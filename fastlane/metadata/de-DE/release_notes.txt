@@ -1,6 +1,6 @@
-Verbesserungen beim Scrollen in Unterhaltungen
-Suchergebnisse sind jetzt besser organisiert, um Dinge einfacher zu finden. Wenn du nach einer Gruppe mit dem Namen "Hi" suchen, wirst du nicht mehr von jeder einzelnen Nachricht begraben, in der jemand Hallo gesagt hat.
-Wir haben einen Fehler behoben, der es unmöglich machte, Ergebnisse für ein einzelnes chinesisches Zeichen im neuen Unterhaltungsbildschirm zu finden. 
-Animierte GIF-Suchergebnisse werden jetzt im Handumdrehen angezeigt.
+• Verbesserungen beim Scrollen in Unterhaltungen
+• Suchergebnisse sind jetzt besser organisiert, um Dinge einfacher zu finden. Wenn du nach einer Gruppe mit dem Namen "Hi" suchen, wirst du nicht mehr von jeder einzelnen Nachricht begraben, in der jemand Hallo gesagt hat.
+• Wir haben einen Fehler behoben, der es unmöglich machte, Ergebnisse für ein einzelnes chinesisches Zeichen im neuen Unterhaltungsbildschirm zu finden. 
+• Animierte GIF-Suchergebnisse werden jetzt im Handumdrehen angezeigt.
 
 Möchtest du zur Verbesserung von Signal beitragen? Wir stellen ein. Besuche https://signal.org/workworkwork um mehr zu erfahren.

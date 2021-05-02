@@ -1,6 +1,6 @@
-⦁ Todavía no hemos acabado pero, con las mejoras que ya incluye esta versión, vas a tararear el "Suavemente" de Elvis Costello mientras te desplazas por tus chats.
-⦁ Han desparecido varios errores de la función de búsqueda sin dejar huella, y ha mejorado la organización de los resultados. Si estás buscando un grupo que se llama "Hola", ya no se perderá entre todos los mensajes en los que alguien saluda.
-⦁ Hemos corregido un fallo que impedía buscar un solo ideograma chino en la nueva pantalla de chat. 
-⦁ Cuando buscas GIFs, salen en un PLIs (esperemos que se entienda el juego de palabras).
+• Todavía no hemos acabado pero, con las mejoras que ya incluye esta versión, vas a tararear el "Suavemente" de Elvis Costello mientras te desplazas por tus chats.
+• Han desparecido varios errores de la función de búsqueda sin dejar huella, y ha mejorado la organización de los resultados. Si estás buscando un grupo que se llama "Hola", ya no se perderá entre todos los mensajes en los que alguien saluda.
+• Hemos corregido un fallo que impedía buscar un solo ideograma chino en la nueva pantalla de chat. 
+• Cuando buscas GIFs, salen en un PLIs (esperemos que se entienda el juego de palabras).
 
-⦁ ¿Te gustaría ayudarnos a mejorar Signal? ¡Estamos contratando! Infórmate en: https://signal.org/workworkwork 
+¿Te gustaría ayudarnos a mejorar Signal? ¡Estamos contratando! Infórmate en: https://signal.org/workworkwork 
