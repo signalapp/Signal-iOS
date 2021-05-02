@@ -18,4 +18,4 @@ tx pull -l $APP_STORE_LANGUAGES --minimum-perc=100
 
 # Legacy hack: pull *any existing* app store descriptios regardless of their completion.
 # Once supported, we don't want to drop any translations.
-tx pull --force -r signal-ios.app-store-description -l $APP_STORE_LANGUAGES
+tx pull --force -l $APP_STORE_LANGUAGES
