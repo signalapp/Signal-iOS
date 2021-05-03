@@ -312,8 +312,10 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         deferredReconfigTimer?.invalidate()
 
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction -> (UIImage?, ConversationColorName) in
-            avatarView.diameter = avatarDiameter
-            avatarView.configure(address: device.address, transaction: transaction)
+            avatarView.configure(address: device.address,
+                                 diameter: avatarDiameter,
+                                 localUserAvatarMode: .asUser,
+                                 transaction: transaction)
             avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
             return (

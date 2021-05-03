@@ -4,7 +4,6 @@
 
 #import "SelectThreadViewController.h"
 #import "BlockListUIUtils.h"
-#import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
@@ -200,7 +199,7 @@ NS_ASSUME_NONNULL_BEGIN
         [recentChatsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
-                            SelectThreadViewController *strongSelf = weakSelf;
+                            SelectThreadViewController *_Nullable strongSelf = weakSelf;
                             OWSCAssertDebug(strongSelf);
 
                             // To be consistent with the threads (above), we use ContactTableViewCell
@@ -208,16 +207,16 @@ NS_ASSUME_NONNULL_BEGIN
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
                             BOOL isBlocked = [helper isThreadBlocked:thread];
-                            if (isBlocked) {
-                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
-                            }
 
                             [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-                                [cell configureWithThread:thread
-                                      localUserAvatarMode:LocalUserAvatarModeNoteToSelf
-                                              transaction:transaction];
+                                ContactCellConfiguration *configuration =
+                                    [ContactCellConfiguration buildForThread:thread
+                                                         localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
+                                if (isBlocked) {
+                                    configuration.accessoryMessage = MessageStrings.conversationIsBlocked;
+                                }
 
-                                if (!cell.hasAccessoryText) {
+                                if (!configuration.hasAccessoryText) {
                                     // Don't add a disappearing messages indicator if we've already added a "blocked"
                                     // label.
                                     __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
@@ -235,9 +234,12 @@ NS_ASSUME_NONNULL_BEGIN
                                         disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
                                         [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
 
-                                        [cell ows_setAccessoryView:disappearingTimerConfigurationView];
+                                        configuration.accessoryView = disappearingTimerConfigurationView;
                                     }
                                 }
+
+                                // configure() cannot be invoked until the configuration is complete.
+                                [cell configureWithConfiguration:configuration transaction:transaction];
                             }];
 
                             return cell;
@@ -282,18 +284,25 @@ NS_ASSUME_NONNULL_BEGIN
         [otherContactsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
+                            SelectThreadViewController *_Nullable strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
+
                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
-                            if (isBlocked) {
-                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
-                            }
-                            [cell configureWithSneakyTransactionWithRecipientAddress:signalAccount.recipientAddress
-                                                                 localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
+                            [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                ContactCellConfiguration *configuration =
+                                    [ContactCellConfiguration buildForAddress:signalAccount.recipientAddress
+                                                          localUserAvatarMode:LocalUserAvatarModeNoteToSelf
+                                                                  transaction:transaction];
+
+                                BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
+                                if (isBlocked) {
+                                    configuration.accessoryMessage = MessageStrings.conversationIsBlocked;
+                                }
+                                [cell configureWithConfiguration:configuration transaction:transaction];
+                            }];
                             return cell;
                         }
-                        actionBlock:^{
-                            [weakSelf signalAccountWasSelected:signalAccount];
-                        }]];
+                        actionBlock:^{ [weakSelf signalAccountWasSelected:signalAccount]; }]];
     }
 
     if (otherContactsSection.itemCount > 0) {

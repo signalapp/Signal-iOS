@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -240,7 +240,8 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         groupMemberViewGroupMemberCountForDisplay() >= GroupManager.groupsV2MaxGroupSizeRecommended
     }
 
-    func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
+    func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
+                                            transaction: SDSAnyReadTransaction) -> Bool {
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
             return false
@@ -253,12 +254,12 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
             groupMembership.isRequestingMember(address) {
             // We can "add" pending or requesting members if they support gv2
             // and we know their profile key credential.
-            let canAddMember = databaseStorage.read { transaction -> Bool in
+            let canAddMember: Bool = {
                 guard GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction) else {
                     return false
                 }
                 return self.groupsV2.hasProfileKeyCredential(for: address, transaction: transaction)
-            }
+            }()
 
             return !canAddMember
         }

@@ -53,10 +53,6 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private let byteCountFormatter: ByteCountFormatter = ByteCountFormatter()
 
-    private lazy var shouldShowUD: Bool = {
-        return self.preferences.shouldShowUnidentifiedDeliveryIndicators()
-    }()
-
     private lazy var contactShareViewHelper: ContactShareViewHelper = {
         let contactShareViewHelper = ContactShareViewHelper()
         contactShareViewHelper.delegate = self
@@ -275,7 +271,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     }
 
     private func buildStatusSections() -> [OWSTableSection] {
-        guard let outgoingMessage = message as? TSOutgoingMessage else {
+        guard nil != message as? TSOutgoingMessage else {
             owsFailDebug("Unexpected message type")
             return []
         }
@@ -337,7 +333,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 section.headerTitle = sectionTitle
             }
 
-            section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin))
+            section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing))
 
             for recipient in recipients {
                 section.add(contactItem(
@@ -356,9 +352,16 @@ class MessageDetailViewController: OWSTableViewController2 {
             customCellBlock: { [weak self] in
                 let cell = ContactTableViewCell()
                 guard let self = self else { return cell }
-                cell.configureWithSneakyTransaction(recipientAddress: address,
-                                                    localUserAvatarMode: .asUser)
-                cell.ows_setAccessoryView(self.buildAccessoryView(text: accessoryText, displayUDIndicator: displayUDIndicator))
+
+                Self.databaseStorage.read { transaction in
+                    let configuration = ContactCellConfiguration.build(address: address,
+                                                                       localUserAvatarMode: .asUser,
+                                                                       transaction: transaction)
+                    configuration.accessoryView = self.buildAccessoryView(text: accessoryText,
+                                                                          displayUDIndicator: displayUDIndicator,
+                                                                          transaction: transaction)
+                    cell.configure(configuration: configuration, transaction: transaction)
+                }
                 return cell
             },
             actionBlock: { [weak self] in
@@ -369,12 +372,16 @@ class MessageDetailViewController: OWSTableViewController2 {
         )
     }
 
-    private func buildAccessoryView(text: String, displayUDIndicator: Bool) -> UIView {
+    private func buildAccessoryView(text: String,
+                                    displayUDIndicator: Bool,
+                                    transaction: SDSAnyReadTransaction) -> UIView {
         let label = UILabel()
         label.textColor = Theme.ternaryTextColor
         label.text = text
         label.textAlignment = .right
         label.font = .ows_dynamicTypeFootnoteClamped
+
+        let shouldShowUD = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
 
         guard displayUDIndicator && shouldShowUD else { return label }
 

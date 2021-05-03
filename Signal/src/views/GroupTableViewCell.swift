@@ -31,7 +31,7 @@ import SignalServiceKit
         let columns = UIStackView(arrangedSubviews: [avatarView, textRows, accessoryLabel])
         columns.axis = .horizontal
         columns.alignment = .center
-        columns.spacing = kContactCellAvatarTextMargin
+        columns.spacing = ContactCellView.avatarTextHSpacing
 
         self.contentView.addSubview(columns)
         columns.autoPinWidthToSuperviewMargins()

@@ -20,7 +20,7 @@ public class NonContactTableViewCell: UITableViewCell {
         OWSTableItem.configureCell(self)
 
         let stackView = UIStackView()
-        stackView.spacing = kContactCellAvatarTextMargin
+        stackView.spacing = ContactCellView.avatarTextHSpacing
         stackView.addArrangedSubview(iconView)
 
         contentView.addSubview(stackView)

@@ -15,8 +15,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/CVItemViewModel.h>
-#import <SignalMessaging/ContactCellView.h>
-#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/CountryCodeViewController.h>
 #import <SignalMessaging/DateUtil.h>

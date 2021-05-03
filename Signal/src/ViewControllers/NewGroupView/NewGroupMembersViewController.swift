@@ -110,7 +110,8 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.groupsV2MaxGroupSizeRecommended
     }
 
-    func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
+    func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
+                                            transaction: SDSAnyReadTransaction) -> Bool {
         false
     }
 

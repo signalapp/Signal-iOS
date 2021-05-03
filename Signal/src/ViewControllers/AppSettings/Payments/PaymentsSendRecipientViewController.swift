@@ -143,7 +143,8 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryMessageForRecipient recipient: PickedRecipient
+        accessoryMessageForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
     ) -> String? {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
         switch recipient.identifier {
@@ -157,16 +158,16 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
+                         attributedSubtitleForRecipient recipient: PickedRecipient,
+                         transaction: SDSAnyReadTransaction) -> NSAttributedString? {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
         switch recipient.identifier {
         case .address(let address):
             guard !address.isLocalAddress else {
                 return nil
             }
-            if let bioForDisplay = (Self.databaseStorage.read { transaction in
-                Self.profileManagerImpl.profileBioForDisplay(for: address, transaction: transaction)
-               }) {
+            if let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
+                                                                                transaction: transaction) {
                 return NSAttributedString(string: bioForDisplay)
             }
             return nil

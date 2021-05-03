@@ -118,7 +118,8 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        accessoryMessageForRecipient recipient: PickedRecipient
+        accessoryMessageForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):

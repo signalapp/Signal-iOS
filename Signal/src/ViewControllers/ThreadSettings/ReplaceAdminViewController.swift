@@ -51,12 +51,17 @@ class ReplaceAdminViewController: OWSTableViewController2 {
             section.add(OWSTableItem(customCellBlock: {
                 let cell = ContactTableViewCell()
 
-                let imageView = UIImageView()
-                imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
-                cell.ows_setAccessoryView(imageView)
+                Self.databaseStorage.read { transaction in
+                    let configuration = ContactCellConfiguration.build(address: address,
+                                                                       localUserAvatarMode: .asUser,
+                                                                       transaction: transaction)
 
-                cell.configureWithSneakyTransaction(recipientAddress: address,
-                                                    localUserAvatarMode: .asUser)
+                    let imageView = UIImageView()
+                    imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
+                    configuration.accessoryView = imageView
+
+                    cell.configure(configuration: configuration, transaction: transaction)
+                }
 
                 return cell
                 },

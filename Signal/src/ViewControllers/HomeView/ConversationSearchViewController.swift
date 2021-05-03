@@ -84,7 +84,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.cellReuseIdentifier())
-        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         databaseStorage.appendUIDatabaseSnapshotDelegate(self)
 
@@ -269,7 +269,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             )
             return cell
         case .contacts:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -278,7 +278,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configureWithSneakyTransaction(recipientAddress: searchResult.signalAccount.recipientAddress,
+            cell.configureWithSneakyTransaction(address: searchResult.signalAccount.recipientAddress,
                                                 localUserAvatarMode: .noteToSelf)
             return cell
         case .messages:

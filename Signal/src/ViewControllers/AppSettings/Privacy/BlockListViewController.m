@@ -9,10 +9,10 @@
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
@@ -109,9 +109,17 @@ NS_ASSUME_NONNULL_BEGIN
             [blockedContactsSection addItem:[OWSTableItem
                                                 itemWithCustomCellBlock:^{
                                                     ContactTableViewCell *cell = [ContactTableViewCell new];
-                                                    [cell configureWithSneakyTransactionWithRecipientAddress:address
-                                                                                         localUserAvatarMode:
-                                                                                             LocalUserAvatarModeAsUser];
+
+                                                    [BlockListViewController.databaseStorage
+                                                        readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                                            ContactCellConfiguration *configuration =
+                                                                [ContactCellConfiguration
+                                                                        buildForAddress:address
+                                                                    localUserAvatarMode:LocalUserAvatarModeAsUser
+                                                                            transaction:transaction];
+                                                            [cell configureWithConfiguration:configuration
+                                                                                 transaction:transaction];
+                                                        }];
                                                     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                         BlockListViewController, @"user");
                                                     return cell;

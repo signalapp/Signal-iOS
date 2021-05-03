@@ -173,10 +173,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 - (BOOL)isNoteToSelf
 {
-    if (!IsNoteToSelfEnabled()) {
-        return NO;
-    }
-
     return self.contactAddress.isLocalAddress;
 }
 

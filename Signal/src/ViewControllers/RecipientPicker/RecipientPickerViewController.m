@@ -9,9 +9,9 @@
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
@@ -135,7 +135,7 @@ const NSUInteger kMinimumSearchLength = 1;
     _tableViewController.delegate = self;
 
     self.tableViewController.defaultSeparatorInsetLeading
-        = OWSTableViewController2.cellHInnerMargin + kSmallAvatarSize + kContactCellAvatarTextMargin;
+        = OWSTableViewController2.cellHInnerMargin + kSmallAvatarSize + ContactCellView.avatarTextHSpacing;
 
     [self addChildViewController:self.tableViewController];
     [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];
@@ -726,8 +726,11 @@ const NSUInteger kMinimumSearchLength = 1;
                                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                 }
 
-                                cell.accessoryMessage = [strongSelf.delegate recipientPicker:strongSelf
-                                                                accessoryMessageForRecipient:recipient];
+                                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                    cell.accessoryMessage = [strongSelf.delegate recipientPicker:strongSelf
+                                                                    accessoryMessageForRecipient:recipient
+                                                                                     transaction:transaction];
+                                }];
 
                                 [cell configureWithPhoneNumber:phoneNumber
                                                   isRegistered:isRegistered

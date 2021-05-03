@@ -78,6 +78,11 @@ public extension NSString {
 // MARK: - Attributed String Concatentation
 
 public extension NSAttributedString {
+
+    var nilIfEmpty: NSAttributedString? {
+        isEmpty ? nil : self
+    }
+
     var entireRange: NSRange {
         NSRange(location: 0, length: string.utf16.count)
     }

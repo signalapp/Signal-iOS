@@ -628,7 +628,7 @@ extension ConversationPickerViewController {
 // MARK: - ConversationPickerCell
 
 private class ConversationPickerCell: ContactTableViewCell {
-    static let reuseIdentifier = "ConversationPickerCell"
+    open override class var reuseIdentifier: String { "ConversationPickerCell" }
 
     // MARK: - UITableViewCell
 
@@ -641,31 +641,28 @@ private class ConversationPickerCell: ContactTableViewCell {
     // MARK: - ContactTableViewCell
 
     public func configure(conversationItem: ConversationItem, transaction: SDSAnyReadTransaction) {
-        if conversationItem.isBlocked {
-            setAccessoryMessage(MessageStrings.conversationIsBlocked)
-        } else {
-            ows_setAccessoryView(
-                buildAccessoryView(disappearingMessagesConfig: conversationItem.disappearingMessagesConfig)
-            )
-        }
-
+        let content: ConversationContent
         switch conversationItem.messageRecipient {
         case .contact(let address):
-            super.configure(withRecipientAddress: address,
-                            localUserAvatarMode: .noteToSelf,
-                            transaction: transaction)
+            content = ConversationContent.forAddress(address, transaction: transaction)
         case .group(let groupThreadId):
             guard let groupThread = TSGroupThread.anyFetchGroupThread(
                 uniqueId: groupThreadId,
                 transaction: transaction
             ) else {
                 owsFailDebug("Failed to find group thread")
-                break
+                return
             }
-            super.configure(with: groupThread,
-                            localUserAvatarMode: .noteToSelf,
-                            transaction: transaction)
+            content = ConversationContent.forThread(groupThread)
         }
+        let configuration = ContactCellConfiguration(content: content,
+                                                     localUserAvatarMode: .noteToSelf)
+        if conversationItem.isBlocked {
+            configuration.accessoryMessage = MessageStrings.conversationIsBlocked
+        } else {
+            configuration.accessoryView = buildAccessoryView(disappearingMessagesConfig: conversationItem.disappearingMessagesConfig)
+        }
+        super.configure(configuration: configuration, transaction: transaction)
 
         selectionStyle = .none
     }

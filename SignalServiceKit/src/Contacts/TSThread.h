@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL IsNoteToSelfEnabled(void);
-
 @class GRDBReadTransaction;
 @class MessageBody;
 @class MessageBodyRanges;

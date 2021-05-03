@@ -8,103 +8,23 @@ import UIKit
 @objc
 public class ConversationAvatarView: AvatarImageView {
 
+    private struct Configuration: Equatable {
+        let diameter: UInt
+        let localUserAvatarMode: LocalUserAvatarMode
+    }
+    private var configuration: Configuration
+
     @objc
     public var diameter: UInt {
-        didSet {
-            if oldValue != diameter {
-                invalidateIntrinsicContentSize()
-                setNeedsLayout()
-                updateImageWithSneakyTransaction()
-            }
-        }
+        configuration.diameter
     }
 
     @objc
     public var localUserAvatarMode: LocalUserAvatarMode {
-        didSet {
-            if oldValue != localUserAvatarMode {
-                updateImageWithSneakyTransaction()
-            }
-        }
+        configuration.localUserAvatarMode
     }
 
-    private enum State {
-        case contact(contactThread: TSContactThread)
-        case group(groupThread: TSGroupThread)
-        case unknownContact(contactAddress: SignalServiceAddress)
-
-        static func forThread(_ thread: TSThread) -> State {
-            if let contactThread = thread as? TSContactThread {
-                return .contact(contactThread: contactThread)
-            } else if let groupThread = thread as? TSGroupThread {
-                return .group(groupThread: groupThread)
-            } else {
-                owsFail("Invalid thread.")
-            }
-        }
-
-        var contactAddress: SignalServiceAddress? {
-            switch self {
-            case .contact(let contactThread):
-                return contactThread.contactAddress
-            case .group:
-                return nil
-            case .unknownContact(let contactAddress):
-                return contactAddress
-            }
-        }
-
-        var groupThreadId: String? {
-            switch self {
-            case .contact:
-                return nil
-            case .group(let groupThread):
-                return groupThread.uniqueId
-            case .unknownContact:
-                return nil
-            }
-        }
-
-        var thread: TSThread? {
-            switch self {
-            case .contact(let contactThread):
-                return contactThread
-            case .group(let groupThread):
-                return groupThread
-            case .unknownContact:
-                return nil
-            }
-        }
-
-        func reloadWithSneakyTransaction() -> State {
-            databaseStorage.read { transaction in
-                reload(transaction: transaction)
-            }
-        }
-
-        func reload(transaction: SDSAnyReadTransaction) -> State {
-            if let contactAddress = self.contactAddress {
-                if let contactThread = TSContactThread.getWithContactAddress(contactAddress,
-                                                                             transaction: transaction) {
-                    return .contact(contactThread: contactThread)
-                } else {
-                    return .unknownContact(contactAddress: contactAddress)
-                }
-            } else {
-                guard let thread = self.thread else {
-                    return self
-                }
-                guard let latestThread = TSThread.anyFetch(uniqueId: thread.uniqueId,
-                                                           transaction: transaction) else {
-                    owsFailDebug("Missing thread.")
-                    return self
-                }
-                return State.forThread(latestThread)
-            }
-        }
-    }
-
-    private var state: State? {
+    private var content: ConversationContent? {
         didSet {
             ensureObservers()
         }
@@ -122,8 +42,8 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     public required init(diameter: UInt, localUserAvatarMode: LocalUserAvatarMode) {
-        self.diameter = diameter
-        self.localUserAvatarMode = localUserAvatarMode
+        self.configuration = Configuration(diameter: diameter,
+                                           localUserAvatarMode: localUserAvatarMode)
 
         super.init(frame: .zero)
 
@@ -137,21 +57,56 @@ public class ConversationAvatarView: AvatarImageView {
 
     // MARK: -
 
-    private func configure(state: State, transaction: SDSAnyReadTransaction) {
-        self.state = state
-        self.updateImage(transaction: transaction)
+    // To avoid redundant/sneaky transctions, we want to apply all changes to
+    // this view in a single go.  If we need to change the content and/or configuration
+    // we should make sure those changes call this method just once.
+    private func configure(content: ConversationContent,
+                           configuration: Configuration,
+                           transaction: SDSAnyReadTransaction) {
+
+        let didDiameterChange = self.configuration.diameter != configuration.diameter
+        let didLocalUserAvatarModeChange = self.configuration.localUserAvatarMode != configuration.localUserAvatarMode
+        var shouldUpdateImage = self.content != content
+
+        self.configuration = configuration
+        self.content = content
+
+        if didDiameterChange {
+            invalidateIntrinsicContentSize()
+            setNeedsLayout()
+            shouldUpdateImage = true
+        }
+
+        if didLocalUserAvatarModeChange {
+            shouldUpdateImage = true
+        }
+
+        if shouldUpdateImage {
+            updateImage(transaction: transaction)
+        }
     }
 
-    @objc
-    public func configureWithSneakyTransaction(thread: TSThread) {
+    private func configure(content: ConversationContent,
+                           transaction: SDSAnyReadTransaction) {
+        configure(content: content,
+                  configuration: self.configuration,
+                  transaction: transaction)
+    }
+
+    private func configureWithSneakyTransaction(content: ConversationContent) {
         databaseStorage.read { transaction in
-            configure(state: State.forThread(thread), transaction: transaction)
+            configure(content: content, transaction: transaction)
         }
     }
 
     @objc
+    public func configureWithSneakyTransaction(thread: TSThread) {
+        configureWithSneakyTransaction(content: ConversationContent.forThread(thread))
+    }
+
+    @objc
     public func configure(thread: TSThread, transaction: SDSAnyReadTransaction) {
-        configure(state: State.forThread(thread), transaction: transaction)
+        configure(content: ConversationContent.forThread(thread), transaction: transaction)
     }
 
     @objc
@@ -163,12 +118,42 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     public func configure(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
-        if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-            configure(state: State.forThread(thread), transaction: transaction)
-        } else {
-            configure(state: .unknownContact(contactAddress: address),
-                      transaction: transaction)
-        }
+        configure(address: address,
+                  diameter: diameter,
+                  localUserAvatarMode: localUserAvatarMode,
+                  transaction: transaction)
+    }
+
+    @objc
+    public func configure(address: SignalServiceAddress,
+                          diameter: UInt,
+                          localUserAvatarMode: LocalUserAvatarMode,
+                          transaction: SDSAnyReadTransaction) {
+        configure(content: ConversationContent.forAddress(address, transaction: transaction),
+                  diameter: diameter,
+                  localUserAvatarMode: localUserAvatarMode,
+                  transaction: transaction)
+    }
+
+    @objc
+    public func configure(thread: TSThread,
+                          diameter: UInt,
+                          localUserAvatarMode: LocalUserAvatarMode,
+                          transaction: SDSAnyReadTransaction) {
+        configure(content: ConversationContent.forThread(thread),
+                  diameter: diameter,
+                  localUserAvatarMode: localUserAvatarMode,
+                  transaction: transaction)
+    }
+
+    public func configure(content: ConversationContent,
+                          diameter: UInt,
+                          localUserAvatarMode: LocalUserAvatarMode,
+                          transaction: SDSAnyReadTransaction) {
+        let configuration = Configuration(diameter: diameter, localUserAvatarMode: localUserAvatarMode)
+        configure(content: content,
+                  configuration: configuration,
+                  transaction: transaction)
     }
 
     // MARK: - Notifications
@@ -176,17 +161,16 @@ public class ConversationAvatarView: AvatarImageView {
     private func ensureObservers() {
         NotificationCenter.default.removeObserver(self)
 
-        guard let state = state else {
+        guard let content = content else {
             return
         }
 
-        switch state {
-        case .contact:
+        switch content {
+        case .contact, .unknownContact:
             NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(handleOtherUsersProfileChanged(notification:)),
+                                                   selector: #selector(otherUsersProfileDidChange(notification:)),
                                                    name: .otherUsersProfileDidChange,
                                                    object: nil)
-
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(handleSignalAccountsChanged(notification:)),
                                                    name: .OWSContactsManagerSignalAccountsDidChange,
@@ -204,8 +188,6 @@ public class ConversationAvatarView: AvatarImageView {
                                                    selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
                                                    name: OWSContactsManager.skipGroupAvatarBlurDidChange,
                                                    object: nil)
-        case .unknownContact:
-            break
         }
 
         NotificationCenter.default.addObserver(self,
@@ -214,26 +196,30 @@ public class ConversationAvatarView: AvatarImageView {
                                                object: nil)
     }
 
-    @objc func themeDidChange() {
+    @objc
+    private func themeDidChange() {
         updateImageWithSneakyTransaction()
     }
 
-    @objc func handleSignalAccountsChanged(notification: Notification) {
+    @objc
+    private func handleSignalAccountsChanged(notification: Notification) {
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
 
         updateImageWithSneakyTransaction()
     }
 
-    @objc func handleOtherUsersProfileChanged(notification: Notification) {
-        guard let state = self.state else {
+    @objc
+    private func otherUsersProfileDidChange(notification: Notification) {
+        guard let content = self.content else {
             return
         }
-        guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress else {
+        guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
+              changedAddress.isValid else {
             owsFailDebug("changedAddress was unexpectedly nil")
             return
         }
-        guard let contactAddress = state.contactAddress else {
+        guard let contactAddress = content.contactAddress else {
             // shouldn't call this for group threads
             owsFailDebug("contactAddress was unexpectedly nil")
             return
@@ -246,15 +232,16 @@ public class ConversationAvatarView: AvatarImageView {
         updateImageWithSneakyTransaction()
     }
 
-    @objc func handleGroupAvatarChanged(notification: Notification) {
-        guard let state = self.state else {
+    @objc
+    private func handleGroupAvatarChanged(notification: Notification) {
+        guard let content = self.content else {
             return
         }
         guard let changedGroupThreadId = notification.userInfo?[TSGroupThread_NotificationKey_UniqueId] as? String else {
             owsFailDebug("groupThreadId was unexpectedly nil")
             return
         }
-        guard let groupThreadId = state.groupThreadId else {
+        guard let groupThreadId = content.groupThreadId else {
             // shouldn't call this for contact threads
             owsFailDebug("groupThreadId was unexpectedly nil")
             return
@@ -265,30 +252,34 @@ public class ConversationAvatarView: AvatarImageView {
         }
 
         databaseStorage.read { transaction in
-            self.state = state.reload(transaction: transaction)
+            self.content = content.reload(transaction: transaction)
             self.updateImage(transaction: transaction)
         }
     }
 
     @objc
-    func skipContactAvatarBlurDidChange(notification: Notification) {
-        guard let address = notification.userInfo?[OWSContactsManager.skipContactAvatarBlurAddressKey] as? SignalServiceAddress else {
+    private func skipContactAvatarBlurDidChange(notification: Notification) {
+        guard let content = self.content else {
+            return
+        }
+        guard let address = notification.userInfo?[OWSContactsManager.skipContactAvatarBlurAddressKey] as? SignalServiceAddress,
+              address.isValid else {
             owsFailDebug("Missing address.")
             return
         }
-        guard address == state?.contactAddress else {
+        guard address == content.contactAddress else {
             return
         }
         updateImageWithSneakyTransaction()
     }
 
     @objc
-    func skipGroupAvatarBlurDidChange(notification: Notification) {
+    private func skipGroupAvatarBlurDidChange(notification: Notification) {
         guard let groupUniqueId = notification.userInfo?[OWSContactsManager.skipGroupAvatarBlurGroupUniqueIdKey] as? String else {
             owsFailDebug("Missing groupId.")
             return
         }
-        guard groupUniqueId == state?.groupThreadId else {
+        guard groupUniqueId == content?.groupThreadId else {
             return
         }
         updateImageWithSneakyTransaction()
@@ -298,7 +289,7 @@ public class ConversationAvatarView: AvatarImageView {
 
     public func updateImageWithSneakyTransaction() {
         guard diameter > 0,
-              nil != self.state else {
+              nil != self.content else {
             self.image = nil
             return
         }
@@ -309,13 +300,13 @@ public class ConversationAvatarView: AvatarImageView {
 
     public func updateImage(transaction: SDSAnyReadTransaction) {
         guard diameter > 0,
-              let state = self.state else {
+              let content = self.content else {
             self.image = nil
             return
         }
 
         let image = { () -> UIImage? in
-            switch state {
+            switch content {
             case .contact(let contactThread):
                 return buildContactAvatar(address: contactThread.contactAddress,
                                           conversationColorName: contactThread.conversationColorName,
@@ -376,7 +367,119 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     public func reset() {
-        self.state = nil
+        self.content = nil
         self.image = nil
+    }
+}
+
+// MARK: -
+
+// Represents a real or potential conversation.
+public enum ConversationContent: Equatable, Dependencies {
+    case contact(contactThread: TSContactThread)
+    case group(groupThread: TSGroupThread)
+    case unknownContact(contactAddress: SignalServiceAddress)
+
+    static func forThread(_ thread: TSThread) -> ConversationContent {
+        if let contactThread = thread as? TSContactThread {
+            return .contact(contactThread: contactThread)
+        } else if let groupThread = thread as? TSGroupThread {
+            return .group(groupThread: groupThread)
+        } else {
+            owsFail("Invalid thread.")
+        }
+    }
+
+    static func forAddress(_ address: SignalServiceAddress,
+                           transaction: SDSAnyReadTransaction) -> ConversationContent {
+        if let contactThread = TSContactThread.getWithContactAddress(address,
+                                                                     transaction: transaction) {
+            return .contact(contactThread: contactThread)
+        } else {
+            return .unknownContact(contactAddress: address)
+        }
+    }
+
+    var contactAddress: SignalServiceAddress? {
+        switch self {
+        case .contact(let contactThread):
+            return contactThread.contactAddress
+        case .group:
+            return nil
+        case .unknownContact(let contactAddress):
+            return contactAddress
+        }
+    }
+
+    var groupThreadId: String? {
+        switch self {
+        case .contact:
+            return nil
+        case .group(let groupThread):
+            return groupThread.uniqueId
+        case .unknownContact:
+            return nil
+        }
+    }
+
+    var thread: TSThread? {
+        switch self {
+        case .contact(let contactThread):
+            return contactThread
+        case .group(let groupThread):
+            return groupThread
+        case .unknownContact:
+            return nil
+        }
+    }
+
+    func reloadWithSneakyTransaction() -> ConversationContent {
+        databaseStorage.read { transaction in
+            reload(transaction: transaction)
+        }
+    }
+
+    func reload(transaction: SDSAnyReadTransaction) -> ConversationContent {
+        if let contactAddress = self.contactAddress {
+            return Self.forAddress(contactAddress, transaction: transaction)
+        } else {
+            guard let thread = self.thread else {
+                return self
+            }
+            guard let latestThread = TSThread.anyFetch(uniqueId: thread.uniqueId,
+                                                       transaction: transaction) else {
+                owsFailDebug("Missing thread.")
+                return self
+            }
+            return ConversationContent.forThread(latestThread)
+        }
+    }
+
+    // MARK: - Equatable
+
+    public static func == (lhs: ConversationContent, rhs: ConversationContent) -> Bool {
+        switch lhs {
+        case .contact(let contactThreadLhs):
+            switch rhs {
+            case .contact(let contactThreadRhs):
+                return contactThreadLhs.contactAddress == contactThreadRhs.contactAddress
+            default:
+                return false
+            }
+        case .group(let groupThreadLhs):
+            switch rhs {
+            case .group(let groupThreadRhs):
+                return groupThreadLhs.groupId == groupThreadRhs.groupId
+            default:
+                return false
+            }
+        case .unknownContact(let contactAddressLhs):
+            switch rhs {
+            case .unknownContact(let contactAddressRhs):
+                return contactAddressLhs == contactAddressRhs
+            default:
+                return false
+            }
+        }
     }
 }

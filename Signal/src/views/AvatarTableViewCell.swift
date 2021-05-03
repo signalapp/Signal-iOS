@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,7 +38,7 @@ public class AvatarTableViewCell: UITableViewCell {
 
         self.columns = UIStackView(arrangedSubviews: [avatarView, textRows])
         columns.axis = .horizontal
-        columns.spacing = CGFloat(kContactCellAvatarTextMargin)
+        columns.spacing = ContactCellView.avatarTextHSpacing
 
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
