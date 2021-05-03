@@ -173,9 +173,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ покинул группу.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " %@ был удален из группы. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ были удалены из группы. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Название изменено на «%@».";
 /* No comment provided by engineer. */
@@ -183,7 +183,7 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Вы покинули группу.";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " Вы были удалены из группы. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Вы не можете поделиться больше, чем %@ элементами.";
 /* alert title */
@@ -325,7 +325,7 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Отправлять предпросмотр ссылки";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Предварительный просмотр поддерживается для ссылок Imgur, Instagram, Pinterest, Reddit и YouTube.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Предпросмотры ссылок";
 /* table section header */
@@ -356,7 +356,6 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Нажмите и удерживайте для записи голосового сообщения";
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Голосовое сообщение";
-/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 // MARK: - Session
 "continue_2" = "Продолжить";
 "copy" = "Копировать";
@@ -444,3 +443,34 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "Сканировать QR-код";
 "vc_qr_code_view_scan_qr_code_explanation" = "Отсканируйте QR-код другого человека, чтобы начать с ним разговор";
 "vc_view_my_qr_code_explanation" = "Это ваш QR-код. Другие пользователи могут сканировать его, чтобы начать диалог с вами.";
+// MARK: - Not Yet Translated
+"fast_mode_explanation" = "Вы будете получать уведомления о новых сообщениях надежно и сразу же с помощью серверов уведомлений Apple.";
+"slow_mode_explanation" = "Время от времени в фоновом режиме будут проверяться новые сообщения.";
+"vc_pn_mode_title" = "Уведомления о Сообщениях";
+"vc_notification_settings_notification_mode_title" = "Использовать быстрый режим";
+"vc_link_device_recovery_phrase_tab_title" = "Секретная фраза";
+"vc_link_device_scan_qr_code_explanation" = "Перейдите в Настройки → Секретная фраза на другом устройстве, чтобы показать ваш QR-код.";
+"vc_enter_recovery_phrase_title" = "Секретная фраза";
+"vc_enter_recovery_phrase_explanation" = "Чтобы связать ваше устройство, введите фразу восстановления, которая была предоставлена вам при регистрации.";
+"vc_enter_public_key_text_field_hint" = "Введите Session ID или ONS имя";
+"vc_home_title" = "Сообщения";
+"admin_group_leave_warning" = "Так как вы являетесь создателем этой группы, она будет удалена для всех. Это нельзя будет отменить.";
+"vc_join_open_group_suggestions_title" = "Или присоединитесь к одной из этих...";
+"vc_settings_invite_a_friend_button_title" = "Пригласить друга";
+"vc_settings_help_us_translate_button_title" = "Помогите нам перевести Session";
+"copied" = "Скопировано";
+"vc_conversation_settings_copy_session_id_button_title" = "Копировать Session ID";
+"vc_conversation_input_prompt" = "Сообщения";
+"vc_conversation_voice_message_cancel_message" = "Проведите для отмены";
+"modal_download_attachment_title" = "Доверять %@?";
+"modal_download_attachment_explanation" = "Вы уверены, что хотите загрузить медиафайлы, присланные %@?";
+"modal_download_button_title" = "Скачать";
+"modal_open_url_title" = "Открыть ссылку?";
+"modal_open_url_explanation" = "Вы уверены, что хотите открыть %@?";
+"modal_open_url_button_title" = "Открыть";
+"modal_blocked_title" = "Разблокировать %@?";
+"modal_blocked_explanation" = "Вы уверены, что хотите разблокировать %@?";
+"modal_blocked_button_title" = "Разблокировать";
+"modal_link_previews_title" = "Включить предварительный просмотр ссылок?";
+"modal_link_previews_explanation" = "Включение предпросмотра ссылок покажет превью для отправляемых и получаемых ссылок. Это может быть полезно, но Session нужно будет соединиться с сайтами, связанными с ссылками, чтобы сгенерировать предпросмотр. Вы всегда можете отключить предпросмотр ссылок в настройках Session.";
+"modal_link_previews_button_title" = "Включить";
