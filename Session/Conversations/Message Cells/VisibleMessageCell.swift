@@ -241,7 +241,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         bubbleView.backgroundColor = (direction == .incoming) ? Colors.receivedMessageBackground : Colors.sentMessageBackground
         updateBubbleViewCorners()
         // Content view
-        populateContentView(for: viewItem)
+        populateContentView(for: viewItem, message: message)
         // Date break
         headerViewTopConstraint.constant = shouldInsetHeader ? Values.mediumSpacing : 1
         headerView.subviews.forEach { $0.removeFromSuperview() }
@@ -300,7 +300,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         dateBreakLabel.set(.height, to: dateBreakLabelSize.height)
     }
     
-    private func populateContentView(for viewItem: ConversationViewItem) {
+    private func populateContentView(for viewItem: ConversationViewItem, message: TSMessage) {
         snContentView.subviews.forEach { $0.removeFromSuperview() }
         func showMediaPlaceholder() {
             let mediaPlaceholderView = MediaPlaceholderView(viewItem: viewItem, textColor: bodyLabelTextColor)
@@ -320,6 +320,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 linkPreviewView.linkPreviewState = LinkPreviewSent(linkPreview: linkPreview, imageAttachment: viewItem.linkPreviewAttachment)
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
+            } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
+                let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor)
+                snContentView.addSubview(openGroupInvitationView)
+                openGroupInvitationView.pin(to: snContentView)
             } else {
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])

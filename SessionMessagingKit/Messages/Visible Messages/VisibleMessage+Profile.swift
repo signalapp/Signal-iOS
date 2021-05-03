@@ -62,8 +62,8 @@ public extension VisibleMessage {
         public override var description: String {
             """
             Profile(
-                displayName: \(displayName ?? "null")
-                profileKey: \(profileKey?.description ?? "null")
+                displayName: \(displayName ?? "null"),
+                profileKey: \(profileKey?.description ?? "null"),
                 profilePictureURL: \(profilePictureURL ?? "null")
             )
             """

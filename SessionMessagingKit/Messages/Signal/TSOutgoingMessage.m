@@ -269,7 +269,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
                                                          quotedMessage:quotedMessage
-                                                           linkPreview:linkPreview];
+                                                           linkPreview:linkPreview
+                                               openGroupInvitationName:nil
+                                                openGroupInvitationURL:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -286,7 +288,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:groupMetaMessage
                                                          quotedMessage:nil
-                                                           linkPreview:nil];
+                                                           linkPreview:nil
+                                               openGroupInvitationName:nil
+                                                openGroupInvitationURL:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -299,6 +303,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
+                         openGroupInvitationName:(nullable NSString *)openGroupInvitationName
+                          openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -307,7 +313,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:expireStartedAt
                              quotedMessage:quotedMessage
-                               linkPreview:linkPreview];
+                               linkPreview:linkPreview
+                   openGroupInvitationName:openGroupInvitationName
+                    openGroupInvitationURL:openGroupInvitationURL];
     if (!self) {
         return self;
     }

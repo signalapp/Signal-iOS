@@ -9,7 +9,6 @@ public final class MessageSender : NSObject {
     public enum Error : LocalizedError {
         case invalidMessage
         case protoConversionFailed
-        case proofOfWorkCalculationFailed
         case noUserX25519KeyPair
         case noUserED25519KeyPair
         case signingFailed
@@ -22,7 +21,7 @@ public final class MessageSender : NSObject {
 
         internal var isRetryable: Bool {
             switch self {
-            case .invalidMessage, .protoConversionFailed, .proofOfWorkCalculationFailed, .invalidClosedGroupUpdate, .signingFailed, .encryptionFailed: return false
+            case .invalidMessage, .protoConversionFailed, .invalidClosedGroupUpdate, .signingFailed, .encryptionFailed: return false
             default: return true
             }
         }
@@ -31,7 +30,6 @@ public final class MessageSender : NSObject {
             switch self {
             case .invalidMessage: return "Invalid message."
             case .protoConversionFailed: return "Couldn't convert message to proto."
-            case .proofOfWorkCalculationFailed: return "Proof of work calculation failed."
             case .noUserX25519KeyPair: return "Couldn't find user X25519 key pair."
             case .noUserED25519KeyPair: return "Couldn't find user ED25519 key pair."
             case .signingFailed: return "Couldn't sign message."
@@ -47,8 +45,6 @@ public final class MessageSender : NSObject {
 
     // MARK: Initialization
     private override init() { }
-
-    public static let shared = MessageSender() // FIXME: Remove once requestSenderKey is static
 
     // MARK: Preparation
     public static func prep(_ signalAttachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {

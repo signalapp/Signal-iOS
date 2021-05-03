@@ -268,6 +268,8 @@
 		B8D64FCB25BA78A90029CFC0 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		B8D84EA325DF745A005A043E /* LinkPreviewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84EA225DF745A005A043E /* LinkPreviewState.swift */; };
 		B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */; };
+		B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */; };
+		B8EB20F02640F7F000773E52 /* OpenGroupInvitationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */; };
 		B8F5F52925EC4F8A003BF8D4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F52825EC4F8A003BF8D4 /* BlockListUIUtils.m */; };
 		B8F5F54E25EC50A5003BF8D4 /* BlockListUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = B8F5F52725EC4F6A003BF8D4 /* BlockListUIUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8F5F56525EC8453003BF8D4 /* Notification+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */; };
@@ -1252,6 +1254,8 @@
 		B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OnionRequests.swift"; sourceTree = "<group>"; };
 		B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Convenience.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Convenience.swift"; sourceTree = "<group>"; };
 		B8EB20E6263F7E4B00773E52 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+OpenGroupInvitation.swift"; sourceTree = "<group>"; };
+		B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupInvitationView.swift; sourceTree = "<group>"; };
 		B8F5F52725EC4F6A003BF8D4 /* BlockListUIUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlockListUIUtils.h; sourceTree = "<group>"; };
 		B8F5F52825EC4F8A003BF8D4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
 		B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Contacts.swift"; sourceTree = "<group>"; };
@@ -2110,6 +2114,7 @@
 				B8569AE225CBB19A00DBA3DB /* DocumentView.swift */,
 				B849789525D4A2F500D0D0B3 /* LinkPreviewView.swift */,
 				B8D84EA225DF745A005A043E /* LinkPreviewState.swift */,
+				B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */,
 			);
 			path = "Content Views";
 			sourceTree = "<group>";
@@ -2380,6 +2385,7 @@
 				C3C2A75E2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift */,
 				C3C2A7672553A3D900C340D1 /* VisibleMessage+Contact.swift */,
 				C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */,
+				B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */,
 			);
 			path = "Visible Messages";
 			sourceTree = "<group>";
@@ -4732,6 +4738,7 @@
 				C3C2A7852553AAF300C340D1 /* SessionProtos.pb.swift in Sources */,
 				B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */,
 				C32C5B3F256DC1DF003C73A2 /* TSQuotedMessage+Conversion.swift in Sources */,
+				B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
 				C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */,
@@ -4971,6 +4978,7 @@
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				C302093E25DCBF08001F572D /* MentionSelectionView.swift in Sources */,
 				C328251F25CA3A900062D0A7 /* QuoteView.swift in Sources */,
+				B8EB20F02640F7F000773E52 /* OpenGroupInvitationView.swift in Sources */,
 				B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */,
 				C328254025CA55880062D0A7 /* ContextMenuVC.swift in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,

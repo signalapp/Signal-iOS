@@ -88,9 +88,9 @@ public extension VisibleMessage {
         public override var description: String {
             """
             Quote(
-                timestamp: \(timestamp?.description ?? "null")
-                publicKey: \(publicKey ?? "null")
-                text: \(text ?? "null")
+                timestamp: \(timestamp?.description ?? "null"),
+                publicKey: \(publicKey ?? "null"),
+                text: \(text ?? "null"),
                 attachmentID: \(attachmentID ?? "null")
             )
             """
