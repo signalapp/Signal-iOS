@@ -7,7 +7,7 @@ extension AppDelegate {
         guard Storage.shared.getUser()?.name != nil else { return }
         let userDefaults = UserDefaults.standard
         let lastSync = userDefaults[.lastConfigurationSync] ?? .distantPast
-        guard Date().timeIntervalSince(lastSync) > 2 * 24 * 60 * 60,
+        guard Date().timeIntervalSince(lastSync) > 7 * 24 * 60 * 60,
             let configurationMessage = ConfigurationMessage.getCurrent() else { return } // Sync every 2 days
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         Storage.shared.write { transaction in
