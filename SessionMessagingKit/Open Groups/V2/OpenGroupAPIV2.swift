@@ -174,10 +174,12 @@ public final class OpenGroupAPIV2 : NSObject {
                         }
                         return nil
                     }
-                    let deletions = given(json["deletions"] as? [JSON]) { $0.compactMap { Deletion.from($0) } } ?? []
+                    let rawDeletions = json["deletions"] as? [JSON] ?? []
                     let moderators = json["moderators"] as? [String] ?? []
-                    return try? parseMessages(from: json, for: room, on: server).map { messages in
-                        return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
+                    return try? parseMessages(from: json, for: room, on: server).then(on: DispatchQueue.global(qos: .userInitiated)) { messages in
+                        parseDeletions(from: rawDeletions, for: room, on: server).map(on: DispatchQueue.global(qos: .userInitiated)) { deletions in
+                            return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
+                        }
                     }
                 }
                 return when(fulfilled: promises)
@@ -333,29 +335,34 @@ public final class OpenGroupAPIV2 : NSObject {
         return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in }
     }
     
-    public static func getDeletedMessages(for room: String, on server: String) -> Promise<[Int64]> {
+    public static func getDeletedMessages(for room: String, on server: String) -> Promise<[Deletion]> {
         let storage = SNMessagingKitConfiguration.shared.storage
         var queryParameters: [String:String] = [:]
         if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
             queryParameters["from_server_id"] = String(lastDeletionServerID)
         }
         let request = Request(verb: .get, room: room, server: server, endpoint: "deleted_messages", queryParameters: queryParameters)
-        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[Int64]> in
+        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[Deletion]> in
             guard let rawDeletions = json["ids"] as? [JSON] else { throw Error.parsingFailed }
-            let deletions = rawDeletions.compactMap { Deletion.from($0) }
-            let serverID = deletions.map { $0.id }.max() ?? 0
-            let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) ?? 0
-            if serverID > lastDeletionServerID {
-                let (promise, seal) = Promise<[Int64]>.pending()
-                storage.write(with: { transaction in
-                    storage.setLastDeletionServerID(for: room, on: server, to: serverID, using: transaction)
-                }, completion: {
-                    seal.fulfill(deletions.map { $0.deletedMessageID })
-                })
-                return promise
-            } else {
-                return Promise.value(deletions.map { $0.deletedMessageID })
-            }
+            return parseDeletions(from: rawDeletions, for: room, on: server)
+        }
+    }
+    
+    private static func parseDeletions(from rawDeletions: [JSON], for room: String, on server: String) -> Promise<[Deletion]> {
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let deletions = rawDeletions.compactMap { Deletion.from($0) }
+        let serverID = deletions.map { $0.id }.max() ?? 0
+        let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) ?? 0
+        if serverID > lastDeletionServerID {
+            let (promise, seal) = Promise<[Deletion]>.pending()
+            storage.write(with: { transaction in
+                storage.setLastDeletionServerID(for: room, on: server, to: serverID, using: transaction)
+            }, completion: {
+                seal.fulfill(deletions)
+            })
+            return promise
+        } else {
+            return Promise.value(deletions)
         }
     }
     
