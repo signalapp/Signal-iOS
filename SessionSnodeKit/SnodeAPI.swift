@@ -194,7 +194,7 @@ public final class SnodeAPI : NSObject {
                         ]
                     ]
                 ]
-                return invoke(.getAllSnodes, on: snode, parameters: parameters).map2 { rawResponse in
+                return invoke(.oxenDaemonRPCCall, on: snode, parameters: parameters).map2 { rawResponse in
                     guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON,
                         let rawSnodes = intermediate["service_node_states"] as? [JSON] else {
                         throw Error.snodePoolUpdatingFailed
@@ -285,11 +285,17 @@ public final class SnodeAPI : NSObject {
         guard let nameHash = sodium.genericHash.hash(message: nameAsData),
             let base64EncodedNameHash = nameHash.toBase64() else { return Promise(error: Error.hashingFailed) }
         // Ask 3 different snodes for the Session ID associated with the given name hash
-        let parameters: [String:Any] = [ "name_hash" : base64EncodedNameHash ]
+        let parameters: [String:Any] = [
+            "endpoint" : "ons_resolve",
+            "params" : [
+                "type" : 0, // type 0 means Session
+                "name_hash" : base64EncodedNameHash
+            ]
+        ]
         let promises = (0..<validationCount).map { _ in
             return getRandomSnode().then2 { snode in
                 attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
-                    invoke(.getSessionIDForONSName, on: snode, parameters: parameters)
+                    invoke(.oxenDaemonRPCCall, on: snode, parameters: parameters)
                 }
             }
         }
@@ -300,32 +306,30 @@ public final class SnodeAPI : NSObject {
                 switch result {
                 case .rejected(let error): return seal.reject(error)
                 case .fulfilled(let rawResponse):
-                    guard let json = rawResponse as? JSON, let x0 = json["result"] as? JSON,
-                        let x1 = x0["entries"] as? [JSON], let x2 = x1.first,
-                        let hexEncodedEncryptedBlob = x2["encrypted_value"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
-                    let encryptedBlob = [UInt8](Data(hex: hexEncodedEncryptedBlob))
-                    let isArgon2Based = (encryptedBlob.count == sessionIDByteCount + sodium.secretBox.MacBytes)
+                    guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON,
+                        let hexEncodedCiphertext = intermediate["encrypted_value"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
+                    let ciphertext = [UInt8](Data(hex: hexEncodedCiphertext))
+                    let isArgon2Based = (intermediate["nonce"] == nil)
                     if isArgon2Based {
                         // Handle old Argon2-based encryption used before HF16
                         let salt = [UInt8](Data(repeating: 0, count: sodium.pwHash.SaltBytes))
                         guard let key = sodium.pwHash.hash(outputLength: sodium.secretBox.KeyBytes, passwd: nameAsData, salt: salt,
                             opsLimit: sodium.pwHash.OpsLimitModerate, memLimit: sodium.pwHash.MemLimitModerate, alg: .Argon2ID13) else { return seal.reject(Error.hashingFailed) }
                         let nonce = [UInt8](Data(repeating: 0, count: sodium.secretBox.NonceBytes))
-                        guard let sessionIDAsData = sodium.secretBox.open(authenticatedCipherText: encryptedBlob, secretKey: key, nonce: nonce) else {
+                        guard let sessionIDAsData = sodium.secretBox.open(authenticatedCipherText: ciphertext, secretKey: key, nonce: nonce) else {
                             return seal.reject(Error.decryptionFailed)
                         }
                         sessionIDs.append(sessionIDAsData.toHexString())
                     } else {
-                        // BLAKE2b-based encryption
+                        guard let hexEncodedNonce = intermediate["nonce"] as? String else { return seal.reject(HTTP.Error.invalidJSON) }
+                        let nonce = [UInt8](Data(hex: hexEncodedNonce))
+                        // xchacha-based encryption
                         guard let key = sodium.genericHash.hash(message: nameAsData, key: nameHash) else { // key = H(name, key=H(name))
                             return seal.reject(Error.hashingFailed)
                         }
-                        let nonceSize = sodium.aead.xchacha20poly1305ietf.NonceBytes
-                        guard encryptedBlob.count >= (sessionIDByteCount + sodium.aead.xchacha20poly1305ietf.ABytes + nonceSize) else { // Should always be equal in practice
+                        guard ciphertext.count >= (sessionIDByteCount + sodium.aead.xchacha20poly1305ietf.ABytes) else { // Should always be equal in practice
                             return seal.reject(Error.decryptionFailed)
                         }
-                        let nonce = [UInt8](encryptedBlob[(encryptedBlob.endIndex - nonceSize) ..< encryptedBlob.endIndex])
-                        let ciphertext = [UInt8](encryptedBlob[0 ..< (encryptedBlob.endIndex - nonceSize)])
                         guard let sessionIDAsData = sodium.aead.xchacha20poly1305ietf.decrypt(authenticatedCipherText: ciphertext, secretKey: key, nonce: nonce) else {
                             return seal.reject(Error.decryptionFailed)
                         }
