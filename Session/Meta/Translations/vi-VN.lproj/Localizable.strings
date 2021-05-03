@@ -356,6 +356,8 @@
 "SETTINGS_SECURITY_TITLE" = "Screen Security";
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "None";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ days";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
