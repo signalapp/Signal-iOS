@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -69,12 +69,12 @@ public class SDSDeserialization {
 
         do {
             guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
-                owsFailDebug("Invalid value.")
+                owsFailDebug("Invalid value: \(name).")
                 throw SDSError.invalidValue
             }
             return decoded
         } catch {
-            owsFailDebug("Read failed: \(error).")
+            owsFailDebug("Read failed[\(name)]: \(error).")
             throw SDSError.invalidValue
         }
     }
