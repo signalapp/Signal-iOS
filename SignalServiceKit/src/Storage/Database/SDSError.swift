@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,4 +15,26 @@ public enum SDSError: Int, Error {
     case unexpectedType
     case invalidValue
     case invalidTransaction
+}
+
+// MARK: -
+
+extension SDSError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .invalidResult:
+            return "SDSError.invalidResult"
+        case .missingRequiredField:
+            return "SDSError.missingRequiredField"
+        case .unexpectedType:
+            return "SDSError.unexpectedType"
+        case .invalidValue:
+            return "SDSError.invalidValue"
+        case .invalidTransaction:
+            return "SDSError.invalidTransaction"
+        @unknown default:
+            owsFailDebug("unexpected value: \(self.rawValue)")
+            return "SDSError.Unknown"
+        }
+    }
 }
