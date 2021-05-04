@@ -181,6 +181,12 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
             continue;
         }
 
+        if ([self.blockingManager isAddressBlocked:address]) {
+            OWSLogWarn(@"Skipping send for blocked address: %@", address);
+            [self dequeueReceiptsForAddress:address timestamps:timestamps receiptType:receiptType];
+            continue;
+        }
+
         TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
         OWSReceiptsForSenderMessage *message;
         NSString *receiptName;
