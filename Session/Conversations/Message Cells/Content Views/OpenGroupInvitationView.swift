@@ -43,7 +43,7 @@ final class OpenGroupInvitationView : UIView {
         // Subtitle
         let subtitleLabel = UILabel()
         subtitleLabel.lineBreakMode = .byTruncatingTail
-        subtitleLabel.text = "Open group invitation"
+        subtitleLabel.text = NSLocalizedString("view_open_group_invitation_description", comment: "")
         subtitleLabel.textColor = textColor
         subtitleLabel.font = .systemFont(ofSize: Values.smallFontSize)
         // URL

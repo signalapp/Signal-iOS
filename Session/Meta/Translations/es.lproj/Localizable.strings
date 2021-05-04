@@ -523,3 +523,4 @@
 "vc_share_title" = "Share to Session";
 "vc_share_loading_message" = "Preparing attachments...";
 "vc_share_sending_message" = "Sending...";
+"view_open_group_invitation_description" = "Open group invitation";
