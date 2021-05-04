@@ -7,7 +7,8 @@ import PromiseKit
 @objc
 public class BulkProfileFetch: NSObject {
 
-    private let serialQueue = DispatchQueue(label: "BulkProfileFetch")
+    private static let serialQueue = DispatchQueue(label: "BulkProfileFetch")
+    private var serialQueue: DispatchQueue { Self.serialQueue }
 
     // This property should only be accessed on serialQueue.
     private var uuidQueue = OrderedSet<UUID>()
@@ -48,7 +49,7 @@ public class BulkProfileFetch: NSObject {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             // Try to update missing & stale profiles on launch.
-            DispatchQueue.global(qos: .utility).async {
+            self.serialQueue.async {
                 self.fetchMissingAndStaleProfiles()
             }
         }

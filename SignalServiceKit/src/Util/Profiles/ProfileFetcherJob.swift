@@ -112,14 +112,17 @@ extension ProfileRequestSubject: CustomStringConvertible {
 @objc
 public class ProfileFetcherJob: NSObject {
 
+    private static let serialQueue = DispatchQueue(label: "org.signal.profileFetcherJob")
+
     // This property is only accessed on the serial queue.
     private static var fetchDateMap = [ProfileRequestSubject: Date]()
-    private static let serialQueue = DispatchQueue(label: "org.signal.profileFetcherJob")
 
     private let subject: ProfileRequestSubject
     private let options: ProfileFetchOptions
 
     private var backgroundTask: OWSBackgroundTask?
+
+    private static let unfairLock = UnfairLock()
 
     @objc
     public class func fetchProfilePromiseObjc(address: SignalServiceAddress,
@@ -199,12 +202,12 @@ public class ProfileFetcherJob: NSObject {
     private func runAsPromise() -> Promise<FetchedProfile> {
         return DispatchQueue.main.async(.promise) {
             self.addBackgroundTask()
-        }.then(on: DispatchQueue.global()) { _ in
-            return self.requestProfile()
-        }.then(on: DispatchQueue.global()) { fetchedProfile in
-            return firstly {
+        }.then(on: Self.serialQueue) { _ in
+            self.requestProfile()
+        }.then(on: Self.serialQueue) { fetchedProfile in
+            firstly {
                 self.updateProfile(fetchedProfile: fetchedProfile)
-            }.map(on: DispatchQueue.global()) { _ in
+            }.map(on: Self.serialQueue) { _ in
                 return fetchedProfile
             }
         }
@@ -248,9 +251,9 @@ public class ProfileFetcherJob: NSObject {
         let (promise, resolver) = Promise<FetchedProfile>.pending()
         firstly {
             requestProfileAttempt()
-        }.done(on: DispatchQueue.global()) { fetchedProfile in
+        }.done(on: Self.serialQueue) { fetchedProfile in
             resolver.fulfill(fetchedProfile)
-        }.catch(on: DispatchQueue.global()) { error in
+        }.catch(on: Self.serialQueue) { error in
             if error.httpStatusCode == 401 {
                 return resolver.reject(ProfileFetchError.unauthorized)
             }
@@ -292,9 +295,9 @@ public class ProfileFetcherJob: NSObject {
 
                 firstly {
                     self.requestProfileWithRetries(retryCount: retryCount + 1)
-                }.done(on: DispatchQueue.global()) { fetchedProfile in
+                }.done(on: Self.serialQueue) { fetchedProfile in
                     resolver.fulfill(fetchedProfile)
-                }.catch(on: DispatchQueue.global()) { error in
+                }.catch(on: Self.serialQueue) { error in
                     resolver.reject(error)
                 }
             }
@@ -321,7 +324,7 @@ public class ProfileFetcherJob: NSObject {
         let request = OWSRequestFactory.getProfileRequest(withUsername: username)
         return firstly {
             return networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) {
+        }.map(on: Self.serialQueue) {
             let profile = try SignalServiceProfile(address: nil, responseObject: $1)
             let profileKey = self.profileKey(forProfile: profile,
                                              versionedProfileRequest: nil)
@@ -389,7 +392,7 @@ public class ProfileFetcherJob: NSObject {
 
         return firstly {
             return requestMaker.makeRequest()
-        }.map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> FetchedProfile in
+        }.map(on: Self.serialQueue) { (result: RequestMakerResult) -> FetchedProfile in
             let profile = try SignalServiceProfile(address: address, responseObject: result.responseObject)
             let profileKey = self.profileKey(forProfile: profile,
                                              versionedProfileRequest: currentVersionedProfileRequest)
@@ -438,17 +441,17 @@ public class ProfileFetcherJob: NSObject {
             profileManager.downloadAndDecryptProfileAvatar(forProfileAddress: profileAddress,
                                                            avatarUrlPath: avatarUrlPath,
                                                            profileKey: profileKey)
-        }.map(on: .global()) { (result: Any?) throws -> Data in
+        }.map(on: Self.serialQueue) { (result: Any?) throws -> Data in
             guard let avatarData = result as? Data else {
                 Logger.verbose("Unexpected result: \(String(describing: result))")
                 throw OWSAssertionError("Unexpected result.")
             }
             return avatarData
-        }.then(on: .global()) { (avatarData: Data) -> Promise<Void> in
+        }.then(on: Self.serialQueue) { (avatarData: Data) -> Promise<Void> in
             self.updateProfile(fetchedProfile: fetchedProfile,
                                profileKey: profileKey,
                                optionalAvatarData: avatarData)
-        }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+        }.recover(on: Self.serialQueue) { (error: Error) -> Promise<Void> in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Error: \(error)")
 
@@ -633,13 +636,13 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func lastFetchDate(for subject: ProfileRequestSubject) -> Date? {
-        return ProfileFetcherJob.serialQueue.sync {
-            return ProfileFetcherJob.fetchDateMap[subject]
+        Self.unfairLock.withLock {
+            ProfileFetcherJob.fetchDateMap[subject]
         }
     }
 
     private func recordLastFetchDate(for subject: ProfileRequestSubject) {
-        ProfileFetcherJob.serialQueue.sync {
+        Self.unfairLock.withLock {
             ProfileFetcherJob.fetchDateMap[subject] = Date()
         }
     }
