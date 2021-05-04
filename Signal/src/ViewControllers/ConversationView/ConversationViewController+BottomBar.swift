@@ -149,18 +149,24 @@ public extension ConversationViewController {
             return
         }
 
-        let messageDraft: MessageBody?
+        var messageDraft: MessageBody?
+        var voiceMemoDraft: VoiceMessageModel?
         if let oldInputToolbar = self.inputToolbar {
             // Maintain draft continuity.
             messageDraft = oldInputToolbar.messageBody()
+            voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {
-            messageDraft = Self.databaseStorage.uiRead { transaction in
-                self.thread.currentDraft(with: transaction)
+            Self.databaseStorage.uiRead { transaction in
+                messageDraft = self.thread.currentDraft(with: transaction)
+                if VoiceMessageModel.hasDraft(for: self.thread, transaction: transaction) {
+                    voiceMemoDraft = VoiceMessageModel(thread: self.thread)
+                }
             }
         }
 
         let newInputToolbar = buildInputToolbar(conversationStyle: conversationStyle,
-                                                messageDraft: messageDraft)
+                                                messageDraft: messageDraft,
+                                                voiceMemoDraft: voiceMemoDraft)
 
         self.inputToolbar = newInputToolbar
 

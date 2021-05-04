@@ -94,6 +94,10 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         guard sender.state == .recognized else {
             return
         }
+
+        // Stop any recording voice memos.
+        finishRecordingVoiceMessage(sendImmediately: false)
+
         guard let cell = findCell(forGesture: sender) else {
             return
         }

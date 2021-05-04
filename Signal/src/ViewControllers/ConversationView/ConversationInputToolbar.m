@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState) {
     VoiceMemoRecordingState_Idle,
     VoiceMemoRecordingState_RecordingHeld,
-    VoiceMemoRecordingState_RecordingLocked
+    VoiceMemoRecordingState_RecordingLocked,
+    VoiceMemoRecordingState_Draft
 };
 
 typedef NS_CLOSED_ENUM(NSUInteger, KeyboardType) { KeyboardType_System, KeyboardType_Sticker, KeyboardType_Attachment };
@@ -92,6 +93,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic) VoiceMemoRecordingState voiceMemoRecordingState;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 @property (nonatomic, nullable, weak) UIView *voiceMemoTooltip;
+@property (nonatomic, nullable) VoiceMessageModel *voiceMemoDraft;
 @property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutContraints;
 @property (nonatomic) UIEdgeInsets receivedSafeAreaInsets;
 @property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
@@ -756,6 +758,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                     [self.inputToolbarDelegate voiceMemoGestureDidCancel];
                     break;
                 case VoiceMemoRecordingState_RecordingLocked:
+                case VoiceMemoRecordingState_Draft:
                     OWSFailDebug(@"once locked, shouldn't be possible to interact with gesture.");
                     [self.inputToolbarDelegate voiceMemoGestureDidCancel];
                     break;
@@ -791,6 +794,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                             [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:0];
                             break;
                         case VoiceMemoRecordingState_RecordingLocked:
+                        case VoiceMemoRecordingState_Draft:
                             // already locked
                             break;
                         case VoiceMemoRecordingState_Idle:
@@ -826,6 +830,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                     [self.inputToolbarDelegate voiceMemoGestureDidComplete];
                     break;
                 case VoiceMemoRecordingState_RecordingLocked:
+                case VoiceMemoRecordingState_Draft:
                     // Continue recording.
                     break;
             }
@@ -850,6 +855,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
             return NO;
         case VoiceMemoRecordingState_RecordingHeld:
         case VoiceMemoRecordingState_RecordingLocked:
+        case VoiceMemoRecordingState_Draft:
             return YES;
     }
 }
@@ -970,11 +976,38 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                                                                     repeats:YES];
 }
 
+- (void)showVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft
+{
+    OWSAssertIsOnMainThread();
+
+    self.voiceMemoDraft = voiceMemoDraft;
+    self.voiceMemoRecordingState = VoiceMemoRecordingState_Draft;
+
+    [self removeVoiceMemoTooltip];
+
+    [self.voiceMemoRedRecordingCircle removeFromSuperview];
+    [self.voiceMemoLockView removeFromSuperview];
+
+    [self.voiceMemoContentView removeAllSubviews];
+
+    [self.voiceMemoUpdateTimer invalidate];
+    self.voiceMemoUpdateTimer = nil;
+
+    __weak __typeof(self) weakSelf = self;
+    UIView *draftView = [[VoiceMessageDraftView alloc] initWithVoiceMessageModel:voiceMemoDraft
+                                                               didDeleteCallback:^{ [weakSelf hideVoiceMemoUI:YES]; }];
+    [self.voiceMemoContentView addSubview:draftView];
+    [draftView autoPinEdgesToSuperviewEdges];
+}
+
 - (void)hideVoiceMemoUI:(BOOL)animated
 {
     OWSAssertIsOnMainThread();
 
+    [self.voiceMemoContentView removeAllSubviews];
+
     self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
+    self.voiceMemoDraft = nil;
 
     UIView *oldVoiceMemoRedRecordingCircle = self.voiceMemoRedRecordingCircle;
     UIView *oldVoiceMemoLockView = self.voiceMemoLockView;
@@ -986,6 +1019,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     [self.voiceMemoUpdateTimer invalidate];
     self.voiceMemoUpdateTimer = nil;
+
+    self.voiceMemoDraft = nil;
 
     if (animated) {
         [UIView animateWithDuration:0.2f
@@ -1109,7 +1144,11 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     OWSAssertDebug(self.inputToolbarDelegate);
 
-    if (self.isRecordingVoiceMemo) {
+    if (self.voiceMemoDraft) {
+        self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
+        [self.inputToolbarDelegate sendVoiceMemoDraft:self.voiceMemoDraft];
+    } else if (self.isRecordingVoiceMemo) {
+        self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
         [self.inputToolbarDelegate voiceMemoGestureDidComplete];
     } else {
         [self.inputToolbarDelegate sendButtonPressed];

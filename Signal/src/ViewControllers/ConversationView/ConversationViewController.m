@@ -3397,6 +3397,13 @@ typedef enum : NSUInteger {
     [self.inputToolbar setVoiceMemoUICancelAlpha:cancelAlpha];
 }
 
+- (void)sendVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft
+{
+    OWSAssertIsOnMainThread();
+
+    [self sendVoiceMessageModel:voiceMemoDraft];
+}
+
 #pragma mark - Database Observation
 
 - (BOOL)isViewVisible
@@ -3865,6 +3872,7 @@ typedef enum : NSUInteger {
 
 - (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
                                    messageDraft:(nullable MessageBody *)messageDraft
+                                 voiceMemoDraft:(nullable VoiceMessageModel *)voiceMemoDraft
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.hasViewWillAppearEverBegun);
@@ -3876,6 +3884,11 @@ typedef enum : NSUInteger {
                                               inputTextViewDelegate:self
                                                     mentionDelegate:self];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, inputToolbar);
+
+    if (voiceMemoDraft) {
+        [inputToolbar showVoiceMemoDraft:voiceMemoDraft];
+    }
+
     return inputToolbar;
 }
 

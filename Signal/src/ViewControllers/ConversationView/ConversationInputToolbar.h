@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class PhotoCapture;
 @class SignalAttachment;
 @class StickerInfo;
+@class VoiceMessageModel;
 
 @protocol MentionTextViewDelegate;
 
@@ -38,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)voiceMemoGestureDidCancel;
 
 - (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha;
+
+- (void)sendVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft;
 
 #pragma mark - Attachments
 
@@ -111,6 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showVoiceMemoUI;
 
+- (void)showVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft;
+
 - (void)hideVoiceMemoUI:(BOOL)animated;
 
 - (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha;
@@ -120,6 +125,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showVoiceMemoTooltip;
 
 - (void)removeVoiceMemoTooltip;
+
+@property (nonatomic, nullable, readonly) VoiceMessageModel *voiceMemoDraft;
 
 #pragma mark -
 

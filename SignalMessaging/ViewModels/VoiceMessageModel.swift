@@ -114,6 +114,12 @@ public class VoiceMessageModel: NSObject {
         return directory
     }
 
+    public lazy var audioWaveform: AudioWaveform? =
+        AudioWaveformManager.audioWaveform(forAudioPath: audioFile.path, waveformPath: waveformFile.path)
+
+    public lazy var audioPlayer: OWSAudioPlayer =
+        .init(mediaUrl: audioFile, audioBehavior: .audioMessagePlayback)
+
     private var audioFile: URL { URL(fileURLWithPath: "voice-memo.\(Self.audioExtension)", relativeTo: directory) }
     private var waveformFile: URL { URL(fileURLWithPath: "waveform.dat", relativeTo: directory) }
     private func outputFileName(at date: Date) -> String {
@@ -129,6 +135,12 @@ public class VoiceMessageModel: NSObject {
 
     @objc
     public var isRecording: Bool { audioRecorder?.isRecording ?? false }
+
+    public var duration: TimeInterval? {
+        guard OWSFileSystem.fileOrFolderExists(url: audioFile) else { return nil }
+        audioPlayer.setupAudioPlayer()
+        return audioPlayer.duration
+    }
 
     private var audioRecorder: AVAudioRecorder? {
         didSet {
@@ -184,15 +196,10 @@ public class VoiceMessageModel: NSObject {
         }
     }
 
-    @discardableResult
-    public func stopRecording() -> TimeInterval {
+    public func stopRecording() {
         AssertIsOnMainThread()
-
-        let duration = audioRecorder?.currentTime ?? 0
 
         audioRecorder?.stop()
         audioRecorder = nil
-
-        return duration
     }
 }

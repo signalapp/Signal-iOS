@@ -68,12 +68,14 @@ extension ConversationViewController {
 
     @objc(finishRecordingVoiceMessageAndSendImmediately:)
     func finishRecordingVoiceMessage(sendImmediately: Bool = false) {
+        AssertIsOnMainThread()
+
         defer { viewState.currentVoiceMessageModel = nil }
         guard let voiceMessageModel = viewState.currentVoiceMessageModel else { return }
 
-        let duration = voiceMessageModel.stopRecording()
+        voiceMessageModel.stopRecording()
 
-        guard duration >= Self.minimumVoiceMessageDuration else {
+        guard let duration = voiceMessageModel.duration, duration >= Self.minimumVoiceMessageDuration else {
             inputToolbar?.showVoiceMemoTooltip()
             cancelRecordingVoiceMessage()
             return
@@ -82,14 +84,18 @@ extension ConversationViewController {
         ImpactHapticFeedback.impactOccured(style: .medium)
 
         if sendImmediately {
-            inputToolbar?.hideVoiceMemoUI(true)
             sendVoiceMessageModel(voiceMessageModel)
         } else {
-            databaseStorage.asyncWrite { voiceMessageModel.saveDraft(transaction: $0) }
+            databaseStorage.asyncWrite { voiceMessageModel.saveDraft(transaction: $0) } completion: {
+                self.inputToolbar?.showVoiceMemoDraft(voiceMessageModel)
+            }
         }
     }
 
+    @objc
     func sendVoiceMessageModel(_ voiceMessageModel: VoiceMessageModel) {
+        inputToolbar?.hideVoiceMemoUI(true)
+
         var attachment: SignalAttachment?
         databaseStorage.asyncWrite { transaction in
             do {

@@ -786,6 +786,7 @@
 		88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */; };
 		88928A732640DC9B009C9B30 /* VoiceMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A722640DC9B009C9B30 /* VoiceMessageModel.swift */; };
 		88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */; };
+		88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */; };
 		889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A4CC09246CB0960082211F /* OnboardingTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC08246CB0960082211F /* OnboardingTransferChoiceViewController.swift */; };
@@ -1930,6 +1931,7 @@
 		88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+VoiceMessage.swift"; sourceTree = "<group>"; };
 		88928A722640DC9B009C9B30 /* VoiceMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageModel.swift; sourceTree = "<group>"; };
 		88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageTooltip.swift; sourceTree = "<group>"; };
+		88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageDraftView.swift; sourceTree = "<group>"; };
 		889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurTooltip.swift; sourceTree = "<group>"; };
 		88A357B823639384009D6B9A /* MemberActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionSheet.swift; sourceTree = "<group>"; };
 		88A358252363FF63009D6B9A /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mr; path = translations/mr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -3445,6 +3447,7 @@
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
 				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
 				88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */,
+				88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */,
 			);
 			name = Views;
 			path = views;
@@ -5222,6 +5225,7 @@
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
 				347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */,
+				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
 				3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */,
 				347C3834252CE69400F3D941 /* CVItemModel.swift in Sources */,

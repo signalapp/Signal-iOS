@@ -53,7 +53,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 
 - (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
                                    messageDraft:(nullable MessageBody *)messageDraft
-    NS_SWIFT_NAME(buildInputToolbar(conversationStyle:messageDraft:));
+                                 voiceMemoDraft:(nullable VoiceMessageModel *)voiceMemoDraft
+    NS_SWIFT_NAME(buildInputToolbar(conversationStyle:messageDraft:voiceMemoDraft:));
 
 #pragma mark 3D Touch/UIContextMenu Methods
 
