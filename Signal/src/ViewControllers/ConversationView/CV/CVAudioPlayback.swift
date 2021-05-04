@@ -119,6 +119,23 @@ public class CVAudioPlayer: NSObject {
         audioPlayback.togglePlayState()
     }
 
+    public var audioPlaybackState: AudioPlaybackState = .stopped
+    private var soundPlayer: OWSAudioPlayer?
+    private var soundComplete: (() -> Void)?
+    private func playStandardSound(_ sound: OWSStandardSound, completion: (() -> Void)? = nil) {
+        AssertIsOnMainThread()
+
+        if let soundPlayer = soundPlayer {
+            soundPlayer.stop()
+            soundComplete?()
+        }
+
+        soundPlayer = OWSSounds.audioPlayer(forSound: sound.rawValue, audioBehavior: .audioMessagePlayback)
+        soundPlayer?.delegate = self
+        soundPlayer?.play()
+        soundComplete = completion
+    }
+
     @objc
     public func autoplayNextAudioAttachment(_ audioAttachment: AudioAttachment?) {
         AssertIsOnMainThread()
@@ -126,8 +143,7 @@ public class CVAudioPlayer: NSObject {
         guard let audioAttachment = audioAttachment, let attachmentStream = audioAttachment.attachmentStream else {
             if audioPlayback?.attachmentId == autoplayAttachmentId {
                 // Play a tone indicating the last track completed.
-                let systemSound = OWSSounds.systemSoundID(forSound: OWSStandardSound.endLastTrack.rawValue, quiet: false)
-                AudioServicesPlaySystemSound(systemSound)
+                playStandardSound(.endLastTrack)
             }
             return
         }
@@ -138,23 +154,20 @@ public class CVAudioPlayer: NSObject {
         }
 
         // Play a tone indicating the next track is starting.
-        let systemSound = OWSSounds.systemSoundID(forSound: OWSStandardSound.beginNextTrack.rawValue, quiet: false)
-        AudioServicesPlaySystemSoundWithCompletion(systemSound) { [weak self] in
-            DispatchQueue.main.async {
-                // Make sure the user didn't start another attachment while the tone was playing.
-                guard self?.autoplayAttachmentId == attachmentStream.uniqueId else { return }
-                guard self?.audioPlayback?.attachmentId == attachmentStream.uniqueId else { return }
-                guard audioPlayback.audioPlaybackState != .playing else { return }
+        playStandardSound(.beginNextTrack) { [weak self] in
+            // Make sure the user didn't start another attachment while the tone was playing.
+            guard self?.autoplayAttachmentId == attachmentStream.uniqueId else { return }
+            guard self?.audioPlayback?.attachmentId == attachmentStream.uniqueId else { return }
+            guard audioPlayback.audioPlaybackState != .playing else { return }
 
-                if audioAttachment.markOwningMessageAsViewed() {
-                    for listener in self?.listeners.elements ?? [] {
-                        listener.audioPlayerDidMarkViewed(attachmentId: audioPlayback.attachmentId)
-                    }
+            if audioAttachment.markOwningMessageAsViewed() {
+                for listener in self?.listeners.elements ?? [] {
+                    listener.audioPlayerDidMarkViewed(attachmentId: audioPlayback.attachmentId)
                 }
-
-                audioPlayback.setProgress(0)
-                audioPlayback.togglePlayState()
             }
+
+            audioPlayback.setProgress(0)
+            audioPlayback.togglePlayState()
         }
     }
 
@@ -187,6 +200,20 @@ public class CVAudioPlayer: NSObject {
         }
         audioPlayback.stop()
         self.audioPlayback = nil
+    }
+}
+
+extension CVAudioPlayer: OWSAudioPlayerDelegate {
+    public func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval) {}
+
+    public func audioPlayerDidFinish() {
+        DispatchMainThreadSafe { [weak self] in
+            self?.soundPlayer?.stop()
+            self?.soundPlayer = nil
+
+            self?.soundComplete?()
+            self?.soundComplete = nil
+        }
     }
 }
 
