@@ -1113,6 +1113,11 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                     [message updateWithReadRecipient:sendingAddress
                                        readTimestamp:message.timestamp
                                          transaction:transaction];
+                    if (message.isVoiceMessage || message.isViewOnceMessage) {
+                        [message updateWithViewedRecipient:sendingAddress
+                                           viewedTimestamp:message.timestamp
+                                               transaction:transaction];
+                    }
                 }
             });
         }
