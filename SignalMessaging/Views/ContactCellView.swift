@@ -97,7 +97,8 @@ public class ContactCellView: ManualStackView {
 
     // TODO: Update localUserDisplayMode.
     private let avatarView = ConversationAvatarView(diameter: kSmallAvatarSize,
-                                                    localUserDisplayMode: .asUser)
+                                                    localUserDisplayMode: .asUser,
+                                                    shouldLoadAsync: true)
 
     @objc
     public static let avatarTextHSpacing: CGFloat = 12
@@ -114,7 +115,7 @@ public class ContactCellView: ManualStackView {
         nameLabel.lineBreakMode = .byTruncatingTail
         accessoryLabel.textAlignment = .right
         avatarView.shouldDeactivateConstraints = true
-        
+
         self.shouldDeactivateConstraints = false
     }
 
@@ -158,27 +159,27 @@ public class ContactCellView: ManualStackView {
         configureFontsAndColors(forceDarkAppearance: configuration.forceDarkAppearance)
 
         updateNameLabels(configuration: configuration, transaction: transaction)
-        
+
         // Configure self.
         do {
-            var rootStackSubviews: [UIView] = [ avatarView, ]
+            var rootStackSubviews: [UIView] = [ avatarView ]
             let avatarSize = CGSize.square(CGFloat(configuration.avatarSize))
             var rootStackSubviewInfos = [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
 
             // Configure textStack.
             do {
-                var textStackSubviews = [ nameLabel, ]
+                var textStackSubviews = [ nameLabel ]
                 let nameSize = nameLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
                 var textStackSubviewInfos = [ nameSize.asManualSubviewInfo ]
-                
+
                 if let attributedSubtitle = configuration.attributedSubtitle?.nilIfEmpty {
                     subtitleLabel.attributedText = attributedSubtitle
-                    
+
                     textStackSubviews.append(subtitleLabel)
                     let subtitleSize = subtitleLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
                     textStackSubviewInfos.append(subtitleSize.asManualSubviewInfo)
                 }
-                
+
                 let textStackConfig = ManualStackView.Config(axis: .vertical,
                                                              alignment: .leading,
                                                              spacing: 0,
@@ -191,7 +192,7 @@ public class ContactCellView: ManualStackView {
                 rootStackSubviews.append(textStack)
                 rootStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
             }
-            
+
             if let accessoryMessage = configuration.accessoryMessage {
                 accessoryLabel.text = accessoryMessage
                 owsAssertDebug(configuration.accessoryView == nil)
@@ -213,13 +214,6 @@ public class ContactCellView: ManualStackView {
                            measurement: rootStackMeasurement,
                            subviews: rootStackSubviews)
         }
-        
-        Logger.verbose("---- intrinsicContentSize: \(self.intrinsicContentSize)")
-        
-        // Force layout, since imageView isn't being initally rendered on App Store optimized build.
-        //
-        // TODO: Is this still necessary?
-        layoutSubviews()
     }
 
     // MARK: - Notifications
@@ -302,9 +296,9 @@ public class ContactCellView: ManualStackView {
 
     public override func reset() {
         super.reset()
-        
+
         NotificationCenter.default.removeObserver(self)
-        
+
         configuration = nil
 
         avatarView.reset()

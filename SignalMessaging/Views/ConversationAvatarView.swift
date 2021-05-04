@@ -14,6 +14,8 @@ public class ConversationAvatarView: AvatarImageView {
     }
     private var configuration: Configuration
 
+    private let shouldLoadAsync: Bool
+
     @objc
     public var diameter: UInt {
         configuration.diameter
@@ -41,9 +43,12 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     @objc
-    public required init(diameter: UInt, localUserDisplayMode: LocalUserDisplayMode) {
+    public required init(diameter: UInt,
+                         localUserDisplayMode: LocalUserDisplayMode,
+                         shouldLoadAsync: Bool = false) {
         self.configuration = Configuration(diameter: diameter,
                                            localUserDisplayMode: localUserDisplayMode)
+        self.shouldLoadAsync = shouldLoadAsync
 
         super.init(frame: .zero)
 
@@ -288,21 +293,53 @@ public class ConversationAvatarView: AvatarImageView {
     // MARK: -
 
     public func updateImageWithSneakyTransaction() {
-        guard diameter > 0,
-              nil != self.content else {
-            self.image = nil
-            return
-        }
-        databaseStorage.read { transaction in
-            self.updateImage(transaction: transaction)
-        }
+        updateImageAsync()
     }
 
     public func updateImage(transaction: SDSAnyReadTransaction) {
-        guard diameter > 0,
+        if shouldLoadAsync {
+            updateImageAsync()
+        } else {
+            self.image = Self.buildImage(configuration: configuration,
+                                         content: content,
+                                         transaction: transaction)
+        }
+    }
+
+    private static let serialQueue = DispatchQueue(label: "org.signal.ConversationAvatarView")
+
+    public func updateImageAsync() {
+        let configuration = self.configuration
+        guard configuration.diameter > 0,
               let content = self.content else {
             self.image = nil
             return
+        }
+        Self.serialQueue.async { [weak self] in
+            let image: UIImage? = Self.databaseStorage.read { transaction in
+                Self.buildImage(configuration: configuration, content: content, transaction: transaction)
+            }
+            DispatchQueue.main.async {
+                guard let self = self else {
+                    return
+                }
+                guard self.configuration == configuration,
+                      self.content == content else {
+                    // Discard stale loads.
+                    return
+                }
+                self.image = image
+            }
+        }
+    }
+
+    private static func buildImage(configuration: Configuration,
+                                   content: ConversationContent?,
+                                   transaction: SDSAnyReadTransaction) -> UIImage? {
+        let diameter = configuration.diameter
+        guard configuration.diameter > 0,
+              let content = content else {
+            return nil
         }
 
         let image = { () -> UIImage? in
@@ -310,24 +347,32 @@ public class ConversationAvatarView: AvatarImageView {
             case .contact(let contactThread):
                 return buildContactAvatar(address: contactThread.contactAddress,
                                           conversationColorName: contactThread.conversationColorName,
+                                          diameter: diameter,
+                                          localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
             case .group(let groupThread):
-                return buildGroupAvatar(groupThread: groupThread, transaction: transaction)
+                return buildGroupAvatar(groupThread: groupThread,
+                                        diameter: diameter,
+                                        transaction: transaction)
             case .unknownContact(let contactAddress):
                 let conversationColorName = TSContactThread.conversationColorName(forContactAddress: contactAddress,
                                                                                   transaction: transaction)
                 return buildContactAvatar(address: contactAddress,
                                           conversationColorName: conversationColorName,
+                                          diameter: diameter,
+                                          localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
             }
         }()
         owsAssertDebug(image != nil)
-        self.image = image
+        return image
     }
 
-    private func buildContactAvatar(address: SignalServiceAddress,
-                                    conversationColorName: ConversationColorName,
-                                    transaction: SDSAnyReadTransaction) -> UIImage? {
+    private static func buildContactAvatar(address: SignalServiceAddress,
+                                           conversationColorName: ConversationColorName,
+                                           diameter: UInt,
+                                           localUserDisplayMode: LocalUserDisplayMode,
+                                           transaction: SDSAnyReadTransaction) -> UIImage? {
         let builder = OWSContactAvatarBuilder(address: address,
                                               colorName: conversationColorName,
                                               diameter: diameter,
@@ -340,8 +385,9 @@ public class ConversationAvatarView: AvatarImageView {
                            transaction: transaction)
     }
 
-    private func buildGroupAvatar(groupThread: TSGroupThread,
-                                  transaction: SDSAnyReadTransaction) -> UIImage? {
+    private static func buildGroupAvatar(groupThread: TSGroupThread,
+                                         diameter: UInt,
+                                         transaction: SDSAnyReadTransaction) -> UIImage? {
         let builder = OWSGroupAvatarBuilder(thread: groupThread,
                                             diameter: diameter)
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
@@ -351,9 +397,9 @@ public class ConversationAvatarView: AvatarImageView {
                            transaction: transaction)
     }
 
-    private func buildAvatar(avatarBuilder: OWSAvatarBuilder,
-                             shouldBlurAvatar: Bool,
-                             transaction: SDSAnyReadTransaction) -> UIImage? {
+    private static func buildAvatar(avatarBuilder: OWSAvatarBuilder,
+                                    shouldBlurAvatar: Bool,
+                                    transaction: SDSAnyReadTransaction) -> UIImage? {
         guard let image = avatarBuilder.build(with: transaction) else {
             owsFailDebug("Could not build contact avatar.")
             return nil

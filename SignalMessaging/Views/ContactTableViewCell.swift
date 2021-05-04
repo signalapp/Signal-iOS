@@ -80,15 +80,8 @@ open class ContactTableViewCell: UITableViewCell {
     @objc
     public func configure(configuration: ContactCellConfiguration,
                           transaction: SDSAnyReadTransaction) {
-
         OWSTableItem.configureCell(self)
-
         cellView.configure(configuration: configuration, transaction: transaction)
-
-        // Force layout, since imageView isn't being initally rendered on App Store optimized build.
-        //
-        // TODO: Is this still necessary?
-        self.layoutSubviews()
     }
 
     public override func prepareForReuse() {
