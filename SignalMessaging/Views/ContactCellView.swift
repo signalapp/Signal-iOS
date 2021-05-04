@@ -200,7 +200,7 @@ public class ContactCellView: ManualStackView {
             if let accessoryView = configuration.accessoryView {
                 rootStackSubviews.append(accessoryView)
                 let accessorySize = accessoryView.sizeThatFits(.square(.greatestFiniteMagnitude))
-                rootStackSubviewInfos.append(accessorySize.asManualSubviewInfo)
+                rootStackSubviewInfos.append(accessorySize.asManualSubviewInfo(hasFixedSize: true))
             }
 
             let rootStackConfig = ManualStackView.Config(axis: .horizontal,

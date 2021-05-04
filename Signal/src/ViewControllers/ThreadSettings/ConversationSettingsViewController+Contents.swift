@@ -507,13 +507,17 @@ extension ConversationSettingsViewController {
                 continue
             }
 
+            let tableView = self.tableView
             let isLocalUser = memberAddress.isLocalAddress
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
                     return OWSTableItem.newCell()
                 }
-                let cell = ContactTableViewCell()
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                    owsFailDebug("Missing cell.")
+                    return UITableViewCell()
+                }
 
                 Self.databaseStorage.read { transaction in
                     let configuration = ContactCellConfiguration.build(address: memberAddress,

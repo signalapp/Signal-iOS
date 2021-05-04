@@ -66,6 +66,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         helper.delegate = self
         helper.buildContents(avatarViewHelperDelegate: self)
 
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+
         updateTableContents()
     }
 
@@ -112,6 +114,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     // MARK: -
 
     private func updateTableContents() {
+        let tableView = self.tableView
         let contents = OWSTableContents()
 
         let nameAndAvatarSection = OWSTableSection()
@@ -245,7 +248,10 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             for address in members {
                 section.add(OWSTableItem(
                     customCellBlock: {
-                        let cell = ContactTableViewCell()
+                        guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                            owsFailDebug("Missing cell.")
+                            return UITableViewCell()
+                        }
 
                         cell.selectionStyle = .none
 
@@ -476,6 +482,8 @@ class NewLegacyGroupView: UIView {
         self.v1Members = v1Members
 
         super.init(frame: .zero)
+
+        tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
     }
 
     required init(coder: NSCoder) {
@@ -483,6 +491,8 @@ class NewLegacyGroupView: UIView {
     }
 
     func present(fromViewController: UIViewController) {
+        let tableView = tableViewController.tableView
+
         let wrapViewWithHMargins = { (viewToWrap: UIView) -> UIView in
             let stackView = UIStackView(arrangedSubviews: [viewToWrap])
             stackView.axis = .vertical
@@ -529,7 +539,11 @@ class NewLegacyGroupView: UIView {
         for address in members {
             section.add(OWSTableItem(
                 customCellBlock: {
-                    let cell = ContactTableViewCell()
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
+
                     cell.selectionStyle = .none
                     cell.configureWithSneakyTransaction(address: address,
                                                         localUserDisplayMode: .asUser)

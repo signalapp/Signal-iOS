@@ -342,7 +342,6 @@
 		34AC09DD211B39B100997B47 /* ViewControllerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09DE211B39B100997B47 /* OWSNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09C0211B39AE00997B47 /* OWSNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09DF211B39B100997B47 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09C1211B39AF00997B47 /* OWSNavigationController.m */; };
-		34AC09E1211B39B100997B47 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09C3211B39AF00997B47 /* SelectThreadViewController.m */; };
 		34AC09E2211B39B100997B47 /* ReturnToCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09C4211B39AF00997B47 /* ReturnToCallViewController.swift */; };
 		34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09C5211B39AF00997B47 /* OWSViewController.m */; };
 		34AC09E4211B39B100997B47 /* ScreenLockViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09C6211B39AF00997B47 /* ScreenLockViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -355,7 +354,6 @@
 		34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */; };
 		34AC09EF211B39B100997B47 /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D1211B39B000997B47 /* ViewControllerUtils.m */; };
 		34AC09F2211B39B100997B47 /* OWSViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D4211B39B000997B47 /* OWSViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34AC09F4211B39B100997B47 /* SelectThreadViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D6211B39B100997B47 /* SelectThreadViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09F7211B39B100997B47 /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D9211B39B100997B47 /* MediaMessageView.swift */; };
 		34AC09F8211B39B100997B47 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09DA211B39B100997B47 /* CountryCodeViewController.m */; };
 		34AC09F9211B39B100997B47 /* CountryCodeViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09DB211B39B100997B47 /* CountryCodeViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1379,7 +1377,6 @@
 		34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
 		34AC09C0211B39AE00997B47 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSNavigationController.h; sourceTree = "<group>"; };
 		34AC09C1211B39AF00997B47 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationController.m; sourceTree = "<group>"; };
-		34AC09C3211B39AF00997B47 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
 		34AC09C4211B39AF00997B47 /* ReturnToCallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReturnToCallViewController.swift; sourceTree = "<group>"; };
 		34AC09C5211B39AF00997B47 /* OWSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSViewController.m; sourceTree = "<group>"; };
 		34AC09C6211B39AF00997B47 /* ScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenLockViewController.h; sourceTree = "<group>"; };
@@ -1392,7 +1389,6 @@
 		34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
 		34AC09D1211B39B000997B47 /* ViewControllerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
 		34AC09D4211B39B000997B47 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSViewController.h; sourceTree = "<group>"; };
-		34AC09D6211B39B100997B47 /* SelectThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectThreadViewController.h; sourceTree = "<group>"; };
 		34AC09D9211B39B100997B47 /* MediaMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaMessageView.swift; sourceTree = "<group>"; };
 		34AC09DA211B39B100997B47 /* CountryCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryCodeViewController.m; sourceTree = "<group>"; };
 		34AC09DB211B39B100997B47 /* CountryCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryCodeViewController.h; sourceTree = "<group>"; };
@@ -3136,8 +3132,6 @@
 				34AC09C4211B39AF00997B47 /* ReturnToCallViewController.swift */,
 				34AC09C6211B39AF00997B47 /* ScreenLockViewController.h */,
 				34AC09C7211B39AF00997B47 /* ScreenLockViewController.m */,
-				34AC09D6211B39B100997B47 /* SelectThreadViewController.h */,
-				34AC09C3211B39AF00997B47 /* SelectThreadViewController.m */,
 				4C23A5F1215C4ADE00534937 /* SheetViewController.swift */,
 				344DC9AD226E483C004E7322 /* Stickers */,
 				3470249B238367E90078D72C /* TextApprovalViewController.swift */,
@@ -4131,7 +4125,6 @@
 				34480B631FD0A98800BC14EF /* UIView+OWS.h in Headers */,
 				451F8A4B1FD715E1005CB9DA /* OWSGroupAvatarBuilder.h in Headers */,
 				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
-				34AC09F4211B39B100997B47 /* SelectThreadViewController.h in Headers */,
 				34AC09DD211B39B100997B47 /* ViewControllerUtils.h in Headers */,
 				3426A376256321190036407F /* OWSMessageTextView.h in Headers */,
 				451F8A451FD71570005CB9DA /* BlockListUIUtils.h in Headers */,
@@ -4869,7 +4862,6 @@
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				3472A4AC2620911D000803AE /* ManualLayoutView.swift in Sources */,
-				34AC09E1211B39B100997B47 /* SelectThreadViewController.m in Sources */,
 				34AC09EF211B39B100997B47 /* ViewControllerUtils.m in Sources */,
 				3498A0A824DC936300CA492C /* ContactsViewHelper.swift in Sources */,
 				88EFF4F625AD1C82000FAFBA /* ThemeHeaderView.swift in Sources */,

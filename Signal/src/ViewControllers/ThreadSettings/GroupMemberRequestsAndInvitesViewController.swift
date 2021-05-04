@@ -55,6 +55,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
         configureSegmentedControl()
 
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+
         updateTableContents()
     }
 
@@ -124,6 +126,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     private func addContentsForMemberRequests(contents: OWSTableContents) {
 
+        let tableView = self.tableView
         let canApproveMemberRequests = groupViewHelper.canApproveMemberRequests
 
         let groupMembership = groupModel.groupMembership
@@ -223,6 +226,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             return
         }
 
+        let tableView = self.tableView
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
@@ -258,7 +262,11 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         if membersInvitedByLocalUser.count > 0 {
             for address in membersInvitedByLocalUser {
                 localSection.add(OWSTableItem(customCellBlock: {
-                    let cell = ContactTableViewCell()
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
+
                     cell.selectionStyle = canRevokeInvites ? .default : .none
                     cell.configureWithSneakyTransaction(address: address,
                                                         localUserDisplayMode: .asUser)
@@ -300,7 +308,11 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         return OWSTableItem.newCell()
                     }
 
-                    let cell = ContactTableViewCell()
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
+
                     cell.selectionStyle = canRevokeInvites ? .default : .none
 
                     Self.databaseStorage.read { transaction in
