@@ -167,34 +167,6 @@ public class ContactCellView: UIStackView {
         }
     }
 
-    public func configureWithSneakyTransaction(recipientAddress: SignalServiceAddress,
-                                               localUserDisplayMode: LocalUserDisplayMode) {
-        databaseStorage.read { transaction in
-            configure(recipientAddress: recipientAddress,
-                      localUserDisplayMode: localUserDisplayMode,
-                      transaction: transaction)
-        }
-    }
-
-    public func configure(recipientAddress address: SignalServiceAddress,
-                          localUserDisplayMode: LocalUserDisplayMode,
-                          transaction: SDSAnyReadTransaction) {
-        owsAssertDebug(address.isValid)
-        let content = ConversationContent.forAddress(address, transaction: transaction)
-        let configuration = ContactCellConfiguration(content: content,
-                                                     localUserDisplayMode: localUserDisplayMode)
-        configure(configuration: configuration, transaction: transaction)
-
-    }
-
-    public func configure(thread: TSThread,
-                          localUserDisplayMode: LocalUserDisplayMode,
-                          transaction: SDSAnyReadTransaction) {
-        let configuration = ContactCellConfiguration(content: ConversationContent.forThread(thread),
-                                                     localUserDisplayMode: localUserDisplayMode)
-        configure(configuration: configuration, transaction: transaction)
-    }
-
     public func configure(configuration: ContactCellConfiguration,
                           transaction: SDSAnyReadTransaction) {
 
