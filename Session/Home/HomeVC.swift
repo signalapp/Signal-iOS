@@ -337,8 +337,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             self.present(alert, animated: true, completion: nil)
         }
         delete.backgroundColor = Colors.destructive
-        if thread is TSContactThread {
-            let publicKey = thread.contactIdentifier()!
+        if let thread = thread as? TSContactThread {
+            let publicKey = thread.contactIdentifier()
             let blockingManager = SSKEnvironment.shared.blockingManager
             let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
             let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in

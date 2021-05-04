@@ -232,7 +232,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 - (void)softDeleteGroupThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self removeAllThreadInteractionsWithTransaction:transaction];
-    self.shouldThreadBeVisible = NO;
+    self.shouldBeVisible = NO;
     [self saveWithTransaction:transaction];
 }
 

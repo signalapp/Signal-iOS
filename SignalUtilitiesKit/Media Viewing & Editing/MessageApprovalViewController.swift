@@ -162,7 +162,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
 
-        let publicKey = thread.contactIdentifier()!
+        let publicKey = contactThread.contactIdentifier()
         nameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
         nameLabel.textColor = Theme.primaryColor
 

@@ -202,7 +202,7 @@ extension MessageReceiver {
                 userProfile.profileName = contact.displayName
                 userProfile.save(with: transaction)
                 let thread = TSContactThread.getOrCreateThread(withContactId: sessionID, transaction: transaction)
-                thread.shouldThreadBeVisible = true
+                thread.shouldBeVisible = true
                 thread.save(with: transaction)
             }
             // Closed groups

@@ -175,13 +175,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     }
 
     BOOL isNoteToSelf
-        = (!thread.isGroupThread && [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+        = ([thread isKindOfClass:TSContactThread.class] && [((TSContactThread *)thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
     if (isNoteToSelf) {
         threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
     }
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        self.recipientId = thread.contactIdentifier;
+        self.recipientId = ((TSContactThread *)thread).contactIdentifier;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(otherUsersProfileDidChange:)

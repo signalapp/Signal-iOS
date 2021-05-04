@@ -58,18 +58,16 @@ NSString *const TSContactThreadPrefix = @"c";
     return @[ self.contactIdentifier ];
 }
 
-- (BOOL)isGroupThread {
-    return false;
-}
-
-- (BOOL)hasSafetyNumbers
+- (BOOL)isGroupThread
 {
     return NO;
 }
 
 - (NSString *)name
 {
-    return [[LKStorage.shared getContactWithSessionID:self.contactIdentifier] displayNameFor:SNContactContextRegular] ?: self.contactIdentifier;
+    NSString *sessionID = self.contactIdentifier;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
+    return [contact displayNameFor:SNContactContextRegular] ?: sessionID;
 }
 
 + (NSString *)threadIdFromContactId:(NSString *)contactId {

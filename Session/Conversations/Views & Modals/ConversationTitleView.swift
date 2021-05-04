@@ -76,7 +76,7 @@ final class ConversationTitleView : UIView {
         } else if thread.isNoteToSelf() {
             return "Note to Self"
         } else {
-            let sessionID = thread.contactIdentifier()!
+            let sessionID = (thread as! TSContactThread).contactIdentifier()
             var result = sessionID
             Storage.read { transaction in
                 result = Storage.shared.getContact(with: sessionID)?.displayName(for: .regular) ?? "Anonymous"

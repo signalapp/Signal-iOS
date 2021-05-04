@@ -10,8 +10,6 @@ extern NSString *const TSContactThreadPrefix;
 
 @interface TSContactThread : TSThread
 
-@property (nonatomic) BOOL hasDismissedOffers;
-
 - (instancetype)initWithContactId:(NSString *)contactId;
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId NS_SWIFT_NAME(getOrCreateThread(contactId:));

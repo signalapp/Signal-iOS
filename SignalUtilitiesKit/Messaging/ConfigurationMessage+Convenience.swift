@@ -37,7 +37,7 @@ extension ConfigurationMessage {
                 guard let profile = object as? OWSUserProfile, let displayName = profile.profileName else { return }
                 let publicKey = profile.recipientId
                 let threadID = TSContactThread.threadId(fromContactId: publicKey)
-                guard let thread = TSContactThread.fetch(uniqueId: threadID, transaction: transaction), thread.shouldThreadBeVisible
+                guard let thread = TSContactThread.fetch(uniqueId: threadID, transaction: transaction), thread.shouldBeVisible
                     && !SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey) else { return }
                 let profilePictureURL = profile.avatarUrlPath
                 let profileKey = profile.profileKey?.keyData
