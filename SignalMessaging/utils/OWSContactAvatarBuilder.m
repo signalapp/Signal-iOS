@@ -184,7 +184,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)buildNoteToSelfAvatarForLocalUser
 {
     OWSCAssertDebug(self.address.isLocalAddress);
-    NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
+    NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self-%d-%lu",
+                                             self.cacheKey,
+                                             Theme.isDarkThemeEnabled,
+                                             (unsigned long)self.diameter];
     UIImage *_Nullable cachedAvatar =
         [OWSContactAvatarBuilder.contactsManagerImpl getImageFromAvatarCacheWithKey:noteToSelfCacheKey
                                                                            diameter:(CGFloat)self.diameter];
@@ -207,9 +210,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)cacheKey
 {
     if (self.address.isValid) {
-        return [NSString stringWithFormat:@"%@-%d", self.address.stringForDisplay, Theme.isDarkThemeEnabled];
+        return [NSString stringWithFormat:@"%@-%d-%lu",
+                         self.address.stringForDisplay,
+                         Theme.isDarkThemeEnabled,
+                         (unsigned long)self.diameter];
     } else {
-        return [NSString stringWithFormat:@"%@-%d", self.contactInitials, Theme.isDarkThemeEnabled];
+        return [NSString stringWithFormat:@"%@-%d-%lu",
+                         self.contactInitials,
+                         Theme.isDarkThemeEnabled,
+                         (unsigned long)self.diameter];
     }
 }
 

@@ -413,7 +413,8 @@ extension ConversationPickerViewController: UITableViewDataSource {
             owsFail("conversation was unexpectedly nil")
         }
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier, for: indexPath) as? ConversationPickerCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier,
+                                                       for: indexPath) as? ConversationPickerCell else {
             owsFail("cell was unexpectedly nil for indexPath: \(indexPath)")
         }
 
