@@ -785,6 +785,7 @@
 		88928A45263A2781009C9B30 /* state-change_confirm-up.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A43263A2781009C9B30 /* state-change_confirm-up.caf */; };
 		88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */; };
 		88928A732640DC9B009C9B30 /* VoiceMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A722640DC9B009C9B30 /* VoiceMessageModel.swift */; };
+		88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */; };
 		889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A4CC09246CB0960082211F /* OnboardingTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC08246CB0960082211F /* OnboardingTransferChoiceViewController.swift */; };
@@ -1928,6 +1929,7 @@
 		88928A5A263F0DEC009C9B30 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+VoiceMessage.swift"; sourceTree = "<group>"; };
 		88928A722640DC9B009C9B30 /* VoiceMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageModel.swift; sourceTree = "<group>"; };
+		88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageTooltip.swift; sourceTree = "<group>"; };
 		889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurTooltip.swift; sourceTree = "<group>"; };
 		88A357B823639384009D6B9A /* MemberActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionSheet.swift; sourceTree = "<group>"; };
 		88A358252363FF63009D6B9A /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mr; path = translations/mr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -3442,6 +3444,7 @@
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
 				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
+				88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */,
 			);
 			name = Views;
 			path = views;
@@ -5176,6 +5179,7 @@
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
 				88A4CC0E246CD6CC0082211F /* OnboardingTransferProgressViewController.swift in Sources */,
+				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
 				4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */,
 				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,

@@ -12,7 +12,6 @@ extension ConversationViewController {
         // Cancel any ongoing audio playback.
         cvAudioPlayer.stopAll()
 
-        SelectionHapticFeedback().selectionChanged()
         inputToolbar?.showVoiceMemoUI()
 
         let voiceMessageModel = VoiceMessageModel(thread: thread)
@@ -38,6 +37,8 @@ extension ConversationViewController {
             return owsFailDebug("Unexpectedly missing voice message model")
         }
 
+        ImpactHapticFeedback.impactOccured(style: .light)
+
         do {
             try voiceMessageModel.startRecording()
         } catch {
@@ -50,7 +51,13 @@ extension ConversationViewController {
     func cancelRecordingVoiceMessage() {
         AssertIsOnMainThread()
 
-        viewState.currentVoiceMessageModel?.stopRecording()
+        defer { viewState.currentVoiceMessageModel = nil }
+        guard let voiceMessageModel = viewState.currentVoiceMessageModel else { return }
+
+        voiceMessageModel.stopRecording()
+
+        NotificationHapticFeedback().notificationOccurred(.warning)
+
         clearVoiceMessageDraft()
         viewState.currentVoiceMessageModel = nil
         inputToolbar?.cancelVoiceMemoIfNecessary()
@@ -66,16 +73,13 @@ extension ConversationViewController {
 
         let duration = voiceMessageModel.stopRecording()
 
-        SelectionHapticFeedback().selectionChanged()
-
         guard duration >= Self.minimumVoiceMessageDuration else {
-            presentToast(text: NSLocalizedString(
-                "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE",
-                comment: "Message for the alert indicating the 'voice message' needs to be held to be held down to record."
-            ))
+            inputToolbar?.showVoiceMemoTooltip()
             cancelRecordingVoiceMessage()
             return
         }
+
+        ImpactHapticFeedback.impactOccured(style: .medium)
 
         if sendImmediately {
             inputToolbar?.hideVoiceMemoUI(true)

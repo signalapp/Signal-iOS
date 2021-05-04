@@ -117,6 +117,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cancelVoiceMemoIfNecessary;
 
+- (void)showVoiceMemoTooltip;
+
+- (void)removeVoiceMemoTooltip;
+
 #pragma mark -
 
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;

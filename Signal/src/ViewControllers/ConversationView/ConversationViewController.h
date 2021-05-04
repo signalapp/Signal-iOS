@@ -92,7 +92,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 @property (nonatomic, readonly) CVViewState *viewState;
 
-- (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageBody:(MessageBody *_Nullable)messageBody NS_SWIFT_NAME(tryToSendAttachments(_:messageBody:));
+- (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments
+                 messageBody:(MessageBody *_Nullable)messageBody NS_SWIFT_NAME(tryToSendAttachments(_:messageBody:));
 
 - (void)updateBarButtonItems;
 - (void)ensureBannerState;
