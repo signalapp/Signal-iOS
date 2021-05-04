@@ -20,6 +20,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     private let conversationStyle: ConversationStyle
     private let maxMessageWidth: CGFloat
     private let isBorderless: Bool
+    private let thumbnailQuality: AttachmentThumbnailQuality
 
     private var reusableMediaView: ReusableMediaView?
 
@@ -30,12 +31,14 @@ public class CVMediaView: ManualLayoutViewWithLayer {
                          interaction: TSInteraction,
                          maxMessageWidth: CGFloat,
                          isBorderless: Bool,
+                         thumbnailQuality: AttachmentThumbnailQuality,
                          conversationStyle: ConversationStyle) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.interaction = interaction
         self.maxMessageWidth = maxMessageWidth
         self.isBorderless = isBorderless
+        self.thumbnailQuality = thumbnailQuality
         self.conversationStyle = conversationStyle
 
         super.init(name: "CVMediaView")
@@ -209,7 +212,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             return
         }
 
-        let mediaViewAdapter = MediaViewAdapterStill(attachmentStream: attachmentStream)
+        let mediaViewAdapter = MediaViewAdapterStill(attachmentStream: attachmentStream,
+                                                     thumbnailQuality: thumbnailQuality)
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
@@ -221,7 +225,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             return
         }
 
-        let mediaViewAdapter = MediaViewAdapterVideo(attachmentStream: attachmentStream)
+        let mediaViewAdapter = MediaViewAdapterVideo(attachmentStream: attachmentStream,
+                                                     thumbnailQuality: thumbnailQuality)
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 

@@ -51,14 +51,20 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         let imageArrangement = imageArrangementWrapper.imageArrangement
 
         self.items = items
-        self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map {
-            CVMediaView(mediaCache: mediaCache,
-                        attachment: $0.attachment,
-                        interaction: interaction,
-                        maxMessageWidth: maxMessageWidth,
-                        isBorderless: isBorderless,
-                        conversationStyle: conversationStyle)
+
+        let viewSizePoints = imageArrangement.worstCaseMediaRenderSizePoints(conversationStyle: conversationStyle)
+        self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map { item in
+            let thumbnailQuality = Self.thumbnailQuality(mediaSizePoints: item.mediaSize,
+                                                         viewSizePoints: viewSizePoints)
+            return CVMediaView(mediaCache: mediaCache,
+                               attachment: item.attachment,
+                               interaction: interaction,
+                               maxMessageWidth: maxMessageWidth,
+                               isBorderless: isBorderless,
+                               thumbnailQuality: thumbnailQuality,
+                               conversationStyle: conversationStyle)
         }
+
         self.isBorderless = isBorderless
         self.backgroundColor = isBorderless ? .clear : Theme.backgroundColor
 
@@ -277,10 +283,14 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     fileprivate struct ImageGroup: Equatable {
         let imageCount: Int
         let imageSize: CGSize
+
+        var imageSizes: [CGSize] {
+            [CGSize](repeating: imageSize, count: imageCount)
+        }
     }
 
     fileprivate enum ImageArrangement: Equatable {
-        case single(imageSize: CGSize)
+        case single(row: ImageGroup)
         case oneHorizontalRow(row: ImageGroup)
         case twoHorizontalRows(row1: ImageGroup, row2: ImageGroup)
         case twoVerticalColumns(column1: ImageGroup, column2: ImageGroup)
@@ -309,8 +319,8 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
         var imageGroup1: ImageGroup {
             switch self {
-            case .single(let imageSize):
-                return ImageGroup(imageCount: 1, imageSize: imageSize)
+            case .single(let row):
+                return row
             case .oneHorizontalRow(let row):
                 return row
             case .twoHorizontalRows(let row1, _):
@@ -330,6 +340,38 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 return row2
             case .twoVerticalColumns(_, let column2):
                 return column2
+            }
+        }
+
+        func worstCaseMediaRenderSizePoints(conversationStyle: ConversationStyle) -> CGSize {
+            let maxMediaMessageWidth = conversationStyle.maxMediaMessageWidth
+
+            func worstCaseMediaRenderSize(horizontalRow row: ImageGroup,
+                                          rowSize: CGSize) -> CGSize {
+                return CGSize(width: rowSize.width / CGFloat(row.imageCount),
+                              height: rowSize.height)
+            }
+
+            switch self {
+            case .single:
+                return .square(maxMediaMessageWidth)
+            default:
+                let imageSizes = self.imageSizes
+                return CGSize(width: imageSizes.map { $0.width }.reduce(0, max),
+                              height: imageSizes.map { $0.height }.reduce(0, max))
+            }
+        }
+
+        var imageSizes: [CGSize] {
+            switch self {
+            case .single(let row):
+                return row.imageSizes
+            case .oneHorizontalRow(let row):
+                return row.imageSizes
+            case .twoHorizontalRows(let row1, let row2):
+                return row1.imageSizes + row2.imageSizes
+            case .twoVerticalColumns(let column1, let column2):
+                return column1.imageSizes + column2.imageSizes
             }
         }
     }
@@ -362,7 +404,8 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             owsFailDebug("Missing items.")
 
             let imageSize = CGSize(square: maxWidth)
-            return .single(imageSize: imageSize)
+            let row = ImageGroup(imageCount: 1, imageSize: imageSize)
+            return .single(row: row)
         case 1:
             // X
             // Reflects content size.
@@ -420,7 +463,8 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             }
 
             let imageSize = buildSingleMediaSize() ?? CGSize(square: maxWidth)
-            return .single(imageSize: imageSize)
+            let row = ImageGroup(imageCount: 1, imageSize: imageSize)
+            return .single(row: row)
         case 2:
             // X X
             // side-by-side.
@@ -470,6 +514,47 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     public func isMoreItemsView(mediaView: CVMediaView) -> Bool {
         return moreItemsView == mediaView
     }
+
+    private static func thumbnailQuality(mediaSizePoints: CGSize,
+                                         viewSizePoints: CGSize) -> AttachmentThumbnailQuality {
+        guard mediaSizePoints.isNonEmpty,
+              viewSizePoints.isNonEmpty else {
+            owsFailDebug("Invalid sizes. mediaSizePoints: \(mediaSizePoints), viewSizePoints: \(viewSizePoints).")
+            return .medium
+        }
+        // Determine render size for .scaleAspectFill.
+        let renderSizeByWidth = CGSize(width: viewSizePoints.width,
+                                       height: viewSizePoints.width * mediaSizePoints.height / mediaSizePoints.width)
+        let renderSizeByHeight = CGSize(width: viewSizePoints.height * mediaSizePoints.width / mediaSizePoints.height,
+                                       height: viewSizePoints.height)
+        let renderSizePoints = (renderSizeByWidth.width > renderSizeByHeight.width
+                                    ? renderSizeByWidth
+                                    : renderSizeByHeight)
+        let renderDimensionPoints = renderSizePoints.largerAxis
+        let quality: AttachmentThumbnailQuality = {
+            // Find the smallest quality of acceptable size.
+            let qualities: [AttachmentThumbnailQuality] = [
+                .small,
+                .medium,
+                .mediumLarge
+                // Skip .large
+            ]
+            for quality in qualities {
+                // The image will .scaleAspectFill the bounds of the media view.
+                // We want to ensure that we more-or-less have sufficient pixel
+                // data for the screen. There are only a few thumbnail sizes,
+                // so falling over to the next largest size is expensive. Therefore
+                // we include a small measure of slack in our calculation.
+                let sizeTolerance: CGFloat = 1.25
+                let thumbnailDimensionPoints = TSAttachmentStream.thumbnailDimensionPoints(forThumbnailQuality: quality)
+                if renderDimensionPoints <= CGFloat(thumbnailDimensionPoints) * sizeTolerance {
+                    return quality
+                }
+            }
+            return .large
+        }()
+        return quality
+    }
 }
 
 // MARK: -
@@ -483,6 +568,8 @@ public struct CVMediaAlbumItem: Equatable {
     public let caption: String?
 
     // This property will be non-zero if the attachment is valid.
+    //
+    // TODO: Add units to name.
     public let mediaSize: CGSize
 
     public var isFailedDownload: Bool {

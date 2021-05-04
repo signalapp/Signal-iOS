@@ -364,9 +364,12 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
     public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
     let imageView = CVImageView()
+    let thumbnailQuality: AttachmentThumbnailQuality
 
-    init(attachmentStream: TSAttachmentStream) {
+    init(attachmentStream: TSAttachmentStream,
+         thumbnailQuality: AttachmentThumbnailQuality) {
         self.attachmentStream = attachmentStream
+        self.thumbnailQuality = thumbnailQuality
     }
 
     var mediaView: UIView {
@@ -378,7 +381,7 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
     }
 
     var cacheKey: String {
-        attachmentStream.uniqueId
+        attachmentStream.uniqueId + NSStringForAttachmentThumbnailQuality(thumbnailQuality)
     }
 
     func loadMedia() -> Promise<AnyObject> {
@@ -386,11 +389,13 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
-        attachmentStream.thumbnailImageLarge(success: { (image) in
-            resolver.fulfill(image)
-        }, failure: {
-            resolver.reject(OWSAssertionError("Could not load thumbnail"))
-        })
+        attachmentStream.thumbnailImage(quality: thumbnailQuality,
+                                        success: { (image) in
+                                            resolver.fulfill(image)
+                                        },
+                                        failure: {
+                                            resolver.reject(OWSAssertionError("Could not load thumbnail"))
+                                        })
         return promise
     }
 
@@ -418,9 +423,12 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
     public let shouldBeRenderedByYY = false
     let attachmentStream: TSAttachmentStream
     let imageView = CVImageView()
+    let thumbnailQuality: AttachmentThumbnailQuality
 
-    init(attachmentStream: TSAttachmentStream) {
+    init(attachmentStream: TSAttachmentStream,
+         thumbnailQuality: AttachmentThumbnailQuality) {
         self.attachmentStream = attachmentStream
+        self.thumbnailQuality = thumbnailQuality
     }
 
     var mediaView: UIView {
@@ -432,7 +440,7 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
     }
 
     var cacheKey: String {
-        attachmentStream.uniqueId
+        attachmentStream.uniqueId + NSStringForAttachmentThumbnailQuality(thumbnailQuality)
     }
 
     func loadMedia() -> Promise<AnyObject> {
@@ -440,11 +448,13 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         let (promise, resolver) = Promise<AnyObject>.pending()
-        attachmentStream.thumbnailImageLarge(success: { (image) in
-            resolver.fulfill(image)
-        }, failure: {
-            resolver.reject(OWSAssertionError("Could not load thumbnail"))
-        })
+        attachmentStream.thumbnailImage(quality: thumbnailQuality,
+                                        success: { (image) in
+                                            resolver.fulfill(image)
+                                        },
+                                        failure: {
+                                            resolver.reject(OWSAssertionError("Could not load thumbnail"))
+                                        })
         return promise
     }
 

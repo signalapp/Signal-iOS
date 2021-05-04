@@ -15,21 +15,14 @@ public enum LinkPreviewImageState: Int {
 // MARK: -
 
 @objc
-public enum LinkPreviewImageSize: UInt {
-    case small
-    case medium
-}
-
-// MARK: -
-
-@objc
 public protocol LinkPreviewState {
     func isLoaded() -> Bool
     func urlString() -> String?
     func displayDomain() -> String?
     func title() -> String?
     func imageState() -> LinkPreviewImageState
-    func imageAsync(imageSize: LinkPreviewImageSize, completion: @escaping (UIImage) -> Void)
+    func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+                    completion: @escaping (UIImage) -> Void)
     var imagePixelSize: CGSize { get }
     func previewDescription() -> String?
     func date() -> Date?
@@ -89,7 +82,7 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
         return .none
     }
 
-    public func imageAsync(imageSize: LinkPreviewImageSize,
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
     }
 
@@ -170,7 +163,7 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
         }
     }
 
-    public func imageAsync(imageSize: LinkPreviewImageSize,
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState() == .loaded)
         guard let imageData = linkPreviewDraft.imageData else {
@@ -298,7 +291,8 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         return .loaded
     }
 
-    public func imageAsync(imageSize: LinkPreviewImageSize, completion: @escaping (UIImage) -> Void) {
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+                           completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState() == .loaded)
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             owsFailDebug("Could not load image.")
@@ -324,20 +318,13 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
                 }
                 completion(image)
             } else {
-                switch imageSize {
-                case .small:
-                    attachmentStream.thumbnailImageSmall { image in
-                        completion(image)
-                    } failure: {
-                        owsFailDebug("Could not load thumnail.")
-                    }
-                case .medium:
-                    attachmentStream.thumbnailImageMedium { image in
-                        completion(image)
-                    } failure: {
-                        owsFailDebug("Could not load thumnail.")
-                    }
-                }
+                attachmentStream.thumbnailImage(quality: thumbnailQuality,
+                                                success: { image in
+                                                    completion(image)
+                                                },
+                                                failure: {
+                                                    owsFailDebug("Could not load thumnail.")
+                                                })
             }
         }
     }
@@ -353,7 +340,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return CGSize.zero
         }
-        let result = attachmentStream.imageSize()
+        let result = attachmentStream.imageSizePixels
         imagePixelSizeCache.set(result)
         return result
     }

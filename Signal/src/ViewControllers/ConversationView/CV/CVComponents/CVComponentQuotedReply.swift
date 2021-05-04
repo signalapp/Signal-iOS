@@ -56,10 +56,9 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let size = QuotedMessageView.measure(state: quotedReply.viewState,
-                                             maxWidth: maxWidth,
-                                             measurementBuilder: measurementBuilder)
-        return size
+        return QuotedMessageView.measure(state: quotedReply.viewState,
+                                         maxWidth: maxWidth,
+                                         measurementBuilder: measurementBuilder)
     }
 
     // MARK: - Events

@@ -19,6 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSThumbnailSuccess)(UIImage *image);
 typedef void (^OWSThumbnailFailure)(void);
 
+typedef NS_CLOSED_ENUM(NSUInteger, AttachmentThumbnailQuality) {
+    AttachmentThumbnailQuality_Small,
+    AttachmentThumbnailQuality_Medium,
+    AttachmentThumbnailQuality_MediumLarge,
+    AttachmentThumbnailQuality_Large
+};
+NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value);
+
 @interface TSAttachmentStream : TSAttachment
 
 - (instancetype)initWithServerId:(UInt64)serverId
@@ -146,8 +154,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 + (NSString *)legacyAttachmentsDirPath;
 + (NSString *)sharedDataAttachmentsDirPath;
 
-- (BOOL)shouldHaveImageSize;
-- (CGSize)imageSize;
+@property (nonatomic, readonly) BOOL shouldHaveImageSize;
+@property (nonatomic, readonly) CGSize imageSizePixels;
 
 - (NSTimeInterval)audioDurationSeconds;
 - (nullable AudioWaveform *)audioWaveform;
@@ -162,12 +170,12 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 - (void)thumbnailImageWithSizeHint:(CGSize)sizeHint
                            success:(OWSThumbnailSuccess)success
                            failure:(OWSThumbnailFailure)failure;
-- (void)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
-- (void)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
-- (void)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
-- (nullable UIImage *)thumbnailImageSmallSync;
-- (nullable UIImage *)thumbnailImageMediumSync;
-- (nullable UIImage *)thumbnailImageLargeSync;
+- (void)thumbnailImageWithQuality:(AttachmentThumbnailQuality)quality
+                          success:(OWSThumbnailSuccess)success
+                          failure:(OWSThumbnailFailure)failure NS_SWIFT_NAME(thumbnailImage(quality:success:failure:));
+
+- (nullable UIImage *)thumbnailImageSyncWithQuality:(AttachmentThumbnailQuality)quality
+    NS_SWIFT_NAME(thumbnailImageSync(quality:));
 
 // This method should only be invoked by OWSThumbnailService.
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;

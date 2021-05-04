@@ -909,10 +909,9 @@ fileprivate extension CVComponentState.Builder {
             throw OWSAssertionError("Missing sticker attachment.")
         }
         if let attachmentStream = attachment as? TSAttachmentStream {
-            let mediaSize = attachmentStream.imageSize()
+            let mediaSize = attachmentStream.imageSizePoints
             guard attachmentStream.isValidImage,
-                  mediaSize.width > 0,
-                  mediaSize.height > 0 else {
+                  mediaSize.isNonEmpty else {
                 throw OWSAssertionError("Invalid sticker.")
             }
             let stickerType = StickerManager.stickerType(forContentType: attachmentStream.contentType)
@@ -994,8 +993,7 @@ fileprivate extension CVComponentState.Builder {
             guard let attachmentStream = attachment as? TSAttachmentStream else {
                 var mediaSize: CGSize = .zero
                 if let attachmentPointer = attachment as? TSAttachmentPointer,
-                   attachmentPointer.mediaSize.width > 0,
-                   attachmentPointer.mediaSize.height > 0 {
+                   attachmentPointer.mediaSize.isNonEmpty {
                     mediaSize = attachmentPointer.mediaSize
                 } else {
                     owsFailDebug("Invalid attachment.")
@@ -1015,8 +1013,8 @@ fileprivate extension CVComponentState.Builder {
                                                         mediaSize: .zero))
                 continue
             }
-            let mediaSize = attachmentStream.imageSize()
-            if mediaSize.width <= 0 || mediaSize.height <= 0 {
+            let mediaSize = attachmentStream.imageSizePixels
+            if !mediaSize.isNonEmpty {
                 Logger.warn("Filtering media with invalid size.")
                 mediaAlbumItems.append(CVMediaAlbumItem(attachment: attachment,
                                                         attachmentStream: nil,

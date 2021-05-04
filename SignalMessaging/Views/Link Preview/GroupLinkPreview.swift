@@ -75,7 +75,8 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         return .loading
     }
 
-    public func imageAsync(imageSize: LinkPreviewImageSize, completion: @escaping (UIImage) -> Void) {
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
+                           completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState() == .loaded)
 
         let groupInviteLinkViewModel = self.groupInviteLinkViewModel

@@ -70,8 +70,9 @@ public class MediaGalleryItem: Equatable, Hashable {
         return attachmentStream.isImage
     }
 
+    // TODO: Add units to name.
     var imageSize: CGSize {
-        return attachmentStream.imageSize()
+        attachmentStream.imageSizePoints
     }
 
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
