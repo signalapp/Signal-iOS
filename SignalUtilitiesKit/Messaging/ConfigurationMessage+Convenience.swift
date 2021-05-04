@@ -27,8 +27,6 @@ extension ConfigurationMessage {
                 case .openGroup:
                     if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
                         openGroups.insert("\(v2OpenGroup.server)/\(v2OpenGroup.room)?public_key=\(v2OpenGroup.publicKey)")
-                    } else if let openGroup = storage.getOpenGroup(for: thread.uniqueId!) {
-                        openGroups.insert(openGroup.server)
                     }
                 default: break
                 }

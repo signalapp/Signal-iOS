@@ -80,13 +80,6 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
                 }, completion: { })
                 self.handlePermanentFailure(error: error)
-            } else if let error = error as? DotNetAPI.Error, case .parsingFailed = error {
-                // No need to retry if the response is invalid. Most likely this means we (incorrectly)
-                // got a "Cannot GET ..." error from the file server.
-                storage.write(with: { transaction in
-                    storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
-                }, completion: { })
-                self.handlePermanentFailure(error: error)
             } else {
                 self.handleFailure(error: error)
             }
@@ -100,17 +93,11 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
-        } else if pointer.downloadURL.contains(FileServerAPIV2.server) {
+        } else {
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
                 return handleFailure(Error.invalidURL)
             }
             FileServerAPIV2.download(file).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
-                self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
-            }.catch(on: DispatchQueue.global()) { error in
-                handleFailure(error)
-            }
-        } else { // Legacy
-            FileServerAPI.downloadAttachment(from: pointer.downloadURL).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
