@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,9 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size;
 + (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData;
 
-- (size_t)pixelWidth;
-- (size_t)pixelHeight;
-- (CGSize)pixelSize;
+@property (readonly) size_t pixelWidth;
+@property (readonly) size_t pixelHeight;
+@property (readonly) CGSize pixelSize;
 
 @end
 

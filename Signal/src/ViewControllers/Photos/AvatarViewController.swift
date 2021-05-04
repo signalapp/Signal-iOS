@@ -79,7 +79,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         view.addSubview(imageView)
         view.addSubview(closeButton)
 
-        let imageRatio = CGFloat(avatarImage.pixelWidth()) / CGFloat(avatarImage.pixelHeight())
+        let imageRatio = CGFloat(avatarImage.pixelWidth) / CGFloat(avatarImage.pixelHeight)
 
         imageView.autoCenterInSuperview()
         imageView.autoPin(toAspectRatio: imageRatio)

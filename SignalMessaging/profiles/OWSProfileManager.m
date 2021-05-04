@@ -32,6 +32,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// TODO: Clarify if this value is pixels or points.
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 1024;
 const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_WasLocallyInitiated";
 

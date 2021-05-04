@@ -118,7 +118,7 @@ public class BlurHash: NSObject {
         // As long as we're normalizing the image, reduce the size.
         // The blurHash algorithm doesn't need more data.
         // This also places an upper bound on blurHash perf cost.
-        let srcSize = image.pixelSize()
+        let srcSize = image.pixelSize
         guard srcSize.width > 0, srcSize.height > 0 else {
             owsFailDebug("Invalid image size.")
             return nil

@@ -328,6 +328,10 @@ public class ConversationAvatarView: AvatarImageView {
                     // Discard stale loads.
                     return
                 }
+                guard let image = image else {
+                    self.image = nil
+                    return
+                }
                 self.image = image
             }
         }
@@ -342,7 +346,7 @@ public class ConversationAvatarView: AvatarImageView {
             return nil
         }
 
-        let image = { () -> UIImage? in
+        guard let image = { () -> UIImage? in
             switch content {
             case .contact(let contactThread):
                 return buildContactAvatar(address: contactThread.contactAddress,
@@ -363,8 +367,17 @@ public class ConversationAvatarView: AvatarImageView {
                                           localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
             }
-        }()
-        owsAssertDebug(image != nil)
+        }() else {
+            owsFailDebug("Could not build avatar image.")
+            return nil
+        }
+        let screenScale = UIScreen.main.scale
+        let targetSizePixels = CGFloat(diameter) * screenScale
+        guard CGFloat(image.pixelWidth) <= targetSizePixels,
+              CGFloat(image.pixelHeight) <= targetSizePixels else {
+            let resizedImage = image.resizedImage(toFillPixelSize: .square(targetSizePixels))
+            return resizedImage
+        }
         return image
     }
 
