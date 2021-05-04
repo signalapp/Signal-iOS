@@ -413,7 +413,7 @@ public extension Array where Element == SignalServiceAddress {
 
 @objc
 public class SignalServiceAddressCache: NSObject {
-    private let serialQueue = DispatchQueue(label: "SignalServiceAddressCache")
+    private static let unfairLock = UnfairLock()
 
     private var uuidToPhoneNumberCache = [UUID: String]()
     private var phoneNumberToUUIDCache = [String: UUID]()
@@ -454,7 +454,7 @@ public class SignalServiceAddressCache: NSObject {
         // in low trust scenarios.
         if trustLevel == .low, uuid != nil { phoneNumber = nil }
 
-        return serialQueue.sync {
+        return Self.unfairLock.withLock {
             // If we have a UUID and a phone number, cache the mapping.
             if let uuid = uuid, let phoneNumber = phoneNumber {
                 uuidToPhoneNumberCache[uuid] = phoneNumber
@@ -493,16 +493,16 @@ public class SignalServiceAddressCache: NSObject {
     }
 
     func uuid(forPhoneNumber phoneNumber: String) -> UUID? {
-        return serialQueue.sync { phoneNumberToUUIDCache[phoneNumber] }
+        Self.unfairLock.withLock { phoneNumberToUUIDCache[phoneNumber] }
     }
 
     func phoneNumber(forUuid uuid: UUID) -> String? {
-        return serialQueue.sync { uuidToPhoneNumberCache[uuid] }
+        Self.unfairLock.withLock { uuidToPhoneNumberCache[uuid] }
     }
 
     @objc
     func updateMapping(uuid: UUID, phoneNumber: String?) {
-        serialQueue.sync {
+        Self.unfairLock.withLock {
             // Maintain the existing hash value for the given UUID, or create
             // a new hash if one is yet to exist.
             let hashValue: Int = {
