@@ -13,41 +13,42 @@ typedef NS_ENUM(NSUInteger, OWSStandardSound) {
     OWSStandardSound_Default = 0,
 
     // Notification Sounds
-    OWSStandardSound_Aurora,
-    OWSStandardSound_Bamboo,
-    OWSStandardSound_Chord,
-    OWSStandardSound_Circles,
-    OWSStandardSound_Complete,
-    OWSStandardSound_Hello,
-    OWSStandardSound_Input,
-    OWSStandardSound_Keys,
-    OWSStandardSound_Note,
-    OWSStandardSound_Popcorn,
-    OWSStandardSound_Pulse,
-    OWSStandardSound_Synth,
-    OWSStandardSound_SignalClassic,
+    OWSStandardSound_Aurora = 1,
+    OWSStandardSound_Bamboo = 2,
+    OWSStandardSound_Chord = 3,
+    OWSStandardSound_Circles = 4,
+    OWSStandardSound_Complete = 5,
+    OWSStandardSound_Hello = 6,
+    OWSStandardSound_Input = 7,
+    OWSStandardSound_Keys = 8,
+    OWSStandardSound_Note = 9,
+    OWSStandardSound_Popcorn = 10,
+    OWSStandardSound_Pulse = 11,
+    OWSStandardSound_Synth = 12,
+    OWSStandardSound_SignalClassic = 13,
 
     // Ringtone Sounds
-    OWSStandardSound_Reflection,
+    OWSStandardSound_Reflection = 14,
 
     // Calls
-    OWSStandardSound_CallConnecting,
-    OWSStandardSound_CallOutboundRinging,
-    OWSStandardSound_CallBusy,
-    OWSStandardSound_CallEnded,
+    OWSStandardSound_CallConnecting = 15,
+    OWSStandardSound_CallOutboundRinging = 16,
+    OWSStandardSound_CallBusy = 17,
+    OWSStandardSound_CallEnded = 18,
 
     // Group Calls
-    OWSStandardSound_GroupCallJoin,
-    OWSStandardSound_GroupCallLeave,
-
-    // Audio Playback
-    OWSStandardSound_BeginNextTrack,
-    OWSStandardSound_EndLastTrack,
+    OWSStandardSound_GroupCallJoin = 19,
+    OWSStandardSound_GroupCallLeave = 20,
 
     // Other
-    OWSStandardSound_MessageSent,
-    OWSStandardSound_None,
-    OWSStandardSound_Silence,
+    OWSStandardSound_MessageSent = 21,
+    OWSStandardSound_None = 22,
+    OWSStandardSound_Silence = 23,
+
+    // Audio Playback
+    OWSStandardSound_BeginNextTrack = 24,
+    OWSStandardSound_EndLastTrack = 25,
+
     OWSStandardSound_DefaultiOSIncomingRingtone = OWSStandardSound_Reflection,
 
     // Custom sound IDs begin at this threshold
