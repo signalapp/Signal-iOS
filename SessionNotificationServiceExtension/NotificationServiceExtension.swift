@@ -20,7 +20,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
             isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
         }
-        guard !isMainAppAndActive else { return self.handleFailure(for: notificationContent!) }
+        guard !isMainAppAndActive else { return self.completeSilenty() }
 
         // Perform main setup
         DispatchQueue.main.sync { self.setUpIfNecessary() { } }
@@ -45,7 +45,11 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
                             return self.handleFailure(for: notificationContent)
                         }
-                        let threadID = tsIncomingMessage.thread(with: transaction).uniqueId!
+                        let thread = tsIncomingMessage.thread(with: transaction)
+                        if thread.isMuted {
+                            return self.completeSilenty()
+                        }
+                        let threadID = thread.uniqueId!
                         userInfo[NotificationServiceExtension.threadIdKey] = threadID
                         snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
                             ?? "You've got a new message"
@@ -58,9 +62,9 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         // in some cases we need to send messages (e.g. our sender key) to a number of other users.
                         switch closedGroupControlMessage.kind {
                         case .new(_, let name, _, _, _): snippet = "\(senderDisplayName) added you to \(name)"
-                        default: return self.handleFailure(for: notificationContent)
+                        default: return self.completeSilenty()
                         }
-                    default: return self.handleFailure(for: notificationContent)
+                    default: return self.completeSilenty()
                     }
                     notificationContent.userInfo = userInfo
                     notificationContent.badge = 1
@@ -171,7 +175,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         AppReadiness.setAppIsReady()
     }
     
-    private  func completeSilenty() {
+    private func completeSilenty() {
         contentHandler!(.init())
     }
 
