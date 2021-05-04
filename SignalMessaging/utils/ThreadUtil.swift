@@ -194,7 +194,7 @@ extension TSThread {
 
         if let threadAvatar = OWSAvatarBuilder.buildImage(thread: self,
                                                           diameter: 400,
-                                                          localUserAvatarMode: .noteToSelf,
+                                                          localUserDisplayMode: .noteToSelf,
                                                           transaction: transaction),
            let threadAvatarPng = threadAvatar.pngData() {
             let image = INImage(imageData: threadAvatarPng)

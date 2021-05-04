@@ -8,7 +8,7 @@ import SignalServiceKit
 @objc class GroupTableViewCell: UITableViewCell {
 
     private let avatarView = ConversationAvatarView(diameter: kSmallAvatarSize,
-                                                    localUserAvatarMode: .asUser)
+                                                    localUserDisplayMode: .asUser)
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let accessoryLabel = UILabel()

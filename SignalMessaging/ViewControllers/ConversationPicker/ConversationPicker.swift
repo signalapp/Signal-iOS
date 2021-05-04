@@ -656,7 +656,7 @@ private class ConversationPickerCell: ContactTableViewCell {
             content = ConversationContent.forThread(groupThread)
         }
         let configuration = ContactCellConfiguration(content: content,
-                                                     localUserAvatarMode: .noteToSelf)
+                                                     localUserDisplayMode: .noteToSelf)
         if conversationItem.isBlocked {
             configuration.accessoryMessage = MessageStrings.conversationIsBlocked
         } else {

@@ -34,7 +34,7 @@ public extension ConversationListViewController {
         let title = String(format: format, userName, formattedAmount)
 
         let avatarView = ConversationAvatarView(diameter: Self.paymentsBannerAvatarSize,
-                                                localUserAvatarMode: .asUser)
+                                                localUserDisplayMode: .asUser)
         avatarView.configure(address: address, transaction: transaction)
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,

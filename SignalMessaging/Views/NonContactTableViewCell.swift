@@ -79,7 +79,7 @@ public class NonContactTableViewCell: UITableViewCell {
                 address: address,
                 colorName: TSThread.stableColorNameForNewConversation(with: address.stringForDisplay),
                 diameter: 48,
-                localUserAvatarMode: .asUser
+                localUserDisplayMode: .asUser
             )
 
             iconView.image = avatarBuilder.build()

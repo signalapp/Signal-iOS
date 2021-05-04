@@ -90,7 +90,7 @@ class NameCollisionCell: UITableViewCell {
     typealias Action = (title: String, action: () -> Void)
 
     let avatarView = ConversationAvatarView(diameter: 64,
-                                            localUserAvatarMode: .asUser)
+                                            localUserDisplayMode: .asUser)
 
     let nameLabel: UILabel = {
         let label = UILabel()

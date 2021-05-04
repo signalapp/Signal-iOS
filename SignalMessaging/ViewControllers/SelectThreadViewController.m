@@ -211,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
                                 ContactCellConfiguration *configuration =
                                     [ContactCellConfiguration buildForThread:thread
-                                                         localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
+                                                        localUserDisplayMode:LocalUserDisplayModeNoteToSelf];
                                 if (isBlocked) {
                                     configuration.accessoryMessage = MessageStrings.conversationIsBlocked;
                                 }
@@ -291,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
                                 ContactCellConfiguration *configuration =
                                     [ContactCellConfiguration buildForAddress:signalAccount.recipientAddress
-                                                          localUserAvatarMode:LocalUserAvatarModeNoteToSelf
+                                                         localUserDisplayMode:LocalUserDisplayModeNoteToSelf
                                                                   transaction:transaction];
 
                                 BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];

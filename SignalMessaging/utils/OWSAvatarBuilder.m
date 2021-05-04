@@ -26,13 +26,13 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter
-                      localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                     localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
 {
     __block UIImage *_Nullable result;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self buildImageForThread:thread
                                   diameter:diameter
-                       localUserAvatarMode:localUserAvatarMode
+                      localUserDisplayMode:localUserDisplayMode
                                transaction:transaction];
     }];
     return result;
@@ -40,7 +40,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter
-                      localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                     localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                               transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -52,7 +52,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:contactThread.contactAddress
                                                                colorName:colorName
                                                                 diameter:diameter
-                                                     localUserAvatarMode:localUserAvatarMode
+                                                    localUserDisplayMode:localUserDisplayMode
                                                              transaction:transaction];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];

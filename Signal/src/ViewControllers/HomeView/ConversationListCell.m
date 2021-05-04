@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     _viewConstraints = [NSMutableArray new];
 
     self.avatarView = [[ConversationAvatarView alloc] initWithDiameter:self.avatarSize
-                                                   localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
+                                                  localUserDisplayMode:LocalUserDisplayModeNoteToSelf];
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:16];
     [self.avatarView autoVCenterInSuperview];

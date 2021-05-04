@@ -249,7 +249,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
     let avatarView = ConversationAvatarView(diameter: 0,
-                                            localUserAvatarMode: .asUser)
+                                            localUserDisplayMode: .asUser)
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
 
@@ -314,7 +314,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction -> (UIImage?, ConversationColorName) in
             avatarView.configure(address: device.address,
                                  diameter: avatarDiameter,
-                                 localUserAvatarMode: .asUser,
+                                 localUserDisplayMode: .asUser,
                                  transaction: transaction)
             avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 

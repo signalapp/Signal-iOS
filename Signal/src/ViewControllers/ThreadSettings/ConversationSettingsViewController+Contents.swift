@@ -517,7 +517,7 @@ extension ConversationSettingsViewController {
 
                 Self.databaseStorage.read { transaction in
                     let configuration = ContactCellConfiguration.build(address: memberAddress,
-                                                                       localUserAvatarMode: .asUser,
+                                                                       localUserDisplayMode: .asLocalUser,
                                                                        transaction: transaction)
 
                     let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
@@ -535,8 +535,6 @@ extension ConversationSettingsViewController {
                     }
 
                     if isLocalUser {
-                        configuration.customName = NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                                                     comment: "Label indicating the local user.").attributedString()
                         cell.selectionStyle = .none
                     } else {
                         cell.selectionStyle = .default

@@ -8,7 +8,7 @@ public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
     let contactAvatarView = ConversationAvatarView(diameter: PaymentModelCell.avatarDiameter,
-                                                   localUserAvatarMode: .asUser)
+                                                   localUserDisplayMode: .asUser)
 
     let nameLabel = UILabel()
     let statusLabel = UILabel()

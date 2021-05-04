@@ -9,10 +9,11 @@ extern const NSUInteger kStandardAvatarSize;
 extern const NSUInteger kMediumAvatarSize;
 extern const NSUInteger kLargeAvatarSize;
 
-typedef NS_CLOSED_ENUM(NSUInteger, LocalUserAvatarMode) {
+typedef NS_CLOSED_ENUM(NSUInteger, LocalUserDisplayMode) {
     // We should use this value by default.
-    LocalUserAvatarModeAsUser = 0,
-    LocalUserAvatarModeNoteToSelf,
+    LocalUserDisplayModeAsUser = 0,
+    LocalUserDisplayModeNoteToSelf,
+    LocalUserDisplayModeAsLocalUser,
 };
 
 @class SDSAnyReadTransaction;
@@ -23,14 +24,13 @@ typedef NS_CLOSED_ENUM(NSUInteger, LocalUserAvatarMode) {
 
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter
-                      localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
-    NS_SWIFT_NAME(buildImage(thread:diameter:localUserAvatarMode:));
+                     localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
+    NS_SWIFT_NAME(buildImage(thread:diameter:localUserDisplayMode:));
 
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter
-                      localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
-                              transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(buildImage(thread:diameter:localUserAvatarMode:transaction:));
+                     localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
+                              transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(buildImage(thread:diameter:localUserDisplayMode:transaction:));
 
 + (nullable UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
 + (nullable UIImage *)buildNoiseAvatarWithDiameter:(NSUInteger)diameter;

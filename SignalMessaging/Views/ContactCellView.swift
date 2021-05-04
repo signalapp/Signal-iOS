@@ -9,7 +9,7 @@ public class ContactCellConfiguration: NSObject {
     public let content: ConversationContent
 
     @objc
-    public let localUserAvatarMode: LocalUserAvatarMode
+    public let localUserDisplayMode: LocalUserDisplayMode
 
     @objc
     public var useLargeAvatars = false
@@ -21,7 +21,7 @@ public class ContactCellConfiguration: NSObject {
     public var accessoryMessage: String?
 
     @objc
-    public var customName: NSAttributedString?
+    public var customName: String?
 
     @objc
     public var accessoryView: UIView?
@@ -39,36 +39,36 @@ public class ContactCellConfiguration: NSObject {
     }
 
     public init(content: ConversationContent,
-                localUserAvatarMode: LocalUserAvatarMode) {
+                localUserDisplayMode: LocalUserDisplayMode) {
         self.content = content
-        self.localUserAvatarMode = localUserAvatarMode
+        self.localUserDisplayMode = localUserDisplayMode
 
         super.init()
     }
 
-    @objc(buildWithSneakyTransactionForaddress:localUserAvatarMode:)
+    @objc(buildWithSneakyTransactionForaddress:localUserDisplayMode:)
     public static func buildWithSneakyTransaction(address: SignalServiceAddress,
-                                                  localUserAvatarMode: LocalUserAvatarMode) -> ContactCellConfiguration {
+                                                  localUserDisplayMode: LocalUserDisplayMode) -> ContactCellConfiguration {
         databaseStorage.read { transaction in
-            build(address: address, localUserAvatarMode: localUserAvatarMode, transaction: transaction)
+            build(address: address, localUserDisplayMode: localUserDisplayMode, transaction: transaction)
         }
     }
 
-    @objc(buildForAddress:localUserAvatarMode:transaction:)
+    @objc(buildForAddress:localUserDisplayMode:transaction:)
     public static func build(address: SignalServiceAddress,
-                             localUserAvatarMode: LocalUserAvatarMode,
+                             localUserDisplayMode: LocalUserDisplayMode,
                              transaction: SDSAnyReadTransaction) -> ContactCellConfiguration {
         let content = ConversationContent.forAddress(address, transaction: transaction)
         return ContactCellConfiguration(content: content,
-                                        localUserAvatarMode: localUserAvatarMode)
+                                        localUserDisplayMode: localUserDisplayMode)
     }
 
-    @objc(buildForThread:localUserAvatarMode:)
+    @objc(buildForThread:localUserDisplayMode:)
     public static func build(thread: TSThread,
-                             localUserAvatarMode: LocalUserAvatarMode) -> ContactCellConfiguration {
+                             localUserDisplayMode: LocalUserDisplayMode) -> ContactCellConfiguration {
         let content = ConversationContent.forThread(thread)
         return ContactCellConfiguration(content: content,
-                                        localUserAvatarMode: localUserAvatarMode)
+                                        localUserDisplayMode: localUserDisplayMode)
     }
 
     public func useVerifiedSubtitle() {
@@ -94,47 +94,11 @@ public class ContactCellView: UIStackView {
         }
     }
 
-//    // TODO: Remove.
-//    @objc
-//    public var accessoryMessage: String? { configuration?.accessoryMessage}
-//
-//    // TODO: Remove.
-//    @objc
-//    public var customName: NSAttributedString? { configuration?.customName }
-//
-//    // TODO: Pass as argument to configure.
-//    @objc
-//    public var useLargeAvatars: Bool { configuration?.useLargeAvatars ?? false }
-
     private var content: ConversationContent? { configuration?.content }
-//        didSet {
-//            ensureObservers()
-//        }
-//    }
 
-//    @objc
-//    public var accessoryMessage: String?
-//
-//    @objc
-//    public var customName: NSAttributedString?
-//
-//    // TODO: Pass as argument to configure.
-//    @objc
-//    public var useLargeAvatars = false
-
-    // - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle
-    // {
-    //    self.subtitleLabel.attributedText = attributedSubtitle;
-    // }
-    //
-    // - (void)setSubtitle:(nullable NSString *)subtitle
-    // {
-    //    [self setAttributedSubtitle:subtitle.asAttributedString];
-    // }
-
-    // TODO: Update localUserAvatarMode.
+    // TODO: Update localUserDisplayMode.
     private let avatarView = ConversationAvatarView(diameter: kSmallAvatarSize,
-                                                    localUserAvatarMode: .asUser)
+                                                    localUserDisplayMode: .asUser)
 
     @objc
     public static let avatarTextHSpacing: CGFloat = 12
@@ -204,30 +168,30 @@ public class ContactCellView: UIStackView {
     }
 
     public func configureWithSneakyTransaction(recipientAddress: SignalServiceAddress,
-                                               localUserAvatarMode: LocalUserAvatarMode) {
+                                               localUserDisplayMode: LocalUserDisplayMode) {
         databaseStorage.read { transaction in
             configure(recipientAddress: recipientAddress,
-                      localUserAvatarMode: localUserAvatarMode,
+                      localUserDisplayMode: localUserDisplayMode,
                       transaction: transaction)
         }
     }
 
     public func configure(recipientAddress address: SignalServiceAddress,
-                          localUserAvatarMode: LocalUserAvatarMode,
+                          localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         owsAssertDebug(address.isValid)
         let content = ConversationContent.forAddress(address, transaction: transaction)
         let configuration = ContactCellConfiguration(content: content,
-                                                     localUserAvatarMode: localUserAvatarMode)
+                                                     localUserDisplayMode: localUserDisplayMode)
         configure(configuration: configuration, transaction: transaction)
 
     }
 
     public func configure(thread: TSThread,
-                          localUserAvatarMode: LocalUserAvatarMode,
+                          localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         let configuration = ContactCellConfiguration(content: ConversationContent.forThread(thread),
-                                                     localUserAvatarMode: localUserAvatarMode)
+                                                     localUserDisplayMode: localUserDisplayMode)
         configure(configuration: configuration, transaction: transaction)
     }
 
@@ -238,7 +202,7 @@ public class ContactCellView: UIStackView {
 
         avatarView.configure(content: configuration.content,
                              diameter: configuration.avatarSize,
-                             localUserAvatarMode: configuration.localUserAvatarMode,
+                             localUserDisplayMode: configuration.localUserDisplayMode,
                              transaction: transaction)
 
         // Update fonts to reflect changes to dynamic type.
@@ -304,36 +268,49 @@ public class ContactCellView: UIStackView {
 
     private func updateNameLabels(configuration: ContactCellConfiguration,
                                   transaction: SDSAnyReadTransaction) {
-        if let customName = configuration.customName?.nilIfEmpty {
-            nameLabel.attributedText = customName
-        } else {
-            func updateNameLabels(address: SignalServiceAddress) {
+        nameLabel.attributedText = { () -> NSAttributedString in
+            if let customName = configuration.customName?.nilIfEmpty {
+                return customName.asAttributedString
+            }
+            func nameForAddress(_ address: SignalServiceAddress) -> NSAttributedString {
+                let name: String
                 if address.isLocalAddress {
-                    nameLabel.text = MessageStrings.noteToSelf
+                    switch configuration.localUserDisplayMode {
+                    case .noteToSelf:
+                        name = MessageStrings.noteToSelf
+                    case .asLocalUser:
+                        name = NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
+                                                 comment: "Label indicating the local user.")
+                    case .asUser:
+                        name = contactsManager.displayName(for: address,
+                                                           transaction: transaction)
+                    }
                 } else {
-                    nameLabel.text = contactsManager.displayName(for: address,
-                                                                 transaction: transaction)
+                    name = contactsManager.displayName(for: address,
+                                                       transaction: transaction)
                 }
+                return name.asAttributedString
             }
 
             switch configuration.content {
             case .contact(let contactThread):
-                updateNameLabels(address: contactThread.contactAddress)
+                return nameForAddress(contactThread.contactAddress)
             case .group(let groupThread):
                 // TODO: Ensure nameLabel.textColor.
                 let threadName = contactsManager.displayName(for: groupThread,
                                                              transaction: transaction)
                 if let nameLabelColor = nameLabel.textColor {
-                    nameLabel.attributedText = threadName.asAttributedString(attributes: [
+                    return threadName.asAttributedString(attributes: [
                         .foregroundColor: nameLabelColor
                     ])
                 } else {
                     owsFailDebug("Missing nameLabelColor.")
+                    return TSGroupThread.defaultGroupName.asAttributedString
                 }
             case .unknownContact(let contactAddress):
-                updateNameLabels(address: contactAddress)
+                return nameForAddress(contactAddress)
             }
-        }
+        }()
 
         // TODO: Is this necessary?
         nameLabel.setNeedsLayout()
@@ -346,14 +323,10 @@ public class ContactCellView: UIStackView {
         avatarView.reset()
 
         self.configuration = nil
-//        self.content = nil
-//        self.accessoryMessage = nil
         self.nameLabel.text = nil
         self.subtitleLabel.text = nil
         self.accessoryLabel.text = nil
-//        self.customName = nil
         accessoryViewContainer.removeAllSubviews()
-//        self.useLargeAvatars = false
     }
 
     @objc

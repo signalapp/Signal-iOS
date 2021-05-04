@@ -380,7 +380,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
             avatarView.image = UIImage(data: avatarData)
         } else {
             let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarSize),
-                                                        localUserAvatarMode: .asUser)
+                                                        localUserDisplayMode: .asUser)
             avatarView.image = avatarBuilder.buildDefaultImage()
         }
     }

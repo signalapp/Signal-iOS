@@ -279,7 +279,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 return UITableViewCell()
             }
             cell.configureWithSneakyTransaction(address: searchResult.signalAccount.recipientAddress,
-                                                localUserAvatarMode: .noteToSelf)
+                                                localUserDisplayMode: .noteToSelf)
             return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {

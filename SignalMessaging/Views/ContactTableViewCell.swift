@@ -14,74 +14,6 @@ open class ContactTableViewCell: UITableViewCell {
     // TODO:
     private let allowUserInteraction: Bool
 
-//    @objc
-//    public var accessoryMessage: String? {
-//        get { cellView.accessoryMessage }
-//        set { cellView.accessoryMessage = newValue }
-//    }
-
-    // - (NSAttributedString *)verifiedSubtitle
-    // {
-    //    return self.cellView.verifiedSubtitle;
-    // }
-    //
-    // - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle
-    // {
-    //    [self.cellView setAttributedSubtitle:attributedSubtitle];
-    // }
-    //
-    // - (void)setSubtitle:(nullable NSString *)subtitle
-    // {
-    //    [self.cellView setSubtitle:subtitle];
-    // }
-
-//    @objc
-//    public var useLargeAvatars: Bool {
-//        get { cellView.useLargeAvatars }
-//        set { cellView.useLargeAvatars = newValue }
-//    }
-
-    // - (BOOL)hasAccessoryText
-    // {
-    //    return [self.cellView hasAccessoryText];
-    // }
-    //
-    // - (void)ows_setAccessoryView:(UIView *)accessoryView
-    // {
-    //    return [self.cellView setAccessoryView:accessoryView];
-    // }
-    //
-    // @end
-    //
-    // NS_ASSUME_NONNULL_END
-
-//    @objc
-//    public var ows_accessoryView: UIView? {
-//        get { cellView.ows }
-//        set { cellView.accessoryMessage = newValue }
-//    }
-
-    //// This method should be called _before_ the configure... methods.
-    // - (void)setAccessoryMessage:(nullable NSString *)accessoryMessage;
-    //
-    //// This method should be called _after_ the configure... methods.
-    // - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle;
-    //
-    //// This method should be called _after_ the configure... methods.
-    // - (void)setSubtitle:(nullable NSString *)subtitle;
-    //
-    // - (void)setCustomName:(nullable NSString *)customName;
-    // - (void)setCustomNameAttributed:(nullable NSAttributedString *)customName;
-    //
-    // - (void)setUseLargeAvatars;
-    //
-    // - (NSAttributedString *)verifiedSubtitle;
-    //
-    // - (BOOL)hasAccessoryText;
-    //
-    // - (void)ows_setAccessoryView:(UIView *)accessoryView;
-    //
-
     @objc
     public override var accessoryView: UIView? {
         didSet {
@@ -119,28 +51,28 @@ open class ContactTableViewCell: UITableViewCell {
     }
 
     public func configureWithSneakyTransaction(address: SignalServiceAddress,
-                                               localUserAvatarMode: LocalUserAvatarMode) {
+                                               localUserDisplayMode: LocalUserDisplayMode) {
         databaseStorage.read { transaction in
             configure(address: address,
-                      localUserAvatarMode: localUserAvatarMode,
+                      localUserDisplayMode: localUserDisplayMode,
                       transaction: transaction)
         }
     }
 
     public func configure(address: SignalServiceAddress,
-                          localUserAvatarMode: LocalUserAvatarMode,
+                          localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         let content = ConversationContent.forAddress(address, transaction: transaction)
         let configuration = ContactCellConfiguration(content: content,
-                                                     localUserAvatarMode: localUserAvatarMode)
+                                                     localUserDisplayMode: localUserDisplayMode)
         configure(configuration: configuration, transaction: transaction)
     }
 
     public func configure(thread: TSThread,
-                          localUserAvatarMode: LocalUserAvatarMode,
+                          localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         let configuration = ContactCellConfiguration(content: .forThread(thread),
-                                                     localUserAvatarMode: localUserAvatarMode)
+                                                     localUserDisplayMode: localUserDisplayMode)
         configure(configuration: configuration, transaction: transaction)
     }
 

@@ -53,7 +53,7 @@ class ReplaceAdminViewController: OWSTableViewController2 {
 
                 Self.databaseStorage.read { transaction in
                     let configuration = ContactCellConfiguration.build(address: address,
-                                                                       localUserAvatarMode: .asUser,
+                                                                       localUserDisplayMode: .asUser,
                                                                        transaction: transaction)
 
                     let imageView = UIImageView()

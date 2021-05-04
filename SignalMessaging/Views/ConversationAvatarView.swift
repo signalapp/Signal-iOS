@@ -10,7 +10,7 @@ public class ConversationAvatarView: AvatarImageView {
 
     private struct Configuration: Equatable {
         let diameter: UInt
-        let localUserAvatarMode: LocalUserAvatarMode
+        let localUserDisplayMode: LocalUserDisplayMode
     }
     private var configuration: Configuration
 
@@ -20,8 +20,8 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     @objc
-    public var localUserAvatarMode: LocalUserAvatarMode {
-        configuration.localUserAvatarMode
+    public var localUserDisplayMode: LocalUserDisplayMode {
+        configuration.localUserDisplayMode
     }
 
     private var content: ConversationContent? {
@@ -41,9 +41,9 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     @objc
-    public required init(diameter: UInt, localUserAvatarMode: LocalUserAvatarMode) {
+    public required init(diameter: UInt, localUserDisplayMode: LocalUserDisplayMode) {
         self.configuration = Configuration(diameter: diameter,
-                                           localUserAvatarMode: localUserAvatarMode)
+                                           localUserDisplayMode: localUserDisplayMode)
 
         super.init(frame: .zero)
 
@@ -65,7 +65,7 @@ public class ConversationAvatarView: AvatarImageView {
                            transaction: SDSAnyReadTransaction) {
 
         let didDiameterChange = self.configuration.diameter != configuration.diameter
-        let didLocalUserAvatarModeChange = self.configuration.localUserAvatarMode != configuration.localUserAvatarMode
+        let didLocalUserDisplayModeChange = self.configuration.localUserDisplayMode != configuration.localUserDisplayMode
         var shouldUpdateImage = self.content != content
 
         self.configuration = configuration
@@ -77,7 +77,7 @@ public class ConversationAvatarView: AvatarImageView {
             shouldUpdateImage = true
         }
 
-        if didLocalUserAvatarModeChange {
+        if didLocalUserDisplayModeChange {
             shouldUpdateImage = true
         }
 
@@ -120,37 +120,37 @@ public class ConversationAvatarView: AvatarImageView {
     public func configure(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
         configure(address: address,
                   diameter: diameter,
-                  localUserAvatarMode: localUserAvatarMode,
+                  localUserDisplayMode: localUserDisplayMode,
                   transaction: transaction)
     }
 
     @objc
     public func configure(address: SignalServiceAddress,
                           diameter: UInt,
-                          localUserAvatarMode: LocalUserAvatarMode,
+                          localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         configure(content: ConversationContent.forAddress(address, transaction: transaction),
                   diameter: diameter,
-                  localUserAvatarMode: localUserAvatarMode,
+                  localUserDisplayMode: localUserDisplayMode,
                   transaction: transaction)
     }
 
     @objc
     public func configure(thread: TSThread,
                           diameter: UInt,
-                          localUserAvatarMode: LocalUserAvatarMode,
+                          localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         configure(content: ConversationContent.forThread(thread),
                   diameter: diameter,
-                  localUserAvatarMode: localUserAvatarMode,
+                  localUserDisplayMode: localUserDisplayMode,
                   transaction: transaction)
     }
 
     public func configure(content: ConversationContent,
                           diameter: UInt,
-                          localUserAvatarMode: LocalUserAvatarMode,
+                          localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
-        let configuration = Configuration(diameter: diameter, localUserAvatarMode: localUserAvatarMode)
+        let configuration = Configuration(diameter: diameter, localUserDisplayMode: localUserDisplayMode)
         configure(content: content,
                   configuration: configuration,
                   transaction: transaction)
@@ -331,7 +331,7 @@ public class ConversationAvatarView: AvatarImageView {
         let builder = OWSContactAvatarBuilder(address: address,
                                               colorName: conversationColorName,
                                               diameter: diameter,
-                                              localUserAvatarMode: localUserAvatarMode,
+                                              localUserDisplayMode: localUserDisplayMode,
                                               transaction: transaction)
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
                                                                            transaction: transaction)

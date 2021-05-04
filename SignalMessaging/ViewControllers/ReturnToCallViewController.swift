@@ -73,7 +73,7 @@ public class ReturnToCallViewController: UIViewController {
     }
 
     private lazy var avatarView = ConversationAvatarView(diameter: 60,
-                                                         localUserAvatarMode: .asUser)
+                                                         localUserDisplayMode: .asUser)
     private lazy var backgroundAvatarView = UIImageView()
     private lazy var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 

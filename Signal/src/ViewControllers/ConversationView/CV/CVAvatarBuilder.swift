@@ -24,7 +24,7 @@ public class CVAvatarBuilder: Dependencies {
     }
 
     func buildAvatar(forAddress address: SignalServiceAddress,
-                     localUserAvatarMode: LocalUserAvatarMode,
+                     localUserDisplayMode: LocalUserDisplayMode,
                      diameter: UInt) -> UIImage? {
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
                                                                            transaction: transaction)
@@ -40,7 +40,7 @@ public class CVAvatarBuilder: Dependencies {
         guard let rawAvatar = OWSContactAvatarBuilder(address: address,
                                                       colorName: colorName,
                                                       diameter: diameter,
-                                                      localUserAvatarMode: localUserAvatarMode,
+                                                      localUserDisplayMode: localUserDisplayMode,
                                                       transaction: transaction).build(with: transaction) else {
             owsFailDebug("Could build avatar image")
             return nil

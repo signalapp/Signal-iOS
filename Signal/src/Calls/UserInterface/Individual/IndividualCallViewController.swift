@@ -69,7 +69,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     private lazy var contactNameLabel = MarqueeLabel()
     private lazy var contactAvatarView = ConversationAvatarView(diameter: 200,
-                                                                localUserAvatarMode: .asUser)
+                                                                localUserDisplayMode: .asUser)
     private lazy var contactAvatarContainerView = UIView.container()
     private lazy var callStatusLabel = UILabel()
     private lazy var backButton = UIButton()

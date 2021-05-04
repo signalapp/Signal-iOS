@@ -186,7 +186,7 @@ extension RecipientPickerViewController {
 
                     Self.databaseStorage.read { transaction in
                         let configuration = ContactCellConfiguration.build(address: address,
-                                                                           localUserAvatarMode: .noteToSelf,
+                                                                           localUserDisplayMode: .noteToSelf,
                                                                            transaction: transaction)
 
                         if let delegate = self.delegate {

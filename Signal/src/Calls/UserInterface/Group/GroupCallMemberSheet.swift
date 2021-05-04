@@ -231,7 +231,7 @@ private class GroupCallMemberCell: UITableViewCell {
     static let reuseIdentifier = "GroupCallMemberCell"
 
     let avatarView = ConversationAvatarView(diameter: 36,
-                                            localUserAvatarMode: .asUser)
+                                            localUserDisplayMode: .asUser)
     let nameLabel = UILabel()
     let videoMutedIndicator = UIImageView()
     let audioMutedIndicator = UIImageView()

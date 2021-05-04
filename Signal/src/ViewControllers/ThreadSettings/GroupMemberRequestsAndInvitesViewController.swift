@@ -150,7 +150,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
                     Self.databaseStorage.read { transaction in
                         let configuration = ContactCellConfiguration.build(address: address,
-                                                                           localUserAvatarMode: .asUser,
+                                                                           localUserDisplayMode: .asLocalUser,
                                                                            transaction: transaction)
 
                         if canApproveMemberRequests {
@@ -158,8 +158,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         }
 
                         if address.isLocalAddress {
-                            configuration.customName = NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                                                         comment: "Label indicating the local user.").attributedString()
                             cell.selectionStyle = .none
                         } else {
                             cell.selectionStyle = .default
@@ -263,7 +261,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     let cell = ContactTableViewCell()
                     cell.selectionStyle = canRevokeInvites ? .default : .none
                     cell.configureWithSneakyTransaction(address: address,
-                                                        localUserAvatarMode: .asUser)
+                                                        localUserDisplayMode: .asUser)
                     return cell
                     }) { [weak self] in
                                                 self?.inviteFromLocalUserWasTapped(address,
@@ -307,7 +305,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
                     Self.databaseStorage.read { transaction in
                         let configuration = ContactCellConfiguration.build(address: inviterAddress,
-                                                                           localUserAvatarMode: .asUser,
+                                                                           localUserDisplayMode: .asUser,
                                                                            transaction: transaction)
                         let inviterName = self.contactsManager.displayName(for: inviterAddress,
                                                                            transaction: transaction)
@@ -316,11 +314,11 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                                            comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}.")
                             configuration.customName = String(format: format,
                                                               inviterName,
-                                                              OWSFormat.formatInt(invitedAddresses.count)).attributedString()
+                                                              OWSFormat.formatInt(invitedAddresses.count))
                         } else {
                             let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT",
                                                            comment: "Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}.")
-                            configuration.customName = String(format: format, inviterName).attributedString()
+                            configuration.customName = String(format: format, inviterName)
                         }
                         cell.configure(configuration: configuration, transaction: transaction)
                     }

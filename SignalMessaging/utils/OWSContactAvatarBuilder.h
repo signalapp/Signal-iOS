@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactAvatarBuilder : OWSAvatarBuilder
 
-@property (nonatomic, readonly, class) LocalUserAvatarMode defaultLocalUserAvatarMode;
+@property (nonatomic, readonly, class) LocalUserDisplayMode defaultLocalUserDisplayMode;
 
 /**
  * Build an avatar for a Signal recipient
@@ -27,11 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
-            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode;
+           localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode;
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
-            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+           localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                     transaction:(SDSAnyReadTransaction *)transaction;
 
 /**
@@ -43,9 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
     NS_SWIFT_NAME(init(nonSignalNameComponents:colorSeed:diameter:));
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
-                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode;
+                        localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode;
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
-                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                        localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 @end

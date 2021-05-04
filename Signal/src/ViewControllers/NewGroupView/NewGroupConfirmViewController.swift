@@ -251,7 +251,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
                         Self.databaseStorage.read { transaction in
                             let configuration = ContactCellConfiguration.build(address: address,
-                                                                               localUserAvatarMode: .asUser,
+                                                                               localUserDisplayMode: .asUser,
                                                                                transaction: transaction)
 
                             if GroupManager.areMigrationsBlocking,
@@ -532,7 +532,7 @@ class NewLegacyGroupView: UIView {
                     let cell = ContactTableViewCell()
                     cell.selectionStyle = .none
                     cell.configureWithSneakyTransaction(address: address,
-                                                        localUserAvatarMode: .asUser)
+                                                        localUserDisplayMode: .asUser)
                     return cell
             }))
         }

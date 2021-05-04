@@ -114,9 +114,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                         readWithBlock:^(SDSAnyReadTransaction *transaction) {
                                                             ContactCellConfiguration *configuration =
                                                                 [ContactCellConfiguration
-                                                                        buildForAddress:address
-                                                                    localUserAvatarMode:LocalUserAvatarModeAsUser
-                                                                            transaction:transaction];
+                                                                         buildForAddress:address
+                                                                    localUserDisplayMode:LocalUserDisplayModeAsUser
+                                                                             transaction:transaction];
                                                             [cell configureWithConfiguration:configuration
                                                                                  transaction:transaction];
                                                         }];
