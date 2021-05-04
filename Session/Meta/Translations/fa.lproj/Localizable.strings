@@ -32,6 +32,8 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "لطفا یک آرشیو فشرده از این فایل یا دایرکتوری را ساخته و ارسال آن را امتحان کنید.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "این نوع فایل پشتیبانی نمی‌شود.";
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "پیام صوتی";
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "داده‌های پشتیبان گرفته‌شده قادر به صدور نیستند.";
 /* Error indicating that the app received an invalid response from CloudKit. */

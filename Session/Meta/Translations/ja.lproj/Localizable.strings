@@ -32,6 +32,8 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "ファイルやディレクトリを圧縮して再送信してみてください。";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "未対応ファイル";
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "音声メッセージ";
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "バックアップデータのエクスポートができませんでした。";
 /* Error indicating that the app received an invalid response from CloudKit. */

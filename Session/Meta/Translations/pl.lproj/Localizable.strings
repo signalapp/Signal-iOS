@@ -32,6 +32,8 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Nieobsługiwany typ pliku. Spróbuj go skompresować przed ponownym wysyłaniem.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nieobsługiwany plik";
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Wiadomość głosowa";
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Nie udało się eksportować kopii zapasowej.";
 /* Error indicating that the app received an invalid response from CloudKit. */
