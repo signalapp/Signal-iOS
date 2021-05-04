@@ -7,10 +7,10 @@ public enum SNUserDefaults {
         case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
-        case isMigratingToV2KeyPair
     }
 
     public enum Date : Swift.String {
+        /// Deprecated. Remove with removal of v1 open groups.
         case lastProfilePictureUpload
         case lastConfigurationSync
         case lastDisplayNameUpdate
@@ -28,8 +28,6 @@ public enum SNUserDefaults {
     
     public enum String : Swift.String {
         case deviceToken
-        /// Just used for migration purposes.
-        case displayName
     }
 }
 
