@@ -25,8 +25,10 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @class ConversationStyle;
 @class ConversationViewLayout;
 @class MessageActionsToolbar;
+@class MessageBody;
 @class SDSAnyReadTransaction;
 @class SDSDatabaseStorage;
+@class SignalAttachment;
 @class TSMessage;
 @class TSThread;
 @class ThreadViewModel;
@@ -89,6 +91,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 @property (nonatomic, readonly) CVViewState *viewState;
+
+- (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageBody:(MessageBody *_Nullable)messageBody NS_SWIFT_NAME(tryToSendAttachments(_:messageBody:));
 
 - (void)updateBarButtonItems;
 - (void)ensureBannerState;

@@ -22,7 +22,7 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
 
 #pragma mark -
 
-NSString *const OWSReceiptManagerCollection = @"OWSReceiptManagerCollection";
+NSString *const OWSReceiptManagerCollection = @"OWSReadReceiptManagerCollection";
 NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabled";
 
 @interface OWSReceiptManager ()

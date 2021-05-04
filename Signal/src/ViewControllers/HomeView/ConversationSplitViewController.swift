@@ -196,6 +196,16 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         }
     }
 
+    override var shouldAutorotate: Bool {
+        if let presentedViewController = presentedViewController {
+            return presentedViewController.shouldAutorotate
+        } else if let selectedConversationViewController = selectedConversationViewController {
+            return selectedConversationViewController.shouldAutorotate
+        } else {
+            return super.shouldAutorotate
+        }
+    }
+
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if let presentedViewController = presentedViewController {
             return presentedViewController.supportedInterfaceOrientations
