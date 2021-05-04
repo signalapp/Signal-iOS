@@ -171,11 +171,16 @@ extension RecipientPickerViewController {
     }
 
     func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
+        let tableView = self.tableView
+        
         switch recipient.identifier {
         case .address(let address):
             return OWSTableItem(
                 customCellBlock: { [weak self] in
-                    let cell = ContactTableViewCell()
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("cell was unexpectedly nil")
+                        return UITableViewCell()
+                    }
 
                     guard let self = self else { return cell }
 

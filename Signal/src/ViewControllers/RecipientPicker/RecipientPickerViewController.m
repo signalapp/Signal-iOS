@@ -141,6 +141,8 @@ const NSUInteger kMinimumSearchLength = 1;
     [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];
     [self.tableViewController.view setCompressionResistanceVerticalLow];
     [self.tableViewController.view setContentHuggingVerticalLow];
+    [self.tableViewController.tableView registerClass:[ContactTableViewCell class]
+                               forCellReuseIdentifier:ContactTableViewCell.reuseIdentifier];
 
     _noSignalContactsView = [self createNoSignalContactsView];
     self.noSignalContactsView.hidden = YES;
@@ -159,6 +161,10 @@ const NSUInteger kMinimumSearchLength = 1;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, pullToRefreshView);
 
     [self updateTableContents];
+}
+
+- (UITableView *)tableView {
+    return self.tableViewController.tableView;
 }
 
 - (void)viewSafeAreaInsetsDidChange

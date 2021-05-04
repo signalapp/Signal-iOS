@@ -97,6 +97,8 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
+    [self.tableViewController.tableView registerClass:[ContactTableViewCell class]
+                               forCellReuseIdentifier:ContactTableViewCell.reuseIdentifier];
 }
 
 #pragma mark - UIDatabaseSnapshotDelegate
@@ -167,6 +169,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateTableContents
 {
     __weak SelectThreadViewController *weakSelf = self;
+    UITableView *tableView = self.tableViewController.tableView;
+
     ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
 
@@ -201,10 +205,11 @@ NS_ASSUME_NONNULL_BEGIN
                         itemWithCustomCellBlock:^{
                             SelectThreadViewController *_Nullable strongSelf = weakSelf;
                             OWSCAssertDebug(strongSelf);
-
+            
                             // To be consistent with the threads (above), we use ContactTableViewCell
                             // instead of ConversationListCell to present contacts and threads.
-                            ContactTableViewCell *cell = [ContactTableViewCell new];
+                            ContactTableViewCell *cell =
+                            [tableView dequeueReusableCellWithIdentifier:ContactTableViewCell.reuseIdentifier];
 
                             BOOL isBlocked = [helper isThreadBlocked:thread];
 
@@ -287,7 +292,9 @@ NS_ASSUME_NONNULL_BEGIN
                             SelectThreadViewController *_Nullable strongSelf = weakSelf;
                             OWSCAssertDebug(strongSelf);
 
-                            ContactTableViewCell *cell = [ContactTableViewCell new];
+                            ContactTableViewCell *cell =
+                            [tableView dequeueReusableCellWithIdentifier:ContactTableViewCell.reuseIdentifier];
+
                             [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
                                 ContactCellConfiguration *configuration =
                                     [ContactCellConfiguration buildForAddress:signalAccount.recipientAddress

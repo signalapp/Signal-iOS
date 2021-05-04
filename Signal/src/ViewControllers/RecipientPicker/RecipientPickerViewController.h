@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSArray<PickedRecipient *> *pickedRecipients;
 
+@property (nonatomic) UITableView *tableView;
+
 - (void)reloadContent;
 
 - (void)clearSearchText;

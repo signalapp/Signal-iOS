@@ -7,6 +7,7 @@ import Foundation
 @objc
 open class ContactTableViewCell: UITableViewCell {
 
+    @objc
     open class var reuseIdentifier: String { "ContactTableViewCell" }
 
     private let cellView = ContactCellView()
@@ -82,8 +83,7 @@ open class ContactTableViewCell: UITableViewCell {
 
         OWSTableItem.configureCell(self)
 
-        cellView.configure(configuration: configuration,
-                           transaction: transaction)
+        cellView.configure(configuration: configuration, transaction: transaction)
 
         // Force layout, since imageView isn't being initally rendered on App Store optimized build.
         //
@@ -94,7 +94,7 @@ open class ContactTableViewCell: UITableViewCell {
     public override func prepareForReuse() {
         super.prepareForReuse()
 
-        cellView.prepareForReuse()
+        cellView.reset()
 
         self.accessoryType = .none
     }

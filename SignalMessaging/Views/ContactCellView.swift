@@ -85,8 +85,7 @@ public class ContactCellConfiguration: NSObject {
 
 // MARK: -
 
-@objc
-public class ContactCellView: UIStackView {
+public class ContactCellView: ManualStackView {
 
     private var configuration: ContactCellConfiguration? {
         didSet {
@@ -103,55 +102,32 @@ public class ContactCellView: UIStackView {
     @objc
     public static let avatarTextHSpacing: CGFloat = 12
 
-    private let nameLabel = UILabel()
-    private let subtitleLabel = UILabel()
-    private let accessoryLabel = UILabel()
+    private let nameLabel = CVLabel()
+    private let subtitleLabel = CVLabel()
+    private let accessoryLabel = CVLabel()
 
-    private let accessoryViewContainer = UIView.transparentContainer()
+    private let textStack = ManualStackView(name: "textStack")
 
-    private let nameContainerView = UIStackView()
-
-    @objc
     public required init() {
-        super.init(frame: .zero)
-
-        configure()
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func configure() {
-
-        self.layoutMargins = .zero
+        super.init(name: "ContactCellView")
 
         nameLabel.lineBreakMode = .byTruncatingTail
-
         accessoryLabel.textAlignment = .right
-
-        nameContainerView.axis = .vertical
-        nameContainerView.addArrangedSubview(nameLabel)
-        nameContainerView.addArrangedSubview(subtitleLabel)
-
-        nameContainerView.setContentHuggingHorizontalLow()
-
-        accessoryViewContainer.setContentHuggingHorizontalHigh()
-
-        self.axis = .horizontal
-        self.spacing = Self.avatarTextHSpacing
-        self.alignment = .center
-        self.addArrangedSubview(avatarView)
-        self.addArrangedSubview(nameContainerView)
-        self.addArrangedSubview(accessoryViewContainer)
+        avatarView.shouldDeactivateConstraints = true
+        
+        self.shouldDeactivateConstraints = false
     }
 
-    fileprivate static var subtitleFont: UIFont {
-        .ows_dynamicTypeCaption1Clamped
+    @available(swift, obsoleted: 1.0)
+    required init(name: String, arrangedSubviews: [UIView] = []) {
+        owsFail("Do not use this initializer.")
     }
+
+    private var nameLabelFont: UIFont { OWSTableItem.primaryLabelFont }
+    fileprivate static var subtitleFont: UIFont { .ows_dynamicTypeCaption1Clamped }
 
     private func configureFontsAndColors(forceDarkAppearance: Bool) {
-        nameLabel.font = OWSTableItem.primaryLabelFont
+        nameLabel.font = nameLabelFont
         subtitleLabel.font = Self.subtitleFont
         accessoryLabel.font = .ows_dynamicTypeSubheadlineClamped
 
@@ -169,6 +145,7 @@ public class ContactCellView: UIStackView {
 
     public func configure(configuration: ContactCellConfiguration,
                           transaction: SDSAnyReadTransaction) {
+        owsAssertDebug(!shouldDeactivateConstraints)
 
         self.configuration = configuration
 
@@ -181,29 +158,64 @@ public class ContactCellView: UIStackView {
         configureFontsAndColors(forceDarkAppearance: configuration.forceDarkAppearance)
 
         updateNameLabels(configuration: configuration, transaction: transaction)
+        
+        // Configure self.
+        do {
+            var rootStackSubviews: [UIView] = [ avatarView, ]
+            let avatarSize = CGSize.square(CGFloat(configuration.avatarSize))
+            var rootStackSubviewInfos = [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
 
-        if let attributedSubtitle = configuration.attributedSubtitle {
-            subtitleLabel.attributedText = attributedSubtitle
+            // Configure textStack.
+            do {
+                var textStackSubviews = [ nameLabel, ]
+                let nameSize = nameLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
+                var textStackSubviewInfos = [ nameSize.asManualSubviewInfo ]
+                
+                if let attributedSubtitle = configuration.attributedSubtitle?.nilIfEmpty {
+                    subtitleLabel.attributedText = attributedSubtitle
+                    
+                    textStackSubviews.append(subtitleLabel)
+                    let subtitleSize = subtitleLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
+                    textStackSubviewInfos.append(subtitleSize.asManualSubviewInfo)
+                }
+                
+                let textStackConfig = ManualStackView.Config(axis: .vertical,
+                                                             alignment: .leading,
+                                                             spacing: 0,
+                                                             layoutMargins: .zero)
+                let textStackMeasurement = ManualStackView.measure(config: textStackConfig,
+                                                                   subviewInfos: textStackSubviewInfos)
+                textStack.configure(config: textStackConfig,
+                                    measurement: textStackMeasurement,
+                                    subviews: textStackSubviews)
+                rootStackSubviews.append(textStack)
+                rootStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
+            }
+            
+            if let accessoryMessage = configuration.accessoryMessage {
+                accessoryLabel.text = accessoryMessage
+                owsAssertDebug(configuration.accessoryView == nil)
+                configuration.accessoryView = accessoryLabel
+            }
+            if let accessoryView = configuration.accessoryView {
+                rootStackSubviews.append(accessoryView)
+                let accessorySize = accessoryView.sizeThatFits(.square(.greatestFiniteMagnitude))
+                rootStackSubviewInfos.append(accessorySize.asManualSubviewInfo)
+            }
+
+            let rootStackConfig = ManualStackView.Config(axis: .horizontal,
+                                                         alignment: .center,
+                                                         spacing: Self.avatarTextHSpacing,
+                                                         layoutMargins: .zero)
+            let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
+                                                               subviewInfos: rootStackSubviewInfos)
+            self.configure(config: rootStackConfig,
+                           measurement: rootStackMeasurement,
+                           subviews: rootStackSubviews)
         }
-
-        if let accessoryMessage = configuration.accessoryMessage {
-            accessoryLabel.text = accessoryMessage
-            owsAssertDebug(configuration.accessoryView == nil)
-            configuration.accessoryView = accessoryLabel
-        }
-
-        if let accessoryView = configuration.accessoryView {
-            owsAssertDebug(accessoryViewContainer.subviews.isEmpty)
-
-            accessoryViewContainer.addSubview(accessoryView)
-
-            // Trailing-align the accessory view.
-            accessoryView.autoPinEdge(toSuperviewMargin: .top)
-            accessoryView.autoPinEdge(toSuperviewMargin: .bottom)
-            accessoryView.autoPinEdge(toSuperviewMargin: .trailing)
-            accessoryView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-        }
-
+        
+        Logger.verbose("---- intrinsicContentSize: \(self.intrinsicContentSize)")
+        
         // Force layout, since imageView isn't being initally rendered on App Store optimized build.
         //
         // TODO: Is this still necessary?
@@ -288,17 +300,19 @@ public class ContactCellView: UIStackView {
         nameLabel.setNeedsLayout()
     }
 
-    @objc
-    public func prepareForReuse() {
+    public override func reset() {
+        super.reset()
+        
         NotificationCenter.default.removeObserver(self)
+        
+        configuration = nil
 
         avatarView.reset()
+        textStack.reset()
 
-        self.configuration = nil
-        self.nameLabel.text = nil
-        self.subtitleLabel.text = nil
-        self.accessoryLabel.text = nil
-        accessoryViewContainer.removeAllSubviews()
+        nameLabel.text = nil
+        subtitleLabel.text = nil
+        accessoryLabel.text = nil
     }
 
     @objc

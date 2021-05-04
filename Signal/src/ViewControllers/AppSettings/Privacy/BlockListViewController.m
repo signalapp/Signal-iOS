@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinEdgesToSuperviewEdges];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
+    [self.tableViewController.tableView registerClass:[ContactTableViewCell class]
+                               forCellReuseIdentifier:ContactTableViewCell.reuseIdentifier];
 
     [self updateTableContents];
 }
@@ -105,10 +107,13 @@ NS_ASSUME_NONNULL_BEGIN
         blockedContactsSection.headerTitle = NSLocalizedString(
             @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
+        UITableView *tableView = self.tableViewController.tableView;
         for (SignalServiceAddress *address in blockedAddresses) {
             [blockedContactsSection addItem:[OWSTableItem
                                                 itemWithCustomCellBlock:^{
-                                                    ContactTableViewCell *cell = [ContactTableViewCell new];
+
+                                                ContactTableViewCell *cell =
+                                                [tableView dequeueReusableCellWithIdentifier:ContactTableViewCell.reuseIdentifier];
 
                                                     [BlockListViewController.databaseStorage
                                                         readWithBlock:^(SDSAnyReadTransaction *transaction) {
