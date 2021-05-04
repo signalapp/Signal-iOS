@@ -322,6 +322,13 @@ public class CVLoader: NSObject {
             }
             rootComponent = CVComponentSystemMessage(itemModel: itemModel,
                                                      systemMessage: unknownThreadWarning)
+        case .defaultDisappearingMessageTimer:
+            guard let defaultDisappearingMessageTimer = itemModel.componentState.defaultDisappearingMessageTimer else {
+                owsFailDebug("Missing unknownThreadWarning.")
+                return nil
+            }
+            rootComponent = CVComponentSystemMessage(itemModel: itemModel,
+                                                     systemMessage: defaultDisappearingMessageTimer)
         case .textOnlyMessage, .audio, .genericAttachment, .contactShare,
              .bodyMedia, .viewOnce, .stickerMessage:
             rootComponent = CVComponentMessage(itemModel: itemModel)
