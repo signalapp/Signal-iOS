@@ -125,49 +125,14 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     }
     
     fileprivate func joinOpenGroup(with string: String) {
-        // A V1 open group URL will look like: https:// + <host>
         // A V2 open group URL will look like: <optional scheme> + <host> + <optional port> + <room> + <public key>
         // The host doesn't parse if no explicit scheme is provided
-        if let url = URL(string: string), let host = url.host ?? given(string.split(separator: "/").first, { String($0) }) {
-            if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: string), Features.useV2OpenGroups {
-                joinV2OpenGroup(room: room, server: server, publicKey: publicKey)
-            } else {
-                // Inputs that should work:
-                // loki.opensession.id
-                // https://loki.opensession.id
-                // http://loki.opensession.id (still goes to HTTPS)
-                joinV1OpenGroup("https://" + host)
-            }
+        if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: string) {
+            joinV2OpenGroup(room: room, server: server, publicKey: publicKey)
         } else {
             let title = NSLocalizedString("invalid_url", comment: "")
             let message = "Please check the URL you entered and try again."
             showError(title: title, message: message)
-        }
-    }
-    
-    private func joinV1OpenGroup(_ string: String) {
-        guard !isJoining else { return }
-        isJoining = true
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
-            Storage.shared.write { transaction in
-                OpenGroupManager.shared.add(with: string, using: transaction)
-                .done(on: DispatchQueue.main) { [weak self] _ in
-                    self?.presentingViewController!.dismiss(animated: true, completion: nil)
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
-                }
-                .catch(on: DispatchQueue.main) { [weak self] error in
-                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                    var title = "Couldn't Join"
-                    var message = ""
-                    if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 || statusCode == 403 {
-                        title = "Unauthorized"
-                        message = "Please ask the open group operator to add you to the group."
-                    }
-                    self?.isJoining = false
-                    self?.showError(title: title, message: message)
-                }
-            }
         }
     }
     
@@ -242,13 +207,8 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Stack view
-        let stackView: UIStackView
-        if Features.useV2OpenGroups {
-            stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
-                UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
-        } else {
-            stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.vStretchingSpacer(), nextButtonContainer ])
-        }
+        let stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
+            UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)

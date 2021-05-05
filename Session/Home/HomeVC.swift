@@ -156,9 +156,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
         // Get default open group rooms if needed
-        if Features.useV2OpenGroups {
-            OpenGroupAPIV2.getDefaultRoomsIfNeeded()
-        }
+        OpenGroupAPIV2.getDefaultRoomsIfNeeded()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -359,13 +357,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     
     private func delete(_ thread: TSThread) {
         let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!)
-        let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)
         Storage.write { transaction in
             Storage.shared.cancelPendingMessageSendJobs(for: thread.uniqueId!, using: transaction)
             if let openGroupV2 = openGroupV2 {
                 OpenGroupManagerV2.shared.delete(openGroupV2, associatedWith: thread, using: transaction)
-            } else if let openGroup = openGroup {
-                OpenGroupManager.shared.delete(openGroup, associatedWith: thread, using: transaction)
             } else if let thread = thread as? TSGroupThread, thread.isClosedGroup == true {
                 let groupID = thread.groupModel.groupId
                 let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)

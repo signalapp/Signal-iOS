@@ -152,10 +152,9 @@ static NSTimeInterval launchStartedAt;
 
     [LKAppModeManager configureWithDelegate:self];
 
-    // OWSLinkPreview and OpenGroup are now in SessionMessagingKit, so to still be able to deserialize them we
+    // OWSLinkPreview is now in SessionMessagingKit, so to still be able to deserialize them we
     // need to tell NSKeyedUnarchiver about the changes.
     [NSKeyedUnarchiver setClass:OWSLinkPreview.class forClassName:@"SessionServiceKit.OWSLinkPreview"];
-    [NSKeyedUnarchiver setClass:SNOpenGroup.class forClassName:@"LKPublicChat"];
 
     BOOL isLoggingEnabled;
 #ifdef DEBUG
@@ -411,7 +410,7 @@ static NSTimeInterval launchStartedAt;
                 } requiresSync:YES];
             }
             
-            if (CurrentAppContext().isMainApp && SNFeatures.useV2OpenGroups) {
+            if (CurrentAppContext().isMainApp) {
                 [SNOpenGroupAPIV2 getDefaultRoomsIfNeeded];
             }
             
@@ -742,12 +741,10 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startOpenGroupPollersIfNeeded
 {
-    [SNOpenGroupManager.shared startPolling];
     [SNOpenGroupManagerV2.shared startPolling];
 }
 
 - (void)stopOpenGroupPollers {
-    [SNOpenGroupManager.shared stopPolling];
     [SNOpenGroupManagerV2.shared stopPolling];
 }
 

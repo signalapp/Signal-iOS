@@ -10,8 +10,6 @@ public enum SNUserDefaults {
     }
 
     public enum Date : Swift.String {
-        /// Deprecated. Remove with removal of v1 open groups.
-        case lastProfilePictureUpload
         case lastConfigurationSync
         case lastDisplayNameUpdate
         case lastProfilePictureUpdate
