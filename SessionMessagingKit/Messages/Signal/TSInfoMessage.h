@@ -10,8 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSInfoMessage : TSMessage <OWSReadTracking>
 
 typedef NS_ENUM(NSInteger, TSInfoMessageType) {
-    TSInfoMessageTypeGroupUpdate,
-    TSInfoMessageTypeGroupQuit,
+    TSInfoMessageTypeGroupCreated,
+    TSInfoMessageTypeGroupUpdated,
+    TSInfoMessageTypeGroupCurrentUserLeft,
     TSInfoMessageTypeDisappearingMessagesUpdate,
     TSInfoMessageTypeScreenshotNotification,
     TSInfoMessageTypeMediaSavedNotification

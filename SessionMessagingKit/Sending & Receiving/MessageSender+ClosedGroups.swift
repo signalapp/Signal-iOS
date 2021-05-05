@@ -41,7 +41,7 @@ extension MessageSender {
         // Notify the PN server
         promises.append(PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: userPublicKey))
         // Notify the user
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdate)
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupCreated)
         infoMessage.save(with: transaction)
         // Return
         return when(fulfilled: promises).map2 { thread }
@@ -137,7 +137,7 @@ extension MessageSender {
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdated, customMessage: updateInfo)
         infoMessage.save(with: transaction)
         // Return
         return Promise.value(())
@@ -182,7 +182,7 @@ extension MessageSender {
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdated, customMessage: updateInfo)
         infoMessage.save(with: transaction)
         // Return
         return Promise.value(())
@@ -233,7 +233,7 @@ extension MessageSender {
         // Notify the user if needed (not if only zombie members were removed)
         if !membersToRemove.subtracting(oldZombies).isEmpty {
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
         // Return
@@ -280,7 +280,7 @@ extension MessageSender {
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupCurrentUserLeft, customMessage: updateInfo)
         infoMessage.save(with: transaction)
         // Return
         return promise

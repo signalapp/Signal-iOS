@@ -398,7 +398,7 @@ extension MessageReceiver {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
             thread.save(with: transaction)
             // Notify the user
-            let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupUpdate)
+            let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupCreated)
             infoMessage.save(with: transaction)
         }
         // Add the group to the user's set of public keys to poll for
@@ -470,7 +470,7 @@ extension MessageReceiver {
             // Notify the user if needed
             guard name != group.groupName else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
@@ -504,7 +504,7 @@ extension MessageReceiver {
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
@@ -548,7 +548,7 @@ extension MessageReceiver {
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
-            let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .groupQuit : .groupUpdate
+            let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .groupCurrentUserLeft : .groupUpdated
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
             let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: infoMessageType, customMessage: updateInfo)
             infoMessage.save(with: transaction)
@@ -581,8 +581,14 @@ extension MessageReceiver {
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
-            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            let contact = Storage.shared.getContact(with: message.sender!)
+            let updateInfo: String
+            if let displayName = contact?.displayName(for: Contact.Context.regular) {
+                updateInfo = String(format: NSLocalizedString("GROUP_MEMBER_LEFT", comment: ""), displayName)
+            } else {
+                updateInfo = NSLocalizedString("GROUP_UPDATED", comment: "")
+            }
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
