@@ -391,10 +391,6 @@ static NSTimeInterval launchStartedAt;
         dispatch_async(dispatch_get_main_queue(), ^{
             NSString *userPublicKey = self.tsAccountManager.localNumber;
 
-            [self startPollerIfNeeded];
-            [self startClosedGroupPollerIfNeeded];
-            [self startOpenGroupPollersIfNeeded];
-
             // Update profile picture if needed
             NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
             NSDate *now = [NSDate new];
@@ -415,6 +411,10 @@ static NSTimeInterval launchStartedAt;
             }
             
             [[SNSnodeAPI getSnodePool] retainUntilComplete];
+            
+            [self startPollerIfNeeded];
+            [self startClosedGroupPollerIfNeeded];
+            [self startOpenGroupPollersIfNeeded];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying remote notification registration since user hasn't registered yet.");
