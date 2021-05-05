@@ -76,7 +76,7 @@ public class VoiceMessageModel: NSObject {
     private static let audioUTI: String = kUTTypeMPEG4Audio as String
 
     @objc
-    public func consumeForSending(transaction: SDSAnyWriteTransaction) throws -> SignalAttachment {
+    public func prepareForSending() throws -> SignalAttachment {
         guard !isRecording else {
             throw OWSAssertionError("Can't send while actively recording")
         }
@@ -97,15 +97,17 @@ public class VoiceMessageModel: NSObject {
             throw OWSAssertionError("Failed to create voice message attachment: \(attachment.errorName ?? "Unknown Error")")
         }
 
-        clearDraft(transaction: transaction)
-
         return attachment
     }
 
     // MARK: -
 
     private static func directory(for threadUniqueId: String) -> URL {
-        return URL(fileURLWithPath: threadUniqueId, isDirectory: true, relativeTo: Self.draftVoiceMessageDirectory)
+        return URL(
+            fileURLWithPath: threadUniqueId.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!,
+            isDirectory: true,
+            relativeTo: Self.draftVoiceMessageDirectory
+        )
     }
 
     private var directory: URL {

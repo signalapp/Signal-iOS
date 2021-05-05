@@ -106,16 +106,12 @@ extension ConversationViewController {
         inputToolbar?.hideVoiceMemoUI(true)
         configureScrollDownButtons()
 
-        var attachment: SignalAttachment?
-        databaseStorage.asyncWrite { transaction in
-            do {
-                attachment = try voiceMessageModel.consumeForSending(transaction: transaction)
-            } catch {
-                owsFailDebug("Failed to send prepare voice message for sending \(error)")
-            }
-        } completion: {
-            guard let attachment = attachment else { return }
-            self.tryToSendAttachments([attachment], messageBody: nil)
+        do {
+            let attachment = try voiceMessageModel.prepareForSending()
+            tryToSendAttachments([attachment], messageBody: nil)
+            clearVoiceMessageDraft()
+        } catch {
+            owsFailDebug("Failed to send prepare voice message for sending \(error)")
         }
     }
 

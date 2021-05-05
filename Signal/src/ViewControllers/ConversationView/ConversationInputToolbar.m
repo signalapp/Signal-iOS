@@ -324,7 +324,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [vStack setCompressionResistanceHorizontalLow];
 
     [vStack addSubview:self.voiceMemoContentView];
-    [self.voiceMemoContentView autoPinEdgesToEdgesOfView:self.inputTextView];
+    [self.voiceMemoContentView autoPinWidthToWidthOf:self.inputTextView];
+    [self.voiceMemoContentView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
 
     for (UIView *button in
         @[ self.cameraButton, self.attachmentButton, self.stickerButton, self.voiceMemoButton, self.sendButton ]) {
