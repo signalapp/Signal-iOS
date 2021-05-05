@@ -103,10 +103,12 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     switch (_messageType) {
+        case TSInfoMessageTypeGroupCreated:
+            return NSLocalizedString(@"GROUP_CREATED", @"");
         case TSInfoMessageTypeGroupCurrentUserLeft:
-            return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
+            return NSLocalizedString(@"GROUP_YOU_LEFT", @"");
         case TSInfoMessageTypeGroupUpdated:
-            return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", nil);
+            return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", @"");
         default:
             break;
     }
