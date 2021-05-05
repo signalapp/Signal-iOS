@@ -237,15 +237,24 @@ public class AudioWaveform: NSObject {
             return nil
         }
 
+        // Normalize to a range of 0-1 with 0 being silence and
+        // 1 being the loudest value we render.
+        func normalize(_ float: Float) -> Float {
+            float.inverseLerp(
+                AudioWaveform.silenceThreshold,
+                AudioWaveform.clippingThreshold,
+                shouldClamp: true
+            )
+        }
+
         // If we're trying to downsample to more samples than exist, just return what we have.
         guard decibelSamples.count > sampleCount else {
-            return decibelSamples.map { 1 - ($0 / AudioWaveform.silenceDecibelThreshold) }
+            return decibelSamples.map(normalize)
         }
 
         let downSampledData = downsample(samples: decibelSamples, toSampleCount: sampleCount)
 
-        // Normalize to a range of 0-1 with 0 being silence.
-        return downSampledData.map { 1 - ($0 / AudioWaveform.silenceDecibelThreshold) }
+        return downSampledData.map(normalize)
     }
 
     // MARK: - Sampling
@@ -258,7 +267,8 @@ public class AudioWaveform: NSObject {
     }
 
     /// Anything below this decibel level is considered silent and clipped.
-    fileprivate static let silenceDecibelThreshold: Float = -50
+    fileprivate static let silenceThreshold: Float = -50
+    fileprivate static let clippingThreshold: Float = -20
 
     /// The number of samples to collect for the given audio file.
     /// We limit this to restrict the memory space an individual audio
@@ -504,7 +514,7 @@ private class AudioWaveformSamplingOperation: Operation {
             var zeroDecibelEquivalent: Float = Float(Int16.max)
 
             var loudestClipValue: Float = 0.0
-            var quietestClipValue = AudioWaveform.silenceDecibelThreshold
+            var quietestClipValue = AudioWaveform.silenceThreshold
             let samplesToProcess = vDSP_Length(sampleLength)
 
             // convert 16bit int amplitudes to float representation
