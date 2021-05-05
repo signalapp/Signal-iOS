@@ -687,21 +687,33 @@ private class ConversationPickerCell: ContactTableViewCell {
         return container
     }()
 
-    func buildAccessoryView(disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?) -> UIView {
+    func buildAccessoryView(disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?) -> ContactCellAccessoryView {
+
+        let selectionWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(selectionView)
+
         guard let disappearingMessagesConfig = disappearingMessagesConfig,
             disappearingMessagesConfig.isEnabled else {
-            return selectionView
+            return ContactCellAccessoryView(accessoryView: selectionWrapper,
+                                            size: selectionBadgeSize)
         }
 
         let timerView = DisappearingTimerConfigurationView(durationSeconds: disappearingMessagesConfig.durationSeconds)
         timerView.tintColor = Theme.middleGrayColor
-        timerView.autoSetDimensions(to: CGSize(square: 44))
-        timerView.setCompressionResistanceHigh()
+        let timerSize = CGSize(square: 44)
 
-        let stackView = UIStackView(arrangedSubviews: [timerView, selectionView])
-        stackView.alignment = .center
-        stackView.setCompressionResistanceHigh()
-        return stackView
+        let stackView = ManualStackView(name: "stackView")
+        let stackConfig = OWSStackView.Config(axis: .horizontal,
+                                              alignment: .center,
+                                              spacing: 0,
+                                              layoutMargins: .zero)
+        let stackMeasurement = stackView.configure(config: stackConfig,
+                                                   subviews: [timerView, selectionWrapper],
+                                                   subviewInfos: [
+                                                    timerSize.asManualSubviewInfo,
+                                                    selectionBadgeSize.asManualSubviewInfo
+                                                   ])
+        let stackSize = stackMeasurement.measuredSize
+        return ContactCellAccessoryView(accessoryView: stackView, size: stackSize)
     }
 
     lazy var unselectedBadgeView: UIView = {

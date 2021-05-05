@@ -5,6 +5,19 @@
 import Foundation
 
 @objc
+public class ContactCellAccessoryView: NSObject {
+    let accessoryView: UIView
+    let size: CGSize
+
+    public init(accessoryView: UIView, size: CGSize) {
+        self.accessoryView = accessoryView
+        self.size = size
+    }
+}
+
+// MARK: -
+
+@objc
 public class ContactCellConfiguration: NSObject {
     public let content: ConversationContent
 
@@ -24,7 +37,7 @@ public class ContactCellConfiguration: NSObject {
     public var customName: String?
 
     @objc
-    public var accessoryView: UIView?
+    public var accessoryView: ContactCellAccessoryView?
 
     @objc
     public var attributedSubtitle: NSAttributedString?
@@ -184,24 +197,22 @@ public class ContactCellView: ManualStackView {
                                                              alignment: .leading,
                                                              spacing: 0,
                                                              layoutMargins: .zero)
-                let textStackMeasurement = ManualStackView.measure(config: textStackConfig,
-                                                                   subviewInfos: textStackSubviewInfos)
-                textStack.configure(config: textStackConfig,
-                                    measurement: textStackMeasurement,
-                                    subviews: textStackSubviews)
+                let textStackMeasurement = textStack.configure(config: textStackConfig,
+                                                               subviews: textStackSubviews,
+                                                               subviewInfos: textStackSubviewInfos)
                 rootStackSubviews.append(textStack)
                 rootStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
             }
 
             if let accessoryMessage = configuration.accessoryMessage {
                 accessoryLabel.text = accessoryMessage
-                owsAssertDebug(configuration.accessoryView == nil)
-                configuration.accessoryView = accessoryLabel
+                let labelSize = accessoryLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
+                configuration.accessoryView = ContactCellAccessoryView(accessoryView: accessoryLabel,
+                                                                       size: labelSize)
             }
             if let accessoryView = configuration.accessoryView {
-                rootStackSubviews.append(accessoryView)
-                let accessorySize = accessoryView.sizeThatFits(.square(.greatestFiniteMagnitude))
-                rootStackSubviewInfos.append(accessorySize.asManualSubviewInfo(hasFixedSize: true))
+                rootStackSubviews.append(accessoryView.accessoryView)
+                rootStackSubviewInfos.append(accessoryView.size.asManualSubviewInfo(hasFixedSize: true))
             }
 
             let rootStackConfig = ManualStackView.Config(axis: .horizontal,

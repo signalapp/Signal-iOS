@@ -62,9 +62,9 @@ class ReplaceAdminViewController: OWSTableViewController2 {
                                                                        localUserDisplayMode: .asUser,
                                                                        transaction: transaction)
 
-                    let imageView = UIImageView()
+                    let imageView = CVImageView()
                     imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
-                    configuration.accessoryView = imageView
+                    configuration.accessoryView = ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
 
                     cell.configure(configuration: configuration, transaction: transaction)
                 }

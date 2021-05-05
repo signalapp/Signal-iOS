@@ -40,7 +40,7 @@ protocol RecipientPickerDelegate: AnyObject {
     @objc
     optional func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                                   accessoryViewForRecipient recipient: PickedRecipient,
-                                  transaction: SDSAnyReadTransaction) -> UIView?
+                                  transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView?
 
     @objc
     optional func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
@@ -172,7 +172,7 @@ extension RecipientPickerViewController {
 
     func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
         let tableView = self.tableView
-        
+
         switch recipient.identifier {
         case .address(let address):
             return OWSTableItem(

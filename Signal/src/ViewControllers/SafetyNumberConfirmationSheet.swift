@@ -510,7 +510,10 @@ private class SafetyNumberCell: ContactTableViewCell {
 
             configuration.forceDarkAppearance = (theme == .translucentDark)
 
-            configuration.accessoryView = button
+            let buttonSize = button.sizeThatFits(.square(.greatestFiniteMagnitude))
+            let buttonWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(button)
+            configuration.accessoryView = ContactCellAccessoryView(accessoryView: buttonWrapper,
+                                                                   size: buttonSize)
 
             if let verificationState = item.verificationState, verificationState == .noLongerVerified {
                 let previouslyVerified = NSMutableAttributedString()
