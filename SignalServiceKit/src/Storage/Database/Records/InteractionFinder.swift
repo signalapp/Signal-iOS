@@ -19,6 +19,7 @@ protocol InteractionFinderAdapter {
     static func incompleteCallIds(transaction: ReadTransaction) -> [String]
 
     static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String]
+    static func pendingInteractionIds(transaction: ReadTransaction) -> [String]
 
     // The interactions should be enumerated in order from "first to expire" to "last to expire".
     static func enumerateMessagesWithStartedPerConversationExpiration(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void)
@@ -119,6 +120,14 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return GRDBInteractionFinder.attemptingOutInteractionIds(transaction: grdbRead)
+        }
+    }
+
+    @objc
+    public class func pendingInteractionIds(transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinder.pendingInteractionIds(transaction: grdbRead)
         }
     }
 
@@ -712,6 +721,23 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             result = try String.fetchAll(transaction.database,
                                          sql: sql,
                                          arguments: [TSOutgoingMessageState.sending.rawValue])
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+        return result
+    }
+
+    static func pendingInteractionIds(transaction: ReadTransaction) -> [String] {
+        let sql: String = """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .storedMessageState) = ?
+        """
+        var result = [String]()
+        do {
+            result = try String.fetchAll(transaction.database,
+                                         sql: sql,
+                                         arguments: [TSOutgoingMessageState.pending.rawValue])
         } catch {
             owsFailDebug("error: \(error)")
         }

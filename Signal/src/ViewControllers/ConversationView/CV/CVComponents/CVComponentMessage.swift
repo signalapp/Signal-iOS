@@ -975,6 +975,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return true
         }
 
+        // SPAM TODO: add captcha retry handler
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:

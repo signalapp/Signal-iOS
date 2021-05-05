@@ -4,20 +4,76 @@
 
 class PushChallenge: SpamChallenge {
 
-    private let token: String
     private var failureCount: UInt = 0
     private let kMaxFailures = 15
 
-    init(tokenIn: String) {
+    init(tokenIn: String? = nil, expiry: Date = .distantFuture) {
         token = tokenIn
-        super.init(expiry: .distantFuture)
+        super.init(expiry: expiry)
+
+        if Platform.isSimulator {
+            state = .failed
+        }
+    }
+
+    var token: String? {
+        didSet {
+            if oldValue == nil {
+                state = .actionable
+            } else {
+                owsFailDebug("Token should only be set non-nil after init.")
+            }
+        }
     }
 
     override public func resolveChallenge() {
-        Logger.verbose("Performing push challenge")
         super.resolveChallenge()
 
-        let request = OWSRequestFactory.pushChallengeResponse(withToken: self.token)
+        if let token = token {
+            postToken(token)
+        } else {
+            requestToken()
+        }
+    }
+
+    private func requestToken() {
+        Logger.verbose("Requesting push token for challenge")
+        let request = OWSRequestFactory.pushChallengeRequest()
+
+        firstly(on: workQueue) {
+            self.networkManager.makePromise(request: request)
+
+        }.done(on: workQueue) { _ in
+            Logger.verbose("Push challenge request succeeded. Waiting for push delivery.")
+            self.state = .deferred(self.expirationDate)
+
+        }.catch(on: workQueue) { error in
+            owsFailDebugUnlessNetworkFailure(error)
+            self.failureCount += 1
+
+            if self.failureCount > self.kMaxFailures {
+                Logger.info("Too many failures. Making push challenge as failed")
+                self.state = .failed
+
+            } else if let statusCode = error.httpStatusCode {
+                if (500..<600).contains(statusCode), statusCode != 508 {
+                    let retryDate = error.httpRetryAfterDate ?? self.fallbackRetryAfter
+                    self.state = .deferred(retryDate)
+                } else {
+                    Logger.info("Permanent failure. Making push challenge as failed")
+                    self.state = .failed
+                }
+
+            } else {
+                self.state = .deferred(self.fallbackRetryAfter)
+            }
+        }
+
+    }
+
+    private func postToken(_ token: String) {
+        Logger.verbose("Posting push token for challenge")
+        let request = OWSRequestFactory.pushChallengeResponse(withToken: token)
 
         firstly(on: workQueue) {
             self.networkManager.makePromise(request: request)
@@ -32,7 +88,7 @@ class PushChallenge: SpamChallenge {
 
             if self.failureCount > self.kMaxFailures {
                 Logger.info("Too many failures. Making push challenge as complete")
-                self.state = .complete
+                self.state = .failed
 
             } else if let statusCode = error.httpStatusCode {
                 if (500..<600).contains(statusCode), statusCode != 508 {
@@ -40,7 +96,7 @@ class PushChallenge: SpamChallenge {
                     self.state = .deferred(retryDate)
                 } else {
                     Logger.info("Permanent failure. Making push challenge as complete")
-                    self.state = .complete
+                    self.state = .failed
                 }
 
             } else {
@@ -71,7 +127,7 @@ class PushChallenge: SpamChallenge {
 
         if decodedToken == nil {
             owsFailDebug("Invalid decoding")
-            state = .complete
+            state = .failed
         }
     }
 

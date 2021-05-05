@@ -859,11 +859,18 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 #pragma mark - Spam
 
++ (TSRequest *)pushChallengeRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge/push"]
+                              method:@"POST"
+                          parameters:@{}];
+}
+
 + (TSRequest *)pushChallengeResponseWithToken:(NSString *)challengeToken
 {
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge"]
-                              method:@"GET"
-                          parameters:@{ @"type" : @"rate_limit_challenge", @"challenge" : challengeToken }];
+                              method:@"PUT"
+                          parameters:@{ @"type" : @"rateLimitPushChallenge", @"challenge" : challengeToken }];
 }
 
 + (TSRequest *)recaptchChallengeResponseWithToken:(NSString *)serverToken captchaToken:(NSString *)captchaToken

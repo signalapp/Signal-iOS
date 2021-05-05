@@ -15,6 +15,7 @@ import SignalMessaging
     case viewed
     case failed
     case skipped
+    case pending
 }
 
 @objc
@@ -57,7 +58,7 @@ public class MessageRecipientStatusUtils: NSObject {
         recipientState: TSOutgoingMessageRecipientState) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
 
         switch recipientState.state {
-        case .failed:
+        case .failed, .pending:         // SPAM TODO: message status for pending messages?
             let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
             let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages")
             return (status:.failed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
@@ -112,7 +113,7 @@ public class MessageRecipientStatusUtils: NSObject {
     internal class func receiptStatusAndMessage(outgoingMessage: TSOutgoingMessage) -> (status: MessageReceiptStatus, message: String) {
 
         switch outgoingMessage.messageState {
-        case .failed:
+        case .failed, .pending:         // SPAM TODO
             // Use the "long" version of this message here.
             return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
         case .sending:
@@ -176,6 +177,8 @@ public class MessageRecipientStatusUtils: NSObject {
             return "failed"
         case .skipped:
             return "skipped"
+        case .pending:
+            return "pending"
         }
     }
 }

@@ -41,6 +41,8 @@ NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
             return @"TSOutgoingMessageStateDelivered_OBSOLETE";
         case TSOutgoingMessageStateSent:
             return @"TSOutgoingMessageStateSent";
+        case TSOutgoingMessageStatePending:
+            return @"TSOutgoingMessageStatePending";
     }
 }
 
@@ -55,6 +57,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             return @"OWSOutgoingMessageRecipientStateSkipped";
         case OWSOutgoingMessageRecipientStateSent:
             return @"OWSOutgoingMessageRecipientStateSent";
+        case OWSOutgoingMessageRecipientStatePending:
+            return @"OWSOutgoingMessageRecipientStatePending";
     }
 }
 
@@ -411,10 +415,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     OWSAssertDebug(recipientStates);
 
     // If there are any "sending" recipients, consider this message "sending".
+    // If there are any "pending" recipients, consider this message "pending".
     BOOL hasFailed = NO;
     for (TSOutgoingMessageRecipientState *recipientState in recipientStates) {
         if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
             return TSOutgoingMessageStateSending;
+        } else if (recipientState.state == OWSOutgoingMessageRecipientStatePending) {
+            return TSOutgoingMessageStatePending;
         } else if (recipientState.state == OWSOutgoingMessageRecipientStateFailed) {
             hasFailed = YES;
         }
@@ -503,7 +510,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
     for (SignalServiceAddress *recipientAddress in self.recipientAddressStates) {
         TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[recipientAddress];
-        if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
+        if (recipientState.state == OWSOutgoingMessageRecipientStateSending || recipientState.state == OWSOutgoingMessageRecipientStatePending) {
             [result addObject:recipientAddress];
         }
     }
@@ -711,9 +718,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                         @"Missing recipient state for recipient: %@", recipientAddress);
                                                     return;
                                                 }
-                                                recipientState.state = OWSOutgoingMessageRecipientStateFailed;
-                                                recipientState.errorCode = @(error.code);
-                                            }];
+
+        if ([error ows_isSSKErrorWithCode:OWSErrorCodeServerRejectedSuspectedSpam]) {
+            recipientState.state = OWSOutgoingMessageRecipientStatePending;
+        } else {
+            recipientState.state = OWSOutgoingMessageRecipientStateFailed;
+        }
+        recipientState.errorCode = @(error.code);
+    }];
 }
 
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
@@ -970,6 +982,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                             break;
                                                         case TSOutgoingMessageStateSent:
                                                             recipientState.state = OWSOutgoingMessageRecipientStateSent;
+                                                            break;
+                                                        case TSOutgoingMessageStatePending:
+                                                            recipientState.state = OWSOutgoingMessageRecipientStatePending;
                                                             break;
                                                         default:
                                                             OWSFailDebug(@"unexpected message state.");

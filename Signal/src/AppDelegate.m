@@ -268,6 +268,11 @@ void uncaughtExceptionHandler(NSException *exception)
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(spamChallenge:)
+                                                 name:OWSSpamChallengeResolver.NeedsCaptchaNotification
+                                               object:nil];
+
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
     OWSLogInfo(@"launchOptions: %@.", launchOptions);
@@ -275,6 +280,13 @@ void uncaughtExceptionHandler(NSException *exception)
     [OWSAnalytics appLaunchDidBegin];
 
     return YES;
+}
+
+- (void)spamChallenge:(NSNotification *)notification
+{
+    [OWSSpamCaptchaViewController presentModallyWithCompletion:^void(NSString *token){
+        [self.spamChallengeResolver handleIncomingCaptchaChallengeToken:token];
+    }];
 }
 
 /**
@@ -1011,14 +1023,10 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        NSString *_Nullable spamChallengeToken = userInfo[@"rate_limit_challenge"];
-        if (spamChallengeToken) {
-            OWSSpamChallengeResolver *spamResolver = self.spamChallengeResolver;
-            [spamResolver didReceiveIncomingPushChallengeWithToken:spamChallengeToken];
+        BOOL isSilentPush = [self handleSilentPushContent:userInfo];
+        if (!isSilentPush) {
+            [self.messageFetcherJob runObjc];
         }
-
-        [self.messageFetcherJob runObjc];
-
         if (completion != nil) {
             completion();
         }
@@ -1182,6 +1190,18 @@ void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark - UNUserNotificationsDelegate
 
+- (BOOL)handleSilentPushContent:(NSDictionary *)userInfo
+{
+    NSString *_Nullable spamChallengeToken = userInfo[@"rateLimitChallenge"];
+
+    if (spamChallengeToken) {
+        OWSSpamChallengeResolver *spamResolver = self.spamChallengeResolver;
+        [spamResolver handleIncomingPushChallengeToken:spamChallengeToken];
+        return YES;
+    }
+    return NO;
+}
+
 // The method will be called on the delegate only if the application is in the foreground. If the method is not
 // implemented or the handler is not called in a timely manner then the notification will not be presented. The
 // application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
@@ -1192,13 +1212,19 @@ void uncaughtExceptionHandler(NSException *exception)
 {
     OWSLogInfo(@"");
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        // We need to respect the in-app notification sound preference. This method, which is called
-        // for modern UNUserNotification users, could be a place to do that, but since we'd still
-        // need to handle this behavior for legacy UINotification users anyway, we "allow" all
-        // notification options here, and rely on the shared logic in NotificationPresenter to
-        // honor notification sound preferences for both modern and legacy users.
-        UNNotificationPresentationOptions options = UNNotificationPresentationOptionAlert
-            | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+        UNNotificationPresentationOptions options = 0;
+        BOOL isSilent = [self handleSilentPushContent:notification.request.content.userInfo];
+
+        if (!isSilent) {
+            // We need to respect the in-app notification sound preference. This method, which is called
+            // for modern UNUserNotification users, could be a place to do that, but since we'd still
+            // need to handle this behavior for legacy UINotification users anyway, we "allow" all
+            // notification options here, and rely on the shared logic in NotificationPresenter to
+            // honor notification sound preferences for both modern and legacy users.
+            options |= UNNotificationPresentationOptionAlert;
+            options |= UNNotificationPresentationOptionBadge;
+            options |= UNNotificationPresentationOptionSound;
+        }
         completionHandler(options);
     });
 }

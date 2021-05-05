@@ -365,7 +365,7 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
             if outgoingMessage.wasRemotelyDeleted { return false }
 
             switch outgoingMessage.messageState {
-            case .failed, .sending:
+            case .failed, .sending, .pending:
                 return false
             default:
                 return true

@@ -287,6 +287,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             .sent,
             .uploading,
             .sending,
+            .pending,           // SPAM TODO: Is this the right position?
             .failed,
             .skipped
         ]
@@ -430,7 +431,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func sectionIconName(for messageReceiptStatus: MessageReceiptStatus) -> String? {
         switch messageReceiptStatus {
-        case .uploading, .sending:
+        case .uploading, .sending, .pending:            // SPAM TODO: Is this the right icon?
             return "message_status_sending"
         case .sent:
             return "message_status_sent"
@@ -448,7 +449,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")
-        case .sending:
+        case .sending, .pending:            // SPAM TODO
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
                               comment: "Status label for messages which are sending.")
         case .sent:
@@ -769,7 +770,7 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
                         accessoryText: statusMessage,
                         displayUDIndicator: recipientState.wasSentByUD
                     ))
-                case .sending, .failed, .skipped, .uploading:
+                case .sending, .failed, .skipped, .uploading, pending:              // SPAM TODO
                     bucket.append(MessageRecipientModel(
                         address: address,
                         accessoryText: "",

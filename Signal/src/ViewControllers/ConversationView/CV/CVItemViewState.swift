@@ -267,6 +267,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                     receiptStatus == nextReceiptStatus &&
                                                     outgoingMessage.messageState != .failed &&
                                                     outgoingMessage.messageState != .sending &&
+                                                    outgoingMessage.messageState != .pending &&
                                                     !isDisappearingMessage &&
                                                     !hasTapForMore)
             }

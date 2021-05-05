@@ -484,6 +484,11 @@ public class DebugFlags: BaseFlags {
                                                       title: LocalizationNotNeeded("Message Sends Fail"),
                                                       details: LocalizationNotNeeded("All outgoing message sends will fail."))
 
+    @objc
+    public static let disableUD = TestableFlag(false,
+                                               title: LocalizationNotNeeded("Disable sealed sender"),
+                                               details: LocalizationNotNeeded("Sealed sender will be disabled for all messages."))
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)

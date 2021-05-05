@@ -17,11 +17,15 @@ class SpamChallenge: Codable {
     /// The date this challenge will expire.
     var expirationDate: Date
 
+    /// Blah
+    var completionHandler: ((Bool) -> Void)?
+
     enum State: Equatable {
         case actionable
         case inProgress
         case deferred(Date)
         case complete
+        case failed
 
         var isActionable: Bool {
             switch self {
@@ -30,25 +34,41 @@ class SpamChallenge: Codable {
             default: return false
             }
         }
-
-        var deferralDate: Date? {
-            switch self {
-            case let .deferred(date): return date
-            default: return nil
-            }
-        }
     }
 
     var state: State = .actionable {
         didSet {
+            // Complete and failed are final states
+            owsAssertDebug([.complete, .failed].contains(oldValue) == false)
+
             guard oldValue != state else { return }
             schedulingDelegate?.spamChallenge(self, stateDidChangeFrom: oldValue)
+
+            if state == .complete {
+                completionHandler?(true)
+                completionHandler = nil
+            } else if state == .failed {
+                completionHandler?(false)
+                completionHandler = nil
+            }
+        }
+    }
+
+    var nextActionableDate: Date {
+        switch state {
+        case let .deferred(date): return min(date, expirationDate)
+        default: return expirationDate
         }
     }
 
     init(expiry: Date) {
         creationDate = Date()
         expirationDate = expiry
+    }
+
+    deinit {
+        // If we haven't fired our completion handler yet, fire a failure.
+        completionHandler?(false)
     }
 
     public func resolveChallenge() {
@@ -66,6 +86,7 @@ class SpamChallenge: Codable {
         case creationDate
         case expirationDate
         case isComplete
+        case isFailed
         case deferralDate
     }
 
@@ -74,16 +95,18 @@ class SpamChallenge: Codable {
         let decodedCreationDate = try values.decodeIfPresent(Date.self, forKey: .creationDate)
         let decodedExpirationDate = try values.decodeIfPresent(Date.self, forKey: .expirationDate)
         let decodedIsComplete = try values.decodeIfPresent(Bool.self, forKey: .isComplete)
+        let decodedIsFailed = try values.decodeIfPresent(Bool.self, forKey: .isFailed)
         let decodedDeferralDate = try values.decodeIfPresent(Date.self, forKey: .deferralDate)
 
         creationDate = decodedCreationDate ?? Date()
         expirationDate = decodedExpirationDate ?? Date()
-        switch (decodedIsComplete, decodedDeferralDate) {
-        case let (_, date?):
+        if let date = decodedDeferralDate {
             state = .deferred(date)
-        case (true, _):
+        } else if decodedIsFailed == true {
+            state = .failed
+        } else if decodedIsComplete == true {
             state = .complete
-        default:
+        } else {
             state = .actionable
         }
     }
@@ -93,17 +116,20 @@ class SpamChallenge: Codable {
         try container.encode(creationDate, forKey: .creationDate)
         try container.encode(expirationDate, forKey: .expirationDate)
 
-        let (deferralDate, isComplete) = { () -> (Date?, Bool) in
+        let (deferralDate, isComplete, isFailed) = { () -> (Date?, Bool, Bool) in
             switch state {
             case .complete:
-                return (nil, true)
+                return (nil, true, false)
+            case .failed:
+                return (nil, false, true)
             case let .deferred(date):
-                return (date, false)
+                return (date, false, false)
             default:
-                return (nil, false)
+                return (nil, false, false)
             }
         }()
         try container.encode(deferralDate, forKey: .deferralDate)
         try container.encode(isComplete, forKey: .isComplete)
+        try container.encode(isFailed, forKey: .isFailed)
     }
 }

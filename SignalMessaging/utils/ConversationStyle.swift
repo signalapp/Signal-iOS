@@ -236,7 +236,7 @@ public class ConversationStyle: NSObject {
             switch outgoingMessage.messageState {
             case .failed:
                 return bubbleColorOutgoingFailed
-            case .sending:
+            case .sending, .pending:
                 return bubbleColorOutgoingSending
             default:
                 return bubbleColorOutgoingSent

@@ -15,6 +15,7 @@ public enum MessageSenderError: Int, Error {
     case blockedContactRecipient
     case threadMissing
     case spamChallengeRequired
+    case spamChallengeResolved
 }
 
 // MARK: -
@@ -52,6 +53,15 @@ public extension MessageSender {
     class func isSpamChallengeRequiredError(_ error: Error) -> Bool {
         switch error {
         case MessageSenderError.spamChallengeRequired:
+            return true
+        default:
+            return false
+        }
+    }
+
+    class func isSpamChallengeResolvedError(_ error: Error) -> Bool {
+        switch error {
+        case MessageSenderError.spamChallengeResolved:
             return true
         default:
             return false
@@ -283,19 +293,37 @@ public extension MessageSender {
                     return failure(MessageSenderError.missingDevice)
                 } else if httpStatusCode == 413 {
                     return failure(MessageSenderError.prekeyRateLimit)
-                } else if httpStatusCode == 428, FeatureFlags.spamChallenges {
-                    let userInfo = (error as NSError).userInfo
+                } else if httpStatusCode == 428 {
+                    var unpackedError = error
+                    if case NetworkManagerError.taskError(_, let underlyingError) = unpackedError {
+                        unpackedError = underlyingError
+                    }
+                    let userInfo = (unpackedError as NSError).userInfo
                     let responseData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data
+                    let expiry = unpackedError.httpRetryAfterDate
 
-                    if let responseData = responseData {
-                        spamChallengeResolver.serverFlaggedRequestAsPotentialSpam(responseBody: responseData)
+                    if let body = responseData, let expiry = expiry {
+                        // The resolver has 10s to asynchronously resolve a challenge
+                        // If it resolves, great! We'll let MessageSender auto-retry
+                        // Otherwise, it'll be marked as "pending"
+                        spamChallengeResolver.handleServerChallengeBody(
+                            body,
+                            retryAfter: expiry
+                        ) { didResolve in
+                            if didResolve {
+                                failure(MessageSenderError.spamChallengeResolved)
+                            } else {
+                                failure(MessageSenderError.spamChallengeRequired)
+                            }
+                        }
                     } else {
                         owsFailDebug("No response body for spam challenge")
+                        return failure(MessageSenderError.spamChallengeRequired)
                     }
-                    return failure(MessageSenderError.spamChallengeRequired)
                 }
+            } else {
+                failure(error)
             }
-            failure(error)
         }
     }
 
@@ -1011,18 +1039,30 @@ public extension MessageSender {
             retrySend()
         case 428:
             Logger.warn("Server requested user complete spam challenge.")
-            if let data = responseData {
-                spamChallengeResolver.serverFlaggedRequestAsPotentialSpam(responseBody: data)
+
+            let errorDescription = "Spam challenge NEEDS LOCALIZATION"
+            let error = OWSErrorWithCodeDescription(.serverRejectedSuspectedSpam, errorDescription) as NSError
+            error.isRetryable = false
+            error.isFatal = false
+
+            if let data = responseData, let expiry = responseError.httpRetryAfterDate {
+                // The resolver has 10s to asynchronously resolve a challenge
+                // If it resolves, great! We'll let MessageSender auto-retry
+                // Otherwise, it'll be marked as "pending"
+                spamChallengeResolver.handleServerChallengeBody(
+                    data,
+                    retryAfter: expiry
+                ) { didResolve in
+                    if didResolve {
+                        retrySend()
+                    } else {
+                        messageSend.failure(error)
+                    }
+                }
             } else {
                 owsFailDebug("Expected response body from server")
+                messageSend.failure(error)
             }
-
-            let errorDescription = NSLocalizedString("FAILED_SENDING_BECAUSE_RATE_LIMIT", comment: "action sheet header when re-sending message which failed because of too many attempts")
-            let error = OWSErrorWithCodeDescription(.signalServiceRateLimited, errorDescription) as NSError
-
-            error.isRetryable = false
-            error.isFatal = true
-            messageSend.failure(error)
 
         default:
             retrySend()

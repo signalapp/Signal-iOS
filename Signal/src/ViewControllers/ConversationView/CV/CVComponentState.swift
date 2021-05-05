@@ -729,6 +729,7 @@ fileprivate extension CVComponentState.Builder {
         try buildBodyText(message: message)
 
         if let outgoingMessage = message as? TSOutgoingMessage,
+           // SPAM TODO: badge pending messages
            outgoingMessage.messageState == .failed {
             self.sendFailureBadge = SendFailureBadge()
         }
@@ -813,7 +814,7 @@ fileprivate extension CVComponentState.Builder {
                 viewOnceState = .outgoingSentExpired
             } else {
                 switch outgoingMessage.messageState {
-                case .sending:
+                case .sending, .pending:        // todo verify this makes sense
                     viewOnceState = .outgoingSending
                 case .failed:
                     viewOnceState = .outgoingFailed

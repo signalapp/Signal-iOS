@@ -62,7 +62,8 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeContactSyncFailed,
     OWSErrorCodeAppDeregistered,
     OWSErrorCodeRegistrationTransferAvailable,
-    OWSErrorCodeFailedToDecryptDuplicateMessage
+    OWSErrorCodeFailedToDecryptDuplicateMessage,
+    OWSErrorCodeServerRejectedSuspectedSpam
 };
 
 extern NSString *const OWSErrorRecipientAddressKey;
@@ -77,5 +78,12 @@ extern NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...);
 extern NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...);
 extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(void);
 extern NSError *OWSErrorMakeMessageSendFailedDueToBlockListError(void);
+
+@interface NSError (OWSError)
+
+- (BOOL)ows_isSameError:(NSError *)other;
+- (BOOL)ows_isSSKErrorWithCode:(NSUInteger)code;
+
+@end
 
 NS_ASSUME_NONNULL_END

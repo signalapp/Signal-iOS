@@ -3,9 +3,16 @@
 //
 
 class CaptchaChallenge: SpamChallenge {
-
     let token: String
-    var captchaToken: String?
+    var captchaToken: String? {
+        didSet {
+            guard oldValue != captchaToken else { return }
+            owsAssertDebug(oldValue == nil)
+            Logger.info("")
+            state = .actionable
+        }
+    }
+
     var failureCount: UInt = 0
     let kMaxFailures = 15
 
@@ -26,13 +33,8 @@ class CaptchaChallenge: SpamChallenge {
     }
 
     private func requestCaptchaFromUser() {
-        // TODO
-        workQueue.asyncAfter(deadline: .now() + .seconds(3)) {
-            if self.state == .inProgress {
-                self.captchaToken = "fake"
-                self.state = .actionable
-            }
-        }
+        NotificationCenter.default.postNotificationNameAsync(
+            SpamChallengeResolver.NeedsCaptchaNotification, object: nil)
     }
 
     private func notifyServerOfCompletedCaptcha() {
@@ -106,7 +108,7 @@ class CaptchaChallenge: SpamChallenge {
 
         if decodedToken == nil {
             owsFailDebug("Invalid decoding")
-            state = .complete
+            state = .failed
         }
     }
 
