@@ -7,14 +7,6 @@ public final class OpenGroupPollerV2 : NSObject {
     private var hasStarted = false
     private var isPolling = false
 
-    private var isMainAppAndActive: Bool {
-        var isMainAppAndActive = false
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
-        }
-        return isMainAppAndActive
-    }
-
     // MARK: Settings
     private let pollInterval: TimeInterval = 4
 
@@ -26,12 +18,13 @@ public final class OpenGroupPollerV2 : NSObject {
 
     @objc public func startIfNeeded() {
         guard !hasStarted else { return }
-        guard isMainAppAndActive else { stop(); return }
         DispatchQueue.main.async { [weak self] in // Timers don't do well on background queues
             guard let strongSelf = self else { return }
             strongSelf.hasStarted = true
-            strongSelf.timer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollInterval, repeats: true) { _ in self?.poll() }
-            strongSelf.poll()
+            strongSelf.timer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollInterval, repeats: true) { _ in
+                self?.poll().retainUntilComplete()
+            }
+            strongSelf.poll().retainUntilComplete()
         }
     }
 
@@ -43,7 +36,6 @@ public final class OpenGroupPollerV2 : NSObject {
     // MARK: Polling
     @discardableResult
     public func poll() -> Promise<Void> {
-        guard isMainAppAndActive else { stop(); return Promise.value(()) }
         return poll(isBackgroundPoll: false)
     }
 
@@ -53,12 +45,12 @@ public final class OpenGroupPollerV2 : NSObject {
         self.isPolling = true
         let (promise, seal) = Promise<Void>.pending()
         promise.retainUntilComplete()
-        OpenGroupAPIV2.compactPoll(server).done(on: DispatchQueue.global(qos: .default)) { [weak self] bodies in
+        OpenGroupAPIV2.compactPoll(server).done(on: OpenGroupAPIV2.workQueue) { [weak self] bodies in
             guard let self = self else { return }
             self.isPolling = false
             bodies.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
             seal.fulfill(())
-        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+        }.catch(on: OpenGroupAPIV2.workQueue) { error in
             SNLog("Open group polling failed due to error: \(error).")
             self.isPolling = false
             seal.fulfill(()) // The promise is just used to keep track of when we're done
@@ -85,6 +77,13 @@ public final class OpenGroupPollerV2 : NSObject {
                 SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
             }
         }
+        // - Moderators
+        if var x = OpenGroupAPIV2.moderators[server] {
+            x[body.room] = Set(body.moderators)
+            OpenGroupAPIV2.moderators[server] = x
+        } else {
+            OpenGroupAPIV2.moderators[server] = [ body.room : Set(body.moderators) ]
+        }
         // - Deletions
         let deletedMessageServerIDs = Set(body.deletions.map { UInt64($0.deletedMessageID) })
         storage.write { transaction in
@@ -97,13 +96,6 @@ public final class OpenGroupPollerV2 : NSObject {
                 messagesToRemove.append(message)
             }
             messagesToRemove.forEach { $0.remove(with: transaction) }
-        }
-        // - Moderators
-        if var x = OpenGroupAPIV2.moderators[server] {
-            x[body.room] = Set(body.moderators)
-            OpenGroupAPIV2.moderators[server] = x
-        } else {
-            OpenGroupAPIV2.moderators[server] = [body.room:Set(body.moderators)]
         }
     }
 }

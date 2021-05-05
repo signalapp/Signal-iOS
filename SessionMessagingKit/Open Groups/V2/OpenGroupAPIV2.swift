@@ -4,12 +4,14 @@ import SessionSnodeKit
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var authTokenPromises: [String:Promise<String>] = [:]
-    
+    public static let workQueue = DispatchQueue(label: "OpenGroupAPIV2.workQueue", qos: .userInitiated) // It's important that this is a serial queue
     public static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
-    public static let defaultServer = "http://116.203.70.33"
-    public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
     public static var defaultRoomsPromise: Promise<[Info]>?
     public static var groupImagePromises: [String:Promise<Data>] = [:]
+    
+    // MARK: Settings
+    public static let defaultServer = "http://116.203.70.33"
+    public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
     
     // MARK: Error
     public enum Error : LocalizedError {
@@ -113,10 +115,10 @@ public final class OpenGroupAPIV2 : NSObject {
         if request.useOnionRouting {
             guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else { return Promise(error: Error.noPublicKey) }
             if request.isAuthRequired, let room = request.room { // Because auth happens on a per-room basis, we need both to make an authenticated request
-                return getAuthToken(for: room, on: request.server).then(on: DispatchQueue.global(qos: .userInitiated)) { authToken -> Promise<JSON> in
+                return getAuthToken(for: room, on: request.server).then(on: OpenGroupAPIV2.workQueue) { authToken -> Promise<JSON> in
                     tsRequest.setValue(authToken, forHTTPHeaderField: "Authorization")
                     let promise = OnionRequestAPI.sendOnionRequest(tsRequest, to: request.server, using: publicKey)
-                    promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                    promise.catch(on: OpenGroupAPIV2.workQueue) { error in
                         // A 401 means that we didn't provide a (valid) auth token for a route that required one. We use this as an
                         // indication that the token we're using has expired. Note that a 403 has a different meaning; it means that
                         // we provided a valid token but it doesn't have a high enough permission level for the route in question.
@@ -153,7 +155,7 @@ public final class OpenGroupAPIV2 : NSObject {
             }
             body.append(json)
         }
-        return when(fulfilled: [Promise<String>](authTokenPromises.values)).then(on: DispatchQueue.global(qos: .userInitiated)) { _ -> Promise<[CompactPollResponseBody]> in
+        return when(fulfilled: [Promise<String>](authTokenPromises.values)).then(on: OpenGroupAPIV2.workQueue) { _ -> Promise<[CompactPollResponseBody]> in
             let bodyWithAuthTokens = body.compactMap { json -> JSON? in
                 guard let roomID = json["room_id"] as? String, let authToken = authTokenPromises[roomID]?.value else { return nil }
                 var json = json
@@ -161,7 +163,7 @@ public final class OpenGroupAPIV2 : NSObject {
                 return json
             }
             let request = Request(verb: .post, room: nil, server: server, endpoint: "compact_poll", parameters: [ "requests" : bodyWithAuthTokens ], isAuthRequired: false)
-            return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[CompactPollResponseBody]> in
+            return send(request).then(on: OpenGroupAPIV2.workQueue) { json -> Promise<[CompactPollResponseBody]> in
                 guard let results = json["results"] as? [JSON] else { throw Error.parsingFailed }
                 let promises = results.compactMap { json -> Promise<CompactPollResponseBody>? in
                     guard let room = json["room_id"] as? String, let status = json["status_code"] as? UInt else { return nil }
@@ -176,8 +178,8 @@ public final class OpenGroupAPIV2 : NSObject {
                     }
                     let rawDeletions = json["deletions"] as? [JSON] ?? []
                     let moderators = json["moderators"] as? [String] ?? []
-                    return try? parseMessages(from: json, for: room, on: server).then(on: DispatchQueue.global(qos: .userInitiated)) { messages in
-                        parseDeletions(from: rawDeletions, for: room, on: server).map(on: DispatchQueue.global(qos: .userInitiated)) { deletions in
+                    return try? parseMessages(from: json, for: room, on: server).then(on: OpenGroupAPIV2.workQueue) { messages in
+                        parseDeletions(from: rawDeletions, for: room, on: server).map(on: OpenGroupAPIV2.workQueue) { deletions in
                             return CompactPollResponseBody(room: room, messages: messages, deletions: deletions, moderators: moderators)
                         }
                     }
@@ -197,8 +199,8 @@ public final class OpenGroupAPIV2 : NSObject {
                 return authTokenPromise
             } else {
                 let promise = requestNewAuthToken(for: room, on: server)
-                .then(on: DispatchQueue.global(qos: .userInitiated)) { claimAuthToken($0, for: room, on: server) }
-                .then(on: DispatchQueue.global(qos: .userInitiated)) { authToken -> Promise<String> in
+                .then(on: OpenGroupAPIV2.workQueue) { claimAuthToken($0, for: room, on: server) }
+                .then(on: OpenGroupAPIV2.workQueue) { authToken -> Promise<String> in
                     let (promise, seal) = Promise<String>.pending()
                     storage.write(with: { transaction in
                         storage.setAuthToken(for: room, on: server, to: authToken, using: transaction)
@@ -207,9 +209,9 @@ public final class OpenGroupAPIV2 : NSObject {
                     })
                     return promise
                 }
-                promise.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                promise.done(on: OpenGroupAPIV2.workQueue) { _ in
                     authTokenPromises["\(server).\(room)"] = nil
-                }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                }.catch(on: OpenGroupAPIV2.workQueue) { _ in
                     authTokenPromises["\(server).\(room)"] = nil
                 }
                 authTokenPromises["\(server).\(room)"] = promise
@@ -223,7 +225,7 @@ public final class OpenGroupAPIV2 : NSObject {
         guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
         let queryParameters = [ "public_key" : getUserHexEncodedPublicKey() ]
         let request = Request(verb: .get, room: room, server: server, endpoint: "auth_token_challenge", queryParameters: queryParameters, isAuthRequired: false)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let challenge = json["challenge"] as? JSON, let base64EncodedCiphertext = challenge["ciphertext"] as? String,
                 let base64EncodedEphemeralPublicKey = challenge["ephemeral_public_key"] as? String, let ciphertext = Data(base64Encoded: base64EncodedCiphertext),
                 let ephemeralPublicKey = Data(base64Encoded: base64EncodedEphemeralPublicKey) else {
@@ -240,13 +242,13 @@ public final class OpenGroupAPIV2 : NSObject {
         let headers = [ "Authorization" : authToken ] // Set explicitly here because is isn't in the database yet at this point
         let request = Request(verb: .post, room: room, server: server, endpoint: "claim_auth_token",
             parameters: parameters, headers: headers, isAuthRequired: false)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in authToken }
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in authToken }
     }
     
     /// Should be called when leaving a group.
     public static func deleteAuthToken(for room: String, on server: String) -> Promise<Void> {
         let request = Request(verb: .delete, room: room, server: server, endpoint: "auth_token")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in
             let storage = SNMessagingKitConfiguration.shared.storage
             storage.write { transaction in
                 storage.removeAuthToken(for: room, on: server, using: transaction)
@@ -259,7 +261,7 @@ public final class OpenGroupAPIV2 : NSObject {
         let base64EncodedFile = file.base64EncodedString()
         let parameters = [ "file" : base64EncodedFile ]
         let request = Request(verb: .post, room: room, server: server, endpoint: "files", parameters: parameters)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let fileID = json["result"] as? UInt64 else { throw Error.parsingFailed }
             return fileID
         }
@@ -267,7 +269,7 @@ public final class OpenGroupAPIV2 : NSObject {
     
     public static func download(_ file: UInt64, from room: String, on server: String) -> Promise<Data> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "files/\(file)")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let base64EncodedFile = json["result"] as? String, let file = Data(base64Encoded: base64EncodedFile) else { throw Error.parsingFailed }
             return file
         }
@@ -278,7 +280,7 @@ public final class OpenGroupAPIV2 : NSObject {
         guard let signedMessage = message.sign() else { return Promise(error: Error.signingFailed) }
         guard let json = signedMessage.toJSON() else { return Promise(error: Error.parsingFailed) }
         let request = Request(verb: .post, room: room, server: server, endpoint: "messages", parameters: json)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let rawMessage = json["message"] as? JSON, let message = OpenGroupMessageV2.fromJSON(rawMessage) else { throw Error.parsingFailed }
             return message
         }
@@ -291,7 +293,7 @@ public final class OpenGroupAPIV2 : NSObject {
             queryParameters["from_server_id"] = String(lastMessageServerID)
         }
         let request = Request(verb: .get, room: room, server: server, endpoint: "messages", queryParameters: queryParameters)
-        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[OpenGroupMessageV2]> in
+        return send(request).then(on: OpenGroupAPIV2.workQueue) { json -> Promise<[OpenGroupMessageV2]> in
             try parseMessages(from: json, for: room, on: server)
         }
     }
@@ -332,7 +334,7 @@ public final class OpenGroupAPIV2 : NSObject {
     // MARK: Message Deletion
     public static func deleteMessage(with serverID: Int64, from room: String, on server: String) -> Promise<Void> {
         let request = Request(verb: .delete, room: room, server: server, endpoint: "messages/\(serverID)")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in }
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
     
     public static func getDeletedMessages(for room: String, on server: String) -> Promise<[Deletion]> {
@@ -342,7 +344,7 @@ public final class OpenGroupAPIV2 : NSObject {
             queryParameters["from_server_id"] = String(lastDeletionServerID)
         }
         let request = Request(verb: .get, room: room, server: server, endpoint: "deleted_messages", queryParameters: queryParameters)
-        return send(request).then(on: DispatchQueue.global(qos: .userInitiated)) { json -> Promise<[Deletion]> in
+        return send(request).then(on: OpenGroupAPIV2.workQueue) { json -> Promise<[Deletion]> in
             guard let rawDeletions = json["ids"] as? [JSON] else { throw Error.parsingFailed }
             return parseDeletions(from: rawDeletions, for: room, on: server)
         }
@@ -369,7 +371,7 @@ public final class OpenGroupAPIV2 : NSObject {
     // MARK: Moderation
     public static func getModerators(for room: String, on server: String) -> Promise<[String]> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "moderators")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let moderators = json["moderators"] as? [String] else { throw Error.parsingFailed }
             if var x = self.moderators[server] {
                 x[room] = Set(moderators)
@@ -384,12 +386,12 @@ public final class OpenGroupAPIV2 : NSObject {
     public static func ban(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
         let parameters = [ "public_key" : publicKey ]
         let request = Request(verb: .post, room: room, server: server, endpoint: "block_list", parameters: parameters)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in }
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
     
     public static func unban(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
         let request = Request(verb: .delete, room: room, server: server, endpoint: "block_list/\(publicKey)")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { _ in }
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
 
     public static func isUserModerator(_ publicKey: String, for room: String, on server: String) -> Bool {
@@ -404,10 +406,10 @@ public final class OpenGroupAPIV2 : NSObject {
             let promise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
                 OpenGroupAPIV2.getAllRooms(from: defaultServer)
             }
-            let _ = promise.done(on: DispatchQueue.global(qos: .userInitiated)) { items in
+            let _ = promise.done(on: OpenGroupAPIV2.workQueue) { items in
                 items.forEach { getGroupImage(for: $0.id, on: defaultServer).retainUntilComplete() }
             }
-            promise.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+            promise.catch(on: OpenGroupAPIV2.workQueue) { _ in
                 OpenGroupAPIV2.defaultRoomsPromise = nil
             }
             defaultRoomsPromise = promise
@@ -416,7 +418,7 @@ public final class OpenGroupAPIV2 : NSObject {
     
     public static func getInfo(for room: String, on server: String) -> Promise<Info> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)", isAuthRequired: false)
-        let promise: Promise<Info> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        let promise: Promise<Info> = send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let rawRoom = json["room"] as? JSON, let id = rawRoom["id"] as? String, let name = rawRoom["name"] as? String else { throw Error.parsingFailed }
             let imageID = rawRoom["image_id"] as? String
             return Info(id: id, name: name, imageID: imageID)
@@ -426,7 +428,7 @@ public final class OpenGroupAPIV2 : NSObject {
     
     public static func getAllRooms(from server: String) -> Promise<[Info]> {
         let request = Request(verb: .get, room: nil, server: server, endpoint: "rooms", isAuthRequired: false)
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let rawRooms = json["rooms"] as? [JSON] else { throw Error.parsingFailed }
             let rooms: [Info] = rawRooms.compactMap { json in
                 guard let id = json["id"] as? String, let name = json["name"] as? String else {
@@ -442,7 +444,7 @@ public final class OpenGroupAPIV2 : NSObject {
     
     public static func getMemberCount(for room: String, on server: String) -> Promise<UInt64> {
         let request = Request(verb: .get, room: room, server: server, endpoint: "member_count")
-        return send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let memberCount = json["member_count"] as? UInt64 else { throw Error.parsingFailed }
             let storage = SNMessagingKitConfiguration.shared.storage
             storage.write { transaction in
@@ -472,7 +474,7 @@ public final class OpenGroupAPIV2 : NSObject {
             return promise
         } else {
             let request = Request(verb: .get, room: room, server: server, endpoint: "rooms/\(room)/image", isAuthRequired: false)
-            let promise: Promise<Data> = send(request).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+            let promise: Promise<Data> = send(request).map(on: OpenGroupAPIV2.workQueue) { json in
                 guard let base64EncodedFile = json["result"] as? String, let file = Data(base64Encoded: base64EncodedFile) else { throw Error.parsingFailed }
                 if server == defaultServer {
                     Storage.shared.write { transaction in
