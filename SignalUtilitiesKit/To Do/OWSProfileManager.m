@@ -370,6 +370,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             }
             
             [promise.thenOn(dispatch_get_main_queue(), ^(NSString *downloadURL) {
+                [NSUserDefaults.standardUserDefaults setObject:[NSDate new] forKey:@"lastProfilePictureUpload"];
                 [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
                    successBlock(downloadURL);
                 }];
