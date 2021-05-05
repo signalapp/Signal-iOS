@@ -884,6 +884,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self.voiceMemoContentView removeAllSubviews];
 
     self.recordingLabel = [UILabel new];
+    self.recordingLabel.textAlignment = NSTextAlignmentLeft;
     self.recordingLabel.textColor = Theme.primaryTextColor;
     self.recordingLabel.font = UIFont.ows_dynamicTypeBodyClampedFont.ows_medium.ows_monospaced;
     [self.voiceMemoContentView addSubview:self.recordingLabel];
