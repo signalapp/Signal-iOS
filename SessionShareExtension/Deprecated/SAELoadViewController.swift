@@ -5,7 +5,7 @@
 import UIKit
 import PureLayout
 
-class SAELoadViewController: UIViewController {
+class SAELoadViewControllerOld: UIViewController {
 
     weak var delegate: ShareViewDelegate?
 

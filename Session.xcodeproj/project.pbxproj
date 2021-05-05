@@ -689,6 +689,7 @@
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
 		C3AAFFE825AE975D0089E6DD /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */; };
 		C3AAFFF225AE99710089E6DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFF125AE99710089E6DD /* AppDelegate.swift */; };
+		C3ADC66126426688005F1414 /* ShareVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ADC66026426688005F1414 /* ShareVC.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
 		C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE07F2554CDD70050F1E3 /* Storage.swift */; };
 		C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D62553860B00C340D1 /* Promise+Retrying.swift */; };
@@ -1690,6 +1691,7 @@
 		C3AAFFCB25AE92150089E6DD /* OpenGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupManager.swift; sourceTree = "<group>"; };
 		C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		C3AAFFF125AE99710089E6DD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C3ADC66026426688005F1414 /* ShareVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareVC.swift; sourceTree = "<group>"; };
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3B7845C25649DA600ADB2E7 /* TSIncomingMessage+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSIncomingMessage+Conversion.swift"; sourceTree = "<group>"; };
 		C3BBE0752554CDA60050F1E3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -1981,14 +1983,13 @@
 			isa = PBXGroup;
 			children = (
 				C31C21A4255BCA4800EC2D66 /* Meta */,
+				C3ADC65F264265D9005F1414 /* Deprecated */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
-				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
-				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
 				34641E1D2088DA6C00E2EDE5 /* SAEScreenLockViewController.h */,
 				34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */,
-				4535186A1FC635DD00210559 /* ShareViewController.swift */,
 				34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */,
 				34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */,
+				C3ADC66026426688005F1414 /* ShareVC.swift */,
 			);
 			path = SessionShareExtension;
 			sourceTree = "<group>";
@@ -3152,6 +3153,16 @@
 				B87EF17026367CF800124B3C /* FileServerAPIV2.swift */,
 			);
 			path = "File Server";
+			sourceTree = "<group>";
+		};
+		C3ADC65F264265D9005F1414 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
+				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
+				4535186A1FC635DD00210559 /* ShareViewController.swift */,
+			);
+			path = Deprecated;
 			sourceTree = "<group>";
 		};
 		C3BBE0B32554F0D30050F1E3 /* Utilities */ = {
@@ -4407,6 +4418,7 @@
 			files = (
 				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
 				34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */,
+				C3ADC66126426688005F1414 /* ShareVC.swift in Sources */,
 				34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,

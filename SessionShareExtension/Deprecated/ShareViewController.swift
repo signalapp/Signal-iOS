@@ -10,7 +10,7 @@ import SessionUIKit
 import CoreServices
 
 @objc
-public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate, AppModeManagerDelegate {
+public class ShareViewControllerOld: UIViewController, ShareViewDelegate, SAEFailedViewDelegate, AppModeManagerDelegate {
 
     // MARK: - Dependencies
 
@@ -32,7 +32,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private var areVersionMigrationsComplete = false
 
     private var progressPoller: ProgressPoller?
-    var loadViewController: SAELoadViewController?
+    var loadViewController: SAELoadViewControllerOld?
 
     private var shareViewNavigationController: OWSNavigationController?
 
@@ -96,7 +96,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let shareViewNavigationController = OWSNavigationController()
         self.shareViewNavigationController = shareViewNavigationController
 
-        let loadViewController = SAELoadViewController(delegate: self)
+        let loadViewController = SAELoadViewControllerOld(delegate: self)
         self.loadViewController = loadViewController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
@@ -393,7 +393,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func showErrorView(title: String, message: String) {
         AssertIsOnMainThread()
 
-        let viewController = SAEFailedViewController(delegate: self, title: title, message: message)
+        let viewController = SAEFailedViewControllerOld(delegate: self, title: title, message: message)
         self.showPrimaryViewController(viewController)
     }
 
@@ -466,7 +466,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // If no view has been presented yet, do nothing.
             return
         }
-        if let _ = firstViewController as? SAEFailedViewController {
+        if let _ = firstViewController as? SAEFailedViewControllerOld {
             // If root view is an error view, do nothing.
             return
         }
@@ -708,7 +708,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 Logger.error("invalid inputItem \(inputItemRaw)")
                 continue
             }
-            if let itemProviders = ShareViewController.preferredItemProviders(inputItem: inputItem) {
+            if let itemProviders = ShareViewControllerOld.preferredItemProviders(inputItem: inputItem) {
                 return Promise.value(itemProviders)
             }
         }
@@ -753,7 +753,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // * UTIs aren't very descriptive (there are far more MIME types than UTI types)
         //   so in the case of file attachments we try to refine the attachment type
         //   using the file extension.
-        guard let srcUtiType = ShareViewController.utiType(itemProvider: itemProvider) else {
+        guard let srcUtiType = ShareViewControllerOld.utiType(itemProvider: itemProvider) else {
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
@@ -880,7 +880,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("building DataSource with url: \(url), utiType: \(utiType)")
 
-        guard let dataSource = ShareViewController.createDataSource(utiType: utiType, url: url, customFileName: loadedItem.customFileName) else {
+        guard let dataSource = ShareViewControllerOld.createDataSource(utiType: utiType, url: url, customFileName: loadedItem.customFileName) else {
             let error = ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             return Promise(error: error)
         }

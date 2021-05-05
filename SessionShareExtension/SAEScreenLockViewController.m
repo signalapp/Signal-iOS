@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView.appearance.tintColor = LKColors.text;
     
-    // Loki: Set gradient background
+    // Gradient background
     self.view.backgroundColor = UIColor.clearColor;
     CAGradientLayer *layer = [CAGradientLayer new];
     layer.frame = UIScreen.mainScreen.bounds;
@@ -52,20 +52,21 @@ NS_ASSUME_NONNULL_BEGIN
     layer.colors = @[ (id)gradientStartColor.CGColor, (id)gradientEndColor.CGColor ];
     [self.view.layer insertSublayer:layer atIndex:0];
     
-    // Loki: Set navigation bar background color
+    // Navigation bar background color
     UINavigationBar *navigationBar = self.navigationController.navigationBar;
     [navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
     navigationBar.shadowImage = [UIImage new];
     [navigationBar setTranslucent:NO];
     navigationBar.barTintColor = LKColors.navigationBarBackground;
 
-    // Loki: Customize title
+    // Title
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(@"Share to Session", @"");
     titleLabel.textColor = LKColors.text;
     titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
     self.navigationItem.titleView = titleLabel;
 
+    // Close button
     UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"X"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissPressed:)];
     closeButton.tintColor = LKColors.text;
     self.navigationItem.leftBarButtonItem = closeButton;

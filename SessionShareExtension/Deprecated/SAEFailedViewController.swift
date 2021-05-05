@@ -10,7 +10,7 @@ protocol SAEFailedViewDelegate: class {
     func shareViewWasCancelled()
 }
 
-class SAEFailedViewController: UIViewController {
+class SAEFailedViewControllerOld: UIViewController {
 
     weak var delegate: SAEFailedViewDelegate?
 
