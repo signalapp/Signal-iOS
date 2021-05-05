@@ -158,15 +158,14 @@ BOOL IsNoteToSelfEnabled(void)
  * Iterate over this thread's interactions
  */
 - (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                  usingBlock:(void (^)(TSInteraction *interaction,
-                                                 YapDatabaseReadTransaction *transaction))block
+                                  usingBlock:(void (^)(TSInteraction *interaction, BOOL *stop))block
 {
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     [interactionsByThread
         enumerateKeysAndObjectsInGroup:self.uniqueId
                             usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                                 TSInteraction *interaction = object;
-                                block(interaction, transaction);
+                                block(interaction, stop);
                             }];
 }
 
@@ -179,7 +178,7 @@ BOOL IsNoteToSelfEnabled(void)
     [self.dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self enumerateInteractionsWithTransaction:transaction
                                         usingBlock:^(
-                                            TSInteraction *interaction, YapDatabaseReadTransaction *t) {
+                                            TSInteraction *interaction, BOOL *stop) {
 
                                             block(interaction);
                                         }];

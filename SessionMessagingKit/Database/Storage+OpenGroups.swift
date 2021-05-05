@@ -178,7 +178,6 @@ extension Storage {
     // MARK: - Metadata
 
     private static let openGroupUserCountCollection = "SNOpenGroupUserCountCollection"
-    private static let openGroupMessageIDCollection = "LKMessageIDCollection"
     private static let openGroupImageCollection = "SNOpenGroupImageCollection"
     
     public func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64? {

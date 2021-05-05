@@ -176,13 +176,18 @@ public final class OpenGroupPoller : NSObject {
     
     private func pollForDeletedMessages() {
         let openGroup = self.openGroup
+        let storage = SNMessagingKitConfiguration.shared.storage
         OpenGroupAPI.getDeletedMessageServerIDs(for: openGroup.channel, on: openGroup.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
-            let deletedMessageIDs = deletedMessageServerIDs.compactMap { Storage.shared.getIDForMessage(withServerID: UInt64($0)) }
-            SNMessagingKitConfiguration.shared.storage.write { transaction in
-                deletedMessageIDs.forEach { messageID in
-                    let transaction = transaction as! YapDatabaseReadWriteTransaction
-                    TSMessage.fetch(uniqueId: messageID, transaction: transaction)?.remove(with: transaction)
+            storage.write { transaction in
+                let transaction = transaction as! YapDatabaseReadWriteTransaction
+                guard let threadID = storage.getThreadID(for: openGroup.id),
+                    let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
+                var messagesToRemove: [TSMessage] = []
+                thread.enumerateInteractions(with: transaction) { interaction, stop in
+                    guard let message = interaction as? TSMessage, deletedMessageServerIDs.contains(message.openGroupServerMessageID) else { return }
+                    messagesToRemove.append(message)
                 }
+                messagesToRemove.forEach { $0.remove(with: transaction) }
             }
         }.retainUntilComplete()
     }
