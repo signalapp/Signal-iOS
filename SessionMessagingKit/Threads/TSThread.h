@@ -45,7 +45,7 @@ BOOL IsNoteToSelfEnabled(void);
 
 #pragma mark Interactions
 
-- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, YapDatabaseReadTransaction *transaction))block;
+- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, BOOL *stop))block;
 
 - (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block;
 
