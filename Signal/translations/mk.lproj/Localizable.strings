@@ -428,13 +428,16 @@
 "BUTTON_OKAY" = "Во ред";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "Претходно";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Одбери";
 
+/* Label for the 'set' button. */
+"BUTTON_SET" = "Set";
+
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "Започни";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Испрати";
@@ -1273,14 +1276,35 @@
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
 
+/* Disappearing message option to define a custom time */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+
+/* The unit for a number of days */
+"DISAPPEARING_MESSAGES_DAYS" = "days";
+
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Моменталните пораките исчезнуваат после %@";
 
+/* The unit for a number of hours */
+"DISAPPEARING_MESSAGES_HOURS" = "часа";
+
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Поставки за изчезнувачките пораки";
+
+/* The unit for a number of minutes */
+"DISAPPEARING_MESSAGES_MINUTES" = "минути";
+
+/* The unit for a number of seconds */
+"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+
+/* subheading in privacy settings */
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+
+/* The unit for a number of weeks */
+"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Откажи";
@@ -2566,6 +2590,9 @@
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стикери";
 
+/* accessibility hint for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Гласовна порака";
 
@@ -2836,6 +2863,9 @@
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Прикачување";
 
+/* Status label for messages which are viewed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Примено";
 
@@ -2985,6 +3015,9 @@
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Прикачување...";
+
+/* status message for viewed messages */
+"MESSAGE_STATUS_VIEWED" = "Прегледано";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Нова порака";
@@ -3422,7 +3455,7 @@
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Плати";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -3458,16 +3491,16 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Белешка";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Плати";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Процесирање";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Обработка";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
@@ -4543,12 +4576,6 @@
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "See All";
 
-/* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Други контакти";
-
-/* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Неодамнешни разговори";
-
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Испрати повторно";
 
@@ -4708,6 +4735,9 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Data Usage";
 
+/* table cell label in conversation settings */
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Избриши сметка";
 
@@ -4731,6 +4761,12 @@
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Избриши се";
+
+/* Label for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES" = "Изчезнувачки пораки";
+
+/* Explanation for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Донирајте на Signal";
@@ -4811,13 +4847,13 @@
 "SETTINGS_NOTIFICATIONS" = "Известувања";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Активирај";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Активирај";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
@@ -4853,16 +4889,16 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Конверзиите се само проценки и можеби не се точни.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Сите валути";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Деактивирај";
 
 /* Label for 'deactivate payments' button in the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
@@ -4871,7 +4907,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Да се деактивираат плаќањата?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
@@ -4898,10 +4934,10 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin е нова дигитална валута фокусирана на приватност.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "За MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
@@ -4952,13 +4988,13 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Нерегистриран";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Активирајте Плаќања";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Користете го Signal за испраќање и примање на MobileCoin, нова дигитална валута фокусирана на приватност. Активирајте за да започнете.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
@@ -5021,7 +5057,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Плаќањата се деактивирани.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Сите";
@@ -5108,7 +5144,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Невалидна адреса";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
@@ -5204,7 +5240,7 @@
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "Плаќања (Бета)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Адреса на Вашиот паричник";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
@@ -5539,11 +5575,14 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Потврдете";
 
+/* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Немате заеднички групи. Прегледувајте ги барањата внимателно.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Нема контакти во оваа група. Внимателно разгледајте ги барањата.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Оваа порака беше избришана.";
@@ -5816,16 +5855,13 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "Појдовните еднократни медија датотеки автоматски се отстрануваат откако ќе бидат испратени.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Лизгај за икслучување";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Повлечи за откажување";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Гласовна порака";
 
-/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Допрете и задржете за да снимите гласовна порака.";
-
-/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Гласовна порака";
+/* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завршете го поставувањето на Signal Desktop.";
@@ -5847,9 +5883,6 @@
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
-
-/* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Преглед";

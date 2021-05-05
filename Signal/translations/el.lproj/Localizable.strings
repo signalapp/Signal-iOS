@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Ο/Η %@ προστέθηκε στην ομάδα %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "Προσθήκη σε ομάδα";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Θέλεις να κοινοποιήσεις το προφίλ σου με αυτόν τον/την χρήστη;";
@@ -125,7 +125,7 @@
 "ALERT_SAVE" = "Αποθήκευση";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Δεν είσαι σε κοινές ομάδες με αυτό το άτομο. Έλεγξε τα αιτήματα προσεκτικά πριν αποδεχτείς, για να γλιτώσεις ανεπιθύμητα μηνύματα.";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
@@ -432,6 +432,9 @@
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Επιλογή";
+
+/* Label for the 'set' button. */
+"BUTTON_SET" = "Ορισμός";
 
 /* Label for the 'start' button. */
 "BUTTON_START" = "Εκκίνηση";
@@ -899,7 +902,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Αναφορές";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "μήνυμα";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Σίγαση συνομιλίας για...";
@@ -908,7 +911,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Πάντα";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "σίγαση";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 ώρες";
@@ -974,7 +977,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Αφαίρεση του/της %@ ως διαχειριστή/τρια της ομάδας;";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "αναζήτηση";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Κατάργηση φραγής ομάδας";
@@ -992,10 +995,10 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Μη αποθηκευμένες αλλαγές";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "βίντεο";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Λεπτομέρειες επαφής";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Κοινοποίηση προφίλ";
@@ -1037,22 +1040,22 @@
 "DATE_HOURS_AGO_FORMAT" = "%@ώ";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
+"DATE_HOURS_AGO_LONG_FORMAT" = "πριν %@ ώρες";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@λ";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "πριν %@ λεπτά";
 
 /* The present; the current time. */
 "DATE_NOW" = "Τώρα";
 
 /* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+"DATE_ONE_HOUR_AGO_LONG" = "πριν 1 ώρα";
 
 /* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
+"DATE_ONE_MINUTE_AGO_LONG" = "πριν 1 λεπτό";
 
 /* The current day. */
 "DATE_TODAY" = "Σήμερα ";
@@ -1273,14 +1276,35 @@
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Τα μηνύματα σε αυτή τη συνομιλία θα εξαφανίζονται μετά από %@.";
 
+/* Disappearing message option to define a custom time */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+
+/* The unit for a number of days */
+"DISAPPEARING_MESSAGES_DAYS" = "days";
+
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Όταν ενεργοποιηθεί, τα μηνύματα που στέλνονται και λαμβάνονται σε αυτή τη συνομιλία θα εξαφανίζονται αφού προβληθούν.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Τα μηνύματα εξαφανίζονται μετά από %@";
 
+/* The unit for a number of hours */
+"DISAPPEARING_MESSAGES_HOURS" = "hours";
+
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Ρυθμίσεις μηνυμάτων που εξαφανίζονται";
+
+/* The unit for a number of minutes */
+"DISAPPEARING_MESSAGES_MINUTES" = "minutes";
+
+/* The unit for a number of seconds */
+"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+
+/* subheading in privacy settings */
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+
+/* The unit for a number of weeks */
+"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Απόρριψη";
@@ -2566,6 +2590,9 @@
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Αυτοκόλλητα";
 
+/* accessibility hint for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Μήνυμα φωνής";
 
@@ -2836,6 +2863,9 @@
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Ανεβαίνει";
 
+/* Status label for messages which are viewed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Παρελήφθη";
 
@@ -2985,6 +3015,9 @@
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Ανεβαίνει...";
+
+/* status message for viewed messages */
+"MESSAGE_STATUS_VIEWED" = "Διαβάστηκε";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Νέο μήνυμα";
@@ -3467,7 +3500,7 @@
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Συνολικό ποσό";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Επεξεργασία";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "Προς %@";
@@ -3551,7 +3584,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Αδυναμία αποστολής πληρωμής";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
@@ -4543,12 +4576,6 @@
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "Εμφάνιση όλων";
 
-/* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Άλλες επαφές";
-
-/* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Πρόσφατες συνομιλίες";
-
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Επαναποστολή";
 
@@ -4708,6 +4735,9 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Χρήση δεδομένων";
 
+/* table cell label in conversation settings */
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Διαγραφή λογαριασμού";
 
@@ -4731,6 +4761,12 @@
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Διαγραφή όλων";
+
+/* Label for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES" = "Μηνύματα που εξαφανίζονται";
+
+/* Explanation for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Κάνε μια δωρεά στο Signal";
@@ -4811,13 +4847,13 @@
 "SETTINGS_NOTIFICATIONS" = "Ειδοποιήσεις";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Ενεργοποίηση";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Ενεργοποίηση";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
@@ -4832,10 +4868,10 @@
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "Όλες οι πληρωμές";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ στις %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
@@ -4856,25 +4892,25 @@
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Όλα τα νομίσματα";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Απενεργοποίηση";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Απενεργοποίηση πληρωμών";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Απενεργοποίηση πληρωμών;";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Απενεργοποίηση πληρωμών";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
@@ -4901,7 +4937,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Σχετικά με το MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
@@ -4952,7 +4988,7 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Μη εγγεγραμμένος";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Ενεργοποίηση πληρωμών";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
@@ -4973,7 +5009,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Add Funds";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Φραγή αριθμού";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Χρέωση δικτύου";
@@ -5015,7 +5051,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Από %@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Προς %@";
@@ -5033,7 +5069,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Στάλθηκε στις";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Πρόσφατες πληρωμές";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
@@ -5075,10 +5111,10 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Επικόλληση από πρόχειρο";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Φράση ανάκτησης";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
@@ -5090,7 +5126,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Enter Recovery Phrase";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Φράση ανάκτησης";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
@@ -5111,19 +5147,19 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Με έγκυρο URL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Σκανάρισμα κωδικού QR";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Αποστολή πληρωμής";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Επιλογή παραλήπτη";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "Μετατροπή νομίσματος";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "Πληρωμές";
@@ -5165,7 +5201,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Both words are incorrect. Try again.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Word %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Λέξη %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
@@ -5174,7 +5210,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Αντιγραφή στο πρόχειρο";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
@@ -5189,7 +5225,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Φράση ανάκτησης";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
@@ -5198,10 +5234,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Φράση ανάκτησης";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Πληρωμή (Beta)";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
@@ -5411,7 +5447,7 @@
 "SMS_INVITE_BODY" = "Σε προσκαλώ να εγκαταστήσεις το Signal! Να ο σύνδεσμος:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "Ήχοι & ειδοποιήσεις";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Κανένας";
@@ -5539,11 +5575,14 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Επιβεβαίωση";
 
+/* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Χωρίς κοινές ομάδες. Έλεγξε τα αιτήματα προσεκτικά.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Χωρίς κοινές επαφές. Έλεγξε τα αιτήματα προσεκτικά.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Αυτο το μήνυμα διαγράφτηκε.";
@@ -5821,11 +5860,8 @@
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Μήνυμα φωνής";
 
-/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Πάτα παρατεταμένα για να ηχογραφήσεις ένα μήνυμα φωνής.";
-
-/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Μήνυμα φωνής";
+/* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Ολοκλήρωσε την εγκατάσταση στο Signal Desktop.";
@@ -5847,9 +5883,6 @@
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Ορισμός ταπετσαρίας για %@.";
-
-/* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Ορισμός";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Προεπισκόπηση";

@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "క్రొత్త సభ్యుడిని జోడించండి";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "ఇప్పటికే సభ్యుడు";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ఇప్పటికే %@ లో సభ్యుడు";
@@ -131,7 +131,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "సందేశ అభ్యర్థనల గురించి";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "సమాధానం";
@@ -428,13 +428,16 @@
 "BUTTON_OKAY" = "సరే";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "మునుపటి";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "ఎంచుకోండి";
 
+/* Label for the 'set' button. */
+"BUTTON_SET" = "జత";
+
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "ప్రారంభించండి";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "సమర్పించండి";
@@ -719,22 +722,22 @@
 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+"CONTACT_SUPPORT_FILTER_OTHER" = "ఇంకేదో";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "ఇతర";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "చెల్లింపులు";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "చెల్లింపులు";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "మేము ఏ విధంగా సహయపడగలము?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "నాకు ఒక ప్రశ్న ఉంది";
 
 /* A brief localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
@@ -905,7 +908,7 @@
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
 
 /* Label for button to mute a thread forever. */
-"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "ఎల్లప్పుడూ";
 
 /* Button to mute the chat */
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
@@ -932,13 +935,13 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 వారం";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "ఎల్లప్పుడూ";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "ఎల్లప్పుడూ మ్యూట్ చేయబడింది";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "మ్యూట్ చేయబడింది";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "వరకు %@";
@@ -1273,14 +1276,35 @@
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ఈ చాట్‌లోని సందేశాలు %@ తర్వాత కనిపించవు.";
 
+/* Disappearing message option to define a custom time */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+
+/* The unit for a number of days */
+"DISAPPEARING_MESSAGES_DAYS" = "days";
+
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "ప్రారంభించినప్పుడు, ఈ మాటామంతీ‌లో పంపిన మరియు స్వీకరించిన సందేశాలు చూసిన తర్వాత అవి కనిపించవు.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "ప్రస్తుతం సందేశాలు %@ తర్వాత అదృశ్యమవుతాయి";
 
+/* The unit for a number of hours */
+"DISAPPEARING_MESSAGES_HOURS" = "గంటలు";
+
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "అదృశ్యమవుతున్న సందేశాలు అమరికలు ";
+
+/* The unit for a number of minutes */
+"DISAPPEARING_MESSAGES_MINUTES" = "నిముషాలు ";
+
+/* The unit for a number of seconds */
+"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+
+/* subheading in privacy settings */
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+
+/* The unit for a number of weeks */
+"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "రద్దుచేసే";
@@ -2566,6 +2590,9 @@
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "స్టిక్కర్లు";
 
+/* accessibility hint for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "వాయిస్ సందేశం";
 
@@ -2836,6 +2863,9 @@
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "అప్లోడ్";
 
+/* Status label for messages which are viewed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "అందుకున్న";
 
@@ -2985,6 +3015,9 @@
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "అప్లోడ్";
+
+/* status message for viewed messages */
+"MESSAGE_STATUS_VIEWED" = "వీక్షించినవి";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "కొత్త సందేశం";
@@ -3428,7 +3461,7 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "సేవను సంప్రదించలేకపోయాము";
 
 /* Indicates that a payment failed due to insufficient funds. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
@@ -3437,10 +3470,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "లావాదేవీ చెల్లదు";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "చెల్లింపులను ఉపయోగించడానికి Signalను నవీకరించండి.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
@@ -3641,7 +3674,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "మీరు ఆహ్వానించారు";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "ఇన్‌కమింగ్ సందేశాన్ని నిర్వహించడంలో లోపం";
@@ -4235,7 +4268,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "క్రొత్త నిర్వాహకుడిని ఎంచుకోండి";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "పుష్ నోటిఫికేషన్‌లను తిరిగి నమోదు చేయండి";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "Signal‌ను గ్రహం మీద ఉత్తమ సందేశ అనువర్తనంగా మార్చడానికి, మీ అభిప్రాయాన్ని వినడానికి మేము ఇష్టపడతాము.";
@@ -4543,12 +4576,6 @@
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "అన్నింటిని చూడు";
 
-/* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "ఇతర పరిచయాలు";
-
-/* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "ఇటీవలి మాటామంతీ";
-
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "మరల పంపు";
 
@@ -4708,6 +4735,9 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "డేటా వినియోగం";
 
+/* table cell label in conversation settings */
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ఖాతాను తొలగించండి";
 
@@ -4731,6 +4761,12 @@
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ప్రతిదీ తొలగించండి";
+
+/* Label for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES" = "అదృశ్యమవుతున్న  సందేశాలు";
+
+/* Explanation for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal కు దానం చేయండి";
@@ -5126,7 +5162,7 @@
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "చెల్లింపులు";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
@@ -5539,6 +5575,9 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "నిర్ధారించబడిన";
 
+/* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
 
@@ -5821,11 +5860,8 @@
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "వాయిస్ సందేశం";
 
-/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "మాటతో కూడిన సందేశాన్ని రికార్డు చేయుటకు తడుతూనే ఉంచండి.";
-
-/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "వాయిస్ సందేశం";
+/* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop యొక్క పూర్తి స్థాపన ";
@@ -5847,9 +5883,6 @@
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ కోసం వాల్‌పేపర్‌ను నిశ్చిత చేయండి.";
-
-/* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "జత";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "పూర్వప్రదర్శన";

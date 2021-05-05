@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ne zdaj";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "O Signal-u";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Sprejmi novo varnostno številko";
@@ -17,10 +17,10 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Stik";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Stik za %@";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Medijske datoteke";
+"ACCESSIBILITY_LABEL_MEDIA" = "Vsebine";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Vi";
@@ -29,22 +29,22 @@
 "ACCESSIBILITY_LABEL_STICKER" = "Nalepka";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Glasovno sporočilo";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "%@ sekundno glasovno sporočilo";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Klic Signal";
+"ACTION_AUDIO_CALL" = "Signal klic";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Povabi k uporabi";
+"ACTION_INVITE" = "Povabi na Signal";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Pošlji sporočilo";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Deli stik iz imenika";
+"ACTION_SHARE_CONTACT" = "Deli stik";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "Tapnite za prenos";
@@ -53,25 +53,25 @@
 "ACTION_VIDEO_CALL" = "Video klic";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Dodaj člana/ico";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Včlani";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Dodaj člane/ice";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Včlani ceč oseb";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Dodam člana/ico v skupino “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Včlani v skupino “%2$@”?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Dodam %1$@ članov v skupino “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Včlanim %1$@ oseb v skupino “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Dodaj novega/novo člana/ico";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Včlani novo osebo";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Dodajanje novih članov";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Včlanitev novih oseb";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Dodajanje članov/ic";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Včlanitev";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Bi želeli deliti svoj profil s to skupino?";
@@ -86,28 +86,28 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Dodaj v skupino";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Dodaj \"%1$@\" v \"%2$@\"?";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Dodaj novega/novo člana/ico";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Včlani novo osebo";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Uporabnik/ca je že član/ica skupine";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Je že v skupini";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Uporabnik/ca %@ je že član/ica skupine %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ je že v skupini %@";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Nedavni pogovori";
+"ADD_TO_GROUP_RECENTS_TITLE" = "Nedavni kepeti";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Uporabnik/ca %@ je bil dodan/a v skupino %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = " %@ je bil dodan/-a v skupino %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "Dodaj v skupino";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bi želeli deliti svoj profil s tem/to uporabnikom/co?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bi želeli deliti svoj profil s to osebo?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Razumem";
@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "Shrani";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "S to osebo nimate nobene skupne skupine. Preverite zahtevke, da se izognete nezaželjenim spoločilom.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "S to skupino nimate skupnih članov. Preverite zahtevke, da se izognete nezaželjenim spoločilom.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O prošnjah za pogovor";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Sprejmi";
@@ -428,10 +428,13 @@
 "BUTTON_OKAY" = "Okej";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "Nazaj";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Izberi";
+
+/* Label for the 'set' button. */
+"BUTTON_SET" = "Set";
 
 /* Label for the 'start' button. */
 "BUTTON_START" = "Start";
@@ -542,13 +545,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Izberi državo";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Izberite barvo za odhodna sporočila v tem pogovoru.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Izberite barvo za odhodna sporočila v tem klepetu";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Barvo, ki ste jo določili, boste videli le sami.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Barva pogovora";
+"COLOR_PICKER_SHEET_TITLE" = "Barva klepeta";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Primerjaj z odložiščem";
@@ -788,7 +791,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Skupine";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Nedavni pogovori";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Nedavni klepeti";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Ljudje";
@@ -845,7 +848,7 @@
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Blokiraj uporabnika/co";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Barva pogovora";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Barva klepeta";
 
 /* Label for the 'edit' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT" = "Uredi";
@@ -902,7 +905,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Utišaj ta klepet za...";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Vedno";
@@ -1273,14 +1276,35 @@
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Sporočila v tem klepetu bodo izginila po %@.";
 
+/* Disappearing message option to define a custom time */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+
+/* The unit for a number of days */
+"DISAPPEARING_MESSAGES_DAYS" = "days";
+
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kadar je vklopljeno, bodo poslana in prejeta sporočila tega klepeta po ogledu izginila.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Sporočila trenutno izginejo po %@";
 
+/* The unit for a number of hours */
+"DISAPPEARING_MESSAGES_HOURS" = "ur";
+
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Natavitve izginjajočih sporočil";
+
+/* The unit for a number of minutes */
+"DISAPPEARING_MESSAGES_MINUTES" = "minut";
+
+/* The unit for a number of seconds */
+"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+
+/* subheading in privacy settings */
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+
+/* The unit for a number of weeks */
+"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Prekini";
@@ -1508,7 +1532,7 @@
 "FORWARD_MESSAGE" = "Posreduj sporočilo";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "V tem klepetu ni medijskih vsebin.";
+"GALLERY_TILES_EMPTY_GALLERY" = "V tem klepetu ni predstavnostnih vsebin.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Nalaganje novejših vsebin...";
@@ -2566,6 +2590,9 @@
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Nalepke";
 
+/* accessibility hint for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Glasovno sporočilo";
 
@@ -2618,7 +2645,7 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Novo sporočilo";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Chat";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Pojdi na naslednji klepet";
 
 /* A keyboard command to jump to the previous conversation in the list. */
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Chat";
@@ -2836,6 +2863,9 @@
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Prenašam";
 
+/* Status label for messages which are viewed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Prejeto";
 
@@ -2985,6 +3015,9 @@
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Nalagam...";
+
+/* status message for viewed messages */
+"MESSAGE_STATUS_VIEWED" = "Ogledano";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Novo sporočilo";
@@ -4543,12 +4576,6 @@
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "See All";
 
-/* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Drugi stiki";
-
-/* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Nedavni pogovori";
-
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Ponovno pošlji";
 
@@ -4708,6 +4735,9 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Data Usage";
 
+/* table cell label in conversation settings */
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Izbriši račun";
 
@@ -4731,6 +4761,12 @@
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Izbriši vse";
+
+/* Label for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES" = "Izginjajoča sporočila";
+
+/* Explanation for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Podprite Signal";
@@ -5539,6 +5575,9 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Potrdi";
 
+/* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
 
@@ -5816,16 +5855,13 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "Poslane medijske datoteke za enkraten ogled so avtomatično odstranjene s seznama.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Za preklic podrsajte";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Za prekinitev podrsajte v levo";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Glasovno sporočilo";
 
-/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Za snemanje glasovnega sporočila tapnite in zadržite prst.";
-
-/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Glasovno sporočilo";
+/* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Dokončajte nastavitev v programu Signal Desktop.";
@@ -5847,9 +5883,6 @@
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
-
-/* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "Set";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Predogled";

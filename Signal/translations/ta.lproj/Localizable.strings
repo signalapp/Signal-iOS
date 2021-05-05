@@ -433,6 +433,9 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "தேர்வு";
 
+/* Label for the 'set' button. */
+"BUTTON_SET" = "அமைக்கவும்";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "Start";
 
@@ -1273,14 +1276,35 @@
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "இந்த உரையாடலில்  செய்திகள் %@ பிறகு மறைந்துவிடும்.";
 
+/* Disappearing message option to define a custom time */
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+
+/* The unit for a number of days */
+"DISAPPEARING_MESSAGES_DAYS" = "days";
+
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "இயக்கப்பட்டால், இதில் செய்திகள் அனுப்பப்பட்டு பெறப்படுகின்றன உரையாடல் விருப்பம் மறைந்துவிடும் அவர்கள் காணப்பட்ட பிறகு.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "தற்போது %@  க்குப் பிறகு செய்திகள் மறைந்துவிடும்";
 
+/* The unit for a number of hours */
+"DISAPPEARING_MESSAGES_HOURS" = "மணி நேரங்கள்";
+
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "செய்தி அமைப்புகள் மறைந்துவிடும்";
+
+/* The unit for a number of minutes */
+"DISAPPEARING_MESSAGES_MINUTES" = "நிமிடங்கள்";
+
+/* The unit for a number of seconds */
+"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+
+/* subheading in privacy settings */
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+
+/* The unit for a number of weeks */
+"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "நிராகரி";
@@ -2566,6 +2590,9 @@
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ஓட்டிகள்";
 
+/* accessibility hint for the button which records voice memos */
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "குரல் செய்தி";
 
@@ -2836,6 +2863,9 @@
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "பதிவேற்றுகிறது";
 
+/* Status label for messages which are viewed. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "பெறப்பட்டது";
 
@@ -2985,6 +3015,9 @@
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "ஏற்றுகிறது ...";
+
+/* status message for viewed messages */
+"MESSAGE_STATUS_VIEWED" = "பார்க்கப்பட்டவை";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "புதிய தகவல்";
@@ -4543,12 +4576,6 @@
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "See All";
 
-/* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "பிற தொடர்புகள்";
-
-/* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "சமீபத்திய அரட்டைகள்";
-
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "மீண்டும் அனுப்பு";
 
@@ -4708,6 +4735,9 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "தரவு பயன்பாடு";
 
+/* table cell label in conversation settings */
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "கணக்கு நீக்குக";
 
@@ -4731,6 +4761,12 @@
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "எல்லாவற்றையும் நீக்கு";
+
+/* Label for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES" = "காணாமல் போகும் செய்திகள்";
+
+/* Explanation for the 'disappearing messages' privacy settings. */
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donate to Signal சிக்னலுக்கு நன்கொடை";
@@ -5539,6 +5575,9 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "சரிபார்க்கவும்";
 
+/* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
 
@@ -5816,16 +5855,13 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "வெளிச்செல்லும் காண்க-ஒருமுறை முறை மீடியா கோப்புகள் அனுப்பப்பட்ட பின் தானாகவே அகற்றப்படும்.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "ரத்து செய்ய ஸ்லைடு செய்யவும் ";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "ரத்து செய்ய ஸ்லைடு செய் ";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "குரல் செய்தி";
 
-/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "குரல் செய்தியைப் பதிவுசெய்ய தட்டவும்.";
-
-/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "குரல் செய்தி";
+/* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop பில் முழுமையான அமைப்பு.";
@@ -5847,9 +5883,6 @@
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@க்கு பின்னணிப்படத்தை அமைக்கவும்.";
-
-/* The text for the set button on wallpaper preview view. */
-"WALLPAPER_PREVIEW_SET_BUTTON" = "அமைக்கவும்";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "முன்னோட்டம்";
