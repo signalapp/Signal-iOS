@@ -73,8 +73,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 // Specifically, it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-
     OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp && !CurrentAppContext().isRunningTests) {
         backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -98,8 +96,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                 completionQueue:(nullable dispatch_queue_t)completionQueue
                 completionBlock:(nullable dispatch_block_t)completionBlock
 {
-    id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-
     __block OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp) {
         backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];

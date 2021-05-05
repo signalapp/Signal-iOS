@@ -152,6 +152,8 @@
 "DATE_YESTERDAY" = "昨日";
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "消えるメッセージ";
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "この会話中のメッセージは%@後に消えます";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "グループを編集";
 /* Label indicating media gallery is empty */
@@ -264,6 +266,10 @@
 "NOTIFICATIONS_SHOW" = "表示内容";
 /* No comment provided by engineer. */
 "OK" = "OK";
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@がメッセージの消失をオフにしました";
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@がメッセージの消失時間を%@に設定しました";
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "画像はキャプチャできません";
 /* alert title */
@@ -392,7 +398,10 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "タップを保持して音声録音";
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "音声メッセージ";
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "消えるメッセージをオフにしました";
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "消えるメッセージの消失時間を%@に設定しました";
 // MARK: - Session
 "continue_2" = "続行する";
 "copy" = "コピーする";
