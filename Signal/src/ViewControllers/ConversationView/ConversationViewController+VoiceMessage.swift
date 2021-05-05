@@ -12,10 +12,18 @@ extension ConversationViewController {
         // Cancel any ongoing audio playback.
         cvAudioPlayer.stopAll()
 
-        inputToolbar?.showVoiceMemoUI()
-
         let voiceMessageModel = VoiceMessageModel(thread: thread)
         viewState.currentVoiceMessageModel = voiceMessageModel
+
+        // Delay showing the voice memo UI for N ms to avoid a jarring transition
+        // when you just tap and don't hold.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            guard let self = self else { return }
+            guard self.viewState.currentVoiceMessageModel === voiceMessageModel else { return }
+            self.configureScrollDownButtons()
+            self.inputToolbar?.showVoiceMemoUI()
+        }
+
         ows_askForMicrophonePermissions { [weak self] granted in
             guard let self = self else { return }
             guard self.viewState.currentVoiceMessageModel === voiceMessageModel else { return }
@@ -54,14 +62,14 @@ extension ConversationViewController {
         defer { viewState.currentVoiceMessageModel = nil }
         guard let voiceMessageModel = viewState.currentVoiceMessageModel else { return }
 
-        voiceMessageModel.stopRecording()
+        voiceMessageModel.stopRecordingAsync()
 
         NotificationHapticFeedback().notificationOccurred(.warning)
 
         clearVoiceMessageDraft()
         viewState.currentVoiceMessageModel = nil
-        inputToolbar?.cancelVoiceMemoIfNecessary()
         inputToolbar?.hideVoiceMemoUI(true)
+        configureScrollDownButtons()
     }
 
     private static let minimumVoiceMessageDuration: TimeInterval = 1
@@ -88,6 +96,7 @@ extension ConversationViewController {
         } else {
             databaseStorage.asyncWrite { voiceMessageModel.saveDraft(transaction: $0) } completion: {
                 self.inputToolbar?.showVoiceMemoDraft(voiceMessageModel)
+                self.configureScrollDownButtons()
             }
         }
     }
@@ -95,6 +104,7 @@ extension ConversationViewController {
     @objc
     func sendVoiceMessageModel(_ voiceMessageModel: VoiceMessageModel) {
         inputToolbar?.hideVoiceMemoUI(true)
+        configureScrollDownButtons()
 
         var attachment: SignalAttachment?
         databaseStorage.asyncWrite { transaction in

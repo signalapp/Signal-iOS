@@ -38,8 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)voiceMemoGestureDidCancel;
 
-- (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha;
-
 - (void)sendVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft;
 
 #pragma mark - Attachments
@@ -117,10 +115,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft;
 
 - (void)hideVoiceMemoUI:(BOOL)animated;
-
-- (void)setVoiceMemoUICancelAlpha:(CGFloat)cancelAlpha;
-
-- (void)cancelVoiceMemoIfNecessary;
 
 - (void)showVoiceMemoTooltip;
 

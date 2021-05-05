@@ -136,11 +136,11 @@ public class VoiceMessageModel: NSObject {
     @objc
     public var isRecording: Bool { audioRecorder?.isRecording ?? false }
 
-    public var duration: TimeInterval? {
+    public lazy var duration: TimeInterval? = {
         guard OWSFileSystem.fileOrFolderExists(url: audioFile) else { return nil }
         audioPlayer.setupAudioPlayer()
         return audioPlayer.duration
-    }
+    }()
 
     private var audioRecorder: AVAudioRecorder? {
         didSet {
@@ -199,7 +199,33 @@ public class VoiceMessageModel: NSObject {
     public func stopRecording() {
         AssertIsOnMainThread()
 
-        audioRecorder?.stop()
-        audioRecorder = nil
+        guard let audioRecorder = audioRecorder else { return }
+
+        self.duration = audioRecorder.currentTime
+
+        audioRecorder.stop()
+
+        self.audioRecorder = nil
+
+        // This is expensive. We can safely do it in the background.
+        DispatchQueue.sharedUserInteractive.async {
+            self.audioSession.endAudioActivity(self.audioActivity)
+        }
+    }
+
+    public func stopRecordingAsync() {
+        AssertIsOnMainThread()
+
+        guard let audioRecorder = audioRecorder else { return }
+
+        self.audioRecorder = nil
+        self.duration = audioRecorder.currentTime
+
+        // This is expensive. We can safely do it in the background
+        // if we're not relying on the recorded audio (e.g. we canceled)
+        DispatchQueue.sharedUserInteractive.async {
+            audioRecorder.stop()
+            self.audioSession.endAudioActivity(self.audioActivity)
+        }
     }
 }

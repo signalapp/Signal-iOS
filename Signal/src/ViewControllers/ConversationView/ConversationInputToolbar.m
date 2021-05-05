@@ -89,7 +89,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic, nullable) UILabel *voiceMemoCancelLabel;
 @property (nonatomic, nullable) UIView *voiceMemoRedRecordingCircle;
 @property (nonatomic, nullable) UILabel *recordingLabel;
-@property (nonatomic, readonly) BOOL isRecordingVoiceMemo;
+@property (nonatomic) BOOL isShowingVoiceMemoUI;
 @property (nonatomic) VoiceMemoRecordingState voiceMemoRecordingState;
 @property (nonatomic) CGPoint voiceMemoGestureStartLocation;
 @property (nonatomic, nullable, weak) UIView *voiceMemoTooltip;
@@ -636,15 +636,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     // NOTE: We use untrimmedText, so that the sticker button disappears
     //       even if the user just enters whitespace.
     BOOL hasTextInput = self.inputTextView.untrimmedText.length > 0;
-    BOOL isRecordingVoiceMemo = self.isRecordingVoiceMemo;
+    BOOL isShowingVoiceMemoUI = self.isShowingVoiceMemoUI;
 
     // We used trimmed text for determining all the other button visibility.
     BOOL hasNonWhitespaceTextInput = self.inputTextView.trimmedText.length > 0;
     ensureViewHiddenState(self.attachmentButton, NO);
-    if (isRecordingVoiceMemo) {
+    if (isShowingVoiceMemoUI) {
         BOOL hideSendButton = self.voiceMemoRecordingState == VoiceMemoRecordingState_RecordingHeld;
         ensureViewHiddenState(self.linkPreviewWrapper, YES);
-        ensureViewHiddenState(self.quotedReplyWrapper, YES);
         ensureViewHiddenState(self.voiceMemoContentView, NO);
         ensureViewHiddenState(self.voiceMemoContentViewLeftSpacer, NO);
         ensureViewHiddenState(self.voiceMemoContentViewRightSpacer, !hideSendButton);
@@ -654,7 +653,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         ensureViewHiddenState(self.attachmentButton, YES);
     } else if (hasNonWhitespaceTextInput) {
         ensureViewHiddenState(self.linkPreviewWrapper, NO);
-        ensureViewHiddenState(self.quotedReplyWrapper, NO);
         ensureViewHiddenState(self.voiceMemoContentView, YES);
         ensureViewHiddenState(self.voiceMemoContentViewLeftSpacer, YES);
         ensureViewHiddenState(self.voiceMemoContentViewRightSpacer, YES);
@@ -664,7 +662,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         ensureViewHiddenState(self.attachmentButton, NO);
     } else {
         ensureViewHiddenState(self.linkPreviewWrapper, NO);
-        ensureViewHiddenState(self.quotedReplyWrapper, NO);
         ensureViewHiddenState(self.voiceMemoContentView, YES);
         ensureViewHiddenState(self.voiceMemoContentViewLeftSpacer, YES);
         ensureViewHiddenState(self.voiceMemoContentViewRightSpacer, YES);
@@ -684,7 +681,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
 
     void (^updateBlock)(void) = ^{
-        BOOL hideStickerButton = hasTextInput || isRecordingVoiceMemo || self.quotedReply != nil;
+        BOOL hideStickerButton = hasTextInput || isShowingVoiceMemoUI || self.quotedReply != nil;
         ensureViewHiddenState(self.stickerButton, hideStickerButton);
         if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
@@ -743,7 +740,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         case UIGestureRecognizerStatePossible:
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
-            if (self.isRecordingVoiceMemo) {
+            if (self.voiceMemoRecordingState != VoiceMemoRecordingState_Idle) {
                 // Cancel voice message if necessary.
                 self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
                 [self.inputToolbarDelegate voiceMemoGestureDidCancel];
@@ -769,7 +766,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
             [self.inputToolbarDelegate voiceMemoGestureDidStart];
             break;
         case UIGestureRecognizerStateChanged:
-            if (self.isRecordingVoiceMemo) {
+            if (self.isShowingVoiceMemoUI) {
                 // Check for "slide to cancel" gesture.
                 CGPoint location = [sender locationInView:self];
                 // For LTR/RTL, swiping in either direction will cancel.
@@ -791,7 +788,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                         case VoiceMemoRecordingState_RecordingHeld:
                             self.voiceMemoRecordingState = VoiceMemoRecordingState_RecordingLocked;
                             [self.inputToolbarDelegate voiceMemoGestureDidLock];
-                            [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:0];
+                            [self setVoiceMemoUICancelAlpha:0];
                             break;
                         case VoiceMemoRecordingState_RecordingLocked:
                         case VoiceMemoRecordingState_Draft:
@@ -815,7 +812,17 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                         [self.inputToolbarDelegate voiceMemoGestureDidCancel];
                         break;
                     } else {
-                        [self.inputToolbarDelegate voiceMemoGestureDidUpdateCancelWithRatioComplete:cancelAlpha];
+                        [self setVoiceMemoUICancelAlpha:cancelAlpha];
+                    }
+
+                    if (xOffset > yOffset) {
+                        self.voiceMemoRedRecordingCircle.transform
+                            = CGAffineTransformMakeTranslation(MIN(-xOffset, 0), 0);
+                    } else if (yOffset > xOffset) {
+                        self.voiceMemoRedRecordingCircle.transform
+                            = CGAffineTransformMakeTranslation(0, MIN(-yOffset, 0));
+                    } else {
+                        self.voiceMemoRedRecordingCircle.transform = CGAffineTransformIdentity;
                     }
                 }
             }
@@ -840,29 +847,31 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 - (void)setVoiceMemoRecordingState:(VoiceMemoRecordingState)voiceMemoRecordingState
 {
+    OWSAssertIsOnMainThread();
+
     if (voiceMemoRecordingState != _voiceMemoRecordingState) {
         _voiceMemoRecordingState = voiceMemoRecordingState;
         [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
     }
 }
 
-#pragma mark - Voice Memo
-
-- (BOOL)isRecordingVoiceMemo
+- (void)setIsShowingVoiceMemoUI:(BOOL)isShowingVoiceMemoUI
 {
-    switch (self.voiceMemoRecordingState) {
-        case VoiceMemoRecordingState_Idle:
-            return NO;
-        case VoiceMemoRecordingState_RecordingHeld:
-        case VoiceMemoRecordingState_RecordingLocked:
-        case VoiceMemoRecordingState_Draft:
-            return YES;
+    OWSAssertIsOnMainThread();
+
+    if (isShowingVoiceMemoUI != _isShowingVoiceMemoUI) {
+        _isShowingVoiceMemoUI = isShowingVoiceMemoUI;
+        [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
     }
 }
+
+#pragma mark - Voice Memo
 
 - (void)showVoiceMemoUI
 {
     OWSAssertIsOnMainThread();
+
+    self.isShowingVoiceMemoUI = YES;
 
     [self removeVoiceMemoTooltip];
 
@@ -940,7 +949,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     VoiceMemoLockView *voiceMemoLockView = [VoiceMemoLockView new];
     self.voiceMemoLockView = voiceMemoLockView;
-    [self addSubview:voiceMemoLockView];
+    [self insertSubview:voiceMemoLockView belowSubview:redCircleView];
     [voiceMemoLockView autoAlignAxis:ALAxisVertical toSameAxisOfView:redCircleView];
     [voiceMemoLockView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:redCircleView];
     [voiceMemoLockView setCompressionResistanceHigh];
@@ -956,7 +965,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                      completion:nil];
 
     redCircleView.transform = CGAffineTransformMakeScale(0.0, 0.0);
-    [UIView animateWithDuration:0.1f animations:^{ redCircleView.transform = CGAffineTransformIdentity; }];
+    [UIView animateWithDuration:0.2f animations:^{ redCircleView.transform = CGAffineTransformIdentity; }];
 
     // Pulse the icon.
     imageView.alpha = 1.f;
@@ -979,6 +988,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)showVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft
 {
     OWSAssertIsOnMainThread();
+
+    self.isShowingVoiceMemoUI = YES;
 
     self.voiceMemoDraft = voiceMemoDraft;
     self.voiceMemoRecordingState = VoiceMemoRecordingState_Draft;
@@ -1003,6 +1014,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (void)hideVoiceMemoUI:(BOOL)animated
 {
     OWSAssertIsOnMainThread();
+
+    self.isShowingVoiceMemoUI = NO;
 
     [self.voiceMemoContentView removeAllSubviews];
 
@@ -1047,8 +1060,11 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     UIButton *cancelButton = [[OWSButton alloc] initWithBlock:^{
         [weakSelf.inputToolbarDelegate voiceMemoGestureDidCancel];
     }];
+
     [cancelButton setTitle:CommonStrings.cancelButton forState:UIControlStateNormal];
     [cancelButton setTitleColor:UIColor.ows_accentRedColor forState:UIControlStateNormal];
+    [cancelButton setTitleColor:[UIColor.ows_accentRedColor colorWithAlphaComponent:0.4]
+                       forState:UIControlStateHighlighted];
     cancelButton.alpha = 0;
     cancelButton.titleLabel.textAlignment = NSTextAlignmentRight;
     cancelButton.titleLabel.font = UIFont.ows_dynamicTypeBodyClampedFont.ows_medium;
@@ -1102,13 +1118,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self.recordingLabel sizeToFit];
 }
 
-- (void)cancelVoiceMemoIfNecessary
-{
-    if (self.isRecordingVoiceMemo) {
-        self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
-    }
-}
-
 - (void)showVoiceMemoTooltip
 {
     if (self.voiceMemoTooltip) {
@@ -1144,12 +1153,14 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     OWSAssertDebug(self.inputToolbarDelegate);
 
-    if (self.voiceMemoDraft) {
+    if (self.isShowingVoiceMemoUI) {
         self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
-        [self.inputToolbarDelegate sendVoiceMemoDraft:self.voiceMemoDraft];
-    } else if (self.isRecordingVoiceMemo) {
-        self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
-        [self.inputToolbarDelegate voiceMemoGestureDidComplete];
+
+        if (self.voiceMemoDraft) {
+            [self.inputToolbarDelegate sendVoiceMemoDraft:self.voiceMemoDraft];
+        } else {
+            [self.inputToolbarDelegate voiceMemoGestureDidComplete];
+        }
     } else {
         [self.inputToolbarDelegate sendButtonPressed];
     }

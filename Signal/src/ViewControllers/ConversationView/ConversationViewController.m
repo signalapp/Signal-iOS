@@ -2022,7 +2022,10 @@ typedef enum : NSUInteger {
         = self.isHidingScrollToNextMentionButton ? YES : self.scrollToNextMentionButton.hidden;
     BOOL scrollToNextMentionIsHidden = scrollToNextMentionWasHidden;
 
-    if (self.isInPreviewPlatter) {
+    if (self.viewState.currentVoiceMessageModel.isRecording) {
+        scrollDownIsHidden = YES;
+        scrollToNextMentionIsHidden = YES;
+    } else if (self.isInPreviewPlatter) {
         scrollDownIsHidden = YES;
         scrollToNextMentionIsHidden = YES;
     } else if (self.isPresentingMessageActions) {
@@ -3388,13 +3391,6 @@ typedef enum : NSUInteger {
     OWSLogInfo(@"voiceMemoGestureDidCancel");
 
     [self cancelRecordingVoiceMessage];
-}
-
-- (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha
-{
-    OWSAssertIsOnMainThread();
-
-    [self.inputToolbar setVoiceMemoUICancelAlpha:cancelAlpha];
 }
 
 - (void)sendVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft
