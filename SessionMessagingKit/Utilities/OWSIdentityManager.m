@@ -14,7 +14,6 @@
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
-#import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "TSMessage.h"
 #import "YapDatabaseConnection+OWS.h"

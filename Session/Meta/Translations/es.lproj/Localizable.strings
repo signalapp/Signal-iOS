@@ -152,6 +152,8 @@
 "DATE_YESTERDAY" = "Ayer";
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Desaparición de mensajes";
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Los mensajes de este chat desaparecerán tras %@.";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Editar grupo";
 /* Label indicating media gallery is empty */
@@ -264,6 +266,10 @@
 "NOTIFICATIONS_SHOW" = "Ver";
 /* No comment provided by engineer. */
 "OK" = "OK";
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha desactivado la desaparición de mensajes.";
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha fijado la desaparición de mensajes en %@.";
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "Fallo al tomar foto.";
 /* alert title */
@@ -392,7 +398,10 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Toca y mantén pulsado el icono del micrófono para grabar una nota de voz corta. Toca, arrastra hacia arriba y suelta para grabar notas de voz más largas.";
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Nota de voz";
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Has desactivado la desaparición de mensajes.";
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Has fijado la desaparición de mensajes en %@.";
 // MARK: - Session
 "continue_2" = "Continuar";
 "copy" = "Copiar";

@@ -152,6 +152,8 @@
 "DATE_YESTERDAY" = "Yesterday";
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Disappearing Messages";
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Edit Group";
 /* Label indicating media gallery is empty */
@@ -264,6 +266,10 @@
 "NOTIFICATIONS_SHOW" = "Show";
 /* No comment provided by engineer. */
 "OK" = "OK";
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@";
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
 /* alert title */
@@ -392,6 +398,10 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
 // MARK: - Session
 "continue_2" = "Continue";
 "copy" = "Copy";

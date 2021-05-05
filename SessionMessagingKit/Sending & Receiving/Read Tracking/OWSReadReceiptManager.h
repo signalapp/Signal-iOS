@@ -16,22 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
-// There are four kinds of read receipts:
-//
-// * Read receipts that this client sends to linked
-//   devices to inform them that a message has been read.
-// * Read receipts that this client receives from linked
-//   devices that inform this client that a message has been read.
-//    * These read receipts are saved so that they can be applied
-//      if they arrive before the corresponding message.
-// * Read receipts that this client sends to other users
-//   to inform them that a message has been read.
-// * Read receipts that this client receives from other users
-//   that inform this client that a message has been read.
-//    * These read receipts are saved so that they can be applied
-//      if they arrive before the corresponding message.
-//
-// This manager is responsible for handling and emitting all four kinds.
 @interface OWSReadReceiptManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -47,9 +31,6 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 - (void)processReadReceiptsFromRecipientId:(NSString *)recipientId
                             sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
                              readTimestamp:(uint64_t)readTimestamp;
-
-- (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Locally Read
 

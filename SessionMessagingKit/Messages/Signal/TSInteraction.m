@@ -20,8 +20,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_IncomingMessage";
         case OWSInteractionType_OutgoingMessage:
             return @"OWSInteractionType_OutgoingMessage";
-        case OWSInteractionType_Error:
-            return @"OWSInteractionType_Error";
         case OWSInteractionType_Call:
             return @"OWSInteractionType_Call";
         case OWSInteractionType_Info:

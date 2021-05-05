@@ -316,15 +316,6 @@ BOOL IsNoteToSelfEnabled(void)
         return NO;
     }
 
-    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
-            // there was no meaningful interaction.
-            return NO;
-        }
-    }
-
     return YES;
 }
 

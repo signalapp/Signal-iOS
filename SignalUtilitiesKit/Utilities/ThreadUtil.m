@@ -5,7 +5,6 @@
 #import "ThreadUtil.h"
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
-#import "TSUnreadIndicatorInteraction.h"
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/OWSBlockingManager.h>
@@ -82,24 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
     [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        // Find any "dynamic" interactions and safety number changes.
-        //
-        // We use different views for performance reasons.
-        NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-        [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction]
-            enumerateKeysAndObjectsInGroup:thread.uniqueId
-                                usingBlock:^(
-                                    NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                    if ([object isKindOfClass:[TSErrorMessage class]]) {
-                                        TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-                                        OWSAssertDebug(
-                                            errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
-                                        [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                                    } else {
-                                        OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
-                                    }
-                                }];
-
         // Determine if there are "unread" messages in this conversation.
         // If we've been passed a firstUnseenInteractionTimestampParameter,
         // just use that value in order to preserve continuity of the
@@ -122,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     thread:thread
                                transaction:transaction
                               maxRangeSize:maxRangeSize
-            nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
+            nonBlockingSafetyNumberChanges:@[]
                hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
                          firstUnseenSortId:firstUnseenSortId];
 
