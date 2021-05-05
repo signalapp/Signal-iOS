@@ -294,8 +294,9 @@ extension MessageReceiver {
             cancelTypingIndicatorsIfNeeded(for: message.sender!)
         }
         // Keep track of the open group server message ID ↔ message ID relationship
-        if let serverID = message.openGroupServerMessageID {
-            storage.setIDForMessage(withServerID: serverID, to: tsMessageID, using: transaction)
+        if let serverID = message.openGroupServerMessageID, let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) {
+            tsMessage.openGroupServerMessageID = serverID
+            tsMessage.save(with: transaction)
         }
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
