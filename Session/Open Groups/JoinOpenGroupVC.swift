@@ -170,8 +170,8 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
     weak var joinOpenGroupVC: JoinOpenGroupVC!
     
     // MARK: Components
-    private lazy var urlTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("vc_enter_chat_url_text_field_hint", comment: ""))
+    private lazy var urlTextView: TextView = {
+        let result = TextView(placeholder: NSLocalizedString("vc_enter_chat_url_text_field_hint", comment: ""))
         result.keyboardType = .URL
         result.autocapitalizationType = .none
         result.autocorrectionType = .no
@@ -207,7 +207,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
         nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextField, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
+        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
             UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -229,7 +229,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
     }
     
     @objc private func dismissKeyboard() {
-        urlTextField.resignFirstResponder()
+        urlTextView.resignFirstResponder()
     }
     
     // MARK: Interaction
@@ -243,7 +243,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
     }
     
     @objc private func joinOpenGroup() {
-        let url = urlTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        let url = urlTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
         joinOpenGroupVC.joinOpenGroup(with: url)
     }
 }
