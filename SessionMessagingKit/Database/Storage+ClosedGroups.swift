@@ -6,9 +6,7 @@ extension Storage {
     }
 
     private static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
-    
     private static let closedGroupFormationTimestampCollection = "SNClosedGroupFormationTimestampCollection"
-    
     private static let closedGroupZombieMembersCollection = "SNClosedGroupZombieMembersCollection"
 
     public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair] {

@@ -16,7 +16,7 @@ final class DataExtractionNotificationInfoMessage : TSInfoMessage {
     
     override func previewText(with transaction: YapDatabaseReadTransaction) -> String {
         guard let thread = thread as? TSContactThread else { return "" } // Should never occur
-        let sessionID = thread.contactIdentifier()
+        let sessionID = thread.contactSessionID()
         let displayName = Storage.shared.getContact(with: sessionID)?.displayName(for: .regular) ?? sessionID
         switch messageType {
         case .screenshotNotification: return "\(displayName) took a screenshot."

@@ -47,6 +47,7 @@ public protocol SessionMessagingKitStorageProtocol {
 
     func getAllV2OpenGroups() -> [String:OpenGroupV2]
     func getV2OpenGroup(for threadID: String) -> OpenGroupV2?
+    func v2GetThreadID(for v2OpenGroupID: String) -> String?
     func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any)
     
     // MARK: - Open Group Public Keys
@@ -69,8 +70,6 @@ public protocol SessionMessagingKitStorageProtocol {
     // MARK: - Open Group Metadata
 
     func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any)
-    func getIDForMessage(withServerID serverID: UInt64) -> String?
-    func setIDForMessage(withServerID serverID: UInt64, to messageID: String, using transaction: Any)
 
     // MARK: - Message Handling
 

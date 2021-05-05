@@ -75,7 +75,6 @@
 #import <SessionMessagingKit/TSAttachmentPointer.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
 #import <SessionMessagingKit/TSContactThread.h>
-#import <SessionMessagingKit/TSErrorMessage.h>
 #import <SessionMessagingKit/TSGroupThread.h>
 #import <SessionMessagingKit/TSIncomingMessage.h>
 #import <SessionMessagingKit/TSInfoMessage.h>

@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 
-
 - (BOOL)shouldAffectUnreadCounts;
 
 /**

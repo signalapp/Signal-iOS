@@ -158,7 +158,6 @@ extension Storage {
     // MARK: - Metadata
 
     private static let openGroupUserCountCollection = "SNOpenGroupUserCountCollection"
-    private static let openGroupMessageIDCollection = "LKMessageIDCollection"
     private static let openGroupImageCollection = "SNOpenGroupImageCollection"
     
     public func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64? {
@@ -171,18 +170,6 @@ extension Storage {
     
     public func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection)
-    }
-
-    public func getIDForMessage(withServerID serverID: UInt64) -> String? {
-        var result: String? = nil
-        Storage.read { transaction in
-            result = transaction.object(forKey: String(serverID), inCollection: Storage.openGroupMessageIDCollection) as? String
-        }
-        return result
-    }
-    
-    public func setIDForMessage(withServerID serverID: UInt64, to messageID: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(messageID, forKey: String(serverID), inCollection: Storage.openGroupMessageIDCollection)
     }
     
     public func getOpenGroupImage(for room: String, on server: String) -> Data? {

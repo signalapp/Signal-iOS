@@ -255,50 +255,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: YapDatabaseReadWriteTransaction) {
-
-        let notificationTitle: String?
-        switch self.previewType {
-        case .namePreview, .nameNoPreview:
-            notificationTitle = thread.name()
-        case .noNameNoPreview:
-            notificationTitle = nil
-        }
-
-        let notificationBody = errorMessage.previewText(with: transaction)
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
-        ]
-
-        transaction.addCompletionQueue(DispatchQueue.main) {
-            let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .errorMessage,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                userInfo: userInfo,
-                                sound: sound)
-        }
-    }
-
-    public func notifyUser(forThreadlessErrorMessage errorMessage: TSErrorMessage, transaction: YapDatabaseReadWriteTransaction) {
-        let notificationBody = errorMessage.previewText(with: transaction)
-
-        transaction.addCompletionQueue(DispatchQueue.main) {
-            let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
-            self.adaptee.notify(category: .threadlessErrorMessage,
-                                title: nil,
-                                body: notificationBody,
-                                userInfo: [:],
-                                sound: sound)
-        }
-    }
-
     @objc
     public func cancelNotifications(threadId: String) {
         self.adaptee.cancelNotifications(threadId: threadId)

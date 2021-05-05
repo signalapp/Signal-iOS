@@ -25,26 +25,18 @@ BOOL IsNoteToSelfEnabled(void)
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
-// DEPRECATED - not used since migrating to sortId
-// but keeping these properties around to ease any pain in the back-forth
-// migration while testing. Eventually we can safely delete these as they aren't used anywhere.
-@property (nonatomic, nullable) NSDate *lastMessageDate DEPRECATED_ATTRIBUTE;
-@property (nonatomic, nullable) NSDate *archivalDate DEPRECATED_ATTRIBUTE;
-
 @end
-
-#pragma mark -
 
 @implementation TSThread
 
-#pragma mark - Dependencies
+#pragma mark Dependencies
 
 - (TSAccountManager *)tsAccountManager
 {
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-#pragma mark -
+#pragma mark Initialization
 
 + (NSString *)collection {
     return @"TSThread";
@@ -69,19 +61,17 @@ BOOL IsNoteToSelfEnabled(void)
         return self;
     }
 
-    // renamed `hasEverHadMessage` -> `shouldThreadBeVisible`
-    if (!_shouldThreadBeVisible) {
+    // renamed `hasEverHadMessage` -> `shouldBeVisible`
+    if (!_shouldBeVisible) {
         NSNumber *_Nullable legacy_hasEverHadMessage = [coder decodeObjectForKey:@"hasEverHadMessage"];
 
         if (legacy_hasEverHadMessage != nil) {
-            _shouldThreadBeVisible = legacy_hasEverHadMessage.boolValue;
+            _shouldBeVisible = legacy_hasEverHadMessage.boolValue;
         }
     }
 
     NSDate *_Nullable lastMessageDate = [coder decodeObjectOfClass:NSDate.class forKey:@"lastMessageDate"];
     NSDate *_Nullable archivalDate = [coder decodeObjectOfClass:NSDate.class forKey:@"archivalDate"];
-    _isArchivedByLegacyTimestampForSorting =
-        [self.class legacyIsArchivedWithLastMessageDate:lastMessageDate archivalDate:archivalDate];
 
     return self;
 }
@@ -138,17 +128,17 @@ BOOL IsNoteToSelfEnabled(void)
 {
     if (!IsNoteToSelfEnabled()) { return NO; }
     if (![self isKindOfClass:TSContactThread.class]) { return NO; }
-    return [self.contactIdentifier isEqual:[SNGeneralUtilities getUserPublicKey]];
+    return [self.contactSessionID isEqual:[SNGeneralUtilities getUserPublicKey]];
 }
 
-#pragma mark - To be subclassed.
+#pragma mark To be subclassed.
 
 - (BOOL)isGroupThread {
     return NO;
 }
 
 // Override in ContactThread
-- (nullable NSString *)contactIdentifier
+- (nullable NSString *)contactSessionID
 {
     return nil;
 }
@@ -162,21 +152,20 @@ BOOL IsNoteToSelfEnabled(void)
     return @[];
 }
 
-#pragma mark - Interactions
+#pragma mark Interactions
 
 /**
  * Iterate over this thread's interactions
  */
 - (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                  usingBlock:(void (^)(TSInteraction *interaction,
-                                                 YapDatabaseReadTransaction *transaction))block
+                                  usingBlock:(void (^)(TSInteraction *interaction, BOOL *stop))block
 {
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     [interactionsByThread
         enumerateKeysAndObjectsInGroup:self.uniqueId
                             usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                                 TSInteraction *interaction = object;
-                                block(interaction, transaction);
+                                block(interaction, stop);
                             }];
 }
 
@@ -189,7 +178,7 @@ BOOL IsNoteToSelfEnabled(void)
     [self.dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self enumerateInteractionsWithTransaction:transaction
                                         usingBlock:^(
-                                            TSInteraction *interaction, YapDatabaseReadTransaction *t) {
+                                            TSInteraction *interaction, BOOL *stop) {
 
                                             block(interaction);
                                         }];
@@ -326,15 +315,6 @@ BOOL IsNoteToSelfEnabled(void)
         return NO;
     }
 
-    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
-            // there was no meaningful interaction.
-            return NO;
-        }
-    }
-
     return YES;
 }
 
@@ -343,15 +323,15 @@ BOOL IsNoteToSelfEnabled(void)
         return;
     }
 
-    if (!self.shouldThreadBeVisible) {
-        self.shouldThreadBeVisible = YES;
+    if (!self.shouldBeVisible) {
+        self.shouldBeVisible = YES;
         [self saveWithTransaction:transaction];
     } else {
         [self touchWithTransaction:transaction];
     }
 }
 
-#pragma mark - Disappearing Messages
+#pragma mark Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
     (YapDatabaseReadTransaction *)transaction
@@ -361,7 +341,6 @@ BOOL IsNoteToSelfEnabled(void)
 
 - (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-
     OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
 
     if (!config.isEnabled) {
@@ -371,54 +350,7 @@ BOOL IsNoteToSelfEnabled(void)
     }
 }
 
-#pragma mark - Archival
-
-- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
-{
-    if (!self.archivedAsOfMessageSortId) {
-        return NO;
-    }
-
-    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
-    uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
-    return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
-}
-
-+ (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate
-                               archivalDate:(nullable NSDate *)archivalDate
-{
-    if (!archivalDate) {
-        return NO;
-    }
-
-    if (!lastMessageDate) {
-        return YES;
-    }
-
-    return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
-}
-
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSThread *thread) {
-                                 uint64_t latestId = [SSKIncrementingIdFinder previousIdWithKey:TSInteraction.collection
-                                                                                    transaction:transaction];
-                                 thread.archivedAsOfMessageSortId = @(latestId);
-                             }];
-
-    [self markAllAsReadWithTransaction:transaction];
-}
-
-- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSThread *thread) {
-                                 thread.archivedAsOfMessageSortId = nil;
-                             }];
-}
-
-#pragma mark - Drafts
+#pragma mark Drafts
 
 - (NSString *)currentDraftWithTransaction:(YapDatabaseReadTransaction *)transaction {
     TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
@@ -435,14 +367,13 @@ BOOL IsNoteToSelfEnabled(void)
     [thread saveWithTransaction:transaction];
 }
 
-#pragma mark - Muted
+#pragma mark Muting
 
 - (BOOL)isMuted
 {
     NSDate *mutedUntilDate = self.mutedUntilDate;
     NSDate *now = [NSDate date];
-    return (mutedUntilDate != nil &&
-            [mutedUntilDate timeIntervalSinceDate:now] > 0);
+    return (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0);
 }
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction

@@ -130,7 +130,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.recipientId = recipientId;
 
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        self.thread = [TSContactThread getThreadWithContactId:recipientId transaction:transaction];
+        self.thread = [TSContactThread getThreadWithContactSessionID:recipientId transaction:transaction];
     }];
 
     BOOL isNoteToSelf = (IsNoteToSelfEnabled() && [recipientId isEqualToString:self.tsAccountManager.localNumber]);
@@ -175,13 +175,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     }
 
     BOOL isNoteToSelf
-        = (!thread.isGroupThread && [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+        = ([thread isKindOfClass:TSContactThread.class] && [((TSContactThread *)thread).contactSessionID isEqualToString:self.tsAccountManager.localNumber]);
     if (isNoteToSelf) {
         threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
     }
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
-        self.recipientId = thread.contactIdentifier;
+        self.recipientId = ((TSContactThread *)thread).contactSessionID;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(otherUsersProfileDidChange:)

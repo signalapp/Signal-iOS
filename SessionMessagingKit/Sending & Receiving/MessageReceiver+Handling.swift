@@ -52,7 +52,7 @@ extension MessageReceiver {
     public static func showTypingIndicatorIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
         func showTypingIndicatorsIfNeeded() {
@@ -70,7 +70,7 @@ extension MessageReceiver {
     public static func hideTypingIndicatorIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
         func hideTypingIndicatorsIfNeeded() {
@@ -88,7 +88,7 @@ extension MessageReceiver {
     public static func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactId(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
         func cancelTypingIndicatorsIfNeeded() {
@@ -110,7 +110,7 @@ extension MessageReceiver {
     private static func handleDataExtractionNotification(_ message: DataExtractionNotification, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard message.groupPublicKey == nil,
-            let thread = TSContactThread.getWithContactId(message.sender!, transaction: transaction) else { return }
+            let thread = TSContactThread.getWithContactSessionID(message.sender!, transaction: transaction) else { return }
         let type: TSInfoMessageType
         switch message.kind! {
         case .screenshot: type = .screenshotNotification
@@ -140,7 +140,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactId(syncTarget ?? senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
@@ -160,7 +160,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactId(syncTarget ?? senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
@@ -201,8 +201,8 @@ extension MessageReceiver {
                 userProfile.avatarUrlPath = contact.profilePictureURL
                 userProfile.profileName = contact.displayName
                 userProfile.save(with: transaction)
-                let thread = TSContactThread.getOrCreateThread(withContactId: sessionID, transaction: transaction)
-                thread.shouldThreadBeVisible = true
+                let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
+                thread.shouldBeVisible = true
                 thread.save(with: transaction)
             }
             // Closed groups
@@ -286,8 +286,9 @@ extension MessageReceiver {
             cancelTypingIndicatorsIfNeeded(for: message.sender!)
         }
         // Keep track of the open group server message ID ↔ message ID relationship
-        if let serverID = message.openGroupServerMessageID {
-            storage.setIDForMessage(withServerID: serverID, to: tsMessageID, using: transaction)
+        if let serverID = message.openGroupServerMessageID, let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) {
+            tsMessage.openGroupServerMessageID = serverID
+            tsMessage.save(with: transaction)
         }
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
@@ -390,7 +391,7 @@ extension MessageReceiver {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
             thread.save(with: transaction)
             // Notify the user
-            let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupUpdate)
+            let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupCreated)
             infoMessage.save(with: transaction)
         }
         // Add the group to the user's set of public keys to poll for
@@ -462,7 +463,7 @@ extension MessageReceiver {
             // Notify the user if needed
             guard name != group.groupName else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
@@ -496,7 +497,7 @@ extension MessageReceiver {
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }
@@ -540,7 +541,7 @@ extension MessageReceiver {
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
-            let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .groupQuit : .groupUpdate
+            let infoMessageType: TSInfoMessageType = wasCurrentUserRemoved ? .groupCurrentUserLeft : .groupUpdated
             let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
             let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: infoMessageType, customMessage: updateInfo)
             infoMessage.save(with: transaction)
@@ -573,8 +574,14 @@ extension MessageReceiver {
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
-            let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
-            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdate, customMessage: updateInfo)
+            let contact = Storage.shared.getContact(with: message.sender!)
+            let updateInfo: String
+            if let displayName = contact?.displayName(for: Contact.Context.regular) {
+                updateInfo = String(format: NSLocalizedString("GROUP_MEMBER_LEFT", comment: ""), displayName)
+            } else {
+                updateInfo = NSLocalizedString("GROUP_UPDATED", comment: "")
+            }
+            let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
     }

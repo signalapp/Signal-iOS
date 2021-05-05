@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     __block TSThread *thread = nil;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+        thread = [TSContactThread getOrCreateThreadWithContactSessionID:recipientId transaction:transaction];
     }];
     [self presentConversationForThread:thread action:action animated:(BOOL)isAnimated];
 }

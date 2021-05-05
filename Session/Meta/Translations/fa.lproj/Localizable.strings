@@ -32,6 +32,8 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "لطفا یک آرشیو فشرده از این فایل یا دایرکتوری را ساخته و ارسال آن را امتحان کنید.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "این نوع فایل پشتیبانی نمی‌شود.";
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "پیام صوتی";
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "داده‌های پشتیبان گرفته‌شده قادر به صدور نیستند.";
 /* Error indicating that the app received an invalid response from CloudKit. */
@@ -150,6 +152,8 @@
 "DATE_YESTERDAY" = "دیروز";
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "پیام‌های محوشونده";
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "پیام های در این مکالمه بعد از %@ ناپدید خواهند شد.";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "وایرایش گروه";
 /* Label indicating media gallery is empty */
@@ -262,6 +266,10 @@
 "NOTIFICATIONS_NONE" = "هیچ نام و یا محتوایی وجود ندارد";
 /* No comment provided by engineer. */
 "OK" = "باشه";
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ پیام‌های محوشونده را غیرفعال کرده است.";
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ زمان محوشدن پیام را روی %@ تنظیم کرده.";
 /* alert title, generic error preventing user from capturing a photo */
 "PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
 /* alert title */
@@ -390,7 +398,10 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "برای ضبط و ارسال پیام صوتی اینجا را لمس کرده و نگه دارید";
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "پیام صوتی";
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "شما پیام‌های محوشونده را غیرفعال کردید.";
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "شما زمان محوشدن پیام‌ها را به %@ تنظیم کردید.";
 // MARK: - Session
 "continue_2" = "ادامه ";
 "copy" = "کپی کردن";

@@ -451,7 +451,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSInteractionType_Offer:
         case OWSInteractionType_TypingIndicator:
             return;
-        case OWSInteractionType_Error:
         case OWSInteractionType_Info:
         case OWSInteractionType_Call:
             self.systemMessageText = [self systemMessageTextWithTransaction:transaction];
@@ -651,10 +650,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssertDebug(transaction);
 
     switch (self.interaction.interactionType) {
-        case OWSInteractionType_Error: {
-            TSErrorMessage *errorMessage = (TSErrorMessage *)self.interaction;
-            return [errorMessage previewTextWithTransaction:transaction];
-        }
         case OWSInteractionType_Info: {
             TSInfoMessage *infoMessage = (TSInfoMessage *)self.interaction;
             return [infoMessage previewTextWithTransaction:transaction];

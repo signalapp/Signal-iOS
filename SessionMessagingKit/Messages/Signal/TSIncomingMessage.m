@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (_authorId == nil) {
-        _authorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+        _authorId = [TSContactThread contactSessionIDFromThreadID:self.uniqueThreadId];
     }
 
     return self;

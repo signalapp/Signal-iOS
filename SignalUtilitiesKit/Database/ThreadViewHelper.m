@@ -200,9 +200,9 @@ NS_ASSUME_NONNULL_BEGIN
                 TSThread *thread = [[transaction extension:TSThreadDatabaseViewExtensionName]
                     objectAtIndexPath:[NSIndexPath indexPathForItem:(NSInteger)item inSection:(NSInteger)section]
                          withMappings:self.threadMappings];
-                if (!thread.shouldThreadBeVisible) { continue; }
+                if (!thread.shouldBeVisible) { continue; }
                 if ([thread isKindOfClass:TSContactThread.class]) {
-                    NSString *publicKey = thread.contactIdentifier;
+                    NSString *publicKey = ((TSContactThread *)thread).contactSessionID;
                     if ([[LKStorage.shared getContactWithSessionID:publicKey] name] == nil) { continue; }
                     [threads addObject:thread];
                 } else {

@@ -20,6 +20,11 @@ const int32_t kGroupIdLength = 16;
 
 @implementation TSGroupModel
 
+- (nullable NSString *)groupName
+{
+    return _groupName.filterStringForDisplay;
+}
+
 #if TARGET_OS_IOS
 - (instancetype)initWithTitle:(nullable NSString *)title
                     memberIds:(NSArray<NSString *> *)memberIds
@@ -30,7 +35,7 @@ const int32_t kGroupIdLength = 16;
 {
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
-    _groupImage = image; // image is stored in DB
+    _groupImage             = image;
     _groupType              = groupType;
     _groupId                = groupId;
     _groupAdminIds          = [adminIds copy];
@@ -53,10 +58,6 @@ const int32_t kGroupIdLength = 16;
     
     if (_groupAdminIds == nil) {
         _groupAdminIds = [NSArray new];
-    }
-    
-    if (_removedMembers == nil) {
-        _removedMembers = [NSMutableSet new];
     }
 
     return self;
@@ -97,75 +98,56 @@ const int32_t kGroupIdLength = 16;
 }
 
 - (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)newModel {
+    // This is only invoked for group * changes *, i.e. not when a group is created.
+    NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     NSString *updatedGroupInfoString = @"";
     if (self == newModel) {
         return NSLocalizedString(@"GROUP_UPDATED", @"");
     }
+    // Name change
     if (![_groupName isEqual:newModel.groupName]) {
-        if (newModel.groupName.length == 0) {
-            updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:@"Closed group created"];
-        } else {
-            updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""), newModel.groupName]];
-        }
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_TITLE_CHANGED", @""), newModel.groupName]];
     }
-    if (_groupImage != nil && newModel.groupImage != nil &&
-        !([UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(newModel.groupImage)])) {
-        updatedGroupInfoString =
-            [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"GROUP_AVATAR_CHANGED", @"")];
-    }
+    // Added & removed members
     NSSet *oldMembers = [NSSet setWithArray:_groupMemberIds];
     NSSet *newMembers = [NSSet setWithArray:newModel.groupMemberIds];
 
-    NSMutableSet *membersWhoJoined = [NSMutableSet setWithSet:newMembers];
-    [membersWhoJoined minusSet:oldMembers];
+    NSMutableSet *addedMembers = newMembers.mutableCopy;
+    [addedMembers minusSet:oldMembers];
 
-    NSMutableSet *membersWhoLeft = [NSMutableSet setWithSet:oldMembers];
-    [membersWhoLeft minusSet:newMembers];
-    [membersWhoLeft minusSet:newModel.removedMembers];
+    NSMutableSet *removedMembers = oldMembers.mutableCopy;
+    [removedMembers minusSet:newMembers];
 
+    NSMutableSet *removedMembersMinusSelf = removedMembers.mutableCopy;
+    [removedMembersMinusSelf minusSet:[NSSet setWithObject:userPublicKey]];
 
-    if ([membersWhoLeft count] > 0) {
-        NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString*(NSString* publicKey) {
-            return [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:SNContactContextRegular] ?: publicKey;
+    if (removedMembersMinusSelf.count > 0) {
+        NSArray *removedMemberNames = [removedMembers.allObjects map:^NSString *(NSString *publicKey) {
+            SNContact *contact = [LKStorage.shared getContactWithSessionID:publicKey];
+            return [contact displayNameFor:SNContactContextRegular] ?: publicKey;
         }];
+        NSString *format = removedMembers.count > 1 ? NSLocalizedString(@"GROUP_MEMBERS_REMOVED", @"") : NSLocalizedString(@"GROUP_MEMBER_REMOVED", @"");
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString
-                                                           stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""),
-                                                           [oldMembersNames componentsJoinedByString:@", "]]];
+                                                           stringWithFormat: format,
+                                                           [removedMemberNames componentsJoinedByString:@", "]]];
     }
     
-    if (membersWhoJoined.count > 0) {
-        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* publicKey) {
-            return [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:SNContactContextRegular] ?: publicKey;
+    if (addedMembers.count > 0) {
+        NSArray *addedMemberNames = [[addedMembers allObjects] map:^NSString*(NSString* publicKey) {
+            SNContact *contact = [LKStorage.shared getContactWithSessionID:publicKey];
+            return [contact displayNameFor:SNContactContextRegular] ?: publicKey;
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString
                                                            stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),
-                                                           [newMembersNames componentsJoinedByString:@", "]]];
+                                                           [addedMemberNames componentsJoinedByString:@", "]]];
     }
-    
-    if (newModel.removedMembers.count > 0) {
-        if ([newModel.removedMembers containsObject:[SNGeneralUtilities getUserPublicKey]]) {
-            updatedGroupInfoString = [updatedGroupInfoString
-                                      stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
-        } else {
-            NSArray *removedMemberNames = [newModel.removedMembers.allObjects map:^NSString*(NSString* publicKey) {
-                return [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:SNContactContextRegular] ?: publicKey;
-            }];
-            if ([removedMemberNames count] > 1) {
-                updatedGroupInfoString = [updatedGroupInfoString
-                                          stringByAppendingString:[NSString
-                                                                   stringWithFormat:NSLocalizedString(@"GROUP_MEMBERS_REMOVED", @""),
-                                                                   [removedMemberNames componentsJoinedByString:@", "]]];
-            }
-            else {
-                updatedGroupInfoString = [updatedGroupInfoString
-                                          stringByAppendingString:[NSString
-                                                                   stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_REMOVED", @""),
-                                                                   removedMemberNames[0]]];
-            }
-        }
+
+    if ([removedMembers containsObject:userPublicKey]) {
+        updatedGroupInfoString = [updatedGroupInfoString stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
     }
+    // Return
     if ([updatedGroupInfoString length] == 0) {
         updatedGroupInfoString = NSLocalizedString(@"GROUP_UPDATED", @"");
     }
@@ -173,21 +155,6 @@ const int32_t kGroupIdLength = 16;
 }
 
 #endif
-
-- (nullable NSString *)groupName
-{
-    return _groupName.filterStringForDisplay;
-}
-
-- (void)setRemovedMembers:(NSMutableSet<NSString *> *)removedMembers
-{
-    _removedMembers = removedMembers;
-}
-
-- (void)updateGroupId: (NSData *)newGroupId
-{
-    _groupId = newGroupId;
-}
 
 @end
 

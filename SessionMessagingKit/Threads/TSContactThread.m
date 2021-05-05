@@ -4,7 +4,6 @@
 
 #import "TSContactThread.h"
 #import <YapDatabase/YapDatabase.h>
-#import <SessionMessagingKit/OWSIdentityManager.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,70 +12,68 @@ NSString *const TSContactThreadPrefix = @"c";
 
 @implementation TSContactThread
 
-- (instancetype)initWithContactId:(NSString *)contactId {
-    NSString *uniqueIdentifier = [[self class] threadIdFromContactId:contactId];
+- (instancetype)initWithContactSessionID:(NSString *)contactSessionID {
+    NSString *uniqueIdentifier = [[self class] threadIDFromContactSessionID:contactSessionID];
 
     self = [super initWithUniqueId:uniqueIdentifier];
 
     return self;
 }
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
++ (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction {
     TSContactThread *thread =
-        [self fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
+        [self fetchObjectWithUniqueID:[self threadIDFromContactSessionID:contactSessionID] transaction:transaction];
 
     if (!thread) {
-        thread = [[TSContactThread alloc] initWithContactId:contactId];
+        thread = [[TSContactThread alloc] initWithContactSessionID:contactSessionID];
         [thread saveWithTransaction:transaction];
     }
 
     return thread;
 }
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
++ (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID
 {
     __block TSContactThread *thread;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
+        thread = [self getOrCreateThreadWithContactSessionID:contactSessionID transaction:transaction];
     }];
 
     return thread;
 }
 
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)getThreadWithContactSessionID:(NSString *)contactSessionID transaction:(YapDatabaseReadTransaction *)transaction;
 {
-    return [TSContactThread fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
+    return [TSContactThread fetchObjectWithUniqueID:[self threadIDFromContactSessionID:contactSessionID] transaction:transaction];
 }
 
-- (NSString *)contactIdentifier {
-    return [[self class] contactIdFromThreadId:self.uniqueId];
+- (NSString *)contactSessionID {
+    return [[self class] contactSessionIDFromThreadID:self.uniqueId];
 }
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
-    return @[ self.contactIdentifier ];
+    return @[ self.contactSessionID ];
 }
 
-- (BOOL)isGroupThread {
-    return false;
-}
-
-- (BOOL)hasSafetyNumbers
+- (BOOL)isGroupThread
 {
     return NO;
 }
 
 - (NSString *)name
 {
-    return [[LKStorage.shared getContactWithSessionID:self.contactIdentifier] displayNameFor:SNContactContextRegular] ?: self.contactIdentifier;
+    NSString *sessionID = self.contactSessionID;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
+    return [contact displayNameFor:SNContactContextRegular] ?: sessionID;
 }
 
-+ (NSString *)threadIdFromContactId:(NSString *)contactId {
-    return [TSContactThreadPrefix stringByAppendingString:contactId];
++ (NSString *)threadIDFromContactSessionID:(NSString *)contactSessionID {
+    return [TSContactThreadPrefix stringByAppendingString:contactSessionID];
 }
 
-+ (NSString *)contactIdFromThreadId:(NSString *)threadId {
++ (NSString *)contactSessionIDFromThreadID:(NSString *)threadId {
     return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
 }
 

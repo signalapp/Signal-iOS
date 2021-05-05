@@ -10,23 +10,21 @@ extern NSString *const TSContactThreadPrefix;
 
 @interface TSContactThread : TSThread
 
-@property (nonatomic) BOOL hasDismissedOffers;
+- (instancetype)initWithContactSessionID:(NSString *)contactSessionID;
 
-- (instancetype)initWithContactId:(NSString *)contactId;
++ (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID NS_SWIFT_NAME(getOrCreateThread(contactSessionID:));
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId NS_SWIFT_NAME(getOrCreateThread(contactId:));
++ (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID
+                                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+// Unlike getOrCreateThreadWithContactSessionID, this will _NOT_ create a thread if one does not already exist.
++ (nullable instancetype)getThreadWithContactSessionID:(NSString *)contactSessionID transaction:(YapDatabaseReadTransaction *)transaction;
 
-// Unlike getOrCreateThreadWithContactId, this will _NOT_ create a thread if one does not already exist.
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId transaction:(YapDatabaseReadTransaction *)transaction;
+- (NSString *)contactSessionID;
 
-- (NSString *)contactIdentifier;
++ (NSString *)contactSessionIDFromThreadID:(NSString *)threadId;
 
-+ (NSString *)contactIdFromThreadId:(NSString *)threadId;
-
-+ (NSString *)threadIdFromContactId:(NSString *)contactId;
++ (NSString *)threadIDFromContactSessionID:(NSString *)contactSessionID;
 
 @end
 

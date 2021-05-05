@@ -42,8 +42,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/TSContactThread.h>
 #import <SessionMessagingKit/TSDatabaseSecondaryIndexes.h>
 #import <SessionMessagingKit/TSDatabaseView.h>
-#import <SessionMessagingKit/TSErrorMessage.h>
-#import <SessionMessagingKit/TSErrorMessage_privateConstructor.h>
 #import <SessionMessagingKit/TSGroupModel.h>
 #import <SessionMessagingKit/TSGroupThread.h>
 #import <SessionMessagingKit/TSIncomingMessage.h>
@@ -52,6 +50,5 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/TSOutgoingMessage.h>
 #import <SessionMessagingKit/TSQuotedMessage.h>
 #import <SessionMessagingKit/TSThread.h>
-#import <SessionMessagingKit/TSUnreadIndicatorInteraction.h>
 #import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
 #import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>

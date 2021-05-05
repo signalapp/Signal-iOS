@@ -126,7 +126,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {
-            let thread = TSContactThread.getOrCreateThread(contactId: hexEncodedPublicKey)
+            let thread = TSContactThread.getOrCreateThread(contactSessionID: hexEncodedPublicKey)
             presentingViewController?.dismiss(animated: true, completion: nil)
             SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
         }

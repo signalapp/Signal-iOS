@@ -162,7 +162,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: YapDatabaseReadTransaction) in
-        let recipientId =  contactThread.contactIdentifier()
+        let recipientId =  contactThread.contactSessionID()
         var result = recipientIndexer.index(recipientId, transaction: transaction)
 
         if IsNoteToSelfEnabled(),
@@ -192,7 +192,7 @@ public class FullTextSearchFinder: NSObject {
         if let groupThread = object as? TSGroupThread {
             return self.groupThreadIndexer.index(groupThread, transaction: transaction)
         } else if let contactThread = object as? TSContactThread {
-            guard contactThread.shouldThreadBeVisible else {
+            guard contactThread.shouldBeVisible else {
                 // If we've never sent/received a message in a TSContactThread,
                 // then we want it to appear in the "Other Contacts" section rather
                 // than in the "Conversations" section.

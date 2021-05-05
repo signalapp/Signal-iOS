@@ -162,7 +162,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
 
-        let publicKey = thread.contactIdentifier()!
+        let publicKey = contactThread.contactSessionID()
         nameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
         nameLabel.textColor = Theme.primaryColor
 
@@ -188,7 +188,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     }
 
     private func profileName(contactThread: TSContactThread) -> String? {
-        let publicKey = contactThread.contactIdentifier()
+        let publicKey = contactThread.contactSessionID()
         return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
     }
 

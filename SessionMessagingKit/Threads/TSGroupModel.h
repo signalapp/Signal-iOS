@@ -21,7 +21,6 @@ extern const int32_t kGroupIdLength;
 @property (nullable, readonly, nonatomic) NSString *groupName;
 @property (readonly, nonatomic) NSData *groupId;
 @property (nonatomic) GroupType groupType;
-@property (nonatomic) NSMutableSet<NSString *> *removedMembers;
 
 #if TARGET_OS_IOS
 @property (nullable, nonatomic, strong) UIImage *groupImage;
@@ -36,7 +35,7 @@ extern const int32_t kGroupIdLength;
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;
 - (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)model;
-- (void)updateGroupId: (NSData *)newGroupId;
+
 #endif
 
 @end

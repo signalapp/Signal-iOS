@@ -67,6 +67,7 @@ public final class OpenGroupPollerV2 : NSObject {
     }
 
     private func handleCompactPollBody(_ body: OpenGroupAPIV2.CompactPollResponseBody, isBackgroundPoll: Bool) {
+        let storage = SNMessagingKitConfiguration.shared.storage
         // - Messages
         // Sorting the messages by server ID before importing them fixes an issue where messages that quote older messages can't find those older messages
         let openGroupID = "\(server).\(body.room)"
@@ -80,17 +81,22 @@ public final class OpenGroupPollerV2 : NSObject {
             envelope.setSource(message.sender!) // Safe because messages with a nil sender are filtered out
             envelope.setServerTimestamp(message.sentTimestamp)
             let job = MessageReceiveJob(data: try! envelope.buildSerializedData(), openGroupMessageServerID: UInt64(message.serverID!), openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll)
-            SNMessagingKitConfiguration.shared.storage.write { transaction in
+            storage.write { transaction in
                 SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
             }
         }
         // - Deletions
-        let deletedMessageIDs = body.deletions.compactMap { Storage.shared.getIDForMessage(withServerID: UInt64($0.deletedMessageID)) }
-        SNMessagingKitConfiguration.shared.storage.write { transaction in
+        let deletedMessageServerIDs = Set(body.deletions.map { UInt64($0.deletedMessageID) })
+        storage.write { transaction in
             let transaction = transaction as! YapDatabaseReadWriteTransaction
-            deletedMessageIDs.forEach { messageID in
-                TSMessage.fetch(uniqueId: messageID, transaction: transaction)?.remove(with: transaction)
+            guard let threadID = storage.v2GetThreadID(for: openGroupID),
+                let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
+            var messagesToRemove: [TSMessage] = []
+            thread.enumerateInteractions(with: transaction) { interaction, stop in
+                guard let message = interaction as? TSMessage, deletedMessageServerIDs.contains(message.openGroupServerMessageID) else { return }
+                messagesToRemove.append(message)
             }
+            messagesToRemove.forEach { $0.remove(with: transaction) }
         }
         // - Moderators
         if var x = OpenGroupAPIV2.moderators[server] {

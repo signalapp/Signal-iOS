@@ -5,8 +5,8 @@ enum ContactUtilities {
         var result: [String] = []
         Storage.read { transaction in
             TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
-                guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible else { return }
-                result.append(thread.contactIdentifier())
+                guard let thread = object as? TSContactThread, thread.shouldBeVisible else { return }
+                result.append(thread.contactSessionID())
             }
         }
         func getDisplayName(for publicKey: String) -> String {

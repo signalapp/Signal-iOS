@@ -81,8 +81,9 @@ public final class ProfilePictureView : UIView {
             }
             update()
         } else { // A one-to-one chat
-            hasTappableProfilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: thread.contactIdentifier()!) != nil
-            update(for: thread.contactIdentifier()!)
+            let thread = thread as! TSContactThread
+            hasTappableProfilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: thread.contactSessionID()) != nil
+            update(for: thread.contactSessionID())
         }
     }
 

@@ -24,7 +24,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     // MARK: Blocking
     @objc func unblock() {
         guard let thread = thread as? TSContactThread else { return }
-        let publicKey = thread.contactIdentifier()
+        let publicKey = thread.contactSessionID()
         UIView.animate(withDuration: 0.25, animations: {
             self.blockedBanner.alpha = 0
         }, completion: { _ in
@@ -34,7 +34,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func showBlockedModalIfNeeded() -> Bool {
         guard let thread = thread as? TSContactThread else { return false }
-        let publicKey = thread.contactIdentifier()
+        let publicKey = thread.contactSessionID()
         guard OWSBlockingManager.shared().isRecipientIdBlocked(publicKey) else { return false }
         let blockedModal = BlockedModal(publicKey: publicKey)
         blockedModal.modalPresentationStyle = .overFullScreen
@@ -390,7 +390,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             case .audio:
                 if viewItem.interaction is TSIncomingMessage,
                     let thread = self.thread as? TSContactThread,
-                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                     confirmDownload()
                 } else {
                     playOrPauseAudio(for: viewItem)
@@ -400,7 +400,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell else { return }
                 if viewItem.interaction is TSIncomingMessage,
                     let thread = self.thread as? TSContactThread,
-                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                     confirmDownload()
                 } else {
                     guard let albumView = cell.albumView else { return }
@@ -431,7 +431,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             case .genericAttachment:
                 if viewItem.interaction is TSIncomingMessage,
                     let thread = self.thread as? TSContactThread,
-                    Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                    Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                     confirmDownload()
                 } else {
                     // Open the document if possible

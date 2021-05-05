@@ -50,7 +50,7 @@ public final class OpenGroupManagerV2 : NSObject {
                 storage.write(with: { transaction in
                     let transaction = transaction as! YapDatabaseReadWriteTransaction
                     let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
-                    thread.shouldThreadBeVisible = true
+                    thread.shouldBeVisible = true
                     thread.save(with: transaction)
                     storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
                 }, completion: {

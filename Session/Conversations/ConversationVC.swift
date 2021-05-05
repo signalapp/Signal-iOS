@@ -116,7 +116,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     lazy var blockedBanner: InfoBanner = {
         let name: String
         if let thread = thread as? TSContactThread {
-            let publicKey = thread.contactIdentifier()
+            let publicKey = thread.contactSessionID()
             let context = Contact.context(for: thread)
             name = Storage.shared.getContact(with: publicKey)?.displayName(for: context) ?? publicKey
         } else {
@@ -416,7 +416,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             blockedBanner.removeFromSuperview()
         }
         guard let thread = thread as? TSContactThread else { return detach() }
-        if OWSBlockingManager.shared().isRecipientIdBlocked(thread.contactIdentifier()) {
+        if OWSBlockingManager.shared().isRecipientIdBlocked(thread.contactSessionID()) {
             view.addSubview(blockedBanner)
             blockedBanner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
         } else {
