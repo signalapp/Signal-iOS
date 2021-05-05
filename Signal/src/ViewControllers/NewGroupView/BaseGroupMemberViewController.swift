@@ -26,7 +26,8 @@ protocol GroupMemberViewDelegate: class {
 
     func groupMemberViewIsGroupFull_RecommendedLimit() -> Bool
 
-    func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool
+    func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
+                                            transaction: SDSAnyReadTransaction) -> Bool
 
     func groupMemberViewIsGroupsV2Required() -> Bool
 
@@ -345,7 +346,10 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return .unknownError
         }
-        guard !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient) else {
+        guard (Self.databaseStorage.read { transaction in
+            !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
+                                                                       transaction: transaction)
+        }) else {
             return .duplicateGroupMember
         }
         return .canBeSelected
@@ -365,7 +369,10 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return
         }
-        guard !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient) else {
+        guard (Self.databaseStorage.read { transaction in
+            !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
+                                                                       transaction: transaction)
+        }) else {
             owsFailDebug("Can't re-add pre-existing member.")
             return
         }
@@ -498,7 +505,8 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryMessageForRecipient recipient: PickedRecipient) -> String? {
+                         accessoryMessageForRecipient recipient: PickedRecipient,
+                         transaction: SDSAnyReadTransaction) -> String? {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
             return nil
@@ -521,7 +529,8 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryViewForRecipient recipient: PickedRecipient) -> UIView? {
+                         accessoryViewForRecipient recipient: PickedRecipient,
+                         transaction: SDSAnyReadTransaction) -> UIView? {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
             return nil
@@ -537,7 +546,8 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
 
         let isCurrentMember = recipientSet.contains(recipient)
         let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
-        let isPreExistingMember = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient)
+        let isPreExistingMember = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
+                                                                                             transaction: transaction)
 
         let imageView = UIImageView()
         if isPreExistingMember {
@@ -554,7 +564,8 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
+                         attributedSubtitleForRecipient recipient: PickedRecipient,
+                         transaction: SDSAnyReadTransaction) -> NSAttributedString? {
 
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing delegate.")
@@ -569,30 +580,26 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             // This is internal-only; we don't need to localize.
             items.append("No UUID")
         }
-        databaseStorage.read { transaction in
-            let hasProfileKey = nil != Self.profileManager.profileKeyData(for: address,
-                                                                          transaction: transaction)
-            // Only show the "missing gv2 capability" warning if we have the
-            // user's profile key.
-            if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
-                                                            transaction: transaction),
-               hasProfileKey {
-                // This is internal-only; we don't need to localize.
-                items.append("No capability")
-            }
+        let hasProfileKey = nil != Self.profileManager.profileKeyData(for: address,
+                                                                      transaction: transaction)
+        // Only show the "missing gv2 capability" warning if we have the
+        // user's profile key.
+        if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
+                                                        transaction: transaction),
+           hasProfileKey {
+            // This is internal-only; we don't need to localize.
+            items.append("No capability")
         }
 
         func defaultSubtitle() -> NSAttributedString? {
-            Self.databaseStorage.read { transaction in
-                guard !address.isLocalAddress else {
-                    return nil
-                }
-                guard let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
-                                                                                       transaction: transaction) else {
-                    return nil
-                }
-                return NSAttributedString(string: bioForDisplay)
+            guard !address.isLocalAddress else {
+                return nil
             }
+            guard let bioForDisplay = Self.profileManagerImpl.profileBioForDisplay(for: address,
+                                                                                   transaction: transaction) else {
+                return nil
+            }
+            return NSAttributedString(string: bioForDisplay)
         }
 
         guard !items.isEmpty else {

@@ -366,11 +366,11 @@ struct ConversationHeaderBuilder: Dependencies {
     }
 
     func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
-        let localUserAvatarMode: LocalUserAvatarMode = (options.contains(.renderLocalUserAsNoteToSelf)
+        let localUserDisplayMode: LocalUserDisplayMode = (options.contains(.renderLocalUserAsNoteToSelf)
                                                             ? .noteToSelf
                                                             : .asUser)
         let avatarView = ConversationAvatarView(diameter: avatarSize,
-                                                localUserAvatarMode: localUserAvatarMode)
+                                                localUserDisplayMode: localUserDisplayMode)
         avatarView.configure(thread: delegate.thread, transaction: transaction)
         // Track the most recent avatar view.
         delegate.avatarView = avatarView

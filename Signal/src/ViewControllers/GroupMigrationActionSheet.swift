@@ -164,7 +164,7 @@ public class GroupMigrationActionSheet: UIView {
                                    transaction: SDSAnyReadTransaction) {
 
             let avatarView = ConversationAvatarView(diameter: 28,
-                                                    localUserAvatarMode: .asUser)
+                                                    localUserDisplayMode: .asUser)
             avatarView.configure(address: address, transaction: transaction)
 
             let label = buildLabel()

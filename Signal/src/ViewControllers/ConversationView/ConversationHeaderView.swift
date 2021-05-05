@@ -72,7 +72,7 @@ public class ConversationHeaderView: UIStackView {
     @objc
     public required init(thread: TSThread) {
         let avatarView = ConversationAvatarView(diameter: 36,
-                                                localUserAvatarMode: .noteToSelf)
+                                                localUserDisplayMode: .noteToSelf)
         avatarView.configureWithSneakyTransaction(thread: thread)
         self.avatarView = avatarView
         // remove default border on avatarView

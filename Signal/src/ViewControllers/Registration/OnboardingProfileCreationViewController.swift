@@ -380,7 +380,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
             avatarView.image = UIImage(data: avatarData)
         } else {
             let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarSize),
-                                                        localUserAvatarMode: .asUser)
+                                                        localUserDisplayMode: .asUser)
             avatarView.image = avatarBuilder.buildDefaultImage()
         }
     }
@@ -402,7 +402,7 @@ extension OnboardingProfileCreationViewController: AvatarViewHelperDelegate {
     public func avatarDidChange(_ image: UIImage) {
         AssertIsOnMainThread()
 
-        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameter))))
+        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameterPixels))))
     }
 
     public func fromViewController() -> UIViewController {

@@ -164,6 +164,8 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             self.colorPicker = colorPicker
         }
 
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+
         observeNotifications()
 
         updateRecentAttachments()

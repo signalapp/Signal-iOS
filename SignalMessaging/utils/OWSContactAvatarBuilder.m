@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSPersonNameComponents *contactNameComponents;
 @property (nonatomic, readonly) ConversationColorName colorName;
 @property (nonatomic, readonly) NSUInteger diameter;
-@property (nonatomic, readonly) LocalUserAvatarMode localUserAvatarMode;
+@property (nonatomic, readonly) LocalUserDisplayMode localUserDisplayMode;
 
 @end
 
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
                  nameComponents:(nullable NSPersonNameComponents *)nameComponents
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
-            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+           localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
 {
     self = [super init];
     if (!self) {
@@ -44,21 +44,21 @@ NS_ASSUME_NONNULL_BEGIN
     _contactNameComponents = nameComponents;
     _colorName = colorName;
     _diameter = diameter;
-    _localUserAvatarMode = localUserAvatarMode;
+    _localUserDisplayMode = localUserDisplayMode;
 
     return self;
 }
 
-+ (LocalUserAvatarMode)defaultLocalUserAvatarMode
++ (LocalUserDisplayMode)defaultLocalUserDisplayMode
 {
-    // TODO: Convert the default to LocalUserAvatarModeAsUser.
-    return LocalUserAvatarModeNoteToSelf;
+    // TODO: Convert the default to LocalUserDisplayModeAsUser.
+    return LocalUserDisplayModeNoteToSelf;
 }
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
-            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+           localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
 {
     // Components for avatar initials.
     __block NSPersonNameComponents *_Nullable nameComponents;
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
                   nameComponents:nameComponents
                        colorName:colorName
                         diameter:diameter
-             localUserAvatarMode:localUserAvatarMode];
+            localUserDisplayMode:localUserDisplayMode];
 }
 
 + (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
@@ -82,14 +82,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
                       colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
-            localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+           localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                     transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self initWithAddress:address
                   nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
                        colorName:colorName
                         diameter:diameter
-             localUserAvatarMode:localUserAvatarMode];
+            localUserDisplayMode:localUserDisplayMode];
 }
 
 - (instancetype)initWithNonSignalNameComponents:(NSPersonNameComponents *)nonSignalNameComponents
@@ -101,11 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
                   nameComponents:nonSignalNameComponents
                        colorName:colorName
                         diameter:diameter
-             localUserAvatarMode:OWSContactAvatarBuilder.defaultLocalUserAvatarMode];
+            localUserDisplayMode:OWSContactAvatarBuilder.defaultLocalUserDisplayMode];
 }
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
-                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                        localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
 {
     OWSAssertDebug(diameter > 0);
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
@@ -118,13 +118,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                transaction:transaction]
                                colorName:ConversationColorNameDefault
                                 diameter:diameter
-                     localUserAvatarMode:localUserAvatarMode];
+                    localUserDisplayMode:localUserDisplayMode];
     }];
     return instance;
 }
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
-                         localUserAvatarMode:(LocalUserAvatarMode)localUserAvatarMode
+                        localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(diameter > 0);
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
                   nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
                        colorName:ConversationColorNameDefault
                         diameter:diameter
-             localUserAvatarMode:localUserAvatarMode];
+            localUserDisplayMode:localUserDisplayMode];
 }
 
 + (nullable UIImage *)buildImageForNonLocalAddress:(SignalServiceAddress *)address
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
                        nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
                             colorName:color
                              diameter:diameter
-                  localUserAvatarMode:OWSContactAvatarBuilder.defaultLocalUserAvatarMode];
+                 localUserDisplayMode:OWSContactAvatarBuilder.defaultLocalUserDisplayMode];
     return [avatarBuilder buildWithTransaction:transaction];
 }
 
@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (self.address.isLocalAddress && self.localUserAvatarMode == LocalUserAvatarModeNoteToSelf) {
+    if (self.address.isLocalAddress && self.localUserDisplayMode == LocalUserDisplayModeNoteToSelf) {
         return self.buildNoteToSelfAvatarForLocalUser;
     }
 
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (self.address.isLocalAddress && self.localUserAvatarMode == LocalUserAvatarModeNoteToSelf) {
+    if (self.address.isLocalAddress && self.localUserDisplayMode == LocalUserDisplayModeNoteToSelf) {
         return self.buildNoteToSelfAvatarForLocalUser;
     }
 
@@ -184,7 +184,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)buildNoteToSelfAvatarForLocalUser
 {
     OWSCAssertDebug(self.address.isLocalAddress);
-    NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
+    NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self-%d-%lu",
+                                             self.cacheKey,
+                                             Theme.isDarkThemeEnabled,
+                                             (unsigned long)self.diameter];
     UIImage *_Nullable cachedAvatar =
         [OWSContactAvatarBuilder.contactsManagerImpl getImageFromAvatarCacheWithKey:noteToSelfCacheKey
                                                                            diameter:(CGFloat)self.diameter];
@@ -207,9 +210,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)cacheKey
 {
     if (self.address.isValid) {
-        return [NSString stringWithFormat:@"%@-%d", self.address.stringForDisplay, Theme.isDarkThemeEnabled];
+        return [NSString stringWithFormat:@"%@-%d-%lu",
+                         self.address.stringForDisplay,
+                         Theme.isDarkThemeEnabled,
+                         (unsigned long)self.diameter];
     } else {
-        return [NSString stringWithFormat:@"%@-%d", self.contactInitials, Theme.isDarkThemeEnabled];
+        return [NSString stringWithFormat:@"%@-%d-%lu",
+                         self.contactInitials,
+                         Theme.isDarkThemeEnabled,
+                         (unsigned long)self.diameter];
     }
 }
 

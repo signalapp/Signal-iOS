@@ -36,10 +36,13 @@ class ReplaceAdminViewController: OWSTableViewController2 {
         title = NSLocalizedString("REPLACE_ADMIN_VIEW_TITLE",
                                   comment: "The title for the 'replace group admin' view.")
 
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+
         updateTableContents()
     }
 
     private func updateTableContents() {
+        let tableView = self.tableView
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
@@ -49,14 +52,22 @@ class ReplaceAdminViewController: OWSTableViewController2 {
         }
         for address in sortedCandidates {
             section.add(OWSTableItem(customCellBlock: {
-                let cell = ContactTableViewCell()
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                    owsFailDebug("Missing cell.")
+                    return UITableViewCell()
+                }
 
-                let imageView = UIImageView()
-                imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
-                cell.ows_setAccessoryView(imageView)
+                Self.databaseStorage.read { transaction in
+                    let configuration = ContactCellConfiguration.build(address: address,
+                                                                       localUserDisplayMode: .asUser,
+                                                                       transaction: transaction)
 
-                cell.configureWithSneakyTransaction(recipientAddress: address,
-                                                    localUserAvatarMode: .asUser)
+                    let imageView = UIImageView()
+                    imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
+                    configuration.accessoryView = imageView
+
+                    cell.configure(configuration: configuration, transaction: transaction)
+                }
 
                 return cell
                 },

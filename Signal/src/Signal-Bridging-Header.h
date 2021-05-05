@@ -50,8 +50,6 @@
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/AttachmentSharing.h>
-#import <SignalMessaging/ContactCellView.h>
-#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSAnyTouchGestureRecognizer.h>
 #import <SignalMessaging/OWSAudioPlayer.h>

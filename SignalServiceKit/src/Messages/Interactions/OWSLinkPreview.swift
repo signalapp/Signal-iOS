@@ -494,7 +494,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
                 }
 
                 var stillThumbnail = stillImage
-                let imageSize = stillImage.pixelSize()
+                let imageSize = stillImage.pixelSize
                 let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
                 if shouldResize {
                     guard let resizedImage = stillImage.resized(withMaxDimensionPixels: maxImageSize) else {

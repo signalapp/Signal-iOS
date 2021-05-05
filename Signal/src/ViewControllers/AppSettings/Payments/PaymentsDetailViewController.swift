@@ -365,7 +365,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         let avatarSize: UInt = 52
         let avatarView = ConversationAvatarView(diameter: avatarSize,
-                                                localUserAvatarMode: .asUser)
+                                                localUserDisplayMode: .asUser)
         stackViews.append(avatarView)
         stackViews.append(UIView.spacer(withHeight: 12))
 

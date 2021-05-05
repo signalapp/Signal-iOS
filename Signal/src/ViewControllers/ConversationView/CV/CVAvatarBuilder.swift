@@ -24,7 +24,7 @@ public class CVAvatarBuilder: Dependencies {
     }
 
     func buildAvatar(forAddress address: SignalServiceAddress,
-                     localUserAvatarMode: LocalUserAvatarMode,
+                     localUserDisplayMode: LocalUserDisplayMode,
                      diameter: UInt) -> UIImage? {
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
                                                                            transaction: transaction)
@@ -40,22 +40,17 @@ public class CVAvatarBuilder: Dependencies {
         guard let rawAvatar = OWSContactAvatarBuilder(address: address,
                                                       colorName: colorName,
                                                       diameter: diameter,
-                                                      localUserAvatarMode: localUserAvatarMode,
+                                                      localUserDisplayMode: localUserDisplayMode,
                                                       transaction: transaction).build(with: transaction) else {
-            owsFailDebug("Could build avatar image")
+            owsFailDebug("Could build avatar image.")
             return nil
         }
-        let finalAvatar: UIImage
-        if shouldBlurAvatar {
-            guard let blurredAvatar = contactsManagerImpl.blurAvatar(rawAvatar) else {
-                owsFailDebug("Could build blur avatar.")
-                return nil
-            }
-            finalAvatar = blurredAvatar
-        } else {
-            finalAvatar = rawAvatar
+        guard let finalAvatar = Self.processAvatar(rawAvatar,
+                                                   diameter: diameter,
+                                                   shouldBlurAvatar: shouldBlurAvatar) else {
+            owsFailDebug("Could build process avatar.")
+            return nil
         }
-
         cache[cacheKey] = finalAvatar
         return finalAvatar
     }
@@ -63,26 +58,47 @@ public class CVAvatarBuilder: Dependencies {
     func buildAvatar(forGroupThread groupThread: TSGroupThread, diameter: UInt) -> UIImage? {
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
                                                                          transaction: transaction)
-        let cacheKey = groupThread.uniqueId
+        let cacheKey = groupThread.uniqueId + ".\(shouldBlurAvatar)"
         if let avatar = cache[cacheKey] {
             return avatar
         }
         let avatarBuilder = OWSGroupAvatarBuilder(thread: groupThread, diameter: diameter)
         guard let rawAvatar = avatarBuilder.build(with: transaction) else {
-            owsFailDebug("Could build avatar image")
+            owsFailDebug("Could build avatar image.")
             return nil
         }
-        let finalAvatar: UIImage
-        if shouldBlurAvatar {
-            guard let blurredAvatar = contactsManagerImpl.blurAvatar(rawAvatar) else {
-                owsFailDebug("Could build blur avatar.")
-                return nil
-            }
-            finalAvatar = blurredAvatar
-        } else {
-            finalAvatar = rawAvatar
+        guard let finalAvatar = Self.processAvatar(rawAvatar,
+                                                   diameter: diameter,
+                                                   shouldBlurAvatar: shouldBlurAvatar) else {
+            owsFailDebug("Could build process avatar.")
+            return nil
         }
         cache[cacheKey] = finalAvatar
         return finalAvatar
+    }
+
+    private static func processAvatar(_ avatar: UIImage?,
+                                      diameter diameterPoints: UInt,
+                                      shouldBlurAvatar: Bool) -> UIImage? {
+        guard let avatar = avatar else {
+            return nil
+        }
+        if shouldBlurAvatar {
+            // We don't need to worry about resizing to diameter if we're blurring;
+            // blurring will always resize image.
+            guard let blurredAvatar = contactsManagerImpl.blurAvatar(avatar) else {
+                owsFailDebug("Could build blur avatar.")
+                return nil
+            }
+            return blurredAvatar
+        } else {
+            let screenScale = UIScreen.main.scale
+            let targetSizePixels = CGFloat(diameterPoints) * screenScale
+            guard CGFloat(avatar.pixelWidth) <= targetSizePixels,
+                  CGFloat(avatar.pixelHeight) <= targetSizePixels else {
+                return avatar.resizedImage(toFillPixelSize: .square(targetSizePixels))
+            }
+            return avatar
+        }
     }
 }

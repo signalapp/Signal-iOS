@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
+extern const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels;
 extern const NSString *kNSNotificationKey_WasLocallyInitiated;
 
 @class MessageSender;

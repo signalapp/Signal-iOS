@@ -32,7 +32,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 1024;
+const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels = 1024;
 const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_WasLocallyInitiated";
 
 @interface OWSProfileManager ()
@@ -355,20 +355,20 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 {
     NSUInteger kMaxAvatarBytes = 5 * 1000 * 1000;
 
-    if (image.size.width != kOWSProfileManager_MaxAvatarDiameter
-        || image.size.height != kOWSProfileManager_MaxAvatarDiameter) {
+    if (image.pixelWidth != kOWSProfileManager_MaxAvatarDiameterPixels
+        || image.pixelHeight != kOWSProfileManager_MaxAvatarDiameterPixels) {
         // To help ensure the user is being shown the same cropping of their avatar as
         // everyone else will see, we want to be sure that the image was resized before this point.
         OWSFailDebug(@"Avatar image should have been resized before trying to upload");
-        image = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,
-                                                       kOWSProfileManager_MaxAvatarDiameter)];
+        image = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameterPixels,
+                                                       kOWSProfileManager_MaxAvatarDiameterPixels)];
     }
 
     NSData *_Nullable data = UIImageJPEGRepresentation(image, 0.95f);
     if (data.length > kMaxAvatarBytes) {
         // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't be able to fit our profile
         // photo. e.g. generating pure noise at our resolution compresses to ~200k.
-        OWSFailDebug(@"Suprised to find profile avatar was too large. Was it scaled properly? image: %@", image);
+        OWSFailDebug(@"Surprised to find profile avatar was too large. Was it scaled properly? image: %@", image);
     }
 
     return data;

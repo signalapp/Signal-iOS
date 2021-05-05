@@ -10,7 +10,7 @@ extension ConversationSettingsViewController {
     // MARK: - Helpers
 
     private var iconSpacingSmall: CGFloat {
-        return kContactCellAvatarTextMargin
+        return ContactCellView.avatarTextHSpacing
     }
 
     private var iconSpacingLarge: CGFloat {
@@ -440,7 +440,7 @@ extension ConversationSettingsViewController {
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel, sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
-        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin))
+        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing))
 
         let helper = contactsViewHelper
         let groupMembership = groupModel.groupMembership
@@ -507,48 +507,54 @@ extension ConversationSettingsViewController {
                 continue
             }
 
+            let tableView = self.tableView
             let isLocalUser = memberAddress.isLocalAddress
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
                     return OWSTableItem.newCell()
                 }
-                let cell = ContactTableViewCell()
-
-                let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
-                let isVerified = verificationState == .verified
-                let isNoLongerVerified = verificationState == .noLongerVerified
-                let isBlocked = helper.isSignalServiceAddressBlocked(memberAddress)
-                if isGroupAdmin {
-                    cell.setAccessoryMessage(NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
-                                                               comment: "Label indicating that a group member is an admin."))
-                } else if isNoLongerVerified {
-                    cell.setAccessoryMessage(NSLocalizedString("CONTACT_CELL_IS_NO_LONGER_VERIFIED",
-                                                               comment: "An indicator that a contact is no longer verified."))
-                } else if isBlocked {
-                    cell.setAccessoryMessage(MessageStrings.conversationIsBlocked)
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                    owsFailDebug("Missing cell.")
+                    return UITableViewCell()
                 }
 
-                if isLocalUser {
-                    cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                                         comment: "Label indicating the local user."))
-                    cell.selectionStyle = .none
-                } else {
-                    cell.selectionStyle = .default
-                }
+                Self.databaseStorage.read { transaction in
+                    let configuration = ContactCellConfiguration.build(address: memberAddress,
+                                                                       localUserDisplayMode: .asLocalUser,
+                                                                       transaction: transaction)
 
-                cell.configureWithSneakyTransaction(recipientAddress: memberAddress,
-                                                    localUserAvatarMode: .asUser)
+                    let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
+                    let isVerified = verificationState == .verified
+                    let isNoLongerVerified = verificationState == .noLongerVerified
+                    let isBlocked = helper.isSignalServiceAddressBlocked(memberAddress)
+                    if isGroupAdmin {
+                        configuration.accessoryMessage = NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
+                                                                           comment: "Label indicating that a group member is an admin.")
+                    } else if isNoLongerVerified {
+                        configuration.accessoryMessage = NSLocalizedString("CONTACT_CELL_IS_NO_LONGER_VERIFIED",
+                                                                           comment: "An indicator that a contact is no longer verified.")
+                    } else if isBlocked {
+                        configuration.accessoryMessage = MessageStrings.conversationIsBlocked
+                    }
 
-                if isVerified {
-                    cell.setAttributedSubtitle(cell.verifiedSubtitle())
-                } else if !memberAddress.isLocalAddress,
-                          let bioForDisplay = (Self.databaseStorage.read { transaction in
-                    Self.profileManagerImpl.profileBioForDisplay(for: memberAddress, transaction: transaction)
-                }) {
-                    cell.setAttributedSubtitle(NSAttributedString(string: bioForDisplay))
-                } else {
-                    cell.setAttributedSubtitle(nil)
+                    if isLocalUser {
+                        cell.selectionStyle = .none
+                    } else {
+                        cell.selectionStyle = .default
+                    }
+
+                    if isVerified {
+                        configuration.useVerifiedSubtitle()
+                    } else if !memberAddress.isLocalAddress,
+                              let bioForDisplay = (Self.profileManagerImpl.profileBioForDisplay(for: memberAddress,
+                                                                                                transaction: transaction)) {
+                        configuration.attributedSubtitle = NSAttributedString(string: bioForDisplay)
+                    } else {
+                        owsAssertDebug(configuration.attributedSubtitle == nil)
+                    }
+
+                    cell.configure(configuration: configuration, transaction: transaction)
                 }
 
                 let cellName = "user.\(memberAddress.stringForDisplay)"
@@ -658,7 +664,7 @@ extension ConversationSettingsViewController {
 
     private func buildMutualGroupsSection(sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
-        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin))
+        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing))
 
         // "Add to a Group" cell.
         section.add(OWSTableItem(

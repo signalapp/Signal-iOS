@@ -41,7 +41,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCloseButton))
 
-        defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing
 
         updateGroupThreadsAsync()
     }

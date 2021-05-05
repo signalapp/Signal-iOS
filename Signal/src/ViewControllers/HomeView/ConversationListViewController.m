@@ -776,7 +776,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.shared localProfileAvatarImage];
     OWSAvatarBuilder *avatarBuilder =
         [[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize
-                                                  localUserAvatarMode:LocalUserAvatarModeNoteToSelf];
+                                                 localUserDisplayMode:LocalUserDisplayModeNoteToSelf];
     UIImage *avatarImage = (localProfileAvatarImage ?: [avatarBuilder buildDefaultImage]);
     OWSAssertDebug(avatarImage);
 

@@ -33,7 +33,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         guard let avatarImage = OWSAvatarBuilder.buildImage(
                 thread: thread,
                 diameter: UInt(UIScreen.main.bounds.size.smallerAxis),
-                localUserAvatarMode: .asUser,
+                localUserDisplayMode: .asUser,
                 transaction: readTx) else { return nil }
 
         self.avatarImage = avatarImage
@@ -47,14 +47,14 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     init?(address: SignalServiceAddress, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
         let diameter = UInt(UIScreen.main.bounds.size.smallerAxis)
         guard let avatarImage: UIImage = {
-            let localUserAvatarMode: LocalUserAvatarMode = (renderLocalUserAsNoteToSelf
+            let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
                                                                 ? .noteToSelf
                                                                 : .asUser)
             if address.isLocalAddress, !renderLocalUserAsNoteToSelf {
                 return Self.profileManager.localProfileAvatarImage() ??
                     OWSContactAvatarBuilder(
                         forLocalUserWithDiameter: diameter,
-                        localUserAvatarMode: localUserAvatarMode,
+                        localUserDisplayMode: localUserDisplayMode,
                         transaction: readTx
                     ).buildDefaultImage()
             } else {
@@ -79,7 +79,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         view.addSubview(imageView)
         view.addSubview(closeButton)
 
-        let imageRatio = CGFloat(avatarImage.pixelWidth()) / CGFloat(avatarImage.pixelHeight())
+        let imageRatio = CGFloat(avatarImage.pixelWidth) / CGFloat(avatarImage.pixelHeight)
 
         imageView.autoCenterInSuperview()
         imageView.autoPin(toAspectRatio: imageRatio)

@@ -769,7 +769,7 @@ public class FullTextSearcher: NSObject {
     private func conversationIndexingString(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         var result = self.indexingString(address: address, transaction: transaction)
 
-        if IsNoteToSelfEnabled(), address.isLocalAddress {
+        if address.isLocalAddress {
             result += " \(MessageStrings.noteToSelf)"
         }
 

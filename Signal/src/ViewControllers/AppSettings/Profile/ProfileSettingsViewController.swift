@@ -232,7 +232,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             avatarImageView.image = UIImage(data: avatarData)
         } else {
             let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarDiameter),
-                                                        localUserAvatarMode: .asUser)
+                                                        localUserDisplayMode: .asUser)
             avatarImageView.image = avatarBuilder.buildDefaultImage()
         }
         avatarImageView.clipsToBounds = true
@@ -305,7 +305,7 @@ extension ProfileSettingsViewController: AvatarViewHelperDelegate {
     public func avatarDidChange(_ image: UIImage) {
         AssertIsOnMainThread()
 
-        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameter))))
+        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameterPixels))))
     }
 
     public func fromViewController() -> UIViewController {

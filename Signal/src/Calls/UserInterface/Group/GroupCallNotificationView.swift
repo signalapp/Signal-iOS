@@ -248,7 +248,7 @@ private class BannerView: UIView {
                 address: address,
                 colorName: conversationColorName,
                 diameter: 40,
-                localUserAvatarMode: .asUser
+                localUserDisplayMode: .asUser
             )
 
             if address.isLocalAddress {

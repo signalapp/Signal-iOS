@@ -51,9 +51,11 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                       comment: "The title for the 'group invites' view.")
         }
 
-        defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + kContactCellAvatarTextMargin
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing
 
         configureSegmentedControl()
+
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         updateTableContents()
     }
@@ -124,6 +126,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     private func addContentsForMemberRequests(contents: OWSTableContents) {
 
+        let tableView = self.tableView
         let canApproveMemberRequests = groupViewHelper.canApproveMemberRequests
 
         let groupMembership = groupModel.groupMembership
@@ -148,20 +151,23 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
                     let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil, allowUserInteraction: true)
 
-                    if canApproveMemberRequests {
-                        cell.ows_setAccessoryView(self.buildMemberRequestButtons(address: address))
-                    }
+                    Self.databaseStorage.read { transaction in
+                        let configuration = ContactCellConfiguration.build(address: address,
+                                                                           localUserDisplayMode: .asLocalUser,
+                                                                           transaction: transaction)
 
-                    if address.isLocalAddress {
-                        cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                                             comment: "Label indicating the local user."))
-                        cell.selectionStyle = .none
-                    } else {
-                        cell.selectionStyle = .default
-                    }
+                        if canApproveMemberRequests {
+                            configuration.accessoryView = self.buildMemberRequestButtons(address: address)
+                        }
 
-                    cell.configureWithSneakyTransaction(recipientAddress: address,
-                                                        localUserAvatarMode: .asUser)
+                        if address.isLocalAddress {
+                            cell.selectionStyle = .none
+                        } else {
+                            cell.selectionStyle = .default
+                        }
+
+                        cell.configure(configuration: configuration, transaction: transaction)
+                    }
                     return cell
                     }) { [weak self] in
                                                 self?.showMemberActionSheet(for: address)
@@ -220,6 +226,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             return
         }
 
+        let tableView = self.tableView
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
@@ -254,11 +261,15 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                                      comment: "Title for the 'people you invited' section of the 'member requests and invites' view.")
         if membersInvitedByLocalUser.count > 0 {
             for address in membersInvitedByLocalUser {
-                localSection.add(OWSTableItem(customCellBlock: { [weak self] in
-                    let cell = ContactTableViewCell()
+                localSection.add(OWSTableItem(customCellBlock: {
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
+
                     cell.selectionStyle = canRevokeInvites ? .default : .none
-                    cell.configureWithSneakyTransaction(recipientAddress: address,
-                                                        localUserAvatarMode: .asUser)
+                    cell.configureWithSneakyTransaction(address: address,
+                                                        localUserDisplayMode: .asUser)
                     return cell
                     }) { [weak self] in
                                                 self?.inviteFromLocalUserWasTapped(address,
@@ -297,30 +308,38 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         return OWSTableItem.newCell()
                     }
 
-                    let cell = ContactTableViewCell()
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
+
                     cell.selectionStyle = canRevokeInvites ? .default : .none
 
-                    let inviterName = self.contactsManager.displayName(for: inviterAddress)
-                    let customName: String
-                    if invitedAddresses.count > 1 {
-                        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT",
-                                                       comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}.")
-                        customName = String(format: format, inviterName, OWSFormat.formatInt(invitedAddresses.count))
-                    } else {
-                        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT",
-                                                       comment: "Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}.")
-                        customName = String(format: format, inviterName)
+                    Self.databaseStorage.read { transaction in
+                        let configuration = ContactCellConfiguration.build(address: inviterAddress,
+                                                                           localUserDisplayMode: .asUser,
+                                                                           transaction: transaction)
+                        let inviterName = self.contactsManager.displayName(for: inviterAddress,
+                                                                           transaction: transaction)
+                        if invitedAddresses.count > 1 {
+                            let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT",
+                                                           comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}.")
+                            configuration.customName = String(format: format,
+                                                              inviterName,
+                                                              OWSFormat.formatInt(invitedAddresses.count))
+                        } else {
+                            let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT",
+                                                           comment: "Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}.")
+                            configuration.customName = String(format: format, inviterName)
+                        }
+                        cell.configure(configuration: configuration, transaction: transaction)
                     }
-                    cell.setCustomName(customName)
-
-                    cell.configureWithSneakyTransaction(recipientAddress: inviterAddress,
-                                                        localUserAvatarMode: .asUser)
 
                     return cell
-                    }) { [weak self] in
-                                                    self?.invitesFromOtherUserWasTapped(invitedAddresses: invitedAddresses,
-                                                                                        inviterAddress: inviterAddress,
-                                                                                        canRevoke: canRevokeInvites)
+                }) { [weak self] in
+                    self?.invitesFromOtherUserWasTapped(invitedAddresses: invitedAddresses,
+                                                        inviterAddress: inviterAddress,
+                                                        canRevoke: canRevokeInvites)
                 })
             }
         } else {

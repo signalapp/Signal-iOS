@@ -15,8 +15,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/CVItemViewModel.h>
-#import <SignalMessaging/ContactCellView.h>
-#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/CountryCodeViewController.h>
 #import <SignalMessaging/DateUtil.h>
@@ -43,7 +41,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSTextView.h>
 #import <SignalMessaging/OWSWindowManager.h>
 #import <SignalMessaging/ScreenLockViewController.h>
-#import <SignalMessaging/SelectThreadViewController.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/ThreadViewHelper.h>

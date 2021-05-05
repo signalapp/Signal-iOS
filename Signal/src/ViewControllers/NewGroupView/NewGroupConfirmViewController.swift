@@ -66,6 +66,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         helper.delegate = self
         helper.buildContents(avatarViewHelperDelegate: self)
 
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+
         updateTableContents()
     }
 
@@ -112,6 +114,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     // MARK: -
 
     private func updateTableContents() {
+        let tableView = self.tableView
         let contents = OWSTableContents()
 
         let nameAndAvatarSection = OWSTableSection()
@@ -193,7 +196,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                 ])
                 firstSection.axis = .horizontal
                 firstSection.alignment = .center
-                firstSection.spacing = kContactCellAvatarTextMargin
+                firstSection.spacing = ContactCellView.avatarTextHSpacing
 
                 cell.contentView.addSubview(firstSection)
                 firstSection.autoPinEdgesToSuperviewMargins()
@@ -245,20 +248,27 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             for address in members {
                 section.add(OWSTableItem(
                     customCellBlock: {
-                        let cell = ContactTableViewCell()
+                        guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                            owsFailDebug("Missing cell.")
+                            return UITableViewCell()
+                        }
 
                         cell.selectionStyle = .none
 
-                        if GroupManager.areMigrationsBlocking,
-                           membersDoNotSupportGroupsV2.contains(address) {
-                            let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
-                                                            comment: "Indicates that a group member does not support New Groups.")
-                            cell.setAttributedSubtitle(warning.attributedString())
+                        Self.databaseStorage.read { transaction in
+                            let configuration = ContactCellConfiguration.build(address: address,
+                                                                               localUserDisplayMode: .asUser,
+                                                                               transaction: transaction)
+
+                            if GroupManager.areMigrationsBlocking,
+                               membersDoNotSupportGroupsV2.contains(address) {
+                                let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
+                                                                comment: "Indicates that a group member does not support New Groups.")
+                                configuration.attributedSubtitle = warning.attributedString()
+                            }
+
+                            cell.configure(configuration: configuration, transaction: transaction)
                         }
-
-                        cell.configureWithSneakyTransaction(recipientAddress: address,
-                                                            localUserAvatarMode: .asUser)
-
                         return cell
                 }))
             }
@@ -472,6 +482,8 @@ class NewLegacyGroupView: UIView {
         self.v1Members = v1Members
 
         super.init(frame: .zero)
+
+        tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
     }
 
     required init(coder: NSCoder) {
@@ -479,6 +491,8 @@ class NewLegacyGroupView: UIView {
     }
 
     func present(fromViewController: UIViewController) {
+        let tableView = tableViewController.tableView
+
         let wrapViewWithHMargins = { (viewToWrap: UIView) -> UIView in
             let stackView = UIStackView(arrangedSubviews: [viewToWrap])
             stackView.axis = .vertical
@@ -525,10 +539,14 @@ class NewLegacyGroupView: UIView {
         for address in members {
             section.add(OWSTableItem(
                 customCellBlock: {
-                    let cell = ContactTableViewCell()
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
+
                     cell.selectionStyle = .none
-                    cell.configureWithSneakyTransaction(recipientAddress: address,
-                                                        localUserAvatarMode: .asUser)
+                    cell.configureWithSneakyTransaction(address: address,
+                                                        localUserDisplayMode: .asUser)
                     return cell
             }))
         }

@@ -9,10 +9,10 @@
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinEdgesToSuperviewEdges];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
+    [self.tableViewController.tableView registerClass:[ContactTableViewCell class]
+                               forCellReuseIdentifier:ContactTableViewCell.reuseIdentifier];
 
     [self updateTableContents];
 }
@@ -105,13 +107,24 @@ NS_ASSUME_NONNULL_BEGIN
         blockedContactsSection.headerTitle = NSLocalizedString(
             @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
+        UITableView *tableView = self.tableViewController.tableView;
         for (SignalServiceAddress *address in blockedAddresses) {
             [blockedContactsSection addItem:[OWSTableItem
                                                 itemWithCustomCellBlock:^{
-                                                    ContactTableViewCell *cell = [ContactTableViewCell new];
-                                                    [cell configureWithSneakyTransactionWithRecipientAddress:address
-                                                                                         localUserAvatarMode:
-                                                                                             LocalUserAvatarModeAsUser];
+
+                                                ContactTableViewCell *cell =
+                                                [tableView dequeueReusableCellWithIdentifier:ContactTableViewCell.reuseIdentifier];
+
+                                                    [BlockListViewController.databaseStorage
+                                                        readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                                            ContactCellConfiguration *configuration =
+                                                                [ContactCellConfiguration
+                                                                         buildForAddress:address
+                                                                    localUserDisplayMode:LocalUserDisplayModeAsUser
+                                                                             transaction:transaction];
+                                                            [cell configureWithConfiguration:configuration
+                                                                                 transaction:transaction];
+                                                        }];
                                                     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                         BlockListViewController, @"user");
                                                     return cell;

@@ -20,7 +20,7 @@ public class NonContactTableViewCell: UITableViewCell {
         OWSTableItem.configureCell(self)
 
         let stackView = UIStackView()
-        stackView.spacing = kContactCellAvatarTextMargin
+        stackView.spacing = ContactCellView.avatarTextHSpacing
         stackView.addArrangedSubview(iconView)
 
         contentView.addSubview(stackView)
@@ -79,7 +79,7 @@ public class NonContactTableViewCell: UITableViewCell {
                 address: address,
                 colorName: TSThread.stableColorNameForNewConversation(with: address.stringForDisplay),
                 diameter: 48,
-                localUserAvatarMode: .asUser
+                localUserDisplayMode: .asUser
             )
 
             iconView.image = avatarBuilder.build()

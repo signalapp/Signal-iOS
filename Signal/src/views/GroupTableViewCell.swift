@@ -8,7 +8,7 @@ import SignalServiceKit
 @objc class GroupTableViewCell: UITableViewCell {
 
     private let avatarView = ConversationAvatarView(diameter: kSmallAvatarSize,
-                                                    localUserAvatarMode: .asUser)
+                                                    localUserDisplayMode: .asUser)
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let accessoryLabel = UILabel()
@@ -31,7 +31,7 @@ import SignalServiceKit
         let columns = UIStackView(arrangedSubviews: [avatarView, textRows, accessoryLabel])
         columns.axis = .horizontal
         columns.alignment = .center
-        columns.spacing = kContactCellAvatarTextMargin
+        columns.spacing = ContactCellView.avatarTextHSpacing
 
         self.contentView.addSubview(columns)
         columns.autoPinWidthToSuperviewMargins()

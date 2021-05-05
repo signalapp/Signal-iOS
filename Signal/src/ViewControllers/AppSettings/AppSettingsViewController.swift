@@ -284,7 +284,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             avatarImageView.image = UIImage(data: avatarData)
         } else {
             let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarDiameter),
-                                                        localUserAvatarMode: .asUser)
+                                                        localUserDisplayMode: .asUser)
             avatarImageView.image = avatarBuilder.buildDefaultImage()
         }
         avatarImageView.clipsToBounds = true
