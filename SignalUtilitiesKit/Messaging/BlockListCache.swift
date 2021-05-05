@@ -86,7 +86,7 @@ public class BlockListCache: NSObject {
         switch thread {
         case let contactThread as TSContactThread:
             return serialQueue.sync {
-                blockedRecipientIds.contains(contactThread.contactIdentifier())
+                blockedRecipientIds.contains(contactThread.contactSessionID())
             }
         case let groupThread as TSGroupThread:
             return serialQueue.sync {

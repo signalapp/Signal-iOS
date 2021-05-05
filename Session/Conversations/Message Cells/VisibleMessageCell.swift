@@ -344,7 +344,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         case .mediaMessage:
             if viewItem.interaction is TSIncomingMessage,
                 let thread = viewItem.interaction.thread as? TSContactThread,
-                Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
                 guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
@@ -370,7 +370,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         case .audio:
             if viewItem.interaction is TSIncomingMessage,
                 let thread = viewItem.interaction.thread as? TSContactThread,
-                Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
                 let voiceMessageView = VoiceMessageView(viewItem: viewItem)
@@ -381,7 +381,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         case .genericAttachment:
             if viewItem.interaction is TSIncomingMessage,
                 let thread = viewItem.interaction.thread as? TSContactThread,
-                Storage.shared.getContact(with: thread.contactIdentifier())?.isTrusted != true {
+                Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
                 let documentView = DocumentView(viewItem: viewItem, textColor: bodyLabelTextColor)

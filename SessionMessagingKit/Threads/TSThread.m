@@ -128,7 +128,7 @@ BOOL IsNoteToSelfEnabled(void)
 {
     if (!IsNoteToSelfEnabled()) { return NO; }
     if (![self isKindOfClass:TSContactThread.class]) { return NO; }
-    return [self.contactIdentifier isEqual:[SNGeneralUtilities getUserPublicKey]];
+    return [self.contactSessionID isEqual:[SNGeneralUtilities getUserPublicKey]];
 }
 
 #pragma mark To be subclassed.
@@ -138,7 +138,7 @@ BOOL IsNoteToSelfEnabled(void)
 }
 
 // Override in ContactThread
-- (nullable NSString *)contactIdentifier
+- (nullable NSString *)contactSessionID
 {
     return nil;
 }

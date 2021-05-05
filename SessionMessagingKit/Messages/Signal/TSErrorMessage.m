@@ -88,7 +88,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 {
     NSString *source = envelope.source;
     TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:source transaction:transaction];
+        [TSContactThread getOrCreateThreadWithContactSessionID:source transaction:transaction];
 
     // Legit usage of senderTimestamp. We don't actually currently surface it in the UI, but it serves as
     // a reference to the envelope which we failed to process.

@@ -16,7 +16,7 @@ extension Storage {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
+            threadOrNil = TSContactThread.getOrCreateThread(withContactSessionID: publicKey, transaction: transaction)
         }
         return threadOrNil?.uniqueId
     }

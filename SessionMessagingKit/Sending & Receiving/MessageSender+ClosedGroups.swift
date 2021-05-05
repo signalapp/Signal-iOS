@@ -24,7 +24,7 @@ extension MessageSender {
         // Send a closed group update message to all members individually
         var promises: [Promise<Void>] = []
         for member in members {
-            let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+            let thread = TSContactThread.getOrCreateThread(withContactSessionID: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
                 encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
@@ -170,7 +170,7 @@ extension MessageSender {
         MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
         // Send updates to the new members individually
         for member in newMembers {
-            let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+            let thread = TSContactThread.getOrCreateThread(withContactSessionID: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: group.groupName!,
                 encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData)
@@ -323,7 +323,7 @@ extension MessageSender {
         // Send it
         guard let proto = try? SNProtoKeyPair.builder(publicKey: encryptionKeyPair.publicKey,
             privateKey: encryptionKeyPair.privateKey).build(), let plaintext = try? proto.serializedData() else { return }
-        let contactThread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
+        let contactThread = TSContactThread.getOrCreateThread(withContactSessionID: publicKey, transaction: transaction)
         guard let ciphertext = try? MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey) else { return }
         SNLog("Sending latest encryption key pair to: \(publicKey).")
         let wrapper = ClosedGroupControlMessage.KeyPairWrapper(publicKey: publicKey, encryptedKeyPair: ciphertext)

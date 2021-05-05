@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
                          withMappings:self.threadMappings];
                 if (!thread.shouldBeVisible) { continue; }
                 if ([thread isKindOfClass:TSContactThread.class]) {
-                    NSString *publicKey = ((TSContactThread *)thread).contactIdentifier;
+                    NSString *publicKey = ((TSContactThread *)thread).contactSessionID;
                     if ([[LKStorage.shared getContactWithSessionID:publicKey] name] == nil) { continue; }
                     [threads addObject:thread];
                 } else {

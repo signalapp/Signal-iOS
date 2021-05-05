@@ -162,7 +162,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: YapDatabaseReadTransaction) in
-        let recipientId =  contactThread.contactIdentifier()
+        let recipientId =  contactThread.contactSessionID()
         var result = recipientIndexer.index(recipientId, transaction: transaction)
 
         if IsNoteToSelfEnabled(),

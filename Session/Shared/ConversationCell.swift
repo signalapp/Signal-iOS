@@ -161,7 +161,7 @@ final class ConversationCell : UITableViewCell {
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID) // FIXME: This is a terrible place to do this
         let isBlocked: Bool
         if let thread = thread as? TSContactThread {
-            isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactIdentifier())
+            isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactSessionID())
         } else {
             isBlocked = false
         }
@@ -220,7 +220,7 @@ final class ConversationCell : UITableViewCell {
             if threadViewModel.threadRecord.isNoteToSelf() {
                 return NSLocalizedString("NOTE_TO_SELF", comment: "")
             } else {
-                let hexEncodedPublicKey = threadViewModel.contactIdentifier!
+                let hexEncodedPublicKey = threadViewModel.contactSessionID!
                 return Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey
             }
         }

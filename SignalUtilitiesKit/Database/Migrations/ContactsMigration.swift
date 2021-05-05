@@ -15,7 +15,7 @@ public class ContactsMigration : OWSDatabaseMigration {
         var contacts: [Contact] = []
         TSContactThread.enumerateCollectionObjects { object, _ in
             guard let thread = object as? TSContactThread else { return }
-            let sessionID = thread.contactIdentifier()
+            let sessionID = thread.contactSessionID()
             if let contact = Storage.shared.getContact(with: sessionID) {
                 contact.isTrusted = true
                 contacts.append(contact)

@@ -141,7 +141,7 @@ CGFloat kIconViewLength = 24;
     NSString *threadName = self.thread.name;
     if ([self.thread isKindOfClass:TSContactThread.class]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
-        return [[LKStorage.shared getContactWithSessionID:thread.contactIdentifier] displayNameFor:SNContactContextRegular] ?: @"Anonymous";
+        return [[LKStorage.shared getContactWithSessionID:thread.contactSessionID] displayNameFor:SNContactContextRegular] ?: @"Anonymous";
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
@@ -369,7 +369,7 @@ CGFloat kIconViewLength = 24;
                                          displayName = @"the group";
                                      } else {
                                          TSContactThread *thread = (TSContactThread *)self.thread;
-                                         displayName = [[LKStorage.shared getContactWithSessionID:thread.contactIdentifier] displayNameFor:SNContactContextRegular] ?: @"anonymous";
+                                         displayName = [[LKStorage.shared getContactWithSessionID:thread.contactSessionID] displayNameFor:SNContactContextRegular] ?: @"anonymous";
                                      }
                                      subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), displayName];
                                      subtitleLabel.textColor = LKColors.text;
@@ -740,7 +740,7 @@ CGFloat kIconViewLength = 24;
         subtitleView.font = [LKFonts spaceMonoOfSize:LKValues.smallFontSize];
         subtitleView.lineBreakMode = NSLineBreakByCharWrapping;
         subtitleView.numberOfLines = 2;
-        subtitleView.text = ((TSContactThread *)self.thread).contactIdentifier;
+        subtitleView.text = ((TSContactThread *)self.thread).contactSessionID;
         subtitleView.textAlignment = NSTextAlignmentCenter;
         [stackView addArrangedSubview:subtitleView];
     }
@@ -1086,7 +1086,7 @@ CGFloat kIconViewLength = 24;
 
 - (void)copySessionID
 {
-    UIPasteboard.generalPasteboard.string = ((TSContactThread *)self.thread).contactIdentifier;
+    UIPasteboard.generalPasteboard.string = ((TSContactThread *)self.thread).contactSessionID;
 }
 
 - (void)showMediaGallery
@@ -1137,7 +1137,7 @@ CGFloat kIconViewLength = 24;
 - (void)saveName
 {
     if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:((TSContactThread *)self.thread).contactIdentifier];
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:((TSContactThread *)self.thread).contactSessionID];
     if (contact == nil) { return; }
     NSString *text = [self.displayNameTextField.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
     contact.nickname = text.length > 0 ? text : nil;
@@ -1188,7 +1188,7 @@ CGFloat kIconViewLength = 24;
     OWSAssertDebug(recipientId.length > 0);
 
     if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
-        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:recipientId]) {
+        [((TSContactThread *)self.thread).contactSessionID isEqualToString:recipientId]) {
         [self updateTableContents];
     }
 }

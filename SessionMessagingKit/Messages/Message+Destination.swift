@@ -9,7 +9,7 @@ public extension Message {
 
         static func from(_ thread: TSThread) -> Message.Destination {
             if let thread = thread as? TSContactThread {
-                return .contact(publicKey: thread.contactIdentifier())
+                return .contact(publicKey: thread.contactSessionID())
             } else if let thread = thread as? TSGroupThread, thread.isClosedGroup {
                 let groupID = thread.groupModel.groupId
                 let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)

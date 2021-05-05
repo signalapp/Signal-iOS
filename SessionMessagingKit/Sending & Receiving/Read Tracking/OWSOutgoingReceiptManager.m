@@ -155,7 +155,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             continue;
         }
 
-        TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        TSThread *thread = [TSContactThread getOrCreateThreadWithContactSessionID:recipientId];
 
         if (thread.isGroupThread) { // Don't send receipts in group threads
             continue;

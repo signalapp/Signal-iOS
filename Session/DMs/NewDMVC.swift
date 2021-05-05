@@ -154,7 +154,7 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     }
 
     private func startNewDM(with sessionID: String) {
-        let thread = TSContactThread.getOrCreateThread(contactId: sessionID)
+        let thread = TSContactThread.getOrCreateThread(contactSessionID: sessionID)
         presentingViewController?.dismiss(animated: true, completion: nil)
         SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
     }

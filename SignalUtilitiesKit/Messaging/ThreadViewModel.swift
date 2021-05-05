@@ -11,7 +11,7 @@ public class ThreadViewModel: NSObject {
     @objc public let isGroupThread: Bool
     @objc public let threadRecord: TSThread
     @objc public let unreadCount: UInt
-    @objc public let contactIdentifier: String?
+    @objc public let contactSessionID: String?
     @objc public let name: String
     @objc public let isMuted: Bool
 
@@ -35,9 +35,9 @@ public class ThreadViewModel: NSObject {
         self.lastMessageDate = lastInteraction?.dateForUI() ?? thread.creationDate
 
         if let contactThread = thread as? TSContactThread {
-            self.contactIdentifier = contactThread.contactIdentifier()
+            self.contactSessionID = contactThread.contactSessionID()
         } else {
-            self.contactIdentifier = nil
+            self.contactSessionID = nil
         }
 
         self.unreadCount = thread.unreadMessageCount(transaction: transaction)
