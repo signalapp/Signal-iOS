@@ -5,7 +5,8 @@
 import Foundation
 
 @objc(OWSTypingIndicators)
-public protocol TypingIndicators: class {
+public protocol TypingIndicators : AnyObject {
+
     @objc
     func didStartTypingOutgoingInput(inThread thread: TSThread)
 
@@ -43,7 +44,7 @@ public protocol TypingIndicators: class {
 // MARK: -
 
 @objc(OWSTypingIndicatorsImpl)
-public class TypingIndicatorsImpl: NSObject, TypingIndicators {
+public class TypingIndicatorsImpl : NSObject, TypingIndicators {
 
     @objc
     public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")

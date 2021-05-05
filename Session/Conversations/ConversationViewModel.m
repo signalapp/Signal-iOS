@@ -1005,7 +1005,6 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSInteractionType_IncomingMessage:
             case OWSInteractionType_OutgoingMessage:
                 return interaction;
-            case OWSInteractionType_Error:
             case OWSInteractionType_Info:
                 break;
             case OWSInteractionType_Call:
@@ -1134,7 +1133,6 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
             case OWSInteractionType_IncomingMessage:
             case OWSInteractionType_OutgoingMessage:
-            case OWSInteractionType_Error:
             case OWSInteractionType_Info:
             case OWSInteractionType_Call:
                 canShowDate = YES;

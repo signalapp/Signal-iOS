@@ -12,7 +12,6 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Unknown,
     OWSInteractionType_IncomingMessage,
     OWSInteractionType_OutgoingMessage,
-    OWSInteractionType_Error,
     OWSInteractionType_Call,
     OWSInteractionType_Info,
     OWSInteractionType_Offer,
