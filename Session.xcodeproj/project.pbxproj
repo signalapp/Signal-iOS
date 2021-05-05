@@ -18,9 +18,6 @@
 		341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 341341EE2187467900192D59 /* ConversationViewModel.m */; };
 		3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
-		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
-		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
-		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34386A53207D271C009F5D9C /* NeverClearView.swift */; };
 		3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */; };
@@ -31,9 +28,6 @@
 		34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */; };
 		34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
-		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
-		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
-		347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		3478504C1FD7496D007B8332 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		347850551FD749C0007B8332 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
@@ -949,9 +943,6 @@
 		3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageTimerView.h; sourceTree = "<group>"; };
 		3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageTimerView.m; sourceTree = "<group>"; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
-		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
-		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
-		34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ElegantIcons.ttf; sourceTree = "<group>"; };
 		34330AA11E79686200DF2FB9 /* OWSProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProgressView.h; sourceTree = "<group>"; };
 		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
 		34386A53207D271C009F5D9C /* NeverClearView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeverClearView.swift; sourceTree = "<group>"; };
@@ -1935,9 +1926,6 @@
 		34330A581E7875FB00DF2FB9 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */,
-				34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */,
-				34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */,
 				B8CCF6342396005F0091D419 /* SpaceMono-Regular.ttf */,
 				C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */,
 			);
@@ -3381,11 +3369,11 @@
 		C3F0A58F255C8E3D007BE2A3 /* Meta */ = {
 			isa = PBXGroup;
 			children = (
-				B81D260326158DF5004D1FE1 /* Certificates */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				C3AAFFF125AE99710089E6DD /* AppDelegate.swift */,
 				34D99CE3217509C1000AFB39 /* AppEnvironment.swift */,
+				B81D260326158DF5004D1FE1 /* Certificates */,
 				B8FF8E6025C10D8B004D1F22 /* Countries */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
@@ -3994,12 +3982,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */,
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
 				347850551FD749C0007B8332 /* Localizable.strings in Resources */,
-				347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */,
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
-				347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */,
 				C3D90A1125773888002C9DF5 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4058,9 +4043,7 @@
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
-				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
-				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
 				C3CA3AA2255CDADA00F4C6D4 /* english.txt in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,
 				C3A01E05261D24C400290BEB /* public-loki-foundation.der in Resources */,
@@ -4073,7 +4056,6 @@
 				C3CA3AB4255CDAE600F4C6D4 /* japanese.txt in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
-				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
