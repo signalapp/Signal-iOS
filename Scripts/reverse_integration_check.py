@@ -120,7 +120,11 @@ def main():
         '3.8.2.4',
         '5.0.0.29',
         '5.0.0.73',
-        '5.6.0.10'
+        '5.6.0.10',
+        '3.1.1.0',
+        '3.13.3.6', 
+        '3.13.3.8', 
+        '5.7.0.0'
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 
