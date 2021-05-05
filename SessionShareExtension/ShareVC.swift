@@ -1,6 +1,7 @@
 import SessionUIKit
 
 final class ShareVC : UIViewController, AppModeManagerDelegate {
+    @IBOutlet private var logoImageView: UIImageView!
     private var areVersionMigrationsComplete = false
 
     // MARK: Lifecycle

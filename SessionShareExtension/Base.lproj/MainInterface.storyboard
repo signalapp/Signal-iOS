@@ -15,13 +15,32 @@
                     <view key="view" opaque="NO" contentMode="scaleToFill" id="wbc-yd-nQP">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SessionGreen64" translatesAutoresizingMaskIntoConstraints="NO" id="Hvu-b1-e3Q">
+                                <rect key="frame" x="155.5" y="301.5" width="64" height="64"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="64" id="bwQ-vq-ZId"/>
+                                    <constraint firstAttribute="height" constant="64" id="vrS-W4-ZXG"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="1Xd-am-t49"/>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.086274509803921567" green="0.086274509803921567" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Hvu-b1-e3Q" firstAttribute="centerY" secondItem="wbc-yd-nQP" secondAttribute="centerY" id="0no-Qo-O3k"/>
+                            <constraint firstItem="Hvu-b1-e3Q" firstAttribute="centerX" secondItem="wbc-yd-nQP" secondAttribute="centerX" id="Vsx-JI-9HN"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="logoImageView" destination="Hvu-b1-e3Q" id="DfV-Fy-b7M"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CEy-Cv-SGf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="126" y="133"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="SessionGreen64" width="57.5" height="64"/>
+    </resources>
 </document>
