@@ -305,7 +305,7 @@ extension ProfileSettingsViewController: AvatarViewHelperDelegate {
     public func avatarDidChange(_ image: UIImage) {
         AssertIsOnMainThread()
 
-        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameter))))
+        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameterPixels))))
     }
 
     public func fromViewController() -> UIViewController {
