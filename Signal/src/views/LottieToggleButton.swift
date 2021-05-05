@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,10 +21,24 @@ class LottieToggleButton: UIButton {
         }
     }
 
+    @objc
+    var animationSpeed: CGFloat {
+        get {
+            animationView?.animationSpeed ?? 0
+        }
+        set {
+            animationView?.animationSpeed = newValue
+        }
+    }
+
     override var isSelected: Bool {
         didSet {
             animationView?.currentProgress = isSelected ? 1 : 0
         }
+    }
+
+    func setValueProvider(_ valueProvider: AnyValueProvider, keypath: AnimationKeypath) {
+        animationView?.setValueProvider(valueProvider, keypath: keypath)
     }
 
     @objc

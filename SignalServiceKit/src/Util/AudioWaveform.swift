@@ -22,7 +22,7 @@ public class AudioWaveformManager: NSObject {
 
     private static var cache = [AttachmentId: Weak<AudioWaveform>]()
 
-    private static var observerMap = [AttachmentId: SamplingObserver]()
+    private static var observerMap = [String: SamplingObserver]()
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     private override init() {}
@@ -32,12 +32,31 @@ public class AudioWaveformManager: NSObject {
         unfairLock.withLock {
             let attachmentId = attachment.uniqueId
 
+            guard attachment.isAudio else {
+                owsFailDebug("Not audio.")
+                return nil
+            }
+
+            guard let audioWaveformPath = attachment.audioWaveformPath else {
+                owsFailDebug("Missing audioWaveformPath.")
+                return nil
+            }
+
+            guard let originalFilePath = attachment.originalFilePath else {
+                owsFailDebug("Missing originalFilePath.")
+                return nil
+            }
+
             if let cacheBox = cache[attachmentId],
                let cachedValue = cacheBox.value {
                 return cachedValue
             }
 
-            guard let value = buildAudioWaveForm(forAttachment: attachment) else {
+            guard let value = buildAudioWaveForm(
+                forAudioPath: originalFilePath,
+                waveformPath: audioWaveformPath,
+                identifier: attachmentId
+            ) else {
                 return nil
             }
 
@@ -47,38 +66,36 @@ public class AudioWaveformManager: NSObject {
         }
     }
 
+    @objc
+    public static func audioWaveform(forAudioPath audioPath: String, waveformPath: String) -> AudioWaveform? {
+        unfairLock.withLock {
+            guard let value = buildAudioWaveForm(
+                    forAudioPath: audioPath,
+                    waveformPath: waveformPath,
+                    identifier: UUID().uuidString
+            ) else {
+                return nil
+            }
+            return value
+        }
+    }
+
     // This method should only be called with unfairLock acquired.
-    private static func buildAudioWaveForm(forAttachment attachment: TSAttachmentStream) -> AudioWaveform? {
+    private static func buildAudioWaveForm(forAudioPath audioPath: String, waveformPath: String, identifier: String) -> AudioWaveform? {
 
-        let attachmentId = attachment.uniqueId
-
-        guard attachment.isAudio else {
-            owsFailDebug("Not audio.")
-            return nil
-        }
-        guard let audioWaveformPath = attachment.audioWaveformPath else {
-            owsFailDebug("Missing audioWaveformPath.")
-            return nil
-        }
-
-        if FileManager.default.fileExists(atPath: audioWaveformPath) {
+        if FileManager.default.fileExists(atPath: waveformPath) {
             // We have a cached waveform on disk, read it into memory.
             do {
-                return try AudioWaveform(contentsOfFile: audioWaveformPath)
+                return try AudioWaveform(contentsOfFile: waveformPath)
             } catch {
                 owsFailDebug("Error: \(error)")
 
                 // Remove the file from disk and create a new one.
-                OWSFileSystem.deleteFileIfExists(audioWaveformPath)
+                OWSFileSystem.deleteFileIfExists(waveformPath)
             }
         }
 
-        guard let originalFilePath = attachment.originalFilePath else {
-            owsFailDebug("Missing originalFilePath.")
-            return nil
-        }
-
-        var asset = AVURLAsset(url: URL(fileURLWithPath: originalFilePath))
+        var asset = AVURLAsset(url: URL(fileURLWithPath: audioPath))
 
         // If the asset isn't readable, we may not be able to generate a waveform for this file.
         //
@@ -87,14 +104,12 @@ public class AudioWaveformManager: NSObject {
         // the file extension, we can. This is pretty brittle and hopefully android will
         // be able to fix the issue in the future in which case `isReadable` will become
         // true and this path will no longer be hit.
-        if !asset.isReadable,
-           attachment.isVoiceMessage,
-           originalFilePath.hasSuffix("m4a") {
+        if !asset.isReadable, audioPath.hasSuffix("m4a") {
 
             let symlinkPath = OWSFileSystem.temporaryFilePath(fileExtension: "aac")
             do {
                 try FileManager.default.createSymbolicLink(atPath: symlinkPath,
-                                                           withDestinationPath: originalFilePath)
+                                                           withDestinationPath: audioPath)
             } catch {
                 owsFailDebug("Failed to create voice memo symlink: \(error)")
                 return nil
@@ -111,15 +126,15 @@ public class AudioWaveformManager: NSObject {
             return nil
         }
 
-        Logger.verbose("Sampling waveform: \(attachmentId)")
+        Logger.verbose("Sampling waveform: \(identifier)")
 
         let waveform = AudioWaveform()
 
         // Listen for sampling completion so we can cache the final waveform to disk.
         let observer = SamplingObserver(waveform: waveform,
-                                        attachmentId: attachmentId,
-                                        audioWaveformPath: audioWaveformPath)
-        observerMap[attachmentId] = observer
+                                        identifier: identifier,
+                                        audioWaveformPath: waveformPath)
+        observerMap[identifier] = observer
         waveform.addSamplingObserver(observer)
 
         waveform.beginSampling(for: asset)
@@ -130,22 +145,22 @@ public class AudioWaveformManager: NSObject {
     private class SamplingObserver: AudioWaveformSamplingObserver {
         // Retain waveform until sampling is complete.
         let waveform: AudioWaveform
-        let attachmentId: AttachmentId
+        let identifier: String
         let audioWaveformPath: String
 
         init(waveform: AudioWaveform,
-             attachmentId: AttachmentId,
+             identifier: String,
              audioWaveformPath: String) {
             self.waveform = waveform
-            self.attachmentId = attachmentId
+            self.identifier = identifier
             self.audioWaveformPath = audioWaveformPath
         }
 
         func audioWaveformDidFinishSampling(_ audioWaveform: AudioWaveform) {
-            let attachmentId = self.attachmentId
+            let identifier = self.identifier
             let audioWaveformPath = self.audioWaveformPath
 
-            Logger.verbose("Sampling waveform complete: \(attachmentId)")
+            Logger.verbose("Sampling waveform complete: \(identifier)")
 
             DispatchQueue.global().async {
                 AudioWaveformManager.unfairLock.withLock {
@@ -162,8 +177,8 @@ public class AudioWaveformManager: NSObject {
                     }
 
                     // Discard observer.
-                    owsAssertDebug(observerMap[attachmentId] != nil)
-                    observerMap[attachmentId] = nil
+                    owsAssertDebug(observerMap[identifier] != nil)
+                    observerMap[identifier] = nil
                 }
             }
         }
@@ -222,15 +237,24 @@ public class AudioWaveform: NSObject {
             return nil
         }
 
+        // Normalize to a range of 0-1 with 0 being silence and
+        // 1 being the loudest value we render.
+        func normalize(_ float: Float) -> Float {
+            float.inverseLerp(
+                AudioWaveform.silenceThreshold,
+                AudioWaveform.clippingThreshold,
+                shouldClamp: true
+            )
+        }
+
         // If we're trying to downsample to more samples than exist, just return what we have.
         guard decibelSamples.count > sampleCount else {
-            return decibelSamples.map { 1 - ($0 / AudioWaveform.silenceDecibelThreshold) }
+            return decibelSamples.map(normalize)
         }
 
         let downSampledData = downsample(samples: decibelSamples, toSampleCount: sampleCount)
 
-        // Normalize to a range of 0-1 with 0 being silence.
-        return downSampledData.map { 1 - ($0 / AudioWaveform.silenceDecibelThreshold) }
+        return downSampledData.map(normalize)
     }
 
     // MARK: - Sampling
@@ -243,7 +267,8 @@ public class AudioWaveform: NSObject {
     }
 
     /// Anything below this decibel level is considered silent and clipped.
-    fileprivate static let silenceDecibelThreshold: Float = -50
+    fileprivate static let silenceThreshold: Float = -50
+    fileprivate static let clippingThreshold: Float = -20
 
     /// The number of samples to collect for the given audio file.
     /// We limit this to restrict the memory space an individual audio
@@ -489,7 +514,7 @@ private class AudioWaveformSamplingOperation: Operation {
             var zeroDecibelEquivalent: Float = Float(Int16.max)
 
             var loudestClipValue: Float = 0.0
-            var quietestClipValue = AudioWaveform.silenceDecibelThreshold
+            var quietestClipValue = AudioWaveform.silenceThreshold
             let samplesToProcess = vDSP_Length(sampleLength)
 
             // convert 16bit int amplitudes to float representation

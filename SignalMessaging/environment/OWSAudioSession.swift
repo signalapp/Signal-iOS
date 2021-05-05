@@ -144,6 +144,9 @@ public class OWSAudioSession: NSObject {
         } else if aggregateBehaviors.contains(.playAndRecord) {
             assert(avAudioSession.recordPermission == .granted)
             try avAudioSession.setCategory(.record)
+            if #available(iOS 13, *) {
+                try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
+            }
         } else if aggregateBehaviors.contains(.audioMessagePlayback) {
             if self.device.proximityState {
                 Logger.debug("proximityState: true")

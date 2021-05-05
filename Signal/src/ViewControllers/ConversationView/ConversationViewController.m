@@ -101,15 +101,10 @@ typedef enum : NSUInteger {
     LocationPickerDelegate,
     InputAccessoryViewPlaceholderDelegate>
 
-@property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
-
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 
 @property (nonatomic, readonly) CVViewState *viewState;
-
-@property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
-@property (nonatomic, nullable) NSUUID *voiceMessageUUID;
 
 @property (nonatomic, nullable) NSTimer *readTimer;
 @property (nonatomic) BOOL isMarkingAsRead;
@@ -185,9 +180,6 @@ typedef enum : NSUInteger {
     [self.contactsViewHelper addObserver:self];
     _contactShareViewHelper = [ContactShareViewHelper new];
     _contactShareViewHelper.delegate = self;
-
-    NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
-    _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 
     self.actionOnOpen = action;
 
@@ -555,7 +547,7 @@ typedef enum : NSUInteger {
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    [self cancelVoiceMemo];
+    [self finishRecordingVoiceMessageAndSendImmediately:NO];
     self.isUserScrolling = NO;
     self.isWaitingForDeceleration = NO;
     [self saveDraft];
@@ -1064,7 +1056,7 @@ typedef enum : NSUInteger {
     [self cancelReadTimer];
     [self saveDraft];
     [self markVisibleMessagesAsRead];
-    [self cancelVoiceMemo];
+    [self finishRecordingVoiceMessageAndSendImmediately:NO];
     [self.mediaCache removeAllObjects];
     [self.inputToolbar clearDesiredKeyboard];
 
@@ -1095,6 +1087,16 @@ typedef enum : NSUInteger {
     [self.inputToolbar ensureTextViewHeight];
 
     [self positionGroupCallTooltip];
+}
+
+- (BOOL)shouldAutorotate
+{
+    // Don't allow orientation changes while recording voice messages.
+    if (self.viewState.currentVoiceMessageModel.isRecording) {
+        return NO;
+    }
+
+    return [super shouldAutorotate];
 }
 
 #pragma mark - Initializers
@@ -2020,7 +2022,10 @@ typedef enum : NSUInteger {
         = self.isHidingScrollToNextMentionButton ? YES : self.scrollToNextMentionButton.hidden;
     BOOL scrollToNextMentionIsHidden = scrollToNextMentionWasHidden;
 
-    if (self.isInPreviewPlatter) {
+    if (self.viewState.currentVoiceMessageModel.isRecording) {
+        scrollDownIsHidden = YES;
+        scrollToNextMentionIsHidden = YES;
+    } else if (self.isInPreviewPlatter) {
         scrollDownIsHidden = YES;
         scrollToNextMentionIsHidden = YES;
     } else if (self.isPresentingMessageActions) {
@@ -2441,186 +2446,6 @@ typedef enum : NSUInteger {
                               [self showErrorAlertForAttachment:nil];
                           });
                   }];
-}
-
-#pragma mark - Audio
-
-- (void)requestRecordingVoiceMemo
-{
-    OWSAssertIsOnMainThread();
-
-    NSUUID *voiceMessageUUID = [NSUUID UUID];
-    self.voiceMessageUUID = voiceMessageUUID;
-
-    __weak typeof(self) weakSelf = self;
-    [self ows_askForMicrophonePermissions:^(BOOL granted) {
-        __strong typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-
-        if (strongSelf.voiceMessageUUID != voiceMessageUUID) {
-            // This voice message recording has been cancelled
-            // before recording could begin.
-            return;
-        }
-
-        if (granted) {
-            [strongSelf startRecordingVoiceMemo];
-        } else {
-            OWSLogInfo(@"we do not have recording permission.");
-            [strongSelf cancelVoiceMemo];
-            [self ows_showNoMicrophonePermissionActionSheet];
-        }
-    }];
-}
-
-- (void)startRecordingVoiceMemo
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"startRecordingVoiceMemo");
-
-    // Cancel any ongoing audio playback.
-    [self.cvAudioPlayer stopAll];
-
-    NSString *temporaryDirectory = OWSTemporaryDirectory();
-    NSString *filename = [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]];
-    NSString *filepath = [temporaryDirectory stringByAppendingPathComponent:filename];
-    NSURL *fileURL = [NSURL fileURLWithPath:filepath];
-
-    // Setup audio session
-    BOOL configuredAudio = [self.audioSession startAudioActivity:self.recordVoiceNoteAudioActivity];
-    if (!configuredAudio) {
-        OWSFailDebug(@"Couldn't configure audio session");
-        [self cancelVoiceMemo];
-        return;
-    }
-
-    NSError *error;
-    // Initiate and prepare the recorder
-    self.audioRecorder = [[AVAudioRecorder alloc] initWithURL:fileURL
-                                                     settings:@{
-                                                         AVFormatIDKey : @(kAudioFormatMPEG4AAC),
-                                                         AVSampleRateKey : @(44100),
-                                                         AVNumberOfChannelsKey : @(2),
-                                                         AVEncoderBitRateKey : @(128 * 1024),
-                                                     }
-                                                        error:&error];
-    if (error) {
-        OWSFailDebug(@"Couldn't create audioRecorder: %@", error);
-        [self cancelVoiceMemo];
-        return;
-    }
-
-    self.audioRecorder.meteringEnabled = YES;
-
-    if (![self.audioRecorder prepareToRecord]) {
-        OWSFailDebug(@"audioRecorder couldn't prepareToRecord.");
-        [self cancelVoiceMemo];
-        return;
-    }
-
-    if (![self.audioRecorder record]) {
-        OWSFailDebug(@"audioRecorder couldn't record.");
-        [self cancelVoiceMemo];
-        return;
-    }
-}
-
-- (void)endRecordingVoiceMemo
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"endRecordingVoiceMemo");
-
-    self.voiceMessageUUID = nil;
-
-    if (!self.audioRecorder) {
-        // No voice message recording is in progress.
-        // We may be cancelling before the recording could begin.
-        OWSLogError(@"Missing audioRecorder");
-        return;
-    }
-
-    NSTimeInterval durationSeconds = self.audioRecorder.currentTime;
-
-    [self stopRecording];
-
-    const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
-    if (durationSeconds < kMinimumRecordingTimeSeconds) {
-        OWSLogInfo(@"Discarding voice message; too short.");
-        self.audioRecorder = nil;
-
-        [self dismissKeyBoard];
-
-        [OWSActionSheets
-            showActionSheetWithTitle:
-                NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE",
-                    @"Title for the alert indicating the 'voice message' needs to be held to be held down to record.")
-                             message:NSLocalizedString(@"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE",
-                                         @"Message for the alert indicating the 'voice message' needs to be held to be "
-                                         @"held "
-                                         @"down to record.")];
-        return;
-    }
-
-    NSError *error;
-    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url
-                                                 shouldDeleteOnDeallocation:YES
-                                                                      error:&error];
-    self.audioRecorder = nil;
-
-    if (error != nil) {
-        OWSFailDebug(@"Couldn't load audioRecorder data: %@", error);
-        self.audioRecorder = nil;
-        return;
-    }
-
-    NSString *filename = [NSString stringWithFormat:@"%@ %@.%@",
-                                   NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages."),
-                                   [NSDateFormatter localizedStringFromDate:[NSDate new]
-                                                                  dateStyle:NSDateFormatterShortStyle
-                                                                  timeStyle:NSDateFormatterShortStyle],
-                                   @"m4a"];
-    [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment =
-        [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];
-    OWSLogVerbose(@"voice memo duration: %f, file size: %zd", durationSeconds, [dataSource dataLength]);
-    if (!attachment || [attachment hasError]) {
-        OWSLogWarn(@"Invalid attachment: %@.", attachment ? [attachment errorName] : @"Missing data");
-        [self showErrorAlertForAttachment:attachment];
-    } else {
-        [self tryToSendAttachments:@[ attachment ] messageBody:nil];
-    }
-}
-
-- (void)stopRecording
-{
-    [self.audioRecorder stop];
-    [self.audioSession endAudioActivity:self.recordVoiceNoteAudioActivity];
-}
-
-- (void)cancelRecordingVoiceMemo
-{
-    OWSAssertIsOnMainThread();
-    OWSLogDebug(@"cancelRecordingVoiceMemo");
-
-    [self stopRecording];
-    self.audioRecorder = nil;
-    self.voiceMessageUUID = nil;
-}
-
-- (void)setAudioRecorder:(nullable AVAudioRecorder *)audioRecorder
-{
-    // Prevent device from sleeping while recording a voice message.
-    if (audioRecorder) {
-        [DeviceSleepManager.shared addBlockWithBlockObject:audioRecorder];
-    } else if (_audioRecorder) {
-        [DeviceSleepManager.shared removeBlockWithBlockObject:_audioRecorder];
-    }
-
-    _audioRecorder = audioRecorder;
 }
 
 #pragma mark Accessory View
@@ -3535,15 +3360,11 @@ typedef enum : NSUInteger {
         [[NSDate new] timeIntervalSinceDate:self.lastMessageSentDate] < kIgnoreMessageSendDoubleTapDurationSeconds) {
         // If users double-taps the message send button, the second tap can look like a
         // very short voice message gesture.  We want to ignore such gestures.
-        [self.inputToolbar cancelVoiceMemoIfNecessary];
-        [self.inputToolbar hideVoiceMemoUI:NO];
-        [self cancelRecordingVoiceMemo];
+        [self cancelRecordingVoiceMessage];
         return;
     }
 
-    [self.inputToolbar showVoiceMemoUI];
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-    [self requestRecordingVoiceMemo];
+    [self checkPermissionsAndStartRecordingVoiceMessage];
 }
 
 - (void)voiceMemoGestureDidComplete
@@ -3552,9 +3373,7 @@ typedef enum : NSUInteger {
 
     OWSLogInfo(@"");
 
-    [self.inputToolbar hideVoiceMemoUI:YES];
-    [self endRecordingVoiceMemo];
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    [self finishRecordingVoiceMessageAndSendImmediately:YES];
 }
 
 - (void)voiceMemoGestureDidLock
@@ -3571,25 +3390,14 @@ typedef enum : NSUInteger {
 
     OWSLogInfo(@"voiceMemoGestureDidCancel");
 
-    [self.inputToolbar hideVoiceMemoUI:NO];
-    [self cancelRecordingVoiceMemo];
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    [self cancelRecordingVoiceMessage];
 }
 
-- (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha
+- (void)sendVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft
 {
     OWSAssertIsOnMainThread();
 
-    [self.inputToolbar setVoiceMemoUICancelAlpha:cancelAlpha];
-}
-
-- (void)cancelVoiceMemo
-{
-    OWSAssertIsOnMainThread();
-
-    [self.inputToolbar cancelVoiceMemoIfNecessary];
-    [self.inputToolbar hideVoiceMemoUI:NO];
-    [self cancelRecordingVoiceMemo];
+    [self sendVoiceMessageModel:voiceMemoDraft];
 }
 
 #pragma mark - Database Observation
@@ -4060,6 +3868,7 @@ typedef enum : NSUInteger {
 
 - (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
                                    messageDraft:(nullable MessageBody *)messageDraft
+                                 voiceMemoDraft:(nullable VoiceMessageModel *)voiceMemoDraft
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.hasViewWillAppearEverBegun);
@@ -4071,6 +3880,11 @@ typedef enum : NSUInteger {
                                               inputTextViewDelegate:self
                                                     mentionDelegate:self];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, inputToolbar);
+
+    if (voiceMemoDraft) {
+        [inputToolbar showVoiceMemoDraft:voiceMemoDraft];
+    }
+
     return inputToolbar;
 }
 

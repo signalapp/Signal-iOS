@@ -90,6 +90,8 @@ public class ConversationListInfo: NSObject {
     @objc
     public let draftText: String?
     @objc
+    public let hasVoiceMemoDraft: Bool
+    @objc
     public let lastMessageText: String
     @objc
     public let lastMessageDate: Date?
@@ -116,6 +118,8 @@ public class ConversationListInfo: NSObject {
         } else {
             self.draftText = nil
         }
+
+        self.hasVoiceMemoDraft = VoiceMessageModel.hasDraft(for: thread, transaction: transaction)
 
         if let groupThread = thread as? TSGroupThread, let addedByAddress = groupThread.groupModel.addedByAddress {
             self.addedToGroupByName = Self.contactsManager.shortDisplayName(for: addedByAddress, transaction: transaction)

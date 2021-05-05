@@ -60,6 +60,29 @@ public extension Double {
 
 // MARK: -
 
+public extension Float {
+    func clamp(_ minValue: Float, _ maxValue: Float) -> Float {
+        return max(minValue, min(maxValue, self))
+    }
+
+    func clamp01() -> Float {
+        return clamp(0, 1)
+    }
+
+    // Linear interpolation
+    func lerp(_ minValue: Float, _ maxValue: Float) -> Float {
+        return (minValue * (1 - self)) + (maxValue * self)
+    }
+
+    // Inverse linear interpolation
+    func inverseLerp(_ minValue: Float, _ maxValue: Float, shouldClamp: Bool = false) -> Float {
+        let value = (self - minValue) / (maxValue - minValue)
+        return (shouldClamp ? value.clamp01() : value)
+    }
+}
+
+// MARK: -
+
 public extension Int {
     func clamp(_ minValue: Int, _ maxValue: Int) -> Int {
         assert(minValue <= maxValue)

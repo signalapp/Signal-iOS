@@ -439,6 +439,30 @@ NS_ASSUME_NONNULL_BEGIN
                          NSFontAttributeName : snippetFont,
                          NSForegroundColorAttributeName : currentColor,
                      }];
+        } else if (thread.conversationListInfo.hasVoiceMemoDraft && !self.hasUnreadStyle) {
+            [snippetText append:NSLocalizedString(
+                                    @"HOME_VIEW_DRAFT_PREFIX", @"A prefix indicating that a message preview is a draft")
+                     attributes:@{
+                         NSFontAttributeName : self.snippetFont.ows_italic,
+                         NSForegroundColorAttributeName : currentColor,
+                     }];
+            [snippetText append:@"🎤"
+                     attributes:@{
+                         NSFontAttributeName : snippetFont,
+                         NSForegroundColorAttributeName : currentColor,
+                     }];
+            [snippetText append:@" "
+                     attributes:@{
+                         NSFontAttributeName : snippetFont,
+                         NSForegroundColorAttributeName : currentColor,
+                     }];
+            [snippetText append:NSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
+                                    @"Short text label for a voice message attachment, used for thread preview and on "
+                                    @"the lock screen")
+                     attributes:@{
+                         NSFontAttributeName : snippetFont,
+                         NSForegroundColorAttributeName : currentColor,
+                     }];
         } else {
             NSString *lastMessageText = thread.conversationListInfo.lastMessageText.filterStringForDisplay;
             if (lastMessageText.length > 0) {

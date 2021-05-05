@@ -147,6 +147,10 @@ public class CVViewState: NSObject {
     @objc
     public let backgroundContainer = CVBackgroundContainer()
 
+    // MARK: - Voice Messages
+    @objc
+    public var currentVoiceMessageModel: VoiceMessageModel?
+
     // MARK: - 
 
     @objc

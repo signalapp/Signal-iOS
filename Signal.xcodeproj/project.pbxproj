@@ -783,6 +783,10 @@
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88928A44263A2781009C9B30 /* state-change_confirm-down.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A42263A2781009C9B30 /* state-change_confirm-down.caf */; };
 		88928A45263A2781009C9B30 /* state-change_confirm-up.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A43263A2781009C9B30 /* state-change_confirm-up.caf */; };
+		88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */; };
+		88928A732640DC9B009C9B30 /* VoiceMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A722640DC9B009C9B30 /* VoiceMessageModel.swift */; };
+		88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */; };
+		88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */; };
 		889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A4CC09246CB0960082211F /* OnboardingTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC08246CB0960082211F /* OnboardingTransferChoiceViewController.swift */; };
@@ -1924,6 +1928,10 @@
 		88928A58263F0DEB009C9B30 /* es_ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es_ES; path = translations/es_ES.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88928A59263F0DEC009C9B30 /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mr; path = translations/mr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88928A5A263F0DEC009C9B30 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+VoiceMessage.swift"; sourceTree = "<group>"; };
+		88928A722640DC9B009C9B30 /* VoiceMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageModel.swift; sourceTree = "<group>"; };
+		88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageTooltip.swift; sourceTree = "<group>"; };
+		88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageDraftView.swift; sourceTree = "<group>"; };
 		889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurTooltip.swift; sourceTree = "<group>"; };
 		88A357B823639384009D6B9A /* MemberActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionSheet.swift; sourceTree = "<group>"; };
 		88A358252363FF63009D6B9A /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mr; path = translations/mr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2514,6 +2522,7 @@
 				4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */,
 				88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */,
 				3426A369255D9D7C0036407F /* ConversationViewController+Selection.swift */,
+				88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */,
 				888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */,
 				3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */,
 				347C3818252CE69400F3D941 /* CV */,
@@ -3196,6 +3205,7 @@
 				459B7759207BA3A80071D0AB /* OWSQuotedReplyModel.h */,
 				459B775A207BA3A80071D0AB /* OWSQuotedReplyModel.m */,
 				4542DF51208B82E9007B4E76 /* ThreadViewModel.swift */,
+				88928A722640DC9B009C9B30 /* VoiceMessageModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -3436,6 +3446,8 @@
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
 				4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */,
+				88928A7426418904009C9B30 /* VoiceMessageTooltip.swift */,
+				88928A7626419D6B009C9B30 /* VoiceMessageDraftView.swift */,
 			);
 			name = Views;
 			path = views;
@@ -4979,6 +4991,7 @@
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
 				8851DB3F24CCE9C8001EACD2 /* MentionTextView.swift in Sources */,
 				34BB3C5F23C6644B001651FC /* GroupV2SnapshotImpl.swift in Sources */,
+				88928A732640DC9B009C9B30 /* VoiceMessageModel.swift in Sources */,
 				346941A3215D2EE400B5BFAD /* Theme.m in Sources */,
 				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
 				88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */,
@@ -5169,6 +5182,7 @@
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
 				88A4CC0E246CD6CC0082211F /* OnboardingTransferProgressViewController.swift in Sources */,
+				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
 				4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */,
 				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
@@ -5211,6 +5225,7 @@
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
 				347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */,
+				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
 				3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */,
 				347C3834252CE69400F3D941 /* CVItemModel.swift in Sources */,
@@ -5426,6 +5441,7 @@
 				887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */,
 				3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */,
 				3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */,
+				88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				32ECD09F24C1153000EDDED0 /* SupportRequestTextView.swift in Sources */,
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,

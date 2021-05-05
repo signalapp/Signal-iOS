@@ -6,6 +6,7 @@
 #import "DateUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
@@ -302,12 +303,19 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
+    NSString *voiceMessageDirPath = VoiceMessageModel.draftVoiceMessageDirectory.path;
+    NSSet<NSString *> *_Nullable allVoiceMessageFilePaths = [self filePathsInDirectorySafe:voiceMessageDirPath];
+    if (!allVoiceMessageFilePaths || !self.isMainAppAndActive) {
+        return nil;
+    }
+
     NSMutableSet<NSString *> *allOnDiskFilePaths = [NSMutableSet new];
     [allOnDiskFilePaths unionSet:legacyAttachmentFilePaths];
     [allOnDiskFilePaths unionSet:sharedDataAttachmentFilePaths];
     [allOnDiskFilePaths unionSet:legacyProfileAvatarsFilePaths];
     [allOnDiskFilePaths unionSet:sharedDataProfileAvatarFilePaths];
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
+    [allOnDiskFilePaths unionSet:allVoiceMessageFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
 
     // This should be redundant, but this will future-proof us against
@@ -339,6 +347,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSLogVerbose(@"databaseFilePaths: %lu", (unsigned long)databaseFilePaths.count);
 
     OWSLogVerbose(@"allOnDiskFilePaths: %lu", (unsigned long)allOnDiskFilePaths.count);
+
+    __block NSSet<NSString *> *voiceMessageDraftFilePaths;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        voiceMessageDraftFilePaths = [VoiceMessageModel allDraftFilePathsWithTransaction:transaction];
+    }];
 
     __block NSSet<NSString *> *profileAvatarFilePaths;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -552,6 +565,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *orphanFilePaths = [allOnDiskFilePaths mutableCopy];
     [orphanFilePaths minusSet:allAttachmentFilePaths];
     [orphanFilePaths minusSet:profileAvatarFilePaths];
+    [orphanFilePaths minusSet:voiceMessageDraftFilePaths];
     [orphanFilePaths minusSet:activeStickerFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [allAttachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:allOnDiskFilePaths];

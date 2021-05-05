@@ -78,6 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self stop];
 }
 
+- (NSTimeInterval)duration
+{
+    return self.audioPlayer.duration;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -241,8 +246,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop
 {
-    OWSAssertIsOnMainThread();
-
     self.delegate.audioPlaybackState = AudioPlaybackState_Stopped;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];

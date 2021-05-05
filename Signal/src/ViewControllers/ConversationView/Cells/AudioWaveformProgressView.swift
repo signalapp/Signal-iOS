@@ -157,8 +157,8 @@ class AudioWaveformProgressView: UIView {
             sampleSpacing = 0
         }
 
-        playedShapeLayer.frame = layer.frame
-        unplayedShapeLayer.frame = layer.frame
+        playedShapeLayer.frame = bounds
+        unplayedShapeLayer.frame = bounds
 
         let progress = self.value
         var thumbXPos = width * progress
@@ -182,10 +182,10 @@ class AudioWaveformProgressView: UIView {
             // from 0 (silence) to 1 (loudest possible value). Calculate the
             // height of the sample view so that the loudest value is the
             // full height of this view.
-            let height = max(minSampleHeight, frame.size.height * CGFloat(sample))
+            let sampleHeight = max(minSampleHeight, height * CGFloat(sample))
 
             // Center the sample vertically.
-            let yPos = frame.center.y - height / 2
+            let yPos = bounds.center.y - sampleHeight / 2
 
             var xPos = CGFloat(x) * (sampleWidth + sampleSpacing)
             if CurrentAppContext().isRTL { xPos = width - xPos }
@@ -194,7 +194,7 @@ class AudioWaveformProgressView: UIView {
                 x: xPos,
                 y: yPos,
                 width: sampleWidth,
-                height: height
+                height: sampleHeight
             )
 
             path.append(UIBezierPath(roundedRect: sampleFrame, cornerRadius: sampleWidth / 2))
