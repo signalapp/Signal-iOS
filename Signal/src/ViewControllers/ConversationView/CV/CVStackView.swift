@@ -8,11 +8,11 @@ public typealias CVStackViewConfig = OWSStackView.Config
 
 // MARK: -
 
-class CVStackView {
+public extension UIStackView {
 
-    public static func measure(config: CVStackViewConfig,
-                               subviewSizes: [CGSize],
-                               verboseLogging: Bool = false) -> CGSize {
+    static func measure(config: CVStackViewConfig,
+                        subviewSizes: [CGSize],
+                        verboseLogging: Bool = false) -> CGSize {
 
         let spacingCount = max(0, subviewSizes.count - 1)
 
@@ -55,6 +55,21 @@ class CVStackView {
             Logger.verbose("size of subviews and spacing and layoutMargins: \(size)")
         }
         return size
+    }
+
+    func apply(config: CVStackViewConfig) {
+        if self.axis != config.axis {
+            self.axis = config.axis
+        }
+        if self.alignment != config.alignment {
+            self.alignment = config.alignment
+        }
+        if self.spacing != config.spacing {
+            self.spacing = config.spacing
+        }
+        if self.layoutMargins != config.layoutMargins {
+            self.layoutMargins = config.layoutMargins
+        }
     }
 }
 

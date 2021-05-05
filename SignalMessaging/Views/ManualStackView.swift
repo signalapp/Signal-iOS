@@ -703,3 +703,18 @@ public struct ManualStackMeasurement: Equatable {
         ManualStackMeasurement(measuredSize: measuredSize, subviewInfos: [])
     }
 }
+
+// MARK: -
+
+public extension ManualStackView {
+    @discardableResult
+    func configure(
+        config: Config,
+        subviews: [UIView],
+        subviewInfos: [ManualStackSubviewInfo]
+    ) -> Measurement {
+        let measurement = ManualStackView.measure(config: config, subviewInfos: subviewInfos)
+        self.configure(config: config, measurement: measurement, subviews: subviews)
+        return measurement
+    }
+}

@@ -380,25 +380,38 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func buildAccessoryView(text: String,
                                     displayUDIndicator: Bool,
-                                    transaction: SDSAnyReadTransaction) -> UIView {
-        let label = UILabel()
-        label.textColor = Theme.ternaryTextColor
-        label.text = text
+                                    transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView {
+        let label = CVLabel()
         label.textAlignment = .right
-        label.font = .ows_dynamicTypeFootnoteClamped
+        let labelConfig = CVLabelConfig(text: text,
+                                        font: .ows_dynamicTypeFootnoteClamped,
+                                        textColor: Theme.ternaryTextColor)
+        labelConfig.applyForRendering(label: label)
+        let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
 
         let shouldShowUD = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
 
-        guard displayUDIndicator && shouldShowUD else { return label }
+        guard displayUDIndicator && shouldShowUD else {
+            return ContactCellAccessoryView(accessoryView: label, size: labelSize)
+        }
 
-        let imageView = UIImageView()
+        let imageView = CVImageView()
         imageView.setTemplateImageName(Theme.iconName(.sealedSenderIndicator), tintColor: Theme.ternaryTextColor)
+        let imageSize = CGSize.square(20)
 
-        let hStack = UIStackView(arrangedSubviews: [imageView, label])
-        hStack.axis = .horizontal
-        hStack.spacing = 8
-
-        return hStack
+        let hStack = ManualStackView(name: "hStack")
+        let hStackConfig = CVStackViewConfig(axis: .horizontal,
+                                             alignment: .center,
+                                             spacing: 8,
+                                             layoutMargins: .zero)
+        let hStackMeasurement = hStack.configure(config: hStackConfig,
+                                                 subviews: [imageView, label],
+                                                 subviewInfos: [
+                                                    imageSize.asManualSubviewInfo(hasFixedSize: true),
+                                                    labelSize.asManualSubviewInfo
+                                                 ])
+        let hStackSize = hStackMeasurement.measuredSize
+        return ContactCellAccessoryView(accessoryView: hStack, size: hStackSize)
     }
 
     private func buildValueLabel(name: String, value: String) -> UILabel {

@@ -530,7 +530,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryViewForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> UIView? {
+                         transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView? {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
             return nil
@@ -549,7 +549,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         let isPreExistingMember = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
                                                                                              transaction: transaction)
 
-        let imageView = UIImageView()
+        let imageView = CVImageView()
         if isPreExistingMember {
             imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.washColor)
         } else if isCurrentMember {
@@ -560,17 +560,13 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         } else {
             imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
         }
-        return imageView
+        return ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> NSAttributedString? {
 
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
-            owsFailDebug("Missing delegate.")
-            return nil
-        }
         guard let address = recipient.address else {
             owsFailDebug("Recipient missing address.")
             return nil

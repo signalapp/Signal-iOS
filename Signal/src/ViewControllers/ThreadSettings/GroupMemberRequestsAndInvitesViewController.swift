@@ -181,11 +181,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         contents.addSection(section)
     }
 
-    private func buildMemberRequestButtons(address: SignalServiceAddress) -> UIView {
+    private func buildMemberRequestButtons(address: SignalServiceAddress) -> ContactCellAccessoryView {
         let buttonHeight: CGFloat = 28
 
         let denyButton = OWSButton()
-        denyButton.autoSetDimensions(to: CGSize(square: buttonHeight))
         denyButton.layer.cornerRadius = buttonHeight / 2
         denyButton.clipsToBounds = true
         denyButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
@@ -196,7 +195,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
 
         let approveButton = OWSButton()
-        approveButton.autoSetDimensions(to: CGSize(square: buttonHeight))
         approveButton.layer.cornerRadius = buttonHeight / 2
         approveButton.clipsToBounds = true
         approveButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
@@ -206,10 +204,25 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             self?.approveMemberRequest(address: address)
         }
 
-        let stackView = UIStackView(arrangedSubviews: [denyButton, approveButton])
-        stackView.axis = .horizontal
-        stackView.spacing = 16
-        return stackView
+        let denyWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(denyButton)
+        let approveWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(approveButton)
+
+        let denyButtonSize = CGSize.square(buttonHeight)
+        let approveButtonSize = CGSize.square(buttonHeight)
+
+        let stackView = ManualStackView(name: "stackView")
+        let stackConfig = CVStackViewConfig(axis: .horizontal,
+                                            alignment: .center,
+                                            spacing: 16,
+                                            layoutMargins: .zero)
+        let stackMeasurement = stackView.configure(config: stackConfig,
+                                                   subviews: [denyWrapper, approveWrapper],
+                                                   subviewInfos: [
+                                                    denyButtonSize.asManualSubviewInfo,
+                                                    approveButtonSize.asManualSubviewInfo
+                                                   ])
+        let stackSize = stackMeasurement.measuredSize
+        return ContactCellAccessoryView(accessoryView: stackView, size: stackSize)
     }
 
     private func approveMemberRequest(address: SignalServiceAddress) {

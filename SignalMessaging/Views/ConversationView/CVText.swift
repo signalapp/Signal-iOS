@@ -303,14 +303,17 @@ public class CVText {
         }
 
         let result: CGSize
-        switch mode {
-        case .layoutManager:
-            result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
-        case .view:
-            result = measureLabelUsingView(config: config, maxWidth: maxWidth)
+        if config.text.stringValue.isEmpty {
+            result = .zero
+        } else {
+            switch mode {
+            case .layoutManager:
+                result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
+            case .view:
+                result = measureLabelUsingView(config: config, maxWidth: maxWidth)
+            }
+            owsAssertDebug(result.isNonEmpty)
         }
-        owsAssertDebug(result.width > 0)
-        owsAssertDebug(result.height > 0)
 
         if cacheMeasurements {
             labelCache.set(key: cacheKey, value: result.ceil)
