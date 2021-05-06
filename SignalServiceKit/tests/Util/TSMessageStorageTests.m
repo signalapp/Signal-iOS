@@ -146,7 +146,8 @@
 
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
         for (uint64_t i = 0; i < 10; i++) {
-            SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
+            NSUInteger memberIdx = (i % thread.groupModel.groupMembers.count);
+            SignalServiceAddress *authorAddress = thread.groupModel.groupMembers[memberIdx];
             TSIncomingMessageBuilder *incomingMessageBuilder =
                 [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
