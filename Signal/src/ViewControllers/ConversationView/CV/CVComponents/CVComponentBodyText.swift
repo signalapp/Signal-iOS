@@ -140,172 +140,171 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private static func detectDataItems(text: String,
                                         hasPendingMessageRequest: Bool,
                                         shouldAllowLinkification: Bool) -> [DataItem] {
-        return []
 
-//        // Use a lock to ensure that measurement on and off the main thread
-//        // don't conflict.
-//        unfairLock.withLock {
-//            guard !hasPendingMessageRequest else {
-//                // Do not linkify if there is a pending message request.
-//                return []
-//            }
-//            // NSDataDetector and UIDataDetector behavior should be aligned.
-//            //
-//            // TODO: We might want to move this detection logic into
-//            // DisplayableText so that we can leverage caching.
-//            guard let detector = dataDetector(shouldAllowLinkification: shouldAllowLinkification) else {
-//                // If the data detectors can't be built, default to using attributed text.
-//                owsFailDebug("Could not build dataDetector.")
-//                return []
-//            }
-//            var dataItems = [DataItem]()
-//            for match in detector.matches(in: text, options: [], range: text.entireRange) {
-//                guard let snippet = (text as NSString).substring(with: match.range).strippedOrNil else {
-//                    owsFailDebug("Invalid snippet.")
-//                    continue
-//                }
-//
-//                let matchUrl = match.url
-//
-//                let dataType: DataItem.DataType
-//                var customUrl: URL?
-//                let resultType: NSTextCheckingResult.CheckingType = match.resultType
-//                if resultType.contains(.orthography) {
-//                    Logger.verbose("orthography")
-//                    continue
-//                } else if resultType.contains(.spelling) {
-//                    Logger.verbose("spelling")
-//                    continue
-//                } else if resultType.contains(.grammar) {
-//                    Logger.verbose("grammar")
-//                    continue
-//                } else if resultType.contains(.date) {
-//                    dataType = .date
-//
-//                    guard matchUrl == nil else {
-//                        // Skip building customUrl; we already have a URL.
-//                        break
-//                    }
-//
-//                    // NSTextCheckingResult.date is in GMT.
-//                    guard let gmtDate = match.date else {
-//                        owsFailDebug("Missing date.")
-//                        continue
-//                    }
-//                    // "calshow:" URLs expect GMT.
-//                    let timeInterval = gmtDate.timeIntervalSinceReferenceDate
-//                    guard let calendarUrl = URL(string: "calshow:\(timeInterval)") else {
-//                        owsFailDebug("Couldn't build calendarUrl.")
-//                        continue
-//                    }
-//                    customUrl = calendarUrl
-//                } else if resultType.contains(.address) {
-//                    Logger.verbose("address")
-//
-//                    dataType = .address
-//
-//                    guard matchUrl == nil else {
-//                        // Skip building customUrl; we already have a URL.
-//                        break
-//                    }
-//
-//                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
-//                    guard let urlEncodedAddress = snippet.encodeURIComponent else {
-//                        owsFailDebug("Could not URL encode address.")
-//                        continue
-//                    }
-//                    let urlString = "https://maps.apple.com/?q=" + urlEncodedAddress
-//                    guard let mapUrl = URL(string: urlString) else {
-//                        owsFailDebug("Couldn't build mapUrl.")
-//                        continue
-//                    }
-//                    customUrl = mapUrl
-//                } else if resultType.contains(.link) {
-//                    Logger.verbose("link")
-//                    dataType = .link
-//                } else if resultType.contains(.quote) {
-//                    Logger.verbose("quote")
-//                    continue
-//                } else if resultType.contains(.dash) {
-//                    Logger.verbose("dash")
-//                    continue
-//                } else if resultType.contains(.replacement) {
-//                    Logger.verbose("replacement")
-//                    continue
-//                } else if resultType.contains(.correction) {
-//                    Logger.verbose("correction")
-//                    continue
-//                } else if resultType.contains(.regularExpression) {
-//                    Logger.verbose("regularExpression")
-//                    continue
-//                } else if resultType.contains(.phoneNumber) {
-//                    Logger.verbose("phoneNumber")
-//
-//                    dataType = .phoneNumber
-//
-//                    guard matchUrl == nil else {
-//                        // Skip building customUrl; we already have a URL.
-//                        break
-//                    }
-//
-//                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
-//                    let characterSet = CharacterSet(charactersIn: "+0123456789")
-//                    guard let phoneNumber = snippet.components(separatedBy: characterSet.inverted).joined().nilIfEmpty else {
-//                        owsFailDebug("Invalid phoneNumber.")
-//                        continue
-//                    }
-//                    let urlString = "tel:" + phoneNumber
-//                    guard let phoneNumberUrl = URL(string: urlString) else {
-//                        owsFailDebug("Couldn't build phoneNumberUrl.")
-//                        continue
-//                    }
-//                    customUrl = phoneNumberUrl
-//                } else if resultType.contains(.transitInformation) {
-//                    Logger.verbose("transitInformation")
-//
-//                    dataType = .transitInformation
-//
-//                    guard matchUrl == nil else {
-//                        // Skip building customUrl; we already have a URL.
-//                        break
-//                    }
-//
-//                    guard let components = match.components,
-//                          let airline = components[.airline]?.nilIfEmpty,
-//                          let flight = components[.flight]?.nilIfEmpty else {
-//                        Logger.warn("Missing components.")
-//                        continue
-//                    }
-//                    let query = airline + " " + flight
-//                    guard let urlEncodedQuery = query.encodeURIComponent else {
-//                        owsFailDebug("Could not URL encode query.")
-//                        continue
-//                    }
-//                    let urlString = "https://www.google.com/?q=" + urlEncodedQuery
-//                    guard let transitUrl = URL(string: urlString) else {
-//                        owsFailDebug("Couldn't build transitUrl.")
-//                        continue
-//                    }
-//                    customUrl = transitUrl
-//                } else {
-//                    let snippet = (text as NSString).substring(with: match.range)
-//                    Logger.verbose("snippet: '\(snippet)'")
-//                    owsFailDebug("Unknown link type: \(resultType.rawValue)")
-//                    continue
-//                }
-//
-//                guard let url = customUrl ?? matchUrl else {
-//                    owsFailDebug("Missing url: \(dataType).")
-//                    continue
-//                }
-//
-//                dataItems.append(DataItem(dataType: dataType,
-//                                          range: match.range,
-//                                          snippet: snippet,
-//                                          url: url))
-//            }
-//            return dataItems
-//        }
+        // Use a lock to ensure that measurement on and off the main thread
+        // don't conflict.
+        unfairLock.withLock {
+            guard !hasPendingMessageRequest else {
+                // Do not linkify if there is a pending message request.
+                return []
+            }
+            // NSDataDetector and UIDataDetector behavior should be aligned.
+            //
+            // TODO: We might want to move this detection logic into
+            // DisplayableText so that we can leverage caching.
+            guard let detector = dataDetector(shouldAllowLinkification: shouldAllowLinkification) else {
+                // If the data detectors can't be built, default to using attributed text.
+                owsFailDebug("Could not build dataDetector.")
+                return []
+            }
+            var dataItems = [DataItem]()
+            for match in detector.matches(in: text, options: [], range: text.entireRange) {
+                guard let snippet = (text as NSString).substring(with: match.range).strippedOrNil else {
+                    owsFailDebug("Invalid snippet.")
+                    continue
+                }
+
+                let matchUrl = match.url
+
+                let dataType: DataItem.DataType
+                var customUrl: URL?
+                let resultType: NSTextCheckingResult.CheckingType = match.resultType
+                if resultType.contains(.orthography) {
+                    Logger.verbose("orthography")
+                    continue
+                } else if resultType.contains(.spelling) {
+                    Logger.verbose("spelling")
+                    continue
+                } else if resultType.contains(.grammar) {
+                    Logger.verbose("grammar")
+                    continue
+                } else if resultType.contains(.date) {
+                    dataType = .date
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    // NSTextCheckingResult.date is in GMT.
+                    guard let gmtDate = match.date else {
+                        owsFailDebug("Missing date.")
+                        continue
+                    }
+                    // "calshow:" URLs expect GMT.
+                    let timeInterval = gmtDate.timeIntervalSinceReferenceDate
+                    guard let calendarUrl = URL(string: "calshow:\(timeInterval)") else {
+                        owsFailDebug("Couldn't build calendarUrl.")
+                        continue
+                    }
+                    customUrl = calendarUrl
+                } else if resultType.contains(.address) {
+                    Logger.verbose("address")
+
+                    dataType = .address
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html
+                    guard let urlEncodedAddress = snippet.encodeURIComponent else {
+                        owsFailDebug("Could not URL encode address.")
+                        continue
+                    }
+                    let urlString = "https://maps.apple.com/?q=" + urlEncodedAddress
+                    guard let mapUrl = URL(string: urlString) else {
+                        owsFailDebug("Couldn't build mapUrl.")
+                        continue
+                    }
+                    customUrl = mapUrl
+                } else if resultType.contains(.link) {
+                    Logger.verbose("link")
+                    dataType = .link
+                } else if resultType.contains(.quote) {
+                    Logger.verbose("quote")
+                    continue
+                } else if resultType.contains(.dash) {
+                    Logger.verbose("dash")
+                    continue
+                } else if resultType.contains(.replacement) {
+                    Logger.verbose("replacement")
+                    continue
+                } else if resultType.contains(.correction) {
+                    Logger.verbose("correction")
+                    continue
+                } else if resultType.contains(.regularExpression) {
+                    Logger.verbose("regularExpression")
+                    continue
+                } else if resultType.contains(.phoneNumber) {
+                    Logger.verbose("phoneNumber")
+
+                    dataType = .phoneNumber
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
+                    let characterSet = CharacterSet(charactersIn: "+0123456789")
+                    guard let phoneNumber = snippet.components(separatedBy: characterSet.inverted).joined().nilIfEmpty else {
+                        owsFailDebug("Invalid phoneNumber.")
+                        continue
+                    }
+                    let urlString = "tel:" + phoneNumber
+                    guard let phoneNumberUrl = URL(string: urlString) else {
+                        owsFailDebug("Couldn't build phoneNumberUrl.")
+                        continue
+                    }
+                    customUrl = phoneNumberUrl
+                } else if resultType.contains(.transitInformation) {
+                    Logger.verbose("transitInformation")
+
+                    dataType = .transitInformation
+
+                    guard matchUrl == nil else {
+                        // Skip building customUrl; we already have a URL.
+                        break
+                    }
+
+                    guard let components = match.components,
+                          let airline = components[.airline]?.nilIfEmpty,
+                          let flight = components[.flight]?.nilIfEmpty else {
+                        Logger.warn("Missing components.")
+                        continue
+                    }
+                    let query = airline + " " + flight
+                    guard let urlEncodedQuery = query.encodeURIComponent else {
+                        owsFailDebug("Could not URL encode query.")
+                        continue
+                    }
+                    let urlString = "https://www.google.com/?q=" + urlEncodedQuery
+                    guard let transitUrl = URL(string: urlString) else {
+                        owsFailDebug("Couldn't build transitUrl.")
+                        continue
+                    }
+                    customUrl = transitUrl
+                } else {
+                    let snippet = (text as NSString).substring(with: match.range)
+                    Logger.verbose("snippet: '\(snippet)'")
+                    owsFailDebug("Unknown link type: \(resultType.rawValue)")
+                    continue
+                }
+
+                guard let url = customUrl ?? matchUrl else {
+                    owsFailDebug("Missing url: \(dataType).")
+                    continue
+                }
+
+                dataItems.append(DataItem(dataType: dataType,
+                                          range: match.range,
+                                          snippet: snippet,
+                                          url: url))
+            }
+            return dataItems
+        }
     }
 
     static func buildState(interaction: TSInteraction,
@@ -608,45 +607,45 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private static func linkifyData(attributedText: NSMutableAttributedString,
                                     dataItems: [DataItem]) {
-        // Sort so that we can detect overlap.
-        let dataItems = dataItems.sorted { (left, right) in
-            left.range.location < right.range.location
-        }
-
-        var mentionRanges = [NSRange]()
-        attributedText.enumerateMentions { mention, subrange, _ in
-            guard nil != mention else { return }
-            mentionRanges.append(subrange)
-        }
-        func shouldSkipDataRange(_ dataRange: NSRange) -> Bool {
-            for mentionRange in mentionRanges {
-                if NSIntersectionRange(mentionRange, dataRange).length > 0 {
-                    return true
-                }
-            }
-            return false
-        }
-
-        var lastIndex: Int = 0
-        for dataItem in dataItems {
-            let range = dataItem.range
-
-            guard range.location >= lastIndex else {
-                owsFailDebug("Overlapping ranges.")
-                continue
-            }
-            if shouldSkipDataRange(range) {
-                Logger.warn("Not link-ifying range: \(range)")
-                continue
-            }
-            guard let link = dataItem.url.absoluteString.nilIfEmpty else {
-                owsFailDebug("Could not build data link.")
-                continue
-            }
-            attributedText.addAttribute(.link, value: link, range: range)
-
-            lastIndex = max(lastIndex, range.location + range.length)
-        }
+//        // Sort so that we can detect overlap.
+//        let dataItems = dataItems.sorted { (left, right) in
+//            left.range.location < right.range.location
+//        }
+//
+//        var mentionRanges = [NSRange]()
+//        attributedText.enumerateMentions { mention, subrange, _ in
+//            guard nil != mention else { return }
+//            mentionRanges.append(subrange)
+//        }
+//        func shouldSkipDataRange(_ dataRange: NSRange) -> Bool {
+//            for mentionRange in mentionRanges {
+//                if NSIntersectionRange(mentionRange, dataRange).length > 0 {
+//                    return true
+//                }
+//            }
+//            return false
+//        }
+//
+//        var lastIndex: Int = 0
+//        for dataItem in dataItems {
+//            let range = dataItem.range
+//
+//            guard range.location >= lastIndex else {
+//                owsFailDebug("Overlapping ranges.")
+//                continue
+//            }
+//            if shouldSkipDataRange(range) {
+//                Logger.warn("Not link-ifying range: \(range)")
+//                continue
+//            }
+//            guard let link = dataItem.url.absoluteString.nilIfEmpty else {
+//                owsFailDebug("Could not build data link.")
+//                continue
+//            }
+//            attributedText.addAttribute(.link, value: link, range: range)
+//
+//            lastIndex = max(lastIndex, range.location + range.length)
+//        }
     }
 
     private func textViewConfig(displayableText: DisplayableText,
