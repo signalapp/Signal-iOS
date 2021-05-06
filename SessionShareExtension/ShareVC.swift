@@ -201,6 +201,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     private func showMainContent() {
         let threadPickerVC = ThreadPickerVC()
         setViewControllers([ threadPickerVC ], animated: false)
+        buildAttachments().retainUntilComplete()
     }
     
     func shareViewWasUnlocked() {
@@ -548,6 +549,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
             let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
 
+            /*
             // TODO: How can we move waiting for this export to the end of the share flow rather than having to do it up front?
             // Ideally we'd be able to start it here, and not block the UI on conversion unless there's still work to be done
             // when the user hits "send".
@@ -565,6 +567,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
                     loadViewController.progress = progressPoller.progress
                 }
             }
+             */
 
             return promise
         }

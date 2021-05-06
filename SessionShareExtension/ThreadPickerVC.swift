@@ -23,6 +23,14 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource {
         return result
     }()
     
+    private lazy var fadeView: UIView = {
+        let result = UIView()
+        let gradient = Gradients.homeVCFade
+        result.setGradient(gradient)
+        result.isUserInteractionEnabled = false
+        return result
+    }()
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +55,12 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource {
         tableView.dataSource = self
         view.addSubview(tableView)
         tableView.pin(to: view)
+        view.addSubview(fadeView)
+        fadeView.pin(.leading, to: .leading, of: view)
+        let topInset = 0.15 * view.height()
+        fadeView.pin(.top, to: .top, of: view, withInset: topInset)
+        fadeView.pin(.trailing, to: .trailing, of: view)
+        fadeView.pin(.bottom, to: .bottom, of: view)
         // Reload
         reload()
     }
