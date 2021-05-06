@@ -4125,7 +4125,7 @@ typedef enum : NSUInteger {
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Don't allow "delete" or "reply" on "sending" outgoing messages.
             return NO;
-        }  else if (outgoingMessage.messageState == TSOutgoingMessageStatePending) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStatePending) {
             // Don't allow "delete" or "reply" on "sending" outgoing messages.
             return NO;
         }

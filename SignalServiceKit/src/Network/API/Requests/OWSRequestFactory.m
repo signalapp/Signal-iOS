@@ -861,9 +861,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)pushChallengeRequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge/push"]
-                              method:@"POST"
-                          parameters:@{}];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge/push"] method:@"POST" parameters:@{}];
 }
 
 + (TSRequest *)pushChallengeResponseWithToken:(NSString *)challengeToken

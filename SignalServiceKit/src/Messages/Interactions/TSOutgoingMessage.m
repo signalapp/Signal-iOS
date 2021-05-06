@@ -510,7 +510,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
     for (SignalServiceAddress *recipientAddress in self.recipientAddressStates) {
         TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[recipientAddress];
-        if (recipientState.state == OWSOutgoingMessageRecipientStateSending || recipientState.state == OWSOutgoingMessageRecipientStatePending) {
+        if (recipientState.state == OWSOutgoingMessageRecipientStateSending
+            || recipientState.state == OWSOutgoingMessageRecipientStatePending) {
             [result addObject:recipientAddress];
         }
     }
@@ -709,23 +710,25 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         error,
         error.isRetryable);
 
-    [self anyUpdateOutgoingMessageWithTransaction:transaction
-                                            block:^(TSOutgoingMessage *message) {
-                                                TSOutgoingMessageRecipientState *_Nullable recipientState
-                                                    = message.recipientAddressStates[recipientAddress];
-                                                if (!recipientState) {
-                                                    OWSFailDebug(
-                                                        @"Missing recipient state for recipient: %@", recipientAddress);
-                                                    return;
-                                                }
+    [self
+        anyUpdateOutgoingMessageWithTransaction:transaction
+                                          block:^(TSOutgoingMessage *message) {
+                                              TSOutgoingMessageRecipientState *_Nullable recipientState
+                                                  = message.recipientAddressStates[recipientAddress];
+                                              if (!recipientState) {
+                                                  OWSFailDebug(
+                                                      @"Missing recipient state for recipient: %@", recipientAddress);
+                                                  return;
+                                              }
 
-        if ([error ows_isSSKErrorWithCode:OWSErrorCodeServerRejectedSuspectedSpam]) {
-            recipientState.state = OWSOutgoingMessageRecipientStatePending;
-        } else {
-            recipientState.state = OWSOutgoingMessageRecipientStateFailed;
-        }
-        recipientState.errorCode = @(error.code);
-    }];
+                                              if ([error
+                                                      ows_isSSKErrorWithCode:OWSErrorCodeServerRejectedSuspectedSpam]) {
+                                                  recipientState.state = OWSOutgoingMessageRecipientStatePending;
+                                              } else {
+                                                  recipientState.state = OWSOutgoingMessageRecipientStateFailed;
+                                              }
+                                              recipientState.errorCode = @(error.code);
+                                          }];
 }
 
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
@@ -984,7 +987,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                             recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                             break;
                                                         case TSOutgoingMessageStatePending:
-                                                            recipientState.state = OWSOutgoingMessageRecipientStatePending;
+                                                            recipientState.state
+                                                                = OWSOutgoingMessageRecipientStatePending;
                                                             break;
                                                         default:
                                                             OWSFailDebug(@"unexpected message state.");
