@@ -4,6 +4,7 @@ import SessionUIKit
 
 final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
     private var areVersionMigrationsComplete = false
+    public static var attachmentPrepPromise: Promise<[SignalAttachment]>?
     
     // MARK: Error
     enum ShareViewControllerError: Error {
@@ -201,7 +202,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     private func showMainContent() {
         let threadPickerVC = ThreadPickerVC()
         setViewControllers([ threadPickerVC ], animated: false)
-        buildAttachments().retainUntilComplete()
+        ShareVC.attachmentPrepPromise = buildAttachments()
     }
     
     func shareViewWasUnlocked() {
@@ -546,29 +547,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: specificUTIType) else {
             // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
-
-            let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
-
-            /*
-            // TODO: How can we move waiting for this export to the end of the share flow rather than having to do it up front?
-            // Ideally we'd be able to start it here, and not block the UI on conversion unless there's still work to be done
-            // when the user hits "send".
-            if let exportSession = exportSession {
-                let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
-                self.progressPoller = progressPoller
-                progressPoller.startPolling()
-
-                guard let loadViewController = self.loadViewController else {
-                    owsFailDebug("load view controller was unexpectedly nil")
-                    return promise
-                }
-
-                DispatchQueue.main.async {
-                    loadViewController.progress = progressPoller.progress
-                }
-            }
-             */
-
+            let (promise, _) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
             return promise
         }
 

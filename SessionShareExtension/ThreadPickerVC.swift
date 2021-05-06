@@ -1,8 +1,9 @@
 import SessionUIKit
 
-final class ThreadPickerVC : UIViewController, UITableViewDataSource {
+final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableViewDelegate, AttachmentApprovalViewControllerDelegate {
     private var threads: YapDatabaseViewMappings!
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
+    private var selectedThread: TSThread?
     
     private var threadCount: UInt {
         threads.numberOfItems(inGroup: TSInboxGroup)
@@ -53,6 +54,7 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource {
         navigationItem.titleView = titleLabel
         // Table view
         tableView.dataSource = self
+        tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(to: view)
         view.addSubview(fadeView)
@@ -89,9 +91,32 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource {
     
     // MARK: Interaction
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let thread = self.thread(at: indexPath.row) else { return }
-        // TODO: Send the attachment
+        guard let thread = self.thread(at: indexPath.row), let attachments = ShareVC.attachmentPrepPromise?.value else { return }
+        self.selectedThread = thread
         tableView.deselectRow(at: indexPath, animated: true)
+        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments, approvalDelegate: self)
+        navigationController!.present(approvalVC, animated: true, completion: nil)
+    }
+    
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+        let message = VisibleMessage()
+        message.sentTimestamp = NSDate.millisecondTimestamp()
+        message.text = messageText
+        let tsMessage = TSOutgoingMessage.from(message, associatedWith: selectedThread!)
+        Storage.write { transaction in
+            tsMessage.save(with: transaction)
+        }
+        Storage.write { transaction in
+            MessageSender.sendNonDurably(message, with: attachments, in: self.selectedThread!, using: transaction).retainUntilComplete()
+        }
+    }
+
+    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
+        
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
+        
     }
     
     // MARK: Convenience
