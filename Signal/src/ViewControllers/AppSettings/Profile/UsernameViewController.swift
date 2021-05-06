@@ -57,6 +57,11 @@ class UsernameViewController: OWSTableViewController2 {
     private var hasUnsavedChanges: Bool {
         normalizedUsername != originalUsername
     }
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
+    }
 
     private func updateNavigation() {
         title = NSLocalizedString("USERNAME_TITLE", comment: "The title for the username view.")

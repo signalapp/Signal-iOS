@@ -50,6 +50,12 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         currentAccessMembers != accessMembers || currentAccessAttributes != accessAttributes
     }
 
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
+    }
+
     private func updateNavigation() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
@@ -60,10 +66,11 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
 
         if hasUnsavedChanges {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .save,
+                title: CommonStrings.setButton,
+                style: .done,
                 target: self,
-                action: #selector(didTapSave),
-                accessibilityIdentifier: "save_button"
+                action: #selector(didTapSet),
+                accessibilityIdentifier: "set_button"
             )
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -193,7 +200,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    func didTapSave() {
+    func didTapSet() {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,

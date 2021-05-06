@@ -3,8 +3,10 @@
 //
 
 import Foundation
+import PromiseKit
 
 class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
+    let thread: TSThread?
     let originalConfiguration: OWSDisappearingMessagesConfiguration
     var configuration: OWSDisappearingMessagesConfiguration
     let completion: (OWSDisappearingMessagesConfiguration) -> Void
@@ -17,11 +19,13 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     }
 
     init(
+        thread: TSThread? = nil,
         configuration: OWSDisappearingMessagesConfiguration,
         isUniversal: Bool = false,
         useCustomPicker: Bool = false,
         completion: @escaping (OWSDisappearingMessagesConfiguration) -> Void
     ) {
+        self.thread = thread
         self.originalConfiguration = configuration
         self.configuration = configuration
         self.isUniversal = isUniversal
@@ -50,7 +54,13 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     }
 
     private var hasUnsavedChanges: Bool {
-        originalConfiguration.isEnabled != configuration.isEnabled || originalConfiguration.durationSeconds != configuration.durationSeconds
+        originalConfiguration.asToken != configuration.asToken
+    }
+
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
     }
 
     private func updateNavigation() {
@@ -151,6 +161,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let vc = DisappearingMessagesTimerSettingsViewController(
+                    thread: self.thread,
                     configuration: self.originalConfiguration,
                     isUniversal: self.isUniversal,
                     useCustomPicker: true,
@@ -181,8 +192,48 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapDone() {
-        completion(configuration)
-        dismiss(animated: true)
+        let configuration = self.configuration
+
+        // We use this view some places that don't have a thread like the
+        // new group view and the universal timer in privacy settings. We
+        // only need to do the extra "save" logic to apply the timer
+        // immediately if we have a thread.
+        guard let thread = thread, hasUnsavedChanges else {
+            completion(configuration)
+            dismiss(animated: true)
+            return
+        }
+
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: self,
+            updatePromiseBlock: {
+                self.updateConfigurationPromise(configuration, thread: thread)
+            },
+            completion: { [weak self] _ in
+                self?.completion(configuration)
+                self?.dismiss(animated: true)
+            }
+        )
+    }
+
+    private func updateConfigurationPromise(
+        _ configuration: OWSDisappearingMessagesConfiguration,
+        thread: TSThread
+    ) -> Promise<Void> {
+        return firstly { () -> Promise<Void> in
+            return GroupManager.messageProcessingPromise(
+                for: thread,
+                description: "Update disappearing messages configuration"
+            )
+        }.map(on: .global()) {
+            // We're sending a message, so we're accepting any pending message request.
+            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+        }.then(on: .global()) {
+            GroupManager.localUpdateDisappearingMessages(
+                thread: thread,
+                disappearingMessageToken: configuration.asToken
+            )
+        }
     }
 }
 

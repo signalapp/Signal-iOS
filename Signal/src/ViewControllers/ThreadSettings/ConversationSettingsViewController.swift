@@ -344,24 +344,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         self.presentActionSheet(actionSheet)
     }
 
-    // MARK: -
-
-    private var hasUnsavedChangesToDisappearingMessagesConfiguration: Bool {
-        return databaseStorage.read { transaction in
-            if let groupThread = self.thread as? TSGroupThread {
-                guard let latestThread = TSGroupThread.fetch(groupId: groupThread.groupModel.groupId, transaction: transaction) else {
-                    // Thread no longer exists.
-                    return false
-                }
-                guard latestThread.isLocalUserMemberOfAnyKind else {
-                    // Local user is no longer in group, e.g. perhaps they just blocked it.
-                    return false
-                }
-            }
-            return self.disappearingMessagesConfiguration.hasChanged(with: transaction)
-        }
-    }
-
     // MARK: - Actions
 
     func tappedAvatar() {
@@ -1028,70 +1010,6 @@ extension ConversationSettingsViewController: GroupMemberRequestsAndInvitesViewC
 extension ConversationSettingsViewController: GroupLinkViewControllerDelegate {
     func groupLinkViewViewDidUpdate() {
         reloadThreadAndUpdateContent()
-    }
-}
-
-// MARK: -
-
-extension ConversationSettingsViewController: OWSNavigationView {
-
-    public func shouldCancelNavigationBack() -> Bool {
-        let result = hasUnsavedChangesToDisappearingMessagesConfiguration
-        if result {
-            self.updateDisappearingMessagesConfigurationAndDismiss()
-        }
-        return result
-    }
-
-    @objc
-    public static func showUnsavedChangesActionSheet(from fromViewController: UIViewController,
-                                                     saveBlock: @escaping () -> Void,
-                                                     discardBlock: @escaping () -> Void) {
-        let actionSheet = ActionSheetController(title: NSLocalizedString("CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE",
-                                                                         comment: "The alert title if user tries to exit conversation settings view without saving changes."),
-                                                message: NSLocalizedString("CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE",
-                                                                           comment: "The alert message if user tries to exit conversation settings view without saving changes."))
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ALERT_SAVE",
-                                                                         comment: "The label for the 'save' button in action sheets."),
-                                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "save"),
-                                                style: .default) { _ in
-                                                    saveBlock()
-        })
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ALERT_DONT_SAVE",
-                                                                         comment: "The label for the 'don't save' button in action sheets."),
-                                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "dont_save"),
-                                                style: .destructive) { _ in
-                                                    discardBlock()
-        })
-        fromViewController.presentActionSheet(actionSheet)
-    }
-
-    private func updateDisappearingMessagesConfigurationAndDismiss() {
-        let dmConfiguration: OWSDisappearingMessagesConfiguration = disappearingMessagesConfiguration
-        let thread = self.thread
-        GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
-                                                        updatePromiseBlock: {
-                                                            self.updateDisappearingMessagesConfigurationPromise(dmConfiguration,
-                                                                                                                thread: thread)
-        },
-                                                        completion: { [weak self] _ in
-                                                            self?.navigationController?.popViewController(animated: true)
-        })
-    }
-
-    private func updateDisappearingMessagesConfigurationPromise(_ dmConfiguration: OWSDisappearingMessagesConfiguration,
-                                                                thread: TSThread) -> Promise<Void> {
-
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: thread,
-                                                         description: "Update disappearing messages configuration")
-        }.map(on: .global()) {
-            // We're sending a message, so we're accepting any pending message request.
-            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
-        }.then(on: .global()) {
-            GroupManager.localUpdateDisappearingMessages(thread: thread,
-                                                         disappearingMessageToken: dmConfiguration.asToken)
-        }
     }
 }
 

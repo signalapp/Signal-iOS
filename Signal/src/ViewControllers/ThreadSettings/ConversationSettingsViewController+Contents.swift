@@ -276,6 +276,7 @@ extension ConversationSettingsViewController {
 
         let canEditConversationAttributes = self.canEditConversationAttributes
         let disappearingMessagesConfiguration = self.disappearingMessagesConfiguration
+        let thread = self.thread
 
         section.add(.init(
             customCellBlock: { [weak self] in
@@ -299,7 +300,10 @@ extension ConversationSettingsViewController {
                 cell.isUserInteractionEnabled = canEditConversationAttributes
                 return cell
             }, actionBlock: { [weak self] in
-                let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration) { configuration in
+                let vc = DisappearingMessagesTimerSettingsViewController(
+                    thread: thread,
+                    configuration: disappearingMessagesConfiguration
+                ) { configuration in
                     self?.disappearingMessagesConfiguration = configuration
                     self?.updateTableContents()
                 }
