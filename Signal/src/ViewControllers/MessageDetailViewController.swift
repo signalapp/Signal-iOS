@@ -287,7 +287,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             .sent,
             .uploading,
             .sending,
-            .pending,           // SPAM TODO UX: Is this the right position?
+            .pending,
             .failed,
             .skipped
         ]
@@ -431,7 +431,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func sectionIconName(for messageReceiptStatus: MessageReceiptStatus) -> String? {
         switch messageReceiptStatus {
-        case .uploading, .sending, .pending:            // SPAM TODO UX: Is this the right icon?
+        case .uploading, .sending, .pending:
             return "message_status_sending"
         case .sent:
             return "message_status_sent"
@@ -449,9 +449,12 @@ class MessageDetailViewController: OWSTableViewController2 {
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")
-        case .sending, .pending:            // SPAM TODO UX is this correct?
+        case .sending:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
-                              comment: "Status label for messages which are sending.")
+                                     comment: "Status label for messages which are sending.")
+        case .pending:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
+                                     comment: "Status label for messages which are paused.")
         case .sent:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
                               comment: "Status label for messages which are sent.")
@@ -770,7 +773,7 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
                         accessoryText: statusMessage,
                         displayUDIndicator: recipientState.wasSentByUD
                     ))
-                case .sending, .failed, .skipped, .uploading, .pending:              // SPAM TODO UX
+                case .sending, .failed, .skipped, .uploading, .pending:
                     bucket.append(MessageRecipientModel(
                         address: address,
                         accessoryText: "",

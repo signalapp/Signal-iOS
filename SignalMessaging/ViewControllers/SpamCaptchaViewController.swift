@@ -190,7 +190,7 @@ class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
         if #available(iOS 13.0, *) {
             isModalInPresentation = true
         }
-        navigationItem.title = "Complete verification"
+        navigationItem.title = NSLocalizedString("SPAM_CAPTCHA_VIEW_CONTROLLER", comment: "Title for the captcha view controller")
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .stop,
             target: self,
@@ -228,18 +228,14 @@ extension SpamCaptchaViewController {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
-        titleLabel.text = "Verify to Continue Messaging"
+        titleLabel.text = NSLocalizedString("SPAM_CAPTCHA_SHEET_TITLE", comment: "Title for action sheet explaining captcha requirement.")
 
         let bodyLabel = UILabel()
         bodyLabel.font = .ows_dynamicTypeBody2Clamped
         bodyLabel.textColor = Theme.primaryTextColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.text = """
-        To help prevent spam on Signal, please complete verification.
-
-        After verifying, you can continue messaging. Any paused messages will automatically be sent.
-        """
+        bodyLabel.text = NSLocalizedString("SPAM_CAPTCHA_SHEET_BODY", comment: "Body for action sheet explaining captcha requirement.")
 
         let continueButton = OWSFlatButton()
         continueButton.setTitle(
@@ -269,12 +265,17 @@ extension SpamCaptchaViewController {
             sheet.dismiss(animated: true)
 
             let confirmationSheet = ActionSheetController(
-                title: "Continue Without Verifying?",
-                message: "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.")
+                title: NSLocalizedString(
+                    "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE",
+                    comment: "Title for confirmation dialog confirming to ignore verification."),
+                message: NSLocalizedString(
+                    "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE",
+                    comment: "Message for confirmation dialog confirming to ignore verification.")
+                )
 
             confirmationSheet.addAction(
                 ActionSheetAction(
-                    title: "Skip Verification",
+                    title: NSLocalizedString("SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION", comment: "Action to skip verification"),
                     style: .destructive
                 ))
             confirmationSheet.addAction(
@@ -282,7 +283,7 @@ extension SpamCaptchaViewController {
                     title: CommonStrings.cancelButton,
                     style: .cancel,
                     handler: { _ in
-                        presentCaptchaVC(from: fromVC)
+                        presentActionSheet(from: fromVC)
                     }
                 ))
             fromVC.present(confirmationSheet, animated: true, completion: nil)
@@ -305,7 +306,10 @@ extension SpamCaptchaViewController {
         let vc = SpamCaptchaViewController()
         vc.completionHandler = { token in
             if let token = token {
-                fromVC.presentToast(text: "Verification complete.")
+                fromVC.presentToast(
+                    text: NSLocalizedString(
+                        "SPAM_CAPTCHA_COMPLETED_TOAST",
+                        comment:"Text for toast presented after spam verification has been completed"))
                 spamChallengeResolver.handleIncomingCaptchaChallengeToken(token)
             }
             vc.dismiss(animated: true)
