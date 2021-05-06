@@ -73,6 +73,13 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource {
         tableView.reloadData()
     }
     
+    // MARK: Interaction
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let thread = self.thread(at: indexPath.row) else { return }
+        // TODO: Send the attachment
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     // MARK: Convenience
     private func thread(at index: Int) -> TSThread? {
         var thread: TSThread? = nil
