@@ -140,6 +140,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_removeOversizedGroupAvatars
         case dataMigration_scheduleStorageServiceUpdateForMutedThreads
         case dataMigration_populateGroupMember
+        case dataMigration_cullInvalidIdentityKeySendingErrors
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1320,6 +1321,17 @@ public class GRDBSchemaMigrator: NSObject {
                     memberRecord.anyInsert(transaction: transaction.asAnyWrite)
                 }
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_cullInvalidIdentityKeySendingErrors.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            let sql = """
+                DELETE FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .recordType) = ?
+            """
+            transaction.executeUpdate(sql: sql, arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue])
         }
     }
 }
