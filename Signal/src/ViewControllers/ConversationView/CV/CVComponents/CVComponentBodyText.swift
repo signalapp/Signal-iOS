@@ -607,45 +607,45 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private static func linkifyData(attributedText: NSMutableAttributedString,
                                     dataItems: [DataItem]) {
-//        // Sort so that we can detect overlap.
-//        let dataItems = dataItems.sorted { (left, right) in
-//            left.range.location < right.range.location
-//        }
-//
-//        var mentionRanges = [NSRange]()
-//        attributedText.enumerateMentions { mention, subrange, _ in
-//            guard nil != mention else { return }
-//            mentionRanges.append(subrange)
-//        }
-//        func shouldSkipDataRange(_ dataRange: NSRange) -> Bool {
-//            for mentionRange in mentionRanges {
-//                if NSIntersectionRange(mentionRange, dataRange).length > 0 {
-//                    return true
-//                }
-//            }
-//            return false
-//        }
-//
-//        var lastIndex: Int = 0
-//        for dataItem in dataItems {
-//            let range = dataItem.range
-//
-//            guard range.location >= lastIndex else {
-//                owsFailDebug("Overlapping ranges.")
-//                continue
-//            }
-//            if shouldSkipDataRange(range) {
-//                Logger.warn("Not link-ifying range: \(range)")
-//                continue
-//            }
-//            guard let link = dataItem.url.absoluteString.nilIfEmpty else {
-//                owsFailDebug("Could not build data link.")
-//                continue
-//            }
-//            attributedText.addAttribute(.link, value: link, range: range)
-//
-//            lastIndex = max(lastIndex, range.location + range.length)
-//        }
+        // Sort so that we can detect overlap.
+        let dataItems = dataItems.sorted { (left, right) in
+            left.range.location < right.range.location
+        }
+
+        var mentionRanges = [NSRange]()
+        attributedText.enumerateMentions { mention, subrange, _ in
+            guard nil != mention else { return }
+            mentionRanges.append(subrange)
+        }
+        func shouldSkipDataRange(_ dataRange: NSRange) -> Bool {
+            for mentionRange in mentionRanges {
+                if NSIntersectionRange(mentionRange, dataRange).length > 0 {
+                    return true
+                }
+            }
+            return false
+        }
+
+        var lastIndex: Int = 0
+        for dataItem in dataItems {
+            let range = dataItem.range
+
+            guard range.location >= lastIndex else {
+                owsFailDebug("Overlapping ranges.")
+                continue
+            }
+            if shouldSkipDataRange(range) {
+                Logger.warn("Not link-ifying range: \(range)")
+                continue
+            }
+            guard let link = dataItem.url.absoluteString.nilIfEmpty else {
+                owsFailDebug("Could not build data link.")
+                continue
+            }
+            attributedText.addAttribute(.link, value: link, range: range)
+
+            lastIndex = max(lastIndex, range.location + range.length)
+        }
     }
 
     private func textViewConfig(displayableText: DisplayableText,
