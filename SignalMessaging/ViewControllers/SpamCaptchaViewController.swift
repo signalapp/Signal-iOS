@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -157,7 +157,6 @@ extension CaptchaView: WKNavigationDelegate {
     }
 }
 
-
 @objc(OWSSpamCaptchaViewController)
 class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
     private var captchaView: CaptchaView?
@@ -309,7 +308,7 @@ extension SpamCaptchaViewController {
                 fromVC.presentToast(
                     text: NSLocalizedString(
                         "SPAM_CAPTCHA_COMPLETED_TOAST",
-                        comment:"Text for toast presented after spam verification has been completed"))
+                        comment: "Text for toast presented after spam verification has been completed"))
                 spamChallengeResolver.handleIncomingCaptchaChallengeToken(token)
             }
             vc.dismiss(animated: true)

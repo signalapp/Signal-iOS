@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 protocol SpamChallengeSchedulingDelegate: AnyObject {
@@ -8,7 +8,7 @@ protocol SpamChallengeSchedulingDelegate: AnyObject {
 }
 
 class SpamChallenge: Codable {
-    weak var schedulingDelegate: SpamChallengeSchedulingDelegate? = nil
+    weak var schedulingDelegate: SpamChallengeSchedulingDelegate?
     var workQueue: DispatchQueue { schedulingDelegate?.workQueue ?? .sharedUtility }
 
     /// The date the challenge was first registered
@@ -74,7 +74,7 @@ class SpamChallenge: Codable {
         // Subclass work should happen here.
         // Subclasses a responsible for updating their state
         // once they've completed their attempt, successfully or not.
-        
+
         // For now, to avoid re-enterancy...
         state = .inProgress
     }
