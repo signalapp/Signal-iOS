@@ -1042,7 +1042,7 @@ public extension MessageSender {
             // SPAM TODO: Only retry messages with -hasRenderableContent
             Logger.warn("Server requested user complete spam challenge.")
 
-            let errorDescription = "Spam challenge NEEDS LOCALIZATION"
+            let errorDescription = NSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM", comment: "Description for errors returned from the server due to suspected spam.")
             let error = OWSErrorWithCodeDescription(.serverRejectedSuspectedSpam, errorDescription) as NSError
             error.isRetryable = false
             error.isFatal = false

@@ -64,13 +64,7 @@ class CaptchaChallenge: SpamChallenge {
                 self.state = .deferred(self.expirationDate)
 
             } else if let statusCode = error.httpStatusCode {
-                // TODO: Replace with a 4xx status code once defined by server
-                if String(statusCode) == "4xx" {
-                    Logger.info("Server rejected captcha. Clearing and re-notifying user.")
-                    self.captchaToken = nil
-                    self.state = .actionable
-
-                } else if (500..<600).contains(statusCode), statusCode != 508 {
+                if (500..<600).contains(statusCode), statusCode != 508 {
                     let retryDate = error.httpRetryAfterDate ?? self.fallbackRetryAfter
                     self.state = .deferred(retryDate)
 
