@@ -275,6 +275,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setCurrentTime:(NSTimeInterval)currentTime
 {
+    [self setupAudioPlayer];
+
     self.audioPlayer.currentTime = currentTime;
 
     [self.delegate setAudioProgress:self.audioPlayer.currentTime duration:self.audioPlayer.duration];
