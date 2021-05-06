@@ -58,10 +58,14 @@ public class MessageRecipientStatusUtils: NSObject {
         recipientState: TSOutgoingMessageRecipientState) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
 
         switch recipientState.state {
-        case .failed, .pending:         // SPAM TODO: message status for pending messages?
+        case .failed:
             let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
             let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages")
             return (status:.failed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
+        case .pending:
+            let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_PENDING_SHORT", comment: "Label indicating that a message send was paused.")
+            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused.")
+            return (status:.pending, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
         case .sending:
             if outgoingMessage.hasAttachments() {
                 assert(outgoingMessage.messageState == .sending)
@@ -113,9 +117,11 @@ public class MessageRecipientStatusUtils: NSObject {
     internal class func receiptStatusAndMessage(outgoingMessage: TSOutgoingMessage) -> (status: MessageReceiptStatus, message: String) {
 
         switch outgoingMessage.messageState {
-        case .failed, .pending:         // SPAM TODO
+        case .failed:
             // Use the "long" version of this message here.
             return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
+        case .pending:
+            return (.pending, NSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused."))
         case .sending:
             if outgoingMessage.hasAttachments() {
                 return (.uploading, NSLocalizedString("MESSAGE_STATUS_UPLOADING",

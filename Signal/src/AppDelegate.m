@@ -284,9 +284,8 @@ void uncaughtExceptionHandler(NSException *exception)
 
 - (void)spamChallenge:(NSNotification *)notification
 {
-    [OWSSpamCaptchaViewController presentModallyWithCompletion:^void(NSString *token){
-        [self.spamChallengeResolver handleIncomingCaptchaChallengeToken:token];
-    }];
+    UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
+    [OWSSpamCaptchaViewController presentActionSheetFrom:fromVC];
 }
 
 /**

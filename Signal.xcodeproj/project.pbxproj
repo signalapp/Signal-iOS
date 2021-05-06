@@ -13,6 +13,7 @@
 		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
 		173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */; };
 		17B78E0E260529E900E24A9E /* newlyInitializedSessionState in Resources */ = {isa = PBXBuildFile; fileRef = 17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */; };
+		32275883264367520037E73A /* SpamCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32275882264367520037E73A /* SpamCaptchaViewController.swift */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
 		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
 		327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */; };
@@ -1016,6 +1017,7 @@
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		32275882264367520037E73A /* SpamCaptchaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamCaptchaViewController.swift; sourceTree = "<group>"; };
 		3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCollisionReviewCell.swift; sourceTree = "<group>"; };
 		323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewsMegaphone.swift; sourceTree = "<group>"; };
 		327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetStartedBannerViewController.swift; sourceTree = "<group>"; };
@@ -3142,6 +3144,7 @@
 				34AC09C6211B39AF00997B47 /* ScreenLockViewController.h */,
 				34AC09C7211B39AF00997B47 /* ScreenLockViewController.m */,
 				4C23A5F1215C4ADE00534937 /* SheetViewController.swift */,
+				32275882264367520037E73A /* SpamCaptchaViewController.swift */,
 				344DC9AD226E483C004E7322 /* Stickers */,
 				3470249B238367E90078D72C /* TextApprovalViewController.swift */,
 				4C38E4FE230374D700E464B9 /* UIViewController+Permissions.h */,
@@ -4955,6 +4958,7 @@
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
+				32275883264367520037E73A /* SpamCaptchaViewController.swift in Sources */,
 				3465948424352FE900E5C510 /* OWSTableViewController.swift in Sources */,
 				3425A5A22631E051006D5863 /* CVText.swift in Sources */,
 				88EFF4F525AD1ACB000FAFBA /* ConversationItem.swift in Sources */,

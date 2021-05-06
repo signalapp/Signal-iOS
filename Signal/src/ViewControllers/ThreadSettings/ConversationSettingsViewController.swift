@@ -972,7 +972,9 @@ extension ConversationSettingsViewController: ColorPickerDelegate {
             return
         }
         let sheetViewController = colorPicker.sheetViewController
-        sheetViewController.delegate = self
+        sheetViewController.dismissHandler = { [weak self] _ in
+            self?.dismiss(animated: true)
+        }
         self.present(sheetViewController, animated: true) {
             Logger.info("presented sheet view")
         }
@@ -1026,14 +1028,6 @@ extension ConversationSettingsViewController: GroupMemberRequestsAndInvitesViewC
 extension ConversationSettingsViewController: GroupLinkViewControllerDelegate {
     func groupLinkViewViewDidUpdate() {
         reloadThreadAndUpdateContent()
-    }
-}
-
-// MARK: -
-
-extension ConversationSettingsViewController: SheetViewControllerDelegate {
-    public func sheetViewControllerRequestedDismiss(_ sheetViewController: SheetViewController) {
-        dismiss(animated: true)
     }
 }
 

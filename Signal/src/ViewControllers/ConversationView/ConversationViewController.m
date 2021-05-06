@@ -1633,7 +1633,6 @@ typedef enum : NSUInteger {
         failure:^(NSError *error) { OWSLogWarn(@"Failed to redownload message with error: %@", error); }];
 }
 
-// SPAM TODO: present captcha for pending message?
 - (void)resendFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
     TSOutgoingMessage *messageToSend;
@@ -4630,6 +4629,14 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self showConversationSettingsAndShowMemberRequests];
+}
+
+- (void)cvc_didTapPendingOutgoingMessage:(TSOutgoingMessage *)message
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(message);
+
+    [OWSSpamCaptchaViewController presentActionSheetFrom:self];
 }
 
 - (void)cvc_didTapFailedOutgoingMessage:(TSOutgoingMessage *)message

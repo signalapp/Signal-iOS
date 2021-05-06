@@ -404,11 +404,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if isIncoming {
             hOuterStackSubviews.append(componentView.cellSpacer)
         }
-        if hasSendFailureBadge {
+        if let badgeConfig = componentState.sendFailureBadge {
             // Send failures are rare, so it's cheaper to only build these views when we need them.
             let sendFailureBadge = CVImageView()
             sendFailureBadge.contentMode = .center
-            sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: .ows_accentRed)
+            sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: badgeConfig.color)
             if conversationStyle.hasWallpaper {
                 sendFailureBadge.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
                 sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
@@ -975,13 +975,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return true
         }
 
-        // SPAM TODO: add captcha retry handler
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:
                 // Tap to retry.
                 componentDelegate.cvc_didTapFailedOutgoingMessage(outgoingMessage)
                 return true
+            case .pending:
+                componentDelegate.cvc_didTapPendingOutgoingMessage(outgoingMessage)
             case .sending:
                 // Ignore taps on outgoing messages being sent.
                 return true

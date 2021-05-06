@@ -224,6 +224,7 @@ public class CVComponentState: Equatable, Dependencies {
     let failedOrPendingDownloads: FailedOrPendingDownloads?
 
     struct SendFailureBadge: Equatable {
+        let color: UIColor
     }
     let sendFailureBadge: SendFailureBadge?
 
@@ -728,10 +729,15 @@ fileprivate extension CVComponentState.Builder {
 
         try buildBodyText(message: message)
 
-        if let outgoingMessage = message as? TSOutgoingMessage,
-           // SPAM TODO: badge pending messages
-           outgoingMessage.messageState == .failed {
-            self.sendFailureBadge = SendFailureBadge()
+        if let outgoingMessage = message as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .failed:
+                sendFailureBadge = SendFailureBadge(color: .ows_accentRed)
+            case .pending:
+                sendFailureBadge = SendFailureBadge(color: .ows_gray60)
+            default:
+                break
+            }
         }
 
         do {
@@ -814,7 +820,7 @@ fileprivate extension CVComponentState.Builder {
                 viewOnceState = .outgoingSentExpired
             } else {
                 switch outgoingMessage.messageState {
-                case .sending, .pending:        // todo verify this makes sense
+                case .sending, .pending:
                     viewOnceState = .outgoingSending
                 case .failed:
                     viewOnceState = .outgoingFailed

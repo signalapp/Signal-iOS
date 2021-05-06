@@ -158,6 +158,9 @@ public protocol CVComponentDelegate {
     func cvc_didTapGroupCall()
 
     @objc
+    func cvc_didTapPendingOutgoingMessage(_ message: TSOutgoingMessage)
+
+    @objc
     func cvc_didTapFailedOutgoingMessage(_ message: TSOutgoingMessage)
 
     @objc

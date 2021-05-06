@@ -355,9 +355,12 @@ NS_ASSUME_NONNULL_BEGIN
                 shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted;
                 break;
             case MessageReceiptStatusFailed:
-            case MessageReceiptStatusPending:           // SPAM TODO
                 statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
                 messageStatusViewTintColor = UIColor.ows_accentRedColor;
+                break;
+            case MessageReceiptStatusPending:
+                statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
+                messageStatusViewTintColor = UIColor.ows_gray60Color;
                 break;
         }
 

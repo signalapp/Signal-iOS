@@ -2998,6 +2998,12 @@
 /* Label indicating that a message was only sent to some recipients. */
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
 
+/* Label indicating that a message send was paused. */
+"MESSAGE_STATUS_PENDING" = "Send paused";
+
+/* Label indicating that a message send was paused. */
+"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Read";
 

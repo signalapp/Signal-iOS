@@ -293,7 +293,7 @@ public extension MessageSender {
                     return failure(MessageSenderError.missingDevice)
                 } else if httpStatusCode == 413 {
                     return failure(MessageSenderError.prekeyRateLimit)
-                } else if httpStatusCode == 428 {
+                } else if httpStatusCode == 428 {       // SPAM TODO and is bubble
                     var unpackedError = error
                     if case NetworkManagerError.taskError(_, let underlyingError) = unpackedError {
                         unpackedError = underlyingError
@@ -1037,7 +1037,7 @@ public extension MessageSender {
             }
 
             retrySend()
-        case 428:
+        case 428:       // SPAM TODO: and is bubble
             Logger.warn("Server requested user complete spam challenge.")
 
             let errorDescription = "Spam challenge NEEDS LOCALIZATION"

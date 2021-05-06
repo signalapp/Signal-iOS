@@ -15,7 +15,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     struct State: Equatable {
         let timestampText: String
-        let isFailedOutgoingMessage: Bool
         let statusIndicator: StatusIndicator?
         let accessibilityLabel: String?
         let hasTapForMore: Bool
@@ -31,9 +30,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     public var timestampText: String {
         footerState.timestampText
-    }
-    private var isFailedOutgoingMessage: Bool {
-        footerState.isFailedOutgoingMessage
     }
     private var statusIndicator: StatusIndicator? {
         footerState.statusIndicator
@@ -155,6 +151,14 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                              subviews: outerViews)
     }
 
+    static func isPendingOutgoingMessage(interaction: TSInteraction) -> Bool {
+        guard let outgoingMessage = interaction as? TSOutgoingMessage else {
+            return false
+        }
+        let messageStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
+        return messageStatus == .pending
+    }
+
     static func isFailedOutgoingMessage(interaction: TSInteraction) -> Bool {
         guard let outgoingMessage = interaction as? TSOutgoingMessage else {
             return false
@@ -166,6 +170,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     public static func timestampText(forInteraction interaction: TSInteraction,
                                      shouldUseLongFormat: Bool) -> String {
 
+        let isPendingOutgoingMessage = Self.isPendingOutgoingMessage(interaction: interaction)
         let isFailedOutgoingMessage = Self.isFailedOutgoingMessage(interaction: interaction)
         let wasSentToAnyRecipient: Bool = {
             guard let outgoingMessage = interaction as? TSOutgoingMessage else {
@@ -174,7 +179,10 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             return outgoingMessage.wasSentToAnyRecipient
         }()
 
-        if isFailedOutgoingMessage {
+        if isPendingOutgoingMessage {
+            return NSLocalizedString("MESSAGE_STATUS_PENDING",
+                                     comment: "Label indicating that a message send was paused.")
+        } else if isFailedOutgoingMessage {
             if wasSentToAnyRecipient {
                 return NSLocalizedString("MESSAGE_STATUS_PARTIALLY_SENT",
                                          comment: "Label indicating that a message was only sent to some recipients.")
@@ -205,6 +213,10 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 statusIndicator = StatusIndicator(imageName: "message_status_sending",
                                                   imageSize: .square(12),
                                                   isAnimated: true)
+            case .pending:
+                statusIndicator = StatusIndicator(imageName: "message_status_sending",
+                                                  imageSize: .square(12),
+                                                  isAnimated: false)
             case .sent, .skipped:
                 statusIndicator = StatusIndicator(imageName: "message_status_sent",
                                                   imageSize: .square(12),
@@ -235,7 +247,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
 
         return State(timestampText: timestampText,
-                     isFailedOutgoingMessage: isFailedOutgoingMessage,
                      statusIndicator: statusIndicator,
                      accessibilityLabel: accessibilityLabel,
                      hasTapForMore: hasTapForMore,

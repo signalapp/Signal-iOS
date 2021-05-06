@@ -19,6 +19,7 @@ protocol InteractionFinderAdapter {
     static func incompleteCallIds(transaction: ReadTransaction) -> [String]
 
     static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String]
+
     static func pendingInteractionIds(transaction: ReadTransaction) -> [String]
 
     // The interactions should be enumerated in order from "first to expire" to "last to expire".

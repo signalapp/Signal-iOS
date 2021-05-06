@@ -912,7 +912,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         if ([exception.name isEqualToString:MessageSenderSpamChallengeResolvedException] ||
             [exception.name isEqualToString:MessageSenderSpamChallengeRequiredException]) {
 
-            NSString *description = @"Suspected spam NEEDS LOCALIZATION";
+            NSString *description = @"Suspected spam NEEDS LOCALIZATION";   // SPAM TODO UX
             NSUInteger code = OWSErrorCodeServerRejectedSuspectedSpam;
             NSError *error = OWSErrorWithCodeDescription(code, description);
 
