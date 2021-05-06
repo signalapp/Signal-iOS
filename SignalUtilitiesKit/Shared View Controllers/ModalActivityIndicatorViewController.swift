@@ -54,7 +54,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         fromViewController.present(view, animated: false) {
             DispatchQueue.global().async {
                 backgroundBlock(view)
-                
             }
         }
     }
