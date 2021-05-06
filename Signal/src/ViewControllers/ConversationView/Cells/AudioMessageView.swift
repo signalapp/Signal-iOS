@@ -88,6 +88,7 @@ class AudioMessageView: ManualStackView {
         progressSlider.setMinimumTrackImage(trackImage(color: playedColor), for: .normal)
         progressSlider.setMaximumTrackImage(trackImage(color: unplayedColor), for: .normal)
         progressSlider.isEnabled = isDownloaded
+        progressSlider.isUserInteractionEnabled = false
 
         waveformContainer.addSubview(progressSlider) { [progressSlider] view in
             var sliderFrame = view.bounds
