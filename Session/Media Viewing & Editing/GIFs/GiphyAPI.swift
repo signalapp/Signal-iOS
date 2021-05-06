@@ -285,13 +285,13 @@ extension GiphyError: LocalizedError {
     private let kGiphyBaseURL = "https://api.giphy.com/"
 
     private func giphyAPISessionManager() -> AFHTTPSessionManager? {
-        return ContentProxy.jsonSessionManager(baseUrl: kGiphyBaseURL)
+        return AFHTTPSessionManager(baseURL: URL(string: kGiphyBaseURL), sessionConfiguration: .ephemeral)
     }
 
     // MARK: Search
     // This is the Signal iOS API key.
     let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
-    let kGiphyPageSize = 100
+    let kGiphyPageSize = 20
     
     public func trending() -> Promise<[GiphyImageInfo]> {
         guard let sessionManager = giphyAPISessionManager() else {
