@@ -489,3 +489,4 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "Skanowania QR code";
 "vc_qr_code_view_scan_qr_code_explanation" = "Zeskanuj czyjś kod QR, aby rozpocząć z nim rozmowę";
 "vc_view_my_qr_code_explanation" = "To jest twój kod QR. Inni użytkownicy mogą go zeskanować, aby rozpocząć z tobą sesję.";
+"vc_share_title" = "Share to Session";

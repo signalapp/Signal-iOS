@@ -1,29 +1,7 @@
 import SessionUIKit
 
-final class ShareVC : UIViewController, UITableViewDataSource, AppModeManagerDelegate {
-    @IBOutlet private var logoImageView: UIImageView!
+final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
     private var areVersionMigrationsComplete = false
-    private var threads: YapDatabaseViewMappings!
-    private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
-    
-    private var threadCount: UInt {
-        threads.numberOfItems(inGroup: TSInboxGroup)
-    }
-    
-    private lazy var dbConnection: YapDatabaseConnection = {
-        let result = OWSPrimaryStorage.shared().newDatabaseConnection()
-        result.objectCacheLimit = 500
-        return result
-    }()
-
-    private lazy var tableView: UITableView = {
-        let result = UITableView()
-        result.backgroundColor = .clear
-        result.separatorStyle = .none
-        result.register(SimplifiedConversationCell.self, forCellReuseIdentifier: SimplifiedConversationCell.reuseIdentifier)
-        result.showsVerticalScrollIndicator = false
-        return result
-    }()
     
     // MARK: Lifecycle
     override func loadView() {
@@ -136,7 +114,7 @@ final class ShareVC : UIViewController, UITableViewDataSource, AppModeManagerDel
 
         AppVersion.sharedInstance().saeLaunchDidComplete()
 
-        setUpViewHierarchy()
+        showLockScreenOrMainContent()
 
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
@@ -149,38 +127,14 @@ final class ShareVC : UIViewController, UITableViewDataSource, AppModeManagerDel
 
         OWSReadReceiptManager.shared().prepareCachedValues()
     }
-
-    private func setUpViewHierarchy() {
-        // Gradient
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultBackground
-        view.setGradient(gradient)
-        // Threads
-        dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
-        threads = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
-        threads.setIsReversed(true, forGroup: TSInboxGroup)
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction) // Perform the initial update
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
+            strongSelf.showLockScreenOrMainContent()
         }
-        // Logo
-        logoImageView.alpha = 0
-        // Fake nav bar
-        let fakeNavBar = UIView()
-        fakeNavBar.set(.height, to: 64)
-        view.addSubview(fakeNavBar)
-        fakeNavBar.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("share", comment: "")
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        fakeNavBar.addSubview(titleLabel)
-        titleLabel.center(in: fakeNavBar)
-        // Table view
-        tableView.dataSource = self
-        view.addSubview(tableView)
-        tableView.pin(.top, to: .bottom, of: fakeNavBar)
-        tableView.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right, UIView.VerticalEdge.bottom ], to: view)
-        // Reload
-        reload()
     }
 
     @objc
@@ -220,49 +174,38 @@ final class ShareVC : UIViewController, UITableViewDataSource, AppModeManagerDel
         return // Not applicable to share extensions
     }
     
-    // MARK: Table View Data Source
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Int(threadCount)
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: SimplifiedConversationCell.reuseIdentifier) as! SimplifiedConversationCell
-        cell.threadViewModel = threadViewModel(at: indexPath.row)
-        return cell
-    }
-    
     // MARK: Updating
-    private func reload() {
-        AssertIsOnMainThread()
-        dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction)
-        }
-        threadViewModelCache.removeAll()
-        tableView.reloadData()
-    }
-    
-    // MARK: Convenience
-    private func thread(at index: Int) -> TSThread? {
-        var thread: TSThread? = nil
-        dbConnection.read { transaction in
-            let ext = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
-            thread = ext.object(atRow: UInt(index), inSection: 0, with: self.threads) as! TSThread?
-        }
-        return thread
-    }
-    
-    private func threadViewModel(at index: Int) -> ThreadViewModel? {
-        guard let thread = thread(at: index) else { return nil }
-        if let cachedThreadViewModel = threadViewModelCache[thread.uniqueId!] {
-            return cachedThreadViewModel
+    private func showLockScreenOrMainContent() {
+        if OWSScreenLock.shared.isScreenLockEnabled() {
+            showLockScreen()
         } else {
-            var threadViewModel: ThreadViewModel? = nil
-            dbConnection.read { transaction in
-                threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-            }
-            threadViewModelCache[thread.uniqueId!] = threadViewModel
-            return threadViewModel
+            showMainContent()
         }
+    }
+    
+    private func showLockScreen() {
+        let screenLockVC = SAEScreenLockViewController(shareViewDelegate: self)
+        setViewControllers([ screenLockVC ], animated: false)
+    }
+    
+    private func showMainContent() {
+        let threadPickerVC = ThreadPickerVC()
+        setViewControllers([ threadPickerVC ], animated: false)
+    }
+    
+    func shareViewWasUnlocked() {
+        showMainContent()
+    }
+    
+    func shareViewWasCompleted() {
+        print("completed")
+    }
+    
+    func shareViewWasCancelled() {
+        print("canceled")
+    }
+    
+    func shareViewFailed(error: Error) {
+        print("failed")
     }
 }

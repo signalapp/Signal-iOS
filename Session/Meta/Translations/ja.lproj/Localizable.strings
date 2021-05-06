@@ -490,3 +490,4 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "QR コードをスキャンする";
 "vc_qr_code_view_scan_qr_code_explanation" = "誰かの QR コードをスキャンして、会話を始めましょう";
 "vc_view_my_qr_code_explanation" = "これはあなたの QR コードです。他のユーザーはそれをスキャンして、あなたとの Session を開始できます。";
+"vc_share_title" = "Share to Session";

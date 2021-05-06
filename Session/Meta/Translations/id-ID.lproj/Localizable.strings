@@ -490,3 +490,4 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "Pindai kode QR";
 "vc_qr_code_view_scan_qr_code_explanation" = "Pindai kode QR pengguna lain untuk memulai percakapan";
 "vc_view_my_qr_code_explanation" = "Ini adalah kode QR anda. Pengguna lain bisa memindainya untuk memulai percakapan dengan anda";
+"vc_share_title" = "Share to Session";

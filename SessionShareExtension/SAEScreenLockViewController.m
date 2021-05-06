@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Title
     UILabel *titleLabel = [UILabel new];
-    titleLabel.text = NSLocalizedString(@"Share to Session", @"");
+    titleLabel.text = NSLocalizedString(@"vc_share_title", @"");
     titleLabel.textColor = LKColors.text;
     titleLabel.font = [UIFont boldSystemFontOfSize:LKValues.veryLargeFontSize];
     self.navigationItem.titleView = titleLabel;

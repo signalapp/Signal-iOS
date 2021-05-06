@@ -496,3 +496,4 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "Quét mã QR";
 "vc_qr_code_view_scan_qr_code_explanation" = "Quét mã QR của ai đó để bắt đầu trò chuyện với họ";
 "vc_view_my_qr_code_explanation" = "Đây là mã QR của bạn. Những người dùng khác có thể quét mã này và bắt đầu session với bạn.";
+"vc_share_title" = "Share to Session";

@@ -166,6 +166,7 @@
 		B8041AA725C90927003C2166 /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */; };
 		B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */; };
 		B817AD9A26436593009DF825 /* SimplifiedConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */; };
+		B817AD9C26436F73009DF825 /* ThreadPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */; };
 		B81D25C426157F40004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
 		B81D25C526157F40004D1FE1 /* storage-seed-1.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B726157F20004D1FE1 /* storage-seed-1.crt */; };
 		B81D25C626157F40004D1FE1 /* public-loki-foundation.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */; };
@@ -1159,6 +1160,7 @@
 		B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorCell.swift; sourceTree = "<group>"; };
 		B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewClosedGroupVC.swift; sourceTree = "<group>"; };
 		B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedConversationCell.swift; sourceTree = "<group>"; };
+		B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerVC.swift; sourceTree = "<group>"; };
 		B81D25B726157F20004D1FE1 /* storage-seed-1.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "storage-seed-1.crt"; sourceTree = "<group>"; };
 		B81D25B826157F20004D1FE1 /* public-loki-foundation.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "public-loki-foundation.crt"; sourceTree = "<group>"; };
 		B81D25B926157F20004D1FE1 /* storage-seed-3.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "storage-seed-3.crt"; sourceTree = "<group>"; };
@@ -1992,6 +1994,7 @@
 				34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */,
 				34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */,
 				C3ADC66026426688005F1414 /* ShareVC.swift */,
+				B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */,
 				B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */,
 			);
 			path = SessionShareExtension;
@@ -4425,6 +4428,7 @@
 				C3ADC66126426688005F1414 /* ShareVC.swift in Sources */,
 				34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
+				B817AD9C26436F73009DF825 /* ThreadPickerVC.swift in Sources */,
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
