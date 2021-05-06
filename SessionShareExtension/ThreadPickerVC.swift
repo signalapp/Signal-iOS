@@ -4,7 +4,7 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
     private var threads: YapDatabaseViewMappings!
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var selectedThread: TSThread?
-    var shareVC: ShareVC?
+    var shareDelegate: ShareViewDelegate?
     
     private var threadCount: UInt {
         threads.numberOfItems(inGroup: TSInboxGroup)
@@ -100,7 +100,6 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
     }
     
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
-        shareVC?.showLoader()
         let message = VisibleMessage()
         message.sentTimestamp = NSDate.millisecondTimestamp()
         message.text = messageText
@@ -108,17 +107,21 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
         Storage.write { transaction in
             tsMessage.save(with: transaction)
         }
-        Storage.write { transaction in
-            MessageSender.sendNonDurably(message, with: attachments, in: self.selectedThread!, using: transaction).done { [weak self] _ in
-                guard let self = self else { return }
-                self.shareVC?.hideLoader()
-                self.shareVC?.shareViewWasCompleted()
-            }.catch { [weak self] error in
-                guard let self = self else { return }
-                self.shareVC?.hideLoader()
-                self.shareVC?.shareViewFailed(error: error)
-            }
-        }
+//        DispatchQueue.main.async {
+//            ModalActivityIndicatorViewController.present(fromViewController: self.navigationController!, canCancel: false) { activityIndicator in
+                Storage.write { transaction in
+                    MessageSender.sendNonDurably(message, with: attachments, in: self.selectedThread!, using: transaction).done { [weak self] _ in
+                        guard let self = self else { return }
+//                        activityIndicator.dismiss { }
+                        self.shareDelegate?.shareViewWasCompleted()
+                    }.catch { [weak self] error in
+                        guard let self = self else { return }
+//                        activityIndicator.dismiss { }
+                        self.shareDelegate?.shareViewFailed(error: error)
+                    }
+                }
+//            }
+//        }
     }
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {

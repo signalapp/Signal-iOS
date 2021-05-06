@@ -201,14 +201,15 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     
     private func showMainContent() {
         let threadPickerVC = ThreadPickerVC()
-        threadPickerVC.shareVC = self
+        threadPickerVC.shareDelegate = self
         setViewControllers([ threadPickerVC ], animated: false)
-        showLoader()
         let promise = buildAttachments()
-        promise.done { [weak self] _ in
-            self?.hideLoader()
-        }.catch { [weak self] _ in
-            self?.hideLoader()
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { activityIndicator in
+            promise.done { _ in
+                activityIndicator.dismiss { }
+            }.catch { _ in
+                activityIndicator.dismiss { }
+            }
         }
         ShareVC.attachmentPrepPromise = promise
     }
@@ -227,14 +228,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     
     func shareViewFailed(error: Error) {
         extensionContext!.cancelRequest(withError: error)
-    }
-    
-    func showLoader() {
-        
-    }
-    
-    func hideLoader() {
-        
     }
     
     // MARK: Attachment Prep
