@@ -50,7 +50,7 @@ final class SimplifiedConversationCell : UITableViewCell {
         profilePictureView.set(.height, to: profilePictureViewSize)
         profilePictureView.size = profilePictureViewSize
         // Main stack view
-        let stackView = UIStackView(arrangedSubviews: [ accentLineView, profilePictureView, displayNameLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ accentLineView, profilePictureView, displayNameLabel, UIView.hSpacer(0) ])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Values.mediumSpacing

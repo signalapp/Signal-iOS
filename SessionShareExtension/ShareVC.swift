@@ -201,8 +201,16 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     
     private func showMainContent() {
         let threadPickerVC = ThreadPickerVC()
+        threadPickerVC.shareVC = self
         setViewControllers([ threadPickerVC ], animated: false)
-        ShareVC.attachmentPrepPromise = buildAttachments()
+        showLoader()
+        let promise = buildAttachments()
+        promise.done { [weak self] _ in
+            self?.hideLoader()
+        }.catch { [weak self] _ in
+            self?.hideLoader()
+        }
+        ShareVC.attachmentPrepPromise = promise
     }
     
     func shareViewWasUnlocked() {
@@ -210,15 +218,23 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     }
     
     func shareViewWasCompleted() {
-        print("completed")
+        extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
     }
     
     func shareViewWasCancelled() {
-        print("canceled")
+        extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
     }
     
     func shareViewFailed(error: Error) {
-        print("failed")
+        extensionContext!.cancelRequest(withError: error)
+    }
+    
+    func showLoader() {
+        
+    }
+    
+    func hideLoader() {
+        
     }
     
     // MARK: Attachment Prep
