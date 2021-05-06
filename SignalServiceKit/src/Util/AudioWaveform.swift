@@ -283,7 +283,7 @@ public class AudioWaveform: NSObject {
 
     /// The maximum duration asset that we will display waveforms for.
     /// It's too intensive to sample a waveform for really long audio files.
-    fileprivate static let maximumDuration: TimeInterval = 10 * kMinuteInterval
+    fileprivate static let maximumDuration: TimeInterval = 15 * kMinuteInterval
 
     private weak var sampleOperation: Operation?
 
