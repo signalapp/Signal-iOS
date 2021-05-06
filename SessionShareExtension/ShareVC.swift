@@ -151,6 +151,10 @@ final class ShareVC : UIViewController, UITableViewDataSource, AppModeManagerDel
     }
 
     private func setUpViewHierarchy() {
+        // Gradient
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultBackground
+        view.setGradient(gradient)
         // Threads
         dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
         threads = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
@@ -160,10 +164,21 @@ final class ShareVC : UIViewController, UITableViewDataSource, AppModeManagerDel
         }
         // Logo
         logoImageView.alpha = 0
+        // Fake nav bar
+        let fakeNavBar = UIView()
+        fakeNavBar.set(.height, to: 64)
+        view.addSubview(fakeNavBar)
+        fakeNavBar.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("share", comment: "")
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        fakeNavBar.addSubview(titleLabel)
+        titleLabel.center(in: fakeNavBar)
         // Table view
         tableView.dataSource = self
         view.addSubview(tableView)
-        tableView.pin(to: view)
+        tableView.pin(.top, to: .bottom, of: fakeNavBar)
+        tableView.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right, UIView.VerticalEdge.bottom ], to: view)
         // Reload
         reload()
     }
