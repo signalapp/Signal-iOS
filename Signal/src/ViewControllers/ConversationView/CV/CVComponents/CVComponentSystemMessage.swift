@@ -163,7 +163,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 button.titleLabel?.textAlignment = .center
                 button.titleLabel?.font = buttonLabelConfig.font
                 button.setTitleColor(buttonLabelConfig.textColor, for: .normal)
-                if nil == interaction as? OWSGroupCallMessage {
+                if nil != interaction as? OWSGroupCallMessage {
+                    button.backgroundColor = UIColor.ows_accentGreen
+                } else {
                     if isDarkThemeEnabled && hasWallpaper {
                         button.backgroundColor = .ows_gray65
                     } else {
