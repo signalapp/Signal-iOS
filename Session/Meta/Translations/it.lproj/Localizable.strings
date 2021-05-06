@@ -490,3 +490,5 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "Scansiona il codice QR di un utente per iniziare una conversazione con questa persona";
 "vc_view_my_qr_code_explanation" = "Questo è il tuo codice QR. Altri utenti possono scansionarlo per iniziare una sessione con te.";
 "vc_share_title" = "Share to Session";
+"vc_share_loading_message" = "Preparing attachments...";
+"vc_share_sending_message" = "Sending...";

@@ -490,3 +490,5 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "برای شروع مکالمه با دیگران، کد QR شخصی را اسکن کنید";
 "vc_view_my_qr_code_explanation" = "این کد QR شماست. سایر کاربران می‌توانند برای شروع Session با شما آن را اسکن کنند.";
 "vc_share_title" = "Share to Session";
+"vc_share_loading_message" = "Preparing attachments...";
+"vc_share_sending_message" = "Sending...";

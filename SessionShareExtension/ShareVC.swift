@@ -201,10 +201,10 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     
     private func showMainContent() {
         let threadPickerVC = ThreadPickerVC()
-        threadPickerVC.shareDelegate = self
+        threadPickerVC.shareVC = self
         setViewControllers([ threadPickerVC ], animated: false)
         let promise = buildAttachments()
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { activityIndicator in
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false, message: NSLocalizedString("vc_share_loading_message", comment: "")) { activityIndicator in
             promise.done { _ in
                 activityIndicator.dismiss { }
             }.catch { _ in
