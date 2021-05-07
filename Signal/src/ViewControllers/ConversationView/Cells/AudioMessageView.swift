@@ -28,7 +28,7 @@ class AudioMessageView: ManualStackView {
     }
 
     private let isIncoming: Bool
-    private weak var componentDelegate: CVComponentDelegate!
+    private weak var componentDelegate: CVComponentDelegate?
 
     private let playedDotAnimation = AnimationView(name: "audio-played-dot")
     private let playedDotContainer = ManualLayoutView(name: "playedDotContainer")
@@ -437,9 +437,9 @@ class AudioMessageView: ManualStackView {
         guard destination != playPauseAnimation.currentProgress else { return }
 
         if animated {
-            let endCellAnimation = componentDelegate.cvc_beginCellAnimation(maximumDuration: 0.2)
+            let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
             playPauseAnimation.play(toProgress: destination) { _ in
-                endCellAnimation()
+                endCellAnimation?()
             }
         } else {
             playPauseAnimation.currentProgress = destination
@@ -459,9 +459,9 @@ class AudioMessageView: ManualStackView {
         guard destination != playedDotAnimation.currentProgress else { return }
 
         if animated {
-            let endCellAnimation = componentDelegate.cvc_beginCellAnimation(maximumDuration: 0.2)
+            let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
             playedDotAnimation.play(toProgress: destination) { _ in
-                endCellAnimation()
+                endCellAnimation?()
             }
         } else {
             playedDotAnimation.currentProgress = destination
