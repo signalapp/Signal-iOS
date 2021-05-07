@@ -10,11 +10,26 @@ public class CVUtils {
     @available(*, unavailable, message: "use other init() instead.")
     private init() {}
 
-    public static let workQueue: DispatchQueue = {
-        // Note that we use the highest qos.
-        DispatchQueue(label: "org.whispersystems.signal.conversationView",
-                             qos: .userInteractive,
-                             autoreleaseFrequency: .workItem)
+    private static let workQueue_userInitiated: DispatchQueue = {
+        DispatchQueue(label: "org.whispersystems.signal.conversationView.workQueue_userInitiated",
+                      qos: .userInitiated,
+                      autoreleaseFrequency: .workItem)
+    }()
+
+    private static let workQueue_userInteractive: DispatchQueue = {
+        DispatchQueue(label: "org.whispersystems.signal.conversationView.workQueue_userInteractive",
+                      qos: .userInteractive,
+                      autoreleaseFrequency: .workItem)
+    }()
+
+    public static func workQueue(isInitialLoad: Bool) -> DispatchQueue {
+        isInitialLoad ? workQueue_userInteractive : workQueue_userInitiated
+    }
+
+    public static let landingQueue: DispatchQueue = {
+        DispatchQueue(label: "org.whispersystems.signal.conversationView.landingQueue",
+                      qos: .userInitiated,
+                      autoreleaseFrequency: .workItem)
     }()
 }
 

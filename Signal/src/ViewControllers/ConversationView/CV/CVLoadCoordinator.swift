@@ -518,7 +518,7 @@ public class CVLoadCoordinator: NSObject {
             }
             // Initiate new load if necessary.
             self.loadIfNecessary()
-        }.catch(on: CVUtils.workQueue) { [weak self] (error) in
+        }.catch(on: CVUtils.workQueue(isInitialLoad: loadRequest.isInitialLoad)) { [weak self] (error) in
             guard let self = self else {
                 return
             }
@@ -585,9 +585,9 @@ public class CVLoadCoordinator: NSObject {
                 //
                 // Block on load land completion.
                 loadDidLandPromise
-            }.done(on: .sharedUserInteractive) {
+            }.done(on: CVUtils.landingQueue) {
                 loadResolver.fulfill(())
-            }.catch(on: .sharedUserInteractive) { error in
+            }.catch(on: CVUtils.landingQueue) { error in
                 loadResolver.reject(error)
             }
         }
