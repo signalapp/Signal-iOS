@@ -3,6 +3,7 @@ final class OpenGroupInvitationView : UIView {
     private let name: String
     private let rawURL: String
     private let textColor: UIColor
+    private let isOutgoing: Bool
     
     private lazy var url: String = {
         if let range = rawURL.range(of: "?public_key=") {
@@ -17,10 +18,11 @@ final class OpenGroupInvitationView : UIView {
     private static let iconImageViewSize: CGFloat = 48
     
     // MARK: Lifecycle
-    init(name: String, url: String, textColor: UIColor) {
+    init(name: String, url: String, textColor: UIColor, isOutgoing: Bool) {
         self.name = name
         self.rawURL = url
         self.textColor = textColor
+        self.isOutgoing = isOutgoing
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -58,7 +60,8 @@ final class OpenGroupInvitationView : UIView {
         labelStackView.axis = .vertical
         // Icon
         let iconSize = OpenGroupInvitationView.iconSize
-        let icon = UIImage(named: "Plus")?.withTint(.white)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
+        let iconName = isOutgoing ? "Globe" : "Plus"
+        let icon = UIImage(named: iconName)?.withTint(.white)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
         let iconImageViewSize = OpenGroupInvitationView.iconImageViewSize
         let iconImageView = UIImageView(image: icon)
         iconImageView.contentMode = .center

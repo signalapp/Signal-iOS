@@ -321,7 +321,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
             } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
-                let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor)
+                let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor, isOutgoing: isOutgoing)
                 snContentView.addSubview(openGroupInvitationView)
                 openGroupInvitationView.pin(to: snContentView)
             } else {
