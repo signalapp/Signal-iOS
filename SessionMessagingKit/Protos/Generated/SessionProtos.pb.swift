@@ -670,6 +670,39 @@ struct SessionProtos_DataMessage {
     fileprivate var _profilePicture: String? = nil
   }
 
+  struct OpenGroupInvitation {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var url: String {
+      get {return _url ?? String()}
+      set {_url = newValue}
+    }
+    /// Returns true if `url` has been explicitly set.
+    var hasURL: Bool {return self._url != nil}
+    /// Clears the value of `url`. Subsequent reads from it will return its default value.
+    mutating func clearURL() {self._url = nil}
+
+    /// @required
+    var name: String {
+      get {return _name ?? String()}
+      set {_name = newValue}
+    }
+    /// Returns true if `name` has been explicitly set.
+    var hasName: Bool {return self._name != nil}
+    /// Clears the value of `name`. Subsequent reads from it will return its default value.
+    mutating func clearName() {self._name = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _url: String? = nil
+    fileprivate var _name: String? = nil
+  }
+
   struct ClosedGroupControlMessage {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2053,6 +2086,47 @@ extension SessionProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, SwiftPro
   static func ==(lhs: SessionProtos_DataMessage.LokiProfile, rhs: SessionProtos_DataMessage.LokiProfile) -> Bool {
     if lhs._displayName != rhs._displayName {return false}
     if lhs._profilePicture != rhs._profilePicture {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_DataMessage.OpenGroupInvitation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_DataMessage.protoMessageName + ".OpenGroupInvitation"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "url"),
+    3: .same(proto: "name"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._url == nil {return false}
+    if self._name == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._url)
+      case 3: try decoder.decodeSingularStringField(value: &self._name)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._url {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._name {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_DataMessage.OpenGroupInvitation, rhs: SessionProtos_DataMessage.OpenGroupInvitation) -> Bool {
+    if lhs._url != rhs._url {return false}
+    if lhs._name != rhs._name {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

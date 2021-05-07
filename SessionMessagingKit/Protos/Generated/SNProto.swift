@@ -1294,6 +1294,118 @@ extension SNProtoDataMessageLokiProfile.SNProtoDataMessageLokiProfileBuilder {
 
 #endif
 
+// MARK: - SNProtoDataMessageOpenGroupInvitation
+
+@objc public class SNProtoDataMessageOpenGroupInvitation: NSObject {
+
+    // MARK: - SNProtoDataMessageOpenGroupInvitationBuilder
+
+    @objc public class func builder(url: String, name: String) -> SNProtoDataMessageOpenGroupInvitationBuilder {
+        return SNProtoDataMessageOpenGroupInvitationBuilder(url: url, name: name)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoDataMessageOpenGroupInvitationBuilder {
+        let builder = SNProtoDataMessageOpenGroupInvitationBuilder(url: url, name: name)
+        return builder
+    }
+
+    @objc public class SNProtoDataMessageOpenGroupInvitationBuilder: NSObject {
+
+        private var proto = SessionProtos_DataMessage.OpenGroupInvitation()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(url: String, name: String) {
+            super.init()
+
+            setUrl(url)
+            setName(name)
+        }
+
+        @objc public func setUrl(_ valueParam: String) {
+            proto.url = valueParam
+        }
+
+        @objc public func setName(_ valueParam: String) {
+            proto.name = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoDataMessageOpenGroupInvitation {
+            return try SNProtoDataMessageOpenGroupInvitation.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoDataMessageOpenGroupInvitation.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_DataMessage.OpenGroupInvitation
+
+    @objc public let url: String
+
+    @objc public let name: String
+
+    private init(proto: SessionProtos_DataMessage.OpenGroupInvitation,
+                 url: String,
+                 name: String) {
+        self.proto = proto
+        self.url = url
+        self.name = name
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoDataMessageOpenGroupInvitation {
+        let proto = try SessionProtos_DataMessage.OpenGroupInvitation(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_DataMessage.OpenGroupInvitation) throws -> SNProtoDataMessageOpenGroupInvitation {
+        guard proto.hasURL else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: url")
+        }
+        let url = proto.url
+
+        guard proto.hasName else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: name")
+        }
+        let name = proto.name
+
+        // MARK: - Begin Validation Logic for SNProtoDataMessageOpenGroupInvitation -
+
+        // MARK: - End Validation Logic for SNProtoDataMessageOpenGroupInvitation -
+
+        let result = SNProtoDataMessageOpenGroupInvitation(proto: proto,
+                                                           url: url,
+                                                           name: name)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoDataMessageOpenGroupInvitation {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoDataMessageOpenGroupInvitation.SNProtoDataMessageOpenGroupInvitationBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoDataMessageOpenGroupInvitation? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper
 
 @objc public class SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper: NSObject {

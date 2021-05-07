@@ -101,6 +101,13 @@ message DataMessage {
     optional string profilePicture = 2;
   }
 
+  message OpenGroupInvitation {
+    // @required
+    required string url = 1;
+    // @required
+    required string name = 3;
+  }
+
   message ClosedGroupControlMessage {
 
     enum Type {
