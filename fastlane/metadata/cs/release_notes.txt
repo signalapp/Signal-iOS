@@ -1,6 +1,4 @@
-• Stále máme více vylepšení na práci, ale vylepšení posouvání chatu v tomto vydání vám způsobí, že se budete cítit jako takový „Smooth Operator“, že v zásadě provádíte neoficiální cover hitu Sade z roku 1984.
-• Mnoho chyb při hledání v chatu zmizelo beze stopy a výsledky vyhledávání jsou lépe organizovány, aby bylo hledání jednodušší. Pokud hledáte skupinu s názvem „Ahoj“, už nebude pohřbena každou zprávou, kde někdo pozdravil.
-• Opravili jsme chybu, která znemožnila najít výsledky pro jeden čínský znak na nové obrazovce chatu.
-• Animované výsledky hledání GIF se nyní zobrazují rychle.
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Chcete pomoci vylepšit Signal? Nabíráme. Další informace najdete na adrese https://signal.org/workworkwork.

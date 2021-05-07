@@ -1,6 +1,4 @@
-• Abbiamo ancora altri miglioramenti in cantiere, ma i miglioramenti allo scorrimento della chat in questa versione ti faranno sentire un tale "Smooth Operator" che stai praticamente eseguendo una cover non ufficiale della canzone di successo di Sade del 1984.
-• Numerosi bug nella ricerca della chat sono spariti senza lasciare traccia, e i risultati della ricerca sono organizzati meglio per rendere le cose più facili da trovare. Se state cercando un gruppo chiamato "Ciao" non sarà più sepolto da ogni singolo messaggio in cui qualcuno ha detto ciao.
-• Abbiamo corretto un bug che rendeva impossibile trovare risultati per un singolo carattere cinese nella nuova schermata della chat.
-• I risultati di ricerca delle GIF animate ora vengono visualizzati in un batter d'occhio (si pronuncia gif o ghif?).
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Interessato ad aiutare a migliorare Signal? Stiamo assumendo. Visita https://signal.org/workworkwork per saperne di più.

@@ -1,6 +1,4 @@
-• Vi har fortfarande fler förbättringar på gång, men chattrullningsförbättringarna i denna utgåva kommer att få dig att känna dig som en "Smooth Operator" så att du i princip utför en inofficiell cover av Sades hitlåt från 1984.
-• Många fel i chattsökningen har försvunnit spårlöst och sökresultaten är bättre organiserade för att göra det lättare att hitta. Om du letar efter en grupp som heter "Hej", kommer den inte längre att begravas av varje enskilt meddelande där någon sa hej.
-• Vi åtgärdade ett fel som gjorde det omöjligt att hitta resultat för ett enda kinesiskt tecken i den nya chattskärmen.
-• Animerade GIF-sökresultat visas nu snabbt (även om det inte är så GIF uttalas).
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Intresserad av att förbättra Signal? Vi anställer. Besök https://signal.org/workworkwork för att läsa mera.

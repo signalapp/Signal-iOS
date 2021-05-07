@@ -1,6 +1,4 @@
-• Verbesserungen beim Scrollen in Unterhaltungen
-• Suchergebnisse sind jetzt besser organisiert, um Dinge einfacher zu finden. Wenn du nach einer Gruppe mit dem Namen "Hi" suchen, wirst du nicht mehr von jeder einzelnen Nachricht begraben, in der jemand Hallo gesagt hat.
-• Wir haben einen Fehler behoben, der es unmöglich machte, Ergebnisse für ein einzelnes chinesisches Zeichen im neuen Unterhaltungsbildschirm zu finden. 
-• Animierte GIF-Suchergebnisse werden jetzt im Handumdrehen angezeigt.
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Möchtest du zur Verbesserung von Signal beitragen? Wir stellen ein. Besuche https://signal.org/workworkwork um mehr zu erfahren.

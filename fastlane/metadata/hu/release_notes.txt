@@ -1,6 +1,4 @@
-• További fejlesztéseken dolgozunk most is, de a csevegés gördítés bővítések ebben a kiadásban olyan "Smooth Operator"-rá tesznek, mintha te játszanád a Sade toplistás dalát 1984-ből.
-• Számtalan hiba a csevegés keresésben nyom nélkül eltünt és a keresési eredmények is jobban rendezettek, hogy könnyebben megtaláld a dolgokat. Ha egy csoportot keresel "Hi" névvel, többé nem leszel elárasztva az összes olyan üzenettel, ahol valaki köszönt egyet.
-• Javítottunk egy hibát, ami lehetetlenné tette, hogy eredményeket kapj egy darab kínai karakter keresésére a csevegés képernyőn.
-• Az animált GIF keresés eredmény most már egy jiffy-ben jelenik meg (még akkor is, ha tudjuk, hogy nem ez a GIF helyes kiejtése).
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Érdeklődsz a Signal javítása iránt? Munkatársakat keresünk. Látogasd meg a https://signal.org/workworkwork oldalt a részletekért.

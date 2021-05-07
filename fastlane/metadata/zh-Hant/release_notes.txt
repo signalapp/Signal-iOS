@@ -1,6 +1,4 @@
-•我們的產品還需要更多改進，但是此版本中聊天捲動的增強將使你感覺像是“流暢的操作員”，基本上就像你對1984年Sade的熱門歌曲進行非官方翻唱。
-•聊天搜尋中的許多錯誤已更正，而且搜尋結果的組織性更好，使搜尋起來更容易。 如果你正在搜尋一個名為“ Hi”的群組，則該群組將不再被某人打招呼的每條訊息所遮蓋。
-•我們修復了一個錯誤，使得無法在新的聊天螢幕中找到單個中文字的結果。
-•現在，動畫GIF搜尋結果會顯得有些雜亂（即使這不是GIF的發音方式）。
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

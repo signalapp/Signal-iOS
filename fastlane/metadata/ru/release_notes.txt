@@ -1,6 +1,4 @@
-• В этой версии мы улучшили прокрутку в чатах. Мы продолжаем работать над другими улучшениями.
-• Многочисленные ошибки в поиске по чатам исчезли без следа, и результаты поиска теперь лучше организованы, чтобы вам было легче искать.
-• Мы исправили ошибку, которая делала невозможным поиск по одному китайскому символу на экране «Новое сообщение».
-• Результаты поиска GIF-анимаций теперь показываются мгновенно.
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Вам интересно помогать улучшать Signal? Мы нанимаем на работу. Посетите https://signal.org/workworkwork, чтобы узнать больше.

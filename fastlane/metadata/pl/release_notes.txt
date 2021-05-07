@@ -1,6 +1,4 @@
-• Wciąż pracujemy nad kolejnymi ulepszeniami, Poprawki przewijania rozmowy, wprowadzone w tej wersji, sprawią, że ta czynność będzie działać równie gładko, jak w przebojowej piosence zespołu Sade, "Smooth Operator", z 1984 r.
-• Liczne błędy w wyszukiwaniu rozmów zniknęły bez śladu. Wyniki wyszukiwania są lepiej zorganizowane, aby ułatwić Ci znalezienie tego, czego szukasz. Jeśli szukasz grupy o nazwie "Cześć", to nie będzie już ukryta pod każdą wiadomością, w której ktoś chciał się przywitać.
-• Naprawiliśmy błąd, który uniemożliwiał wyświetlenie wyników, dla pojedynczego, chińskiego znaku, na ekranie nowej rozmowy.
-• Wyniki wyszukiwania animowanych GIF-ów pojawiają się teraz w mgnieniu oka.
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

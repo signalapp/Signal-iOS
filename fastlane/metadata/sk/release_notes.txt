@@ -1,6 +1,4 @@
-• Pracujeme stále na ďalších vylepšeniach, a vylepšenie posúvania konverzácie v tomto vydaní spôsobí, že sa budete cítiť ako taký „Smooth Operator“ ktorý predvádza neoficiálny obal hitovej piesne Sade z roku 1984.
-• Mnohé chyby vo vyhľadávaní v konverzácií zmizli bez stopy a výsledky vyhľadávania sú lepšie usporiadané, tak aby sa veci dali ľahšie nájsť. Ak hľadáte skupinu s názvom „Ahoj“, už sa nebude prehrabávať každou jednou správou, kde niekto len pozdravuje.
-• Opravili sme chybu, ktorá znemožnila nájsť výsledky pre jeden čínsky znak v novej konverzácií.
-• Animované výsledky vyhľadávania GIF sa teraz zobrazia v stotine.
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

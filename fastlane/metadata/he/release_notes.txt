@@ -1,6 +1,4 @@
-• יש לנו עדיין שיפורים בתהליך, אבל הטיובים של גלילת ההתכתבות בשחרור הזה יגרמו לך להרגיש כמו "מתפעל חלק" שאתה מבצע בעיקרון כיסוי בלתי רשמי של הלהיט של Sade משנת 1984.
-• מלא תקלים בחיפוש של התכתבות נעלמו בלי עקבות, ותוצאות חיפוש מאורגנות בצורה טובה יותר כדי להקל למצוא דברים. אם אתה מחפש קבוצה בשם "Hi" היא לא תטושטש יותר ע״י כל הודעה שבה מישהו אמר hello.
-• תיקנו תקל שעשה זאת אפשרי למצוא תוצאות חיפוש עבור תו סיני יחיד במסך ההתכתבות החדש.
-• תוצאות חיפוש של GIF מונפש מופיעות עכשיו בזריזות (ממש).
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 מעוניין לעזור לשפר את Signal? אנחנו מגייסים. בקר בכתובת https://signal.org/workworkwork כדי ללמוד עוד.

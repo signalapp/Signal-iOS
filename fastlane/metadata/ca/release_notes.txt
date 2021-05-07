@@ -1,6 +1,4 @@
-• Encara tenim més millores en camí, però les millores en el desplaçament de les converses en aquesta versió us faran sentir com un "operador suau" que bàsicament interpreta una portada no oficial de la cançó d'èxit de Sade del 1984.
-• Nombrosos errors en la cerca de les converses han desaparegut sense deixar rastre, i els resultats de la cerca s’organitzen millor per facilitar-la. Si cerqueu un grup anomenat Hola, ja no quedarà enterrat per cada missatge on algú digui hola.
-• Hem corregit un error que feia impossible trobar resultats per a un sol caràcter xinès a la nova pantalla de conversa.
-• Ara els resultats de la cerca GIF animats es mostren en un tres i no res.
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

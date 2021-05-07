@@ -1,6 +1,4 @@
-• Parannettavaa riittää, mutta keskustelun sujuvanpehmeä vierittämiskokemus muistuttaa Saden hittikappaleesta "Smooth Operator" vuodelta 1984.
-• Lukuisat hakutoiminnon bugit ovat kadonneet jälkiä jättämättä, ja asioiden löytäminen on helpompaa hakutulosten fiksumman ryhmittelyn ansiosta. Esimerkiksi ryhmän "Hei" hakeminen ei kompastu jokaiseen tervehdysviestiin muissa keskusteluissa.
-• Korjasimme virheen, joka esti hakutulosten löytämisen eräälle kiinalaiselle merkille uusien keskustelujen näkymässä.
-• Animoitujen GIF-kuvien haku näyttää nyt kifvemalta (vaikka GIF-sanaa ei niin lausutakaan).
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Haluatko auttaa Signalin kehittämisessä ammattilaisena? Tutustu meihin työnantajana osoitteessa https://signal.org/workworkwork.

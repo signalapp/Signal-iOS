@@ -1,6 +1,4 @@
-• У нас ще багато доопрацювань на черзі, хоча прокручування чату ми покращили настільки, що у цій версії ви відчуєте себе головним героєм пісні Шаде 1984 року під назвою «Smooth Operator».
-• Численні помилки у пошуці чату зникли без сліду, а результати пошуку краще організовані, щоб легше відшукати потрібні речі. Якщо ви шукаєте групу з назвою «Привіт», тепер її не буде поховано під кожним повідомленням, в якому хтось сказав привіт.
-• Виправили помилку, через яку було неможливо отримати результати пошуку для одного китайського ієрогліфа у новому вікні чату.
-• Результати пошуку анімованих GIF тепер показуються миттєво (а GIF читається як гіф).
+• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
+• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
 
 Бажаєте допомогти у покращенні Signal? У нас є вакансії. Завітайте на https://signal.org/workworkwork по деталі.
