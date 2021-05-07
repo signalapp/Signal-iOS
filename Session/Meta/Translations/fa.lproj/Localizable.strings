@@ -89,11 +89,11 @@
 /* The label for the 'restore backup' button. */
 "CHECK_FOR_BACKUP_RESTORE" = "بازیابی";
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Session data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "سشن نتوانست وضعیت اکانت iCloud شما را تشخیص دهد. وارد اکانت iCloud خود از بخش تنظیمات iOS شوید تا بتوانید اطلاعات برنامه ی سشن را بکاپ بگیرید.";
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Session data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "اکانت iCloud وجود ندارد. وارد اکانت iCloud خود از بخش تنظیمات iOS شوید تا بتوانید اطلاعات برنامه ی سشن را بکاپ بگیرید.";
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Session was denied access your iCloud account for backups. Grant Session access to your iCloud Account in the iOS settings app to backup your Session data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "دسترسی سشن به اکانت iCloud شما رد شد. به سشن دسترسی لازم به اکانت iCloud خود از بخش تنظیمات iOS بدهید تا بتوانید اطلاعات برنامه ی سشن را بکاپ بگیرید.";
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "شما دیگر قادر به ارسال یا دریافت پیام از این گروه نخواهید بود";
 /* Alert title */
@@ -103,11 +103,11 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "مشابهی یافت نشد";
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "۱ مورد";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d از %d مورد یافت شد";
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "تنظیمات گفت و گو";
 /* table cell label in conversation settings */
@@ -131,7 +131,7 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "تا %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "جستجو در مکالمه";
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "خارج کردن از حالت سکوت";
 /* Title for the 'crop/scale image' dialog. */
@@ -181,9 +181,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ از گروه خارج شد.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " %@ از گروه حذف شد. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ از گروه حذف شدند. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "عنوان ، هم‌اکنون '%@' است.";
 /* No comment provided by engineer. */
@@ -191,11 +191,11 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "شما از این گروه خارج شده‌اید.";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " شما از گروه حذف شدید. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "شما نمی توانید بیش از %@ آیتم را به اشتراک بگذارید.";
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "انتخاب پیوست ناموفق بود.";
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "فایل صوتی نامعتبر.";
 /* Slider label when disappearing messages is off */
@@ -245,9 +245,9 @@
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "شما هیچ اعلانی از گفتگوهای ساکت‌شده دریافت نخواهید کرد.";
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ در %@";
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "یادداشت به خود";
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "ممکن است شما زمانی که %@ در حال ری استارت بود پیام هایی دریافت کرده باشید.";
 /* No comment provided by engineer. */
@@ -261,9 +261,9 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "فقط نام";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "نمایش";
-/* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "هیچ نام و یا محتوایی وجود ندارد";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "نمایش";
 /* No comment provided by engineer. */
 "OK" = "باشه";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -271,11 +271,11 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ زمان محوشدن پیام را روی %@ تنظیم کرده.";
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "مشکل در گرفتن تصویر.";
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "مشکل در گرفتن تصویر.";
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "مشکل در نتظیمات دوربین.";
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "آلبوم بی نام";
 /* alert body during registration */
@@ -289,7 +289,7 @@
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "بازگشت به دوربین";
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
@@ -305,13 +305,13 @@
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "وضعیت iCloud";
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "ناتوانی در بازگرداندن بکاپ";
 /* Indicates that app is not restoring up. */
 "SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "در حال بازگرداندن بکاپ";
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "بازگرداندن بکاپ موفقیت‌آمیز بود";
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "فاز";
 /* Label for phase row in the in the backup settings view. */
@@ -335,11 +335,11 @@
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صدای پیام";
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "ارسال پیش نمایش لینک";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "پیش نمایش ها برای Imgur، Instagram، Pinterest، Reddit، و لینک های Youtube پشتیبانی می شود.";
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "پیش نمایش های لینک";
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "محتوای نوتیفیکیشن";
 /* Label for the 'read receipts' setting. */
@@ -359,7 +359,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "نشانگر های نوشته";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "هیچکدام";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ روز";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -489,6 +489,37 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "اسکن کد QR";
 "vc_qr_code_view_scan_qr_code_explanation" = "برای شروع مکالمه با دیگران، کد QR شخصی را اسکن کنید";
 "vc_view_my_qr_code_explanation" = "این کد QR شماست. سایر کاربران می‌توانند برای شروع Session با شما آن را اسکن کنند.";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
+// MARK: - Not Yet Translated
+"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
+"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
+"vc_pn_mode_title" = "Message Notifications";
+"vc_notification_settings_notification_mode_title" = "استفاده از حالت سریع";
+"vc_link_device_recovery_phrase_tab_title" = "عبارت بازیابی";
+"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
+"vc_enter_recovery_phrase_title" = "عبارت بازیابی";
+"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
+"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
+"vc_home_title" = "پیام ها";
+"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
+"vc_join_open_group_suggestions_title" = "یا به یکی از اینها بپیوندید...";
+"vc_settings_invite_a_friend_button_title" = "دعوت از یک دوست";
+"vc_settings_help_us_translate_button_title" = "به ما کمک کنید که سشن را ترجمه کنیم";
+"copied" = "کپی شد";
+"vc_conversation_settings_copy_session_id_button_title" = "کپی کردن شناسه‌ی Session شما";
+"vc_conversation_input_prompt" = "پیام";
+"vc_conversation_voice_message_cancel_message" = "برای کنسل کردن به کناره بکشید";
+"modal_download_attachment_title" = "Trust %@?";
+"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
+"modal_download_button_title" = "دریافت";
+"modal_open_url_title" = "URL باز شود؟";
+"modal_open_url_explanation" = "آیا مطمئن هستید که میخواهید %@ را باز کنید؟";
+"modal_open_url_button_title" = "باز کن";
+"modal_blocked_title" = "Unblock %@?";
+"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
+"modal_blocked_button_title" = "رفع مسدودی";
+"modal_link_previews_title" = "فعال‌سازی پیش‌نمایش لینک؟";
+"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
+"modal_link_previews_button_title" = "فعال سازی";
+"vc_share_title" = "اشتراک گذاری با Session";
+"vc_share_loading_message" = "آماده سازی پیوست‌ها...";
+"vc_share_sending_message" = "در حال ارسال...";

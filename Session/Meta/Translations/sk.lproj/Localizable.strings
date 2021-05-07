@@ -33,7 +33,7 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nepodporovaný súbor";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice Message";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Hlasová správa";
 /* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
 /* Error indicating that the app received an invalid response from CloudKit. */
@@ -75,13 +75,13 @@
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokovať";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokovať %@?";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Odblokovať";
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokovaný používateľ vám nebude mocť volať ani posielať správy.";
 /* Label for generic done button. */
-"BUTTON_DONE" = "Done";
+"BUTTON_DONE" = "Hotovo";
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Vyberte";
 /* The label for the 'do not restore backup' button. */
@@ -95,7 +95,7 @@
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Session was denied access your iCloud account for backups. Grant Session access to your iCloud Account in the iOS settings app to backup your Session data.";
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Už nebudete môcť posielať a prijímať správy v tejto skupine.";
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Ste si istý/á, že chcete odísť?";
 /* Message for the 'conversation delete confirmation' alert. */
@@ -153,7 +153,7 @@
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Miznúce správy";
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Správy v tejto konverzácii zmiznú po %@.";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Upraviť skupinu";
 /* Label indicating media gallery is empty */
@@ -163,7 +163,7 @@
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Načítavajú sa staršie médiá…";
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Nepodarilo sa stiahnuť požadovaný GIF. Uistite sa prosím, že ste online.";
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Vyskytla sa neznáma chyba.";
 /* Shown when selected GIF couldn't be fetched */
@@ -185,7 +185,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ boli odstránení zo skupiny. ";
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Title is now '%@'. ";
+"GROUP_TITLE_CHANGED" = "Názov je teraz '%@'. ";
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "Skupina bola aktualizovaná.";
 /* No comment provided by engineer. */
@@ -215,7 +215,7 @@
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Odstrániť správu";
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ %@";
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 /* Short sender label for media sent by you */
@@ -241,9 +241,9 @@
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session potrebuje prístup k vašim fotkám pre túto funkciu.";
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Na stíšené konverzácie nebudete dostávať upozornenia.";
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ do %@";
 /* Label for 1:1 conversation with yourself. */
@@ -271,9 +271,9 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@";
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Nepodarilo sa zachytiť obrázok.";
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Nepodarilo sa zachytiť obrázok.";
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
 /* label for system photo collections which have no name. */
@@ -281,13 +281,13 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nemôžeme aktivovať váš účet kým neoveríte kód, ktorý sme vám poslali.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Okamžite";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Overenie zlyhalo";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+"SEND_MEDIA_ABANDON_TITLE" = "Zahodiť médiá?";
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Zahodiť médiá";
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Vrátiť sa ku kamere";
 /* alert action when the user decides not to cancel the media flow after all. */
@@ -303,7 +303,7 @@
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Zálohovanie povolené";
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "Stav iCloud";
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
 /* Indicates that app is not restoring up. */
@@ -359,33 +359,33 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indikátory písania";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Žiaden";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "%@ dní";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "%@ hodín";
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "%@ minút";
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "%@ sekúnd";
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ deň";
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ hodina";
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minúta";
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ týždeň";
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "%@ týždňov";
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 /* Label for the cancel button in an alert or action sheet. */
@@ -399,9 +399,9 @@
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Hlasová správa";
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Vypli ste miznúce správy.";
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Nastavili ste časovač miznúcich správ na %@";
 // MARK: - Session
 "continue_2" = "Pokračovať";
 "copy" = "Kopírovať";
@@ -444,7 +444,7 @@
 "view_seed_reminder_subtitle_2" = "Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.";
 "view_seed_reminder_subtitle_3" = "Uistite sa, že frázu na obnovenie máte uloženú na bezpečnom mieste";
 "vc_path_title" = "Cesta";
-"vc_path_explanation" = "Session hides your IP by routing your messages through multiple Service Nodes in Session's decentralized network. These are the countries your connection is currently being routed through:";
+"vc_path_explanation" = "Session skrýva vašu IP smerovaním vašich správ cez viacero servisných uzlov v decentralizovanej Session siete. Toto sú krajiny cez ktoré je momentálne smerované vaše spojenie:";
 "vc_path_device_row_title" = "Vy";
 "vc_path_guard_node_row_title" = "Vstupný uzol";
 "vc_path_service_node_row_title" = "Servisný uzol";
@@ -479,7 +479,7 @@
 "vc_settings_clear_all_data_button_title" = "Odstrániť dáta";
 "vc_notification_settings_title" = "Hlásenia";
 "vc_privacy_settings_title" = "Súkromie";
-"preferences_notifications_strategy_category_title" = "Notification Strategy";
+"preferences_notifications_strategy_category_title" = "Stratégia upozornení";
 "modal_seed_title" = "Vaša fráza pre obnovenie";
 "modal_seed_explanation" = "Toto je vaša fráza pre obnovenie. S jej pomocou môžete obnoviť alebo presunúť svoje Session ID na nové zariadenie.";
 "modal_clear_all_data_title" = "Odstrániť všetky dáta";
@@ -490,7 +490,7 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "Oskenujte niečí QR kód a začnite konverzáciu s danou osobou";
 "vc_view_my_qr_code_explanation" = "Toto je váš QR kód. Ostatní používatelia ho môžu oskenovať a začať tak stretnutie s vami.";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
+"fast_mode_explanation" = "Budete upozornený/á na nové správy spoľahlivo a okamžite použitím serverov Apple.";
 "slow_mode_explanation" = "Session občas na pozadí skontroluje nové správy.";
 "vc_pn_mode_title" = "Upozornenia na správy";
 "vc_notification_settings_notification_mode_title" = "Použiť rýchly režim";
@@ -500,7 +500,7 @@
 "vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
 "vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
 "vc_home_title" = "Správy";
-"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
+"admin_group_leave_warning" = "Pretože tvorcom skupiny ste vy, skupina bude vymazaná pre každého. Táto akcia sa nedá vrátiť.";
 "vc_join_open_group_suggestions_title" = "Alebo sa pripojte k jednej z týchto...";
 "vc_settings_invite_a_friend_button_title" = "Pozvať priateľa";
 "vc_settings_help_us_translate_button_title" = "Pomôžte nám preložiť Session";
