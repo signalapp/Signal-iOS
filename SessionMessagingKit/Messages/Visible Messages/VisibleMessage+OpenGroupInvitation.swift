@@ -7,7 +7,8 @@ public extension VisibleMessage {
         public var name: String?
         public var url: String?
 
-        internal init(name: String, url: String) {
+        @objc
+        public init(name: String, url: String) {
             self.name = name
             self.url = url
         }

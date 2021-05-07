@@ -1105,10 +1105,26 @@ CGFloat kIconViewLength = 24;
 
 - (void)inviteUsersToOpenGroup
 {
-    SNUserSelectionVC *userSelectionVC = [[SNUserSelectionVC alloc] initWithTitle:@"vc_conversation_settings_invite_button_title"
+    NSString *threadID = self.thread.uniqueId;
+    SNOpenGroupV2 *openGroup = [LKStorage.shared getV2OpenGroupForThreadID:threadID];
+    NSString *url = [NSString stringWithFormat:@"%@/%@?public_key=%@", openGroup.server, openGroup.room, openGroup.publicKey];
+    SNUserSelectionVC *userSelectionVC = [[SNUserSelectionVC alloc] initWithTitle:NSLocalizedString(@"vc_conversation_settings_invite_button_title", @"")
                                                                         excluding:[NSSet new]
                                                                        completion:^(NSSet<NSString *> *selectedUsers) {
-        
+        for (NSString *user in selectedUsers) {
+            SNVisibleMessage *message = [SNVisibleMessage new];
+            message.sentTimestamp = [NSDate millisecondTimestamp];
+            message.openGroupInvitation = [[SNOpenGroupInvitation alloc] initWithName:openGroup.name url:url];
+            TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:self.thread];
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [tsMessage saveWithTransaction:transaction];
+            }];
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                TSContactThread *thread = [TSContactThread getThreadWithContactSessionID:user transaction:transaction];
+                [SNMessageSender send:message inThread:thread usingTransaction:transaction];
+                [self.navigationController popViewControllerAnimated:YES];
+            }];
+        }
     }];
     [self.navigationController pushViewController:userSelectionVC animated:YES];
 }
