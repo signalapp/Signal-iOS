@@ -44,7 +44,7 @@ final class JoinOpenGroupModal : Modal {
         joinButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         joinButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         joinButton.setTitle("Join", for: UIControl.State.normal)
-        joinButton.addTarget(self, action: #selector(openURL), for: UIControl.Event.touchUpInside)
+        joinButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, joinButton ])
         buttonStackView.axis = .horizontal
@@ -62,7 +62,24 @@ final class JoinOpenGroupModal : Modal {
     }
     
     // MARK: Interaction
-    @objc private func openURL() {
-        
+    @objc private func joinOpenGroup() {
+        guard let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: url), Features.useV2OpenGroups else {
+            let alert = UIAlertController(title: "Couldn't Join", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            return presentingViewController!.present(alert, animated: true, completion: nil)
+        }
+        presentingViewController!.dismiss(animated: true, completion: nil)
+        Storage.shared.write { [presentingViewController = self.presentingViewController!] transaction in
+            OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
+            .done(on: DispatchQueue.main) { _ in
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+            }
+            .catch(on: DispatchQueue.main) { error in
+                let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                presentingViewController.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 }
