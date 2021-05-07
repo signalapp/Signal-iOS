@@ -988,12 +988,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "เปิดเสียง";
 
-/* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "คุณต้องการบันทึกความเปลี่ยนแปลงที่คุณทำในแชตนี้หรือไม่?";
-
-/* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "การเปลี่ยนแปลงที่ยังไม่ถูกบันทึก";
-
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "วิดีโอ";
 

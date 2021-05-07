@@ -988,12 +988,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "အသံပြန်ဖွင့်မယ်";
 
-/* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "၎င်းစကားပြောဆိုမှုသို့ ပြုလုပ်ထားသော ပြောင်းလဲမှုများကို သိမ်းဆည်းချင်ပါသလား?";
-
-/* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "မသိမ်းရသေးသော ပြောင်းလဲမှုများ";
-
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "ဗီဒီယို";
 

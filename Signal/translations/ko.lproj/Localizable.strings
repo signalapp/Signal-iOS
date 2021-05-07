@@ -988,12 +988,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "알림 켜기";
 
-/* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "이 대화의 변경사항을 저장하시겠습니까?";
-
-/* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "저장하지 않은 변경사항";
-
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "비디오";
 

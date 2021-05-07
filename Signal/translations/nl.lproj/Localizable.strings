@@ -988,12 +988,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet langer dempen";
 
-/* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Wil je de wijzigingen die je aan dit gesprek gemaakt hebt opslaan?";
-
-/* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Niet-opgeslagen wijzigingen";
-
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "Video";
 
@@ -1445,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfout. Probeer het later opnieuw.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "De servers vereisen dat de gebruiker zijn telefoonnummer verifieert alvorens hij het bericht kan verzenden, omdat het vermoeden bestaat dat hij spam verzend.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Er is een onbekende fout opgetreden.";
@@ -2852,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Mislukt";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Verzending is gepauzeerd";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Gelezen door";
@@ -3008,7 +3002,7 @@
 "MESSAGE_STATUS_PENDING" = "Verzending is gepauzeerd";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Gepauzeerd";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Gelezen";
@@ -5465,22 +5459,22 @@
 "SOUNDS_NONE" = "Geen";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verificatie succesvol voltooid.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Als je er voor kiest om verificatie van je telefoonnummer over te slaan, dan kan het zijn dat je sommige berichten niet ontvangt en dat het niet langer mogelijk is om berichten te verzenden.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Doorgaan zonder te verifiëren?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Om spamberichten op Signal te voorkomen moeten sommige gebruikers hun telefoonnummer opnieuw verifiëren, zo ook jij.\n\nNadat je je telefoonnummer hebt geverifieerd kun je doorgaan met het verzenden en ontvangen van berichten. Berichten waarvan aflevering gepauzeerd is zullen dan automatisch alsnog worden afgeleverd.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Verifieer je telefoonnummer";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Verifiëren overslaan";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Verificatie voltooien";

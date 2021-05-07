@@ -988,12 +988,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Slå på varsling igjen";
 
-/* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Vil du lagre endringene du gjorde for denne samtalen?";
-
-/* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Ulagrede endringer";
-
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
 
@@ -1277,13 +1271,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Meldinger i denne samtalen vil forsvinne etter %@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Selvvalgt tid";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dager";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Når aktivert vil meldinger sendt og mottatt i denne samtalen forsvinne etter at de har blitt sett.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Når aktivert vil meldinger sendt og mottatt i denne samtalen forsvinne etter at de har blitt sett.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Meldinger i denne samtalen er satt til å forsvinne etter %@";
@@ -1298,13 +1292,13 @@
 "DISAPPEARING_MESSAGES_MINUTES" = "minutter";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "sekunder";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Når aktivert vil sendte og mottatte meldinger, i nye samtaler du starter, forsvinne etter at de har blitt sett.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "uker";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Avbryt";
@@ -1445,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfeil. Vennligst forsøk igjen senere.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Tjenesten krever brukerverifisering for å sende denne meldingen.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "En ukjent feil oppstod.";
@@ -2594,7 +2588,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Klistremerker";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Dobbelttrykk og hold for å spille inn. Slipp for å sende eller sveip venstre for å avbryte. Dobbelttrykk og sveip opp for å låse innspilling.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Talemelding";
@@ -2852,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Mislyktes";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Satt på pause";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lest av";
@@ -3005,10 +2999,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Delvis sendt, trykk for detaljer";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "Satt på pause";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Satt på pause";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Lest";
@@ -3428,7 +3422,7 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Avslå denne forespørselen?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Myntoppryddingsgebyr";
 
 /* Error indicating that a payment request could not be cancelled. */
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Forespørselen kunne ikke avbrytes.";
@@ -3461,7 +3455,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Legg til notat";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Tilgjengelig balanse: %@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Bekreft betaling";
@@ -3473,13 +3467,13 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Kunne ikke kontakte tjenesten";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Du har ikke nok MOB til å gjennomføre denne betalingen.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Du har ikke nok MOB til å gjennomføre denne betalingen. Saldoen din er %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Ugyldig transaksjon";
@@ -3491,7 +3485,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Nettverksgebyr";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
 "PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
@@ -3524,10 +3518,10 @@
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sendte deg %2$@";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ nye betalingsvarsler";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Betaling fullført";
@@ -3602,7 +3596,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Invalid Recipient";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Ugyldig mottaker";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
@@ -4778,7 +4772,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Tidsbegrensede meldinger";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Sett standard utløpstid for tidsbegrensede meldinger for nye  samtaler startet av deg.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donér til Signal";
@@ -4859,16 +4853,16 @@
 "SETTINGS_NOTIFICATIONS" = "Varslinger";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktiver";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Aktiver";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "Se vilkårene for MobileCoin";
 
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
@@ -4904,7 +4898,7 @@
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Alle valutaer";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
@@ -4913,16 +4907,16 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deaktiver";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deaktiver betalinger";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Du vil ikke kunne sende eller motta MobileCoin i Signal hvis du deaktiverer betalinger.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deaktivere betalinger?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deaktiver betalinger";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
@@ -4931,22 +4925,22 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deaktiver uten å overføre den gjenstående balansen?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Betalinger kunne ikke deaktiveres";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Detaljer";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Aktiver betalinger";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin er en ny, personvernorientert digital valuta.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Om MobileCoin";
@@ -4985,13 +4979,13 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Ingen nylig aktivitet.";
 
 /* Message for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Betalinger er ikke aktivert";
 
 /* Message for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
@@ -5000,19 +4994,19 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Ikke registrert";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Aktiver betalinger";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Betalinger er aktivert.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Bruk Signal til å sende og motta MobileCoin, en ny personvernorientert digital valuta. Aktiver for å komme i gang.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Vi introduserer betalinger (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
@@ -5024,7 +5018,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Nettverksgebyr";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "Mottatt";
@@ -5045,7 +5039,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Sendt";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sendt til %@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Status";
@@ -5054,10 +5048,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "\"Myntoppryddingsgebyr\" belastes når myntene i din besittelse ikke kan kombineres for å fullføre en transaksjon. Oppryddingen vil tillate deg å fortsette å sende betalinger.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Du har ikke nok MOB til å gjennomføre denne betalingen. Saldoen din er %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
@@ -5069,7 +5063,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Betalinger er deaktivert";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Alle";
@@ -5081,7 +5075,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Sendt";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Nylige betalinger";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
@@ -5093,13 +5087,13 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Gjenværende balanse";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Fjern";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Gjenopprett betalingskonto";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
@@ -5123,7 +5117,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Lim inn fra utklippstavlen";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
@@ -5159,7 +5153,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Ugyldig lenke";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Skann QR-kode";
@@ -5168,10 +5162,10 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Velg Mottaker";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "Valutakonvertering";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "Betalinger";
@@ -5228,7 +5222,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Kopier til utklippstavlen?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
@@ -5249,7 +5243,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "Betalinger (Beta)";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
@@ -5465,25 +5459,25 @@
 "SOUNDS_NONE" = "Ingen";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verifisering fullført.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Om du velger å hoppe over verifisering kan du gå glipp av meldinger fra andre, og dine meldinger kan muligens ikke bli sendt.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Fortsett uten å verifisere?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "For å hindre søppelpost på Signal ber vi deg fullføre verifiseringen.\n\nEtter verifisering kan du fortsette med meldingene. Meldinger satt på pause vil automatisk bli sendt.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Verifiser for å fortsette å sende meldinger";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Hopp over verifisering";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Fullfør verifisering";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Eksisterende grupper vil automatisk få disse oppdateringene i de kommende ukene.";
@@ -5609,7 +5603,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Bekreft";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Utløpstiden for meldinger blir satt til %@ når du melder dem.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Ingen felles grupper. Gjennomgå forespørsler nøye.";
@@ -5894,7 +5888,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Talemelding";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Trykk og hold for å spille inn.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Fullfør installeringen i Signal Desktop.";

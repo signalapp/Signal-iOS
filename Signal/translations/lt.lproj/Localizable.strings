@@ -988,12 +988,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Įjungti pranešimus";
 
-/* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Ar norėtumėte įrašyti šiam pokalbiui atliktus pakeitimus?";
-
-/* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Neįrašyti pakeitimai";
-
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "vaizdo skambutis";
 
@@ -1277,13 +1271,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Žinutės šiame pokalbyje išnyks po %@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Tinkintas laikas";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "days";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kai įjungta, šiame pokalbyje naujos išsiųstos ir gautos žinutės išnyks po to, kai bus perskaitytos.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Šiuo metu žinutės išnyksta po %@";
@@ -2852,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Nepavyko";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Siuntimas pristabdytas";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Perskaitė";
@@ -2870,7 +2864,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Nusiunčiama";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Peržiūrėjo";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Gauta";
@@ -3005,10 +2999,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Dalinai išsiųsta, bakstelėkite išsamesnei informacijai";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "Siuntimas pristabdytas";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Pristabdyta";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Perskaitytos";

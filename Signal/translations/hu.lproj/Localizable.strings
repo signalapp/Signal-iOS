@@ -988,12 +988,6 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Feloldás";
 
-/* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Szeretnéd menteni a csoport beállítás változtatásait?";
-
-/* The alert title if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Mentetlen változtatások";
-
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "videó";
 
@@ -1445,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Szerver hiba. Próbálkozz újra később.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "A szerver felhasználói ellenőrzést igényel az üzenet elküldése előtt.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ismeretlen hiba történt.";
@@ -2852,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Sikertelen";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Küldés felfüggesztve";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Elolvasta";
@@ -3008,7 +3002,7 @@
 "MESSAGE_STATUS_PENDING" = "Küldés felfüggesztve";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Felfüggesztve";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Elolvasva";
@@ -5465,22 +5459,22 @@
 "SOUNDS_NONE" = "Nincs";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Ellenőrzés kész.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Ha az ellenőrzés kihagyását választod, előfordulhat, hogy nem kapsz meg, vagy nem tudsz elküldeni üzeneteket másoknak.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Folytatod ellenőrzés nélkül?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "A spam üzenetek kiszűrése érdekében kérjük végezd el az ellenőrzést.\n\nAz ellenőrzést követően folytathatod az üzenetküldést. Az összes felfüggesztett üzenetet automatikusan elküldjük.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Az üzenetküldés folytatásához ellenőrzés szükséges";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Ellenőrzés kihagyása";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Ellenőrzés befejezése";
