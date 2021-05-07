@@ -364,8 +364,8 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         FingerprintViewController.present(from: self, address: contactAddress)
     }
 
-    func showWallpaperSettingsView() {
-        let vc = WallpaperSettingsViewController(thread: thread)
+    func showColorAndWallpaperSettingsView() {
+        let vc = ColorAndWallpaperSettingsViewController(thread: thread)
         navigationController?.pushViewController(vc, animated: true)
     }
 

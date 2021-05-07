@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class WallpaperSettingsViewController: OWSTableViewController2 {
+public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     let thread: TSThread?
     public init(thread: TSThread? = nil) {
         self.thread = thread

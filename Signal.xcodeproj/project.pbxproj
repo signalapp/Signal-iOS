@@ -119,6 +119,7 @@
 		343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */; };
 		343D69AA260B870600F8638C /* ManualStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343D69A9260B870600F8638C /* ManualStackView.swift */; };
 		343D69B1260B874800F8638C /* OWSStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343D69B0260B874800F8638C /* OWSStackView.swift */; };
+		343DA0012645CA720000833C /* ConversationColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343DA0002645CA720000833C /* ConversationColors.swift */; };
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
 		34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
@@ -741,7 +742,7 @@
 		8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */; };
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
 		886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */; };
-		886BB3D425BA0CA900079781 /* WallpaperSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8A25B8B3CC0008C78A /* WallpaperSettingsViewController.swift */; };
+		886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8A25B8B3CC0008C78A /* ColorAndWallpaperSettingsViewController.swift */; };
 		886BB3D725BA871B00079781 /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886BB3D525BA871B00079781 /* Wallpaper.swift */; };
 		886BB3D825BA871B00079781 /* Wallpaper+SolidColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886BB3D625BA871B00079781 /* Wallpaper+SolidColor.swift */; };
 		886CB07824E77E5B00753909 /* silence.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 886CB07724E77E5B00753909 /* silence.aiff */; };
@@ -1143,6 +1144,7 @@
 		343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
 		343D69A9260B870600F8638C /* ManualStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualStackView.swift; sourceTree = "<group>"; };
 		343D69B0260B874800F8638C /* OWSStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSStackView.swift; sourceTree = "<group>"; };
+		343DA0002645CA720000833C /* ConversationColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationColors.swift; sourceTree = "<group>"; };
 		34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareAppExtensionContext.h; sourceTree = "<group>"; };
 		34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareAppExtensionContext.m; sourceTree = "<group>"; };
 		34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1955,7 +1957,7 @@
 		88A941982409A391000E9700 /* LottieToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieToggleButton.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
-		88ABAB8A25B8B3CC0008C78A /* WallpaperSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperSettingsViewController.swift; sourceTree = "<group>"; };
+		88ABAB8A25B8B3CC0008C78A /* ColorAndWallpaperSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorAndWallpaperSettingsViewController.swift; sourceTree = "<group>"; };
 		88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetWallpaperViewController.swift; sourceTree = "<group>"; };
 		88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewWallpaperViewController.swift; sourceTree = "<group>"; };
 		88ABB8B42534070400229EAA /* CallHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHeader.swift; sourceTree = "<group>"; };
@@ -2669,6 +2671,7 @@
 		3469419C215D2EE400B5BFAD /* appearance */ = {
 			isa = PBXGroup;
 			children = (
+				343DA0002645CA720000833C /* ConversationColors.swift */,
 				346941A0215D2EE400B5BFAD /* OWSConversationColor.h */,
 				3469419E215D2EE400B5BFAD /* OWSConversationColor.m */,
 				3469419D215D2EE400B5BFAD /* Theme.h */,
@@ -3741,7 +3744,7 @@
 		88A51B9825BA079500CDB45C /* Wallpapers */ = {
 			isa = PBXGroup;
 			children = (
-				88ABAB8A25B8B3CC0008C78A /* WallpaperSettingsViewController.swift */,
+				88ABAB8A25B8B3CC0008C78A /* ColorAndWallpaperSettingsViewController.swift */,
 				88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */,
 				88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */,
 			);
@@ -4980,6 +4983,7 @@
 				340872C122394CAA00CB25B0 /* ImageEditorTransform.swift in Sources */,
 				450C800F20AD1AB900F3A091 /* OWSWindowManager.m in Sources */,
 				454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */,
+				343DA0012645CA720000833C /* ConversationColors.swift in Sources */,
 				45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
@@ -5196,7 +5200,7 @@
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */,
 				8835DDF9230CEDC300DC6B66 /* RecipientPickerViewController.m in Sources */,
-				886BB3D425BA0CA900079781 /* WallpaperSettingsViewController.swift in Sources */,
+				886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */,
 				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,

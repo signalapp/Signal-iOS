@@ -4870,6 +4870,9 @@
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
 
+/* Label for settings view that allows user to change the chat color and wallpaper. */
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chat Color & Wallpaper";
+
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
 

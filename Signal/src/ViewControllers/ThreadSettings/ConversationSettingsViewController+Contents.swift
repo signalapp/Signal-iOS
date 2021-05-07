@@ -62,7 +62,7 @@ extension ConversationSettingsViewController {
         mainSection.customHeaderView = header
 
         addDisappearingMessagesItem(to: mainSection)
-        addWallpaperSettingsItem(to: mainSection)
+        addColorAndWallpaperSettingsItem(to: mainSection)
         if !isNoteToSelf { addSoundAndNotificationSettingsItem(to: mainSection) }
         addSystemContactItemIfNecessary(to: mainSection)
         addSafetyNumberItemIfNecessary(to: mainSection)
@@ -230,7 +230,7 @@ extension ConversationSettingsViewController {
         }
     }
 
-    private func addWallpaperSettingsItem(to section: OWSTableSection) {
+    private func addColorAndWallpaperSettingsItem(to section: OWSTableSection) {
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
                 owsFailDebug("Missing self")
@@ -238,15 +238,16 @@ extension ConversationSettingsViewController {
             }
 
             let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                // TODO: Change icon.
                 icon: .settingsWallpaper,
-                itemName: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
-                                            comment: "Label for settings view that allows user to change the wallpaper."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+                itemName: NSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
+                                            comment: "Label for settings view that allows user to change the chat color and wallpaper."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "color_and_wallpaper")
             )
             return cell
         },
         actionBlock: { [weak self] in
-            self?.showWallpaperSettingsView()
+            self?.showColorAndWallpaperSettingsView()
         }))
     }
 
