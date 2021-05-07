@@ -81,7 +81,6 @@ extern NSError *OWSErrorMakeMessageSendFailedDueToBlockListError(void);
 
 @interface NSError (OWSError)
 
-- (BOOL)ows_isSameError:(NSError *)other;
 - (BOOL)ows_isSSKErrorWithCode:(NSUInteger)code;
 
 @end

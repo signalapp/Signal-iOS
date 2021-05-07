@@ -86,13 +86,6 @@ NSError *OWSErrorMakeMessageSendFailedDueToBlockListError()
 
 @implementation NSError (OWSError)
 
-- (BOOL)ows_isSameError:(NSError *)other
-{
-    BOOL sameDomain = [self.domain isEqualToString:other.domain];
-    BOOL sameCode = (self.code == other.code);
-    return (sameDomain && sameCode);
-}
-
 - (BOOL)ows_isSSKErrorWithCode:(NSUInteger)code
 {
     BOOL sameDomain = [self.domain isEqualToString:OWSSignalServiceKitErrorDomain];
