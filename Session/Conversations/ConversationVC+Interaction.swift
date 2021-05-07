@@ -296,18 +296,18 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             let lastCharacterIndex = newText.index(before: newText.endIndex)
             let lastCharacter = newText[lastCharacterIndex]
             // Check if there is a whitespace before the '@' or the '@' is the first character
-            let isCharacterBeforeLastAtSignOrStartOfLine: Bool
+            let isCharacterBeforeLastWhiteSpaceOrStartOfLine: Bool
             if newText.count == 1 {
-                isCharacterBeforeLastAtSignOrStartOfLine = true // Start of line
+                isCharacterBeforeLastWhiteSpaceOrStartOfLine = true // Start of line
             } else {
                 let characterBeforeLast = newText[newText.index(before: lastCharacterIndex)]
-                isCharacterBeforeLastAtSignOrStartOfLine = (characterBeforeLast == "@")
+                isCharacterBeforeLastWhiteSpaceOrStartOfLine = characterBeforeLast.isWhitespace
             }
-            if lastCharacter == "@" && isCharacterBeforeLastAtSignOrStartOfLine {
+            if lastCharacter == "@" && isCharacterBeforeLastWhiteSpaceOrStartOfLine {
                 let candidates = MentionsManager.getMentionCandidates(for: "", in: thread.uniqueId!)
                 currentMentionStartIndex = lastCharacterIndex
                 snInputView.showMentionsUI(for: candidates, in: thread)
-            } else if lastCharacter.isWhitespace {
+            } else if lastCharacter.isWhitespace || lastCharacter == "@" { // the lastCharacter == "@" is to check for @@
                 currentMentionStartIndex = nil
                 snInputView.hideMentionsUI()
             } else {
