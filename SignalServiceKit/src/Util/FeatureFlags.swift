@@ -172,6 +172,9 @@ public class FeatureFlags: BaseFlags {
     public static let paymentsScrubDetails = false
 
     @objc
+    public static let spamChallenges = false
+
+    @objc
     public static let universalDisappearingMessages = build.includes(.qa)
 
     public static func buildFlagMap() -> [String: Any] {
@@ -480,6 +483,11 @@ public class DebugFlags: BaseFlags {
     public static let messageSendsFail = TestableFlag(false,
                                                       title: LocalizationNotNeeded("Message Sends Fail"),
                                                       details: LocalizationNotNeeded("All outgoing message sends will fail."))
+
+    @objc
+    public static let disableUD = TestableFlag(false,
+                                               title: LocalizationNotNeeded("Disable sealed sender"),
+                                               details: LocalizationNotNeeded("Sealed sender will be disabled for all messages."))
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

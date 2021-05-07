@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessagePipelineSupervisor;
 @class OWSOutgoingReceiptManager;
 @class OWSReceiptManager;
+@class OWSSpamChallengeResolver;
 @class SDSDatabaseStorage;
 @class SSKPreKeyStore;
 @class SSKPreferences;
@@ -106,7 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
                               appExpiry:(AppExpiry *)appExpiry
                        messageProcessor:(MessageProcessor *)messageProcessor
                                payments:(id<Payments>)payments
-                     paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies NS_DESIGNATED_INITIALIZER;
+                     paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
+                  spamChallengeResolver:(OWSSpamChallengeResolver *)spamResolver NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -166,6 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) MessageProcessor *messageProcessorRef;
 @property (nonatomic, readonly) id<Payments> paymentsRef;
 @property (nonatomic, readonly) id<PaymentsCurrencies> paymentsCurrenciesRef;
+@property (nonatomic, readonly) OWSSpamChallengeResolver *spamChallengeResolverRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

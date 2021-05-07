@@ -1,25 +1,24 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-@objc(OWSSheetViewControllerDelegate)
-public protocol SheetViewControllerDelegate: class {
-    func sheetViewControllerRequestedDismiss(_ sheetViewController: SheetViewController)
-}
-
 @objc(OWSSheetViewController)
 public class SheetViewController: UIViewController {
 
-    @objc
-    public weak var delegate: SheetViewControllerDelegate?
+    public var dismissHandler: ((SheetViewController) -> Void)?
 
     @objc
     public let contentView: UIView = UIView()
 
     private let sheetView: SheetView = SheetView()
     private let handleView: UIView = UIView()
+
+    public var isHandleHidden: Bool {
+        get { handleView.isHidden }
+        set { handleView.isHidden = newValue }
+    }
 
     deinit {
         Logger.verbose("")
@@ -124,14 +123,12 @@ public class SheetViewController: UIViewController {
 
     @objc
     func didTapBackground() {
-        // inform delegate to
-        delegate?.sheetViewControllerRequestedDismiss(self)
+        dismissHandler?(self)
     }
 
     @objc
     func didSwipeDown() {
-        // inform delegate to
-        delegate?.sheetViewControllerRequestedDismiss(self)
+        dismissHandler?(self)
     }
 }
 

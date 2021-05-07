@@ -857,6 +857,27 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
+#pragma mark - Spam
+
++ (TSRequest *)pushChallengeRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge/push"] method:@"POST" parameters:@{}];
+}
+
++ (TSRequest *)pushChallengeResponseWithToken:(NSString *)challengeToken
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge"]
+                              method:@"PUT"
+                          parameters:@{ @"type" : @"rateLimitPushChallenge", @"challenge" : challengeToken }];
+}
+
++ (TSRequest *)recaptchChallengeResponseWithToken:(NSString *)serverToken captchaToken:(NSString *)captchaToken
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/challenge"]
+                              method:@"PUT"
+                          parameters:@{ @"type" : @"recaptcha", @"token" : serverToken, @"captcha" : captchaToken }];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

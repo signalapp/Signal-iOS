@@ -287,6 +287,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             .sent,
             .uploading,
             .sending,
+            .pending,
             .failed,
             .skipped
         ]
@@ -430,7 +431,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func sectionIconName(for messageReceiptStatus: MessageReceiptStatus) -> String? {
         switch messageReceiptStatus {
-        case .uploading, .sending:
+        case .uploading, .sending, .pending:
             return "message_status_sending"
         case .sent:
             return "message_status_sent"
@@ -450,7 +451,10 @@ class MessageDetailViewController: OWSTableViewController2 {
                               comment: "Status label for messages which are uploading.")
         case .sending:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
-                              comment: "Status label for messages which are sending.")
+                                     comment: "Status label for messages which are sending.")
+        case .pending:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
+                                     comment: "Status label for messages which are paused.")
         case .sent:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
                               comment: "Status label for messages which are sent.")
@@ -769,7 +773,7 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
                         accessoryText: statusMessage,
                         displayUDIndicator: recipientState.wasSentByUD
                     ))
-                case .sending, .failed, .skipped, .uploading:
+                case .sending, .failed, .skipped, .uploading, .pending:
                     bucket.append(MessageRecipientModel(
                         address: address,
                         accessoryText: "",
@@ -979,6 +983,9 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // TODO:
     func cvc_didTapGroupCall() {}
+
+    // TODO:
+    func cvc_didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {}
 
     // TODO:
     func cvc_didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {}

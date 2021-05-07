@@ -4125,6 +4125,9 @@ typedef enum : NSUInteger {
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Don't allow "delete" or "reply" on "sending" outgoing messages.
             return NO;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStatePending) {
+            // Don't allow "delete" or "reply" on "sending" outgoing messages.
+            return NO;
         }
     }
 
@@ -4626,6 +4629,14 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self showConversationSettingsAndShowMemberRequests];
+}
+
+- (void)cvc_didTapPendingOutgoingMessage:(TSOutgoingMessage *)message
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(message);
+
+    [OWSSpamCaptchaViewController presentActionSheetFrom:self];
 }
 
 - (void)cvc_didTapFailedOutgoingMessage:(TSOutgoingMessage *)message

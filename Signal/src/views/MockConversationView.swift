@@ -403,6 +403,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_didTapGroupCall() {}
 
+    func cvc_didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {}
+
     func cvc_didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {}
 
     func cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,

@@ -358,6 +358,10 @@ NS_ASSUME_NONNULL_BEGIN
                 statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
                 messageStatusViewTintColor = UIColor.ows_accentRedColor;
                 break;
+            case MessageReceiptStatusPending:
+                statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
+                messageStatusViewTintColor = UIColor.ows_gray60Color;
+                break;
         }
 
         self.messageStatusIconView.image =

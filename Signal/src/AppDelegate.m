@@ -268,6 +268,11 @@ void uncaughtExceptionHandler(NSException *exception)
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(spamChallenge:)
+                                                 name:OWSSpamChallengeResolver.NeedsCaptchaNotification
+                                               object:nil];
+
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
     OWSLogInfo(@"launchOptions: %@.", launchOptions);
@@ -275,6 +280,12 @@ void uncaughtExceptionHandler(NSException *exception)
     [OWSAnalytics appLaunchDidBegin];
 
     return YES;
+}
+
+- (void)spamChallenge:(NSNotification *)notification
+{
+    UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
+    [OWSSpamCaptchaViewController presentActionSheetFrom:fromVC];
 }
 
 /**
@@ -979,16 +990,6 @@ void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark Push Notifications Delegate Methods
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    OWSAssertIsOnMainThread();
-
-    if (SSKDebugFlags.verboseNotificationLogging) {
-        OWSLogInfo(@"didReceiveRemoteNotification w/o. completion.");
-    }
-
-    [self processRemoteNotification:userInfo completion:nil];
-}
-
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -1021,8 +1022,10 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        [self.messageFetcherJob runObjc];
-
+        BOOL isSilentPush = [self handleSilentPushContent:userInfo];
+        if (!isSilentPush) {
+            [self.messageFetcherJob runObjc];
+        }
         if (completion != nil) {
             completion();
         }
@@ -1186,6 +1189,18 @@ void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark - UNUserNotificationsDelegate
 
+- (BOOL)handleSilentPushContent:(NSDictionary *)userInfo
+{
+    NSString *_Nullable spamChallengeToken = userInfo[@"rateLimitChallenge"];
+
+    if (spamChallengeToken) {
+        OWSSpamChallengeResolver *spamResolver = self.spamChallengeResolver;
+        [spamResolver handleIncomingPushChallengeToken:spamChallengeToken];
+        return YES;
+    }
+    return NO;
+}
+
 // The method will be called on the delegate only if the application is in the foreground. If the method is not
 // implemented or the handler is not called in a timely manner then the notification will not be presented. The
 // application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
@@ -1193,17 +1208,22 @@ void uncaughtExceptionHandler(NSException *exception)
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
-    __IOS_AVAILABLE(10.0)__TVOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)__OSX_AVAILABLE(10.14)
 {
     OWSLogInfo(@"");
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        // We need to respect the in-app notification sound preference. This method, which is called
-        // for modern UNUserNotification users, could be a place to do that, but since we'd still
-        // need to handle this behavior for legacy UINotification users anyway, we "allow" all
-        // notification options here, and rely on the shared logic in NotificationPresenter to
-        // honor notification sound preferences for both modern and legacy users.
-        UNNotificationPresentationOptions options = UNNotificationPresentationOptionAlert
-            | UNNotificationPresentationOptionBadge | UNNotificationPresentationOptionSound;
+        UNNotificationPresentationOptions options = 0;
+        BOOL isSilent = [self handleSilentPushContent:notification.request.content.userInfo];
+
+        if (!isSilent) {
+            // We need to respect the in-app notification sound preference. This method, which is called
+            // for modern UNUserNotification users, could be a place to do that, but since we'd still
+            // need to handle this behavior for legacy UINotification users anyway, we "allow" all
+            // notification options here, and rely on the shared logic in NotificationPresenter to
+            // honor notification sound preferences for both modern and legacy users.
+            options |= UNNotificationPresentationOptionAlert;
+            options |= UNNotificationPresentationOptionBadge;
+            options |= UNNotificationPresentationOptionSound;
+        }
         completionHandler(options);
     });
 }
@@ -1213,24 +1233,12 @@ void uncaughtExceptionHandler(NSException *exception)
 // returns from application:didFinishLaunchingWithOptions:.
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
-             withCompletionHandler:(void (^)(void))completionHandler __IOS_AVAILABLE(10.0)__WATCHOS_AVAILABLE(3.0)
-                                       __OSX_AVAILABLE(10.14)__TVOS_PROHIBITED
+             withCompletionHandler:(void (^)(void))completionHandler
 {
     OWSLogInfo(@"");
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         [self.userNotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler];
     });
-}
-
-// The method will be called on the delegate when the application is launched in response to the user's request to view
-// in-app notification settings. Add UNAuthorizationOptionProvidesAppNotificationSettings as an option in
-// requestAuthorizationWithOptions:completionHandler: to add a button to inline notification settings view and the
-// notification settings view in Settings. The notification will be nil when opened from Settings.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-    openSettingsForNotification:(nullable UNNotification *)notification __IOS_AVAILABLE(12.0)
-                                    __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
-{
-    OWSLogInfo(@"");
 }
 
 - (void)setupNSEInteroperation

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSError.h"
@@ -83,5 +83,16 @@ NSError *OWSErrorMakeMessageSendFailedDueToBlockListError()
         NSLocalizedString(@"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
             @"Error message indicating that message send failed due to block list"));
 }
+
+@implementation NSError (OWSError)
+
+- (BOOL)ows_isSSKErrorWithCode:(NSUInteger)code
+{
+    BOOL sameDomain = [self.domain isEqualToString:OWSSignalServiceKitErrorDomain];
+    BOOL sameCode = (self.code == code);
+    return (sameDomain && sameCode);
+}
+
+@end
 
 NS_ASSUME_NONNULL_END

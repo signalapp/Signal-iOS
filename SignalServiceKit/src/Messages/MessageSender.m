@@ -301,6 +301,8 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 NSString *const MessageSenderInvalidDeviceException = @"InvalidDeviceException";
 NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
+NSString *const MessageSenderSpamChallengeRequiredException = @"SpamChallengeRequiredException";
+NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeResolvedException";
 
 @interface MessageSender ()
 
@@ -907,6 +909,22 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
             return nil;
         }
 
+        if ([exception.name isEqualToString:MessageSenderSpamChallengeResolvedException] ||
+            [exception.name isEqualToString:MessageSenderSpamChallengeRequiredException]) {
+
+            NSString *description = NSLocalizedString(@"ERROR_DESCRIPTION_SUSPECTED_SPAM",
+                @"Description for errors returned from the server due to suspected spam.");
+            NSUInteger code = OWSErrorCodeServerRejectedSuspectedSpam;
+            NSError *error = OWSErrorWithCodeDescription(code, description);
+
+            BOOL didResolve = [exception.name isEqualToString:MessageSenderSpamChallengeResolvedException];
+            [error setIsRetryable:didResolve];
+            [error setIsFatal:NO];
+            *errorHandle = error;
+            return nil;
+        }
+
+
         OWSLogWarn(@"Could not build device messages: %@", exception);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:YES];
@@ -975,6 +993,9 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
     // non-UD auth case.
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]
         && ![message isKindOfClass:[OWSOutgoingSentMessageTranscript class]]) {
+        [messageSend disableUD];
+    } else if (SSKDebugFlags.disableUD.value) {
+        OWSLogDebug(@"Disabling UD because of testable flag");
         [messageSend disableUD];
     }
 
@@ -1349,6 +1370,16 @@ NSString *const MessageSenderRateLimitedException = @"RateLimitedException";
                 exception = [NSException exceptionWithName:MessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
                                                   userInfo:@{ NSUnderlyingErrorKey : error }];
+            } else if ([MessageSender isSpamChallengeRequiredError:error]) {
+                // Can't throw exception from within callback as it's probabably a different thread.
+                exception = [NSException exceptionWithName:MessageSenderSpamChallengeRequiredException
+                                                    reason:@"Spam challenge required"
+                                                  userInfo:@ { NSUnderlyingErrorKey : error }];
+            } else if ([MessageSender isSpamChallengeResolvedError:error]) {
+                // Can't throw exception from within callback as it's probabably a different thread.
+                exception = [NSException exceptionWithName:MessageSenderSpamChallengeResolvedException
+                                                    reason:@"Spam challenge resolved"
+                                                  userInfo:@ { NSUnderlyingErrorKey : error }];
             } else if ([MessageSender isUntrustedIdentityError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:UntrustedIdentityKeyException

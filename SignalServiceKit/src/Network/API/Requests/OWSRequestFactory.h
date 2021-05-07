@@ -191,6 +191,12 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)paymentsAuthenticationCredentialRequest;
 
+#pragma mark - Spam
+
++ (TSRequest *)pushChallengeRequest;
++ (TSRequest *)pushChallengeResponseWithToken:(NSString *)challengeToken;
++ (TSRequest *)recaptchChallengeResponseWithToken:(NSString *)serverToken captchaToken:(NSString *)captchaToken;
+
 @end
 
 NS_ASSUME_NONNULL_END

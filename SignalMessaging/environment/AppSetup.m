@@ -113,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
         id<Payments> payments = [PaymentsImpl new];
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
+        OWSSpamChallengeResolver *spamChallengeResolver = [OWSSpamChallengeResolver new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -172,7 +173,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         appExpiry:appExpiry
                                                                  messageProcessor:messageProcessor
                                                                          payments:payments
-                                                               paymentsCurrencies:paymentsCurrencies]];
+                                                               paymentsCurrencies:paymentsCurrencies
+                                                            spamChallengeResolver:spamChallengeResolver]];
 
         appSpecificSingletonBlock();
 

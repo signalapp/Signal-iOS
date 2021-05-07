@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     TSOutgoingMessageStateDelivered_OBSOLETE,
     // The message has been sent to the service.
     TSOutgoingMessageStateSent,
+    // The message is blocked behind some precondition.
+    TSOutgoingMessageStatePending
 };
 
 NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value);
@@ -36,9 +38,12 @@ typedef NS_CLOSED_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
     OWSOutgoingMessageRecipientStateSkipped,
     // The message has been sent to the service.  It may also have been delivered or read.
     OWSOutgoingMessageRecipientStateSent,
+    // The server rejected the message send request until some other condition is satisfied.
+    // Currently, this only flags messages that the server suspects may be spam.
+    OWSOutgoingMessageRecipientStatePending,
 
     OWSOutgoingMessageRecipientStateMin = OWSOutgoingMessageRecipientStateFailed,
-    OWSOutgoingMessageRecipientStateMax = OWSOutgoingMessageRecipientStateSent,
+    OWSOutgoingMessageRecipientStateMax = OWSOutgoingMessageRecipientStatePending,
 };
 
 NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientState value);
@@ -228,7 +233,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 @property (atomic, nullable, readonly)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
 
-// All recipients of this message who we are currently trying to send to (queued, uploading or during send).
+// All recipients of this message who we are currently trying to send to (pending, queued, uploading or during send).
 - (NSArray<SignalServiceAddress *> *)sendingRecipientAddresses;
 
 // All recipients of this message to whom it has been sent (and possibly delivered or read).
