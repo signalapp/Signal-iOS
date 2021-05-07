@@ -69,11 +69,9 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
     private func scheduleNextUpdate() {
         assertOnQueue(workQueue)
 
-        let deferral = challenges?
-            .map { $0.nextActionableDate }
-            .min()
-
-        guard let deferral = deferral else { return }
+        guard let deferral = challenges?
+                .map({ $0.nextActionableDate })
+                .min() else { return }
         guard deferral.isAfterNow else { return }
         guard deferral != nextAttemptTimer?.fireDate else { return }
 

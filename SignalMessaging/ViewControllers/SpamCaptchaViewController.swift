@@ -222,7 +222,7 @@ extension SpamCaptchaViewController {
     static func presentActionSheet(from fromVC: UIViewController) {
 
         let titleLabel = UILabel()
-        titleLabel.font = .ows_dynamicTypeTitle2Clamped.ows_semibold
+        titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
