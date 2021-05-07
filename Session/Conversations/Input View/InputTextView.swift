@@ -9,7 +9,7 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     // MARK: UI Components
     private lazy var placeholderLabel: UILabel = {
         let result = UILabel()
-        result.text = "Message"
+        result.text = NSLocalizedString("vc_conversation_input_prompt", comment: "")
         result.font = .systemFont(ofSize: Values.mediumFontSize)
         result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         return result
@@ -74,7 +74,7 @@ public final class InputTextView : UITextView, UITextViewDelegate {
 }
 
 // MARK: Delegate
-protocol InputTextViewDelegate : class {
+protocol InputTextViewDelegate : AnyObject {
     
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView)
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)

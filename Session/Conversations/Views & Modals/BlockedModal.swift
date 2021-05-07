@@ -23,13 +23,13 @@ final class BlockedModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
-        titleLabel.text = "Unblock \(name)?"
+        titleLabel.text = String(format: NSLocalizedString("modal_blocked_title", comment: ""), name)
         titleLabel.textAlignment = .center
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
         messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        let message = "Are you sure you want to unblock \(name)?"
+        let message = String(format: NSLocalizedString("modal_blocked_explanation", comment: ""), name)
         let attributedMessage = NSMutableAttributedString(string: message)
         attributedMessage.addAttributes([ .font : UIFont.boldSystemFont(ofSize: Values.smallFontSize) ], range: (message as NSString).range(of: name))
         messageLabel.attributedText = attributedMessage
@@ -43,7 +43,7 @@ final class BlockedModal : Modal {
         unblockButton.backgroundColor = Colors.buttonBackground
         unblockButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         unblockButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        unblockButton.setTitle("Unblock", for: UIControl.State.normal)
+        unblockButton.setTitle(NSLocalizedString("modal_blocked_button_title", comment: ""), for: UIControl.State.normal)
         unblockButton.addTarget(self, action: #selector(unblock), for: UIControl.Event.touchUpInside)
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, unblockButton ])

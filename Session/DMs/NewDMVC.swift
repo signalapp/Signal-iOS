@@ -167,7 +167,7 @@ private final class EnterPublicKeyVC : UIViewController {
     
     // MARK: Components
     private lazy var publicKeyTextView: TextView = {
-        let result = TextView(placeholder: "Enter Session ID or ONS name")
+        let result = TextView(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
         result.autocapitalizationType = .none
         return result
     }()
@@ -308,7 +308,7 @@ private final class EnterPublicKeyVC : UIViewController {
         UIPasteboard.general.string = getUserHexEncodedPublicKey()
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle("Copied", for: UIControl.State.normal)
+            self.copyButton.setTitle(NSLocalizedString("copied", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }

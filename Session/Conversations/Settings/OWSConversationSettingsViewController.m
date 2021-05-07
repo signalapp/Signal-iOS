@@ -291,7 +291,7 @@ CGFloat kIconViewLength = 24;
         [mainSection addItem:[OWSTableItem
                                  itemWithCustomCellBlock:^{
                                      return [weakSelf
-                                          disclosureCellWithName:@"Copy Session ID"
+                                          disclosureCellWithName:NSLocalizedString(@"vc_conversation_settings_copy_session_id_button_title", "")
                                                         iconName:@"ic_copy"
                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                      OWSConversationSettingsViewController, @"copy_session_id")];

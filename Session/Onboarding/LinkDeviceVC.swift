@@ -10,7 +10,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: "Recovery Phrase") { [weak self] in
+            TabBar.Tab(title: NSLocalizedString("vc_link_device_recovery_phrase_tab_title", comment: "")) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
@@ -35,7 +35,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = "Navigate to Settings → Recovery Phrase on your other device to show your QR code."
+        let message = NSLocalizedString("vc_link_device_scan_qr_code_explanation", comment: "")
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -163,14 +163,14 @@ private final class RecoveryPhraseVC : UIViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = "Recovery Phrase"
+        titleLabel.text = NSLocalizedString("vc_enter_recovery_phrase_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "To link your device, enter the recovery phrase that was given to you when you signed up."
+        explanationLabel.text = NSLocalizedString("vc_enter_recovery_phrase_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Spacers

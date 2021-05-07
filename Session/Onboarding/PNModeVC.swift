@@ -12,14 +12,14 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
 
     // MARK: Components
     private lazy var apnsOptionView: OptionView = {
-        let explanation = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers."
+        let explanation = NSLocalizedString("fast_mode_explanation", comment: "")
         let result = OptionView(title: "Fast Mode", explanation: explanation, delegate: self, isRecommended: true)
         result.accessibilityLabel = "Fast mode option"
         return result
     }()
     
     private lazy var backgroundPollingOptionView: OptionView = {
-        let explanation = "Session will occasionally check for new messages in the background."
+        let explanation = NSLocalizedString("slow_mode_explanation", comment: "")
         let result = OptionView(title: "Slow Mode", explanation: explanation, delegate: self)
         result.accessibilityLabel = "Slow mode option"
         return result
@@ -38,7 +38,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = "Message Notifications"
+        titleLabel.text = NSLocalizedString("vc_pn_mode_title", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up spacers

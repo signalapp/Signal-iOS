@@ -491,7 +491,9 @@
 "vc_view_my_qr_code_explanation" = "This is your QR code. Other users can scan it to start a session with you.";
 // MARK: - Not Yet Translated
 "fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
+"fast_mode" = "Fast Mode";
 "slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
+"slow_mode" = "Slow Mode";
 "vc_pn_mode_title" = "Message Notifications";
 "vc_notification_settings_notification_mode_title" = "Use Fast Mode";
 "vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";

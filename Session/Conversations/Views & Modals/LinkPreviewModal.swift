@@ -21,13 +21,13 @@ final class LinkPreviewModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
-        titleLabel.text = "Enable Link Previews?"
+        titleLabel.text = NSLocalizedString("modal_link_previews_title", comment: "")
         titleLabel.textAlignment = .center
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
         messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        let message = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings."
+        let message = NSLocalizedString("modal_link_previews_explanation", comment: "")
         messageLabel.text = message
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
@@ -39,7 +39,7 @@ final class LinkPreviewModal : Modal {
         enableButton.backgroundColor = Colors.buttonBackground
         enableButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         enableButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        enableButton.setTitle("Enable", for: UIControl.State.normal)
+        enableButton.setTitle(NSLocalizedString("modal_link_previews_button_title", comment: ""), for: UIControl.State.normal)
         enableButton.addTarget(self, action: #selector(enable), for: UIControl.Event.touchUpInside)
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, enableButton ])

@@ -44,7 +44,7 @@
 
     OWSTableSection *strategySection = [OWSTableSection new];
     strategySection.headerTitle = NSLocalizedString(@"preferences_notifications_strategy_category_title", @"");
-    [strategySection addItem:[OWSTableItem switchItemWithText:@"Use Fast Mode"
+    [strategySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"vc_notification_settings_notification_mode_title", @"")
                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"push_notification_strategy")
                               isOnBlock:^{
                                   return [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
