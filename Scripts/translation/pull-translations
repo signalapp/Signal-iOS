@@ -46,7 +46,8 @@ done
 
 # Get and build iStringsCheck from https://github.com/FredericJacobs/iStringsCheck
 # This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
-LINT_CMD=$REPO_ROOT/../l10n_lint/target/debug/l10n_lint
+LINT_CMD=$(command -v l10n_lint)
+LINT_CMD=${LINT_CMD:-$REPO_ROOT/../l10n_lint/target/debug/l10n_lint}
 
 if [ -e $LINT_CMD ]
 then
