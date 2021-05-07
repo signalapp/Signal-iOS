@@ -585,9 +585,9 @@ public class CVLoadCoordinator: NSObject {
                 //
                 // Block on load land completion.
                 loadDidLandPromise
-            }.done(on: .global()) {
+            }.done(on: .sharedUserInteractive) {
                 loadResolver.fulfill(())
-            }.catch(on: .global()) { error in
+            }.catch(on: .sharedUserInteractive) { error in
                 loadResolver.reject(error)
             }
         }
