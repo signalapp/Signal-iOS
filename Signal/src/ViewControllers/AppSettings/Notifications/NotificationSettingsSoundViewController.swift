@@ -40,6 +40,11 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
     private var hasUnsavedChanges: Bool {
         notificationSound != originalNotificationSound
     }
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
+    }
 
     private func updateNavigation() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(

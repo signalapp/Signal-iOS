@@ -66,6 +66,11 @@ class ProfileNameViewController: OWSTableViewController2 {
     private var hasUnsavedChanges: Bool {
         (normalizedGivenName != originalGivenName) || (normalizedFamilyName != originalFamilyName)
     }
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
+    }
 
     private func updateNavigation() {
         title = NSLocalizedString("PROFILE_NAME_VIEW_TITLE", comment: "Title for the profile name view.")

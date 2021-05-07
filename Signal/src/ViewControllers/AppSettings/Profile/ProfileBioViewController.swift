@@ -77,6 +77,11 @@ class ProfileBioViewController: OWSTableViewController2 {
     private var hasUnsavedChanges: Bool {
         (normalizedProfileBio != originalBio) || (normalizedProfileBioEmoji != originalBioEmoji)
     }
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
+    }
 
     private func updateNavigation() {
         if bioTextField.isFirstResponder,

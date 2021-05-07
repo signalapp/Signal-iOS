@@ -182,11 +182,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.delegate.audioPlaybackState = AudioPlaybackState_Playing;
     [self.audioPlayer play];
     [self.audioPlayerPoller invalidate];
-    self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.05f
-                                                                  target:self
-                                                                selector:@selector(audioPlayerUpdated:)
-                                                                userInfo:nil
-                                                                 repeats:YES];
+    self.audioPlayerPoller = [NSTimer weakTimerWithTimeInterval:.05f
+                                                         target:self
+                                                       selector:@selector(audioPlayerUpdated:)
+                                                       userInfo:nil
+                                                        repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:self.audioPlayerPoller forMode:NSRunLoopCommonModes];
 
     // Prevent device from sleeping while playing audio.
     [DeviceSleepManager.shared addBlockWithBlockObject:self];
@@ -274,6 +275,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setCurrentTime:(NSTimeInterval)currentTime
 {
+    [self setupAudioPlayer];
+
     self.audioPlayer.currentTime = currentTime;
 
     [self.delegate setAudioProgress:self.audioPlayer.currentTime duration:self.audioPlayer.duration];
