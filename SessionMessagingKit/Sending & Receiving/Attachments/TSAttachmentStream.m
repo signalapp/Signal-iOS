@@ -523,6 +523,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         // Ignore "invalid audio file" errors.
         return 0.f;
     }
+    [audioPlayer prepareToPlay];
     if (!error) {
         return (CGFloat)[audioPlayer duration];
     } else {
