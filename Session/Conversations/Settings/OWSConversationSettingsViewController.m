@@ -312,6 +312,20 @@ CGFloat kIconViewLength = 24;
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
                              }]];
+    
+    if (self.isOpenGroup) {
+        [mainSection addItem:[OWSTableItem
+                                 itemWithCustomCellBlock:^{
+                                     return [weakSelf
+                                          disclosureCellWithName:NSLocalizedString(@"vc_conversation_settings_invite_button_title", "")
+                                                        iconName:@"ic_plus_24"
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                     OWSConversationSettingsViewController, @"invite")];
+                                 }
+                                 actionBlock:^{
+                                     [weakSelf inviteUsersToOpenGroup];
+                                 }]];
+    }
 
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
@@ -1087,6 +1101,11 @@ CGFloat kIconViewLength = 24;
 - (void)copySessionID
 {
     UIPasteboard.generalPasteboard.string = ((TSContactThread *)self.thread).contactSessionID;
+}
+
+- (void)inviteUsersToOpenGroup
+{
+    
 }
 
 - (void)showMediaGallery
