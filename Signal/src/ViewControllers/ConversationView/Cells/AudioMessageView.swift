@@ -433,6 +433,9 @@ class AudioMessageView: ManualStackView {
         let isPlaying = audioPlaybackState == .playing
         let destination: AnimationProgressTime = isPlaying ? 1 : 0
 
+        // Do nothing if we're already there.
+        guard destination != playPauseAnimation.currentProgress else { return }
+
         if animated {
             let endCellAnimation = componentDelegate.cvc_beginCellAnimation(maximumDuration: 0.2)
             playPauseAnimation.play(toProgress: destination) { _ in
@@ -451,6 +454,9 @@ class AudioMessageView: ManualStackView {
         if !RemoteConfig.viewedReceiptSending { isViewed = true }
 
         let destination: AnimationProgressTime = isViewed ? 1 : 0
+
+        // Do nothing if we're already there.
+        guard destination != playedDotAnimation.currentProgress else { return }
 
         if animated {
             let endCellAnimation = componentDelegate.cvc_beginCellAnimation(maximumDuration: 0.2)
