@@ -1,4 +1,5 @@
 
+@objc(SNUserSelectionVC)
 final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let navBarTitle: String
     private let usersToExclude: Set<String>
@@ -25,7 +26,8 @@ final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate
     }()
 
     // MARK: Lifecycle
-    @objc init(with title: String, excluding usersToExclude: Set<String>, completion: @escaping (Set<String>) -> Void) {
+    @objc(initWithTitle:excluding:completion:)
+    init(with title: String, excluding usersToExclude: Set<String>, completion: @escaping (Set<String>) -> Void) {
         self.navBarTitle = title
         self.usersToExclude = usersToExclude
         self.completion = completion

@@ -1105,7 +1105,12 @@ CGFloat kIconViewLength = 24;
 
 - (void)inviteUsersToOpenGroup
 {
-    
+    SNUserSelectionVC *userSelectionVC = [[SNUserSelectionVC alloc] initWithTitle:@"vc_conversation_settings_invite_button_title"
+                                                                        excluding:[NSSet new]
+                                                                       completion:^(NSSet<NSString *> *selectedUsers) {
+        
+    }];
+    [self.navigationController pushViewController:userSelectionVC animated:YES];
 }
 
 - (void)showMediaGallery
