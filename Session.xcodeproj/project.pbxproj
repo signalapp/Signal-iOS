@@ -1195,6 +1195,7 @@
 		B85A68B02587141A008CC492 /* Storage+Resetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Resetting.swift"; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
+		B87588582644CA9D000E60D0 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
 		B879D448247E1BE300DB3608 /* PathVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathVC.swift; sourceTree = "<group>"; };
 		B879D44A247E1D9200DB3608 /* PathStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathStatusView.swift; sourceTree = "<group>"; };
@@ -4031,6 +4032,7 @@
 				"vi-VN",
 				"id-ID",
 				sk,
+				nl,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -5091,6 +5093,7 @@
 				C396469F2509D41100B0B9F5 /* id-ID */,
 				C3F0A5B2255C915C007BE2A3 /* en */,
 				B8EB20E6263F7E4B00773E52 /* sk */,
+				B87588582644CA9D000E60D0 /* nl */,
 			);
 			name = Localizable.strings;
 			path = Meta/Translations;
