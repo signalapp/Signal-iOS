@@ -1115,14 +1115,13 @@ CGFloat kIconViewLength = 24;
             SNVisibleMessage *message = [SNVisibleMessage new];
             message.sentTimestamp = [NSDate millisecondTimestamp];
             message.openGroupInvitation = [[SNOpenGroupInvitation alloc] initWithName:openGroup.name url:url];
-            TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:self.thread];
+            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactSessionID:user];
+            TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
             [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [tsMessage saveWithTransaction:transaction];
             }];
             [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSContactThread *thread = [TSContactThread getThreadWithContactSessionID:user transaction:transaction];
                 [SNMessageSender send:message inThread:thread usingTransaction:transaction];
-                [self.navigationController popViewControllerAnimated:YES];
             }];
         }
     }];
