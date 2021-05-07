@@ -440,6 +440,15 @@ struct SessionProtos_DataMessage {
   /// Clears the value of `profile`. Subsequent reads from it will return its default value.
   mutating func clearProfile() {_uniqueStorage()._profile = nil}
 
+  var openGroupInvitation: SessionProtos_DataMessage.OpenGroupInvitation {
+    get {return _storage._openGroupInvitation ?? SessionProtos_DataMessage.OpenGroupInvitation()}
+    set {_uniqueStorage()._openGroupInvitation = newValue}
+  }
+  /// Returns true if `openGroupInvitation` has been explicitly set.
+  var hasOpenGroupInvitation: Bool {return _storage._openGroupInvitation != nil}
+  /// Clears the value of `openGroupInvitation`. Subsequent reads from it will return its default value.
+  mutating func clearOpenGroupInvitation() {_uniqueStorage()._openGroupInvitation = nil}
+
   var closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage {
     get {return _storage._closedGroupControlMessage ?? SessionProtos_DataMessage.ClosedGroupControlMessage()}
     set {_uniqueStorage()._closedGroupControlMessage = newValue}
@@ -1666,6 +1675,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     8: .same(proto: "quote"),
     10: .same(proto: "preview"),
     101: .same(proto: "profile"),
+    102: .same(proto: "openGroupInvitation"),
     104: .same(proto: "closedGroupControlMessage"),
     105: .same(proto: "syncTarget"),
   ]
@@ -1681,6 +1691,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     var _quote: SessionProtos_DataMessage.Quote? = nil
     var _preview: [SessionProtos_DataMessage.Preview] = []
     var _profile: SessionProtos_DataMessage.LokiProfile? = nil
+    var _openGroupInvitation: SessionProtos_DataMessage.OpenGroupInvitation? = nil
     var _closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage? = nil
     var _syncTarget: String? = nil
 
@@ -1699,6 +1710,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       _quote = source._quote
       _preview = source._preview
       _profile = source._profile
+      _openGroupInvitation = source._openGroupInvitation
       _closedGroupControlMessage = source._closedGroupControlMessage
       _syncTarget = source._syncTarget
     }
@@ -1717,6 +1729,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       if let v = _storage._group, !v.isInitialized {return false}
       if let v = _storage._quote, !v.isInitialized {return false}
       if !SwiftProtobuf.Internal.areAllInitialized(_storage._preview) {return false}
+      if let v = _storage._openGroupInvitation, !v.isInitialized {return false}
       if let v = _storage._closedGroupControlMessage, !v.isInitialized {return false}
       return true
     }
@@ -1737,6 +1750,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
         case 8: try decoder.decodeSingularMessageField(value: &_storage._quote)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 101: try decoder.decodeSingularMessageField(value: &_storage._profile)
+        case 102: try decoder.decodeSingularMessageField(value: &_storage._openGroupInvitation)
         case 104: try decoder.decodeSingularMessageField(value: &_storage._closedGroupControlMessage)
         case 105: try decoder.decodeSingularStringField(value: &_storage._syncTarget)
         default: break
@@ -1777,6 +1791,9 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       if let v = _storage._profile {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
       }
+      if let v = _storage._openGroupInvitation {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 102)
+      }
       if let v = _storage._closedGroupControlMessage {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 104)
       }
@@ -1802,6 +1819,7 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
         if _storage._quote != rhs_storage._quote {return false}
         if _storage._preview != rhs_storage._preview {return false}
         if _storage._profile != rhs_storage._profile {return false}
+        if _storage._openGroupInvitation != rhs_storage._openGroupInvitation {return false}
         if _storage._closedGroupControlMessage != rhs_storage._closedGroupControlMessage {return false}
         if _storage._syncTarget != rhs_storage._syncTarget {return false}
         return true

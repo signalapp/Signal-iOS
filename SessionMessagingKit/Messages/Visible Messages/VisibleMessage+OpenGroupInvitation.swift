@@ -23,12 +23,24 @@ public extension VisibleMessage {
             coder.encode(url, forKey: "url")
         }
 
-        public static func fromProto(_ proto: SNProtoDataMessage) -> Profile? {
-            notImplemented()
+        public static func fromProto(_ proto: SNProtoDataMessageOpenGroupInvitation) -> OpenGroupInvitation? {
+            let url = proto.url
+            let name = proto.name
+            return OpenGroupInvitation(name: name, url: url)
         }
 
-        public func toProto() -> SNProtoDataMessage? {
-            notImplemented()
+        public func toProto() -> SNProtoDataMessageOpenGroupInvitation? {
+            guard let url = url, let name = name else {
+                SNLog("Couldn't construct open group invitation proto from: \(self).")
+                return nil
+            }
+            let openGroupInvitationProto = SNProtoDataMessageOpenGroupInvitation.builder(url: url, name: name)
+            do {
+                return try openGroupInvitationProto.build()
+            } catch {
+                SNLog("Couldn't construct open group invitation proto from: \(self).")
+                return nil
+            }
         }
         
         // MARK: Description

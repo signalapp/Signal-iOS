@@ -1808,6 +1808,9 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         if let _value = profile {
             builder.setProfile(_value)
         }
+        if let _value = openGroupInvitation {
+            builder.setOpenGroupInvitation(_value)
+        }
         if let _value = closedGroupControlMessage {
             builder.setClosedGroupControlMessage(_value)
         }
@@ -1875,6 +1878,10 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             proto.profile = valueParam.proto
         }
 
+        @objc public func setOpenGroupInvitation(_ valueParam: SNProtoDataMessageOpenGroupInvitation) {
+            proto.openGroupInvitation = valueParam.proto
+        }
+
         @objc public func setClosedGroupControlMessage(_ valueParam: SNProtoDataMessageClosedGroupControlMessage) {
             proto.closedGroupControlMessage = valueParam.proto
         }
@@ -1903,6 +1910,8 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
     @objc public let preview: [SNProtoDataMessagePreview]
 
     @objc public let profile: SNProtoDataMessageLokiProfile?
+
+    @objc public let openGroupInvitation: SNProtoDataMessageOpenGroupInvitation?
 
     @objc public let closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?
 
@@ -1963,6 +1972,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                  quote: SNProtoDataMessageQuote?,
                  preview: [SNProtoDataMessagePreview],
                  profile: SNProtoDataMessageLokiProfile?,
+                 openGroupInvitation: SNProtoDataMessageOpenGroupInvitation?,
                  closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?) {
         self.proto = proto
         self.attachments = attachments
@@ -1970,6 +1980,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         self.quote = quote
         self.preview = preview
         self.profile = profile
+        self.openGroupInvitation = openGroupInvitation
         self.closedGroupControlMessage = closedGroupControlMessage
     }
 
@@ -2005,6 +2016,11 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             profile = try SNProtoDataMessageLokiProfile.parseProto(proto.profile)
         }
 
+        var openGroupInvitation: SNProtoDataMessageOpenGroupInvitation? = nil
+        if proto.hasOpenGroupInvitation {
+            openGroupInvitation = try SNProtoDataMessageOpenGroupInvitation.parseProto(proto.openGroupInvitation)
+        }
+
         var closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage? = nil
         if proto.hasClosedGroupControlMessage {
             closedGroupControlMessage = try SNProtoDataMessageClosedGroupControlMessage.parseProto(proto.closedGroupControlMessage)
@@ -2020,6 +2036,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                                         quote: quote,
                                         preview: preview,
                                         profile: profile,
+                                        openGroupInvitation: openGroupInvitation,
                                         closedGroupControlMessage: closedGroupControlMessage)
         return result
     }

@@ -63,6 +63,8 @@ public final class VisibleMessage : Message {
         if let linkPreviewProto = dataMessage.preview.first, let linkPreview = LinkPreview.fromProto(linkPreviewProto) { result.linkPreview = linkPreview }
         // TODO: Contact
         if let profile = Profile.fromProto(dataMessage) { result.profile = profile }
+        if let openGroupInvitationProto = dataMessage.openGroupInvitation,
+            let openGroupInvitation = OpenGroupInvitation.fromProto(openGroupInvitationProto) { result.openGroupInvitation = openGroupInvitation }
         result.syncTarget = dataMessage.syncTarget
         return result
     }
@@ -99,6 +101,8 @@ public final class VisibleMessage : Message {
         let attachmentProtos = attachments.compactMap { $0.buildProto() }
         dataMessage.setAttachments(attachmentProtos)
         // TODO: Contact
+        // Open group invitation
+        if let openGroupInvitation = openGroupInvitation, let openGroupInvitationProto = openGroupInvitation.toProto() { dataMessage.setOpenGroupInvitation(openGroupInvitationProto) }
         // Expiration timer
         // TODO: We * want * expiration timer updates to be explicit. But currently Android will disable the expiration timer for a conversation
         // if it receives a message without the current expiration timer value attached to it...
