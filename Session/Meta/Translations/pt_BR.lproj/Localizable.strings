@@ -181,9 +181,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ saiu do grupo.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " %@ foi removido do grupo. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ foram removidos do grupo. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "O título agora é '%@'.";
 /* No comment provided by engineer. */
@@ -191,7 +191,7 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Você saiu do grupo.";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " Você foi removido do grupo. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Você não pode compartilhar mais de %@ itens.";
 /* alert title */
@@ -299,9 +299,9 @@
 /* Label for 'backup now' button in the backup settings view. */
 "SETTINGS_BACKUP_BACKUP_NOW" = "Criar cópia de segurança";
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancelar cópia de segurança";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancelar backup";
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Cópia de segurança ativada";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Ativado";
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "Status da iCloud";
 /* Indicates that the last backup restore failed. */
@@ -337,7 +337,7 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Enviar pré-visualizações de links";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pré-visualizações de links suportadas para Imgur, Instagram, Pinterest, Reddit e YouTube.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Pré-visualizações de links";
 /* table section header */
@@ -359,23 +359,23 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicadores de digitação";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Silencioso";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dias";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@dias";
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ horas";
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@horas";
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minutos";
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@minutos";
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ segundos";
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@segundos";
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_DAY" = "%@ dia";
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
@@ -489,3 +489,37 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "Escanear código QR";
 "vc_qr_code_view_scan_qr_code_explanation" = "Escaneie o código QR de alguém para iniciar uma conversa com essa pessoa";
 "vc_view_my_qr_code_explanation" = "Este é o seu código QR. Outros usuários podem escaneá-lo para iniciar uma sessão com você.";
+// MARK: - Not Yet Translated
+"fast_mode_explanation" = "Você será notificado de forma confiável e imediata sobre novas mensagens usando os servidores de notificação da Apple.";
+"slow_mode_explanation" = "O session verificará ocasionalmente por novas mensagens em segundo plano.";
+"vc_pn_mode_title" = "Notificação de Mensangens";
+"vc_notification_settings_notification_mode_title" = "Usar Modo Rápido";
+"vc_link_device_recovery_phrase_tab_title" = "Frase de Recuperação";
+"vc_link_device_scan_qr_code_explanation" = "Navegue até Configurações -> Frase de Recuperação no outro dispositivo para visualizar seu QR code.";
+"vc_enter_recovery_phrase_title" = "Frase de Recuperação";
+"vc_enter_recovery_phrase_explanation" = "Para vincular o seu dispositivo, insira a frase de recuperação que foi gerada quando você criou sua conta.";
+"vc_enter_public_key_text_field_hint" = "Insira seu ID Session ou ONS";
+"vc_home_title" = "Mensagens";
+"admin_group_leave_warning" = "Porque você é o criador deste grupo ele será excluído para todos. Isso não pode ser desfeito.";
+"vc_join_open_group_suggestions_title" = "Ou junte-se a um desses...";
+"vc_settings_invite_a_friend_button_title" = "Convide um amigo";
+"vc_settings_help_us_translate_button_title" = "Ajude a traduzir o Session";
+"copied" = "Copiado";
+"vc_conversation_settings_copy_session_id_button_title" = "Copiar ID Session";
+"vc_conversation_input_prompt" = "Mensagem";
+"vc_conversation_voice_message_cancel_message" = "Deslize para cancelar";
+"modal_download_attachment_title" = "Confiar %@?";
+"modal_download_attachment_explanation" = "Você tem certeza que deseja baixar a mídia enviada por %@?";
+"modal_download_button_title" = "Download";
+"modal_open_url_title" = "Abrir URL?";
+"modal_open_url_explanation" = "Você tem certeza que deseja abrir %@/?";
+"modal_open_url_button_title" = "Abrir";
+"modal_blocked_title" = "Desbloquear %@?";
+"modal_blocked_explanation" = "Você tem certeza que deseja desbloquear %@?";
+"modal_blocked_button_title" = "Desbloquear";
+"modal_link_previews_title" = "Ativar pré-visualizações de link?";
+"modal_link_previews_explanation" = "Ativar a pré-visualização de links irá mostrar as URLs que você receber e enviar. Isto pode ser útil, o Session precisa se conectar aos sites vinculados gerar as prévias. Você poderá desabiliatar esta opção nas configurações do Session.";
+"modal_link_previews_button_title" = "Ativar";
+"vc_share_title" = "Compartilhar no Session";
+"vc_share_loading_message" = "Preparando anexos...";
+"vc_share_sending_message" = "Enviando...";

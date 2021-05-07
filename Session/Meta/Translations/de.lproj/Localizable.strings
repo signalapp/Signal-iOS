@@ -7,7 +7,7 @@
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aktualisieren";
 /* No comment provided by engineer. */
- "ATTACHMENT" = "Anhang";
+"ATTACHMENT" = "Anhang";
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Beschriftungslimit erreicht.";
 /* placeholder text for an empty captioning field */
@@ -181,9 +181,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ hat die Gruppe verlassen.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " %@ wurde aus der Gruppe entfernt. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ wurden aus der Gruppe entfernt. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Titel lautet jetzt »%@«.";
 /* No comment provided by engineer. */
@@ -191,7 +191,7 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Du hast die Gruppe verlassen.";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " Du wurdest aus der Gruppe entfernt. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kannst nicht mehr als %@ Elemente teilen.";
 /* alert title */
@@ -313,7 +313,7 @@
 /* Indicates that the last backup restore succeeded. */
 "SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Wiederherstellen der Sicherung erfolgreich";
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Schritt";
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PROGRESS" = "Fortschritt";
 /* Label for backup status row in the in the backup settings view. */
@@ -337,7 +337,7 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Link-Vorschauen senden";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Linkvorschau ist verfügbar für Imgur, Instagram, Pinterest, Reddit, und YouTube Links.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Link-Vorschauen";
 /* table section header */
@@ -359,7 +359,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Tipp-Indikatoren";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Stumm";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ Tage";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -489,3 +489,37 @@
 "vc_qr_code_view_scan_qr_code_tab_title" = "QR-Code scannen";
 "vc_qr_code_view_scan_qr_code_explanation" = "Scannen Sie den QR-Code einer Person, um ein Gespräch mit ihr zu beginnen.";
 "vc_view_my_qr_code_explanation" = "Das ist Ihr QR-Code. Andere Benutzer können ihn scannen, um eine Session mit Ihnen zu starten.";
+// MARK: - Not Yet Translated
+"fast_mode_explanation" = "Du wirst zuverlässig und unmittelbar mit dem Push-Mitteilungsdienst von Apple über neue Nachrichten informiert.";
+"slow_mode_explanation" = "Session sucht gelegentlich im Hintergrund nach neuen Nachrichten.";
+"vc_pn_mode_title" = "Nachrichtenmitteilungen";
+"vc_notification_settings_notification_mode_title" = "Schnellen Modus benutzen";
+"vc_link_device_recovery_phrase_tab_title" = "Wiederherstellungsphrase";
+"vc_link_device_scan_qr_code_explanation" = "Gehe zu Einstellungen → Wiederherstellungsphrase auf deinem anderen Gerät um deinen QR-Code anzeigen zu lassen.";
+"vc_enter_recovery_phrase_title" = "Wiederherstellungsphrase";
+"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
+"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
+"vc_home_title" = "Messages";
+"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
+"vc_join_open_group_suggestions_title" = "Or join one of these...";
+"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
+"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
+"copied" = "Copied";
+"vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
+"vc_conversation_input_prompt" = "Message";
+"vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
+"modal_download_attachment_title" = "Trust %@?";
+"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
+"modal_download_button_title" = "Download";
+"modal_open_url_title" = "Open URL?";
+"modal_open_url_explanation" = "Are you sure you want to open %@?";
+"modal_open_url_button_title" = "Open";
+"modal_blocked_title" = "Unblock %@?";
+"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
+"modal_blocked_button_title" = "Unblock";
+"modal_link_previews_title" = "Enable Link Previews?";
+"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
+"modal_link_previews_button_title" = "Enable";
+"vc_share_title" = "Share to Session";
+"vc_share_loading_message" = "Preparing attachments...";
+"vc_share_sending_message" = "Sending...";

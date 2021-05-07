@@ -1,42 +1,21 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
-import UIKit
-
-import PureLayout
+import CoreServices
 import PromiseKit
 import SessionUIKit
-import CoreServices
 
-@objc
-public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate, AppModeManagerDelegate {
-
-    // MARK: - Dependencies
-
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
-    }
-
-    // MARK: -
-
+final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
+    private var areVersionMigrationsComplete = false
+    public static var attachmentPrepPromise: Promise<[SignalAttachment]>?
+    
+    // MARK: Error
     enum ShareViewControllerError: Error {
         case assertionError(description: String)
         case unsupportedMedia
         case notRegistered
         case obsoleteShare
     }
-
-    private var hasInitialRootViewController = false
-    private var isReadyForAppExtensions = false
-    private var areVersionMigrationsComplete = false
-
-    private var progressPoller: ProgressPoller?
-    var loadViewController: SAELoadViewController?
-
-    private var shareViewNavigationController: OWSNavigationController?
-
-    override open func loadView() {
+    
+    // MARK: Lifecycle
+    override func loadView() {
         super.loadView()
 
         // This should be the first thing we do.
@@ -56,8 +35,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         _ = AppVersion.sharedInstance()
 
-        startupLogging()
-
         Cryptography.seedRandom()
 
         // We don't need to use DeviceSleepManager in the SAE.
@@ -69,18 +46,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
-        // If we haven't migrated the database file to the shared data
-        // directory we can't load it, and therefore can't init TSSPrimaryStorage,
-        // and therefore don't want to setup most of our machinery (Environment,
-        // most of the singletons, etc.).  We just want to show an error view and
-        // abort.
-        isReadyForAppExtensions = OWSPreferences.isReadyForAppExtensions()
-        guard isReadyForAppExtensions else {
-            showNotReadyView()
-            return
-        }
-
-        // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment(appSpecificSingletonBlock: {
             SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
         }, migrationCompletion: { [weak self] in
@@ -93,26 +58,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             strongSelf.versionMigrationsDidComplete()
         })
 
-        let shareViewNavigationController = OWSNavigationController()
-        self.shareViewNavigationController = shareViewNavigationController
-
-        let loadViewController = SAELoadViewController(delegate: self)
-        self.loadViewController = loadViewController
-
-        // Don't display load screen immediately, in hopes that we can avoid it altogether.
-        after(seconds: 0.5).done { [weak self] in
-            AssertIsOnMainThread()
-
-            guard let strongSelf = self else { return }
-            guard strongSelf.presentedViewController == nil else {
-                Logger.debug("setup completed quickly, no need to present load view controller.")
-                return
-            }
-
-            Logger.debug("setup is slow - showing loading screen")
-            strongSelf.showPrimaryViewController(loadViewController)
-        }.retainUntilComplete()
-
         // We don't need to use "screen protection" in the SAE.
 
         NotificationCenter.default.addObserver(self,
@@ -120,93 +65,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                name: .StorageIsReady,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(registrationStateDidChange),
-                                               name: .RegistrationStateDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(owsApplicationWillEnterForeground),
-                                               name: .OWSApplicationWillEnterForeground,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationDidEnterBackground),
                                                name: .OWSApplicationDidEnterBackground,
                                                object: nil)
-
-        Logger.info("completed.")
-    }
-
-    deinit {
-        Logger.info("deinit")
-        NotificationCenter.default.removeObserver(self)
-
-        // Share extensions reside in a process that may be reused between usages.
-        // That isn't safe; the codebase is full of statics (e.g. singletons) which
-        // we can't easily clean up.
-        ExitShareExtension()
-    }
-
-    @objc
-    public func applicationDidEnterBackground() {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        if OWSScreenLock.shared.isScreenLockEnabled() {
-
-            Logger.info("dismissing.")
-
-            self.dismiss(animated: false) { [weak self] in
-                AssertIsOnMainThread()
-                guard let strongSelf = self else { return }
-                strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
-            }
-        }
-    }
-
-    private func activate() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        // We don't need to use "screen protection" in the SAE.
-
-        ensureRootViewController()
-
-        // We don't need to use RTCInitializeSSL() in the SAE.
-
-        if tsAccountManager.isRegistered() {
-            // At this point, potentially lengthy DB locking migrations could be running.
-            // Avoid blocking app launch by putting all further possible DB access in async block
-            DispatchQueue.global().async { [weak self] in
-                guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber()!)")
-
-                // We don't need to use OWSDisappearingMessagesJob in the SAE.
-
-                // We don't need to use OWSFailedMessagesJob in the SAE.
-
-                // We don't need to use OWSFailedAttachmentDownloadsJob in the SAE.
-            }
-        } else {
-            Logger.info("running post launch block for unregistered user.")
-
-            // We don't need to update the app icon badge number in the SAE.
-
-            // We don't need to prod the TSSocketManager in the SAE.
-        }
-
-        if tsAccountManager.isRegistered() {
-            DispatchQueue.main.async { [weak self] in
-                guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber()!)")
-
-                // We don't need to use the TSSocketManager in the SAE.
-
-                // We don't need to fetch messages in the SAE.
-
-                // We don't need to use OWSSyncPushTokensJob in the SAE.
-            }
-        }
     }
 
     @objc
@@ -256,19 +117,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber()!)")
+        // We don't need to use messageFetcherJob in the SAE.
 
-            // We don't need to use messageFetcherJob in the SAE.
-
-            // We don't need to use SyncPushTokensJob in the SAE.
-        }
+        // We don't need to use SyncPushTokensJob in the SAE.
 
         // We don't need to use DeviceSleepManager in the SAE.
 
         AppVersion.sharedInstance().saeLaunchDidComplete()
 
-        ensureRootViewController()
+        showLockScreenOrMainContent()
 
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
@@ -281,164 +138,34 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         OWSReadReceiptManager.shared().prepareCachedValues()
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
+            AssertIsOnMainThread()
+            guard let strongSelf = self else { return }
+            strongSelf.showLockScreenOrMainContent()
+        }
+    }
 
     @objc
-    func registrationStateDidChange() {
+    public func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
-        Logger.debug("")
-
-        if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber()!)")
-
-            // We don't need to use ExperienceUpgradeFinder in the SAE.
-
-            // We don't need to use OWSDisappearingMessagesJob in the SAE.
-
-            OWSProfileManager.shared().ensureLocalProfileCached()
-        }
-    }
-
-    private func ensureRootViewController() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        guard AppReadiness.isAppReady() else {
-            return
-        }
-        guard !hasInitialRootViewController else {
-            return
-        }
-        hasInitialRootViewController = true
-
-        Logger.info("Presenting initial root view controller")
+        Logger.info("")
 
         if OWSScreenLock.shared.isScreenLockEnabled() {
-            presentScreenLock()
-        } else {
-            presentContentView()
-        }
-    }
 
-    private func presentContentView() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        Logger.info("Presenting content view")
-
-        if !tsAccountManager.isRegistered() {
-            showNotRegisteredView()
-        } else if !OWSProfileManager.shared().localProfileExists() {
-            // This is a rare edge case, but we want to ensure that the user
-            // is has already saved their local profile key in the main app.
-            showNotReadyView()
-        } else {
-            DispatchQueue.main.async { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.buildAttachmentsAndPresentConversationPicker()
-            }
-        }
-
-        // We don't use the AppUpdateNag in the SAE.
-    }
-
-    func startupLogging() {
-        Logger.info("iOS Version: \(UIDevice.current.systemVersion)}")
-
-        let locale = NSLocale.current as NSLocale
-        if let localeIdentifier = locale.object(forKey: NSLocale.Key.identifier) as? String,
-            localeIdentifier.count > 0 {
-            Logger.info("Locale Identifier: \(localeIdentifier)")
-        } else {
-            owsFailDebug("Locale Identifier: Unknown")
-        }
-        if let countryCode = locale.object(forKey: NSLocale.Key.countryCode) as? String,
-            countryCode.count > 0 {
-            Logger.info("Country Code: \(countryCode)")
-        } else {
-            owsFailDebug("Country Code: Unknown")
-        }
-        if let languageCode = locale.object(forKey: NSLocale.Key.languageCode) as? String,
-            languageCode.count > 0 {
-            Logger.info("Language Code: \(languageCode)")
-        } else {
-            owsFailDebug("Language Code: Unknown")
-        }
-    }
-
-    // MARK: Error Views
-
-    private func showNotReadyView() {
-        AssertIsOnMainThread()
-
-        let failureTitle = NSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE",
-                                             comment: "Title indicating that the share extension cannot be used until the main app has been launched at least once.")
-        let failureMessage = NSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE",
-                                               comment: "Message indicating that the share extension cannot be used until the main app has been launched at least once.")
-        showErrorView(title: failureTitle, message: failureMessage)
-    }
-
-    private func showNotRegisteredView() {
-        AssertIsOnMainThread()
-
-        let failureTitle = NSLocalizedString("SHARE_EXTENSION_NOT_REGISTERED_TITLE",
-                                             comment: "Title indicating that the share extension cannot be used until the user has registered in the main app.")
-        let failureMessage = NSLocalizedString("SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
-                                               comment: "Message indicating that the share extension cannot be used until the user has registered in the main app.")
-        showErrorView(title: failureTitle, message: failureMessage)
-    }
-
-    private func showErrorView(title: String, message: String) {
-        AssertIsOnMainThread()
-
-        let viewController = SAEFailedViewController(delegate: self, title: title, message: message)
-        self.showPrimaryViewController(viewController)
-    }
-
-    // MARK: View Lifecycle
-
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-
-        Logger.debug("")
-
-        if isReadyForAppExtensions {
-            AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
+            self.dismiss(animated: false) { [weak self] in
                 AssertIsOnMainThread()
                 guard let strongSelf = self else { return }
-                strongSelf.activate()
+                strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
             }
         }
     }
 
-    override open func viewWillAppear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewWillAppear(animated)
-    }
-
-    override open func viewDidAppear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewDidAppear(animated)
-    }
-
-    override open func viewWillDisappear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewWillDisappear(animated)
-
-        Logger.flush()
-    }
-
-    override open func viewDidDisappear(_ animated: Bool) {
-        Logger.debug("")
-
-        super.viewDidDisappear(animated)
-
-        Logger.flush()
+    deinit {
+        NotificationCenter.default.removeObserver(self)
 
         // Share extensions reside in a process that may be reused between usages.
         // That isn't safe; the codebase is full of statics (e.g. singletons) which
@@ -446,136 +173,68 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         ExitShareExtension()
     }
 
-    @objc
-    func owsApplicationWillEnterForeground() throws {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        // If a user unregisters in the main app, the SAE should shut down
-        // immediately.
-        guard !tsAccountManager.isRegistered() else {
-            // If user is registered, do nothing.
-            return
-        }
-        guard let shareViewNavigationController = shareViewNavigationController else {
-            owsFailDebug("Missing shareViewNavigationController")
-            return
-        }
-        guard let firstViewController = shareViewNavigationController.viewControllers.first else {
-            // If no view has been presented yet, do nothing.
-            return
-        }
-        if let _ = firstViewController as? SAEFailedViewController {
-            // If root view is an error view, do nothing.
-            return
-        }
-        throw ShareViewControllerError.notRegistered
+    // MARK: App Mode
+    public func getCurrentAppMode() -> AppMode {
+        guard let window = self.view.window else { return .light }
+        let userInterfaceStyle = window.traitCollection.userInterfaceStyle
+        let isLightMode = (userInterfaceStyle == .light || userInterfaceStyle == .unspecified)
+        return isLightMode ? .light : .dark
     }
 
-    // MARK: ShareViewDelegate, SAEFailedViewDelegate
-
-    public func shareViewWasUnlocked() {
-        Logger.info("")
-
-        presentContentView()
+    public func setCurrentAppMode(to appMode: AppMode) {
+        return // Not applicable to share extensions
     }
-
-    public func shareViewWasCompleted() {
-        Logger.info("")
-
-        self.dismiss(animated: true) { [weak self] in
-            AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
-        }
-    }
-
-    public func shareViewWasCancelled() {
-        Logger.info("")
-
-        self.dismiss(animated: true) { [weak self] in
-            AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
-        }
-    }
-
-    public func shareViewFailed(error: Error) {
-        Logger.info("")
-
-        self.dismiss(animated: true) { [weak self] in
-            AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-            strongSelf.extensionContext!.cancelRequest(withError: error)
-        }
-    }
-
-    // MARK: Helpers
-
-    // This view controller is not visible to the user. It exists to intercept touches, set up the
-    // extensions dependencies, and eventually present a visible view to the user.
-    // For speed of presentation, we only present a single modal, and if it's already been presented
-    // we swap out the contents.
-    // e.g. if loading is taking a while, the user will see the load screen presented with a modal
-    // animation. Next, when loading completes, the load view will be switched out for the contact
-    // picker view.
-    private func showPrimaryViewController(_ viewController: UIViewController) {
-        AssertIsOnMainThread()
-
-        guard let shareViewNavigationController = shareViewNavigationController else {
-            owsFailDebug("Missing shareViewNavigationController")
-            return
-        }
-        shareViewNavigationController.setViewControllers([viewController], animated: false)
-        if self.presentedViewController == nil {
-            Logger.debug("presenting modally: \(viewController)")
-            self.present(shareViewNavigationController, animated: true)
+    
+    // MARK: Updating
+    private func showLockScreenOrMainContent() {
+        if OWSScreenLock.shared.isScreenLockEnabled() {
+            showLockScreen()
         } else {
-            Logger.debug("modal already presented. swapping modal content for: \(viewController)")
-            assert(self.presentedViewController == shareViewNavigationController)
+            showMainContent()
         }
     }
-
-    private func buildAttachmentsAndPresentConversationPicker() {
-        AssertIsOnMainThread()
-
-        self.buildAttachments().map { [weak self] attachments in
-            AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-
-            strongSelf.progressPoller = nil
-            strongSelf.loadViewController = nil
-
-            let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: strongSelf)
-            Logger.debug("presentConversationPicker: \(conversationPicker)")
-            conversationPicker.attachments = attachments
-            strongSelf.showPrimaryViewController(conversationPicker)
-            Logger.info("showing picker with attachments: \(attachments)")
-        }.catch { [weak self] error in
-            AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-
-            let alertTitle = NSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
-                                               comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
-            OWSAlerts.showAlert(title: alertTitle,
-                                message: error.localizedDescription,
-                                buttonTitle: CommonStrings.cancelButton) { _ in
-                                    strongSelf.shareViewWasCancelled()
+    
+    private func showLockScreen() {
+        let screenLockVC = SAEScreenLockViewController(shareViewDelegate: self)
+        setViewControllers([ screenLockVC ], animated: false)
+    }
+    
+    private func showMainContent() {
+        let threadPickerVC = ThreadPickerVC()
+        threadPickerVC.shareVC = self
+        setViewControllers([ threadPickerVC ], animated: false)
+        let promise = buildAttachments()
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false, message: NSLocalizedString("vc_share_loading_message", comment: "")) { activityIndicator in
+            promise.done { _ in
+                activityIndicator.dismiss { }
+            }.catch { _ in
+                activityIndicator.dismiss { }
             }
-            owsFailDebug("building attachment failed with error: \(error)")
-        }.retainUntilComplete()
+        }
+        ShareVC.attachmentPrepPromise = promise
     }
-
-    private func presentScreenLock() {
-        AssertIsOnMainThread()
-
-        let screenLockUI = SAEScreenLockViewController(shareViewDelegate: self)
-        Logger.debug("presentScreenLock: \(screenLockUI)")
-        showPrimaryViewController(screenLockUI)
-        Logger.info("showing screen lock")
+    
+    func shareViewWasUnlocked() {
+        showMainContent()
     }
-
+    
+    func shareViewWasCompleted() {
+        extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+    }
+    
+    func shareViewWasCancelled() {
+        extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+    }
+    
+    func shareViewFailed(error: Error) {
+        let alert = UIAlertController(title: "Session", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: { _ in
+            self.extensionContext!.cancelRequest(withError: error)
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: Attachment Prep
     private class func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
         // URLs, contacts and other special items have to be detected separately.
         // Many shares (e.g. pdfs) will register many UTI types and/or conform to kUTTypeData.
@@ -708,7 +367,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 Logger.error("invalid inputItem \(inputItemRaw)")
                 continue
             }
-            if let itemProviders = ShareViewController.preferredItemProviders(inputItem: inputItem) {
+            if let itemProviders = ShareVC.preferredItemProviders(inputItem: inputItem) {
                 return Promise.value(itemProviders)
             }
         }
@@ -740,7 +399,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             self.isConvertibleToContactShare = isConvertibleToContactShare
         }
     }
-
+    
     private func loadItemProvider(itemProvider: NSItemProvider) -> Promise<LoadedItem> {
         Logger.info("attachment: \(itemProvider)")
 
@@ -753,7 +412,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // * UTIs aren't very descriptive (there are far more MIME types than UTI types)
         //   so in the case of file attachments we try to refine the attachment type
         //   using the file extension.
-        guard let srcUtiType = ShareViewController.utiType(itemProvider: itemProvider) else {
+        guard let srcUtiType = ShareVC.utiType(itemProvider: itemProvider) else {
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
@@ -862,7 +521,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         return promise
     }
-
+    
     private func buildAttachment(forLoadedItem loadedItem: LoadedItem) -> Promise<SignalAttachment> {
         let itemProvider = loadedItem.itemProvider
         let itemUrl = loadedItem.itemUrl
@@ -880,7 +539,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("building DataSource with url: \(url), utiType: \(utiType)")
 
-        guard let dataSource = ShareViewController.createDataSource(utiType: utiType, url: url, customFileName: loadedItem.customFileName) else {
+        guard let dataSource = ShareVC.createDataSource(utiType: utiType, url: url, customFileName: loadedItem.customFileName) else {
             let error = ShareViewControllerError.assertionError(description: "Unable to read attachment data")
             return Promise(error: error)
         }
@@ -901,27 +560,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         guard !SignalAttachment.isInvalidVideo(dataSource: dataSource, dataUTI: specificUTIType) else {
             // This can happen, e.g. when sharing a quicktime-video from iCloud drive.
-
-            let (promise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
-
-            // TODO: How can we move waiting for this export to the end of the share flow rather than having to do it up front?
-            // Ideally we'd be able to start it here, and not block the UI on conversion unless there's still work to be done
-            // when the user hits "send".
-            if let exportSession = exportSession {
-                let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
-                self.progressPoller = progressPoller
-                progressPoller.startPolling()
-
-                guard let loadViewController = self.loadViewController else {
-                    owsFailDebug("load view controller was unexpectedly nil")
-                    return promise
-                }
-
-                DispatchQueue.main.async {
-                    loadViewController.progress = progressPoller.progress
-                }
-            }
-
+            let (promise, _) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: specificUTIType)
             return promise
         }
 
@@ -1003,61 +642,5 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // If video file already existed on disk as an mp4, then the host app didn't need to
         // apply any conversion, so no need to relocate the app.
         return !itemProvider.registeredTypeIdentifiers.contains(kUTTypeMPEG4 as String)
-    }
-
-    // MARK: App Mode
-
-    public func getCurrentAppMode() -> AppMode {
-        guard let window = self.view.window else { return .light }
-        let userInterfaceStyle = window.traitCollection.userInterfaceStyle
-        let isLightMode = (userInterfaceStyle == .light || userInterfaceStyle == .unspecified)
-        return isLightMode ? .light : .dark
-    }
-
-    public func setCurrentAppMode(to appMode: AppMode) {
-        return // Not applicable to share extensions
-    }
-}
-
-// Exposes a Progress object, whose progress is updated by polling the return of a given block
-private class ProgressPoller: NSObject {
-
-    let progress: Progress
-    private(set) var timer: Timer?
-
-    // Higher number offers higher ganularity
-    let progressTotalUnitCount: Int64 = 10000
-    private let timeInterval: Double
-    private let ratioCompleteBlock: () -> Float
-
-    init(timeInterval: TimeInterval, ratioCompleteBlock: @escaping () -> Float) {
-        self.timeInterval = timeInterval
-        self.ratioCompleteBlock = ratioCompleteBlock
-
-        self.progress = Progress()
-
-        progress.totalUnitCount = progressTotalUnitCount
-        progress.completedUnitCount = Int64(ratioCompleteBlock() * Float(progressTotalUnitCount))
-    }
-
-    func startPolling() {
-        guard self.timer == nil else {
-            owsFailDebug("already started timer")
-            return
-        }
-
-        self.timer = WeakTimer.scheduledTimer(timeInterval: timeInterval, target: self, userInfo: nil, repeats: true) { [weak self] (timer) in
-            guard let strongSelf = self else {
-                return
-            }
-
-            let completedUnitCount = Int64(strongSelf.ratioCompleteBlock() * Float(strongSelf.progressTotalUnitCount))
-            strongSelf.progress.completedUnitCount = completedUnitCount
-
-            if completedUnitCount == strongSelf.progressTotalUnitCount {
-                Logger.debug("progress complete")
-                timer.invalidate()
-            }
-        }
     }
 }

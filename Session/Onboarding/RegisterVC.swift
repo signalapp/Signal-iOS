@@ -177,7 +177,7 @@ final class RegisterVC : BaseVC {
         UIPasteboard.general.string = x25519KeyPair.hexEncodedPublicKey
         copyPublicKeyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyPublicKeyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyPublicKeyButton.setTitle("Copied", for: UIControl.State.normal)
+            self.copyPublicKeyButton.setTitle(NSLocalizedString("copied", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }

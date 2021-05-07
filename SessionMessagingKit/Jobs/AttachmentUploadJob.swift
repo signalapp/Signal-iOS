@@ -82,7 +82,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         if encrypt {
             var encryptionKey = NSData()
             var digest = NSData()
-            guard let ciphertext = Cryptography.encryptAttachmentData(data, shouldPad: false, outKey: &encryptionKey, outDigest: &digest) else {
+            guard let ciphertext = Cryptography.encryptAttachmentData(data, shouldPad: true, outKey: &encryptionKey, outDigest: &digest) else {
                 SNLog("Couldn't encrypt attachment.")
                 onFailure?(Error.encryptionFailed); return
             }

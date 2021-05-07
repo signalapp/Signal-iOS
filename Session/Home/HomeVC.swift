@@ -89,7 +89,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             setUpNavBarStyle()
         }
         updateNavBarButtons()
-        setNavBarTitle("Messages")
+        setNavBarTitle(NSLocalizedString("vc_home_title", comment: ""))
         // Recovery phrase reminder
         let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
         if !hasViewedSeed {
@@ -324,7 +324,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
             var message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: "")
             if let thread = thread as? TSGroupThread, thread.isClosedGroup, thread.groupModel.groupAdminIds.contains(getUserHexEncodedPublicKey()) {
-                message = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone."
+                message = NSLocalizedString("admin_group_leave_warning", comment: "")
             }
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { [weak self] _ in

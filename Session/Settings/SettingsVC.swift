@@ -139,13 +139,13 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         versionLabel.text = "Version \(version) (\(buildNumber))"
         // Invite button
         let inviteButton = UIButton()
-        inviteButton.setTitle("Invite a Friend", for: UIControl.State.normal)
+        inviteButton.setTitle(NSLocalizedString("vc_settings_invite_a_friend_button_title", comment: ""), for: UIControl.State.normal)
         inviteButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         inviteButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         inviteButton.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
         // Help translate button
         let helpTranslateButton = UIButton()
-        helpTranslateButton.setTitle("Help us Translate Session", for: UIControl.State.normal)
+        helpTranslateButton.setTitle(NSLocalizedString("vc_settings_help_us_translate_button_title", comment: ""), for: UIControl.State.normal)
         helpTranslateButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         helpTranslateButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         helpTranslateButton.addTarget(self, action: #selector(helpTranslate), for: UIControl.Event.touchUpInside)
@@ -418,7 +418,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         UIPasteboard.general.string = getUserHexEncodedPublicKey()
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle("Copied", for: UIControl.State.normal)
+            self.copyButton.setTitle(NSLocalizedString("copied", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }

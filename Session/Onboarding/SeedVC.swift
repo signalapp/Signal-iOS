@@ -177,7 +177,7 @@ final class SeedVC : BaseVC {
         UIPasteboard.general.string = mnemonic
         copyButton.isUserInteractionEnabled = false
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle("Copied", for: UIControl.State.normal)
+            self.copyButton.setTitle(NSLocalizedString("copied", comment: ""), for: UIControl.State.normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }

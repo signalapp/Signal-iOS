@@ -193,7 +193,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         let suggestionGridTitleLabel = UILabel()
         suggestionGridTitleLabel.textColor = Colors.text
         suggestionGridTitleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
-        suggestionGridTitleLabel.text = "Or join one of these..."
+        suggestionGridTitleLabel.text = NSLocalizedString("vc_join_open_group_suggestions_title", comment: "")
         suggestionGridTitleLabel.numberOfLines = 0
         suggestionGridTitleLabel.lineBreakMode = .byWordWrapping
         // Next button

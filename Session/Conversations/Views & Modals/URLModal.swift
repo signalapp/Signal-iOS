@@ -21,13 +21,13 @@ final class URLModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
-        titleLabel.text = "Open URL?"
+        titleLabel.text = NSLocalizedString("modal_open_url_title", comment: "")
         titleLabel.textAlignment = .center
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
         messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        let message = "Are you sure you want to open \(url.absoluteString)?"
+        let message = String(format: NSLocalizedString("modal_open_url_explanation", comment: ""), url.absoluteString)
         let attributedMessage = NSMutableAttributedString(string: message)
         attributedMessage.addAttributes([ .font : UIFont.boldSystemFont(ofSize: Values.smallFontSize) ], range: (message as NSString).range(of: url.absoluteString))
         messageLabel.attributedText = attributedMessage
@@ -41,7 +41,7 @@ final class URLModal : Modal {
         openButton.backgroundColor = Colors.buttonBackground
         openButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         openButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        openButton.setTitle("Open", for: UIControl.State.normal)
+        openButton.setTitle(NSLocalizedString("modal_open_url_button_title", comment: ""), for: UIControl.State.normal)
         openButton.addTarget(self, action: #selector(openURL), for: UIControl.Event.touchUpInside)
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, openButton ])

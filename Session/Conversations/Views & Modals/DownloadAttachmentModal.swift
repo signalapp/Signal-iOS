@@ -24,13 +24,13 @@ final class DownloadAttachmentModal : Modal {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
-        titleLabel.text = "Trust \(name)?"
+        titleLabel.text = String(format: NSLocalizedString("modal_download_attachment_title", comment: ""), name)
         titleLabel.textAlignment = .center
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
         messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        let message = "Are you sure you want to download media sent by \(name)?"
+        let message = String(format: NSLocalizedString("modal_download_attachment_explanation", comment: ""), name)
         let attributedMessage = NSMutableAttributedString(string: message)
         attributedMessage.addAttributes([ .font : UIFont.boldSystemFont(ofSize: Values.smallFontSize) ], range: (message as NSString).range(of: name))
         messageLabel.attributedText = attributedMessage
@@ -44,7 +44,7 @@ final class DownloadAttachmentModal : Modal {
         downloadButton.backgroundColor = Colors.buttonBackground
         downloadButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         downloadButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        downloadButton.setTitle("Download", for: UIControl.State.normal)
+        downloadButton.setTitle(NSLocalizedString("modal_download_button_title", comment: ""), for: UIControl.State.normal)
         downloadButton.addTarget(self, action: #selector(trust), for: UIControl.Event.touchUpInside)
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, downloadButton ])
