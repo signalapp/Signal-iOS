@@ -95,7 +95,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                     linkPreview:(nullable OWSLinkPreview *)linkPreview NS_DESIGNATED_INITIALIZER;
+                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                         openGroupInvitationName:(nullable NSString *)openGroupInvitationName
+                          openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

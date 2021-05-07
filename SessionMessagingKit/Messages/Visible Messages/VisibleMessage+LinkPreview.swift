@@ -61,8 +61,8 @@ public extension VisibleMessage {
         public override var description: String {
             """
             LinkPreview(
-                title: \(title ?? "null")
-                url: \(url ?? "null")
+                title: \(title ?? "null"),
+                url: \(url ?? "null"),
                 attachmentID: \(attachmentID ?? "null")
             )
             """

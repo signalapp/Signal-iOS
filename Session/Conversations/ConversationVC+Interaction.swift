@@ -447,6 +447,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     // Scroll to the source of the reply
                     guard let indexPath = viewModel.ensureLoadWindowContainsQuotedReply(reply) else { return }
                     messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)
+                } else if let message = viewItem.interaction as? TSIncomingMessage, let name = message.openGroupInvitationName,
+                    let url = message.openGroupInvitationURL {
+                    joinOpenGroup(name: name, url: url)
                 }
             default: break
             }
@@ -553,6 +556,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         urlModal.modalPresentationStyle = .overFullScreen
         urlModal.modalTransitionStyle = .crossDissolve
         present(urlModal, animated: true, completion: nil)
+    }
+    
+    func joinOpenGroup(name: String, url: String) {
+        // Open groups can be unsafe, so always ask the user whether they want to join one
+        let joinOpenGroupModal = JoinOpenGroupModal(name: name, url: url)
+        joinOpenGroupModal.modalPresentationStyle = .overFullScreen
+        joinOpenGroupModal.modalTransitionStyle = .crossDissolve
+        present(joinOpenGroupModal, animated: true, completion: nil)
     }
     
     func handleReplyButtonTapped(for viewItem: ConversationViewItem) {

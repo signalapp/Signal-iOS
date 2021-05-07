@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
                   serverTimestamp:(nullable NSNumber *)serverTimestamp
                   wasReceivedByUD:(BOOL)wasReceivedByUD
+          openGroupInvitationName:(nullable NSString *)openGroupInvitationName
+           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -61,7 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:0
                              quotedMessage:quotedMessage
-                               linkPreview:linkPreview];
+                               linkPreview:linkPreview
+                   openGroupInvitationName:openGroupInvitationName
+                    openGroupInvitationURL:openGroupInvitationURL];
 
     if (!self) {
         return self;

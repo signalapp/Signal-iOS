@@ -80,11 +80,11 @@ public final class ConfigurationMessage : ControlMessage {
     public override var description: String {
         """
         ConfigurationMessage(
-            closedGroups: \([ClosedGroup](closedGroups).prettifiedDescription)
-            openGroups: \([String](openGroups).prettifiedDescription)
-            displayName: \(displayName ?? "null")
-            profilePictureURL: \(profilePictureURL ?? "null")
-            profileKey: \(profileKey?.toHexString() ?? "null")
+            closedGroups: \([ClosedGroup](closedGroups).prettifiedDescription),
+            openGroups: \([String](openGroups).prettifiedDescription),
+            displayName: \(displayName ?? "null"),
+            profilePictureURL: \(profilePictureURL ?? "null"),
+            profileKey: \(profileKey?.toHexString() ?? "null"),
             contacts: \([Contact](contacts).prettifiedDescription)
         )
         """

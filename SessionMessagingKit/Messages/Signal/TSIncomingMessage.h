@@ -58,7 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
                   serverTimestamp:(nullable NSNumber *)serverTimestamp
-                  wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
+                  wasReceivedByUD:(BOOL)wasReceivedByUD
+          openGroupInvitationName:(nullable NSString *)openGroupInvitationName
+           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

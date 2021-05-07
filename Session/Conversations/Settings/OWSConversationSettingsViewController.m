@@ -312,6 +312,20 @@ CGFloat kIconViewLength = 24;
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
                              }]];
+    
+    if (self.isOpenGroup) {
+        [mainSection addItem:[OWSTableItem
+                                 itemWithCustomCellBlock:^{
+                                     return [weakSelf
+                                          disclosureCellWithName:NSLocalizedString(@"vc_conversation_settings_invite_button_title", "")
+                                                        iconName:@"ic_plus_24"
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                     OWSConversationSettingsViewController, @"invite")];
+                                 }
+                                 actionBlock:^{
+                                     [weakSelf inviteUsersToOpenGroup];
+                                 }]];
+    }
 
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
@@ -1087,6 +1101,31 @@ CGFloat kIconViewLength = 24;
 - (void)copySessionID
 {
     UIPasteboard.generalPasteboard.string = ((TSContactThread *)self.thread).contactSessionID;
+}
+
+- (void)inviteUsersToOpenGroup
+{
+    NSString *threadID = self.thread.uniqueId;
+    SNOpenGroupV2 *openGroup = [LKStorage.shared getV2OpenGroupForThreadID:threadID];
+    NSString *url = [NSString stringWithFormat:@"%@/%@?public_key=%@", openGroup.server, openGroup.room, openGroup.publicKey];
+    SNUserSelectionVC *userSelectionVC = [[SNUserSelectionVC alloc] initWithTitle:NSLocalizedString(@"vc_conversation_settings_invite_button_title", @"")
+                                                                        excluding:[NSSet new]
+                                                                       completion:^(NSSet<NSString *> *selectedUsers) {
+        for (NSString *user in selectedUsers) {
+            SNVisibleMessage *message = [SNVisibleMessage new];
+            message.sentTimestamp = [NSDate millisecondTimestamp];
+            message.openGroupInvitation = [[SNOpenGroupInvitation alloc] initWithName:openGroup.name url:url];
+            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactSessionID:user];
+            TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [tsMessage saveWithTransaction:transaction];
+            }];
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [SNMessageSender send:message inThread:thread usingTransaction:transaction];
+            }];
+        }
+    }];
+    [self.navigationController pushViewController:userSelectionVC animated:YES];
 }
 
 - (void)showMediaGallery

@@ -36,6 +36,8 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic) uint64_t openGroupServerMessageID;
 @property (nonatomic, readonly) BOOL isOpenGroupMessage;
+@property (nonatomic, readonly, nullable) NSString *openGroupInvitationName;
+@property (nonatomic, readonly, nullable) NSString *openGroupInvitationURL;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -46,7 +48,9 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                             linkPreview:(nullable OWSLinkPreview *)linkPreview NS_DESIGNATED_INITIALIZER;
+                             linkPreview:(nullable OWSLinkPreview *)linkPreview
+                 openGroupInvitationName:(nullable NSString *)openGroupInvitationName
+                  openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

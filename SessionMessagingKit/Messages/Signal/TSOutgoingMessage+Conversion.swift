@@ -28,7 +28,9 @@ import SessionUtilitiesKit
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
             quotedMessage: TSQuotedMessage.from(visibleMessage.quote),
-            linkPreview: OWSLinkPreview.from(visibleMessage.linkPreview)
+            linkPreview: OWSLinkPreview.from(visibleMessage.linkPreview),
+            openGroupInvitationName: visibleMessage.openGroupInvitation?.name,
+            openGroupInvitationURL: visibleMessage.openGroupInvitation?.url
         )
     }
 }
