@@ -285,7 +285,7 @@ void uncaughtExceptionHandler(NSException *exception)
 - (void)spamChallenge:(NSNotification *)notification
 {
     UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
-    [OWSSpamCaptchaViewController presentActionSheetFrom:fromVC];
+    [SpamCaptchaViewController presentActionSheetFrom:fromVC];
 }
 
 /**

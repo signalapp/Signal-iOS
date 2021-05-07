@@ -4636,7 +4636,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
 
-    [OWSSpamCaptchaViewController presentActionSheetFrom:self];
+    [SpamCaptchaViewController presentActionSheetFrom:self];
 }
 
 - (void)cvc_didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
