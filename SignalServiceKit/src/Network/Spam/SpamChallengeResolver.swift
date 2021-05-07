@@ -177,7 +177,7 @@ private struct ServerChallengePayload: Decodable {
 
     enum Options: String, Decodable {
         case recaptcha
-        case push_challenge
+        case pushChallenge
         case unrecognized
 
         init(from decoder: Decoder) throws {
@@ -212,7 +212,7 @@ extension SpamChallengeResolver {
                 return
             }
 
-            if payload.options.contains(.push_challenge), let completion = silentRecoveryCompletionHandler {
+            if payload.options.contains(.pushChallenge), let completion = silentRecoveryCompletionHandler {
                 Logger.info("Requesting push for silent recovery")
                 let challenge = PushChallenge(expiry: Date(timeIntervalSinceNow: 10))
                 challenge.schedulingDelegate = self
