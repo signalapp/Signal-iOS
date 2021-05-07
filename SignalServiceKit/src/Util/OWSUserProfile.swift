@@ -20,18 +20,42 @@ public extension OWSUserProfile {
 
     // MARK: - Bio
 
+    @nonobjc
+    private static let bioComponentCache = LRUCache<String, String>(maxSize: 256)
+    private static let unfairLock = UnfairLock()
+
+    private static func filterBioComponentForDisplay(_ input: String?,
+                                                     maxLengthGlyphs: Int,
+                                                     maxLengthBytes: Int) -> String? {
+        guard let input = input else {
+            return nil
+        }
+        let cacheKey = "\(maxLengthGlyphs)-\(maxLengthBytes)-\(input)"
+        return unfairLock.withLock {
+            // Note: we use empty strings in the cache, but return nil for empty strings.
+            if let cachedValue = bioComponentCache.get(key: cacheKey) {
+                return cachedValue.nilIfEmpty
+            }
+            let value = input.filterStringForDisplay().trimToGlyphCount(maxLengthGlyphs).trimToUtf8ByteCount(maxLengthBytes)
+            bioComponentCache.set(key: cacheKey, value: value)
+            return value.nilIfEmpty
+        }
+    }
+
     // Joins the two bio components into a single string
     // ready for display. It filters and enforces length
     // limits on the components.
     static func bioForDisplay(bio: String?, bioEmoji: String?) -> String? {
         var components = [String]()
         // TODO: We could use EmojiWithSkinTones to check for availability of the emoji.
-        if let emoji = bioEmoji?.filterStringForDisplay().trimToGlyphCount(kMaxBioEmojiLengthGlyphs).trimToUtf8ByteCount(kMaxBioEmojiLengthBytes),
-           !emoji.isEmpty {
+        if let emoji = filterBioComponentForDisplay(bioEmoji,
+                                                    maxLengthGlyphs: kMaxBioEmojiLengthGlyphs,
+                                                    maxLengthBytes: kMaxBioEmojiLengthBytes) {
             components.append(emoji)
         }
-        if let bioText = bio?.filterStringForDisplay().trimToGlyphCount(kMaxBioLengthGlyphs).trimToUtf8ByteCount(kMaxBioLengthBytes),
-           !bioText.isEmpty {
+        if let bioText = filterBioComponentForDisplay(bioEmoji,
+                                                    maxLengthGlyphs: kMaxBioLengthGlyphs,
+                                                    maxLengthBytes: kMaxBioLengthBytes) {
             components.append(bioText)
         }
         guard !components.isEmpty else {
