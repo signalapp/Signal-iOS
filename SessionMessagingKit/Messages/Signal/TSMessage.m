@@ -346,6 +346,8 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
+    } else if (self.openGroupInvitationName != nil) {
+        return @"😎 Open group invitation";
     } else {
         // TODO: We should do better here.
         return @"";
