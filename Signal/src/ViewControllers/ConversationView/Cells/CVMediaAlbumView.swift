@@ -545,7 +545,11 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 // data for the screen. There are only a few thumbnail sizes,
                 // so falling over to the next largest size is expensive. Therefore
                 // we include a small measure of slack in our calculation.
-                let sizeTolerance: CGFloat = 1.25
+                //
+                // targetQuality is expressed in terms of "the worst case ratio of
+                // image pixels per screen pixels that we will accept."
+                let targetQuality: CGFloat = 0.4
+                let sizeTolerance: CGFloat = 1 / targetQuality
                 let thumbnailDimensionPoints = TSAttachmentStream.thumbnailDimensionPoints(forThumbnailQuality: quality)
                 if renderDimensionPoints <= CGFloat(thumbnailDimensionPoints) * sizeTolerance {
                     return quality
