@@ -270,7 +270,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(spamChallenge:)
-                                                 name:OWSSpamChallengeResolver.NeedsCaptchaNotification
+                                                 name:SpamChallengeResolver.NeedsCaptchaNotification
                                                object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
@@ -1194,7 +1194,7 @@ void uncaughtExceptionHandler(NSException *exception)
     NSString *_Nullable spamChallengeToken = userInfo[@"rateLimitChallenge"];
 
     if (spamChallengeToken) {
-        OWSSpamChallengeResolver *spamResolver = self.spamChallengeResolver;
+        SpamChallengeResolver *spamResolver = self.spamChallengeResolver;
         [spamResolver handleIncomingPushChallengeToken:spamChallengeToken];
         return YES;
     }

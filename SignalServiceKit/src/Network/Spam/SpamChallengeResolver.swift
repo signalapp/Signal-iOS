@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc(OWSSpamChallengeResolver)
 public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
     // Post-initial load, all work should be done on this queue

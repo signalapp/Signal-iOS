@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     MessageProcessor *messageProcessor = [MessageProcessor new];
     id<Payments> payments = [MockPayments new];
     id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
-    OWSSpamChallengeResolver *spamChallengeResolver = [OWSSpamChallengeResolver new];
+    SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager

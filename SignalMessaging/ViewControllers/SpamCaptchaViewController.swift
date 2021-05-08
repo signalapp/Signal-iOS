@@ -166,7 +166,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
         super.init(nibName: nil, bundle: nil)
     }
 
-    override func loadView() {
+    override public func loadView() {
         let captchaView = CaptchaView()
         captchaView.delegate = self
 
@@ -182,7 +182,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         captchaView?.loadCaptcha()
 
@@ -203,12 +203,12 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
         completionHandler = nil
     }
 
-    func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {
+    public func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {
         completionHandler?(token)
         completionHandler = nil
     }
 
-    func captchaViewDidFailToCompleteCaptcha(_: CaptchaView) {
+    public func captchaViewDidFailToCompleteCaptcha(_: CaptchaView) {
         captchaView?.loadCaptcha()
     }
 
