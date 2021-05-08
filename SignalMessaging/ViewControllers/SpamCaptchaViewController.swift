@@ -158,7 +158,7 @@ extension CaptchaView: WKNavigationDelegate {
 }
 
 @objc
-class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
+public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
     private var captchaView: CaptchaView?
     var completionHandler: ((String?) -> Void)?
 
