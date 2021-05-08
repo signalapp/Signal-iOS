@@ -351,14 +351,13 @@ class MessageDetailViewController: OWSTableViewController2 {
     }
 
     private func contactItem(for address: SignalServiceAddress, accessoryText: String, displayUDIndicator: Bool) -> OWSTableItem {
-        let tableView = self.tableView
-        return .init(
-            customCellBlock: { [weak self] in
+        return .init(customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                let tableView = self.tableView
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                     owsFailDebug("Missing cell.")
                     return UITableViewCell()
                 }
-                guard let self = self else { return cell }
 
                 Self.databaseStorage.read { transaction in
                     let configuration = ContactCellConfiguration.build(address: address,

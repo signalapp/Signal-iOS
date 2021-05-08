@@ -107,13 +107,18 @@ NS_ASSUME_NONNULL_BEGIN
         blockedContactsSection.headerTitle = NSLocalizedString(
             @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
-        UITableView *tableView = self.tableViewController.tableView;
         for (SignalServiceAddress *address in blockedAddresses) {
             [blockedContactsSection addItem:[OWSTableItem
                                                 itemWithCustomCellBlock:^{
+                                                    BlockListViewController *_Nullable strongSelf = weakSelf;
+                                                    if (strongSelf == nil) {
+                                                        return [ContactTableViewCell new];
+                                                    }
+                                                    UITableView *tableView = strongSelf.tableViewController.tableView;
 
-                                                ContactTableViewCell *cell =
-                                                [tableView dequeueReusableCellWithIdentifier:ContactTableViewCell.reuseIdentifier];
+                                                    ContactTableViewCell *cell = [tableView
+                                                        dequeueReusableCellWithIdentifier:ContactTableViewCell
+                                                                                              .reuseIdentifier];
 
                                                     [BlockListViewController.databaseStorage
                                                         readWithBlock:^(SDSAnyReadTransaction *transaction) {

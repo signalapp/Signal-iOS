@@ -240,7 +240,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             return
         }
 
-        let tableView = self.tableView
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
@@ -275,7 +274,9 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                                      comment: "Title for the 'people you invited' section of the 'member requests and invites' view.")
         if membersInvitedByLocalUser.count > 0 {
             for address in membersInvitedByLocalUser {
-                localSection.add(OWSTableItem(customCellBlock: {
+                localSection.add(OWSTableItem(customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    let tableView = self.tableView
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                         owsFailDebug("Missing cell.")
                         return UITableViewCell()
@@ -321,6 +322,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         owsFailDebug("Missing self")
                         return OWSTableItem.newCell()
                     }
+                    let tableView = self.tableView
 
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                         owsFailDebug("Missing cell.")

@@ -42,7 +42,6 @@ class ReplaceAdminViewController: OWSTableViewController2 {
     }
 
     private func updateTableContents() {
-        let tableView = self.tableView
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
@@ -51,7 +50,9 @@ class ReplaceAdminViewController: OWSTableViewController2 {
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(self.candidates), transaction: transaction)
         }
         for address in sortedCandidates {
-            section.add(OWSTableItem(customCellBlock: {
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                let tableView = self.tableView
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                     owsFailDebug("Missing cell.")
                     return UITableViewCell()
