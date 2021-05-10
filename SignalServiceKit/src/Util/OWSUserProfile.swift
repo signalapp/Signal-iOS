@@ -53,9 +53,9 @@ public extension OWSUserProfile {
                                                     maxLengthBytes: kMaxBioEmojiLengthBytes) {
             components.append(emoji)
         }
-        if let bioText = filterBioComponentForDisplay(bioEmoji,
-                                                    maxLengthGlyphs: kMaxBioLengthGlyphs,
-                                                    maxLengthBytes: kMaxBioLengthBytes) {
+        if let bioText = filterBioComponentForDisplay(bio,
+                                                      maxLengthGlyphs: kMaxBioLengthGlyphs,
+                                                      maxLengthBytes: kMaxBioLengthBytes) {
             components.append(bioText)
         }
         guard !components.isEmpty else {
