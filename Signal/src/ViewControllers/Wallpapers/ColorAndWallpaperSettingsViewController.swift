@@ -21,7 +21,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("WALLPAPER_SETTINGS_TITLE", comment: "Title for the wallpaper settings view.")
+        title = NSLocalizedString("COLOR_AND_WALLPAPER_SETTINGS_TITLE", comment: "Title for the color & wallpaper settings view.")
 
         updateTableContents()
     }
@@ -32,8 +32,6 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false
-        previewSection.headerTitle = NSLocalizedString("WALLPAPER_SETTINGS_PREVIEW",
-                                                       comment: "Title for the wallpaper settings preview section.")
         let previewItem = OWSTableItem { [weak self] in
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
@@ -48,6 +46,68 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         previewSection.add(previewItem)
 
         contents.addSection(previewSection)
+
+        let chatColorSection = OWSTableSection()
+        chatColorSection.customHeaderHeight = 14
+
+        let defaultConversationColor = databaseStorage.read { transaction in
+            ConversationColors.defaultConversationColor(transaction: transaction)
+        }
+        let accessoryView = ConversationColorPreviewView(conversationColorValue: defaultConversationColor,
+                                                         mode: .circle)
+        accessoryView.autoSetDimensions(to: .square(16))
+        accessoryView.setContentHuggingHigh()
+        accessoryView.setCompressionResistanceHigh()
+        chatColorSection.add(OWSTableItem.item(
+            name: NSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
+                                        comment: "Set chat color action in color and wallpaper settings view."),
+            accessoryType: .disclosureIndicator,
+            accessoryView: accessoryView,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
+        ) { [weak self] in
+            guard let self = self else { return }
+//            let vc = SetWallpaperViewController(thread: self.thread)
+//            self.navigationController?.pushViewController(vc, animated: true)
+        })
+
+        chatColorSection.add(OWSTableItem.actionItem(
+            name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLOR",
+                                    comment: "Reset chat color action in color and wallpaper settings view."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color")
+        ) { [weak self] in
+            self?.didPressResetChatColorWallpaper()
+        })
+
+        contents.addSection(chatColorSection)
+
+        let wallpaperSection = OWSTableSection()
+        wallpaperSection.customHeaderHeight = 14
+
+        wallpaperSection.add(OWSTableItem.disclosureItem(
+            withText: NSLocalizedString("WALLPAPER_SETTINGS_SET_WALLPAPER",
+                                        comment: "Set wallpaper action in wallpaper settings view."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_wallpaper")
+        ) { [weak self] in
+            guard let self = self else { return }
+            let vc = SetWallpaperViewController(thread: self.thread)
+            self.navigationController?.pushViewController(vc, animated: true)
+        })
+
+        wallpaperSection.add(OWSTableItem.switch(
+            withText: NSLocalizedString("WALLPAPER_SETTINGS_DIM_WALLPAPER",
+                                        comment: "Dim wallpaper action in wallpaper settings view."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "dim_wallpaper"),
+            isOn: { () -> Bool in
+                self.databaseStorage.read { Wallpaper.dimInDarkMode(for: self.thread, transaction: $0) }
+            },
+            isEnabledBlock: {
+                self.databaseStorage.read { Wallpaper.exists(for: self.thread, transaction: $0) }
+            },
+            target: self,
+            selector: #selector(updateWallpaperDimming)
+        ))
+
+        contents.addSection(wallpaperSection)
 
         let setSection = OWSTableSection()
         setSection.customHeaderHeight = 14
@@ -175,6 +235,22 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         ) { _ in
             self.resetAllWallpapers()
         }
+    }
+
+    func didPressResetChatColorWallpaper() {
+//        OWSActionSheets.showConfirmationAlert(
+//            title: NSLocalizedString(
+//                "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION",
+//                comment: "Confirmation dialog when resetting all wallpapers."
+//            ),
+//            proceedTitle: NSLocalizedString(
+//                "WALLPAPER_SETTINGS_RESET_ALL",
+//                comment: "Reset all wallpapers action in wallpaper settings view."
+//            ),
+//            proceedStyle: .destructive
+//        ) { _ in
+//            self.resetAllWallpapers()
+//        }
     }
 
     func resetAllWallpapers() {

@@ -142,6 +142,7 @@ public extension OWSTableItem {
                      accessoryText: String? = nil,
                      accessoryType: UITableViewCell.AccessoryType = .none,
                      accessoryImage: UIImage? = nil,
+                     accessoryView: UIView? = nil,
                      accessibilityIdentifier: String,
                      actionBlock: (() -> Void)? = nil) -> OWSTableItem {
 
@@ -155,6 +156,7 @@ public extension OWSTableItem {
                 accessoryText: accessoryText,
                 accessoryType: accessoryType,
                 accessoryImage: accessoryImage,
+                accessoryView: accessoryView,
                 accessibilityIdentifier: accessibilityIdentifier
             ),
             actionBlock: actionBlock
@@ -185,6 +187,7 @@ public extension OWSTableItem {
                                             accessoryText: String? = nil,
                                             accessoryType: UITableViewCell.AccessoryType = .disclosureIndicator,
                                             accessoryImage: UIImage? = nil,
+                                            accessoryView: UIView? = nil,
                                             accessibilityIdentifier: String? = nil) -> UITableViewCell {
         buildIconNameCell(icon: icon,
                           tintColor: tintColor,
@@ -194,6 +197,7 @@ public extension OWSTableItem {
                           accessoryText: accessoryText,
                           accessoryType: accessoryType,
                           accessoryImage: accessoryImage,
+                          accessoryView: accessoryView,
                           accessibilityIdentifier: accessibilityIdentifier)
     }
 
@@ -207,6 +211,7 @@ public extension OWSTableItem {
                                   accessoryTextColor: UIColor? = nil,
                                   accessoryType: UITableViewCell.AccessoryType = .none,
                                   accessoryImage: UIImage? = nil,
+                                  accessoryView: UIView? = nil,
                                   customColor: UIColor? = nil,
                                   accessibilityIdentifier: String? = nil) -> UITableViewCell {
 
@@ -261,7 +266,11 @@ public extension OWSTableItem {
             nameLabel.textColor = customColor
         }
 
-        if let accessoryText = accessoryText {
+        if let accessoryView = accessoryView {
+            owsAssertDebug(accessoryText == nil)
+
+            subviews.append(accessoryView)
+        } else if let accessoryText = accessoryText {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
             accessoryLabel.textColor = accessoryTextColor ?? (Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45)
