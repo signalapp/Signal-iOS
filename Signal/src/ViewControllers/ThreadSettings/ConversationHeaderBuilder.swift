@@ -57,7 +57,10 @@ struct ConversationHeaderBuilder: Dependencies {
         options: Options,
         delegate: ConversationHeaderDelegate
     ) -> UIView {
-        databaseStorage.read { transaction in
+        // Make sure the view is loaded before we open a transaction,
+        // because it can end up creating a transaction within.
+        _ = delegate.view
+        return databaseStorage.read { transaction in
             self.buildHeaderForGroup(
                 groupThread: groupThread,
                 avatarSize: avatarSize,
@@ -110,7 +113,10 @@ struct ConversationHeaderBuilder: Dependencies {
         options: Options,
         delegate: ConversationHeaderDelegate
     ) -> UIView {
-        databaseStorage.read { transaction in
+        // Make sure the view is loaded before we open a transaction,
+        // because it can end up creating a transaction within.
+        _ = delegate.view
+        return databaseStorage.read { transaction in
             self.buildHeaderForContact(
                 contactThread: contactThread,
                 avatarSize: avatarSize,
