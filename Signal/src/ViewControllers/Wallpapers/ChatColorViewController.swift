@@ -8,11 +8,6 @@ public class ChatColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
-    private lazy var mockConversationView = MockConversationView(
-        mode: buildMockConversationMode(),
-        hasWallpaper: true
-    )
-
     public init(thread: TSThread? = nil) {
         self.thread = thread
         super.init()
@@ -33,6 +28,12 @@ public class ChatColorViewController: OWSTableViewController2 {
             self,
             selector: #selector(chatColorDidChange),
             name: ChatColors.chatColorDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .ThemeDidChange,
             object: nil
         )
     }
@@ -64,17 +65,40 @@ public class ChatColorViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let mockConversationView = self.mockConversationView
+        let wallpaperPreviewView: UIView
+        if let wallpaperView = (databaseStorage.read { transaction in
+            Wallpaper.view(for: thread, transaction: transaction)
+        }) {
+            wallpaperPreviewView = wallpaperView.asPreviewView()
+        } else {
+            wallpaperPreviewView = UIView()
+            wallpaperPreviewView.backgroundColor = Theme.backgroundColor
+        }
+        wallpaperPreviewView.layer.cornerRadius = OWSTableViewController2.cellRounding
+        wallpaperPreviewView.clipsToBounds = true
+
+        let mockConversationView = MockConversationView(
+            mode: buildMockConversationMode(),
+            hasWallpaper: true
+        )
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false
         previewSection.add(OWSTableItem { [weak self] in
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
             guard let self = self else { return cell }
+
+            cell.contentView.addSubview(wallpaperPreviewView)
+            wallpaperPreviewView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
+            wallpaperPreviewView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
+            wallpaperPreviewView.autoPinHeightToSuperview()
+
             cell.contentView.addSubview(mockConversationView)
             mockConversationView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
             mockConversationView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
-            mockConversationView.autoPinHeightToSuperview()
+            mockConversationView.autoPinEdge(toSuperviewEdge: .top, withInset: 24)
+            mockConversationView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 24)
+
             return cell
         } actionBlock: {})
         contents.addSection(previewSection)
@@ -82,7 +106,7 @@ public class ChatColorViewController: OWSTableViewController2 {
         let charColorPicker = buildChatColorPicker()
         let colorsSection = OWSTableSection()
         colorsSection.customHeaderHeight = 14
-        colorsSection.add(OWSTableItem { [weak self] in
+        colorsSection.add(OWSTableItem {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
             cell.contentView.addSubview(charColorPicker)
