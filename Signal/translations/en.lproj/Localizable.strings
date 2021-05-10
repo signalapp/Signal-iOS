@@ -544,6 +544,15 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
 
+/* The incoming bubble text when setting a chat color. */
+"CHAT_COLOR_INCOMING_MESSAGE" = "Here’s a preview of the chat color.";
+
+/* The outgoing bubble text when setting a chat color. */
+"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+
+/* Title for the chat color settings view. */
+"CHAT_COLOR_SETTINGS_TITLE" = "Chat Color";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
 

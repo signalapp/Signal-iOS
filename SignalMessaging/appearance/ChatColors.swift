@@ -26,7 +26,7 @@ public struct OWSColor: Equatable, Codable {
 
 // MARK: -
 
-public enum ConversationColorAppearance: Equatable {
+public enum ChatColorAppearance: Equatable {
     case solidColor(color: OWSColor)
     case gradient(color1: OWSColor,
                   color2: OWSColor,
@@ -35,9 +35,9 @@ public enum ConversationColorAppearance: Equatable {
 
 // MARK: -
 
-// TODO: We might end up renaming this to ConversationColor
+// TODO: We might end up renaming this to ChatColor
 //       depending on how the design shakes out.
-public enum ConversationColorValue: Equatable, Codable {
+public enum ChatColorValue: Equatable, Codable {
     case unthemedColor(color: OWSColor)
     case themedColors(lightThemeColor: OWSColor, darkThemeColor: OWSColor)
     // For now, angle is in radians
@@ -116,7 +116,7 @@ public enum ConversationColorValue: Equatable, Codable {
         }
     }
 
-    var appearance: ConversationColorAppearance {
+    public var appearance: ChatColorAppearance {
         switch self {
         case .unthemedColor(let color):
             return .solidColor(color: color)
@@ -136,121 +136,78 @@ public enum ConversationColorValue: Equatable, Codable {
 
 // MARK: -
 
-// A round "swatch" that offers a preview of a conversation color option.
-public class ConversationColorPreviewView: ManualLayoutViewWithLayer {
-    private var conversationColorValue: ConversationColorValue
-
-    public enum Mode {
-        case circle
-        case rectangle
-    }
-    private let mode: Mode
-
-    public init(conversationColorValue: ConversationColorValue,
-                mode: Mode) {
-        self.conversationColorValue = conversationColorValue
-        self.mode = mode
-
-        super.init(name: "ConversationColorSwatchView")
-
-        self.shouldDeactivateConstraints = false
-
-        configure()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
-
-        addLayoutBlock { view in
-            guard let view = view as? ConversationColorPreviewView else { return }
-            view.configure()
-        }
-    }
-
-    @available(swift, obsoleted: 1.0)
-    required init(name: String) {
-        owsFail("Do not use this initializer.")
-    }
-
-    @objc
-    private func themeDidChange() {
-        configure()
-    }
-
-    private struct State: Equatable {
-        let size: CGSize
-        let appearance: ConversationColorAppearance
-    }
-    private var state: State?
-
-    private func configure() {
-        let size = bounds.size
-        let appearance = conversationColorValue.appearance
-        let newState = State(size: size, appearance: appearance)
-        // Exit early if the appearance and bounds haven't changed.
-        guard state != newState else {
-            return
-        }
-        self.state = newState
-
-        switch mode {
-        case .circle:
-            self.layer.cornerRadius = size.smallerAxis * 0.5
-            self.clipsToBounds = true
-        case .rectangle:
-            self.layer.cornerRadius = 0
-            self.clipsToBounds = false
-        }
-
-        switch appearance {
-        case .solidColor(let color):
-            backgroundColor = color.uiColor
-        case .gradient(let color1, let color2, let angleRadians):
-            // TODO:
-            backgroundColor = color1.uiColor
-        }
-    }
-}
-
-// MARK: -
-
-public class ConversationColors {
+public class ChatColors {
     @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {}
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "ConversationColors")
+    private static let keyValueStore = SDSKeyValueStore(collection: "ChatColors")
 
     private static let defaultKey = "defaultKey"
 
-    // TODO: When is this applied? Lazily?
-    public static func defaultConversationColor(transaction: SDSAnyReadTransaction) -> ConversationColorValue {
+    public static func autoChatColor(forThread thread: TSThread?,
+                                     transaction: SDSAnyReadTransaction) -> ChatColorValue {
+        if let wallpaper = Wallpaper.get(for: thread, transaction: transaction) {
+            return autoChatColor(forWallpaper: wallpaper)
+        } else {
+            // TODO:
+            let defaultValue: ChatColorValue = .unthemedColor(color: .init(red: 1,
+                                                                           green: 0,
+                                                                           blue: 0))
+            return defaultValue
+        }
+    }
+
+    public static func autoChatColor(forWallpaper wallpaper: Wallpaper) -> ChatColorValue {
         // TODO:
-        let defaultValue: ConversationColorValue = .unthemedColor(color: .init(red: 1,
-                                                                               green: 0,
-                                                                               blue: 0))
-
-        return getConversationColor(key: defaultKey, defaultValue: defaultValue, transaction: transaction)
+        let defaultValue: ChatColorValue = .unthemedColor(color: .init(red: 1,
+                                                                       green: 0,
+                                                                       blue: 0))
+        return defaultValue
     }
 
-    public static func setDefaultConversationColor(_ value: ConversationColorValue?,
-                                                   transaction: SDSAnyWriteTransaction) {
-        setConversationColor(key: defaultKey, value: value, transaction: transaction)
+    // Returns nil for default/auto.
+    public static func defaultChatColorSetting(transaction: SDSAnyReadTransaction) -> ChatColorValue? {
+        getChatColor(key: defaultKey, transaction: transaction)
     }
 
-    public static func conversationColor(thread: TSThread,
-                                         transaction: SDSAnyReadTransaction) -> ConversationColorValue {
-        let defaultValue = defaultConversationColor(transaction: transaction)
-        return getConversationColor(key: thread.uniqueId, defaultValue: defaultValue, transaction: transaction)
+    // TODO: When is this applied? Lazily?
+    public static func defaultChatColorForRendering(transaction: SDSAnyReadTransaction) -> ChatColorValue {
+        if let value = defaultChatColorSetting(transaction: transaction) {
+            return value
+        } else {
+            return autoChatColor(forThread: nil, transaction: transaction)
+        }
     }
 
-    public static func setConversationColor(_ value: ConversationColorValue?,
-                                            thread: TSThread,
-                                            transaction: SDSAnyWriteTransaction) {
-        setConversationColor(key: thread.uniqueId, value: value, transaction: transaction)
+    public static func setDefaultChatColor(_ value: ChatColorValue?,
+                                           transaction: SDSAnyWriteTransaction) {
+        setChatColor(key: defaultKey, value: value, transaction: transaction)
     }
 
-    private static func getConversationColor(key: String,
-                                             defaultValue: ConversationColorValue,
-                                             transaction: SDSAnyReadTransaction) -> ConversationColorValue {
-        if let value = { () -> ConversationColorValue? in
+    // Returns nil for default/auto.
+    public static func chatColorSetting(thread: TSThread,
+                                        transaction: SDSAnyReadTransaction) -> ChatColorValue? {
+        getChatColor(key: thread.uniqueId, transaction: transaction)
+    }
+
+    public static func chatColorForRendering(thread: TSThread,
+                                             transaction: SDSAnyReadTransaction) -> ChatColorValue {
+        if let value = chatColorSetting(thread: thread, transaction: transaction) {
+            return value
+        } else {
+            return autoChatColor(forThread: thread, transaction: transaction)
+        }
+    }
+
+    public static func setChatColor(_ value: ChatColorValue?,
+                                    thread: TSThread,
+                                    transaction: SDSAnyWriteTransaction) {
+        setChatColor(key: thread.uniqueId, value: value, transaction: transaction)
+    }
+
+    private static func getChatColor(key: String,
+                                     transaction: SDSAnyReadTransaction) -> ChatColorValue? {
+        if let value = { () -> ChatColorValue? in
             do {
                 return try keyValueStore.getCodableValue(forKey: key,
                                                          transaction: transaction)
@@ -261,17 +218,17 @@ public class ConversationColors {
         }() {
             return value
         } else {
-            return defaultValue
+            return nil
         }
     }
 
-    public static let defaultConversationColorDidChange = NSNotification.Name("defaultConversationColorDidChange")
-    public static let conversationColorDidChange = NSNotification.Name("conversationColorDidChange")
-    public static let conversationColorDidChangeThreadUniqueIdKey = "conversationColorDidChangeThreadUniqueIdKey"
+    public static let defaultChatColorDidChange = NSNotification.Name("defaultChatColorDidChange")
+    public static let chatColorDidChange = NSNotification.Name("chatColorDidChange")
+    public static let chatColorDidChangeThreadUniqueIdKey = "chatColorDidChangeThreadUniqueIdKey"
 
-    private static func setConversationColor(key: String,
-                                             value: ConversationColorValue?,
-                                             transaction: SDSAnyWriteTransaction) {
+    private static func setChatColor(key: String,
+                                     value: ChatColorValue?,
+                                     transaction: SDSAnyWriteTransaction) {
         do {
             if let value = value {
                 try keyValueStore.setCodable(value, key: key, transaction: transaction)
@@ -284,16 +241,16 @@ public class ConversationColors {
 
         if key == defaultKey {
             NotificationCenter.default.postNotificationNameAsync(
-                Self.defaultConversationColorDidChange,
+                Self.defaultChatColorDidChange,
                 object: nil,
                 userInfo: nil
             )
         } else {
             NotificationCenter.default.postNotificationNameAsync(
-                Self.conversationColorDidChange,
+                Self.chatColorDidChange,
                 object: nil,
                 userInfo: [
-                    conversationColorDidChangeThreadUniqueIdKey: key
+                    chatColorDidChangeThreadUniqueIdKey: key
                 ]
             )
         }
