@@ -91,8 +91,6 @@ class AudioWaveformProgressView: UIView {
         loadingAnimation.backgroundBehavior = .pauseAndRestore
 
         addSubview(loadingAnimation)
-        loadingAnimation.autoHCenterInSuperview()
-        loadingAnimation.autoPinHeightToSuperview()
         loadingAnimation.isHidden = true
     }
 
@@ -109,6 +107,8 @@ class AudioWaveformProgressView: UIView {
             playedShapeLayer.path = nil
             unplayedShapeLayer.path = nil
             thumbView.isHidden = true
+            loadingAnimation.frame = bounds
+
             if showLoadingAnimation {
                 loadingAnimation.isHidden = false
                 loadingAnimation.play()
