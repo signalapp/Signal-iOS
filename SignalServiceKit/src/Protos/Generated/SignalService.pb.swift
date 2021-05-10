@@ -134,6 +134,7 @@ struct SignalServiceProtos_Envelope {
     case prekeyBundle // = 3
     case receipt // = 5
     case unidentifiedSender // = 6
+    case senderkeyMessage // = 7
 
     init() {
       self = .unknown
@@ -147,6 +148,7 @@ struct SignalServiceProtos_Envelope {
       case 3: self = .prekeyBundle
       case 5: self = .receipt
       case 6: self = .unidentifiedSender
+      case 7: self = .senderkeyMessage
       default: return nil
       }
     }
@@ -159,6 +161,7 @@ struct SignalServiceProtos_Envelope {
       case .prekeyBundle: return 3
       case .receipt: return 5
       case .unidentifiedSender: return 6
+      case .senderkeyMessage: return 7
       }
     }
 
@@ -321,6 +324,16 @@ struct SignalServiceProtos_Content {
   /// Clears the value of `typingMessage`. Subsequent reads from it will return its default value.
   mutating func clearTypingMessage() {self._typingMessage = nil}
 
+  /// Serialized SKDM
+  var senderKeyDistributionMessage: Data {
+    get {return _senderKeyDistributionMessage ?? Data()}
+    set {_senderKeyDistributionMessage = newValue}
+  }
+  /// Returns true if `senderKeyDistributionMessage` has been explicitly set.
+  var hasSenderKeyDistributionMessage: Bool {return self._senderKeyDistributionMessage != nil}
+  /// Clears the value of `senderKeyDistributionMessage`. Subsequent reads from it will return its default value.
+  mutating func clearSenderKeyDistributionMessage() {self._senderKeyDistributionMessage = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -331,6 +344,7 @@ struct SignalServiceProtos_Content {
   fileprivate var _nullMessage: SignalServiceProtos_NullMessage?
   fileprivate var _receiptMessage: SignalServiceProtos_ReceiptMessage?
   fileprivate var _typingMessage: SignalServiceProtos_TypingMessage?
+  fileprivate var _senderKeyDistributionMessage: Data?
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -4137,7 +4151,8 @@ extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     2: .same(proto: "KEY_EXCHANGE"),
     3: .same(proto: "PREKEY_BUNDLE"),
     5: .same(proto: "RECEIPT"),
-    6: .same(proto: "UNIDENTIFIED_SENDER")
+    6: .same(proto: "UNIDENTIFIED_SENDER"),
+    7: .same(proto: "SENDERKEY_MESSAGE")
   ]
 }
 
@@ -4200,7 +4215,8 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     3: .same(proto: "callMessage"),
     4: .same(proto: "nullMessage"),
     5: .same(proto: "receiptMessage"),
-    6: .same(proto: "typingMessage")
+    6: .same(proto: "typingMessage"),
+    7: .same(proto: "senderKeyDistributionMessage")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4215,6 +4231,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       case 4: try { try decoder.decodeSingularMessageField(value: &self._nullMessage) }()
       case 5: try { try decoder.decodeSingularMessageField(value: &self._receiptMessage) }()
       case 6: try { try decoder.decodeSingularMessageField(value: &self._typingMessage) }()
+      case 7: try { try decoder.decodeSingularBytesField(value: &self._senderKeyDistributionMessage) }()
       default: break
       }
     }
@@ -4239,6 +4256,9 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if let v = self._typingMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }
+    if let v = self._senderKeyDistributionMessage {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4249,6 +4269,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if lhs._nullMessage != rhs._nullMessage {return false}
     if lhs._receiptMessage != rhs._receiptMessage {return false}
     if lhs._typingMessage != rhs._typingMessage {return false}
+    if lhs._senderKeyDistributionMessage != rhs._senderKeyDistributionMessage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

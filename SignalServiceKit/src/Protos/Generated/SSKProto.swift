@@ -22,6 +22,7 @@ public enum SSKProtoEnvelopeType: Int32 {
     case prekeyBundle = 3
     case receipt = 5
     case unidentifiedSender = 6
+    case senderkeyMessage = 7
 }
 
 private func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelopeType {
@@ -32,6 +33,7 @@ private func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.Type
     case .prekeyBundle: return .prekeyBundle
     case .receipt: return .receipt
     case .unidentifiedSender: return .unidentifiedSender
+    case .senderkeyMessage: return .senderkeyMessage
     }
 }
 
@@ -43,6 +45,7 @@ private func SSKProtoEnvelopeTypeUnwrap(_ value: SSKProtoEnvelopeType) -> Signal
     case .prekeyBundle: return .prekeyBundle
     case .receipt: return .receipt
     case .unidentifiedSender: return .unidentifiedSender
+    case .senderkeyMessage: return .senderkeyMessage
     }
 }
 
@@ -696,6 +699,9 @@ public class SSKProtoContent: NSObject, Codable {
         if let _value = typingMessage {
             builder.setTypingMessage(_value)
         }
+        if let _value = senderKeyDistributionMessage {
+            builder.setSenderKeyDistributionMessage(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -776,6 +782,17 @@ public class SSKProtoContent: NSObject, Codable {
             proto.typingMessage = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderKeyDistributionMessage(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderKeyDistributionMessage = valueParam
+        }
+
+        public func setSenderKeyDistributionMessage(_ valueParam: Data) {
+            proto.senderKeyDistributionMessage = valueParam
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -810,6 +827,18 @@ public class SSKProtoContent: NSObject, Codable {
 
     @objc
     public let typingMessage: SSKProtoTypingMessage?
+
+    @objc
+    public var senderKeyDistributionMessage: Data? {
+        guard hasSenderKeyDistributionMessage else {
+            return nil
+        }
+        return proto.senderKeyDistributionMessage
+    }
+    @objc
+    public var hasSenderKeyDistributionMessage: Bool {
+        return proto.hasSenderKeyDistributionMessage
+    }
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
