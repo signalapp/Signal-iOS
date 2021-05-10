@@ -292,6 +292,7 @@ public extension OWSTableItem {
         }
 
         let contentRow = UIStackView(arrangedSubviews: subviews)
+        contentRow.axis = .horizontal
         contentRow.alignment = .center
         contentRow.spacing = self.iconSpacing
         cell.contentView.addSubview(contentRow)

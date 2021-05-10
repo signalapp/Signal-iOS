@@ -146,11 +146,14 @@ public class ConversationColorPreviewView: ManualLayoutViewWithLayer {
     }
     private let mode: Mode
 
-    public init(conversationColorValue: ConversationColorValue, mode: Mode) {
+    public init(conversationColorValue: ConversationColorValue,
+                mode: Mode) {
         self.conversationColorValue = conversationColorValue
         self.mode = mode
 
         super.init(name: "ConversationColorSwatchView")
+
+        self.shouldDeactivateConstraints = false
 
         configure()
 
@@ -190,7 +193,7 @@ public class ConversationColorPreviewView: ManualLayoutViewWithLayer {
 
         switch mode {
         case .circle:
-            self.layer.cornerRadius = size.smallerAxis
+            self.layer.cornerRadius = size.smallerAxis * 0.5
             self.clipsToBounds = true
         case .rectangle:
             self.layer.cornerRadius = 0
@@ -226,7 +229,7 @@ public class ConversationColors {
         return getConversationColor(key: defaultKey, defaultValue: defaultValue, transaction: transaction)
     }
 
-    public static func setDefaultConversationColor(_ value: ConversationColorValue,
+    public static func setDefaultConversationColor(_ value: ConversationColorValue?,
                                                    transaction: SDSAnyWriteTransaction) {
         setConversationColor(key: defaultKey, value: value, transaction: transaction)
     }
@@ -249,25 +252,37 @@ public class ConversationColors {
         }
     }
 
-    static let conversationColorDidChange = NSNotification.Name("conversationColorDidChange")
-    static let conversationColorDidChangeThreadUniqueIdKey = "conversationColorDidChangeThreadUniqueIdKey"
+    public static let defaultConversationColorDidChange = NSNotification.Name("defaultConversationColorDidChange")
+    public static let conversationColorDidChange = NSNotification.Name("conversationColorDidChange")
+    public static let conversationColorDidChangeThreadUniqueIdKey = "conversationColorDidChangeThreadUniqueIdKey"
 
     private static func setConversationColor(key: String,
-                                             value: ConversationColorValue,
+                                             value: ConversationColorValue?,
                                              transaction: SDSAnyWriteTransaction) {
         do {
-            try keyValueStore.setCodable(value, key: key, transaction: transaction)
+            if let value = value {
+                try keyValueStore.setCodable(value, key: key, transaction: transaction)
+            } else {
+                keyValueStore.removeValue(forKey: key, transaction: transaction)
+            }
         } catch {
             owsFailDebug("Error: \(error)")
         }
 
-        // TODO: Notifications.
-        NotificationCenter.default.postNotificationNameAsync(
-            Self.conversationColorDidChange,
-            object: nil,
-            userInfo: [
-                conversationColorDidChangeThreadUniqueIdKey: key
-            ]
-        )
+        if key == defaultKey {
+            NotificationCenter.default.postNotificationNameAsync(
+                Self.defaultConversationColorDidChange,
+                object: nil,
+                userInfo: nil
+            )
+        } else {
+            NotificationCenter.default.postNotificationNameAsync(
+                Self.conversationColorDidChange,
+                object: nil,
+                userInfo: [
+                    conversationColorDidChangeThreadUniqueIdKey: key
+                ]
+            )
+        }
     }
 }

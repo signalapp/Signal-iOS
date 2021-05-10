@@ -16,6 +16,12 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             name: Wallpaper.wallpaperDidChangeNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: ConversationColors.defaultConversationColorDidChange,
+            object: nil
+        )
     }
 
     public override func viewDidLoad() {
@@ -50,20 +56,21 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         let chatColorSection = OWSTableSection()
         chatColorSection.customHeaderHeight = 14
 
-        let defaultConversationColor = databaseStorage.read { transaction in
+        let defaultConversationColor = Self.databaseStorage.read { transaction in
             ConversationColors.defaultConversationColor(transaction: transaction)
         }
-        let accessoryView = ConversationColorPreviewView(conversationColorValue: defaultConversationColor,
-                                                         mode: .circle)
-        accessoryView.autoSetDimensions(to: .square(16))
-        accessoryView.setContentHuggingHigh()
-        accessoryView.setCompressionResistanceHigh()
-        chatColorSection.add(OWSTableItem.item(
-            name: NSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
-                                        comment: "Set chat color action in color and wallpaper settings view."),
-            accessoryType: .disclosureIndicator,
-            accessoryView: accessoryView,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
+        let defaultColorView = ConversationColorPreviewView(conversationColorValue: defaultConversationColor,
+                                                            mode: .circle)
+        defaultColorView.autoSetDimensions(to: .square(16))
+        defaultColorView.setContentHuggingHigh()
+        defaultColorView.setCompressionResistanceHigh()
+        defaultColorView.addRedBorder()
+        chatColorSection.add(.item(
+                                name: NSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
+                                                        comment: "Set chat color action in color and wallpaper settings view."),
+                                accessoryType: .disclosureIndicator,
+                                accessoryView: defaultColorView,
+                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
         ) { [weak self] in
             guard let self = self else { return }
 //            let vc = SetWallpaperViewController(thread: self.thread)
@@ -238,6 +245,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     }
 
     func didPressResetChatColorWallpaper() {
+        // TODO: Do we need confirm alert?
+        databaseStorage.write { transaction in
+            ConversationColors.setDefaultConversationColor(nil, transaction: transaction)
+        }
 //        OWSActionSheets.showConfirmationAlert(
 //            title: NSLocalizedString(
 //                "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION",
