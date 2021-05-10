@@ -6022,11 +6022,20 @@
 /* Reset all wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_ALL" = "Reset All Wallpapers";
 
+/* Reset all wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Reset All Wallpapers";
+
 /* Confirmation dialog when resetting all wallpapers. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Reset all wallpapers, including custom wallpapers you’ve set for your chats?";
 
 /* Reset chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLOR" = "Reset Chat Color";
+
+/* Reset conversation wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Reset Wallpaper";
+
+/* Reset default wallpaper action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Chat Color";

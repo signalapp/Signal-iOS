@@ -116,59 +116,36 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
         contents.addSection(wallpaperSection)
 
-        let setSection = OWSTableSection()
-        setSection.customHeaderHeight = 14
-
-        let setWallpaperItem = OWSTableItem.disclosureItem(
-            withText: NSLocalizedString("WALLPAPER_SETTINGS_SET_WALLPAPER",
-                                        comment: "Set wallpaper action in wallpaper settings view."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_wallpaper")
-        ) { [weak self] in
-            guard let self = self else { return }
-            let vc = SetWallpaperViewController(thread: self.thread)
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-        setSection.add(setWallpaperItem)
-
-        let dimWallpaperItem = OWSTableItem.switch(
-            withText: NSLocalizedString("WALLPAPER_SETTINGS_DIM_WALLPAPER",
-                                        comment: "Dim wallpaper action in wallpaper settings view."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "dim_wallpaper"),
-            isOn: { () -> Bool in
-                self.databaseStorage.read { Wallpaper.dimInDarkMode(for: self.thread, transaction: $0) }
-            },
-            isEnabledBlock: {
-                self.databaseStorage.read { Wallpaper.exists(for: self.thread, transaction: $0) }
-            },
-            target: self,
-            selector: #selector(updateWallpaperDimming)
-        )
-        setSection.add(dimWallpaperItem)
-
-        contents.addSection(setSection)
-
         let resetSection = OWSTableSection()
         resetSection.customHeaderHeight = 14
 
-        let clearWallpaperItem = OWSTableItem.actionItem(
-            name: NSLocalizedString("WALLPAPER_SETTINGS_CLEAR_WALLPAPER",
-                                    comment: "Clear wallpaper action in wallpaper settings view."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "clear_wallpaper")
-        ) { [weak self] in
-            self?.didPressClearWallpaper()
-        }
-        resetSection.add(clearWallpaperItem)
-
-        if thread == nil {
-            let resetAllWallpapersItem = OWSTableItem.actionItem(
-                name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_ALL",
-                                        comment: "Reset all wallpapers action in wallpaper settings view."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_all_wallpapers")
+        if nil != thread {
+            resetSection.add(.actionItem(
+                name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER",
+                                        comment: "Reset conversation wallpaper action in wallpaper settings view."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpaper")
             ) { [weak self] in
-                self?.didPressResetAllWallpapers()
-            }
-            resetSection.add(resetAllWallpapersItem)
+                self?.didPressResetWallpaper()
+            })
+        } else {
+            resetSection.add(.actionItem(
+                name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER",
+                                        comment: "Reset default wallpaper action in wallpaper settings view."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_default_wallpaper")
+            ) { [weak self] in
+                self?.didPressResetWallpaper()
+            })
         }
+
+        // TODO: Do we still want a "reset all" item?
+//        let resetAllWallpapersItem = OWSTableItem.actionItem(
+//            name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS",
+//                                    comment: "Reset all wallpapers action in wallpaper settings view."),
+//            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_all_wallpapers")
+//        ) { [weak self] in
+//            self?.didPressResetAllWallpapers()
+//        }
+//        resetSection.add(resetAllWallpapersItem)
 
         contents.addSection(resetSection)
 
@@ -186,7 +163,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    func didPressClearWallpaper() {
+    func didPressResetWallpaper() {
         let title: String
         if thread != nil {
             title = NSLocalizedString(
@@ -208,14 +185,15 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             ),
             proceedStyle: .destructive
         ) { _ in
-            self.clearWallpaper()
+            self.resetWallpaper()
         }
     }
 
-    func clearWallpaper() {
+    func resetWallpaper() {
+        let thread = self.thread
         databaseStorage.asyncWrite { transaction in
             do {
-                try Wallpaper.clear(for: self.thread, transaction: transaction)
+                try Wallpaper.clear(for: thread, transaction: transaction)
             } catch {
                 owsFailDebug("Failed to clear wallpaper with error: \(error)")
                 DispatchQueue.main.async {
@@ -244,6 +222,22 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         }
     }
 
+    func resetAllWallpapers() {
+        databaseStorage.asyncWrite { transaction in
+            do {
+                try Wallpaper.resetAll(transaction: transaction)
+            } catch {
+                owsFailDebug("Failed to reset all wallpapers with error: \(error)")
+                DispatchQueue.main.async {
+                    OWSActionSheets.showErrorAlert(
+                        message: NSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_RESET",
+                                                   comment: "An error indicating to the user that we failed to reset all wallpapers.")
+                    )
+                }
+            }
+        }
+    }
+
     func didPressResetChatColorWallpaper() {
         // TODO: Do we need confirm alert?
         databaseStorage.write { transaction in
@@ -262,22 +256,6 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 //        ) { _ in
 //            self.resetAllWallpapers()
 //        }
-    }
-
-    func resetAllWallpapers() {
-        databaseStorage.asyncWrite { transaction in
-            do {
-                try Wallpaper.resetAll(transaction: transaction)
-            } catch {
-                owsFailDebug("Failed to reset all wallpapers with error: \(error)")
-                DispatchQueue.main.async {
-                    OWSActionSheets.showErrorAlert(
-                        message: NSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_RESET",
-                                                   comment: "An error indicating to the user that we failed to reset all wallpapers.")
-                    )
-                }
-            }
-        }
     }
 }
 

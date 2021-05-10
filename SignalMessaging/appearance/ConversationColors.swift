@@ -220,6 +220,7 @@ public class ConversationColors {
 
     private static let defaultKey = "defaultKey"
 
+    // TODO: When is this applied? Lazily?
     public static func defaultConversationColor(transaction: SDSAnyReadTransaction) -> ConversationColorValue {
         // TODO:
         let defaultValue: ConversationColorValue = .unthemedColor(color: .init(red: 1,
@@ -232,6 +233,18 @@ public class ConversationColors {
     public static func setDefaultConversationColor(_ value: ConversationColorValue?,
                                                    transaction: SDSAnyWriteTransaction) {
         setConversationColor(key: defaultKey, value: value, transaction: transaction)
+    }
+
+    public static func conversationColor(thread: TSThread,
+                                         transaction: SDSAnyReadTransaction) -> ConversationColorValue {
+        let defaultValue = defaultConversationColor(transaction: transaction)
+        return getConversationColor(key: thread.uniqueId, defaultValue: defaultValue, transaction: transaction)
+    }
+
+    public static func setConversationColor(_ value: ConversationColorValue?,
+                                            thread: TSThread,
+                                            transaction: SDSAnyWriteTransaction) {
+        setConversationColor(key: thread.uniqueId, value: value, transaction: transaction)
     }
 
     private static func getConversationColor(key: String,
