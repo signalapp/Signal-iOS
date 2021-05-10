@@ -247,9 +247,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
             for address in members {
                 section.add(OWSTableItem(
-                                customCellBlock: { [weak self] in
-                                    guard let self = self else { return UITableViewCell() }
-                                    let tableView = self.tableView
+                                dequeueCellBlock: { tableView in
                         guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                             owsFailDebug("Missing cell.")
                             return UITableViewCell()
@@ -541,9 +539,7 @@ class NewLegacyGroupView: UIView {
         let section = OWSTableSection()
         for address in members {
             section.add(OWSTableItem(
-                            customCellBlock: { [weak self] in
-                                guard let self = self else { return UITableViewCell() }
-                                let tableView = self.tableViewController.tableView
+                            dequeueCellBlock: { tableView in
 
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                         owsFailDebug("Missing cell.")

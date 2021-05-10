@@ -109,13 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         for (SignalServiceAddress *address in blockedAddresses) {
             [blockedContactsSection addItem:[OWSTableItem
-                                                itemWithCustomCellBlock:^{
-                                                    BlockListViewController *_Nullable strongSelf = weakSelf;
-                                                    if (strongSelf == nil) {
-                                                        return [ContactTableViewCell new];
-                                                    }
-                                                    UITableView *tableView = strongSelf.tableViewController.tableView;
-
+                                                itemWithDequeueCellBlock:^(UITableView *tableView) {
                                                     ContactTableViewCell *cell = [tableView
                                                         dequeueReusableCellWithIdentifier:ContactTableViewCell
                                                                                               .reuseIdentifier];

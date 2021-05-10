@@ -104,6 +104,11 @@ open class OWSTableViewController2: OWSViewController {
         navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
     }
 
+    deinit {
+        // Avoid retain cycles by dumping the contents.
+        _contents = OWSTableContents()
+    }
+
     open override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -269,7 +274,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         item.tableViewController = self
 
-        if let cell = item.getOrBuildCustomCell() {
+        if let cell = item.getOrBuildCustomCell(tableView) {
             configureCellBackground(cell, indexPath: indexPath)
             return cell
         }
