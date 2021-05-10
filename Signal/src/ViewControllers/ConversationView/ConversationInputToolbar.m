@@ -742,9 +742,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         case UIGestureRecognizerStateCancelled:
         case UIGestureRecognizerStateFailed:
             if (self.voiceMemoRecordingState != VoiceMemoRecordingState_Idle) {
-                // Cancel voice message if necessary.
+                // Record a draft if we were actively recording.
                 self.voiceMemoRecordingState = VoiceMemoRecordingState_Idle;
-                [self.inputToolbarDelegate voiceMemoGestureDidCancel];
+                [self.inputToolbarDelegate voiceMemoGestureWasInterrupted];
             }
             break;
         case UIGestureRecognizerStateBegan:

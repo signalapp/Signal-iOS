@@ -448,7 +448,7 @@ public class FullTextSearcher: NSObject {
 
         var contactThreads: [ConversationSearchResult<ConversationSortKey>] = []
         var groupThreads: [GroupSearchResult] = []
-        var contacts: [ContactSearchResult] = []
+        var contactsMap: [SignalServiceAddress: ContactSearchResult] = [:]
         var messages: [UInt64: ConversationSearchResult<MessageSortKey>] = [:]
 
         var existingConversationAddresses: Set<SignalServiceAddress> = Set()
@@ -508,8 +508,9 @@ public class FullTextSearcher: NSObject {
         }
 
         func appendSignalAccount(_ signalAccount: SignalAccount) {
+            guard contactsMap[signalAccount.recipientAddress] == nil else { return }
             let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
-            contacts.append(searchResult)
+            contactsMap[searchResult.recipientAddress] = searchResult
 
             getMentionedMessages(signalAccount.recipientAddress)
                 .forEach { message in
@@ -521,7 +522,7 @@ public class FullTextSearcher: NSObject {
         }
 
         var remainingAllowedResults: UInt {
-            UInt(max(0, Int(maxResults) - (contactThreads.count + groupThreads.count + contacts.count + messages.count)))
+            UInt(max(0, Int(maxResults) - (contactThreads.count + groupThreads.count + contactsMap.count + messages.count)))
         }
 
         var hasReachedMaxResults: Bool {
@@ -617,19 +618,17 @@ public class FullTextSearcher: NSObject {
         }
 
         if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
-            if !contacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
-                if let localAddress = TSAccountManager.localAddress {
-                    let localAccount = SignalAccount(address: localAddress)
-                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
-                    contacts.append(localResult)
-                } else {
-                    owsFailDebug("localAddress was unexpectedly nil")
-                }
+            if let localAddress = TSAccountManager.localAddress, contactsMap[localAddress] == nil {
+                let localAccount = SignalAccount(address: localAddress)
+                let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
+                contactsMap[localAddress] = localResult
+            } else {
+                owsFailDebug("localAddress was unexpectedly nil")
             }
         }
 
         // Only show contacts which were not included in an existing 1:1 conversation.
-        var otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationAddresses.contains($0.recipientAddress) }
+        var otherContacts: [ContactSearchResult] = contactsMap.values.filter { !existingConversationAddresses.contains($0.recipientAddress) }
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
