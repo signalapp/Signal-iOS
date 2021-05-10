@@ -3393,6 +3393,15 @@ typedef enum : NSUInteger {
     [self cancelRecordingVoiceMessage];
 }
 
+- (void)voiceMemoGestureWasInterrupted
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"voiceMemoGestureDidCancel");
+
+    [self finishRecordingVoiceMessageAndSendImmediately:NO];
+}
+
 - (void)sendVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft
 {
     OWSAssertIsOnMainThread();

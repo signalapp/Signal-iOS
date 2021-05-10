@@ -38,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)voiceMemoGestureDidCancel;
 
+- (void)voiceMemoGestureWasInterrupted;
+
 - (void)sendVoiceMemoDraft:(VoiceMessageModel *)voiceMemoDraft;
 
 #pragma mark - Attachments
