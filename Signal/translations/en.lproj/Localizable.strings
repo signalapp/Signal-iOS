@@ -550,6 +550,9 @@
 /* The outgoing bubble text when setting a chat color. */
 "CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
 
+/* Label for the 'automatic chat color' option in the chat color settings view. */
+"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Chat Color";
 

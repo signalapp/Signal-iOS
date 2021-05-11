@@ -38,6 +38,7 @@ public enum ChatColorAppearance: Equatable {
 // TODO: We might end up renaming this to ChatColor
 //       depending on how the design shakes out.
 public enum ChatColorValue: Equatable, Codable {
+//    case auto
     case unthemedColor(color: OWSColor)
     case themedColors(lightThemeColor: OWSColor, darkThemeColor: OWSColor)
     // For now, angle is in radians
@@ -53,6 +54,7 @@ public enum ChatColorValue: Equatable, Codable {
         case unthemedColor = 0
         case themedColors = 1
         case gradient = 2
+//        case auto = 3
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -70,6 +72,8 @@ public enum ChatColorValue: Equatable, Codable {
 
         let typeKey = try container.decode(TypeKey.self, forKey: .typeKey)
         switch typeKey {
+//        case .auto:
+//            self = .auto
         case .unthemedColor:
             let color = try container.decode(OWSColor.self, forKey: .color)
             self = .unthemedColor(color: color)
@@ -95,6 +99,8 @@ public enum ChatColorValue: Equatable, Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
+//        case .auto:
+//            try container.encode(TypeKey.auto, forKey: .typeKey)
         case .unthemedColor(let color):
             try container.encode(TypeKey.unthemedColor, forKey: .typeKey)
             try container.encode(color, forKey: .color)
@@ -254,5 +260,32 @@ public class ChatColors {
                 ]
             )
         }
+    }
+
+    // MARK: -
+
+    public static var builtInValues: [ChatColorValue] {
+        // TODO:
+        [
+            .unthemedColor(color: OWSColor(red: 0.5, green: 0.5, blue: 0.5)),
+            .unthemedColor(color: OWSColor(red: 0, green: 0, blue: 1)),
+            .unthemedColor(color: OWSColor(red: 0, green: 1, blue: 0)),
+
+            .themedColors(lightThemeColor: OWSColor(red: 0, green: 1, blue: 0),
+                          darkThemeColor: OWSColor(red: 0, green: 1, blue: 0.5)),
+
+            .gradient(lightThemeColor1: OWSColor(red: 0, green: 1, blue: 0),
+                      lightThemeColor2: OWSColor(red: 0, green: 1, blue: 0),
+                      darkThemeColor1: OWSColor(red: 0, green: 1, blue: 0.5),
+                      darkThemeColor2: OWSColor(red: 0, green: 1, blue: 0.5),
+                      angleRadians: CGFloat.pi * 0.25)
+        ]
+    }
+
+    public static func customValues(transaction: SDSAnyReadTransaction) -> [ChatColorValue] {
+        // TODO:
+        [
+            .unthemedColor(color: OWSColor(red: 0, green: 0, blue: 0))
+        ]
     }
 }

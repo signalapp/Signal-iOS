@@ -5,7 +5,7 @@
 import Foundation
 
 // A round "swatch" that offers a preview of a conversation color option.
-public class ChatColorPreviewView: ManualLayoutViewWithLayer {
+public class ChatColorSwatchView: ManualLayoutViewWithLayer {
     private var chatColorValue: ChatColorValue
 
     public enum Mode {
@@ -27,7 +27,7 @@ public class ChatColorPreviewView: ManualLayoutViewWithLayer {
         NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
 
         addLayoutBlock { view in
-            guard let view = view as? ChatColorPreviewView else { return }
+            guard let view = view as? ChatColorSwatchView else { return }
             view.configure()
         }
     }
