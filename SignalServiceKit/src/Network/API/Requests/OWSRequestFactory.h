@@ -197,6 +197,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)pushChallengeResponseWithToken:(NSString *)challengeToken;
 + (TSRequest *)recaptchChallengeResponseWithToken:(NSString *)serverToken captchaToken:(NSString *)captchaToken;
 
+#pragma mark - Stripe
+
++ (TSRequest *)createPaymentIntentWithAmount:(NSUInteger)amount inCurrencyCode:(NSString *)currencyCode;
+
 @end
 
 NS_ASSUME_NONNULL_END

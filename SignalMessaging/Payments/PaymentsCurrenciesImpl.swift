@@ -629,9 +629,9 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         supportedConversionInfos.map { $0.asCurrencyInfo }
     }
 
-    private static func currencyInfos(for currencyCodes: [CurrencyCode],
-                                      ignoreMissingNames: Bool,
-                                      shouldSort: Bool) -> [CurrencyInfo] {
+    public static func currencyInfos(for currencyCodes: [CurrencyCode],
+                                     ignoreMissingNames: Bool,
+                                     shouldSort: Bool) -> [CurrencyInfo] {
         owsAssertDebug(currencyCodes.count == Set(currencyCodes).count)
 
         var infos = [CurrencyInfo]()

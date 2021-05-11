@@ -234,8 +234,10 @@ class AppSettingsViewController: OWSTableViewController2 {
             name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
             accessoryImage: #imageLiteral(resourceName: "open-externally-14"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
-            actionBlock: {
-                UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
+            actionBlock: { [weak self] in
+                let vc = DonationViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+//                UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
             }
         ))
         contents.addSection(section4)

@@ -5,15 +5,28 @@
 import Foundation
 
 @objc
-class PaymentsCurrencyViewController: OWSTableViewController2 {
+class CurrencyPickerViewController: OWSTableViewController2 {
 
     private let searchBar = OWSSearchBar()
+    private let currentCurrencyCode: PaymentsCurrencies.CurrencyCode
+    private let preferredCurrencyInfos: [CurrencyInfo]
+    private let supportedCurrencyInfos: [CurrencyInfo]
+    private let completion: (PaymentsCurrencies.CurrencyCode) -> Void
 
     fileprivate var searchText: String? {
         searchBar.text?.ows_stripped()
     }
 
-    public override required init() {
+    public required init(
+        currentCurrencyCode: PaymentsCurrencies.CurrencyCode,
+        preferredCurrencyInfos: [CurrencyInfo],
+        supportedCurrencyInfos: [CurrencyInfo],
+        completion: @escaping (PaymentsCurrencies.CurrencyCode) -> Void
+    ) {
+        self.currentCurrencyCode = currentCurrencyCode
+        self.preferredCurrencyInfos = preferredCurrencyInfos
+        self.supportedCurrencyInfos = supportedCurrencyInfos
+        self.completion = completion
         super.init()
 
         topHeader = OWSTableViewController2.buildTopHeader(forView: searchBar)
@@ -32,13 +45,6 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
         searchBar.delegate = self
 
         updateTableContents()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(paymentConversionRatesDidChange),
-            name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
-            object: nil
-        )
     }
 
     public override func applyTheme() {
@@ -65,9 +71,9 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
     private func updateTableContentsDefault() {
         let contents = OWSTableContents()
 
-        let currentCurrencyCode = paymentsCurrencies.currentCurrencyCode
-        let preferredCurrencyInfos = paymentsCurrenciesSwift.preferredCurrencyInfos
-        let supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions
+        let currentCurrencyCode = self.currentCurrencyCode
+        let preferredCurrencyInfos = self.preferredCurrencyInfos
+        let supportedCurrencyInfos = self.supportedCurrencyInfos
 
         let preferredSection = OWSTableSection()
         preferredSection.customHeaderHeight = 12
@@ -195,23 +201,17 @@ class PaymentsCurrencyViewController: OWSTableViewController2 {
     }
 
     private func didSelectCurrency(_ currencyCode: PaymentsCurrencies.CurrencyCode) {
-        Self.databaseStorage.write { transaction in
-            Self.paymentsCurrencies.setCurrentCurrencyCode(currencyCode, transaction: transaction)
-        }
+        completion(currencyCode)
+//        Self.databaseStorage.write { transaction in
+//            Self.paymentsCurrencies.setCurrentCurrencyCode(currencyCode, transaction: transaction)
+//        }
         navigationController?.popViewController(animated: true)
-    }
-
-    @objc
-    func paymentConversionRatesDidChange() {
-        AssertIsOnMainThread()
-
-        updateTableContents()
     }
 }
 
 // MARK: -
 
-extension PaymentsCurrencyViewController: UISearchBarDelegate {
+extension CurrencyPickerViewController: UISearchBarDelegate {
     open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         updateTableContents()
     }

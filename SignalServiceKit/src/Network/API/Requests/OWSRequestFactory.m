@@ -878,6 +878,15 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:@{ @"type" : @"recaptcha", @"token" : serverToken, @"captcha" : captchaToken }];
 }
 
+#pragma mark - Stripe
+
++ (TSRequest *)createPaymentIntentWithAmount:(NSUInteger)amount inCurrencyCode:(NSString *)currencyCode
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/authorize-apple-pay"]
+                              method:@"POST"
+                          parameters:@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) }];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
