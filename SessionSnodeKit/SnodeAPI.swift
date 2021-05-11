@@ -214,7 +214,7 @@ public final class SnodeAPI : NSObject {
         }
         let promise = when(fulfilled: snodePoolPromises).map2 { results -> Set<Snode> in
             var result: Set<Snode> = results[0]
-            results.forEach { result = result.union($0) }
+            results.forEach { result = result.intersection($0) }
             if result.count > 24 { // We want the snodes to agree on at least this many snodes
                 // Limit the snode pool size to 256 so that we don't go too long without
                 // refreshing it
