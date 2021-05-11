@@ -177,6 +177,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let universalDisappearingMessages = build.includes(.qa)
 
+    @objc
+    public static let linkifyWithNSDataDetector = false
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)

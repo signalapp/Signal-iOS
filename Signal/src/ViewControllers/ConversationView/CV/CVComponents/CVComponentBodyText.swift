@@ -80,7 +80,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         checkingTypes.insert(.address)
         checkingTypes.insert(.phoneNumber)
         checkingTypes.insert(.date)
-        checkingTypes.insert(.transitInformation)
 
         do {
             return try NSDataDetector(types: checkingTypes.rawValue)
@@ -514,6 +513,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
             textViewConfig.applyForRendering(textView: textView)
 
+            CVComponentBodyText.configureTextView(textView, displayableText: displayableText)
+
             if textView.superview == nil {
                 let stackView = componentView.stackView
                 stackView.reset()
@@ -591,6 +592,22 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
+    public static func configureTextView(_ textView: UITextView, displayableText: DisplayableText) {
+        let dataDetectorTypes: UIDataDetectorTypes = {
+            // If we're link-ifying with NSDataDetector, UITextView doesn't need to do data detection.
+            guard !FeatureFlags.linkifyWithNSDataDetector,
+                  displayableText.shouldAllowLinkification else {
+                return []
+            }
+            return [.link, .address, .calendarEvent]
+        }()
+        if textView.dataDetectorTypes != dataDetectorTypes {
+            // Setting dataDetectorTypes is expensive, so we only
+            // update the property if the value has changed.
+            textView.dataDetectorTypes = dataDetectorTypes
+        }
+    }
+
     private func linkifyData(attributedText: NSMutableAttributedString) {
         Self.linkifyData(attributedText: attributedText, dataItems: bodyTextState.dataItems)
     }
@@ -607,6 +624,11 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private static func linkifyData(attributedText: NSMutableAttributedString,
                                     dataItems: [DataItem]) {
+
+        guard FeatureFlags.linkifyWithNSDataDetector else {
+            return
+        }
+
         // Sort so that we can detect overlap.
         let dataItems = dataItems.sorted { (left, right) in
             left.range.location < right.range.location
