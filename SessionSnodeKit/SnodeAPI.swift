@@ -184,10 +184,12 @@ public final class SnodeAPI : NSObject {
         }
         let snodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
             return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
+                // Don't specify a limit in the request. Service nodes return a shuffled
+                // list of nodes so if we specify a limit the 3 responses we get might have
+                // very little overlap.
                 let parameters: JSON = [
                     "endpoint" : "get_service_nodes",
                     "params" : [
-                        "limit" : 256,
                         "active_only" : true,
                         "fields" : [
                             "public_ip" : true, "storage_port" : true, "pubkey_ed25519" : true, "pubkey_x25519" : true
@@ -214,7 +216,9 @@ public final class SnodeAPI : NSObject {
             var result: Set<Snode> = results[0]
             results.forEach { result = result.union($0) }
             if result.count > 24 { // We want the snodes to agree on at least this many snodes
-                return result
+                // Limit the snode pool size to 256 so that we don't go too long without
+                // refreshing it
+                return (result.count > 256) ? result[..<256] : result
             } else {
                 throw Error.inconsistentSnodePools
             }
