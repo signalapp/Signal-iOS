@@ -542,7 +542,13 @@ public class CVLoadCoordinator: NSObject {
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
         func canLandLoad() -> Bool {
-            return !delegate.isLayoutApplyingUpdate && !delegate.areCellsAnimating
+            AssertIsOnMainThread()
+            if let lastKeyboardAnimationDate = viewState.lastKeyboardAnimationDate,
+               lastKeyboardAnimationDate.isAfterNow {
+                return false
+            }
+            let result = !delegate.isLayoutApplyingUpdate && !delegate.areCellsAnimating
+            return result
         }
 
         func tryToResolve() {

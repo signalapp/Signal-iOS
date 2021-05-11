@@ -151,6 +151,9 @@ public class CVViewState: NSObject {
     @objc
     public var currentVoiceMessageModel: VoiceMessageModel?
 
+    @objc
+    public var lastKeyboardAnimationDate: Date?
+
     // MARK: - 
 
     @objc
