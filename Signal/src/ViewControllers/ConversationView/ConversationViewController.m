@@ -3803,11 +3803,25 @@ typedef enum : NSUInteger {
 
 - (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration animationCurve:(UIViewAnimationCurve)animationCurve
 {
+    OWSAssertIsOnMainThread();
+
     if (self.transitionCoordinator.isInteractive) {
         return;
     }
 
     if (self.shouldAnimateKeyboardChanges && animationDuration > 0) {
+        // Make note of when the keyboard animation will block
+        // loads from landing during the keyboard animation.
+        // It isn't safe to block loads for long, so we cap
+        // how long they will be blocked for.
+        NSTimeInterval keyboardAnimationBlockLoadInterval = kSecondInterval * 1.0;
+        NSDate *animationCompletionDate = [[NSDate new] dateByAddingTimeInterval:keyboardAnimationBlockLoadInterval];
+        if (self.viewState.lastKeyboardAnimationDate == nil ||
+            [self.viewState.lastKeyboardAnimationDate isBeforeDate:animationCompletionDate]) {
+            self.viewState.lastKeyboardAnimationDate = animationCompletionDate;
+            self.scrollContinuity = ScrollContinuityBottom;
+        }
+
         // The animation curve provided by the keyboard notifications
         // is a private value not represented in UIViewAnimationOptions.
         // We don't use a block based animation here because it's not
