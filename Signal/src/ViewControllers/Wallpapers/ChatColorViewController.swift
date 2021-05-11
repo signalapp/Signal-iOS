@@ -175,6 +175,30 @@ public class ChatColorViewController: OWSTableViewController2 {
     private func didTapOption(option: Option) {
         // TODO:
         Logger.verbose("----")
+
+        func setValue(_ value: ChatColorValue?) {
+            databaseStorage.write { transaction in
+                if let thread = self.thread {
+                    ChatColors.setChatColor(value, thread: thread, transaction: transaction)
+                } else {
+                    ChatColors.setDefaultChatColor(value, transaction: transaction)
+                }
+            }
+            updateTableContents()
+        }
+
+        switch option {
+        case .auto:
+            setValue(nil)
+        case .builtInValue(let value):
+            setValue(value)
+        case .customValue(let value):
+            setValue(value)
+        case .addNewOption:
+            let customColorVC = CustomColorViewController(thread: thread,
+                                                          customColorViewDelegate: self)
+            self.navigationController?.pushViewController(customColorVC, animated: true)
+        }
     }
 
     private func buildChatColorPicker() -> UIView {
@@ -261,6 +285,12 @@ public class ChatColorViewController: OWSTableViewController2 {
                     addOptionView(innerView: view, isSelected: currentValue == value)
                 case .customValue(let value):
                     let view = ChatColorSwatchView(chatColorValue: value, mode: .circle)
+
+                    let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: Theme.primaryIconColor)
+                    view.addSubview(imageView)
+                    imageView.autoSetDimensions(to: .square(24))
+                    imageView.autoCenterInSuperview()
+
                     addOptionView(innerView: view, isSelected: currentValue == value)
                 case .addNewOption:
                     let view = OWSLayerView.circleView()
@@ -295,5 +325,14 @@ public class ChatColorViewController: OWSTableViewController2 {
         let vStack = UIStackView(arrangedSubviews: hStacks)
         vStack.apply(config: vStackConfig)
         return vStack
+    }
+}
+
+// MARK: -
+
+extension ChatColorViewController: CustomColorViewDelegate {
+    public func didSetCustomColor(value: ChatColorValue) {
+        // TODO:
+        updateTableContents()
     }
 }
