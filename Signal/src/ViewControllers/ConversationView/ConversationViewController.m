@@ -3816,8 +3816,9 @@ typedef enum : NSUInteger {
         // how long they will be blocked for.
         NSTimeInterval keyboardAnimationBlockLoadInterval = kSecondInterval * 1.0;
         NSDate *animationCompletionDate = [[NSDate new] dateByAddingTimeInterval:keyboardAnimationBlockLoadInterval];
+        NSDate *lastKeyboardAnimationDate = [[NSDate new] dateByAddingTimeInterval:-1.0];
         if (self.viewState.lastKeyboardAnimationDate == nil ||
-            [self.viewState.lastKeyboardAnimationDate isBeforeDate:animationCompletionDate]) {
+            [self.viewState.lastKeyboardAnimationDate isBeforeDate:lastKeyboardAnimationDate]) {
             self.viewState.lastKeyboardAnimationDate = animationCompletionDate;
             self.scrollContinuity = ScrollContinuityBottom;
         }
