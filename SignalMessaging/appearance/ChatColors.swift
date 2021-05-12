@@ -22,6 +22,10 @@ public struct OWSColor: Equatable, Codable {
     public var uiColor: UIColor {
         UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
+
+    var description: String {
+        "[red: \(red), green: \(green), blue: \(blue)]"
+    }
 }
 
 // MARK: -
@@ -38,32 +42,24 @@ public enum ChatColorAppearance: Equatable {
 // TODO: We might end up renaming this to ChatColor
 //       depending on how the design shakes out.
 public enum ChatColorValue: Equatable, Codable {
-//    case auto
-    case unthemedColor(color: OWSColor)
-    case themedColors(lightThemeColor: OWSColor, darkThemeColor: OWSColor)
+    case solidColor(color: OWSColor)
     // For now, angle is in radians
     //
     // TODO: Finalize actual angle semantics.
-    case gradient(lightThemeColor1: OWSColor,
-                  lightThemeColor2: OWSColor,
-                  darkThemeColor1: OWSColor,
-                  darkThemeColor2: OWSColor,
+    case gradient(gradientColor1: OWSColor,
+                  gradientColor2: OWSColor,
                   angleRadians: CGFloat)
 
     private enum TypeKey: UInt, Codable {
-        case unthemedColor = 0
-        case themedColors = 1
-        case gradient = 2
-//        case auto = 3
+        case solidColor = 0
+        case gradient = 1
     }
 
     private enum CodingKeys: String, CodingKey {
         case typeKey
-        case color
-        case lightThemeColor1
-        case darkThemeColor1
-        case lightThemeColor2
-        case darkThemeColor2
+        case solidColor
+        case gradientColor1
+        case gradientColor2
         case angleRadians
     }
 
@@ -72,25 +68,15 @@ public enum ChatColorValue: Equatable, Codable {
 
         let typeKey = try container.decode(TypeKey.self, forKey: .typeKey)
         switch typeKey {
-//        case .auto:
-//            self = .auto
-        case .unthemedColor:
-            let color = try container.decode(OWSColor.self, forKey: .color)
-            self = .unthemedColor(color: color)
-        case .themedColors:
-            let lightThemeColor = try container.decode(OWSColor.self, forKey: .lightThemeColor1)
-            let darkThemeColor = try container.decode(OWSColor.self, forKey: .darkThemeColor2)
-            self = .themedColors(lightThemeColor: lightThemeColor, darkThemeColor: darkThemeColor)
+        case .solidColor:
+            let color = try container.decode(OWSColor.self, forKey: .solidColor)
+            self = .solidColor(color: color)
         case .gradient:
-            let lightThemeColor1 = try container.decode(OWSColor.self, forKey: .lightThemeColor1)
-            let darkThemeColor1 = try container.decode(OWSColor.self, forKey: .darkThemeColor1)
-            let lightThemeColor2 = try container.decode(OWSColor.self, forKey: .lightThemeColor2)
-            let darkThemeColor2 = try container.decode(OWSColor.self, forKey: .darkThemeColor2)
+            let gradientColor1 = try container.decode(OWSColor.self, forKey: .gradientColor1)
+            let gradientColor2 = try container.decode(OWSColor.self, forKey: .gradientColor2)
             let angleRadians = try container.decode(CGFloat.self, forKey: .angleRadians)
-            self = .gradient(lightThemeColor1: lightThemeColor1,
-                             lightThemeColor2: lightThemeColor2,
-                             darkThemeColor1: darkThemeColor1,
-                             darkThemeColor2: darkThemeColor2,
+            self = .gradient(gradientColor1: gradientColor1,
+                             gradientColor2: gradientColor2,
                              angleRadians: angleRadians)
         }
     }
@@ -99,42 +85,24 @@ public enum ChatColorValue: Equatable, Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
-//        case .auto:
-//            try container.encode(TypeKey.auto, forKey: .typeKey)
-        case .unthemedColor(let color):
-            try container.encode(TypeKey.unthemedColor, forKey: .typeKey)
-            try container.encode(color, forKey: .color)
-        case .themedColors(let lightThemeColor, let darkThemeColor):
-            try container.encode(TypeKey.themedColors, forKey: .typeKey)
-            try container.encode(lightThemeColor, forKey: .lightThemeColor1)
-            try container.encode(darkThemeColor, forKey: .darkThemeColor1)
-        case .gradient(let lightThemeColor1,
-                       let lightThemeColor2,
-                       let darkThemeColor1,
-                       let darkThemeColor2,
-                       let angleRadians):
+        case .solidColor(let solidColor):
+            try container.encode(TypeKey.solidColor, forKey: .typeKey)
+            try container.encode(solidColor, forKey: .solidColor)
+        case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
             try container.encode(TypeKey.gradient, forKey: .typeKey)
-            try container.encode(lightThemeColor1, forKey: .lightThemeColor1)
-            try container.encode(darkThemeColor1, forKey: .darkThemeColor1)
-            try container.encode(lightThemeColor2, forKey: .lightThemeColor2)
-            try container.encode(darkThemeColor2, forKey: .darkThemeColor2)
+            try container.encode(gradientColor1, forKey: .gradientColor1)
+            try container.encode(gradientColor2, forKey: .gradientColor2)
             try container.encode(angleRadians, forKey: .angleRadians)
         }
     }
 
     public var appearance: ChatColorAppearance {
         switch self {
-        case .unthemedColor(let color):
-            return .solidColor(color: color)
-        case .themedColors(let lightThemeColor, let darkThemeColor):
-            return .solidColor(color: Theme.isDarkThemeEnabled ? darkThemeColor : lightThemeColor)
-        case .gradient(let lightThemeColor1,
-                       let lightThemeColor2,
-                       let darkThemeColor1,
-                       let darkThemeColor2,
-                       let angleRadians):
-            return .gradient(color1: Theme.isDarkThemeEnabled ? darkThemeColor1 : lightThemeColor1,
-                             color2: Theme.isDarkThemeEnabled ? darkThemeColor2 : lightThemeColor2,
+        case .solidColor(let solidColor):
+            return .solidColor(color: solidColor)
+        case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
+            return .gradient(color1: gradientColor1,
+                             color2: gradientColor2,
                              angleRadians: angleRadians)
         }
     }
@@ -152,9 +120,10 @@ public class ChatColors {
 
     private static let noWallpaperAutoChatColor: ChatColorValue = {
         // UIColor.ows_accentBlue = 0x2C6BED
-        .unthemedColor(color: .init(red: CGFloat(0x2C) / CGFloat(0xff),
-                                    green: CGFloat(0x6B) / CGFloat(0xff),
-                                    blue: CGFloat(0xED) / CGFloat(0xff)))
+        let color = OWSColor(red: CGFloat(0x2C) / CGFloat(0xff),
+                             green: CGFloat(0x6B) / CGFloat(0xff),
+                             blue: CGFloat(0xED) / CGFloat(0xff))
+        return .solidColor(color: color)
     }()
 
     public static func autoChatColor(forThread thread: TSThread?,
@@ -168,10 +137,8 @@ public class ChatColors {
 
     public static func autoChatColor(forWallpaper wallpaper: Wallpaper) -> ChatColorValue {
         // TODO:
-        let defaultValue: ChatColorValue = .unthemedColor(color: .init(red: 1,
-                                                                       green: 0,
-                                                                       blue: 0))
-        return defaultValue
+        let color = OWSColor(red: 1, green: 0, blue: 0)
+        return .solidColor(color: color)
     }
 
     // Returns nil for default/auto.
@@ -270,17 +237,13 @@ public class ChatColors {
     public static var builtInValues: [ChatColorValue] {
         // TODO:
         [
-            .unthemedColor(color: OWSColor(red: 0.5, green: 0.5, blue: 0.5)),
-            .unthemedColor(color: OWSColor(red: 0, green: 0, blue: 1)),
-            .unthemedColor(color: OWSColor(red: 0, green: 1, blue: 0)),
+            .solidColor(color: OWSColor(red: 0.5, green: 0.5, blue: 0.5)),
+            .solidColor(color: OWSColor(red: 0, green: 0, blue: 1)),
+            .solidColor(color: OWSColor(red: 0, green: 1, blue: 0)),
+            .solidColor(color: OWSColor(red: 0, green: 1, blue: 0.5)),
 
-            .themedColors(lightThemeColor: OWSColor(red: 0, green: 1, blue: 0),
-                          darkThemeColor: OWSColor(red: 0, green: 1, blue: 0.5)),
-
-            .gradient(lightThemeColor1: OWSColor(red: 0, green: 1, blue: 0),
-                      lightThemeColor2: OWSColor(red: 0, green: 1, blue: 0),
-                      darkThemeColor1: OWSColor(red: 0, green: 1, blue: 0.5),
-                      darkThemeColor2: OWSColor(red: 0, green: 1, blue: 0.5),
+            .gradient(gradientColor1: OWSColor(red: 0, green: 1, blue: 0),
+                      gradientColor2: OWSColor(red: 0, green: 1, blue: 0.5),
                       angleRadians: CGFloat.pi * 0.25)
         ]
     }
@@ -288,7 +251,7 @@ public class ChatColors {
     public static func customValues(transaction: SDSAnyReadTransaction) -> [ChatColorValue] {
         // TODO:
         [
-            .unthemedColor(color: OWSColor(red: 0, green: 0, blue: 0))
+            .solidColor(color: OWSColor(red: 0, green: 0, blue: 0))
         ]
     }
 }

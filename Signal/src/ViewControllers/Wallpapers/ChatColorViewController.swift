@@ -195,8 +195,9 @@ public class ChatColorViewController: OWSTableViewController2 {
         case .customValue(let value):
             setValue(value)
         case .addNewOption:
-            let customColorVC = CustomColorViewController(thread: thread,
-                                                          customColorViewDelegate: self)
+            let customColorVC = CustomColorViewController(thread: thread) { [weak self] value in
+                self?.didSetCustomColor(value: value)
+            }
             self.navigationController?.pushViewController(customColorVC, animated: true)
         }
     }
@@ -326,12 +327,8 @@ public class ChatColorViewController: OWSTableViewController2 {
         vStack.apply(config: vStackConfig)
         return vStack
     }
-}
 
-// MARK: -
-
-extension ChatColorViewController: CustomColorViewDelegate {
-    public func didSetCustomColor(value: ChatColorValue) {
+    private func didSetCustomColor(value: ChatColorValue) {
         // TODO:
         updateTableContents()
     }

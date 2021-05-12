@@ -4,17 +4,11 @@
 
 import Foundation
 
-public protocol CustomColorViewDelegate: class {
-    func didSetCustomColor(value: ChatColorValue)
-}
-
-// MARK: -
-
 public class CustomColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
-    private weak var customColorViewDelegate: CustomColorViewDelegate?
+    private let completion: (ChatColorValue) -> Void
 
     private let modeControl = UISegmentedControl()
 
@@ -37,10 +31,9 @@ public class CustomColorViewController: OWSTableViewController2 {
     private let saturationSlider: SpectrumSlider
     private var saturationAlpha: CGFloat { saturationSlider.value.clamp01() }
 
-    public init(thread: TSThread? = nil,
-                customColorViewDelegate: CustomColorViewDelegate) {
+    public init(thread: TSThread? = nil, completion: @escaping (ChatColorValue) -> Void) {
         self.thread = thread
-        self.customColorViewDelegate = customColorViewDelegate
+        self.completion = completion
 
         self.hueSpectrum = Self.buildHueSpectrum()
         hueSlider = SpectrumSlider(spectrum: hueSpectrum,
@@ -102,6 +95,11 @@ public class CustomColorViewController: OWSTableViewController2 {
 
         title = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TITLE",
                                   comment: "Title for the custom chat color settings view.")
+
+        navigationItem.rightBarButtonItem = .init(title: CommonStrings.setButton,
+                                                  style: .done,
+                                                  target: self,
+                                                  action: #selector(didTapSet))
 
         createSubviews()
 
@@ -289,6 +287,16 @@ public class CustomColorViewController: OWSTableViewController2 {
         }
         self.mode = mode
     }
+
+    @objc
+    func didTapSet() {
+        let saturationAlpha = saturationSlider.value.clamp01()
+        let saturationValue = self.saturationSpectrum.value(forAlpha: hueAlpha)
+        let owsColor = saturationValue.asOWSColor
+        let value: ChatColorValue = .solidColor(color: owsColor)
+        Logger.verbose("saturationAlpha: \(saturationAlpha), saturationValue: \(saturationValue), owsColor: \(owsColor), ")
+        completion(value)
+    }
 }
 
 // MARK: -
@@ -435,7 +443,7 @@ private class SpectrumSlider: ManualLayoutView {
             let alpha = x / spectrumImageSizePoints.width
             let hslValue = spectrum.value(forAlpha: alpha)
 //            Logger.verbose("---- drawing alpha: \(alpha), hue: \(hslValue.hue), saturation: \(hslValue.saturation), lightness: \(hslValue.lightness), ")
-            hslValue.uiColor.setFill()
+            hslValue.asUIColor.setFill()
             UIRectFill(CGRect(x: x, y: 0, width: xIncrement, height: spectrumImageSizePoints.height))
             x += xIncrement
         }
@@ -575,8 +583,21 @@ private struct HSLValue: LerpableValue {
                         alpha: interpolationAlpha.lerp(alpha, other.alpha))
     }
 
-    var uiColor: UIColor {
+    var asUIColor: UIColor {
         UIColor(hue: hue, saturation: saturation, lightness: lightness, alpha: 1)
+    }
+
+    var asOWSColor: OWSColor {
+        let uiColor = self.asUIColor
+
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        return OWSColor(red: red.clamp01(), green: green.clamp01(), blue: blue.clamp01())
     }
 
     var description: String {
