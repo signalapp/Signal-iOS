@@ -115,6 +115,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // since we should never use it with GRDB.
     ]
 
+    static let swiftTables: [TableRecord.Type] = [
+        ThreadAssociatedData.self,
+        PendingReadReceiptRecord.self,
+        PendingViewedReceiptRecord.self,
+        MediaGalleryRecord.self
+    ]
+
     // MARK: - Database Snapshot
 
     private var latestSnapshot: DatabaseSnapshot! {

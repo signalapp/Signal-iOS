@@ -5,9 +5,9 @@
 import Foundation
 
 class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
-    let thread: TSThread
-    init(thread: TSThread) {
-        self.thread = thread
+    let threadViewModel: ThreadViewModel
+    init(threadViewModel: ThreadViewModel) {
+        self.threadViewModel = threadViewModel
     }
 
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                 return OWSTableItem.newCell()
             }
 
-            let sound = OWSSounds.notificationSound(for: self.thread)
+            let sound = OWSSounds.notificationSound(for: self.threadViewModel.threadRecord)
             let cell = OWSTableItem.buildCellWithAccessoryLabel(
                 icon: .settingsMessageSound,
                 itemName: NSLocalizedString("SETTINGS_ITEM_NOTIFICATION_SOUND",
@@ -59,12 +59,12 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
 
             let now = Date()
 
-            if self.thread.mutedUntilTimestamp == TSThread.alwaysMutedTimestamp {
+            if self.threadViewModel.mutedUntilTimestamp == ThreadAssociatedData.alwaysMutedTimestamp {
                 muteStatus = NSLocalizedString(
                     "CONVERSATION_SETTINGS_MUTED_ALWAYS",
                     comment: "Indicates that this thread is muted forever."
                 )
-            } else if let mutedUntilDate = self.thread.mutedUntilDate, mutedUntilDate > now {
+            } else if let mutedUntilDate = self.threadViewModel.mutedUntilDate, mutedUntilDate > now {
                 let calendar = Calendar.current
                 let muteUntilComponents = calendar.dateComponents([.year, .month, .day], from: mutedUntilDate)
                 let nowComponents = calendar.dateComponents([.year, .month, .day], from: now)
@@ -103,12 +103,12 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
         },
         actionBlock: { [weak self] in
             guard let self = self else { return }
-            ConversationSettingsViewController.showMuteUnmuteActionSheet(for: self.thread, from: self) {
+            ConversationSettingsViewController.showMuteUnmuteActionSheet(for: self.threadViewModel, from: self) {
                 self.updateTableContents()
             }
         }))
 
-        if Mention.threadAllowsMentionSend(thread) {
+        if Mention.threadAllowsMentionSend(threadViewModel.threadRecord) {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
@@ -119,7 +119,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
                     icon: .settingsMention,
                     itemName: NSLocalizedString("CONVERSATION_SETTINGS_MENTIONS_LABEL",
                                                 comment: "label for 'mentions' cell in conversation settings"),
-                    accessoryText: self.nameForMentionMode(self.thread.mentionNotificationMode)
+                    accessoryText: self.nameForMentionMode(self.threadViewModel.threadRecord.mentionNotificationMode)
                 )
 
                 cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "mentions")
@@ -137,7 +137,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
     }
 
     func showSoundSettingsView() {
-        let vc = NotificationSettingsSoundViewController(thread: thread) { [weak self] in
+        let vc = NotificationSettingsSoundViewController(thread: threadViewModel.threadRecord) { [weak self] in
             self?.updateTableContents()
         }
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
@@ -166,7 +166,7 @@ class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
 
     private func setMentionNotificationMode(_ value: TSThreadMentionNotificationMode) {
         databaseStorage.write { transaction in
-            self.thread.updateWithMentionNotificationMode(value, transaction: transaction)
+            self.threadViewModel.threadRecord.updateWithMentionNotificationMode(value, transaction: transaction)
         }
 
         updateTableContents()

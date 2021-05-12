@@ -108,7 +108,6 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         // .empty
         let contactThread = ContactThreadFactory().create()
         XCTAssertFalse(contactThread.shouldThreadBeVisible)
-        XCTAssertFalse(contactThread.isArchived)
         if threadType == .empty {
             return contactThread
         }
@@ -119,7 +118,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         write { transaction in
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertFalse(latestThread.shouldThreadBeVisible)
-                XCTAssertFalse(latestThread.isArchived)
+                XCTAssertFalse(ThreadAssociatedData.fetchOrDefault(for: latestThread, transaction: transaction).isArchived)
             } else {
                 XCTFail("Missing thread.")
             }
@@ -131,7 +130,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
-                XCTAssertFalse(latestThread.isArchived)
+                XCTAssertFalse(ThreadAssociatedData.fetchOrDefault(for: latestThread, transaction: transaction).isArchived)
             } else {
                 XCTFail("Missing thread.")
             }
@@ -144,16 +143,23 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         write { transaction in
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
-                XCTAssertFalse(latestThread.isArchived)
+                XCTAssertFalse(ThreadAssociatedData.fetchOrDefault(for: latestThread, transaction: transaction).isArchived)
             } else {
                 XCTFail("Missing thread.")
             }
 
-            contactThread.archiveThread(updateStorageService: false, transaction: transaction)
+            ThreadAssociatedData.fetchOrDefault(
+                for: contactThread,
+                transaction: transaction
+            ).updateWith(
+                isArchived: true,
+                updateStorageService: false,
+                transaction: transaction
+            )
 
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
-                XCTAssertTrue(latestThread.isArchived)
+                XCTAssertTrue(ThreadAssociatedData.fetchOrDefault(for: latestThread, transaction: transaction).isArchived)
             } else {
                 XCTFail("Missing thread.")
             }
@@ -166,7 +172,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
         write { transaction in
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
-                XCTAssertTrue(latestThread.isArchived)
+                XCTAssertTrue(ThreadAssociatedData.fetchOrDefault(for: latestThread, transaction: transaction).isArchived)
             } else {
                 XCTFail("Missing thread.")
             }
@@ -176,7 +182,7 @@ class ThreadFinderPerformanceTest: PerformanceBaseTest {
 
             if let latestThread = TSThread.anyFetch(uniqueId: contactThread.uniqueId, transaction: transaction) {
                 XCTAssertTrue(latestThread.shouldThreadBeVisible)
-                XCTAssertFalse(latestThread.isArchived)
+                XCTAssertFalse(ThreadAssociatedData.fetchOrDefault(for: latestThread, transaction: transaction).isArchived)
             } else {
                 XCTFail("Missing thread.")
             }

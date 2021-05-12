@@ -238,7 +238,8 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             newThreads.append((threadId: groupThread.uniqueId, sortOrder: inboxSortOrder))
 
             if let isArchived = groupDetails.isArchived, isArchived == true {
-                groupThread.archiveThread(updateStorageService: false, transaction: transaction)
+                let associatedData = ThreadAssociatedData.fetchOrDefault(for: groupThread, transaction: transaction)
+                associatedData.updateWith(isArchived: true, updateStorageService: false, transaction: transaction)
             }
         }
 

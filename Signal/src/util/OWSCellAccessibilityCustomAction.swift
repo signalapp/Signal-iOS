@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -7,11 +7,11 @@ import UIKit
 @objcMembers class OWSCellAccessibilityCustomAction: UIAccessibilityCustomAction {
 
     var type: OWSCellAccessibilityCustomActionType
-    var thread: TSThread
+    var threadViewModel: ThreadViewModel
 
-    init(name: String, type: OWSCellAccessibilityCustomActionType, thread: TSThread, target: Any?, selector: Selector) {
+    init(name: String, type: OWSCellAccessibilityCustomActionType, threadViewModel: ThreadViewModel, target: Any?, selector: Selector) {
         self.type = type
-        self.thread = thread
+        self.threadViewModel = threadViewModel
         super.init(name: name, target: target, selector: selector)
     }
 }

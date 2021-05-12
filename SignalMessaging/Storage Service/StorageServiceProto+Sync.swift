@@ -60,9 +60,11 @@ extension StorageServiceProtoContactRecord: Dependencies {
         }
 
         if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-            builder.setArchived(thread.isArchived)
-            builder.setMarkedUnread(thread.isMarkedUnread)
-            builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
+            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
+
+            builder.setArchived(threadAssociatedData.isArchived)
+            builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
+            builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
         }
 
         // Unknown
@@ -186,26 +188,19 @@ extension StorageServiceProtoContactRecord: Dependencies {
             }
         }
 
-        if let localThread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-            if archived != localThread.isArchived {
-                if archived {
-                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        let localThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
+        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThread, transaction: transaction)
 
-            if markedUnread != localThread.isMarkedUnread {
-                if markedUnread {
-                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        if archived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: archived, updateStorageService: false, transaction: transaction)
+        }
 
-            if mutedUntilTimestamp != localThread.mutedUntilTimestamp {
-                localThread.updateWithMuted(untilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
-            }
+        if markedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: markedUnread, updateStorageService: false, transaction: transaction)
+        }
+
+        if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
+            localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
         return mergeState
@@ -256,11 +251,12 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
 
-        if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            builder.setArchived(thread.isArchived)
-            builder.setMarkedUnread(thread.isMarkedUnread)
-            builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
-        }
+        let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId, transaction: transaction)
+
+        builder.setArchived(threadAssociatedData.isArchived)
+        builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
+        builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
 
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -317,26 +313,19 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
             }
         }
 
-        if let localThread = TSGroupThread.fetch(groupId: id, transaction: transaction) {
-            if archived != localThread.isArchived {
-                if archived {
-                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        let localThreadId = TSGroupThread.threadId(forGroupId: id, transaction: transaction)
+        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
 
-            if markedUnread != localThread.isMarkedUnread {
-                if markedUnread {
-                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        if archived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: archived, updateStorageService: false, transaction: transaction)
+        }
 
-            if mutedUntilTimestamp != localThread.mutedUntilTimestamp {
-                localThread.updateWithMuted(untilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
-            }
+        if markedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: markedUnread, updateStorageService: false, transaction: transaction)
+        }
+
+        if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
+            localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
         return .resolved(id)
@@ -365,11 +354,12 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
 
-        if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            builder.setArchived(thread.isArchived)
-            builder.setMarkedUnread(thread.isMarkedUnread)
-            builder.setMutedUntilTimestamp(thread.mutedUntilTimestamp)
-        }
+        let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId, transaction: transaction)
+
+        builder.setArchived(threadAssociatedData.isArchived)
+        builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
+        builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
 
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -463,26 +453,19 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
             }
         }
 
-        if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            if archived != localThread.isArchived {
-                if archived {
-                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        let localThreadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
+        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
 
-            if markedUnread != localThread.isMarkedUnread {
-                if markedUnread {
-                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        if archived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: archived, updateStorageService: false, transaction: transaction)
+        }
 
-            if mutedUntilTimestamp != localThread.mutedUntilTimestamp {
-                localThread.updateWithMuted(untilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
-            }
+        if markedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: markedUnread, updateStorageService: false, transaction: transaction)
+        }
+
+        if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
+            localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
         return mergeState
@@ -519,8 +502,10 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         }
 
         if let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction) {
-            builder.setNoteToSelfArchived(thread.isArchived)
-            builder.setNoteToSelfMarkedUnread(thread.isMarkedUnread)
+            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
+
+            builder.setNoteToSelfArchived(threadAssociatedData.isArchived)
+            builder.setNoteToSelfMarkedUnread(threadAssociatedData.isMarkedUnread)
         }
 
         let readReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
@@ -635,22 +620,15 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             mergeState = .needsUpdate
         }
 
-        if let localThread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction) {
-            if noteToSelfArchived != localThread.isArchived {
-                if noteToSelfArchived {
-                    localThread.archiveThread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        let localThread = TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)
+        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThread, transaction: transaction)
 
-            if noteToSelfMarkedUnread != localThread.isMarkedUnread {
-                if noteToSelfMarkedUnread {
-                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
-                } else {
-                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
-                }
-            }
+        if noteToSelfArchived != localThreadAssociatedData.isArchived {
+            localThreadAssociatedData.updateWith(isArchived: noteToSelfArchived, updateStorageService: false, transaction: transaction)
+        }
+
+        if noteToSelfMarkedUnread != localThreadAssociatedData.isMarkedUnread {
+            localThreadAssociatedData.updateWith(isMarkedUnread: noteToSelfMarkedUnread, updateStorageService: false, transaction: transaction)
         }
 
         let localReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled()

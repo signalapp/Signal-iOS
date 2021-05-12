@@ -943,14 +943,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    if (selectedThread.isArchived) {
+    __block ThreadAssociatedData *threadAssociatedData;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        threadAssociatedData = [ThreadAssociatedData fetchOrDefaultForThread:selectedThread transaction:transaction];
+    }];
+
+    if (threadAssociatedData.isArchived) {
         return;
     }
 
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [selectedThread archiveThreadAndUpdateStorageService:YES transaction:transaction];
+        [threadAssociatedData updateWithIsArchived:YES updateStorageService:YES transaction:transaction];
     });
     [self updateViewState];
 }
@@ -967,14 +972,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    if (!selectedThread.isArchived) {
+    __block ThreadAssociatedData *threadAssociatedData;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        threadAssociatedData = [ThreadAssociatedData fetchOrDefaultForThread:selectedThread transaction:transaction];
+    }];
+
+    if (!threadAssociatedData.isArchived) {
         return;
     }
 
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [selectedThread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
+        [threadAssociatedData updateWithIsArchived:NO updateStorageService:YES transaction:transaction];
     });
     [self updateViewState];
 }
@@ -1314,14 +1324,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSCellAccessibilityCustomAction *archiveAction =
         [[OWSCellAccessibilityCustomAction alloc] initWithName:archiveTitle
                                                           type:OWSCellAccessibilityCustomActionTypeArchive
-                                                        thread:thread.threadRecord
+                                               threadViewModel:thread
                                                         target:self
                                                       selector:@selector(performAccessibilityCustomAction:)];
 
     OWSCellAccessibilityCustomAction *deleteAction =
         [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.deleteButton
                                                           type:OWSCellAccessibilityCustomActionTypeDelete
-                                                        thread:thread.threadRecord
+                                               threadViewModel:thread
                                                         target:self
                                                       selector:@selector(performAccessibilityCustomAction:)];
 
@@ -1330,31 +1340,31 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         unreadAction =
             [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.readAction
                                                               type:OWSCellAccessibilityCustomActionTypeMarkRead
-                                                            thread:thread.threadRecord
+                                                   threadViewModel:thread
                                                             target:self
                                                           selector:@selector(performAccessibilityCustomAction:)];
     } else {
         unreadAction =
             [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unreadAction
                                                               type:OWSCellAccessibilityCustomActionTypeMarkUnread
-                                                            thread:thread.threadRecord
+                                                   threadViewModel:thread
                                                             target:self
                                                           selector:@selector(performAccessibilityCustomAction:)];
     }
 
     OWSCellAccessibilityCustomAction *pinnedAction;
-    if ([self isThreadPinned:thread.threadRecord]) {
+    if ([self isThreadPinned:thread]) {
         pinnedAction =
             [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unpinAction
                                                               type:OWSCellAccessibilityCustomActionTypePin
-                                                            thread:thread.threadRecord
+                                                   threadViewModel:thread
                                                             target:self
                                                           selector:@selector(performAccessibilityCustomAction:)];
     } else {
         pinnedAction =
             [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.pinAction
                                                               type:OWSCellAccessibilityCustomActionTypeUnpin
-                                                            thread:thread.threadRecord
+                                                   threadViewModel:thread
                                                             target:self
                                                           selector:@selector(performAccessibilityCustomAction:)];
     }
@@ -1465,7 +1475,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             return nil;
         case ConversationListViewControllerSectionPinned:
         case ConversationListViewControllerSectionUnpinned: {
-            TSThread *thread = [self threadForIndexPath:indexPath];
+            ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
 
             UIContextualAction *deleteAction =
                 [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
@@ -1473,7 +1483,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                       handler:^(UIContextualAction *action,
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
-                                                          [self deleteThreadWithConfirmation:thread];
+                                                          [self deleteThreadWithConfirmation:threadViewModel];
                                                           completionHandler(NO);
                                                       }];
             deleteAction.backgroundColor = UIColor.ows_accentRedColor;
@@ -1486,7 +1496,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                       handler:^(UIContextualAction *action,
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
-                                                          [self archiveThread:thread];
+                                                          [self archiveThread:threadViewModel];
                                                           completionHandler(NO);
                                                       }];
 
@@ -1521,17 +1531,16 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionUnpinned: {
 
             ThreadViewModel *model = [self threadViewModelForIndexPath:indexPath];
-            TSThread *thread = [self threadForIndexPath:indexPath];
 
             UIContextualAction *pinnedStateAction;
-            if ([self isThreadPinned:thread]) {
+            if ([self isThreadPinned:model]) {
                 pinnedStateAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
                                                                             title:nil
                                                                           handler:^(UIContextualAction *action,
                                                                               __kindof UIView *sourceView,
                                                                               void (^completionHandler)(BOOL)) {
                                                                               completionHandler(NO);
-                                                                              [self unpinThread:thread];
+                                                                              [self unpinThread:model];
                                                                           }];
 
                 pinnedStateAction.backgroundColor = [UIColor colorWithRGBHex:0xff990a];
@@ -1545,7 +1554,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                               __kindof UIView *sourceView,
                                                                               void (^completionHandler)(BOOL)) {
                                                                               completionHandler(NO);
-                                                                              [self pinThread:thread];
+                                                                              [self pinThread:model];
                                                                           }];
 
                 pinnedStateAction.backgroundColor = [UIColor colorWithRGBHex:0xff990a];
@@ -1568,7 +1577,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                           dispatch_after(
                                               dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.65 * NSEC_PER_SEC)),
                                               dispatch_get_main_queue(),
-                                              ^{ [self markThreadAsRead:thread]; });
+                                              ^{ [self markThreadAsRead:model]; });
                                       }];
 
                 readStateAction.backgroundColor = UIColor.ows_accentBlueColor;
@@ -1588,9 +1597,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                               dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                                                                  (int64_t)(0.65 * NSEC_PER_SEC)),
                                                                   dispatch_get_main_queue(),
-                                                                  ^{
-                                                                      [self markThreadAsUnread:thread];
-                                                                  });
+                                                                  ^{ [self markThreadAsUnread:model]; });
                                                           }];
 
                 readStateAction.backgroundColor = UIColor.ows_accentBlueColor;
@@ -1730,7 +1737,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)deleteThreadWithConfirmation:(TSThread *)thread
+- (void)deleteThreadWithConfirmation:(ThreadViewModel *)threadViewModel
 {
     __weak ConversationListViewController *weakSelf = self;
     ActionSheetController *alert = [[ActionSheetController alloc]
@@ -1738,11 +1745,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                           @"Title for the 'conversation delete confirmation' alert.")
               message:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
                           @"Message for the 'conversation delete confirmation' alert.")];
-    [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.deleteButton
-                                                        style:ActionSheetActionStyleDestructive
-                                                      handler:^(ActionSheetAction *action) {
-                                                          [weakSelf deleteThread:thread];
-                                                      }]];
+    [alert addAction:[[ActionSheetAction alloc]
+                         initWithTitle:CommonStrings.deleteButton
+                                 style:ActionSheetActionStyleDestructive
+                               handler:^(ActionSheetAction *action) { [weakSelf deleteThread:threadViewModel]; }]];
     [alert addAction:[OWSActionSheets cancelAction]];
 
     [self presentActionSheet:alert];
@@ -1752,69 +1758,63 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     switch(action.type){
         case OWSCellAccessibilityCustomActionTypeArchive:
-            [self archiveThread:action.thread];
+            [self archiveThread:action.threadViewModel];
             break;
         case OWSCellAccessibilityCustomActionTypeDelete:
-            [self deleteThreadWithConfirmation:action.thread];
+            [self deleteThreadWithConfirmation:action.threadViewModel];
             break;
         case OWSCellAccessibilityCustomActionTypeMarkRead:
-            [self markThreadAsRead:action.thread];
+            [self markThreadAsRead:action.threadViewModel];
             break;
         case OWSCellAccessibilityCustomActionTypeMarkUnread:
-            [self markThreadAsUnread:action.thread];
+            [self markThreadAsUnread:action.threadViewModel];
             break;
         case OWSCellAccessibilityCustomActionTypePin:
-            [self pinThread:action.thread];
+            [self pinThread:action.threadViewModel];
             break;
         case OWSCellAccessibilityCustomActionTypeUnpin:
-            [self unpinThread:action.thread];
+            [self unpinThread:action.threadViewModel];
             break;
     }
 }
 
-- (void)deleteThread:(TSThread *)thread
+- (void)deleteThread:(ThreadViewModel *)threadViewModel
 {
     // If this conversation is currently selected, close it.
-    if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+    if ([self.conversationSplitViewController.selectedThread.uniqueId
+            isEqualToString:threadViewModel.threadRecord.uniqueId]) {
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        if ([thread isKindOfClass:[TSGroupThread class]]) {
-            TSGroupThread *groupThread = (TSGroupThread *)thread;
-            if (groupThread.isLocalUserMemberOfAnyKind || groupThread.isGroupV2Thread) {
-                [groupThread softDeleteThreadWithTransaction:transaction];
-            } else {
-                [groupThread anyRemoveWithTransaction:transaction];
-            }
-        } else {
-            // contact thread
-            [thread softDeleteThreadWithTransaction:transaction];
-        }
+        [threadViewModel.threadRecord softDeleteThreadWithTransaction:transaction];
     });
 
     [self updateViewState];
 }
 
-- (void)markThreadAsRead:(TSThread *)thread
+- (void)markThreadAsRead:(ThreadViewModel *)threadViewModel
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [thread markAllAsReadAndUpdateStorageService:YES transaction:transaction];
+        [threadViewModel.threadRecord markAllAsReadAndUpdateStorageService:YES transaction:transaction];
     });
 }
 
-- (void)markThreadAsUnread:(TSThread *)thread
+- (void)markThreadAsUnread:(ThreadViewModel *)threadViewModel
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [thread markAsUnreadAndUpdateStorageService:YES transaction:transaction];
+        [threadViewModel.associatedData updateWithIsMarkedUnread:YES updateStorageService:YES transaction:transaction];
     });
 }
 
-- (void)pinThread:(TSThread *)thread
+- (void)pinThread:(ThreadViewModel *)threadViewModel
 {
     __block NSError *error;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [PinnedThreadManager pinThread:thread updateStorageService:YES transaction:transaction error:&error];
+        [PinnedThreadManager pinThread:threadViewModel.threadRecord
+                  updateStorageService:YES
+                           transaction:transaction
+                                 error:&error];
     });
 
     if (error == PinnedThreadManager.tooManyPinnedThreadsError) {
@@ -1826,11 +1826,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-- (void)unpinThread:(TSThread *)thread
+- (void)unpinThread:(ThreadViewModel *)threadViewModel
 {
     __block NSError *error;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [PinnedThreadManager unpinThread:thread updateStorageService:YES transaction:transaction error:&error];
+        [PinnedThreadManager unpinThread:threadViewModel.threadRecord
+                    updateStorageService:YES
+                             transaction:transaction
+                                   error:&error];
     });
 
     if (error) {
@@ -1838,25 +1841,30 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-- (BOOL)isThreadPinned:(TSThread *)thread
+- (BOOL)isThreadPinned:(ThreadViewModel *)threadViewModel
 {
-    return [PinnedThreadManager isThreadPinned:thread];
+    return [PinnedThreadManager isThreadPinned:threadViewModel.threadRecord];
 }
 
-- (void)archiveThread:(TSThread *)thread
+- (void)archiveThread:(ThreadViewModel *)threadViewModel
 {
     // If this conversation is currently selected, close it.
-    if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
+    if ([self.conversationSplitViewController.selectedThread.uniqueId
+            isEqualToString:threadViewModel.threadRecord.uniqueId]) {
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         switch (self.conversationListMode) {
             case ConversationListMode_Inbox:
-                [thread archiveThreadAndUpdateStorageService:YES transaction:transaction];
+                [threadViewModel.associatedData updateWithIsArchived:YES
+                                                updateStorageService:YES
+                                                         transaction:transaction];
                 break;
             case ConversationListMode_Archive:
-                [thread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
+                [threadViewModel.associatedData updateWithIsArchived:NO
+                                                updateStorageService:YES
+                                                         transaction:transaction];
                 break;
         }
     });

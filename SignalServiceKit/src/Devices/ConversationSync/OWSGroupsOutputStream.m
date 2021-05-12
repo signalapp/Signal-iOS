@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:groupThread
+                                                                             transaction:transaction];
     TSGroupModel *group = groupThread.groupModel;
     OWSAssertDebug(group);
 
@@ -66,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
         [groupBuilder setBlocked:YES];
     }
 
-    [groupBuilder setArchived:groupThread.isArchived];
+    [groupBuilder setArchived:associatedData.isArchived];
     NSNumber *_Nullable sortIndex = [[AnyThreadFinder new] sortIndexObjcWithThread:groupThread transaction:transaction];
     if (sortIndex != nil) {
         [groupBuilder setInboxPosition:sortIndex.intValue];

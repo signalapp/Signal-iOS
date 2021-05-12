@@ -614,6 +614,9 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
         for table in GRDBDatabaseStorageAdapter.tables {
             result[table.tableName] = table.collection
         }
+        for table in GRDBDatabaseStorageAdapter.swiftTables {
+            result[table.databaseTableName] = String(describing: table)
+        }
         result[SDSKeyValueStore.tableName] = SDSKeyValueStore.dataStoreCollection
         return result
     }()

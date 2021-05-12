@@ -40,13 +40,13 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 @interface TSThread ()
 
 @property (nonatomic, nullable) NSDate *creationDate;
-@property (nonatomic) BOOL isArchived;
-@property (nonatomic) BOOL isMarkedUnread;
+@property (nonatomic) BOOL isArchivedObsolete;
+@property (nonatomic) BOOL isMarkedUnreadObsolete;
 
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (nonatomic, nullable) MessageBodyRanges *messageDraftBodyRanges;
 
-@property (atomic) uint64_t mutedUntilTimestamp;
+@property (atomic) uint64_t mutedUntilTimestampObsolete;
 @property (nonatomic) int64_t lastInteractionRowId;
 
 @property (nonatomic, nullable) NSDate *mutedUntilDateObsolete;
@@ -102,8 +102,8 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                       uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-                      isArchived:(BOOL)isArchived
-                  isMarkedUnread:(BOOL)isMarkedUnread
+              isArchivedObsolete:(BOOL)isArchivedObsolete
+          isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
@@ -111,7 +111,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
           mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
-             mutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
+     mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
     self = [super initWithGrdbId:grdbId
@@ -123,8 +123,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
     _conversationColorName = conversationColorName;
     _creationDate = creationDate;
-    _isArchived = isArchived;
-    _isMarkedUnread = isMarkedUnread;
+    _isArchivedObsolete = isArchivedObsolete;
+    _isMarkedUnreadObsolete = isMarkedUnreadObsolete;
     _lastInteractionRowId = lastInteractionRowId;
     _lastVisibleSortIdObsolete = lastVisibleSortIdObsolete;
     _lastVisibleSortIdOnScreenPercentageObsolete = lastVisibleSortIdOnScreenPercentageObsolete;
@@ -132,7 +132,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _messageDraft = messageDraft;
     _messageDraftBodyRanges = messageDraftBodyRanges;
     _mutedUntilDateObsolete = mutedUntilDateObsolete;
-    _mutedUntilTimestamp = mutedUntilTimestamp;
+    _mutedUntilTimestampObsolete = mutedUntilTimestampObsolete;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 
     return self;
@@ -187,8 +187,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         [self.class legacyIsArchivedWithLastMessageDate:lastMessageDate archivalDate:archivalDate];
 
     if ([coder decodeObjectForKey:@"archivedAsOfMessageSortId"] != nil) {
-        OWSAssertDebug(!_isArchived);
-        _isArchived = YES;
+        OWSAssertDebug(!_isArchivedObsolete);
+        _isArchivedObsolete = YES;
     }
 
     return self;
@@ -197,6 +197,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
+
+    [ThreadAssociatedData createForThreadUniqueId:self.uniqueId transaction:transaction];
 
     if (self.shouldThreadBeVisible && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
@@ -232,6 +234,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     [super anyWillRemoveWithTransaction:transaction];
 
     [self removeAllThreadInteractionsWithTransaction:transaction];
+
+    // Remove any associated data
+    [ThreadAssociatedData removeForThreadUniqueId:self.uniqueId transaction:transaction];
 
     // TODO: If we ever use transaction finalizations for more than
     // de-bouncing thread touches, we should promote this to TSYapDatabaseObject
@@ -397,39 +402,11 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                            transaction:transaction];
     }
 
-    [self clearMarkedAsUnreadAndUpdateStorageService:updateStorageService transaction:transaction];
+    ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:self transaction:transaction];
+    [associatedData updateWithIsMarkedUnread:NO updateStorageService:updateStorageService transaction:transaction];
 
     // Just to be defensive, we'll also check for unread messages.
     OWSAssertDebug([interactionFinder allUnreadMessagesWithTransaction:transaction.unwrapGrdbRead].count < 1);
-}
-
-- (void)clearMarkedAsUnreadAndUpdateStorageService:(BOOL)updateStorageService
-                                       transaction:(SDSAnyWriteTransaction *)transaction
-{
-    __block BOOL wasMarkedUnread;
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 wasMarkedUnread = thread.isMarkedUnread;
-                                 thread.isMarkedUnread = NO;
-                             }];
-
-    if (updateStorageService && wasMarkedUnread) {
-        [self recordPendingStorageServiceUpdates];
-    }
-}
-
-- (void)markAsUnreadAndUpdateStorageService:(BOOL)updateStorageService transaction:(SDSAnyWriteTransaction *)transaction
-{
-    __block BOOL wasMarkedUnread;
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 wasMarkedUnread = thread.isMarkedUnread;
-                                 thread.isMarkedUnread = YES;
-                             }];
-
-    if (updateStorageService && !wasMarkedUnread) {
-        [self recordPendingStorageServiceUpdates];
-    }
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -493,7 +470,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToMarkAsVisible = !self.shouldThreadBeVisible;
 
-    BOOL needsToClearArchived = self.isArchived && wasMessageInserted;
+    ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:self transaction:transaction];
+
+    BOOL needsToClearArchived = associatedData.isArchived && wasMessageInserted;
 
     // Don't clear archived during migrations.
     if (!CurrentAppContext().isRunningTests && !AppReadiness.isAppReady) {
@@ -508,13 +487,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
     // Don't clear archive if muted and the user has
     // requested we don't for muted conversations.
-    if (self.isMuted && [SSKPreferences shouldKeepMutedChatsArchivedWithTransaction:transaction]) {
+    if (associatedData.isMuted && [SSKPreferences shouldKeepMutedChatsArchivedWithTransaction:transaction]) {
         needsToClearArchived = NO;
     }
 
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
 
-    BOOL needsToClearIsMarkedUnread = self.isMarkedUnread && wasMessageInserted;
+    BOOL needsToClearIsMarkedUnread = associatedData.isMarkedUnread && wasMessageInserted;
 
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId
         || needsToClearLastVisibleSortId || needsToClearIsMarkedUnread) {
@@ -522,17 +501,11 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                  block:^(TSThread *thread) {
                                      thread.shouldThreadBeVisible = YES;
                                      thread.lastInteractionRowId = MAX(thread.lastInteractionRowId, messageSortId);
-                                     if (needsToClearArchived) {
-                                         thread.isArchived = NO;
-                                     }
-                                     if (needsToClearIsMarkedUnread) {
-                                         thread.isMarkedUnread = NO;
-                                     }
-
-                                     if (needsToClearIsMarkedUnread || needsToClearArchived) {
-                                         [self recordPendingStorageServiceUpdates];
-                                     }
                                  }];
+        [associatedData clearIsArchived:needsToClearArchived
+                    clearIsMarkedUnread:needsToClearIsMarkedUnread
+                   updateStorageService:YES
+                            transaction:transaction];
         if (needsToClearLastVisibleSortId) {
             [self clearLastVisibleInteractionWithTransaction:transaction];
         }
@@ -648,63 +621,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-- (void)archiveThreadAndUpdateStorageService:(BOOL)updateStorageService
-                                 transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 thread.isArchived = YES;
-                             }];
-
-    // We already update storage service below, so we don't need to here.
-    [self markAllAsReadAndUpdateStorageService:NO transaction:transaction];
-
-    if (updateStorageService) {
-        [self recordPendingStorageServiceUpdates];
-    }
-}
-
-- (void)unarchiveThreadAndUpdateStorageService:(BOOL)updateStorageService
-                                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 thread.isArchived = NO;
-                             }];
-
-    if (updateStorageService) {
-        [self recordPendingStorageServiceUpdates];
-    }
-}
-
-- (void)unarchiveAndMarkVisibleThreadWithUpdateStorageService:(BOOL)updateStorageService
-                                                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 thread.isArchived = NO;
-                                 thread.shouldThreadBeVisible = YES;
-                             }];
-
-    if (updateStorageService) {
-        [self recordPendingStorageServiceUpdates];
-    }
-}
-
-- (void)recordPendingStorageServiceUpdates
-{
-    if ([self isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)self;
-        [SSKEnvironment.shared.storageServiceManager recordPendingUpdatesWithGroupModel:groupThread.groupModel];
-    } else if ([self isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)self;
-        [SSKEnvironment.shared.storageServiceManager
-            recordPendingUpdatesWithUpdatedAddresses:@[ contactThread.contactAddress ]];
-    } else {
-        OWSFailDebug(@"unexpected thread type");
-    }
-}
-
 #pragma mark - Drafts
 
 - (nullable MessageBody *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -727,35 +643,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                              }];
 }
 
-#pragma mark - Muted
-
-- (BOOL)isMuted
-{
-    return self.mutedUntilTimestamp > [NSDate ows_millisecondTimeStamp];
-}
-
-- (nullable NSDate *)mutedUntilDate
-{
-    return self.isMuted ? [NSDate ows_dateWithMillisecondsSince1970:self.mutedUntilTimestamp] : nil;
-}
-
-+ (UInt64)alwaysMutedTimestamp
-{
-    return LLONG_MAX;
-}
-
-- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
-                 updateStorageService:(BOOL)updateStorageService
-                          transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) { thread.mutedUntilTimestamp = mutedUntilTimestamp; }];
-
-    if (updateStorageService) {
-        [self recordPendingStorageServiceUpdates];
-    }
-}
-
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -764,6 +651,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                  thread.mentionNotificationMode = mentionNotificationMode;
                              }];
 }
+
+- (void)updateWithShouldThreadBeVisible:(BOOL)shouldThreadBeVisible transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) { thread.shouldThreadBeVisible = shouldThreadBeVisible; }];
+}
+
 
 #pragma mark - Conversation Color
 

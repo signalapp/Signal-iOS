@@ -104,6 +104,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addGroupMember
         case createPendingViewedReceipts
         case addViewedToInteractions
+        case createThreadAssociatedData
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -141,10 +142,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_scheduleStorageServiceUpdateForMutedThreads
         case dataMigration_populateGroupMember
         case dataMigration_cullInvalidIdentityKeySendingErrors
+        case dataMigration_moveToThreadAssociatedData
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 24
+    public static let grdbSchemaVersionLatest: UInt = 25
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1096,6 +1098,39 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(MigrationId.createThreadAssociatedData.rawValue) { db in
+            do {
+                try db.create(table: "thread_associated_data") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                    table.column("threadUniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column("isArchived", .boolean)
+                        .notNull()
+                        .defaults(to: false)
+                    table.column("isMarkedUnread", .boolean)
+                        .notNull()
+                        .defaults(to: false)
+                    table.column("mutedUntilTimestamp", .integer)
+                        .notNull()
+                        .defaults(to: 0)
+                }
+
+                try db.create(index: "index_thread_associated_data_on_threadUniqueId",
+                              on: "thread_associated_data",
+                              columns: ["threadUniqueId"],
+                              unique: true)
+                try db.create(index: "index_thread_associated_data_on_threadUniqueId_and_isMarkedUnread",
+                              on: "thread_associated_data",
+                              columns: ["threadUniqueId", "isMarkedUnread"])
+                try db.create(index: "index_thread_associated_data_on_threadUniqueId_and_isArchived",
+                              on: "thread_associated_data",
+                              columns: ["threadUniqueId", "isArchived"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -1332,6 +1367,24 @@ public class GRDBSchemaMigrator: NSObject {
                 WHERE \(interactionColumn: .recordType) = ?
             """
             transaction.executeUpdate(sql: sql, arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue])
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_moveToThreadAssociatedData.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { thread, _ in
+                do {
+                    try ThreadAssociatedData(
+                        threadUniqueId: thread.uniqueId,
+                        isArchived: thread.isArchivedObsolete,
+                        isMarkedUnread: thread.isMarkedUnreadObsolete,
+                        mutedUntilTimestamp: thread.mutedUntilTimestampObsolete
+                    ).insert(transaction.database)
+                } catch {
+                    owsFail("Error \(error)")
+                }
+            }
         }
     }
 }

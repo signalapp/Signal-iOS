@@ -45,8 +45,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMe
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting DEPRECATED_MSG_ATTRIBUTE("this property is only to be used in the sortId migration");
-@property (nonatomic, readonly) BOOL isArchived;
-@property (nonatomic, readonly) BOOL isMarkedUnread;
+@property (nonatomic, readonly) BOOL isArchivedObsolete;
+@property (nonatomic, readonly) BOOL isMarkedUnreadObsolete;
 
 // This maintains the row Id that was at the bottom of the conversation
 // the last time the user viewed this thread so we can restore their
@@ -79,8 +79,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMe
                       uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-                      isArchived:(BOOL)isArchived
-                  isMarkedUnread:(BOOL)isMarkedUnread
+              isArchivedObsolete:(BOOL)isArchivedObsolete
+          isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
@@ -88,9 +88,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
           mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
-             mutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
+     mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestamp:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -130,13 +130,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
                                  transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(markAllAsRead(updateStorageService:transaction:));
 
-- (void)markAsUnreadAndUpdateStorageService:(BOOL)updateStorageService
-                                transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(markAsUnread(updateStorageService:transaction:));
-- (void)clearMarkedAsUnreadAndUpdateStorageService:(BOOL)updateStorageService
-                                       transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(clearMarkedAsUnread(updateStorageService:transaction:));
-
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
 
@@ -158,29 +151,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 #pragma mark Archival
 
-/**
- *  Archives a thread
- *
- *  @param transaction Database transaction.
- */
-- (void)archiveThreadAndUpdateStorageService:(BOOL)updateStorageService
-                                 transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(archiveThread(updateStorageService:transaction:));
-
 - (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
-/**
- *  Unarchives a thread
- *
- *  @param transaction Database transaction.
- */
-- (void)unarchiveThreadAndUpdateStorageService:(BOOL)updateStorageService
-                                   transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(unarchiveThread(updateStorageService:transaction:));
-
-- (void)unarchiveAndMarkVisibleThreadWithUpdateStorageService:(BOOL)updateStorageService
-                                                  transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(unarchiveThreadAndMarkVisible(updateStorageService:transaction:));
 
 - (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(removeAllThreadInteractions(transaction:));
@@ -211,24 +182,20 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
  */
 - (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction;
 
-@property (atomic, readonly) BOOL isMuted;
-@property (atomic, readonly) uint64_t mutedUntilTimestamp;
-@property (atomic, readonly, nullable) NSDate *mutedUntilDate;
+@property (atomic, readonly) uint64_t mutedUntilTimestampObsolete;
 @property (nonatomic, readonly, nullable) NSDate *mutedUntilDateObsolete;
-
-@property (class, nonatomic, readonly) UInt64 alwaysMutedTimestamp;
 
 @property (nonatomic, readonly) TSThreadMentionNotificationMode mentionNotificationMode;
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
-                 updateStorageService:(BOOL)updateStorageService
-                          transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
                               transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(updateWithMentionNotificationMode(_:transaction:));
+
+- (void)updateWithShouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+                            transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateWithShouldThreadBeVisible(_:transaction:));
 
 @end
 

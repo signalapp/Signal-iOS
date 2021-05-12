@@ -33,8 +33,8 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                       uniqueId:(NSString *)uniqueId
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
-                      isArchived:(BOOL)isArchived
-                  isMarkedUnread:(BOOL)isMarkedUnread
+              isArchivedObsolete:(BOOL)isArchivedObsolete
+          isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
@@ -42,7 +42,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                     messageDraft:(nullable NSString *)messageDraft
           messageDraftBodyRanges:(nullable MessageBodyRanges *)messageDraftBodyRanges
           mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
-             mutedUntilTimestamp:(uint64_t)mutedUntilTimestamp
+     mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
 {
@@ -50,8 +50,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                         uniqueId:uniqueId
              conversationColorName:conversationColorName
                       creationDate:creationDate
-                        isArchived:isArchived
-                    isMarkedUnread:isMarkedUnread
+                isArchivedObsolete:isArchivedObsolete
+            isMarkedUnreadObsolete:isMarkedUnreadObsolete
               lastInteractionRowId:lastInteractionRowId
          lastVisibleSortIdObsolete:lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageObsolete
@@ -59,7 +59,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                       messageDraft:messageDraft
             messageDraftBodyRanges:messageDraftBodyRanges
             mutedUntilDateObsolete:mutedUntilDateObsolete
-               mutedUntilTimestamp:mutedUntilTimestamp
+       mutedUntilTimestampObsolete:mutedUntilTimestampObsolete
              shouldThreadBeVisible:shouldThreadBeVisible];
 
     if (!self) {

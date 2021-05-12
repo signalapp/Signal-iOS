@@ -1290,7 +1290,7 @@ typedef enum : NSUInteger {
     NSString *iconSpacer = UIDevice.currentDevice.isNarrowerThanIPhone6 ? hairSpace : thinSpace;
     NSString *betweenItemSpacer = UIDevice.currentDevice.isNarrowerThanIPhone6 ? @" " : @"  ";
 
-    BOOL isMuted = self.thread.isMuted;
+    BOOL isMuted = self.threadViewModel.isMuted;
     BOOL hasTimer = self.disappearingMessagesConfiguration.isEnabled;
     BOOL isVerified = self.thread.recipientAddresses.count > 0;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {

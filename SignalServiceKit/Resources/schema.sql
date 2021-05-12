@@ -1079,3 +1079,35 @@ CREATE
         ON "pending_viewed_receipts"("threadId"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "thread_associated_data" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"threadUniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"isArchived" BOOLEAN NOT NULL DEFAULT 0
+            ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
+            ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
+        )
+;
+
+CREATE
+    UNIQUE INDEX "index_thread_associated_data_on_threadUniqueId"
+        ON "thread_associated_data"("threadUniqueId"
+)
+;
+
+CREATE
+    INDEX "index_thread_associated_data_on_threadUniqueId_and_isMarkedUnread"
+        ON "thread_associated_data"("threadUniqueId"
+    ,"isMarkedUnread"
+)
+;
+
+CREATE
+    INDEX "index_thread_associated_data_on_threadUniqueId_and_isArchived"
+        ON "thread_associated_data"("threadUniqueId"
+    ,"isArchived"
+)
+;

@@ -119,11 +119,17 @@
 		"TSInteraction.uniqueThreadId": "threadUniqueId",
 		"TSThread.lastVisibleSortIdObsolete": "lastVisibleSortId",
 		"TSThread.lastVisibleSortIdOnScreenPercentageObsolete": "lastVisibleSortIdOnScreenPercentage",
-		"TSThread.mutedUntilDateObsolete": "mutedUntilDate"
+		"TSThread.mutedUntilDateObsolete": "mutedUntilDate",
+		"TSThread.isArchivedObsolete": "isArchived",
+		"TSThread.isMarkedUnreadObsolete": "isMarkedUnread",
+		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp"
 	},
 	"renamed_column_names": {
 		"TSThread.lastVisibleSortIdObsolete": "lastVisibleSortId",
 		"TSThread.lastVisibleSortIdOnScreenPercentageObsolete": "lastVisibleSortIdOnScreenPercentage",
-		"TSThread.mutedUntilDateObsolete": "mutedUntilDate"
+		"TSThread.mutedUntilDateObsolete": "mutedUntilDate",
+		"TSThread.isArchivedObsolete": "isArchived",
+		"TSThread.isMarkedUnreadObsolete": "isMarkedUnread",
+		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp"
 	}
 }

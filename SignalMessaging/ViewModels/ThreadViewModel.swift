@@ -12,11 +12,26 @@ public class ThreadViewModel: NSObject {
     @objc public let unreadCount: UInt
     @objc public let contactAddress: SignalServiceAddress?
     @objc public let name: String
-    @objc public let isMuted: Bool
+    @objc public let associatedData: ThreadAssociatedData
     @objc public let hasPendingMessageRequest: Bool
     @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     @objc public let groupCallInProgress: Bool
     @objc public let hasWallpaper: Bool
+
+    @objc
+    public var isArchived: Bool { associatedData.isArchived }
+
+    @objc
+    public var isMuted: Bool { associatedData.isMuted }
+
+    @objc
+    public var mutedUntilTimestamp: UInt64 { associatedData.mutedUntilTimestamp }
+
+    @objc
+    public var mutedUntilDate: Date? { associatedData.mutedUntilDate }
+
+    @objc
+    public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
 
     public var isContactThread: Bool {
         return !isGroupThread
@@ -42,7 +57,8 @@ public class ThreadViewModel: NSObject {
         self.isGroupThread = thread.isGroupThread
         self.name = Self.contactsManager.displayName(for: thread, transaction: transaction)
 
-        self.isMuted = thread.isMuted
+        let associatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
+        self.associatedData = associatedData
 
         if let contactThread = thread as? TSContactThread {
             self.contactAddress = contactThread.contactAddress
@@ -52,7 +68,7 @@ public class ThreadViewModel: NSObject {
 
         let unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction.unwrapGrdbRead)
         self.unreadCount = unreadCount
-        self.hasUnreadMessages = thread.isMarkedUnread || unreadCount > 0
+        self.hasUnreadMessages = associatedData.isMarkedUnread || unreadCount > 0
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
 
         self.groupCallInProgress = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: transaction)

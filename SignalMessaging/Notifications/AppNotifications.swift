@@ -380,8 +380,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return userInfo
     }
 
+    public func isThreadMuted(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+        ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction).isMuted
+    }
+
     public func canNotify(for incomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        guard thread.isMuted else { return true }
+        guard isThreadMuted(thread, transaction: transaction) else { return true }
 
         guard let localAddress = TSAccountManager.localAddress else {
             owsFailDebug("Missing local address")
@@ -480,7 +484,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func notifyUser(for reaction: OWSReaction, on message: TSOutgoingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
 
-        guard !thread.isMuted else { return }
+        guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         // Reaction notifications only get displayed if we can
         // include the reaction details, otherwise we don't
@@ -656,9 +660,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for previewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
-        guard !thread.isMuted else {
-            return
-        }
+        guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         let notificationTitle: String?
         let threadIdentifier: String?

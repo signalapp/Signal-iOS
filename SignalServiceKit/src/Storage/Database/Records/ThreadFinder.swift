@@ -85,12 +85,11 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         let sql = """
             SELECT COUNT(*)
             FROM \(ThreadRecord.databaseTableName)
-            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-            AND \(threadColumn: .isArchived) = ?
+            \(archivedJoin(isArchived: isArchived))
+            AND \(threadColumn: .shouldThreadBeVisible) = 1
         """
-        let arguments: StatementArguments = [isArchived]
 
-        guard let count = try UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+        guard let count = try UInt.fetchOne(transaction.database, sql: sql) else {
             owsFailDebug("count was unexpectedly nil")
             return 0
         }
@@ -103,30 +102,34 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         let sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
-            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-            AND \(threadColumn: .isArchived) = ?
+            \(archivedJoin(isArchived: isArchived))
+            AND \(threadColumn: .shouldThreadBeVisible) = 1
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
             """
-        let arguments: StatementArguments = [isArchived]
 
-        try ThreadRecord.fetchCursor(transaction.database, sql: sql, arguments: arguments).forEach { threadRecord in
+        try ThreadRecord.fetchCursor(transaction.database, sql: sql).forEach { threadRecord in
             block(try TSThread.fromRecord(threadRecord))
         }
+    }
+
+    private func archivedJoin(isArchived: Bool) -> String {
+        return """
+            INNER JOIN \(ThreadAssociatedData.databaseTableName) AS ad
+                ON ad.threadUniqueId = \(threadColumn: .uniqueId)
+            WHERE ad.isArchived = \(isArchived ? "1" : "0")
+        """
     }
 
     @objc
     public func visibleThreadIds(isArchived: Bool, transaction: GRDBReadTransaction) throws -> [String] {
         let sql = """
-        SELECT \(threadColumn: .uniqueId)
-        FROM \(ThreadRecord.databaseTableName)
-        WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-        AND \(threadColumn: .isArchived) = ?
-        ORDER BY \(threadColumn: .lastInteractionRowId) DESC
+            SELECT \(threadColumn: .uniqueId)
+            FROM \(ThreadRecord.databaseTableName)
+            \(archivedJoin(isArchived: isArchived))
+            AND \(threadColumn: .shouldThreadBeVisible) = 1
+            ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
-        let arguments: StatementArguments = [isArchived]
-        return try String.fetchAll(transaction.database,
-                                   sql: sql,
-                                   arguments: arguments)
+        return try String.fetchAll(transaction.database, sql: sql)
     }
 
     public func sortIndex(thread: TSThread, transaction: GRDBReadTransaction) throws -> UInt? {

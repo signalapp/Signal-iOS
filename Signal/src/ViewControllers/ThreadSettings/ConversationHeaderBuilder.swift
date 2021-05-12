@@ -264,7 +264,7 @@ struct ConversationHeaderBuilder: Dependencies {
         if options.contains(.mute) {
             buttons.append(buildIconButton(
                 icon: .settingsMuted,
-                text: delegate.thread.isMuted
+                text: delegate.threadViewModel.isMuted
                     ? NSLocalizedString(
                         "CONVERSATION_SETTINGS_MUTED_BUTTON",
                         comment: "Button to unmute the chat"
@@ -276,7 +276,7 @@ struct ConversationHeaderBuilder: Dependencies {
                 action: { [weak delegate] in
                     guard let delegate = delegate else { return }
                     ConversationSettingsViewController.showMuteUnmuteActionSheet(
-                        for: delegate.thread,
+                        for: delegate.threadViewModel,
                         from: delegate
                     ) { [weak delegate] in
                         delegate?.updateTableContents(shouldReload: true)

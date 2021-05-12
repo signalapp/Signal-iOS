@@ -147,7 +147,15 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 thread.shouldThreadBeVisible = true
                 thread.anyOverwritingUpdate(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
-                thread.archiveThread(updateStorageService: false, transaction: $0)
+
+                ThreadAssociatedData.fetchOrDefault(
+                    for: thread,
+                    transaction: $0
+                ).updateWith(
+                    isArchived: true,
+                    updateStorageService: false,
+                    transaction: $0
+                )
             }
             return thread
         }()
@@ -175,7 +183,14 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 messageFactory.threadCreator = { _ in thread }
                 _ = messageFactory.create(transaction: transaction)
 
-                thread.archiveThread(updateStorageService: false, transaction: transaction)
+                ThreadAssociatedData.fetchOrDefault(
+                    for: thread,
+                    transaction: transaction
+                ).updateWith(
+                    isArchived: true,
+                    updateStorageService: false,
+                    transaction: transaction
+                )
             }
             return thread
         }()
