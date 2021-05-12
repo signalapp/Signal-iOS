@@ -149,7 +149,8 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         return OWSTableItem.newCell()
                     }
 
-                    let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil, allowUserInteraction: true)
+                    let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil)
+                    cell.allowUserInteraction = true
 
                     Self.databaseStorage.read { transaction in
                         let configuration = ContactCellConfiguration.build(address: address,

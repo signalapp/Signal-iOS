@@ -459,7 +459,7 @@ public enum ConversationContent: Equatable, Dependencies {
         }
     }
 
-    var contactAddress: SignalServiceAddress? {
+    public var contactAddress: SignalServiceAddress? {
         switch self {
         case .contact(let contactThread):
             return contactThread.contactAddress
