@@ -119,6 +119,8 @@ class DonationViewController: OWSTableViewController2 {
                 "DONATION_VIEW_TITLE",
                 comment: "Title for the donate to signal view"
             )
+            label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
             stackView.addArrangedSubview(label)
 
             return stackView
