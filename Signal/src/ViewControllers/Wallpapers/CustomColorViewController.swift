@@ -276,9 +276,9 @@ public class CustomColorViewController: OWSTableViewController2 {
     }
 
     private func updateMockConversation() {
-        // TODO:
-//    self.mockConversationView = mockConversationView
+        // TODO: mockConversationView
     }
+
     // MARK: - Events
 
     @objc
@@ -293,7 +293,6 @@ public class CustomColorViewController: OWSTableViewController2 {
 
 // MARK: -
 
-// TODO:
 extension CustomColorViewController: SpectrumSliderDelegate {
     fileprivate func spectrumSliderDidChange(_ spectrumSlider: SpectrumSlider) {
         if spectrumSlider == self.hueSlider {
