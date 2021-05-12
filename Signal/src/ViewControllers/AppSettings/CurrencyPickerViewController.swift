@@ -4,35 +4,31 @@
 
 import Foundation
 
-@objc
-class CurrencyPickerViewController: OWSTableViewController2 {
+protocol CurrencyPickerDataSource {
+    var currentCurrencyCode: Currency.Code { get }
+    var preferredCurrencyInfos: [Currency.Info] { get }
+    var supportedCurrencyInfos: [Currency.Info] { get }
+
+    init(updateTableContentsBlock: @escaping () -> Void)
+}
+
+class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OWSTableViewController2, UISearchBarDelegate {
 
     private let searchBar = OWSSearchBar()
-    private let currentCurrencyCode: Currency.Code
-    private let preferredCurrencyInfos: [Currency.Info]
-    private let supportedCurrencyInfos: [Currency.Info]
+    private lazy var dataSource = DataSourceType { [weak self] in self?.updateTableContents() }
     private let completion: (Currency.Code) -> Void
 
     fileprivate var searchText: String? {
         searchBar.text?.ows_stripped()
     }
 
-    public required init(
-        currentCurrencyCode: Currency.Code,
-        preferredCurrencyInfos: [Currency.Info],
-        supportedCurrencyInfos: [Currency.Info],
-        completion: @escaping (Currency.Code) -> Void
-    ) {
-        self.currentCurrencyCode = currentCurrencyCode
-        self.preferredCurrencyInfos = preferredCurrencyInfos
-        self.supportedCurrencyInfos = supportedCurrencyInfos
+    public required init(completion: @escaping (Currency.Code) -> Void) {
         self.completion = completion
         super.init()
 
         topHeader = OWSTableViewController2.buildTopHeader(forView: searchBar)
     }
 
-    @objc
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -65,9 +61,9 @@ class CurrencyPickerViewController: OWSTableViewController2 {
     private func updateTableContentsDefault() {
         let contents = OWSTableContents()
 
-        let currentCurrencyCode = self.currentCurrencyCode
-        let preferredCurrencyInfos = self.preferredCurrencyInfos
-        let supportedCurrencyInfos = self.supportedCurrencyInfos
+        let currentCurrencyCode = dataSource.currentCurrencyCode
+        let preferredCurrencyInfos = dataSource.preferredCurrencyInfos
+        let supportedCurrencyInfos = dataSource.supportedCurrencyInfos
 
         let preferredSection = OWSTableSection()
         preferredSection.customHeaderHeight = 12
@@ -116,9 +112,9 @@ class CurrencyPickerViewController: OWSTableViewController2 {
 
         let contents = OWSTableContents()
 
-        let currentCurrencyCode = self.currentCurrencyCode
-        let preferredCurrencyInfos = self.preferredCurrencyInfos
-        let supportedCurrencyInfos = self.supportedCurrencyInfos
+        let currentCurrencyCode = dataSource.currentCurrencyCode
+        let preferredCurrencyInfos = dataSource.preferredCurrencyInfos
+        let supportedCurrencyInfos = dataSource.supportedCurrencyInfos
 
         let currencyInfosToSearch = supportedCurrencyInfos.isEmpty ? preferredCurrencyInfos : supportedCurrencyInfos
         let matchingCurrencyInfos = currencyInfosToSearch.filter { currencyInfo in
@@ -147,7 +143,7 @@ class CurrencyPickerViewController: OWSTableViewController2 {
     }
 
     private func buildTableItem(forCurrencyInfo currencyInfo: Currency.Info,
-                                currentCurrencyCode: String) -> OWSTableItem {
+                                currentCurrencyCode: Currency.Code) -> OWSTableItem {
 
         let currencyCode = currencyInfo.code
 
@@ -198,11 +194,9 @@ class CurrencyPickerViewController: OWSTableViewController2 {
         completion(currencyCode)
         navigationController?.popViewController(animated: true)
     }
-}
 
-// MARK: -
+    // MARK: -
 
-extension CurrencyPickerViewController: UISearchBarDelegate {
     open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         updateTableContents()
     }
@@ -213,5 +207,41 @@ extension CurrencyPickerViewController: UISearchBarDelegate {
 
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         updateTableContents()
+    }
+}
+
+struct CurrencyPickerStripeDataSource: CurrencyPickerDataSource {
+    let currentCurrencyCode = Stripe.defaultCurrencyCode
+    let preferredCurrencyInfos = Stripe.preferredCurrencyInfos
+    let supportedCurrencyInfos = Stripe.supportedCurrencyInfos
+
+    init(updateTableContentsBlock: @escaping () -> Void) {}
+}
+
+class CurrencyPickerPaymentsDataSource: NSObject, CurrencyPickerDataSource {
+    let currentCurrencyCode = paymentsCurrenciesSwift.currentCurrencyCode
+    let preferredCurrencyInfos = paymentsCurrenciesSwift.preferredCurrencyInfos
+    private(set) var supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions {
+        didSet { updateTableContents() }
+    }
+
+    let updateTableContents: () -> Void
+    required init(updateTableContentsBlock: @escaping () -> Void) {
+        self.updateTableContents = updateTableContentsBlock
+        super.init()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(paymentConversionRatesDidChange),
+            name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
+            object: nil
+        )
+
+        paymentsCurrencies.updateConversationRatesIfStale()
+    }
+
+    @objc
+    func paymentConversionRatesDidChange() {
+        supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions
     }
 }
