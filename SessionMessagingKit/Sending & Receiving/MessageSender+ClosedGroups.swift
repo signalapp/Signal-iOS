@@ -43,6 +43,8 @@ extension MessageSender {
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .groupCreated)
         infoMessage.save(with: transaction)
+        // Start polling
+        ClosedGroupPoller.shared.startPolling(for: groupPublicKey)
         // Return
         return when(fulfilled: promises).map2 { thread }
     }
@@ -272,6 +274,7 @@ extension MessageSender {
                 // Remove the group from the database and unsubscribe from PNs
                 Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
                 Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
+                ClosedGroupPoller.shared.stopPolling(for: groupPublicKey)
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             }
         }.map { _ in }

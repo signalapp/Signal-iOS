@@ -10,8 +10,6 @@ extern NSString *const AppDelegateStoryboardMain;
 
 - (void)startPollerIfNeeded;
 - (void)stopPoller;
-- (void)startClosedGroupPollerIfNeeded;
-- (void)stopClosedGroupPoller;
 - (void)startOpenGroupPollersIfNeeded;
 - (void)stopOpenGroupPollers;
 

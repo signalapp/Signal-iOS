@@ -408,6 +408,8 @@ extension MessageReceiver {
         Storage.shared.addClosedGroupEncryptionKeyPair(encryptionKeyPair, for: groupPublicKey, using: transaction)
         // Store the formation timestamp
         Storage.shared.setClosedGroupFormationTimestamp(to: messageSentTimestamp, for: groupPublicKey, using: transaction)
+        // Start polling
+        ClosedGroupPoller.shared.startPolling(for: groupPublicKey)
         // Notify the PN server
         let _ = PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: getUserHexEncodedPublicKey())
     }
@@ -539,6 +541,7 @@ extension MessageReceiver {
             if wasCurrentUserRemoved {
                 Storage.shared.removeClosedGroupPublicKey(groupPublicKey, using: transaction)
                 Storage.shared.removeAllClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
+                ClosedGroupPoller.shared.stopPolling(for: groupPublicKey)
                 let _ = PushNotificationAPI.performOperation(.unsubscribe, for: groupPublicKey, publicKey: userPublicKey)
             }
             let storage = SNMessagingKitConfiguration.shared.storage

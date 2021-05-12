@@ -142,7 +142,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
-            appDelegate.startClosedGroupPollerIfNeeded()
+            appDelegate.startClosedGroupPoller()
             appDelegate.startOpenGroupPollersIfNeeded()
             // Do this only if we created a new Session ID, or if we already received the initial configuration message
             if UserDefaults.standard[.hasSyncedInitialConfiguration] {
