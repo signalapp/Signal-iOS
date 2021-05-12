@@ -438,6 +438,8 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 }
 
+// MARK: -
+
 extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -507,7 +509,8 @@ private class SafetyNumberCell: ContactTableViewCell {
 
             configuration.forceDarkAppearance = (theme == .translucentDark)
 
-            let buttonSize = button.sizeThatFits(.square(.greatestFiniteMagnitude))
+            let buttonSize = button.intrinsicContentSize
+            button.removeFromSuperview()
             let buttonWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(button)
             configuration.accessoryView = ContactCellAccessoryView(accessoryView: buttonWrapper,
                                                                    size: buttonSize)
