@@ -58,10 +58,14 @@ public final class ClosedGroupPoller : NSObject {
     // MARK: Private API
     private func setUpPolling(for groupPublicKey: String) {
         poll(groupPublicKey).done2 { [weak self] _ in
-            self?.pollRecursively(groupPublicKey)
+            DispatchQueue.main.async { // Timers don't do well on background queues
+                self?.pollRecursively(groupPublicKey)
+            }
         }.catch2 { [weak self] error in
-            // The error is logged in poll(_:isBackgroundPoll:)
-            self?.pollRecursively(groupPublicKey)
+            // The error is logged in poll(_:)
+            DispatchQueue.main.async { // Timers don't do well on background queues
+                self?.pollRecursively(groupPublicKey)
+            }
         }
     }
 
@@ -82,10 +86,14 @@ public final class ClosedGroupPoller : NSObject {
         timers[groupPublicKey] = Timer.scheduledTimer(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
             timer.invalidate()
             self?.poll(groupPublicKey).done2 { _ in
-                self?.pollRecursively(groupPublicKey)
+                DispatchQueue.main.async { // Timers don't do well on background queues
+                    self?.pollRecursively(groupPublicKey)
+                }
             }.catch2 { error in
                 // The error is logged in poll(_:)
-                self?.pollRecursively(groupPublicKey)
+                DispatchQueue.main.async { // Timers don't do well on background queues
+                    self?.pollRecursively(groupPublicKey)
+                }
             }
         }
     }
