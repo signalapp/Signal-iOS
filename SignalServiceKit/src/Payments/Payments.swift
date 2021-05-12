@@ -479,16 +479,14 @@ extension MockPayments: PaymentsSwift {
 @objc
 public protocol PaymentsCurrencies: AnyObject {
 
-    typealias CurrencyCode = String
-
     // Expressed as a ratio:
     //
     // price of fiat currency / price of payment currency (MobileCoin)
     typealias CurrencyConversionRate = Double
 
-    var currentCurrencyCode: CurrencyCode { get }
+    var currentCurrencyCode: Currency.Code { get }
 
-    func setCurrentCurrencyCode(_ currencyCode: CurrencyCode, transaction: SDSAnyWriteTransaction)
+    func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: SDSAnyWriteTransaction)
 
     func updateConversationRatesIfStale()
 
@@ -499,13 +497,13 @@ public protocol PaymentsCurrencies: AnyObject {
 
 public protocol PaymentsCurrenciesSwift: PaymentsCurrencies {
 
-    var preferredCurrencyInfos: [CurrencyInfo] { get }
+    var preferredCurrencyInfos: [Currency.Info] { get }
 
-    var supportedCurrencyInfos: [CurrencyInfo] { get }
+    var supportedCurrencyInfos: [Currency.Info] { get }
 
-    var supportedCurrencyInfosWithCurrencyConversions: [CurrencyInfo] { get }
+    var supportedCurrencyInfosWithCurrencyConversions: [Currency.Info] { get }
 
-    func conversionInfo(forCurrencyCode currencyCode: CurrencyCode) -> CurrencyConversionInfo?
+    func conversionInfo(forCurrencyCode currencyCode: Currency.Code) -> CurrencyConversionInfo?
 }
 
 // MARK: -
@@ -638,27 +636,15 @@ public class PaymentsConstants {
 
 // MARK: -
 
-public struct CurrencyInfo {
-    public let currencyCode: PaymentsCurrencies.CurrencyCode
-    public let name: String
-
-    public init(currencyCode: PaymentsCurrencies.CurrencyCode, name: String) {
-        self.currencyCode = currencyCode
-        self.name = name
-    }
-}
-
-// MARK: -
-
 public struct CurrencyConversionInfo {
-    public let currencyCode: PaymentsCurrencies.CurrencyCode
+    public let currencyCode: Currency.Code
     public let name: String
     // Don't use this field; use convertToFiatCurrency() instead.
     private let conversionRate: PaymentsCurrencies.CurrencyConversionRate
     // How fresh is this conversion info?
     public let conversionDate: Date
 
-    public init(currencyCode: PaymentsCurrencies.CurrencyCode,
+    public init(currencyCode: Currency.Code,
                 name: String,
                 conversionRate: PaymentsCurrencies.CurrencyConversionRate,
                 conversionDate: Date) {
@@ -687,8 +673,8 @@ public struct CurrencyConversionInfo {
         return TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
     }
 
-    public var asCurrencyInfo: CurrencyInfo {
-        CurrencyInfo(currencyCode: currencyCode, name: name)
+    public var asCurrencyInfo: Currency.Info {
+        Currency.Info(code: currencyCode, name: name)
     }
 
     public static func areEqual(_ left: CurrencyConversionInfo?,
@@ -702,23 +688,23 @@ public struct CurrencyConversionInfo {
 
 public class MockPaymentsCurrencies: NSObject, PaymentsCurrenciesSwift {
 
-    public let currentCurrencyCode: CurrencyCode = PaymentsConstants.currencyCodeGBP
+    public let currentCurrencyCode: Currency.Code = PaymentsConstants.currencyCodeGBP
 
-    public func setCurrentCurrencyCode(_ currencyCode: PaymentsCurrencies.CurrencyCode, transaction: SDSAnyWriteTransaction) {
+    public func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 
     public func warmCaches() {}
 
-    public let preferredCurrencyInfos: [CurrencyInfo] = []
+    public let preferredCurrencyInfos: [Currency.Info] = []
 
-    public let supportedCurrencyInfos: [CurrencyInfo] = []
+    public let supportedCurrencyInfos: [Currency.Info] = []
 
-    public let supportedCurrencyInfosWithCurrencyConversions: [CurrencyInfo] = []
+    public let supportedCurrencyInfosWithCurrencyConversions: [Currency.Info] = []
 
     public func updateConversationRatesIfStale() {}
 
-    public func conversionInfo(forCurrencyCode currencyCode: CurrencyCode) -> CurrencyConversionInfo? {
+    public func conversionInfo(forCurrencyCode currencyCode: Currency.Code) -> CurrencyConversionInfo? {
         return nil
     }
 }

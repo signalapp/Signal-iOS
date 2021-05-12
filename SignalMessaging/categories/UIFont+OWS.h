@@ -57,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (readonly, nonatomic) UIFont *ows_italic;
 @property (readonly, nonatomic) UIFont *ows_semibold;
+@property (readonly, nonatomic) UIFont *ows_bold;
 @property (readonly, nonatomic) UIFont *ows_medium;
 @property (readonly, nonatomic) UIFont *ows_monospaced;
 

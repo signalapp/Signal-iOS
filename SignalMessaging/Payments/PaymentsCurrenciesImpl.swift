@@ -43,12 +43,10 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
 
     private static let currentCurrencyCodeKey = "currentCurrencyCodeKey"
 
-    public typealias CurrencyCode = PaymentsCurrencies.CurrencyCode
-
     // This property should only be accessed with unfairLock.
-    private var _currentCurrencyCode: CurrencyCode = PaymentsCurrenciesImpl.defaultCurrencyCode
+    private var _currentCurrencyCode: Currency.Code = PaymentsCurrenciesImpl.defaultCurrencyCode
 
-    public private(set) var currentCurrencyCode: CurrencyCode {
+    public private(set) var currentCurrencyCode: Currency.Code {
         get {
             Self.unfairLock.withLock {
                 _currentCurrencyCode
@@ -61,7 +59,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         }
     }
 
-    private static func loadCurrentCurrencyCode(transaction: SDSAnyReadTransaction) -> CurrencyCode {
+    private static func loadCurrentCurrencyCode(transaction: SDSAnyReadTransaction) -> Currency.Code {
         if let currencyCode = Self.keyValueStore.getString(Self.currentCurrencyCodeKey,
                                                            transaction: transaction) {
             return currencyCode
@@ -79,7 +77,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         return Self.defaultCurrencyCode
     }
 
-    public func setCurrentCurrencyCode(_ currencyCode: CurrencyCode, transaction: SDSAnyWriteTransaction) {
+    public func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: SDSAnyWriteTransaction) {
         self.currentCurrencyCode = currencyCode
 
         Self.keyValueStore.setString(currencyCode, key: Self.currentCurrencyCodeKey, transaction: transaction)
@@ -89,7 +87,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
     //
     // price of fiat currency / price of payment currency (MobileCoin)
     public typealias CurrencyConversionRate = PaymentsCurrencies.CurrencyConversionRate
-    public typealias ConversionRateMap = [CurrencyCode: CurrencyConversionRate]
+    public typealias ConversionRateMap = [Currency.Code: CurrencyConversionRate]
 
     public struct ConversionRates {
         let conversionRateMap: ConversionRateMap
@@ -243,7 +241,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         conversionInfos(for: supportedCurrencyInfos)
     }
 
-    private func conversionInfos(for currencyInfos: [CurrencyInfo]) -> [CurrencyConversionInfo] {
+    private func conversionInfos(for currencyInfos: [Currency.Info]) -> [CurrencyConversionInfo] {
 
         guard let conversionRates = conversionRates else {
             return []
@@ -251,7 +249,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
 
         var infos = [CurrencyConversionInfo]()
         for currencyInfo in currencyInfos {
-            guard let info = conversionInfo(forCurrencyCode: currencyInfo.currencyCode,
+            guard let info = conversionInfo(forCurrencyCode: currencyInfo.code,
                                             conversionRates: conversionRates) else {
                 continue
             }
@@ -263,12 +261,12 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         return infos
     }
 
-    public func conversionInfo(forCurrencyCode currencyCode: CurrencyCode) -> CurrencyConversionInfo? {
+    public func conversionInfo(forCurrencyCode currencyCode: Currency.Code) -> CurrencyConversionInfo? {
         conversionInfo(forCurrencyCode: currencyCode,
                        conversionRates: self.conversionRates)
     }
 
-    private func conversionInfo(forCurrencyCode currencyCode: CurrencyCode,
+    private func conversionInfo(forCurrencyCode currencyCode: Currency.Code,
                                 conversionRates: ConversionRates?) -> CurrencyConversionInfo? {
 
         guard let conversionRates = conversionRates else {
@@ -281,7 +279,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
             owsFailDebug("Invalid conversionRate: \(conversionRate)")
             return nil
         }
-        guard let name = Self.name(forCurrencyCode: currencyCode) else {
+        guard let name = Currency.name(for: currencyCode) else {
             owsFailDebug("Missing name for currencyCode: \(currencyCode)")
             return nil
         }
@@ -291,7 +289,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
                                       conversionDate: conversionRates.serviceDate)
     }
 
-    private static let preferredCurrencyCodes: [CurrencyCode] = [
+    private static let preferredCurrencyCodes: [Currency.Code] = [
         "EUR",
         "GBP",
         "JPY",
@@ -300,7 +298,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         "CAD"
     ]
 
-    private static let supportedCurrencyCodesList: [CurrencyCode] = [
+    private static let supportedCurrencyCodesList: [Currency.Code] = [
         "ADP",
         "AED",
         "AFA",
@@ -601,8 +599,8 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         "ZWR"
     ]
 
-    static var supportedCurrencyCodes: Set<CurrencyCode> {
-        var result = Set<CurrencyCode>()
+    static var supportedCurrencyCodes: Set<Currency.Code> {
+        var result = Set<Currency.Code>()
         // Support the intersection of the currency code whitelist
         // and the currencies supported by iOS.
         result.formUnion(Locale.isoCurrencyCodes)
@@ -612,55 +610,16 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         return result
     }
 
-    public var preferredCurrencyInfos: [CurrencyInfo] {
+    public var preferredCurrencyInfos: [Currency.Info] {
         // Always include values for preferred currencies.
-        Self.currencyInfos(for: Self.preferredCurrencyCodes,
-                           ignoreMissingNames: true,
-                           shouldSort: false)
+        Currency.infos(for: Self.preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
     }
 
-    public var supportedCurrencyInfos: [CurrencyInfo] {
-        Self.currencyInfos(for: Array(Self.supportedCurrencyCodes),
-                           ignoreMissingNames: false,
-                           shouldSort: true)
+    public var supportedCurrencyInfos: [Currency.Info] {
+        Currency.infos(for: Array(Self.supportedCurrencyCodes), ignoreMissingNames: false, shouldSort: true)
     }
 
-    public var supportedCurrencyInfosWithCurrencyConversions: [CurrencyInfo] {
+    public var supportedCurrencyInfosWithCurrencyConversions: [Currency.Info] {
         supportedConversionInfos.map { $0.asCurrencyInfo }
-    }
-
-    public static func currencyInfos(for currencyCodes: [CurrencyCode],
-                                     ignoreMissingNames: Bool,
-                                     shouldSort: Bool) -> [CurrencyInfo] {
-        owsAssertDebug(currencyCodes.count == Set(currencyCodes).count)
-
-        var infos = [CurrencyInfo]()
-        for currencyCode in currencyCodes {
-            if let name = name(forCurrencyCode: currencyCode) {
-                infos.append(.init(currencyCode: currencyCode, name: name))
-            } else {
-                Logger.warn("Missing currency name: \(currencyCode)")
-                if ignoreMissingNames {
-                    infos.append(.init(currencyCode: currencyCode, name: currencyCode))
-                }
-            }
-        }
-        if shouldSort {
-            infos.sort { (left, right) in
-                left.name < right.name
-            }
-        }
-        return infos
-    }
-
-    static func name(forCurrencyCode currencyCode: String) -> String? {
-        owsAssertDebug(currencyCode.count == 3)
-
-        if let name = Locale.current.localizedString(forCurrencyCode: currencyCode),
-           !name.isEmpty {
-            return name
-        }
-        Logger.warn("Missing localized name for currencyCode: \(currencyCode)")
-        return nil
     }
 }

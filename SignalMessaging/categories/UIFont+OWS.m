@@ -259,6 +259,19 @@ NS_ASSUME_NONNULL_BEGIN
     return derivedFont;
 }
 
+- (UIFont *)ows_bold
+{
+    // The recommended approach of deriving "bold" weight fonts for dynamic
+    // type fonts is:
+    //
+    // [UIFontDescriptor fontDescriptorByAddingAttributes:...]
+    //
+    // But this doesn't seem to work in practice on iOS 11 using UIFontWeightBold.
+
+    UIFont *derivedFont = [UIFont systemFontOfSize:self.pointSize weight:UIFontWeightBold];
+    return derivedFont;
+}
+
 - (UIFont *)ows_monospaced
 {
     return [self.class ows_monospacedDigitFontWithSize:self.pointSize];

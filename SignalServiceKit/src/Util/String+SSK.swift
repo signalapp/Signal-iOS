@@ -227,24 +227,7 @@ public extension NSMutableAttributedString {
             append("\u{200a}", attributes: attributes ?? [:])
         }
 
-        let attachment = NSTextAttachment()
-        attachment.image = image
-
-        // Match the image's height to the font's height while preserving
-        // the image's aspect ratio, and vertically center.
-        let imageHeight = heightReference.height(for: font)
-        let imageWidth = (imageHeight / image.size.height) * image.size.width
-        attachment.bounds = CGRect(x: 0, y: (font.capHeight - imageHeight) / 2, width: imageWidth, height: imageHeight)
-
-        let attachmentString = NSAttributedString(attachment: attachment)
-
-        if let attributes = attributes {
-            let mutableString = NSMutableAttributedString(attributedString: attachmentString)
-            mutableString.addAttributes(attributes, range: mutableString.entireRange)
-            append(mutableString)
-        } else {
-            append(attachmentString)
-        }
+        append(.with(image: image, font: font, attributes: attributes, heightReference: heightReference))
     }
 
     @objc
@@ -280,6 +263,34 @@ public extension NSMutableAttributedString {
                 in: NSRange(location: 0, length: newStartOfString),
                 with: ""
             )
+        }
+    }
+}
+
+public extension NSAttributedString {
+    static func with(
+        image: UIImage,
+        font: UIFont,
+        attributes: [NSAttributedString.Key: Any]? = nil,
+        heightReference: ImageAttachmentHeightReference = .lineHeight
+    ) -> NSAttributedString {
+        let attachment = NSTextAttachment()
+        attachment.image = image
+
+        // Match the image's height to the font's height while preserving
+        // the image's aspect ratio, and vertically center.
+        let imageHeight = heightReference.height(for: font)
+        let imageWidth = (imageHeight / image.size.height) * image.size.width
+        attachment.bounds = CGRect(x: 0, y: (font.capHeight - imageHeight) / 2, width: imageWidth, height: imageHeight)
+
+        let attachmentString = NSAttributedString(attachment: attachment)
+
+        if let attributes = attributes {
+            let mutableString = NSMutableAttributedString(attributedString: attachmentString)
+            mutableString.addAttributes(attributes, range: mutableString.entireRange)
+            return mutableString
+        } else {
+            return attachmentString
         }
     }
 }

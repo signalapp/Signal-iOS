@@ -7,11 +7,9 @@ import PassKit
 import PromiseKit
 
 struct Stripe: Dependencies {
-    typealias CurrencyCode = String
-
-    static func donate(amount: Double, in currencyCode: CurrencyCode, for payment: PKPayment) -> Promise<Void> {
+    static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
         firstly { () -> Promise<API.PaymentIntent> in
-            API.createPaymentIntent(for: amount, in: currencyCode)
+            API.createPaymentIntent(for: amount.doubleValue, in: currencyCode)
         }.then { intent in
             API.confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id)
         }
@@ -35,18 +33,21 @@ fileprivate extension Stripe {
             let id: String
             let clientSecret: String
         }
-        static func createPaymentIntent(for amount: Double, in currencyCode: String) -> Promise<(PaymentIntent)> {
+        static func createPaymentIntent(
+            for amount: Double,
+            in currencyCode: Currency.Code
+        ) -> Promise<(PaymentIntent)> {
             firstly(on: .sharedUserInitiated) { () -> Promise<TSNetworkManager.Response> in
                 guard amount > 0 else {
                     throw OWSAssertionError("Invalid amount")
                 }
 
-                guard Currency.supportedCodes.contains(currencyCode.uppercased()) else {
+                guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
                     throw OWSAssertionError("Unexpected currency code")
                 }
 
                 let integralAmount: UInt
-                if Currency.zeroDecimalCodes.contains(currencyCode.uppercased()) {
+                if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
                     integralAmount = UInt(amount.rounded(.toNearestOrEven))
                 } else {
                     integralAmount = UInt((amount * 100).rounded(.toNearestOrEven))
@@ -77,7 +78,7 @@ fileprivate extension Stripe {
                     "payment_method": paymentMethodId,
                     "client_secret": clientSecret
                 ]
-                if let email = payment.billingContact?.emailAddress {
+                if let email = payment.shippingContact?.emailAddress {
                     parameters["receipt_email"] = email
                 }
                 return try postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm", parameters: parameters)
@@ -182,186 +183,191 @@ fileprivate extension Stripe {
 // MARK: - Currency
 
 extension Stripe {
-    struct Currency {
-        static let supportedCodes = [
-            "USD",
-            "AED",
-            "AFN",
-            "ALL",
-            "AMD",
-            "ANG",
-            "AOA",
-            "ARS",
-            "AUD",
-            "AWG",
-            "AZN",
-            "BAM",
-            "BBD",
-            "BDT",
-            "BGN",
-            "BIF",
-            "BMD",
-            "BND",
-            "BOB",
-            "BRL",
-            "BSD",
-            "BWP",
-            "BZD",
-            "CAD",
-            "CDF",
-            "CHF",
-            "CLP",
-            "CNY",
-            "COP",
-            "CRC",
-            "CVE",
-            "CZK",
-            "DJF",
-            "DKK",
-            "DOP",
-            "DZD",
-            "EGP",
-            "ETB",
-            "EUR",
-            "FJD",
-            "FKP",
-            "GBP",
-            "GEL",
-            "GIP",
-            "GMD",
-            "GNF",
-            "GTQ",
-            "GYD",
-            "HKD",
-            "HNL",
-            "HRK",
-            "HTG",
-            "HUF",
-            "IDR",
-            "ILS",
-            "INR",
-            "ISK",
-            "JMD",
-            "JPY",
-            "KES",
-            "KGS",
-            "KHR",
-            "KMF",
-            "KRW",
-            "KYD",
-            "KZT",
-            "LAK",
-            "LBP",
-            "LKR",
-            "LRD",
-            "LSL",
-            "MAD",
-            "MDL",
-            "MGA",
-            "MKD",
-            "MMK",
-            "MNT",
-            "MOP",
-            "MRO",
-            "MUR",
-            "MVR",
-            "MWK",
-            "MXN",
-            "MYR",
-            "MZN",
-            "NAD",
-            "NGN",
-            "NIO",
-            "NOK",
-            "NPR",
-            "NZD",
-            "PAB",
-            "PEN",
-            "PGK",
-            "PHP",
-            "PKR",
-            "PLN",
-            "PYG",
-            "QAR",
-            "RON",
-            "RSD",
-            "RUB",
-            "RWF",
-            "SAR",
-            "SBD",
-            "SCR",
-            "SEK",
-            "SGD",
-            "SHP",
-            "SLL",
-            "SOS",
-            "SRD",
-            "STD",
-            "SZL",
-            "THB",
-            "TJS",
-            "TOP",
-            "TRY",
-            "TTD",
-            "TWD",
-            "TZS",
-            "UAH",
-            "UGX",
-            "UYU",
-            "UZS",
-            "VND",
-            "VUV",
-            "WST",
-            "XAF",
-            "XCD",
-            "XOF",
-            "XPF",
-            "YER",
-            "ZAR",
-            "ZMW"
-        ]
-        static let supportedInfos: [CurrencyInfo] = {
-            PaymentsCurrenciesImpl.currencyInfos(for: supportedCodes, ignoreMissingNames: false, shouldSort: true)
-        }()
+    static let supportedCurrencyCodes: [Currency.Code] = [
+        "USD",
+        "AED",
+        "AFN",
+        "ALL",
+        "AMD",
+        "ANG",
+        "AOA",
+        "ARS",
+        "AUD",
+        "AWG",
+        "AZN",
+        "BAM",
+        "BBD",
+        "BDT",
+        "BGN",
+        "BIF",
+        "BMD",
+        "BND",
+        "BOB",
+        "BRL",
+        "BSD",
+        "BWP",
+        "BZD",
+        "CAD",
+        "CDF",
+        "CHF",
+        "CLP",
+        "CNY",
+        "COP",
+        "CRC",
+        "CVE",
+        "CZK",
+        "DJF",
+        "DKK",
+        "DOP",
+        "DZD",
+        "EGP",
+        "ETB",
+        "EUR",
+        "FJD",
+        "FKP",
+        "GBP",
+        "GEL",
+        "GIP",
+        "GMD",
+        "GNF",
+        "GTQ",
+        "GYD",
+        "HKD",
+        "HNL",
+        "HRK",
+        "HTG",
+        "HUF",
+        "IDR",
+        "ILS",
+        "INR",
+        "ISK",
+        "JMD",
+        "JPY",
+        "KES",
+        "KGS",
+        "KHR",
+        "KMF",
+        "KRW",
+        "KYD",
+        "KZT",
+        "LAK",
+        "LBP",
+        "LKR",
+        "LRD",
+        "LSL",
+        "MAD",
+        "MDL",
+        "MGA",
+        "MKD",
+        "MMK",
+        "MNT",
+        "MOP",
+        "MRO",
+        "MUR",
+        "MVR",
+        "MWK",
+        "MXN",
+        "MYR",
+        "MZN",
+        "NAD",
+        "NGN",
+        "NIO",
+        "NOK",
+        "NPR",
+        "NZD",
+        "PAB",
+        "PEN",
+        "PGK",
+        "PHP",
+        "PKR",
+        "PLN",
+        "PYG",
+        "QAR",
+        "RON",
+        "RSD",
+        "RUB",
+        "RWF",
+        "SAR",
+        "SBD",
+        "SCR",
+        "SEK",
+        "SGD",
+        "SHP",
+        "SLL",
+        "SOS",
+        "SRD",
+        "STD",
+        "SZL",
+        "THB",
+        "TJS",
+        "TOP",
+        "TRY",
+        "TTD",
+        "TWD",
+        "TZS",
+        "UAH",
+        "UGX",
+        "UYU",
+        "UZS",
+        "VND",
+        "VUV",
+        "WST",
+        "XAF",
+        "XCD",
+        "XOF",
+        "XPF",
+        "YER",
+        "ZAR",
+        "ZMW"
+    ]
+    static let supportedCurrencyInfos: [Currency.Info] = {
+        Currency.infos(for: supportedCurrencyCodes, ignoreMissingNames: false, shouldSort: true)
+    }()
 
-        static let preferredCodes = [
-            "AUD",
-            "GBP",
-            "CAD",
-            "CNY",
-            "EUR",
-            "JPY",
-            "USD"
-        ]
-        static let preferredInfos: [CurrencyInfo] = {
-            PaymentsCurrenciesImpl.currencyInfos(for: preferredCodes, ignoreMissingNames: true, shouldSort: false)
-        }()
+    static let preferredCurrencyCodes: [Currency.Code] = [
+        "USD",
+        "AUD",
+        "BRL",
+        "GBP",
+        "CAD",
+        "CNY",
+        "EUR",
+        "HKD",
+        "INR",
+        "JPY",
+        "KRW",
+        "PLN",
+        "SEK",
+        "CHF"
+    ]
+    static let preferredCurrencyInfos: [Currency.Info] = {
+        Currency.infos(for: preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
+    }()
 
-        static let zeroDecimalCodes = [
-            "BIF",
-            "CLP",
-            "DJF",
-            "GNF",
-            "JPY",
-            "KMF",
-            "KRW",
-            "MGA",
-            "PYG",
-            "RWF",
-            "UGX",
-            "VND",
-            "VUV",
-            "XAF",
-            "XOF",
-            "XPF"
-        ]
+    static let zeroDecimalCurrencyCodes: [Currency.Code] = [
+        "BIF",
+        "CLP",
+        "DJF",
+        "GNF",
+        "JPY",
+        "KMF",
+        "KRW",
+        "MGA",
+        "PYG",
+        "RWF",
+        "UGX",
+        "VND",
+        "VUV",
+        "XAF",
+        "XOF",
+        "XPF"
+    ]
 
-        static let defaultCode: String = {
-            if let localeCurrencyCode = Locale.current.currencyCode?.uppercased(), supportedCodes.contains(localeCurrencyCode) {
-                return localeCurrencyCode
-            }
+    static let defaultCurrencyCode: Currency.Code = {
+        if let localeCurrencyCode = Locale.current.currencyCode?.uppercased(), supportedCurrencyCodes.contains(localeCurrencyCode) {
+            return localeCurrencyCode
+        }
 
-            return "USD"
-        }()
-    }
+        return "USD"
+    }()
 }

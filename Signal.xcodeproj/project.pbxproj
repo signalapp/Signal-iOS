@@ -2338,11 +2338,12 @@
 			isa = PBXGroup;
 			children = (
 				88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */,
-				88FBE94F2649E7EB005F6C80 /* DonationViewController.swift */,
 				887B6DCA25F6C3F500E677D4 /* Account */,
 				887B6DCB25F6C40500E677D4 /* Appearance */,
 				887B380725F0355700685845 /* ChatsSettingsViewController.swift */,
+				3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */,
 				887B6DCC25F6C41500E677D4 /* Data Usage */,
+				88FBE94F2649E7EB005F6C80 /* DonationViewController.swift */,
 				32ECD08624BFBF5C00EDDED0 /* Help */,
 				887B6DCE25F6C45B00E677D4 /* Internal */,
 				887B6DCD25F6C44800E677D4 /* Linked Devices */,
@@ -2812,7 +2813,6 @@
 			isa = PBXGroup;
 			children = (
 				34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */,
-				3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */,
 				347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */,
 				34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */,
 				3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */,

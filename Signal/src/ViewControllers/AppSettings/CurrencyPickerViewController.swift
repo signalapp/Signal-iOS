@@ -8,20 +8,20 @@ import Foundation
 class CurrencyPickerViewController: OWSTableViewController2 {
 
     private let searchBar = OWSSearchBar()
-    private let currentCurrencyCode: PaymentsCurrencies.CurrencyCode
-    private let preferredCurrencyInfos: [CurrencyInfo]
-    private let supportedCurrencyInfos: [CurrencyInfo]
-    private let completion: (PaymentsCurrencies.CurrencyCode) -> Void
+    private let currentCurrencyCode: Currency.Code
+    private let preferredCurrencyInfos: [Currency.Info]
+    private let supportedCurrencyInfos: [Currency.Info]
+    private let completion: (Currency.Code) -> Void
 
     fileprivate var searchText: String? {
         searchBar.text?.ows_stripped()
     }
 
     public required init(
-        currentCurrencyCode: PaymentsCurrencies.CurrencyCode,
-        preferredCurrencyInfos: [CurrencyInfo],
-        supportedCurrencyInfos: [CurrencyInfo],
-        completion: @escaping (PaymentsCurrencies.CurrencyCode) -> Void
+        currentCurrencyCode: Currency.Code,
+        preferredCurrencyInfos: [Currency.Info],
+        supportedCurrencyInfos: [Currency.Info],
+        completion: @escaping (Currency.Code) -> Void
     ) {
         self.currentCurrencyCode = currentCurrencyCode
         self.preferredCurrencyInfos = preferredCurrencyInfos
@@ -36,8 +36,8 @@ class CurrencyPickerViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("SETTINGS_PAYMENTS_SET_CURRENCY",
-                                  comment: "Title for the 'set currency' view in the app settings.")
+        title = NSLocalizedString("CURRENCY_PICKER_VIEW_TITLE",
+                                  comment: "Title for the 'currency picker' view in the app settings.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
 
@@ -51,12 +51,6 @@ class CurrencyPickerViewController: OWSTableViewController2 {
         super.applyTheme()
 
         updateTableContents()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        paymentsCurrencies.updateConversationRatesIfStale()
     }
 
     private func updateTableContents() {
@@ -122,16 +116,16 @@ class CurrencyPickerViewController: OWSTableViewController2 {
 
         let contents = OWSTableContents()
 
-        let currentCurrencyCode = paymentsCurrencies.currentCurrencyCode
-        let preferredCurrencyInfos = paymentsCurrenciesSwift.preferredCurrencyInfos
-        let supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions
+        let currentCurrencyCode = self.currentCurrencyCode
+        let preferredCurrencyInfos = self.preferredCurrencyInfos
+        let supportedCurrencyInfos = self.supportedCurrencyInfos
 
         let currencyInfosToSearch = supportedCurrencyInfos.isEmpty ? preferredCurrencyInfos : supportedCurrencyInfos
         let matchingCurrencyInfos = currencyInfosToSearch.filter { currencyInfo in
             // We do the simplest possible matching.
             // No terms, no sorting by match quality, etc.
             (currencyInfo.name.lowercased().contains(searchText) ||
-                currencyInfo.currencyCode.lowercased().contains(searchText))
+                currencyInfo.code.lowercased().contains(searchText))
         }
 
         let resultsSection = OWSTableSection()
@@ -152,10 +146,10 @@ class CurrencyPickerViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private func buildTableItem(forCurrencyInfo currencyInfo: CurrencyInfo,
-                                currentCurrencyCode: PaymentsCurrencies.CurrencyCode) -> OWSTableItem {
+    private func buildTableItem(forCurrencyInfo currencyInfo: Currency.Info,
+                                currentCurrencyCode: String) -> OWSTableItem {
 
-        let currencyCode = currencyInfo.currencyCode
+        let currencyCode = currencyInfo.code
 
         return OWSTableItem(customCellBlock: {
             let cell = OWSTableItem.newCell()
@@ -200,11 +194,8 @@ class CurrencyPickerViewController: OWSTableViewController2 {
         navigationController?.popViewController(animated: true)
     }
 
-    private func didSelectCurrency(_ currencyCode: PaymentsCurrencies.CurrencyCode) {
+    private func didSelectCurrency(_ currencyCode: String) {
         completion(currencyCode)
-//        Self.databaseStorage.write { transaction in
-//            Self.paymentsCurrencies.setCurrentCurrencyCode(currencyCode, transaction: transaction)
-//        }
         navigationController?.popViewController(animated: true)
     }
 }
