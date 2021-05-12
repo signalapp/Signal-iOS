@@ -218,7 +218,7 @@ public final class SnodeAPI : NSObject {
             if result.count > 24 { // We want the snodes to agree on at least this many snodes
                 // Limit the snode pool size to 256 so that we don't go too long without
                 // refreshing it
-                return (result.count > 256) ? result[..<256] : result
+                return (result.count > 256) ? Set([Snode](result)[0..<256]) : result
             } else {
                 throw Error.inconsistentSnodePools
             }
