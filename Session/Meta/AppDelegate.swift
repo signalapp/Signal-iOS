@@ -31,4 +31,13 @@ extension AppDelegate {
         }
         return promise
     }
+
+    @objc func startClosedGroupPoller() {
+        guard OWSIdentityManager.shared().identityKeyPair() != nil else { return }
+        ClosedGroupPoller.shared.start()
+    }
+
+    @objc func stopClosedGroupPoller() {
+        ClosedGroupPoller.shared.stop()
+    }
 }
