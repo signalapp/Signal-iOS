@@ -43,6 +43,9 @@ public class ContactCellConfiguration: NSObject {
     public var attributedSubtitle: NSAttributedString?
 
     @objc
+    public var allowUserInteraction = false
+
+    @objc
     public var hasAccessoryText: Bool {
         accessoryMessage?.nilIfEmpty != nil
     }
@@ -162,6 +165,8 @@ public class ContactCellView: ManualStackView {
         owsAssertDebug(!shouldDeactivateConstraints)
 
         self.configuration = configuration
+
+        self.isUserInteractionEnabled = configuration.allowUserInteraction
 
         avatarView.configure(content: configuration.content,
                              diameter: configuration.avatarSize,

@@ -12,9 +12,6 @@ open class ContactTableViewCell: UITableViewCell {
 
     private let cellView = ContactCellView()
 
-    // TODO:
-    private let allowUserInteraction: Bool
-
     @objc
     public override var accessoryView: UIView? {
         didSet {
@@ -22,18 +19,8 @@ open class ContactTableViewCell: UITableViewCell {
         }
     }
 
-    override convenience init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.init(style: style, reuseIdentifier: reuseIdentifier, allowUserInteraction: false)
-    }
-
-    @objc
-    public init(style: UITableViewCell.CellStyle,
-                reuseIdentifier: String?,
-                allowUserInteraction: Bool) {
-        self.allowUserInteraction = allowUserInteraction
-
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
         configure()
     }
 
@@ -48,7 +35,6 @@ open class ContactTableViewCell: UITableViewCell {
         contentView.addSubview(cellView)
         cellView.autoPinWidthToSuperviewMargins()
         cellView.autoPinHeightToSuperview(withMargin: 7)
-        cellView.isUserInteractionEnabled = self.allowUserInteraction
     }
 
     public func configureWithSneakyTransaction(address: SignalServiceAddress,
@@ -78,7 +64,7 @@ open class ContactTableViewCell: UITableViewCell {
     }
 
     @objc
-    public func configure(configuration: ContactCellConfiguration,
+    open func configure(configuration: ContactCellConfiguration,
                           transaction: SDSAnyReadTransaction) {
         OWSTableItem.configureCell(self)
         cellView.configure(configuration: configuration, transaction: transaction)

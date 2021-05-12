@@ -438,6 +438,8 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 }
 
+// MARK: -
+
 extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -475,8 +477,8 @@ private class SafetyNumberCell: ContactTableViewCell {
 
     let button = OWSFlatButton()
 
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier, allowUserInteraction: true)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         selectionStyle = .none
 
@@ -495,10 +497,6 @@ private class SafetyNumberCell: ContactTableViewCell {
     }
 
     func configure(item: SafetyNumberConfirmationSheet.Item, theme: Theme.ActionSheet, viewController: UIViewController) {
-
-        backgroundColor = .clear
-        button.setBackgroundColors(upColor: theme.safetyNumberChangeButtonBackgroundColor)
-        button.setTitleColor(theme.safetyNumberChangeButtonTextColor)
         button.setPressedBlock {
             FingerprintViewController.present(from: viewController, address: item.address)
         }
@@ -507,10 +505,12 @@ private class SafetyNumberCell: ContactTableViewCell {
             let configuration = ContactCellConfiguration.build(address: item.address,
                                                                localUserDisplayMode: .asUser,
                                                                transaction: transaction)
+            configuration.allowUserInteraction = true
 
             configuration.forceDarkAppearance = (theme == .translucentDark)
 
-            let buttonSize = button.sizeThatFits(.square(.greatestFiniteMagnitude))
+            let buttonSize = button.intrinsicContentSize
+            button.removeFromSuperview()
             let buttonWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(button)
             configuration.accessoryView = ContactCellAccessoryView(accessoryView: buttonWrapper,
                                                                    size: buttonSize)
@@ -535,6 +535,15 @@ private class SafetyNumberCell: ContactTableViewCell {
 
             self.configure(configuration: configuration, transaction: transaction)
         }
+    }
+
+    override func configure(configuration: ContactCellConfiguration, transaction: SDSAnyReadTransaction) {
+        super.configure(configuration: configuration, transaction: transaction)
+        let theme: Theme.ActionSheet = (configuration.forceDarkAppearance) ? .translucentDark : .default
+
+        backgroundColor = theme.backgroundColor
+        button.setBackgroundColors(upColor: theme.safetyNumberChangeButtonBackgroundColor)
+        button.setTitleColor(theme.safetyNumberChangeButtonTextColor)
     }
 }
 
