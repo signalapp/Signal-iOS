@@ -533,6 +533,15 @@ private class SafetyNumberCell: ContactTableViewCell {
             self.configure(configuration: configuration, transaction: transaction)
         }
     }
+
+    override func configure(configuration: ContactCellConfiguration, transaction: SDSAnyReadTransaction) {
+        super.configure(configuration: configuration, transaction: transaction)
+        let theme: Theme.ActionSheet = (configuration.forceDarkAppearance) ? .translucentDark : .default
+
+        backgroundColor = theme.backgroundColor
+        button.setBackgroundColors(upColor: theme.safetyNumberChangeButtonBackgroundColor)
+        button.setTitleColor(theme.safetyNumberChangeButtonTextColor)
+    }
 }
 
 // MARK: -
