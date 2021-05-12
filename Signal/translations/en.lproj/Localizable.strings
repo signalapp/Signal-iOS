@@ -1045,6 +1045,9 @@
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
 
+/* Title for the 'hue' section in the chat color settings view. */
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+
 /* Label for the 'solid color' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
 

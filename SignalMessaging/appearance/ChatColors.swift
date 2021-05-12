@@ -150,16 +150,19 @@ public class ChatColors {
 
     private static let defaultKey = "defaultKey"
 
+    private static let noWallpaperAutoChatColor: ChatColorValue = {
+        // UIColor.ows_accentBlue = 0x2C6BED
+        .unthemedColor(color: .init(red: CGFloat(0x2C) / CGFloat(0xff),
+                                    green: CGFloat(0x6B) / CGFloat(0xff),
+                                    blue: CGFloat(0xED) / CGFloat(0xff)))
+    }()
+
     public static func autoChatColor(forThread thread: TSThread?,
                                      transaction: SDSAnyReadTransaction) -> ChatColorValue {
         if let wallpaper = Wallpaper.get(for: thread, transaction: transaction) {
             return autoChatColor(forWallpaper: wallpaper)
         } else {
-            // TODO:
-            let defaultValue: ChatColorValue = .unthemedColor(color: .init(red: 1,
-                                                                           green: 0,
-                                                                           blue: 0))
-            return defaultValue
+            return Self.noWallpaperAutoChatColor
         }
     }
 

@@ -85,7 +85,6 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         defaultColorView.autoSetDimensions(to: .square(16))
         defaultColorView.setContentHuggingHigh()
         defaultColorView.setCompressionResistanceHigh()
-        defaultColorView.addRedBorder()
         chatColorSection.add(.item(
             name: NSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
                                     comment: "Set chat color action in color and wallpaper settings view."),

@@ -160,6 +160,22 @@ public class CustomColorViewController: OWSTableViewController2 {
 //        } actionBlock: {})
 //        contents.addSection(colorsSection)
 
+        let hueSlider = self.hueSlider
+        hueSlider.delegate = self
+        let hueSection = OWSTableSection()
+        hueSection.hasBackground = false
+        hueSection.headerTitle = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_HUE",
+                                                   comment: "Title for the 'hue' section in the chat color settings view.")
+        hueSection.customHeaderHeight = 14
+        hueSection.add(OWSTableItem {
+            let cell = OWSTableItem.newCell()
+            cell.selectionStyle = .none
+            cell.contentView.addSubview(hueSlider)
+            hueSlider.autoPinEdgesToSuperviewMargins()
+            return cell
+        } actionBlock: {})
+        contents.addSection(hueSection)
+
         self.contents = contents
     }
 
@@ -178,6 +194,54 @@ public class CustomColorViewController: OWSTableViewController2 {
         )
     }
 
+    // A custom spectrum that can ensures accessible constrast.
+    private static let lightnessSpectrum: LightnessSpectrum = {
+        var values: [LightnessValue] = [
+            .init(lightness: 0.45, alpha: 0.0 / 360.0),
+            .init(lightness: 0.3, alpha: 60.0 / 360.0),
+            .init(lightness: 0.3, alpha: 180.0 / 360.0),
+            .init(lightness: 0.5, alpha: 240.0 / 360.0),
+            .init(lightness: 0.4, alpha: 300.0 / 360.0),
+            .init(lightness: 0.45, alpha: 360.0 / 360.0)
+        ]
+        return LightnessSpectrum(values: values)
+    }()
+
+    private static func randomAlphaValue() -> CGFloat {
+        let precision: UInt32 = 1024
+        return (CGFloat(arc4random_uniform(precision)) / CGFloat(precision)).clamp01()
+    }
+
+    private static let hueSpectrum: HSLSpectrum = {
+        let lightnessSpectrum = CustomColorViewController.lightnessSpectrum
+        var values = [HSLValue]()
+        let precision: UInt32 = 1024
+        for index in 0..<(precision + 1) {
+            let alpha = (CGFloat(index) / CGFloat(precision)).clamp01()
+            // There's a linear hue progression.
+            let hue = alpha
+            // Saturation is always 1 in the hue spectrum.
+            let saturation: CGFloat = 1
+            // Derive lightness.
+            let lightness = lightnessSpectrum.value(forAlpha: alpha).lightness
+//            Logger.verbose("---- building hueSpectrum alpha: \(alpha), hue: \(hue), saturation: \(saturation), lightness: \(lightness), ")
+            values.append(HSLValue(hue: hue, saturation: saturation, lightness: lightness, alpha: alpha))
+        }
+
+        return HSLSpectrum(values: values)
+    }()
+    private let hueSlider = SpectrumSlider(spectrum: CustomColorViewController.hueSpectrum,
+                                           value: CustomColorViewController.randomAlphaValue())
+    private var hueAlpha: CGFloat { hueSlider.value.clamp01() }
+
+    //    private var hueAlpha: CGFloat = { randomAlphaValue() }()
+    //    private var hueSaturation: CGFloat = { randomAlphaValue() }()
+
+//    private func buildHueControl() -> UIView {
+//        // TODO:
+//        return UIView()
+//    }
+
     // MARK: - Events
 
     @objc
@@ -187,5 +251,360 @@ public class CustomColorViewController: OWSTableViewController2 {
             return
         }
         self.mode = mode
+    }
+}
+
+// MARK: -
+
+// TODO:
+extension CustomColorViewController: SpectrumSliderDelegate {
+    fileprivate func spectrumSliderDidChange(_ spectrumSlider: SpectrumSlider) {
+
+    }
+}
+
+// MARK: -
+
+private protocol SpectrumSliderDelegate: class {
+    func spectrumSliderDidChange(_ spectrumSlider: SpectrumSlider)
+}
+
+// MARK: -
+
+private class SpectrumSlider: ManualLayoutView {
+    fileprivate weak var delegate: SpectrumSliderDelegate?
+
+    private let spectrum: HSLSpectrum
+
+    public var value: CGFloat
+
+    private let knobView = ManualLayoutViewWithLayer(name: "knobView")
+
+    private let spectrumImageView = CVImageView.circleView()
+
+    init(spectrum: HSLSpectrum, value: CGFloat) {
+        self.spectrum = spectrum
+        self.value = value
+
+        super.init(name: "SpectrumSlider")
+
+        self.shouldDeactivateConstraints = false
+
+        createSubviews()
+    }
+
+    @available(swift, obsoleted: 1.0)
+    required init(name: String) {
+        owsFail("Do not use this initializer.")
+    }
+
+    private static let knobDiameter: CGFloat = 28
+    private static let knobShadowRadius: CGFloat = 4
+    private static let spectrumImageDiameter: CGFloat = 24
+
+    private func createSubviews() {
+        let spectrumImageView = self.spectrumImageView
+        spectrumImageView.clipsToBounds = true
+        addSubview(spectrumImageView)
+
+        let knobView = self.knobView
+        knobView.addPillBlock()
+        knobView.backgroundColor = .ows_white
+        knobView.layer.shadowColor = UIColor.ows_black.cgColor
+        knobView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        knobView.layer.shadowOpacity = 0.3
+        knobView.layer.shadowRadius = Self.knobShadowRadius
+        addSubview(knobView) { view in
+            guard let view = view as? SpectrumSlider else {
+                owsFailDebug("Invalid view.")
+                return
+            }
+//            Logger.verbose("---- view.value: \(view.value), ")
+            let knobMinX: CGFloat = 0
+            let knobMaxX: CGFloat = max(0, view.width - Self.knobDiameter)
+            knobView.frame = CGRect(x: view.value.lerp(knobMinX, knobMaxX),
+                                    y: 0,
+                                    width: Self.knobDiameter,
+                                    height: Self.knobDiameter)
+
+            let inset = (Self.knobDiameter - Self.spectrumImageDiameter) * 0.5
+            spectrumImageView.frame = view.bounds.inset(by: UIEdgeInsets(margin: inset))
+//            spectrumImageView.addRedBorder()
+
+            view.ensureSpectrumImage()
+        }
+
+        self.autoSetDimension(.height, toSize: Self.knobDiameter)
+
+        addGestureRecognizer(SpectrumGestureRecognizer(target: self, action: #selector(handleGesture(_:))))
+        self.isUserInteractionEnabled = true
+    }
+
+    @objc
+    private func handleGesture(_ sender: SpectrumGestureRecognizer) {
+        switch sender.state {
+        case .began, .changed, .ended:
+            let location = sender.location(in: self)
+            self.value = location.x.inverseLerp(0, self.bounds.width).clamp01()
+            layoutSubviews()
+            self.delegate?.spectrumSliderDidChange(self)
+        default:
+            break
+        }
+    }
+
+    private func ensureSpectrumImage() {
+        let scale = UIScreen.main.scale
+        let spectrumImageSizePoints = spectrumImageView.bounds.size
+        let spectrumImageSizePixels = spectrumImageSizePoints * scale
+        guard spectrumImageSizePixels.isNonEmpty else {
+            spectrumImageView.image = nil
+            return
+        }
+        if let spectrumImage = spectrumImageView.image,
+           spectrumImage.pixelSize == spectrumImageSizePixels {
+            // Image is already valid.
+            return
+        }
+
+        spectrumImageView.image = nil
+
+        UIGraphicsBeginImageContextWithOptions(spectrumImageSizePoints, false, scale)
+        defer {
+            UIGraphicsEndImageContext()
+        }
+
+        UIColor.white.setFill()
+        UIRectFill(CGRect(origin: .zero, size: spectrumImageSizePoints))
+
+        // We use point resolution; we could use pixel resolution.
+        let xIncrement: CGFloat = 1
+        var x: CGFloat = 0
+        while x < spectrumImageSizePoints.width {
+            let alpha = x / spectrumImageSizePoints.width
+            let hslValue = spectrum.value(forAlpha: alpha)
+//            Logger.verbose("---- drawing alpha: \(alpha), hue: \(hslValue.hue), saturation: \(hslValue.saturation), lightness: \(hslValue.lightness), ")
+            hslValue.uiColor.setFill()
+            UIRectFill(CGRect(x: x, y: 0, width: xIncrement, height: spectrumImageSizePoints.height))
+            x += xIncrement
+        }
+
+//        // Draw the image into the new image
+//        draw(in: CGRect(origin: CGPoint(x: additionalWidth / 2, y: 0), size: size))
+//
+//        // Draw the title label into the new image
+//        titleLabel.drawText(in: CGRect(origin: CGPoint(
+//            x: size.width > titleSize.width ? (size.width - titleSize.width) / 2 : 0,
+//            y: size.height + spacing
+//        ), size: titleSize))
+
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
+            owsFailDebug("Could not build image.")
+            return
+        }
+
+        owsAssertDebug(image.size == spectrumImageSizePoints)
+        owsAssertDebug(image.pixelSize == spectrumImageSizePixels)
+
+        spectrumImageView.image = image
+    }
+
+    class SpectrumGestureRecognizer: UIGestureRecognizer {
+        private var isActive = false
+
+        @objc
+        public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+            handle(event: event)
+        }
+
+        @objc
+        public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+            handle(event: event)
+        }
+
+        @objc
+        public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+            handle(event: event)
+        }
+
+        @objc
+        public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+            handle(event: event)
+        }
+
+        private func handle(event: UIEvent) {
+            guard let allTouches = event.allTouches,
+                  allTouches.count == 1,
+                  let firstTouch = allTouches.first else {
+                self.state = .failed
+                self.isActive = false
+                return
+            }
+            switch firstTouch.phase {
+            case .began:
+                if !self.isActive {
+                    self.state = .began
+                    self.isActive = true
+                    return
+                }
+            case .moved, .stationary:
+                if self.isActive {
+                    self.state = .changed
+                    self.isActive = true
+                    return
+                }
+            case .ended:
+                if self.isActive {
+                    self.state = .ended
+                    self.isActive = false
+                    return
+                }
+            default:
+                break
+            }
+            self.state = .failed
+            self.isActive = false
+        }
+    }
+}
+
+// MARK: -
+
+private struct LightnessValue: LerpableValue {
+    let lightness: CGFloat
+    let alpha: CGFloat
+
+    init(lightness: CGFloat, alpha: CGFloat) {
+        self.lightness = lightness.clamp01()
+        self.alpha = alpha.clamp01()
+    }
+
+    func interpolate(_ other: LightnessValue, interpolationAlpha: CGFloat) -> LightnessValue {
+        let interpolationAlpha = interpolationAlpha.clamp01()
+        return LightnessValue(lightness: interpolationAlpha.lerp(lightness, other.lightness),
+                              alpha: interpolationAlpha.lerp(alpha, other.alpha))
+    }
+}
+
+// MARK: -
+
+private struct LightnessSpectrum: LerpableSpectrum {
+    let values: [LightnessValue]
+
+    func interpolate(left: LightnessValue, right: LightnessValue, interpolationAlpha: CGFloat) -> LightnessValue {
+        owsAssertDebug(left.alpha <= right.alpha)
+
+        return left.interpolate(right, interpolationAlpha: interpolationAlpha)
+    }
+}
+
+// MARK: -
+
+private struct HSLValue: LerpableValue {
+    let hue: CGFloat
+    let saturation: CGFloat
+    let lightness: CGFloat
+    // This property is only used in the context of spectrums.
+    let alpha: CGFloat
+
+    init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat, alpha: CGFloat = 0) {
+        self.hue = hue.clamp01()
+        self.saturation = saturation.clamp01()
+        self.lightness = lightness.clamp01()
+        self.alpha = alpha.clamp01()
+    }
+
+    func interpolate(_ other: HSLValue, interpolationAlpha: CGFloat) -> HSLValue {
+        let interpolationAlpha = interpolationAlpha.clamp01()
+        return HSLValue(hue: interpolationAlpha.lerp(hue, other.hue),
+                        saturation: interpolationAlpha.lerp(saturation, other.saturation),
+                        lightness: interpolationAlpha.lerp(lightness, other.lightness),
+                        alpha: interpolationAlpha.lerp(alpha, other.alpha))
+    }
+
+    var uiColor: UIColor {
+        // TODO: Convert HSL to HSB.
+        UIColor(hue: hue, saturation: saturation, brightness: lightness, alpha: 1)
+    }
+}
+
+// MARK: -
+
+private struct HSLSpectrum: LerpableSpectrum {
+    let values: [HSLValue]
+
+    func interpolate(left: HSLValue, right: HSLValue, interpolationAlpha: CGFloat) -> HSLValue {
+        owsAssertDebug(left.alpha <= right.alpha)
+
+        return left.interpolate(right, interpolationAlpha: interpolationAlpha)
+    }
+}
+
+// MARK: -
+
+private protocol LerpableValue {
+    var alpha: CGFloat { get }
+}
+
+// MARK: -
+
+private protocol LerpableSpectrum {
+    associatedtype Value: LerpableValue
+
+    var values: [Value] { get }
+
+    func interpolate(left: Value, right: Value, interpolationAlpha: CGFloat) -> Value
+}
+
+// MARK: -
+
+extension LerpableSpectrum {
+    func value(forAlpha targetAlpha: CGFloat) -> Value {
+        let values = self.values
+        guard values.count > 1 else {
+            owsFailDebug("Invalid values: \(values.count).")
+            return values.first!
+        }
+        let targetAlpha = targetAlpha.clamp01()
+
+        var leftIndex: Int = 0
+        var rightIndex: Int = values.count - 1
+        while true {
+            guard leftIndex <= rightIndex,
+                  let left = values[safe: leftIndex],
+                  let right = values[safe: rightIndex] else {
+                owsFailDebug("Invalid indices. leftIndex: \(leftIndex), rightIndex: \(rightIndex), values: \(values.count).")
+                return values.first!
+            }
+            guard left.alpha <= right.alpha,
+                  left.alpha <= targetAlpha,
+                  right.alpha >= targetAlpha else {
+                owsFailDebug("Invalid alphas. left.alpha: \(left.alpha), right.alpha: \(right.alpha), targetAlpha: \(targetAlpha).")
+                return left
+            }
+            if leftIndex == rightIndex {
+                return left
+            }
+            if leftIndex + 1 == rightIndex {
+                owsAssertDebug(left.alpha < right.alpha)
+                owsAssertDebug(left.alpha <= targetAlpha)
+                owsAssertDebug(targetAlpha <= right.alpha)
+
+                let interpolationAlpha = targetAlpha.inverseLerp(left.alpha, right.alpha, shouldClamp: true)
+                return interpolate(left: left, right: right, interpolationAlpha: interpolationAlpha)
+            }
+            let midpointIndex = (leftIndex + rightIndex) / 2
+            guard let midpoint = values[safe: midpointIndex] else {
+                owsFailDebug("Invalid indices. leftIndex: \(leftIndex), rightIndex: \(rightIndex), midpointIndex: \(midpointIndex).")
+                return values.first!
+            }
+            if midpoint.alpha < targetAlpha {
+                leftIndex = midpointIndex
+            } else if midpoint.alpha > targetAlpha {
+                rightIndex = midpointIndex
+            } else {
+                return midpoint
+            }
+        }
     }
 }
