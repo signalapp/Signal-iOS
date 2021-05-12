@@ -1309,6 +1309,18 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
 
+/* Action text for donation megaphone */
+"DONATION_MEGAPHONE_ACTION" = "Donate";
+
+/* Body for donation megaphone */
+"DONATION_MEGAPHONE_BODY" = "Signal is powered by people like you. Show your support today!";
+
+/* Cancel text for donation megaphone */
+"DONATION_MEGAPHONE_CANCEL" = "No Thanks";
+
+/* Title for donation megaphone */
+"DONATION_MEGAPHONE_TITLE" = "Donate to Signal";
+
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
 

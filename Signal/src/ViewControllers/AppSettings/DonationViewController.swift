@@ -57,6 +57,24 @@ class DonationViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // If we're the root view, add a cancel button
+        if navigationController?.viewControllers.first == self {
+            navigationItem.leftBarButtonItem = .init(
+                barButtonSystemItem: .done,
+                target: self,
+                action: #selector(didTapDone)
+            )
+        }
+    }
+
+    @objc
+    func didTapDone() {
+        self.dismiss(animated: true)
+    }
+
     static let bubbleBorderWidth: CGFloat = 1.5
     static let bubbleBorderColor = UIColor(rgbHex: 0xdedede)
     static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
@@ -559,6 +577,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
         Stripe.donate(amount: donationAmount, in: currencyCode, for: payment).done { [weak self] in
             completion(.init(status: .success, errors: nil))
             self?.state = .donatedSuccessfully
+            ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.donateMegaphone)
         }.catch { error in
             completion(.init(status: .failure, errors: [error]))
         }
