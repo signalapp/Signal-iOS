@@ -1048,6 +1048,9 @@
 /* Title for the 'hue' section in the chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
 
+/* Title for the 'Saturation' section in the chat color settings view. */
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+
 /* Label for the 'solid color' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
 

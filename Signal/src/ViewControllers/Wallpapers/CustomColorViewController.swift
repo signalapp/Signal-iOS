@@ -29,10 +29,27 @@ public class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
+    private let hueSpectrum: HSLSpectrum
+    private let hueSlider: SpectrumSlider
+    private var hueAlpha: CGFloat { hueSlider.value.clamp01() }
+
+    private var saturationSpectrum: HSLSpectrum
+    private let saturationSlider: SpectrumSlider
+    private var saturationAlpha: CGFloat { saturationSlider.value.clamp01() }
+
     public init(thread: TSThread? = nil,
                 customColorViewDelegate: CustomColorViewDelegate) {
         self.thread = thread
         self.customColorViewDelegate = customColorViewDelegate
+
+        self.hueSpectrum = Self.buildHueSpectrum()
+        hueSlider = SpectrumSlider(spectrum: hueSpectrum,
+                                   value: CustomColorViewController.randomAlphaValue())
+
+        let hueValue = self.hueSpectrum.value(forAlpha: hueSlider.value.clamp01())
+        self.saturationSpectrum = Self.buildSaturationSpectrum(referenceValue: hueValue)
+        saturationSlider = SpectrumSlider(spectrum: saturationSpectrum,
+                                          value: CustomColorViewController.randomAlphaValue())
 
         super.init()
 
@@ -106,6 +123,8 @@ public class CustomColorViewController: OWSTableViewController2 {
                               for: .valueChanged)
     }
 
+    private var mockConversationView: MockConversationView?
+
     @objc
     func updateTableContents() {
         let contents = OWSTableContents()
@@ -126,6 +145,7 @@ public class CustomColorViewController: OWSTableViewController2 {
             mode: buildMockConversationMode(),
             hasWallpaper: true
         )
+        self.mockConversationView = mockConversationView
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false
         previewSection.add(OWSTableItem { [weak self] in
@@ -148,18 +168,6 @@ public class CustomColorViewController: OWSTableViewController2 {
         } actionBlock: {})
         contents.addSection(previewSection)
 
-//        let charColorPicker = buildChatColorPicker()
-//        let colorsSection = OWSTableSection()
-//        colorsSection.customHeaderHeight = 14
-//        colorsSection.add(OWSTableItem {
-//            let cell = OWSTableItem.newCell()
-//            cell.selectionStyle = .none
-//            cell.contentView.addSubview(charColorPicker)
-//            charColorPicker.autoPinEdgesToSuperviewMargins()
-//            return cell
-//        } actionBlock: {})
-//        contents.addSection(colorsSection)
-
         let hueSlider = self.hueSlider
         hueSlider.delegate = self
         let hueSection = OWSTableSection()
@@ -175,6 +183,22 @@ public class CustomColorViewController: OWSTableViewController2 {
             return cell
         } actionBlock: {})
         contents.addSection(hueSection)
+
+        let saturationSlider = self.saturationSlider
+        saturationSlider.delegate = self
+        let saturationSection = OWSTableSection()
+        saturationSection.hasBackground = false
+        saturationSection.headerTitle = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SATURATION",
+                                                   comment: "Title for the 'Saturation' section in the chat color settings view.")
+        saturationSection.customHeaderHeight = 14
+        saturationSection.add(OWSTableItem {
+            let cell = OWSTableItem.newCell()
+            cell.selectionStyle = .none
+            cell.contentView.addSubview(saturationSlider)
+            saturationSlider.autoPinEdgesToSuperviewMargins()
+            return cell
+        } actionBlock: {})
+        contents.addSection(saturationSection)
 
         self.contents = contents
     }
@@ -212,7 +236,7 @@ public class CustomColorViewController: OWSTableViewController2 {
         return (CGFloat(arc4random_uniform(precision)) / CGFloat(precision)).clamp01()
     }
 
-    private static let hueSpectrum: HSLSpectrum = {
+    private static func buildHueSpectrum() -> HSLSpectrum {
         let lightnessSpectrum = CustomColorViewController.lightnessSpectrum
         var values = [HSLValue]()
         let precision: UInt32 = 1024
@@ -224,24 +248,37 @@ public class CustomColorViewController: OWSTableViewController2 {
             let saturation: CGFloat = 1
             // Derive lightness.
             let lightness = lightnessSpectrum.value(forAlpha: alpha).lightness
-//            Logger.verbose("---- building hueSpectrum alpha: \(alpha), hue: \(hue), saturation: \(saturation), lightness: \(lightness), ")
             values.append(HSLValue(hue: hue, saturation: saturation, lightness: lightness, alpha: alpha))
         }
 
         return HSLSpectrum(values: values)
-    }()
-    private let hueSlider = SpectrumSlider(spectrum: CustomColorViewController.hueSpectrum,
-                                           value: CustomColorViewController.randomAlphaValue())
-    private var hueAlpha: CGFloat { hueSlider.value.clamp01() }
+    }
 
-    //    private var hueAlpha: CGFloat = { randomAlphaValue() }()
-    //    private var hueSaturation: CGFloat = { randomAlphaValue() }()
+    private static func buildSaturationSpectrum(referenceValue: HSLValue) -> HSLSpectrum {
+        var values = [HSLValue]()
+        let precision: UInt32 = 1024
+        for index in 0..<(precision + 1) {
+            let alpha = (CGFloat(index) / CGFloat(precision)).clamp01()
+            let hue = referenceValue.hue
+            let saturation = alpha
+            let lightness = referenceValue.lightness
+            values.append(HSLValue(hue: hue, saturation: saturation, lightness: lightness, alpha: alpha))
+        }
+        return HSLSpectrum(values: values)
+    }
 
-//    private func buildHueControl() -> UIView {
-//        // TODO:
-//        return UIView()
-//    }
+    private func updateSaturationSpectrum() {
+        let hueAlpha = hueSlider.value.clamp01()
+        let hueValue = self.hueSpectrum.value(forAlpha: hueAlpha)
+        Logger.verbose("hue alpha: \(hueAlpha), hueValue: \(hueValue)")
+        self.saturationSpectrum = Self.buildSaturationSpectrum(referenceValue: hueValue)
+        self.saturationSlider.spectrum = saturationSpectrum
+    }
 
+    private func updateMockConversation() {
+        // TODO:
+//    self.mockConversationView = mockConversationView
+    }
     // MARK: - Events
 
     @objc
@@ -259,7 +296,17 @@ public class CustomColorViewController: OWSTableViewController2 {
 // TODO:
 extension CustomColorViewController: SpectrumSliderDelegate {
     fileprivate func spectrumSliderDidChange(_ spectrumSlider: SpectrumSlider) {
+        if spectrumSlider == self.hueSlider {
+            Logger.verbose("hueSlider did change.")
+            updateSaturationSpectrum()
+        } else if spectrumSlider == self.saturationSlider {
+            Logger.verbose("saturationSlider did change.")
+            // Do nothing.
+        } else {
+            owsFailDebug("Unknown slider.")
+        }
 
+        updateMockConversation()
     }
 }
 
@@ -274,7 +321,12 @@ private protocol SpectrumSliderDelegate: class {
 private class SpectrumSlider: ManualLayoutView {
     fileprivate weak var delegate: SpectrumSliderDelegate?
 
-    private let spectrum: HSLSpectrum
+    var spectrum: HSLSpectrum {
+        didSet {
+            spectrumImageView.image = nil
+            ensureSpectrumImage()
+        }
+    }
 
     public var value: CGFloat
 
@@ -505,6 +557,8 @@ private struct HSLValue: LerpableValue {
     let saturation: CGFloat
     let lightness: CGFloat
     // This property is only used in the context of spectrums.
+    // It is _NOT_ a transparency/opacity alpha.
+    // It represents the values alpha within a spectrum.
     let alpha: CGFloat
 
     init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat, alpha: CGFloat = 0) {
@@ -523,8 +577,11 @@ private struct HSLValue: LerpableValue {
     }
 
     var uiColor: UIColor {
-        // TODO: Convert HSL to HSB.
-        UIColor(hue: hue, saturation: saturation, brightness: lightness, alpha: 1)
+        UIColor(hue: hue, saturation: saturation, lightness: lightness, alpha: 1)
+    }
+
+    var description: String {
+        "[hue: \(hue), saturation: \(saturation), lightness: \(lightness), alpha: \(alpha)]"
     }
 }
 
@@ -606,5 +663,35 @@ extension LerpableSpectrum {
                 return midpoint
             }
         }
+    }
+}
+
+extension UIColor {
+    // Convert HSL to HSB.
+    convenience init(hue: CGFloat, saturation saturationHSL: CGFloat, lightness: CGFloat, alpha: CGFloat) {
+        owsAssertDebug(0 <= hue)
+        owsAssertDebug(1 >= hue)
+        owsAssertDebug(0 <= saturationHSL)
+        owsAssertDebug(1 >= saturationHSL)
+        owsAssertDebug(0 <= lightness)
+        owsAssertDebug(1 >= lightness)
+        owsAssertDebug(0 <= alpha)
+        owsAssertDebug(1 >= alpha)
+
+        let hue = hue.clamp01()
+        let saturationHSL = saturationHSL.clamp01()
+        let lightness = lightness.clamp01()
+        let alpha = alpha.clamp01()
+
+        let brightness = (lightness + saturationHSL * min(lightness, 1 - lightness)).clamp01()
+        let saturationHSB: CGFloat = {
+            if brightness == 0 {
+                return 0
+            } else {
+                return (2 * (1 - lightness / brightness)).clamp01()
+            }
+        }()
+
+        self.init(hue: hue, saturation: saturationHSB, brightness: brightness, alpha: alpha)
     }
 }
