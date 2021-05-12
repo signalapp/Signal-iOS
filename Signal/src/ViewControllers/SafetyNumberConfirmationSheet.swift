@@ -480,7 +480,6 @@ private class SafetyNumberCell: ContactTableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        allowUserInteraction = true
         selectionStyle = .none
 
         button.setTitle(
@@ -506,6 +505,7 @@ private class SafetyNumberCell: ContactTableViewCell {
             let configuration = ContactCellConfiguration.build(address: item.address,
                                                                localUserDisplayMode: .asUser,
                                                                transaction: transaction)
+            configuration.allowUserInteraction = true
 
             configuration.forceDarkAppearance = (theme == .translucentDark)
 

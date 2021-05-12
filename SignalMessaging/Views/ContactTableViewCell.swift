@@ -12,12 +12,6 @@ open class ContactTableViewCell: UITableViewCell {
 
     private let cellView = ContactCellView()
 
-    // TODO:
-    public var allowUserInteraction: Bool {
-        get { cellView.isUserInteractionEnabled }
-        set { cellView.isUserInteractionEnabled = newValue }
-    }
-
     @objc
     public override var accessoryView: UIView? {
         didSet {
@@ -27,7 +21,6 @@ open class ContactTableViewCell: UITableViewCell {
 
     override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        allowUserInteraction = false
         configure()
     }
 

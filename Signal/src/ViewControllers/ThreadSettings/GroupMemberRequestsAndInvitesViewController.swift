@@ -150,12 +150,12 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     }
 
                     let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil)
-                    cell.allowUserInteraction = true
 
                     Self.databaseStorage.read { transaction in
                         let configuration = ContactCellConfiguration.build(address: address,
                                                                            localUserDisplayMode: .asLocalUser,
                                                                            transaction: transaction)
+                        configuration.allowUserInteraction = true
 
                         if canApproveMemberRequests {
                             configuration.accessoryView = self.buildMemberRequestButtons(address: address)
