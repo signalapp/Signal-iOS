@@ -3810,17 +3810,20 @@ typedef enum : NSUInteger {
     }
 
     if (self.shouldAnimateKeyboardChanges && animationDuration > 0) {
-        // Make note of when the keyboard animation will block
-        // loads from landing during the keyboard animation.
-        // It isn't safe to block loads for long, so we cap
-        // how long they will be blocked for.
-        NSTimeInterval keyboardAnimationBlockLoadInterval = kSecondInterval * 1.0;
-        NSDate *animationCompletionDate = [[NSDate new] dateByAddingTimeInterval:keyboardAnimationBlockLoadInterval];
-        NSDate *lastKeyboardAnimationDate = [[NSDate new] dateByAddingTimeInterval:-1.0];
-        if (self.viewState.lastKeyboardAnimationDate == nil ||
-            [self.viewState.lastKeyboardAnimationDate isBeforeDate:lastKeyboardAnimationDate]) {
-            self.viewState.lastKeyboardAnimationDate = animationCompletionDate;
-            self.scrollContinuity = ScrollContinuityBottom;
+        if (self.hasViewDidAppearEverCompleted) {
+            // Make note of when the keyboard animation will block
+            // loads from landing during the keyboard animation.
+            // It isn't safe to block loads for long, so we cap
+            // how long they will be blocked for.
+            NSTimeInterval keyboardAnimationBlockLoadInterval = kSecondInterval * 1.0;
+            NSDate *animationCompletionDate =
+                [[NSDate new] dateByAddingTimeInterval:keyboardAnimationBlockLoadInterval];
+            NSDate *lastKeyboardAnimationDate = [[NSDate new] dateByAddingTimeInterval:-1.0];
+            if (self.viewState.lastKeyboardAnimationDate == nil ||
+                [self.viewState.lastKeyboardAnimationDate isBeforeDate:lastKeyboardAnimationDate]) {
+                self.viewState.lastKeyboardAnimationDate = animationCompletionDate;
+                self.scrollContinuity = ScrollContinuityBottom;
+            }
         }
 
         // The animation curve provided by the keyboard notifications
