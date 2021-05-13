@@ -48,7 +48,7 @@ public class CustomColorViewController: OWSTableViewController2 {
     private var solidColorSetting = CustomColorViewController.randomColorSetting()
     private var gradientColor1Setting = CustomColorViewController.randomColorSetting()
     private var gradientColor2Setting = CustomColorViewController.randomColorSetting()
-    private var angleRadians: CGFloat = 0
+    fileprivate var angleRadians: CGFloat = 0
 
     fileprivate let hueSpectrum: HSLSpectrum
     private let hueSlider: SpectrumSlider
@@ -136,31 +136,17 @@ public class CustomColorViewController: OWSTableViewController2 {
                               for: .valueChanged)
     }
 
-    private var mockConversationView: MockConversationView?
+    private var previewView: CustomColorPreviewView?
 
     @objc
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        // Preview
-
-        let wallpaperPreviewView: UIView
-        if let wallpaperView = (databaseStorage.read { transaction in
-            Wallpaper.view(for: thread, transaction: transaction)
-        }) {
-            wallpaperPreviewView = wallpaperView.asPreviewView()
-        } else {
-            wallpaperPreviewView = UIView()
-            wallpaperPreviewView.backgroundColor = Theme.backgroundColor
+        let previewView = databaseStorage.read { transaction in
+            CustomColorPreviewView(thread: self.thread, transaction: transaction, delegate: self)
         }
-        wallpaperPreviewView.layer.cornerRadius = OWSTableViewController2.cellRounding
-        wallpaperPreviewView.clipsToBounds = true
+        self.previewView = previewView
 
-        let mockConversationView = MockConversationView(
-            mode: buildMockConversationMode(),
-            hasWallpaper: true
-        )
-        self.mockConversationView = mockConversationView
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false
         previewSection.add(OWSTableItem { [weak self] in
@@ -168,16 +154,10 @@ public class CustomColorViewController: OWSTableViewController2 {
             cell.selectionStyle = .none
             guard let self = self else { return cell }
 
-            cell.contentView.addSubview(wallpaperPreviewView)
-            wallpaperPreviewView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
-            wallpaperPreviewView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
-            wallpaperPreviewView.autoPinHeightToSuperview()
-
-            cell.contentView.addSubview(mockConversationView)
-            mockConversationView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
-            mockConversationView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
-            mockConversationView.autoPinEdge(toSuperviewEdge: .top, withInset: 24)
-            mockConversationView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 24)
+            cell.contentView.addSubview(previewView)
+            previewView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
+            previewView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
+            previewView.autoPinHeightToSuperview()
 
             return cell
         } actionBlock: {})
@@ -236,21 +216,6 @@ public class CustomColorViewController: OWSTableViewController2 {
         contents.addSection(saturationSection)
 
         self.contents = contents
-    }
-
-    func buildMockConversationMode() -> MockConversationView.Mode {
-        let outgoingText = NSLocalizedString(
-            "CHAT_COLOR_OUTGOING_MESSAGE",
-            comment: "The outgoing bubble text when setting a chat color."
-        )
-        let incomingText = NSLocalizedString(
-            "CHAT_COLOR_INCOMING_MESSAGE",
-            comment: "The incoming bubble text when setting a chat color."
-        )
-        return .dateIncomingOutgoing(
-            incomingText: incomingText,
-            outgoingText: outgoingText
-        )
     }
 
     // A custom spectrum that can ensures accessible constrast.
@@ -822,5 +787,73 @@ extension CustomColorViewController.ColorSetting {
         let saturationSpectrum = CustomColorViewController.buildSaturationSpectrum(referenceValue: hueValue)
         let saturationValue = saturationSpectrum.value(forAlpha: self.saturationAlpha)
         return saturationValue.asOWSColor
+    }
+}
+
+// MARK: -
+
+extension CustomColorViewController: CustomColorPreviewDelegate {
+}
+
+// MARK: -
+
+private protocol CustomColorPreviewDelegate: class {
+    var angleRadians: CGFloat { get }
+}
+
+// MARK: -
+
+private class CustomColorPreviewView: UIView {
+    private let mockConversationView: MockConversationView
+
+    private weak var delegate: CustomColorPreviewDelegate?
+
+    init(thread: TSThread?,
+         transaction: SDSAnyReadTransaction,
+         delegate: CustomColorPreviewDelegate) {
+        self.mockConversationView = MockConversationView(
+            mode: CustomColorPreviewView.buildMockConversationMode(),
+            hasWallpaper: true
+        )
+        self.delegate = delegate
+
+        super.init(frame: .zero)
+
+        let wallpaperPreviewView: UIView
+        if let wallpaperView = Wallpaper.view(for: thread, transaction: transaction) {
+            wallpaperPreviewView = wallpaperView.asPreviewView()
+        } else {
+            wallpaperPreviewView = UIView()
+            wallpaperPreviewView.backgroundColor = Theme.backgroundColor
+        }
+        wallpaperPreviewView.layer.cornerRadius = OWSTableViewController2.cellRounding
+        wallpaperPreviewView.clipsToBounds = true
+
+        self.addSubview(wallpaperPreviewView)
+        wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
+
+        self.addSubview(mockConversationView)
+        mockConversationView.autoPinWidthToSuperview()
+        mockConversationView.autoPinEdge(toSuperviewEdge: .top, withInset: 32)
+        mockConversationView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 32)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private static func buildMockConversationMode() -> MockConversationView.Mode {
+        let outgoingText = NSLocalizedString(
+            "CHAT_COLOR_OUTGOING_MESSAGE",
+            comment: "The outgoing bubble text when setting a chat color."
+        )
+        let incomingText = NSLocalizedString(
+            "CHAT_COLOR_INCOMING_MESSAGE",
+            comment: "The incoming bubble text when setting a chat color."
+        )
+        return .dateIncomingOutgoing(
+            incomingText: incomingText,
+            outgoingText: outgoingText
+        )
     }
 }
