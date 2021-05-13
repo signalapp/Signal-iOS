@@ -255,7 +255,7 @@ public class ChatColors: NSObject, Dependencies {
     }
 
     public static func autoChatColor(forWallpaper wallpaper: Wallpaper) -> ChatColorValue {
-        // TODO:
+        // TODO: Derive actual value from wallpaper.
         let color = OWSColor(red: 1, green: 0, blue: 0)
         return ChatColorValue(id: wallpaper.rawValue, appearance: .solidColor(color: color))
     }
@@ -265,7 +265,6 @@ public class ChatColors: NSObject, Dependencies {
         chatColorSetting(key: defaultKey, transaction: transaction)
     }
 
-    // TODO: When is this applied? Lazily?
     public static func defaultChatColorForRendering(transaction: SDSAnyReadTransaction) -> ChatColorValue {
         if let value = defaultChatColorSetting(transaction: transaction) {
             return value
@@ -356,7 +355,7 @@ public class ChatColors: NSObject, Dependencies {
     // MARK: -
 
     private static var builtInValues: [ChatColorValue] {
-        // TODO:
+        // TODO: Apply values from design.
         return [
             // We use fixed timestamps to ensure that built-in values
             // appear before custom values and to control their relative ordering.
@@ -379,11 +378,4 @@ public class ChatColors: NSObject, Dependencies {
                            creationTimestamp: 5)
         ]
     }
-
-//    public static func customValues(transaction: SDSAnyReadTransaction) -> [ChatColorValue] {
-//        // TODO:
-//        [
-//            .solidColor(color: OWSColor(red: 0, green: 0, blue: 0))
-//        ]
-//    }
 }

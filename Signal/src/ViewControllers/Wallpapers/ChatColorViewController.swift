@@ -187,12 +187,12 @@ public class ChatColorViewController: OWSTableViewController2 {
     }
 
     private func didTapOption(option: Option) {
-        // TODO:
-        Logger.verbose("----")
-
         func showCustomColorView(valueMode: CustomColorViewController.ValueMode) {
             let customColorVC = CustomColorViewController(thread: thread, valueMode: valueMode) { [weak self] (value) in
                 guard let self = self else { return }
+                Self.databaseStorage.write { transaction in
+                    Self.chatColors.upsertCustomValue(value, transaction: transaction)
+                }
                 self.currentValue = value
                 self.updateTableContents()
             }
@@ -250,6 +250,7 @@ public class ChatColorViewController: OWSTableViewController2 {
                     outerView.addTapGesture { [weak self] in
                         self?.didTapOption(option: option)
                     }
+                    // TODO: Add long-press to delete.
                     outerView.autoSetDimensions(to: .square(optionViewOuterSize))
                     outerView.setCompressionResistanceHigh()
                     outerView.setContentHuggingHigh()

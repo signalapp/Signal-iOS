@@ -71,7 +71,7 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
         case .solidColor(let color):
             backgroundColor = color.uiColor
         case .gradient(let color1, let color2, let angleRadians):
-            // TODO:
+            // TODO: Support gradients.
             backgroundColor = color1.uiColor
         }
     }
