@@ -461,7 +461,6 @@ private class SpectrumSlider: ManualLayoutView {
                 owsFailDebug("Invalid view.")
                 return
             }
-//            Logger.verbose("---- view.value: \(view.value), ")
             let knobMinX: CGFloat = 0
             let knobMaxX: CGFloat = max(0, view.width - Self.knobDiameter)
             knobView.frame = CGRect(x: view.value.lerp(knobMinX, knobMaxX),
@@ -471,7 +470,6 @@ private class SpectrumSlider: ManualLayoutView {
 
             let inset = (Self.knobDiameter - Self.spectrumImageDiameter) * 0.5
             spectrumImageView.frame = view.bounds.inset(by: UIEdgeInsets(margin: inset))
-//            spectrumImageView.addRedBorder()
 
             view.ensureSpectrumImage()
         }
@@ -525,20 +523,10 @@ private class SpectrumSlider: ManualLayoutView {
         while x < spectrumImageSizePoints.width {
             let alpha = x / spectrumImageSizePoints.width
             let hslValue = spectrum.value(forAlpha: alpha)
-//            Logger.verbose("---- drawing alpha: \(alpha), hue: \(hslValue.hue), saturation: \(hslValue.saturation), lightness: \(hslValue.lightness), ")
             hslValue.asUIColor.setFill()
             UIRectFill(CGRect(x: x, y: 0, width: xIncrement, height: spectrumImageSizePoints.height))
             x += xIncrement
         }
-
-//        // Draw the image into the new image
-//        draw(in: CGRect(origin: CGPoint(x: additionalWidth / 2, y: 0), size: size))
-//
-//        // Draw the title label into the new image
-//        titleLabel.drawText(in: CGRect(origin: CGPoint(
-//            x: size.width > titleSize.width ? (size.width - titleSize.width) / 2 : 0,
-//            y: size.height + spacing
-//        ), size: titleSize))
 
         guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
             owsFailDebug("Could not build image.")

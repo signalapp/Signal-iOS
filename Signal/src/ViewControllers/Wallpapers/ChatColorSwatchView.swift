@@ -104,7 +104,6 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
                 // on the edge of the unit square, and thus edge of the rectangle.
                 // We therefore scale such that longer axis is a half unit.
                 let startSquareScale: CGFloat = max(abs(startVector.x), abs(startVector.y))
-//                Logger.verbose("---- startSquareScale \(startSquareScale), startVector.x: \(abs(startVector.x)), startVector.y: \(abs(startVector.y))")
                 startScale = 0.5 / startSquareScale
             }
             // UIKit uses an upper-left origin.
@@ -116,12 +115,6 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
             // The endpoint should be "opposite" the start point, on the opposite edge of the view.
             gradientLayer.endPoint = convertToCoreGraphicsUnit(point: unitCenter + startVector * -startScale)
 
-//            Logger.verbose("---- angleRadians \(angleRadians)")
-//            Logger.verbose("---- startVector \(startVector)")
-//            Logger.verbose("---- startScale \(startScale)")
-//            Logger.verbose("---- startPoint \(gradientLayer.startPoint)")
-//            Logger.verbose("---- endPoint \(gradientLayer.endPoint)")
-//
             if gradientLayer.superlayer != self.layer {
                 gradientLayer.removeFromSuperlayer()
                 layer.addSublayer(gradientLayer)
