@@ -30,11 +30,16 @@ struct Stripe: Dependencies {
     }
 
     static func integralAmount(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> UInt {
+        let roundedAndScaledAmount: Double
         if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
-            return UInt(amount.doubleValue.rounded(.toNearestOrEven))
+            roundedAndScaledAmount = amount.doubleValue.rounded(.toNearestOrEven)
         } else {
-            return UInt((amount.doubleValue * 100).rounded(.toNearestOrEven))
+            roundedAndScaledAmount = (amount.doubleValue * 100).rounded(.toNearestOrEven)
         }
+
+        guard roundedAndScaledAmount <= Double(UInt.max) else { return UInt.max }
+        guard roundedAndScaledAmount >= 0 else { return 0 }
+        return UInt(roundedAndScaledAmount)
     }
 }
 
@@ -72,9 +77,12 @@ fileprivate extension Stripe {
                     throw OWSAssertionError("Unexpected currency code")
                 }
 
+                // The description is never translated as it's populated into an
+                // english only receipt by Stripe.
                 let request = OWSRequestFactory.createPaymentIntent(
                     withAmount: integralAmount(amount, in: currencyCode),
-                    inCurrencyCode: currencyCode
+                    inCurrencyCode: currencyCode,
+                    withDescription: LocalizationNotNeeded("Thank you for your donation. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. No goods or services were provided in exchange for this donation. Please retain this receipt for your tax records.")
                 )
 
                 return networkManager.makePromise(request: request)
@@ -149,6 +157,7 @@ fileprivate extension Stripe {
             parameters["pk_token_payment_network"] = payment.token.paymentMethod.network.map { $0.rawValue }
 
             if payment.token.transactionIdentifier == "Simulated Identifier" {
+                owsAssertDebug(!FeatureFlags.isUsingProductionService, "Simulated ApplePay only works in staging")
                 // Generate a fake transaction identifier
                 parameters["pk_token_transaction_id"] = "ApplePayStubs~4242424242424242~0~USD~\(UUID().uuidString)"
             } else {

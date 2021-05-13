@@ -360,7 +360,9 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
                 let picker = OWSButton { [weak self] in
                     guard let self = self else { return }
-                    let vc = CurrencyPickerViewController<CurrencyPickerStripeDataSource> { [weak self] currencyCode in
+                    let vc = CurrencyPickerViewController(
+                        dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: self.currencyCode)
+                    ) { [weak self] currencyCode in
                         self?.currencyCode = currencyCode
                     }
                     self.navigationController?.pushViewController(vc, animated: true)

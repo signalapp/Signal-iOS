@@ -949,7 +949,9 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapSetCurrencyButton() {
-        let view = CurrencyPickerViewController<CurrencyPickerPaymentsDataSource> { currencyCode in
+        let view = CurrencyPickerViewController(
+            dataSource: PaymentsCurrencyPickerDataSource()
+        ) { currencyCode in
             Self.databaseStorage.write { transaction in
                 Self.paymentsCurrencies.setCurrentCurrencyCode(currencyCode, transaction: transaction)
             }

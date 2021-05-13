@@ -9,22 +9,25 @@ protocol CurrencyPickerDataSource {
     var preferredCurrencyInfos: [Currency.Info] { get }
     var supportedCurrencyInfos: [Currency.Info] { get }
 
-    init(updateTableContentsBlock: @escaping () -> Void)
+    var updateTableContents: (() -> Void)? { get set }
 }
 
 class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OWSTableViewController2, UISearchBarDelegate {
 
     private let searchBar = OWSSearchBar()
-    private lazy var dataSource = DataSourceType { [weak self] in self?.updateTableContents() }
+    private var dataSource: DataSourceType
     private let completion: (Currency.Code) -> Void
 
     fileprivate var searchText: String? {
         searchBar.text?.ows_stripped()
     }
 
-    public required init(completion: @escaping (Currency.Code) -> Void) {
+    public required init(dataSource: DataSourceType, completion: @escaping (Currency.Code) -> Void) {
+        self.dataSource = dataSource
         self.completion = completion
         super.init()
+
+        self.dataSource.updateTableContents = { [weak self] in self?.updateTableContents() }
 
         topHeader = OWSTableViewController2.buildTopHeader(forView: searchBar)
     }
@@ -210,24 +213,28 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
     }
 }
 
-struct CurrencyPickerStripeDataSource: CurrencyPickerDataSource {
-    let currentCurrencyCode = Stripe.defaultCurrencyCode
+struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
+    let currentCurrencyCode: Currency.Code
     let preferredCurrencyInfos = Stripe.preferredCurrencyInfos
     let supportedCurrencyInfos = Stripe.supportedCurrencyInfos
 
-    init(updateTableContentsBlock: @escaping () -> Void) {}
+    var updateTableContents: (() -> Void)?
+
+    init(currentCurrencyCode: Currency.Code = Stripe.defaultCurrencyCode) {
+        self.currentCurrencyCode = currentCurrencyCode
+    }
 }
 
-class CurrencyPickerPaymentsDataSource: NSObject, CurrencyPickerDataSource {
+class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
     let currentCurrencyCode = paymentsCurrenciesSwift.currentCurrencyCode
     let preferredCurrencyInfos = paymentsCurrenciesSwift.preferredCurrencyInfos
     private(set) var supportedCurrencyInfos = paymentsCurrenciesSwift.supportedCurrencyInfosWithCurrencyConversions {
-        didSet { updateTableContents() }
+        didSet { updateTableContents?() }
     }
 
-    let updateTableContents: () -> Void
-    required init(updateTableContentsBlock: @escaping () -> Void) {
-        self.updateTableContents = updateTableContentsBlock
+    var updateTableContents: (() -> Void)?
+
+    override init() {
         super.init()
 
         NotificationCenter.default.addObserver(

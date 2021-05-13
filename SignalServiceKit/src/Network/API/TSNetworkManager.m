@@ -449,6 +449,7 @@ dispatch_queue_t NetworkManagerQueue()
         NSString *_Nullable contentType = task.originalRequest.allHTTPHeaderFields[@"Content-Type"];
         BOOL isJson = [contentType isEqualToString:OWSMimeTypeJson];
         BOOL isProtobuf = [contentType isEqualToString:@"application/x-protobuf"];
+        BOOL isFormData = [contentType isEqualToString:@"application/x-www-form-urlencoded"];
         if (isJson) {
             NSString *jsonBody = [[NSString alloc] initWithData:task.originalRequest.HTTPBody
                                                        encoding:NSUTF8StringEncoding];
@@ -457,7 +458,7 @@ dispatch_queue_t NetworkManagerQueue()
             OWSAssertDebug([jsonBody rangeOfString:@"'"].location == NSNotFound);
             [curlComponents addObject:@"--data-ascii"];
             [curlComponents addObject:[NSString stringWithFormat:@"'%@'", jsonBody]];
-        } else if (isProtobuf) {
+        } else if (isProtobuf || isFormData) {
             NSData *bodyData = task.originalRequest.HTTPBody;
             NSString *filename = [NSString stringWithFormat:@"%@.tmp", NSUUID.UUID.UUIDString];
 
