@@ -93,13 +93,16 @@ public enum ChatColorAppearance: Equatable, Codable {
 public struct ChatColorValue: Equatable, Codable {
     public let id: String
     public let appearance: ChatColorAppearance
+    public let isBuiltIn: Bool
     public let creationTimestamp: UInt64
 
     public init(id: String,
                 appearance: ChatColorAppearance,
+                isBuiltIn: Bool = false,
                 creationTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
         self.id = id
         self.appearance = appearance
+        self.isBuiltIn = isBuiltIn
         self.creationTimestamp = creationTimestamp
     }
 
@@ -186,7 +189,7 @@ public class ChatColors: NSObject, Dependencies {
 
     // The keys in this store are ChatColorValue.id (String).
     // The values are ChatColorValues.
-    private static let customColorsStore = SDSKeyValueStore(collection: "customColorsStore")
+    private static let customColorsStore = SDSKeyValueStore(collection: "customColorsStore.1")
 
     private static let defaultKey = "defaultKey"
 
@@ -368,20 +371,25 @@ public class ChatColors: NSObject, Dependencies {
             // appear before custom values and to control their relative ordering.
             ChatColorValue(id: "a",
                            appearance: .solidColor(color: OWSColor(red: 0.5, green: 0.5, blue: 0.5)),
+                           isBuiltIn: true,
                            creationTimestamp: 1),
             ChatColorValue(id: "b",
                            appearance: .solidColor(color: OWSColor(red: 0, green: 0, blue: 1)),
+                           isBuiltIn: true,
                            creationTimestamp: 2),
             ChatColorValue(id: "c",
                            appearance: .solidColor(color: OWSColor(red: 0, green: 1, blue: 0)),
+                           isBuiltIn: true,
                            creationTimestamp: 3),
             ChatColorValue(id: "d",
                            appearance: .solidColor(color: OWSColor(red: 0, green: 1, blue: 0.5)),
+                           isBuiltIn: true,
                            creationTimestamp: 4),
             ChatColorValue(id: "e",
                            appearance: .gradient(gradientColor1: OWSColor(red: 1, green: 0, blue: 0),
                                                  gradientColor2: OWSColor(red: 0, green: 1, blue: 0),
                                                  angleRadians: CGFloat.pi * 0.25),
+                           isBuiltIn: true,
                            creationTimestamp: 5)
         ]
     }

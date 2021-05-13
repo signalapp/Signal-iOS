@@ -67,12 +67,12 @@ public class CustomColorViewController: OWSTableViewController2 {
         case .createNew:
             editMode = .solidColor
         case .editExisting(let value):
-            editMode = .gradientColor1
-            // TODO: Apply value.
             switch value.appearance {
             case .solidColor(let color):
+                editMode = .solidColor
                 self.solidColorSetting = color.asColorSetting
             case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
+                editMode = .gradientColor1
                 self.gradientColor1Setting = gradientColor1.asColorSetting
                 self.gradientColor2Setting = gradientColor2.asColorSetting
                 self.angleRadians = angleRadians

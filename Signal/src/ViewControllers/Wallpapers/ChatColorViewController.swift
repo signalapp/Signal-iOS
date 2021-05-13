@@ -159,8 +159,10 @@ public class ChatColorViewController: OWSTableViewController2 {
 
             var result = [Option]()
             result.append(.auto)
-            result.append(contentsOf: ChatColors.allValuesSorted.map {
-                Option.builtInValue(value: $0)
+            result.append(contentsOf: ChatColors.allValuesSorted.map { value in
+                (value.isBuiltIn
+                    ? Option.builtInValue(value: value)
+                    : Option.customValue(value: value))
             })
             result.append(.addNewOption)
 
@@ -297,7 +299,7 @@ public class ChatColorViewController: OWSTableViewController2 {
                 case .customValue(let value):
                     let view = ChatColorSwatchView(chatColorValue: value, mode: .circle)
 
-                    let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: Theme.primaryIconColor)
+                    let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
                     view.addSubview(imageView)
                     imageView.autoSetDimensions(to: .square(24))
                     imageView.autoCenterInSuperview()
