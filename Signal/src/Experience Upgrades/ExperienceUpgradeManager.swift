@@ -106,15 +106,39 @@ class ExperienceUpgradeManager: NSObject {
         databaseStorage.asyncWrite { clearExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
     }
 
-    @objc(clearExperienceUpgrade:transaction:)
-    static func clearExperienceUpgrade(objcId experienceUpgradeId: ObjcExperienceUpgradeId,
-                                       transaction: GRDBWriteTransaction) {
-        clearExperienceUpgrade(experienceUpgradeId.swiftRepresentation, transaction: transaction)
-    }
-
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
     static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
+        transaction.addAsyncCompletion(queue: .main) {
+            // If it's currently being presented, dismiss it.
+            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            lastPresented?.dismiss(animated: false, completion: nil)
+        }
+    }
+
+    static func snoozeExperienceUpgradeWithSneakyTransaction(_ experienceUpgradeId: ExperienceUpgradeId) {
+        // Check if we need to do a write, we'll skip opening a write
+        // transaction if we're able.
+        let hasUnsnoozed = databaseStorage.read { transaction in
+            ExperienceUpgradeFinder.hasUnsnoozed(
+                experienceUpgradeId: experienceUpgradeId,
+                transaction: transaction.unwrapGrdbRead
+            )
+        }
+
+        guard hasUnsnoozed else {
+            // If it's currently being presented, dismiss it.
+            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            lastPresented?.dismiss(animated: false, completion: nil)
+            return
+        }
+
+        databaseStorage.asyncWrite { snoozeExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
+    }
+
+    /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
+    static func snoozeExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
+        ExperienceUpgradeFinder.markAsSnoozed(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
         transaction.addAsyncCompletion(queue: .main) {
             // If it's currently being presented, dismiss it.
             guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
@@ -157,7 +181,8 @@ class ExperienceUpgradeManager: NSObject {
              .linkPreviews,
              .researchMegaphone1,
              .groupCallsMegaphone,
-             .sharingSuggestions:
+             .sharingSuggestions,
+             .donateMegaphone:
             return true
         case .groupsV2AndMentionsSplash2:
             return false
@@ -184,6 +209,8 @@ class ExperienceUpgradeManager: NSObject {
             return GroupCallsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .sharingSuggestions:
             return SharingSuggestionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .donateMegaphone:
+            return DonateMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

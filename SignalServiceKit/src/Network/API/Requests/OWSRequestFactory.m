@@ -878,6 +878,23 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:@{ @"type" : @"recaptcha", @"token" : serverToken, @"captcha" : captchaToken }];
 }
 
+#pragma mark - Donations
+
++ (TSRequest *)createPaymentIntentWithAmount:(NSUInteger)amount
+                              inCurrencyCode:(NSString *)currencyCode
+                             withDescription:(nullable NSString *)description
+{
+    NSMutableDictionary *parameters =
+        [@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) } mutableCopy];
+    if (description) {
+        parameters[@"description"] = description;
+    }
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/authorize-apple-pay"]
+                              method:@"POST"
+                          parameters:parameters];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -13,12 +13,14 @@ public class RemoteConfig: BaseFlags {
     private let isEnabledFlags: [String: Bool]
     private let valueFlags: [String: AnyObject]
     private let researchMegaphone: Bool
+    private let donateMegaphone: Bool
 
     init(isEnabledFlags: [String: Bool],
          valueFlags: [String: AnyObject]) {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
-        self.researchMegaphone = Self.isResearchMegaphoneEnabled(valueFlags: valueFlags)
+        self.researchMegaphone = Self.isCountryCodeBucketEnabled(.researchMegaphone, valueFlags: valueFlags)
+        self.donateMegaphone = Self.isCountryCodeBucketEnabled(.donateMegaphone, valueFlags: valueFlags)
     }
 
     @objc
@@ -141,11 +143,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var cdsSyncInterval: TimeInterval {
-        guard let cdsSyncIntervalString: String = value(.cdsSyncInterval),
-              let cdsSyncInterval = TimeInterval(cdsSyncIntervalString) else {
-            return 2 * kDayInterval
-        }
-        return cdsSyncInterval
+        interval(.cdsSyncInterval, defaultInterval: kDayInterval * 2)
     }
 
     @objc
@@ -155,11 +153,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var automaticSessionResetAttemptInterval: TimeInterval {
-        guard let automaticSessionResetAttemptIntervalString: String = value(.automaticSessionResetAttemptInterval),
-              let automaticSessionResetAttemptInterval = TimeInterval(automaticSessionResetAttemptIntervalString) else {
-            return kHourInterval
-        }
-        return automaticSessionResetAttemptInterval
+        interval(.automaticSessionResetAttemptInterval, defaultInterval: kHourInterval)
     }
 
     @objc
@@ -168,44 +162,15 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.researchMegaphone
     }
 
-    private static func isResearchMegaphoneEnabled(valueFlags: [String: AnyObject]) -> Bool {
-        let rawFlag = Flags.SupportedValuesFlags.researchMegaphone.rawFlag
+    @objc
+    public static var donateMegaphone: Bool {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return false }
+        return remoteConfig.donateMegaphone
+    }
 
-        guard let value = valueFlags[rawFlag] as? String else { return false }
-
-        guard !value.isEmpty else { return false }
-
-        // The value should always be a comma-separated list of country codes colon-separated
-        // from how many buckets out of 1 million should be enabled to see the research
-        // megaphone in that country code. There will also optional be a wildcard "*" bucket
-        // that any unspecified country codes should use. If neither the local country code
-        // or the wildcard is specified, we assume the megaphone is not enabled.
-        let countEnabledPerCountryCode = value
-            .components(separatedBy: ",")
-            .reduce(into: [String: UInt64]()) { result, value in
-                let components = value.components(separatedBy: ":")
-                guard components.count == 2 else { return owsFailDebug("Invalid research megaphone value \(value)")}
-                let countryCode = components[0]
-                let countEnabled = UInt64(components[1])
-                result[countryCode] = countEnabled
-        }
-
-        guard !countEnabledPerCountryCode.isEmpty else { return false }
-
-        guard let localE164 = TSAccountManager.shared.localNumber,
-            let localCountryCode = PhoneNumber(fromE164: localE164)?.getCountryCode()?.stringValue else {
-                owsFailDebug("Missing local number")
-                return false
-        }
-
-        let localCountEnabled = countEnabledPerCountryCode[localCountryCode]
-        let wildcardCountEnabled = countEnabledPerCountryCode["*"]
-
-        if let countEnabled = localCountEnabled ?? wildcardCountEnabled {
-            return isBucketEnabled(key: rawFlag, countEnabled: countEnabled, bucketSize: 1000000)
-        } else {
-            return false
-        }
+    @objc
+    public static var donateMegaphoneSnoozeInterval: TimeInterval {
+        interval(.donateMegaphoneSnoozeInterval, defaultInterval: kMonthInterval * 6)
     }
 
     @objc
@@ -224,6 +189,56 @@ public class RemoteConfig: BaseFlags {
     }
 
     // MARK: -
+
+    private static func interval(
+        _ flag: Flags.SupportedValuesFlags,
+        defaultInterval: TimeInterval
+    ) -> TimeInterval {
+        guard let intervalString: String = value(flag),
+              let interval = TimeInterval(intervalString) else {
+            return defaultInterval
+        }
+        return interval
+    }
+
+    private static func isCountryCodeBucketEnabled(_ flag: Flags.SupportedValuesFlags, valueFlags: [String: AnyObject]) -> Bool {
+        let rawFlag = flag.rawValue
+        guard let value = valueFlags[rawFlag] as? String else { return false }
+
+        guard !value.isEmpty else { return false }
+
+        // The value should always be a comma-separated list of country codes colon-separated
+        // from how many buckets out of 1 million should be enabled in that country code. There
+        // will also optional be a wildcard "*" bucket that any unspecified country codes should
+        // use. If neither the local country code or the wildcard is specified, we assume the
+        // value is not enabled.
+        let countEnabledPerCountryCode = value
+            .components(separatedBy: ",")
+            .reduce(into: [String: UInt64]()) { result, value in
+                let components = value.components(separatedBy: ":")
+                guard components.count == 2 else { return owsFailDebug("Invalid \(rawFlag) value \(value)")}
+                let countryCode = components[0]
+                let countEnabled = UInt64(components[1])
+                result[countryCode] = countEnabled
+        }
+
+        guard !countEnabledPerCountryCode.isEmpty else { return false }
+
+        guard let localE164 = TSAccountManager.shared.localNumber,
+            let localCountryCode = PhoneNumber(fromE164: localE164)?.getCountryCode()?.stringValue else {
+                owsFailDebug("Missing local number")
+                return false
+        }
+
+        let localCountEnabled = countEnabledPerCountryCode[localCountryCode]
+        let wildcardCountEnabled = countEnabledPerCountryCode["*"]
+
+        if let countEnabled = localCountEnabled ?? wildcardCountEnabled {
+            return isBucketEnabled(key: rawFlag, countEnabled: countEnabled, bucketSize: 1_000_000)
+        } else {
+            return false
+        }
+    }
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64) -> Bool {
         guard let uuid = TSAccountManager.shared.localUuid else {
@@ -383,6 +398,8 @@ private struct Flags {
         case researchMegaphone
         case cdsSyncInterval
         case automaticSessionResetAttemptInterval
+        case donateMegaphone
+        case donateMegaphoneSnoozeInterval
     }
 }
 
