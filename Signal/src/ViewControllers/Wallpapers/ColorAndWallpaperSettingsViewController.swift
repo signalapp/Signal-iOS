@@ -78,9 +78,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             let chatColorSection = OWSTableSection()
             chatColorSection.customHeaderHeight = 14
 
-            let defaultChatColor = Self.databaseStorage.read { transaction in
-                ChatColors.defaultChatColorForRendering(transaction: transaction)
-            }
+            let defaultChatColor: ChatColorValue = Self.databaseStorage.read { transaction in
+                ChatColors.defaultChatColorSetting(transaction: transaction)
+
+            } ?? ChatColors.noWallpaperAutoChatColor
             let defaultColorView = ChatColorSwatchView(chatColorValue: defaultChatColor,
                                                        mode: .circle)
             defaultColorView.autoSetDimensions(to: .square(16))
@@ -98,13 +99,23 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 self.navigationController?.pushViewController(vc, animated: true)
             })
 
-            chatColorSection.add(OWSTableItem.actionItem(
-                name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLOR",
-                                        comment: "Reset chat color action in color and wallpaper settings view."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color")
-            ) { [weak self] in
-                self?.didPressResetChatColorWallpaper()
-            })
+            if nil != thread {
+                chatColorSection.add(.actionItem(
+                    name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR",
+                                            comment: "Reset conversation chat color action in wallpaper settings view."),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color")
+                ) { [weak self] in
+                    self?.didPressResetConversationChatColor()
+                })
+            } else {
+                chatColorSection.add(.actionItem(
+                    name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS",
+                                            comment: "Reset global chat colors action in wallpaper settings view."),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_colors")
+                ) { [weak self] in
+                    self?.didPressResetGlobalChatColors()
+                })
+            }
 
             contents.addSection(chatColorSection)
         }
@@ -136,40 +147,25 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             selector: #selector(updateWallpaperDimming)
         ))
 
-        contents.addSection(wallpaperSection)
-
-        let resetSection = OWSTableSection()
-        resetSection.customHeaderHeight = 14
-
         if nil != thread {
-            resetSection.add(.actionItem(
+            wallpaperSection.add(.actionItem(
                 name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER",
                                         comment: "Reset conversation wallpaper action in wallpaper settings view."),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpaper")
             ) { [weak self] in
-                self?.didPressResetWallpaper()
+                self?.didPressResetConversationWallpaper()
             })
         } else {
-            resetSection.add(.actionItem(
+            wallpaperSection.add(.actionItem(
                 name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER",
-                                        comment: "Reset default wallpaper action in wallpaper settings view."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_default_wallpaper")
+                                        comment: "Reset wallpapers action in wallpaper settings view."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpapers")
             ) { [weak self] in
-                self?.didPressResetWallpaper()
+                self?.didPressResetGlobalWallpapers()
             })
         }
 
-        // TODO: Do we still want a "reset all" item?
-        //        let resetAllWallpapersItem = OWSTableItem.actionItem(
-        //            name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS",
-        //                                    comment: "Reset all wallpapers action in wallpaper settings view."),
-        //            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_all_wallpapers")
-        //        ) { [weak self] in
-        //            self?.didPressResetAllWallpapers()
-        //        }
-        //        resetSection.add(resetAllWallpapersItem)
-
-        contents.addSection(resetSection)
+        contents.addSection(wallpaperSection)
 
         self.contents = contents
     }
@@ -185,22 +181,14 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         }
     }
 
-    func didPressResetWallpaper() {
-        let title: String
-        if thread != nil {
-            title = NSLocalizedString(
-                "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION",
-                comment: "Confirmation dialog when clearing the wallpaper for a specific chat."
-            )
-        } else {
-            title = NSLocalizedString(
-                "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION",
-                comment: "Confirmation dialog when clearing the global wallpaper."
-            )
-        }
+    // MARK: - Reset Wallpapers
+
+    func didPressResetConversationWallpaper() {
+        owsAssertDebug(thread != nil)
 
         OWSActionSheets.showConfirmationAlert(
-            title: title,
+            title: NSLocalizedString("WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION",
+                                     comment: "Confirmation dialog when clearing the wallpaper for a specific chat."),
             proceedTitle: NSLocalizedString(
                 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER",
                 comment: "Clear wallpaper action in wallpaper settings view."
@@ -209,6 +197,31 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         ) { _ in
             self.resetWallpaper()
         }
+    }
+
+    func didPressResetGlobalWallpapers() {
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE",
+                                     comment: "Title of confirmation dialog when resetting the global wallpaper settings."),
+            message: NSLocalizedString("WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE",
+                                       comment: "Message of confirmation dialog when resetting the global wallpaper settings.")
+        )
+
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER",
+                                     comment: "Label for 'reset default wallpaper' action in the global wallpaper settings.")) { [weak self] _ in
+            self?.resetWallpaper()
+        })
+
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS",
+                                     comment: "Label for 'reset all wallpapers' action in the global wallpaper settings.")) { [weak self] _ in
+            self?.resetAllWallpapers()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
     }
 
     func resetWallpaper() {
@@ -225,26 +238,15 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
+            transaction.addAsyncCompletion {
+                AssertIsOnMainThread()
+
+                self.updateTableContents()
+            }
         }
     }
 
-    func didPressResetAllWallpapers() {
-        OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString(
-                "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION",
-                comment: "Confirmation dialog when resetting all wallpapers."
-            ),
-            proceedTitle: NSLocalizedString(
-                "WALLPAPER_SETTINGS_RESET_ALL",
-                comment: "Reset all wallpapers action in wallpaper settings view."
-            ),
-            proceedStyle: .destructive
-        ) { _ in
-            self.resetAllWallpapers()
-        }
-    }
-
-    func resetAllWallpapers() {
+    private func resetAllWallpapers() {
         databaseStorage.asyncWrite { transaction in
             do {
                 try Wallpaper.resetAll(transaction: transaction)
@@ -257,27 +259,83 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
+            transaction.addAsyncCompletion {
+                AssertIsOnMainThread()
+
+                self.updateTableContents()
+            }
         }
     }
 
-    func didPressResetChatColorWallpaper() {
-        // TODO: Do we need confirm alert?
-        databaseStorage.write { transaction in
-            ChatColors.setDefaultChatColorSetting(nil, transaction: transaction)
+    // MARK: - Reset Chat Colors
+
+    func didPressResetConversationChatColor() {
+        owsAssertDebug(thread != nil)
+
+        OWSActionSheets.showConfirmationAlert(
+            title: NSLocalizedString("WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION",
+                                     comment: "Confirmation dialog when clearing the chat color for a specific chat."),
+            proceedTitle: NSLocalizedString(
+                "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR",
+                comment: "Clear chat color action in wallpaper settings view."
+            ),
+            proceedStyle: .destructive
+        ) { _ in
+            self.resetChatColor()
         }
-        //        OWSActionSheets.showConfirmationAlert(
-        //            title: NSLocalizedString(
-        //                "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION",
-        //                comment: "Confirmation dialog when resetting all wallpapers."
-        //            ),
-        //            proceedTitle: NSLocalizedString(
-        //                "WALLPAPER_SETTINGS_RESET_ALL",
-        //                comment: "Reset all wallpapers action in wallpaper settings view."
-        //            ),
-        //            proceedStyle: .destructive
-        //        ) { _ in
-        //            self.resetAllWallpapers()
-        //        }
+    }
+
+    func didPressResetGlobalChatColors() {
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE",
+                                     comment: "Title of confirmation dialog when resetting the global wallpaper settings."),
+            message: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE",
+                                       comment: "Message of confirmation dialog when resetting the global wallpaper settings.")
+        )
+
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR",
+                                     comment: "Label for 'reset default chat color' action in the global wallpaper settings.")) { [weak self] _ in
+            self?.resetChatColor()
+        })
+
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS",
+                                     comment: "Label for 'reset all chat colors' action in the global wallpaper settings.")) { [weak self] _ in
+            self?.resetAllChatColors()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
+    }
+
+    func resetChatColor() {
+        let thread = self.thread
+        databaseStorage.asyncWrite { transaction in
+            if let thread = thread {
+                ChatColors.setChatColorSetting(nil, thread: thread, transaction: transaction)
+            } else {
+                ChatColors.setDefaultChatColorSetting(nil, transaction: transaction)
+            }
+            transaction.addAsyncCompletion {
+                AssertIsOnMainThread()
+
+                self.updateTableContents()
+            }
+        }
+    }
+
+    private func resetAllChatColors() {
+        databaseStorage.asyncWrite { transaction in
+            ChatColors.resetAllSettings(transaction: transaction)
+
+            transaction.addAsyncCompletion {
+                AssertIsOnMainThread()
+
+                self.updateTableContents()
+            }
+        }
     }
 }
 

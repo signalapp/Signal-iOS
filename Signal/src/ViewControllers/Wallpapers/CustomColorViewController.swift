@@ -18,24 +18,43 @@ public class CustomColorViewController: OWSTableViewController2 {
 
     private let modeControl = UISegmentedControl()
 
-    private enum ValueType: Int {
-        case solid = 0
-        case gradient = 1
+    private enum EditMode: Int {
+        case solidColor
+        case gradientColor1
+        case gradientColor2
     }
 
-    private var valueType: ValueType = .solid {
+    private var editMode: EditMode = .solidColor {
         didSet {
-            updateTableContents()
+            if isViewLoaded {
+                updateTableContents()
+            }
         }
     }
 
-    private let hueSpectrum: HSLSpectrum
+    fileprivate class ColorSetting {
+        // Represents a position within the hueSpectrum.
+        var hueAlpha: CGFloat
+        // Represents a position within the saturationSpectrum.
+        // NOTE: the saturationSpectrum is a function of the hueAlpha.
+        var saturationAlpha: CGFloat
+
+        init(hueAlpha: CGFloat, saturationAlpha: CGFloat) {
+            self.hueAlpha = hueAlpha
+            self.saturationAlpha = saturationAlpha
+        }
+    }
+
+    private var solidColorSetting = CustomColorViewController.randomColorSetting()
+    private var gradientColor1Setting = CustomColorViewController.randomColorSetting()
+    private var gradientColor2Setting = CustomColorViewController.randomColorSetting()
+    private var angleRadians: CGFloat = 0
+
+    fileprivate let hueSpectrum: HSLSpectrum
     private let hueSlider: SpectrumSlider
-    private var hueAlpha: CGFloat { hueSlider.value.clamp01() }
 
     private var saturationSpectrum: HSLSpectrum
     private let saturationSlider: SpectrumSlider
-    private var saturationAlpha: CGFloat { saturationSlider.value.clamp01() }
 
     public init(thread: TSThread? = nil,
                 valueMode: ValueMode,
@@ -44,24 +63,29 @@ public class CustomColorViewController: OWSTableViewController2 {
         self.valueMode = valueMode
         self.completion = completion
 
-        let hueAlpha: CGFloat
-        let saturationAlpha: CGFloat
         switch valueMode {
         case .createNew:
-            hueAlpha = CustomColorViewController.randomAlphaValue()
-            saturationAlpha = CustomColorViewController.randomAlphaValue()
+            editMode = .solidColor
         case .editExisting(let value):
+            editMode = .gradientColor1
             // TODO: Apply value.
-            hueAlpha = CustomColorViewController.randomAlphaValue()
-            saturationAlpha = CustomColorViewController.randomAlphaValue()
+            switch value.appearance {
+            case .solidColor(let color):
+                self.solidColorSetting = color.asColorSetting
+            case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
+                self.gradientColor1Setting = gradientColor1.asColorSetting
+                self.gradientColor2Setting = gradientColor2.asColorSetting
+                self.angleRadians = angleRadians
+            }
         }
 
         self.hueSpectrum = Self.buildHueSpectrum()
-        hueSlider = SpectrumSlider(spectrum: hueSpectrum, value: hueAlpha)
+        hueSlider = SpectrumSlider(spectrum: hueSpectrum, value: 0)
 
+        let hueAlpha = hueSlider.value.clamp01()
         let hueValue = self.hueSpectrum.value(forAlpha: hueAlpha)
         self.saturationSpectrum = Self.buildSaturationSpectrum(referenceValue: hueValue)
-        saturationSlider = SpectrumSlider(spectrum: saturationSpectrum, value: saturationAlpha)
+        saturationSlider = SpectrumSlider(spectrum: saturationSpectrum, value: 0)
 
         super.init()
 
@@ -95,13 +119,18 @@ public class CustomColorViewController: OWSTableViewController2 {
     private func createSubviews() {
         modeControl.insertSegment(withTitle: NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR",
                                                                comment: "Label for the 'solid color' mode in the custom chat color settings view."),
-                                  at: ValueType.solid.rawValue,
+                                  at: EditMode.solidColor.rawValue,
                                   animated: false)
         modeControl.insertSegment(withTitle: NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT",
                                                                comment: "Label for the 'gradient' mode in the custom chat color settings view."),
-                                  at: ValueType.gradient.rawValue,
+                                  at: EditMode.gradientColor1.rawValue,
                                   animated: false)
-        modeControl.selectedSegmentIndex = valueType.rawValue
+        switch editMode {
+        case .solidColor:
+            modeControl.selectedSegmentIndex = EditMode.solidColor.rawValue
+        case .gradientColor1, .gradientColor2:
+            modeControl.selectedSegmentIndex = EditMode.gradientColor1.rawValue
+        }
         modeControl.addTarget(self,
                               action: #selector(modeControlDidChange),
                               for: .valueChanged)
@@ -112,6 +141,8 @@ public class CustomColorViewController: OWSTableViewController2 {
     @objc
     func updateTableContents() {
         let contents = OWSTableContents()
+
+        // Preview
 
         let wallpaperPreviewView: UIView
         if let wallpaperView = (databaseStorage.read { transaction in
@@ -152,7 +183,28 @@ public class CustomColorViewController: OWSTableViewController2 {
         } actionBlock: {})
         contents.addSection(previewSection)
 
+        // Sliders
+
         let hueSlider = self.hueSlider
+        let saturationSlider = self.saturationSlider
+
+        // Update sliders to reflect editMode.
+        func apply(colorSetting: ColorSetting) {
+            hueSlider.value = colorSetting.hueAlpha
+            saturationSlider.value = colorSetting.saturationAlpha
+
+            // Update saturation slider to reflect hue slider state.
+            updateSaturationSpectrum()
+        }
+        switch editMode {
+        case .solidColor:
+            apply(colorSetting: self.solidColorSetting)
+        case .gradientColor1:
+            apply(colorSetting: self.gradientColor1Setting)
+        case .gradientColor2:
+            apply(colorSetting: self.gradientColor2Setting)
+        }
+
         hueSlider.delegate = self
         let hueSection = OWSTableSection()
         hueSection.hasBackground = false
@@ -168,7 +220,6 @@ public class CustomColorViewController: OWSTableViewController2 {
         } actionBlock: {})
         contents.addSection(hueSection)
 
-        let saturationSlider = self.saturationSlider
         saturationSlider.delegate = self
         let saturationSection = OWSTableSection()
         saturationSection.hasBackground = false
@@ -220,6 +271,10 @@ public class CustomColorViewController: OWSTableViewController2 {
         return (CGFloat(arc4random_uniform(precision)) / CGFloat(precision)).clamp01()
     }
 
+    private static func randomColorSetting() -> ColorSetting {
+        ColorSetting(hueAlpha: randomAlphaValue(), saturationAlpha: randomAlphaValue())
+    }
+
     private static func buildHueSpectrum() -> HSLSpectrum {
         let lightnessSpectrum = CustomColorViewController.lightnessSpectrum
         var values = [HSLValue]()
@@ -267,21 +322,33 @@ public class CustomColorViewController: OWSTableViewController2 {
 
     @objc
     private func modeControlDidChange(_ sender: UISegmentedControl) {
-        guard let valueType = ValueType(rawValue: sender.selectedSegmentIndex) else {
-            owsFailDebug("Couldn't update recordType.")
-            return
+        switch sender.selectedSegmentIndex {
+        case EditMode.solidColor.rawValue:
+            self.editMode = .solidColor
+        case EditMode.gradientColor1.rawValue, EditMode.gradientColor2.rawValue:
+            self.editMode = .gradientColor1
+        default:
+            owsFailDebug("Couldn't update editMode.")
         }
-        self.valueType = valueType
+    }
+
+    private func currentChatColorAppearance() -> ChatColorAppearance {
+        switch editMode {
+        case .solidColor:
+            let solidColor = self.solidColorSetting.asOWSColor(hueSpectrum: self.hueSpectrum)
+            return .solidColor(color: solidColor)
+        case .gradientColor1, .gradientColor2:
+            let gradientColor1 = self.gradientColor1Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
+            let gradientColor2 = self.gradientColor2Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
+            return .gradient(gradientColor1: gradientColor1,
+                             gradientColor2: gradientColor2,
+                             angleRadians: self.angleRadians)
+        }
     }
 
     @objc
     func didTapSet() {
-        let saturationAlpha = saturationSlider.value.clamp01()
-        let saturationValue = self.saturationSpectrum.value(forAlpha: hueAlpha)
-        let owsColor = saturationValue.asOWSColor
-
-        // TODO: Support gradients.
-        let appearance: ChatColorAppearance = .solidColor(color: owsColor)
+        let appearance = self.currentChatColorAppearance()
         let newValue: ChatColorValue
         switch valueMode {
         case .createNew:
@@ -294,7 +361,7 @@ public class CustomColorViewController: OWSTableViewController2 {
                                       creationTimestamp: oldValue.creationTimestamp)
         }
 
-        Logger.verbose("saturationAlpha: \(saturationAlpha), saturationValue: \(saturationValue), owsColor: \(owsColor), ")
+        Logger.verbose("appearance: \(appearance), ")
         completion(newValue)
         self.navigationController?.popViewController(animated: true)
     }
@@ -304,12 +371,23 @@ public class CustomColorViewController: OWSTableViewController2 {
 
 extension CustomColorViewController: SpectrumSliderDelegate {
     fileprivate func spectrumSliderDidChange(_ spectrumSlider: SpectrumSlider) {
+        let currentColorSetting: ColorSetting
+        switch editMode {
+        case .solidColor:
+            currentColorSetting = self.solidColorSetting
+        case .gradientColor1:
+            currentColorSetting = self.gradientColor1Setting
+        case .gradientColor2:
+            currentColorSetting = self.gradientColor2Setting
+        }
+
         if spectrumSlider == self.hueSlider {
             Logger.verbose("hueSlider did change.")
+            currentColorSetting.hueAlpha = hueSlider.value.clamp01()
             updateSaturationSpectrum()
         } else if spectrumSlider == self.saturationSlider {
             Logger.verbose("saturationSlider did change.")
-            // Do nothing.
+            currentColorSetting.saturationAlpha = saturationSlider.value.clamp01()
         } else {
             owsFailDebug("Unknown slider.")
         }
@@ -336,7 +414,11 @@ private class SpectrumSlider: ManualLayoutView {
         }
     }
 
-    public var value: CGFloat
+    public var value: CGFloat {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
     private let knobView = ManualLayoutViewWithLayer(name: "knobView")
 
@@ -589,16 +671,7 @@ private struct HSLValue: LerpableValue {
     }
 
     var asOWSColor: OWSColor {
-        let uiColor = self.asUIColor
-
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-
-        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-
-        return OWSColor(red: red.clamp01(), green: green.clamp01(), blue: blue.clamp01())
+        self.asUIColor.asOWSColor
     }
 
     var description: String {
@@ -714,5 +787,52 @@ extension UIColor {
         }()
 
         self.init(hue: hue, saturation: saturationHSB, brightness: brightness, alpha: alpha)
+    }
+}
+
+// MARK: -
+
+extension OWSColor {
+    fileprivate var asColorSetting: CustomColorViewController.ColorSetting {
+        let uiColor = self.asUIColor
+
+        var hue: CGFloat = 0
+        var saturationHSB: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        uiColor.getHue(&hue, saturation: &saturationHSB, brightness: &brightness, alpha: &alpha)
+
+        hue = hue.clamp01()
+        saturationHSB = saturationHSB.clamp01()
+        brightness = brightness.clamp01()
+
+        // Convert HSB to HSL.
+
+        let lightness = (2 - saturationHSB) * brightness / 2
+
+        let saturationHSL: CGFloat
+        if lightness == 0 {
+            saturationHSL = saturationHSB
+        } else if lightness == 1 {
+            saturationHSL = 0
+        } else if lightness < 0.5 {
+            saturationHSL = (saturationHSB * brightness / (lightness * 2)).clamp01()
+        } else {
+            saturationHSL = (saturationHSB * brightness / (2 - lightness * 2)).clamp01()
+        }
+
+        return CustomColorViewController.ColorSetting(hueAlpha: hue, saturationAlpha: saturationHSL)
+    }
+}
+
+// MARK: -
+
+extension CustomColorViewController.ColorSetting {
+    func asOWSColor(hueSpectrum: HSLSpectrum) -> OWSColor {
+        let hueValue = hueSpectrum.value(forAlpha: self.hueAlpha)
+        let saturationSpectrum = CustomColorViewController.buildSaturationSpectrum(referenceValue: hueValue)
+        let saturationValue = saturationSpectrum.value(forAlpha: self.saturationAlpha)
+        return saturationValue.asOWSColor
     }
 }

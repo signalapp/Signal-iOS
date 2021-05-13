@@ -14,6 +14,8 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
     }
     private let mode: Mode
 
+    private let gradientLayer = CAGradientLayer()
+
     public init(chatColorValue: ChatColorValue, mode: Mode) {
         self.chatColorValue = chatColorValue
         self.mode = mode
@@ -28,6 +30,7 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
 
         addLayoutBlock { view in
             guard let view = view as? ChatColorSwatchView else { return }
+            view.gradientLayer.frame = view.bounds
             view.configure()
         }
     }
@@ -67,12 +70,66 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
             self.clipsToBounds = false
         }
 
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
         switch appearance {
         case .solidColor(let color):
-            backgroundColor = color.uiColor
+            backgroundColor = color.asUIColor
+            gradientLayer.removeFromSuperlayer()
         case .gradient(let color1, let color2, let angleRadians):
             // TODO: Support gradients.
-            backgroundColor = color1.uiColor
+            backgroundColor = color1.asUIColor
+            gradientLayer.colors = [
+                color1.asUIColor.cgColor,
+                color2.asUIColor.cgColor
+            ]
+            /* The start and end points of the gradient when drawn into the layer's
+             * coordinate space. The start point corresponds to the first gradient
+             * stop, the end point to the last gradient stop. Both points are
+             * defined in a unit coordinate space that is then mapped to the
+             * layer's bounds rectangle when drawn. (I.e. [0,0] is the bottom-left
+             * corner of the layer, [1,1] is the top-right corner.) The default values
+             * are [.5,0] and [.5,1] respectively. Both are animatable. */
+            let unitCenter = CGPoint(x: 0.5, y: 0.5)
+            let startVector = CGPoint(x: +sin(angleRadians), y: +cos(angleRadians))
+            let startScale: CGFloat
+            switch mode {
+            case .circle:
+                // In circle mode, we want the startPoint and endPoint to reside
+                // on the circumference of the circle.
+                startScale = 0.5
+            case .rectangle:
+                // In rectangle mode, we want the startPoint and endPoint to reside
+                // on the edge of the unit square, and thus edge of the rectangle.
+                // We therefore scale such that longer axis is a half unit.
+                let startSquareScale: CGFloat = max(abs(startVector.x), abs(startVector.y))
+//                Logger.verbose("---- startSquareScale \(startSquareScale), startVector.x: \(abs(startVector.x)), startVector.y: \(abs(startVector.y))")
+                startScale = 0.5 / startSquareScale
+            }
+            // UIKit uses an upper-left origin.
+            // Core Graphics uses a lower-left origin.
+            func convertToCoreGraphicsUnit(point: CGPoint) -> CGPoint {
+                CGPoint(x: point.x.clamp01(), y: (1 - point.y).clamp01())
+            }
+            gradientLayer.startPoint = convertToCoreGraphicsUnit(point: unitCenter + startVector * +startScale)
+            // The endpoint should be "opposite" the start point, on the opposite edge of the view.
+            gradientLayer.endPoint = convertToCoreGraphicsUnit(point: unitCenter + startVector * -startScale)
+
+//            Logger.verbose("---- angleRadians \(angleRadians)")
+//            Logger.verbose("---- startVector \(startVector)")
+//            Logger.verbose("---- startScale \(startScale)")
+//            Logger.verbose("---- startPoint \(gradientLayer.startPoint)")
+//            Logger.verbose("---- endPoint \(gradientLayer.endPoint)")
+//
+            if gradientLayer.superlayer != self.layer {
+                gradientLayer.removeFromSuperlayer()
+                layer.addSublayer(gradientLayer)
+            }
+
+            gradientLayer.frame = self.bounds
         }
+
+        CATransaction.commit()
     }
 }

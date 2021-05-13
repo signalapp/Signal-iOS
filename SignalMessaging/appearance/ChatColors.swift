@@ -19,7 +19,7 @@ public struct OWSColor: Equatable, Codable {
         self.blue = blue.clamp01()
     }
 
-    public var uiColor: UIColor {
+    public var asUIColor: UIColor {
         UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
 
@@ -32,6 +32,9 @@ public struct OWSColor: Equatable, Codable {
 
 public enum ChatColorAppearance: Equatable, Codable {
     case solidColor(color: OWSColor)
+    // If angleRadians = 0, gradientColor1 is N.
+    // If angleRadians = PI / 2, gradientColor1 is E.
+    // etc.
     case gradient(gradientColor1: OWSColor,
                   gradientColor2: OWSColor,
                   angleRadians: CGFloat)
@@ -237,7 +240,7 @@ public class ChatColors: NSObject, Dependencies {
     }
     public static var allValuesSorted: [ChatColorValue] { Self.chatColors.allValuesSorted }
 
-    private static let noWallpaperAutoChatColor: ChatColorValue = {
+    public static let noWallpaperAutoChatColor: ChatColorValue = {
         // UIColor.ows_accentBlue = 0x2C6BED
         let color = OWSColor(red: CGFloat(0x2C) / CGFloat(0xff),
                              green: CGFloat(0x6B) / CGFloat(0xff),
@@ -352,6 +355,10 @@ public class ChatColors: NSObject, Dependencies {
         }
     }
 
+    public static func resetAllSettings(transaction: SDSAnyWriteTransaction) {
+        Self.chatColorSettingStore.removeAll(transaction: transaction)
+    }
+
     // MARK: -
 
     private static var builtInValues: [ChatColorValue] {
@@ -372,10 +379,25 @@ public class ChatColors: NSObject, Dependencies {
                            appearance: .solidColor(color: OWSColor(red: 0, green: 1, blue: 0.5)),
                            creationTimestamp: 4),
             ChatColorValue(id: "e",
-                           appearance: .gradient(gradientColor1: OWSColor(red: 0, green: 1, blue: 0),
-                                                 gradientColor2: OWSColor(red: 0, green: 1, blue: 0.5),
+                           appearance: .gradient(gradientColor1: OWSColor(red: 1, green: 0, blue: 0),
+                                                 gradientColor2: OWSColor(red: 0, green: 1, blue: 0),
                                                  angleRadians: CGFloat.pi * 0.25),
                            creationTimestamp: 5)
         ]
+    }
+}
+
+// MARK: -
+
+public extension UIColor {
+    var asOWSColor: OWSColor {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        return OWSColor(red: red.clamp01(), green: green.clamp01(), blue: blue.clamp01())
     }
 }
