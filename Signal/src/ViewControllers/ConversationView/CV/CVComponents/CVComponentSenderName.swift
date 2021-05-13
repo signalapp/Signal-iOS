@@ -43,8 +43,9 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         innerStack.reset()
 
         if isBorderlessWithWallpaper {
+            owsAssertDebug(isIncoming)
             let backgroundView = OWSLayerView.pillView()
-            backgroundView.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            backgroundView.backgroundColor = itemModel.conversationStyle.bubbleColorIncoming
             innerStack.addSubviewToFillSuperviewEdges(backgroundView)
         }
 

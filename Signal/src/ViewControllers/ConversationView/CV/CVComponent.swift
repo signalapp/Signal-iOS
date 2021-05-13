@@ -245,7 +245,7 @@ extension CVComponentBase: CVNode {
     var bubbleColorForMessage: UIColor {
         guard let message = interaction as? TSMessage else {
             owsFailDebug("Invalid interaction.")
-            return conversationStyle.bubbleColor(isIncoming: true)
+            return conversationStyle.bubbleColorIncoming
         }
         return conversationStyle.bubbleColor(message: message)
     }

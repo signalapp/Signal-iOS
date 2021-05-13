@@ -214,6 +214,9 @@ public class ConversationStyle: NSObject {
         }
     }
 
+    @objc
+    public var bubbleColorIncoming: UIColor { defaultBubbleColorIncoming }
+
     // TODO: Rework.
     @objc
     public let bubbleColorOutgoingFailed = UIColor.ows_accentBlue

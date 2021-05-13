@@ -64,7 +64,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         }
 
         let bubbleView = componentView.bubbleView
-        bubbleView.fillColor = conversationStyle.bubbleColor(isIncoming: true)
+        bubbleView.fillColor = conversationStyle.bubbleColorIncoming
         innerStackView.addSubviewToFillSuperviewEdges(bubbleView)
 
         let typingIndicatorView = componentView.typingIndicatorView

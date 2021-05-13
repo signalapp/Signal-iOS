@@ -410,7 +410,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             sendFailureBadge.contentMode = .center
             sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: badgeConfig.color)
             if conversationStyle.hasWallpaper {
-                sendFailureBadge.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+                sendFailureBadge.backgroundColor = conversationStyle.bubbleColorIncoming
                 sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
                 sendFailureBadge.clipsToBounds = true
             }
@@ -451,7 +451,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         let swipeToReplySize: CGFloat
         if conversationStyle.hasWallpaper {
-            swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+            swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColorIncoming
             swipeToReplyIconView.clipsToBounds = true
             swipeToReplySize = 34
             swipeToReplyIconView.setTemplateImageName("reply-outline-20",
