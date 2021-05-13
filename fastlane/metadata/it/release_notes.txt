@@ -1,4 +1,4 @@
-• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
-• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
+• Le note vocali hanno ricevuto una nuova mano di vernice. I messaggi consecutivi ora vengono riprodotti insieme e se qualcosa interrompe la registrazione (come ammirare il nostro nuovo aspetto), il tuo messaggio sarà perfettamente conservato nel nostro nuovo stato di bozza (fiu!).
+• Lasciar andare può essere difficile, ma il nostro nuovo timer a scomparsa personalizzato può aiutarti a trovare un po' più di tempo per elaborare quei messaggi fugaci prima che spariscano per sempre.
 
 Interessato ad aiutare a migliorare Signal? Stiamo assumendo. Visita https://signal.org/workworkwork per saperne di più.

@@ -1,4 +1,4 @@
-• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
-• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
+•語音筆記已塗上一層新鮮的油漆。 連續的訊息現在可以一起播放，如果某些內容中斷了你的錄製（例如欣賞我們的新外觀），你的訊息將被完全保留在我們的新草稿狀態（呼！）中。
+•放手可能很難，但是我們新的自定義消毀計時器可以幫助你找到更多時間來處理那些短暫的訊息，直到永遠消失。
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

@@ -1,4 +1,4 @@
-• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
-• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
+• Achtereenvolgende audioberichten spelen vanaf nu acher elkaar af zonder dat je iets hoeft te doen. Vanaf nu blijft ook je audio-opname bewaard als conceptbericht als tijdens het opnemen de opname wordt onderbroken.
+• Iets uit het verleden los laten kan moeilijk zijn, maar met een nieuwe zelf in te stellen tijdspanne voor verlopende berichten heb je meer tijd om afscheid te nemen alvorens een bericht voorgoed wordt gewist.
 
 Ben je geïnteresseerd in helpen om Signal te verbeteren? We huren mensen. Bezoek https://signal.org/workworkwork om hier meer over te lezen.

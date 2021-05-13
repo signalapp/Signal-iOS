@@ -479,7 +479,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Galw";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Hoffech chi alw %@?>";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Hoffech chi alw %@?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Galw?";
@@ -1439,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Gwall Gweinydd. Rhowch gynnig arall arni nes ymlaen.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Mae'r gweinydd angen gwirio defnyddiwr cyn anfon y neges.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Digwyddodd gwall anhysbys.";
@@ -2846,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Methwyd";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Oedwyd anfon";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "`Darllenwyd gan";
@@ -2999,10 +2999,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Wedi'i hanfon yn rhannol, tapiwch am fanylion";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "Oedwyd anfon";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Oedwyd";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Darllen";
@@ -3395,7 +3395,7 @@
 "OPEN_SETTINGS_BUTTON" = "Gosodiadau";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Analluogodd %@ negeseuon byrhoedlog.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Diffoddodd %@ negeseuon byrhoedlog.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Gosododd %@ cyfnod negeseuon byrhoedlog i %@.";
@@ -5459,25 +5459,25 @@
 "SOUNDS_NONE" = "Dim";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Cwblhawyd gwirio.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Os byddwch yn dewis hepgor y gwiriad, efallai byddwch yn methu negeseuon gan bobl eraill ac efallai bydd eich negeseuon chi yn methu ag anfon.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Parhau Heb Wirio?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Er mwyn helpu i atal sothach ar Signal, cwblhewch y gwiriad.\n\nAr ôl gwirio, gallwch barhau i sgwrsio. Bydd unrhyw negeseuon sydd wedi'u oedi yn cael eu hanfon yn awtomatig.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Gwiriwch i Barhau Sgwrsio";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Hepgor Gwiriad";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Cwblhau gwirio";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Bydd grwpiau presennol yn derbyn y nodweddion rhain yn awtomatig yn yr wythnosau sydd i ddod.";
@@ -5729,7 +5729,7 @@
 "UNKNOWN_USER" = "Anhysbys";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Analluogwyd negeseuon byrhoedlog.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Diffoddwyd negeseuon byrhoedlog.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Gosodwyd cyfnod negeseuon byrhoedlog i %@.";
@@ -5951,7 +5951,7 @@
 "YOU_DELETED_THIS_MESSAGE" = "Chi wnaeth ddileu'r neges hon.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Rydych wedi analluogi negeseuon byrhoedlog.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Diffoddasoch negeseuon byrhoedlog.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Mae'n rhaid i chi orffen gosod eich cyfrif cyn parhau.";

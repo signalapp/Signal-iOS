@@ -4847,7 +4847,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "خبر بده هنگامی که...";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "اعلانات";

@@ -1,4 +1,4 @@
-• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
-• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
+• Hlasové poznámky dostaly nový nátěr. Po sobě jdoucí zprávy se nyní přehrávají společně, a pokud vás při nahrávání něco vyruší (například obdivování našeho nového vzhledu), vaše zpráva bude dokonale zachována v novém stavu návrhu (uff!).
+• Odpustit si může být těžké, ale náš nový vlastní časovač zmizení vám pomůže najít trochu více času na zpracování prchavých zpráv, než navždy zmizí.
 
 Chcete pomoci vylepšit Signal? Nabíráme. Další informace najdete na adrese https://signal.org/workworkwork.

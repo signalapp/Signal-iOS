@@ -2999,7 +2999,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Osittain lähetetty, napauta nähdäksesi lisätietoja";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "Lähettäminen pysäytetty";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Paused";

@@ -2915,7 +2915,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Usunąć i opuścić grupę? ";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Starannie przeglądaj prośby o kontakt. Signal znalazł inny kontakt z tym samym imieniem.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Uważnie przeglądaj prośby o kontakt. Signal znalazł inny kontakt z tym samym imieniem.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Twój kontakt";
@@ -3260,10 +3260,10 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Pomiń i utwórz nowy PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Jeśli nie pamiętasz swojego PINu, możesz utworzyć nowy. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w Twoim profilu.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Jeśli nie pamiętasz swojego PIN-u, możesz utworzyć nowy. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w Twoim profilu.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Pominąć wpisywanie PINu?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Pominąć wpisywanie PIN-u?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Dodaj odrobinę człowieczeństwa do swoich wiadomości";
@@ -3326,7 +3326,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Błędny numer telefonu. Podaj prawidłowy numer telefonu, aby zarejestrować.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Skończyły Ci się próby podania PINu, ale wciąż możesz uzyskać dostęp do swojego konta Signal, tworząc nowy kod PIN. Dla Twojej prywatności i bezpieczeństwa, Twoje konto zostanie przywrócone bez informacji zapisanych w profilu i ustawień.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Skończyły Ci się próby podania PIN-u, ale wciąż możesz uzyskać dostęp do swojego konta Signal, tworząc nowy kod PIN. Dla Twojej prywatności i bezpieczeństwa, Twoje konto zostanie przywrócone bez informacji zapisanych w profilu i ustawień.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Dowiedz się więcej o kodach PIN";
@@ -3359,7 +3359,7 @@
 "ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Imię (wymagane)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Regulamin & Polityka Prywatności";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Regulamin i Polityka prywatności";
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Weź prywatność w swoje ręce.\nBądź sobą w każdej wiadomości.";
@@ -3818,10 +3818,10 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Uwaga";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Twój PIN nie został zapisany. Później poprosimy Cię o utworzenie PINu.";
+"PIN_CREATION_ERROR_MESSAGE" = "Twój PIN nie został zapisany. Później poprosimy Cię o utworzenie PIN-u.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "Utworzenie PINu nie powiodło się";
+"PIN_CREATION_ERROR_TITLE" = "Utworzenie PIN-u nie powiodło się";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane i tylko Ty masz do nich dostęp. Twój profil, ustawienia i kontakty zostaną przywrócone, gdy ponownie zainstalujesz Signal. Nie będziesz potrzebować swojego kodu PIN do otwarcia aplikacji.";
@@ -3839,7 +3839,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Ponownie wpisz PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Tworzenie PINu…";
+"PIN_CREATION_PIN_PROGRESS" = "Tworzenie PIN-u…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Dopóki to urządzenie jest zarejestrowane, możesz zmienić swój PIN.";
@@ -3866,10 +3866,10 @@
 "PIN_CREATION_WEAK_ERROR" = "Wybierz silniejszy PIN";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Nie udało się wyłączyć Twojego PINu. Później poprosimy Cię o jego wyłączenie.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Nie udało się wyłączyć Twojego PIN-u. Później poprosimy Cię o jego wyłączenie.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "Wyłączenie PINu nie powiodło się";
+"PIN_DISABLE_ERROR_TITLE" = "Wyłączenie PIN-u nie powiodło się";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Aby pomóc Ci zapamiętać Twój PIN, będziemy co jakiś czas o niego pytać. Z czasem pytania będą coraz rzadsze.";
@@ -3920,7 +3920,7 @@
 "PINS_MEGAPHONE_BODY" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Przypomnimy Ci o tym później. Utworzenie PINu stanie się obowiązkowe za %ld dni.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Przypomnimy Ci o tym później. Utworzenie PIN-u stanie się obowiązkowe za %ld dni.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Utwórz PIN";
@@ -4157,19 +4157,19 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Nie można wybrać użytkownika.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "Nie pamiętam PINu.";
+"REGISTER_2FA_FORGOT_PIN" = "Nie pamiętam PIN-u.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Potrzebujesz pomocy?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Twój PIN to 4+ znakowy, utworzony przez Ciebie kod, który może być liczbowy lub alfanumeryczny. Jeśli nie pamiętasz swojego PINu, będziesz musiał(a) zaczekać 7 dni, aby ponownie zarejestrować konto.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Twój PIN to 4+ znakowy, utworzony przez Ciebie kod, który może być liczbowy lub alfanumeryczny. Jeśli nie pamiętasz swojego PIN-u, będziesz musiał(a) zaczekać 7 dni, aby ponownie zarejestrować konto.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Twój PIN to 4+ znakowy, utworzony przez Ciebie kod, który może być liczbowy lub alfanumeryczny. Jeśli nie pamiętasz swojego PINu, możesz utworzyć nowy. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Twój PIN to składający się z 4 lub więcej znaków, utworzony przez Ciebie kod, który może być liczbowy lub alfanumeryczny. Jeśli nie pamiętasz swojego PIN-u, możesz utworzyć nowy. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Twój PIN to 4+ cyfrowy, utworzony przez Ciebie, kod liczbowy, Jeśli nie pamiętasz swojego PINu, będziesz musiał(a) zaczekać 7 dni, aby ponownie zarejestrować konto.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Twój PIN to składający się z 4 lub więcej cyfr, utworzony przez Ciebie, kod liczbowy, Jeśli nie pamiętasz swojego PIN-u, będziesz musiał(a) zaczekać 7 dni, aby ponownie zarejestrować konto.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Pozostało Ci %lu prób(y). Jeśli się skończą, możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.";
@@ -4187,7 +4187,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Nieprawidłowy kod PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Weryfikowanie PINu…";
+"REGISTER_2FA_PIN_PROGRESS" = "Weryfikowanie PIN-u…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Wyślij";
@@ -4661,7 +4661,7 @@
 "SETTINGS_ADVANCED_PIN_SETTINGS" = "Zaawansowane ustawienia PIN";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Zaawansowane ustawienia PIN";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Zaawansowane ustawienia PIN-u";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Wyłącz PIN";
@@ -5264,16 +5264,16 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Wyłącz przypomnienia";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Upewnij się, że zapamiętałeś(aś) lub zapisałeś(aś) swój PIN w bezpiecznym miejscu, gdyż nie da się go odzyskać. Jeśli zapomnisz swojego PINu, możesz stracić dane przy kolejnej rejestracji swojego konta Signal.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Upewnij się, że zapamiętałeś(aś) lub zapisałeś(aś) swój PIN w bezpiecznym miejscu, gdyż nie da się go odzyskać. Jeśli zapomnisz swojego PIN-u, możesz stracić dane przy kolejnej rejestracji swojego konta Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Potwierdź swój PIN Signal";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Przypomnienia PINu";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Przypomnienia PIN-u";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane i tylko Ty masz do nich dostęp. Twojego PINu nie da się odzyskać. Twój profil, ustawienia i kontakty zostaną przywrócone, gdy ponownie zainstalujesz Signal.";
+"SETTINGS_PINS_FOOTER" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane i tylko Ty masz do nich dostęp. Twojego PIN-u nie da się odzyskać. Twój profil, ustawienia i kontakty zostaną przywrócone, gdy ponownie zainstalujesz Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Zmień swój PIN";
@@ -5309,7 +5309,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Włącz";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jeśli przy ponownej rejestracji w Signal nie będziesz pamiętać swojego PINu Signal, zostaniesz odcięty(a) od swojego konta na 7 dni.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jeśli przy ponownej rejestracji w Signal nie będziesz pamiętać swojego PIN-u Signal, zostaniesz odcięty(a) od swojego konta na 7 dni.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Włączyć blokadę rejestracji?";
@@ -5363,7 +5363,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blokada rejestracji";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Wymagaj Twojego PINu Signal, aby ponownie zarejestrować Twór numer telefonu w Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Wymagaj Twojego PIN-u Signal, aby ponownie zarejestrować Twór numer telefonu w Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Wskaźniki pisania";
@@ -5372,7 +5372,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Ukryty nadawca";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Pokaż ikonę statusu";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Pokaż ikonę";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Zezwól wszystkim";

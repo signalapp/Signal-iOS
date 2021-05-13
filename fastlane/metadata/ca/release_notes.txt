@@ -1,4 +1,4 @@
-• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
-• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
+• Les notes de veu han rebut una nova capa de pintura. Ara els missatges consecutius es reprodueixen junts i si alguna cosa interromp la gravació (com ara admirar el nostre nou aspecte), el vostre missatge es conservarà perfectament en el nostre nou estat d'esborrany (uf!).
+• Deixar-ho estar pot ser difícil, però el nostre temporitzador nou personalitzat de desaparició us pot ajudar a trobar una mica més de temps per processar aquests missatges fugitius abans de desaparèixer definitivament.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
