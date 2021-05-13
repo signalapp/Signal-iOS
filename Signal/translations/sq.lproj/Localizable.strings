@@ -1439,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Gabim Shërbyesi. Ju lutemi, riprovoni më vonë.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Shërbyesi lyp verifikim përdoruesi, para dërgimit të mesazhit.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ndodhi një gabim i panjohur.";
@@ -2846,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Të dështuar";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Dërgimi u ndal";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lexuar nga";
@@ -3002,7 +3002,7 @@
 "MESSAGE_STATUS_PENDING" = "Dërgimi i ndal";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Ndalur";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Të lexuar";
@@ -3422,7 +3422,7 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Të hidhet poshtë kjo Kërkesë?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Tarifë Pastrimi Monedhash";
 
 /* Error indicating that a payment request could not be cancelled. */
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Kërkesa s’u anulua dot.";
@@ -5048,7 +5048,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Hollësi transaksioni, përfshi llogari pagesash dhe kohë transaksioni, janë pjesë e MobileCoin Ledger.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Një “tarifë pastrimi monedhash” aplikohet kur monedhat në pronësinë tuaj s’mund të ndërthuren për të plotësuar një transaksion. Pastrimi do t’ju lejojë të vazhdoni dërgim pagesash.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "S’keni MOB të majftueshëm për të plotësuar këtë pagesë. Depozita juaj aktuale është %@.";
@@ -5459,22 +5459,22 @@
 "SOUNDS_NONE" = "Asnjë";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verifikim i plotë.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Nëse zgjidhni të anashkalohet verifikimi, mund të humbni mesazhe nga persona të tjerë dhe mund të dështojë dërgimi i mesazheve tuaj.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Të Vazhdohet Pa Verifikim?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Që të ndihmoni të parandalohen mesazhe të padëshiruar në Signal, ju lutemi, plotësoni verifikimin.\n\nPas verifikimit, mund të vazhdoni me mesazhet. Çfarëdo mesazhesh të ndalur do të dërgohen automatikisht.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Që të Vazhdohet Me Mesazhet, Verifikojeni";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Anashkaloje Verifikimin";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Plotësoni verifikimin";

@@ -1,4 +1,4 @@
-• Voice notes have been given a fresh coat of paint. Consecutive messages now play together and if something interrupts your recording (like admiring our new looks), your message will be perfectly preserved in our new draft state (phew!).
-• Letting go can be hard, but our new custom disappearing timer can help you find a little more time to process those fleeting messages before they're gone forever.
+• Verbesserungen bei Sprachnachrichten. Aufeinanderfolgende Nachrichten werden jetzt zusammen abgespielt. Wenn du deine Aufnahme unterbrichst, bleibt die Nachricht in unserem neuen Entwurfszustand erhalten. 
+• Neue Option für benutzerdefinierte Zeiten bei »Verschwindenden Nachrichten«.
 
 Möchtest du zur Verbesserung von Signal beitragen? Wir stellen ein. Besuche https://signal.org/workworkwork um mehr zu erfahren.

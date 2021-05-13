@@ -1271,34 +1271,34 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Skilaboð í þessu samtali hverfa eftir %@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Sérsniðinn tími";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "daga";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Þegar þetta er virkt, munu ný send og móttekin skilaboð í þessum hópi hverfa eftir að þau hafa verið skoðuð.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Núna hverfa skilaboð eftir %@.";
 
 /* The unit for a number of hours */
-"DISAPPEARING_MESSAGES_HOURS" = "hours";
+"DISAPPEARING_MESSAGES_HOURS" = "klukkustundir";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Stillingar sjálfeyðandi skilaboða";
 
 /* The unit for a number of minutes */
-"DISAPPEARING_MESSAGES_MINUTES" = "minutes";
+"DISAPPEARING_MESSAGES_MINUTES" = "mínútur";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "sekúndur";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Þegar þetta er virkt, munu ný send og móttekin skilaboð í nýjum samtölum sem þú byrjar hverfa eftir að þau hafa verið skoðuð.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "vikur";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Hafna";
@@ -1439,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Villa í netþjóni. Reyndu aftur síðar.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Netþjónninn krefst sannvottunar áður en skilaboðin eru send.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Óþekkt villa kom upp.";
@@ -2588,7 +2588,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Límmiðar";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Tvípikkaðu og haltu til að taka upp. Slepptu til að senda eða dragðu til vinstri til að hætta við. Tvípikkaðu og dragðu upp til að læsa upptöku.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Talskilaboð";
@@ -2846,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Mistókst";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending í bið";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lesið af";
@@ -2864,7 +2864,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Sendi inn";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Skoðað af";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Móttekið";
@@ -2999,10 +2999,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Sent að hluta, smelltu fyrir nánari upplýsingar";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "Sending í bið";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Í bið";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Lesa";
@@ -4742,7 +4742,7 @@
 "SETTINGS_DATA_TITLE" = "Gagnanotkun";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Sjálfgefinn niðurteljari fyrir nýtt spjall";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Eyða notandaaðgangi";
@@ -4772,7 +4772,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Sjálfeyðandi skilaboð";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Stilltu sjálfgefna niðurtalningu sjálfeyðandi skilaboða í öllum nýjum samtölum sem þú byrjar. ";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Gefa til Signal";
@@ -5459,25 +5459,25 @@
 "SOUNDS_NONE" = "Ekkert";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Sannvottun lokið.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Ef þú velur að sleppa sannvottun, gætirðu misst af skilaboðum frá öðrum og skilaboðin þín gætu misfarist.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Halda áfram án þess að sannreyna?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Til að koma í veg fyrir ruslsendingar í Signal skaltu ljúka sannvottun.\n\nEftir sannvottun geturðu haldið áfram samskiptum. Öll skilaboð sem bíða verða þá sjálfkrafa send.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Sannreyna til að halda áfram samskiptum";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Sleppa sannvottun";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Ljúka sannvottun";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Fyrirliggjandi hópar munu sjálfkrafa fá þessa eiginleika á næstu vikum.";
@@ -5603,7 +5603,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Sannreyna";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Niðurtalning sjálfeyðandi skilaboða er tímastillt á %@ þegar þú sendir viðkomandi aðila skilaboð.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Engir sameiginlegir hópar. Yfirfarðu beiðnir vandlega.";
@@ -5888,7 +5888,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Talskilaboð";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Ýttu og haltu til að taka upp.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Ljúktu uppsetningunni á Signal Desktop.";

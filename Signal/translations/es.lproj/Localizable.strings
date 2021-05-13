@@ -434,7 +434,7 @@
 "BUTTON_SELECT" = "Seleccionar";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Establecer";
+"BUTTON_SET" = "Fijar";
 
 /* Label for the 'start' button. */
 "BUTTON_START" = "Comenzar";
@@ -1439,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Fallo en el servidor. Por favor, inténtalo más tarde.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "El servidor necesita tu verificación antes de enviar el mensaje.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ocurrió un fallo desconocido.";
@@ -2846,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Fallo";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Envío pausado";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Leído por";
@@ -2999,10 +2999,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "No enviado a tod@s, toca para ver más";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "Envío pausado";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Pausado";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Leído";
@@ -4625,7 +4625,7 @@
 "SET_WALLPAPER_PRESETS" = "Incluidos";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Establecer fondo de chat";
+"SET_WALLPAPER_TITLE" = "Fijar fondo de chat";
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Cuenta";
@@ -5459,25 +5459,25 @@
 "SOUNDS_NONE" = "Sin sonido";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verificación completada.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Si decides omitir la verificación, podrás no recibir mensajes de otras personas y el envío de tus mensajes fallará.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "¿Continuar sin verificar?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Para prevenir spam en Signal, completa por favor la verificación\n\nTras la verificación, podrás seguir enviando mensajes. Todos los mensajes pausados se enviarán.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Verificar para continuar chateando";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Omitir verificación";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Completar verificación";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Los grupos existentes se actualizarán automáticamente en unas semanas.";
@@ -5888,7 +5888,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Nota de voz";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Toca y mantén pulsado para grabar.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio Signal Desktop.";
@@ -5906,10 +5906,10 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Desliza horizontalmente para ver más.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Establecer para todos los chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Fijar para todos los chats.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Establece el fondo para %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Fijar el fondo para %@.";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Vista previa";
@@ -5942,7 +5942,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "¿Deseas eliminar todos los fondos de chat, incluidos los que has seleccionado para chats individuales?";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Establecer fondo de chat";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Fijar fondo de chat";
 
 /* Title for the wallpaper settings view. */
 "WALLPAPER_SETTINGS_TITLE" = "Fondo del chat";

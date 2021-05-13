@@ -1271,34 +1271,34 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "بۇ سۆھبەتتىكى ئۇچۇرلار كۆرۈنۈپ %@ دىن كېيىن غايىب بولىدۇ.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "ئىختىيارىچە ۋاقىت خاتىرىلىگۈچ";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "كۈن";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "قوزغىتىلغاندا، بۇ سۆھبەتتە ئەۋەتىلگەن ۋە تاپشۇرۇۋالغان يېڭى ئۇچۇرلار كۆرۈنگەندىن كېيىن غايىب بولىدۇ.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "نۆۋەتتىكى ئۇچۇرلار %@ دىن كېيىن غايىب بولىدۇ.";
 
 /* The unit for a number of hours */
-"DISAPPEARING_MESSAGES_HOURS" = "hours";
+"DISAPPEARING_MESSAGES_HOURS" = "سائەت";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "غايىب ئۇچۇرلار تەڭشىكى";
 
 /* The unit for a number of minutes */
-"DISAPPEARING_MESSAGES_MINUTES" = "minutes";
+"DISAPPEARING_MESSAGES_MINUTES" = "مىنۇت";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "سېكۇنت";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "قوزغىتىلغاندا، سىز باشلىغان يېڭى سۆھبەتتە ئەۋەتىلگەن ۋە تاپشۇرۇۋالغان يېڭى ئۇچۇرلار ئۇلارغا كۆرۈنگەندىن كېيىن غايىب بولىدۇ.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "ھەپتە";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "تارقىتىۋېتىش";
@@ -1439,7 +1439,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "مۇلازىمېتىر خاتالىقى. سەل تۇرۇپ قايتا سىناڭ.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "ئۇچۇر يوللاشتىن ئىلگىرى مۇلازىمېتىر ئىشلەتكۈچىنىڭ دەلىللىشىنى تەلەپ قىلىدۇ.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "يوچۇن خاتالىققا يولۇقتى.";
@@ -2588,7 +2588,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "چاپلاقلار";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "قوش چېكىپ بېسىپ تۇرۇلسا خاتىرىلەيدۇ. قويۇۋېتىلسە يوللايدۇ ياكى سولغا سۈرۈلسە ۋاز كېچىدۇ. قوش چېكىلسە ياكى ئۈستىگە سۈرۈلسە خاتىرىلەشنى قۇلۇپلايدۇ.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "ئاۋازلىق ئۇچۇر";
@@ -2846,7 +2846,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "مەغلۇب بولدى";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "يوللاش ۋاقىتلىق توختىتىلدى";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "ئوقۇغۇچى";
@@ -2864,7 +2864,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "يۈكلىنىۋاتىدۇ";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "كۆرگۈچى";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "تاپشۇرۇۋالغان";
@@ -3002,7 +3002,7 @@
 "MESSAGE_STATUS_PENDING" = "يوللاش ۋاقىتلىق توختىتىلدى";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "ۋاقىتلىق توختىتىلدى";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "ئوقۇش";
@@ -4742,7 +4742,7 @@
 "SETTINGS_DATA_TITLE" = "مەلۇمات ئىشلىتىلىشى";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "يېڭى سۆھبەتنىڭ كۆڭۈلدىكى ۋاقىت خاتىرىلىگۈچىسى";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ھېساباتنى ئۆچۈر";
