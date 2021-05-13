@@ -155,7 +155,7 @@ extension OpenGroupSuggestionGrid {
             stackView.spacing = Values.smallSpacing
             snContentView.addSubview(stackView)
             stackView.center(.vertical, in: snContentView)
-            stackView.pin(.leading, to: .leading, of: snContentView, withInset: Values.smallSpacing)
+            stackView.pin(.leading, to: .leading, of: snContentView, withInset: 4)
             snContentView.trailingAnchor.constraint(greaterThanOrEqualTo: stackView.trailingAnchor, constant: Values.smallSpacing).isActive = true
             snContentView.pin(to: self, withInset: Cell.contentViewInset)
         }
