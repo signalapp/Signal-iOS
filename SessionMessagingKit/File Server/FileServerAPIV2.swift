@@ -88,8 +88,9 @@ public final class FileServerAPIV2 : NSObject {
     }
     
     @objc(download:)
-    public static func objc_download(file: UInt64) -> AnyPromise {
-        return AnyPromise.from(download(file))
+    public static func objc_download(file: String) -> AnyPromise {
+        guard let id = UInt64(file) else { return AnyPromise.from(Promise<Data>(error: Error.invalidURL)) }
+        return AnyPromise.from(download(id))
     }
     
     public static func download(_ file: UInt64) -> Promise<Data> {

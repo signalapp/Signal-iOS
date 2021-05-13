@@ -807,7 +807,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         
         AnyPromise *promise;
         if ([profilePictureURL containsString:SNFileServerAPIV2.server]) {
-            uint64_t *file = (uint64_t)[[profilePictureURL lastPathComponent] intValue];
+            NSString *file = [profilePictureURL lastPathComponent];
             promise = [SNFileServerAPIV2 download:file];
         } else {
             promise = [SNFileServerAPI downloadAttachmentFrom:profilePictureURL];
