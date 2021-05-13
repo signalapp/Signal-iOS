@@ -19,23 +19,23 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: ChatColors.defaultChatColorDidChange,
+            name: ChatColors.defaultChatColorSettingDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(chatColorDidChange),
-            name: ChatColors.chatColorDidChange,
+            selector: #selector(chatColorSettingDidChange),
+            name: ChatColors.chatColorSettingDidChange,
             object: nil
         )
     }
 
     @objc
-    private func chatColorDidChange(_ notification: NSNotification) {
+    private func chatColorSettingDidChange(_ notification: NSNotification) {
         guard let thread = self.thread else {
             return
         }
-        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorDidChangeThreadUniqueIdKey] as? String else {
+        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorSettingDidChangeThreadUniqueIdKey] as? String else {
             owsFailDebug("Missing threadUniqueId.")
             return
         }
@@ -74,38 +74,40 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
         contents.addSection(previewSection)
 
-        let chatColorSection = OWSTableSection()
-        chatColorSection.customHeaderHeight = 14
+        if FeatureFlags.chatColors {
+            let chatColorSection = OWSTableSection()
+            chatColorSection.customHeaderHeight = 14
 
-        let defaultChatColor = Self.databaseStorage.read { transaction in
-            ChatColors.defaultChatColorForRendering(transaction: transaction)
+            let defaultChatColor = Self.databaseStorage.read { transaction in
+                ChatColors.defaultChatColorForRendering(transaction: transaction)
+            }
+            let defaultColorView = ChatColorSwatchView(chatColorValue: defaultChatColor,
+                                                       mode: .circle)
+            defaultColorView.autoSetDimensions(to: .square(16))
+            defaultColorView.setContentHuggingHigh()
+            defaultColorView.setCompressionResistanceHigh()
+            chatColorSection.add(.item(
+                name: NSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
+                                        comment: "Set chat color action in color and wallpaper settings view."),
+                accessoryType: .disclosureIndicator,
+                accessoryView: defaultColorView,
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
+            ) { [weak self] in
+                guard let self = self else { return }
+                let vc = ChatColorViewController(thread: self.thread)
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+
+            chatColorSection.add(OWSTableItem.actionItem(
+                name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLOR",
+                                        comment: "Reset chat color action in color and wallpaper settings view."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color")
+            ) { [weak self] in
+                self?.didPressResetChatColorWallpaper()
+            })
+
+            contents.addSection(chatColorSection)
         }
-        let defaultColorView = ChatColorSwatchView(chatColorValue: defaultChatColor,
-                                                    mode: .circle)
-        defaultColorView.autoSetDimensions(to: .square(16))
-        defaultColorView.setContentHuggingHigh()
-        defaultColorView.setCompressionResistanceHigh()
-        chatColorSection.add(.item(
-            name: NSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
-                                    comment: "Set chat color action in color and wallpaper settings view."),
-            accessoryType: .disclosureIndicator,
-            accessoryView: defaultColorView,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
-        ) { [weak self] in
-            guard let self = self else { return }
-            let vc = ChatColorViewController(thread: self.thread)
-            self.navigationController?.pushViewController(vc, animated: true)
-        })
-
-        chatColorSection.add(OWSTableItem.actionItem(
-            name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLOR",
-                                    comment: "Reset chat color action in color and wallpaper settings view."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color")
-        ) { [weak self] in
-            self?.didPressResetChatColorWallpaper()
-        })
-
-        contents.addSection(chatColorSection)
 
         let wallpaperSection = OWSTableSection()
         wallpaperSection.customHeaderHeight = 14
@@ -261,7 +263,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     func didPressResetChatColorWallpaper() {
         // TODO: Do we need confirm alert?
         databaseStorage.write { transaction in
-            ChatColors.setDefaultChatColor(nil, transaction: transaction)
+            ChatColors.setDefaultChatColorSetting(nil, transaction: transaction)
         }
         //        OWSActionSheets.showConfirmationAlert(
         //            title: NSLocalizedString(

@@ -20,6 +20,7 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) ContactsViewHelper *contactsViewHelperRef;
 @property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic) OWSOrphanDataCleaner *orphanDataCleanerRef;
+@property (nonatomic) ChatColors *chatColorsRef;
 
 @end
 
@@ -62,6 +63,7 @@ static Environment *sharedEnvironment = nil;
                   contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
        broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
                    orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
+                          chatColors:(ChatColors *)chatColors
 {
     self = [super init];
     if (!self) {
@@ -79,6 +81,7 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(contactsViewHelper);
     OWSAssertDebug(broadcastMediaMessageJobQueue);
     OWSAssertDebug(orphanDataCleaner);
+    OWSAssertDebug(chatColors);
 
     _audioSessionRef = audioSession;
     _incomingContactSyncJobQueueRef = incomingContactSyncJobQueue;
@@ -91,6 +94,7 @@ static Environment *sharedEnvironment = nil;
     _contactsViewHelperRef = contactsViewHelper;
     _broadcastMediaMessageJobQueueRef = broadcastMediaMessageJobQueue;
     _orphanDataCleanerRef = orphanDataCleaner;
+    _chatColorsRef = chatColors;
 
     OWSSingletonAssert();
 

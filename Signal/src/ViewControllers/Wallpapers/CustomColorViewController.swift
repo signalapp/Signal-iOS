@@ -8,16 +8,22 @@ public class CustomColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
+    public enum ValueMode {
+        case createNew
+        case editExisting(value: ChatColorValue)
+    }
+    private let valueMode: ValueMode
+
     private let completion: (ChatColorValue) -> Void
 
     private let modeControl = UISegmentedControl()
 
-    private enum Mode: Int {
+    private enum ValueType: Int {
         case solid = 0
         case gradient = 1
     }
 
-    private var mode: Mode = .solid {
+    private var valueType: ValueType = .solid {
         didSet {
             updateTableContents()
         }
@@ -31,42 +37,37 @@ public class CustomColorViewController: OWSTableViewController2 {
     private let saturationSlider: SpectrumSlider
     private var saturationAlpha: CGFloat { saturationSlider.value.clamp01() }
 
-    public init(thread: TSThread? = nil, completion: @escaping (ChatColorValue) -> Void) {
+    public init(thread: TSThread? = nil,
+                valueMode: ValueMode,
+                completion: @escaping (ChatColorValue) -> Void) {
         self.thread = thread
+        self.valueMode = valueMode
         self.completion = completion
 
-        self.hueSpectrum = Self.buildHueSpectrum()
-        hueSlider = SpectrumSlider(spectrum: hueSpectrum,
-                                   value: CustomColorViewController.randomAlphaValue())
+        let hueAlpha: CGFloat
+        let saturationAlpha: CGFloat
+        switch valueMode {
+        case .createNew:
+            hueAlpha = CustomColorViewController.randomAlphaValue()
+            saturationAlpha = CustomColorViewController.randomAlphaValue()
+        case .editExisting(let value):
+            // TODO: Apply value.
+            hueAlpha = CustomColorViewController.randomAlphaValue()
+            saturationAlpha = CustomColorViewController.randomAlphaValue()
+        }
 
-        let hueValue = self.hueSpectrum.value(forAlpha: hueSlider.value.clamp01())
+        self.hueSpectrum = Self.buildHueSpectrum()
+        hueSlider = SpectrumSlider(spectrum: hueSpectrum, value: hueAlpha)
+
+        let hueValue = self.hueSpectrum.value(forAlpha: hueAlpha)
         self.saturationSpectrum = Self.buildSaturationSpectrum(referenceValue: hueValue)
-        saturationSlider = SpectrumSlider(spectrum: saturationSpectrum,
-                                          value: CustomColorViewController.randomAlphaValue())
+        saturationSlider = SpectrumSlider(spectrum: saturationSpectrum, value: saturationAlpha)
 
         super.init()
 
         topHeader = OWSTableViewController2.buildTopHeader(forView: modeControl,
                                                            vMargin: 10)
 
-//        NotificationCenter.default.addObserver(
-//            self,
-//            selector: #selector(updateTableContents),
-//            name: Wallpaper.wallpaperDidChangeNotification,
-//            object: nil
-//        )
-//        NotificationCenter.default.addObserver(
-//            self,
-//            selector: #selector(updateTableContents),
-//            name: ChatColors.autoChatColorDidChange,
-//            object: nil
-//        )
-//        NotificationCenter.default.addObserver(
-//            self,
-//            selector: #selector(chatColorDidChange),
-//            name: ChatColors.chatColorDidChange,
-//            object: nil
-//        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
@@ -74,21 +75,6 @@ public class CustomColorViewController: OWSTableViewController2 {
             object: nil
         )
     }
-
-//    @objc
-//    private func chatColorDidChange(_ notification: NSNotification) {
-//        guard let thread = self.thread else {
-//            return
-//        }
-//        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorDidChangeThreadUniqueIdKey] as? String else {
-//            owsFailDebug("Missing threadUniqueId.")
-//            return
-//        }
-//        guard threadUniqueId == thread.uniqueId else {
-//            return
-//        }
-//        updateTableContents()
-//    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,13 +95,13 @@ public class CustomColorViewController: OWSTableViewController2 {
     private func createSubviews() {
         modeControl.insertSegment(withTitle: NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR",
                                                                comment: "Label for the 'solid color' mode in the custom chat color settings view."),
-                                  at: Mode.solid.rawValue,
+                                  at: ValueType.solid.rawValue,
                                   animated: false)
         modeControl.insertSegment(withTitle: NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT",
                                                                comment: "Label for the 'gradient' mode in the custom chat color settings view."),
-                                  at: Mode.gradient.rawValue,
+                                  at: ValueType.gradient.rawValue,
                                   animated: false)
-        modeControl.selectedSegmentIndex = mode.rawValue
+        modeControl.selectedSegmentIndex = valueType.rawValue
         modeControl.addTarget(self,
                               action: #selector(modeControlDidChange),
                               for: .valueChanged)
@@ -281,11 +267,11 @@ public class CustomColorViewController: OWSTableViewController2 {
 
     @objc
     private func modeControlDidChange(_ sender: UISegmentedControl) {
-        guard let mode = Mode(rawValue: sender.selectedSegmentIndex) else {
+        guard let valueType = ValueType(rawValue: sender.selectedSegmentIndex) else {
             owsFailDebug("Couldn't update recordType.")
             return
         }
-        self.mode = mode
+        self.valueType = valueType
     }
 
     @objc
@@ -293,9 +279,24 @@ public class CustomColorViewController: OWSTableViewController2 {
         let saturationAlpha = saturationSlider.value.clamp01()
         let saturationValue = self.saturationSpectrum.value(forAlpha: hueAlpha)
         let owsColor = saturationValue.asOWSColor
-        let value: ChatColorValue = .solidColor(color: owsColor)
+
+        // TODO: Support gradients.
+        let appearance: ChatColorAppearance = .solidColor(color: owsColor)
+        let newValue: ChatColorValue
+        switch valueMode {
+        case .createNew:
+            newValue = ChatColorValue(id: ChatColorValue.randomId,
+                                      appearance: appearance)
+        case .editExisting(let oldValue):
+            // Preserve the old id and creationTimestamp.
+            newValue = ChatColorValue(id: oldValue.id,
+                                      appearance: appearance,
+                                      creationTimestamp: oldValue.creationTimestamp)
+        }
+
         Logger.verbose("saturationAlpha: \(saturationAlpha), saturationValue: \(saturationValue), owsColor: \(owsColor), ")
-        completion(value)
+        completion(newValue)
+        self.navigationController?.popViewController(animated: true)
     }
 }
 

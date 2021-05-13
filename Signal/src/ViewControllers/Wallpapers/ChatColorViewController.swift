@@ -8,9 +8,20 @@ public class ChatColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
+    private var currentValue: ChatColorValue?
+
     public init(thread: TSThread? = nil) {
         self.thread = thread
+
         super.init()
+
+        self.currentValue = Self.databaseStorage.read { transaction in
+            if let thread = self.thread {
+                return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
+            } else {
+                return ChatColors.defaultChatColorSetting(transaction: transaction)
+            }
+        }
 
         NotificationCenter.default.addObserver(
             self,
@@ -21,13 +32,13 @@ public class ChatColorViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: ChatColors.defaultChatColorDidChange,
+            name: ChatColors.defaultChatColorSettingDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(chatColorDidChange),
-            name: ChatColors.chatColorDidChange,
+            selector: #selector(chatColorSettingDidChange),
+            name: ChatColors.chatColorSettingDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -39,11 +50,11 @@ public class ChatColorViewController: OWSTableViewController2 {
     }
 
     @objc
-    private func chatColorDidChange(_ notification: NSNotification) {
+    private func chatColorSettingDidChange(_ notification: NSNotification) {
         guard let thread = self.thread else {
             return
         }
-        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorDidChangeThreadUniqueIdKey] as? String else {
+        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorSettingDidChangeThreadUniqueIdKey] as? String else {
             owsFailDebug("Missing threadUniqueId.")
             return
         }
@@ -57,6 +68,11 @@ public class ChatColorViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = NSLocalizedString("CHAT_COLOR_SETTINGS_TITLE", comment: "Title for the chat color settings view.")
+
+        navigationItem.rightBarButtonItem = .init(title: CommonStrings.setButton,
+                                                  style: .done,
+                                                  target: self,
+                                                  action: #selector(didTapSet))
 
         updateTableContents()
     }
@@ -140,12 +156,10 @@ public class ChatColorViewController: OWSTableViewController2 {
         case addNewOption
 
         static func allOptions(transaction: SDSAnyReadTransaction) -> [Option] {
+
             var result = [Option]()
             result.append(.auto)
-            result.append(contentsOf: ChatColors.builtInValues.map {
-                Option.builtInValue(value: $0)
-            })
-            result.append(contentsOf: ChatColors.customValues(transaction: transaction).map {
+            result.append(contentsOf: ChatColors.allValuesSorted.map {
                 Option.builtInValue(value: $0)
             })
             result.append(.addNewOption)
@@ -176,29 +190,31 @@ public class ChatColorViewController: OWSTableViewController2 {
         // TODO:
         Logger.verbose("----")
 
-        func setValue(_ value: ChatColorValue?) {
-            databaseStorage.write { transaction in
-                if let thread = self.thread {
-                    ChatColors.setChatColor(value, thread: thread, transaction: transaction)
-                } else {
-                    ChatColors.setDefaultChatColor(value, transaction: transaction)
-                }
+        func showCustomColorView(valueMode: CustomColorViewController.ValueMode) {
+            let customColorVC = CustomColorViewController(thread: thread, valueMode: valueMode) { [weak self] (value) in
+                guard let self = self else { return }
+                self.currentValue = value
+                self.updateTableContents()
             }
-            updateTableContents()
+            self.navigationController?.pushViewController(customColorVC, animated: true)
         }
 
         switch option {
         case .auto:
-            setValue(nil)
+            self.currentValue = nil
+            updateTableContents()
         case .builtInValue(let value):
-            setValue(value)
+            self.currentValue = value
+            updateTableContents()
         case .customValue(let value):
-            setValue(value)
-        case .addNewOption:
-            let customColorVC = CustomColorViewController(thread: thread) { [weak self] value in
-                self?.didSetCustomColor(value: value)
+            if self.currentValue == value {
+                showCustomColorView(valueMode: .editExisting(value: value))
+            } else {
+                self.currentValue = value
+                updateTableContents()
             }
-            self.navigationController?.pushViewController(customColorVC, animated: true)
+        case .addNewOption:
+            showCustomColorView(valueMode: .createNew)
         }
     }
 
@@ -226,13 +242,6 @@ public class ChatColorViewController: OWSTableViewController2 {
 
         var optionViews = Queue<UIView>()
         databaseStorage.read { transaction in
-            let currentValue: ChatColorValue?
-            if let thread = self.thread {
-                currentValue = ChatColors.chatColorSetting(thread: thread, transaction: transaction)
-            } else {
-                currentValue = ChatColors.defaultChatColorSetting(transaction: transaction)
-            }
-
             let options = Option.allOptions(transaction: transaction)
             for option in options {
                 func addOptionView(innerView: UIView, isSelected: Bool) {
@@ -315,7 +324,11 @@ public class ChatColorViewController: OWSTableViewController2 {
                 hStackViews.append(optionView)
             }
             while hStackViews.count < optionsPerRow {
-                hStackViews.append(UIView.transparentSpacer())
+                let spacer = UIView.transparentSpacer()
+                spacer.autoSetDimensions(to: .square(optionViewOuterSize))
+                spacer.setCompressionResistanceHigh()
+                spacer.setContentHuggingHigh()
+                hStackViews.append(spacer)
             }
             let hStack = UIStackView(arrangedSubviews: hStackViews)
             hStack.apply(config: hStackConfig)
@@ -328,8 +341,15 @@ public class ChatColorViewController: OWSTableViewController2 {
         return vStack
     }
 
-    private func didSetCustomColor(value: ChatColorValue) {
-        // TODO:
-        updateTableContents()
+    @objc
+    func didTapSet() {
+        databaseStorage.write { transaction in
+            if let thread = self.thread {
+                ChatColors.setChatColorSetting(self.currentValue, thread: thread, transaction: transaction)
+            } else {
+                ChatColors.setDefaultChatColorSetting(self.currentValue, transaction: transaction)
+            }
+        }
+        self.navigationController?.popViewController(animated: true)
     }
 }

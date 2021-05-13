@@ -11,6 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSNotificationName const WarmCachesNotification = @"WarmCachesNotification";
+
 static SSKEnvironment *sharedSSKEnvironment;
 
 @interface SSKEnvironment ()
@@ -253,6 +255,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.typingIndicatorsImpl warmCaches];
     [self.payments warmCaches];
     [self.paymentsCurrencies warmCaches];
+
+    [NSNotificationCenter.defaultCenter postNotificationName:WarmCachesNotification object:nil];
 }
 
 @end

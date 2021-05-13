@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSNotificationName const WarmCachesNotification;
+
 @class AccountServiceClient;
 @class AppExpiry;
 @class BulkProfileFetch;

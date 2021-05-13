@@ -30,22 +30,8 @@ public struct OWSColor: Equatable, Codable {
 
 // MARK: -
 
-public enum ChatColorAppearance: Equatable {
+public enum ChatColorAppearance: Equatable, Codable {
     case solidColor(color: OWSColor)
-    case gradient(color1: OWSColor,
-                  color2: OWSColor,
-                  angleRadians: CGFloat)
-}
-
-// MARK: -
-
-// TODO: We might end up renaming this to ChatColor
-//       depending on how the design shakes out.
-public enum ChatColorValue: Equatable, Codable {
-    case solidColor(color: OWSColor)
-    // For now, angle is in radians
-    //
-    // TODO: Finalize actual angle semantics.
     case gradient(gradientColor1: OWSColor,
                   gradientColor2: OWSColor,
                   angleRadians: CGFloat)
@@ -95,35 +81,168 @@ public enum ChatColorValue: Equatable, Codable {
             try container.encode(angleRadians, forKey: .angleRadians)
         }
     }
+}
 
-    public var appearance: ChatColorAppearance {
-        switch self {
-        case .solidColor(let solidColor):
-            return .solidColor(color: solidColor)
-        case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
-            return .gradient(color1: gradientColor1,
-                             color2: gradientColor2,
-                             angleRadians: angleRadians)
-        }
+// MARK: -
+
+// TODO: We might end up renaming this to ChatColor
+//       depending on how the design shakes out.
+public struct ChatColorValue: Equatable, Codable {
+    public let id: String
+    public let appearance: ChatColorAppearance
+    public let creationTimestamp: UInt64
+
+    public init(id: String,
+                appearance: ChatColorAppearance,
+                creationTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
+        self.id = id
+        self.appearance = appearance
+        self.creationTimestamp = creationTimestamp
+    }
+
+    public static var randomId: String {
+        UUID().uuidString
+    }
+
+    // MARK: - Equatable
+
+    public static func == (lhs: ChatColorValue, rhs: ChatColorValue) -> Bool {
+        // Ignore creationTimestamp.
+        (lhs.id == rhs.id) && (lhs.appearance == rhs.appearance)
     }
 }
 
 // MARK: -
 
-public class ChatColors {
-    @available(*, unavailable, message: "Do not instantiate this class.")
-    private init() {}
+@objc
+public class ChatColors: NSObject, Dependencies {
+    @objc
+    public override init() {
+        super.init()
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "ChatColors")
+        SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(warmCaches),
+            name: .WarmCaches,
+            object: nil
+        )
+    }
+
+    // The cache should contain all current values at all times.
+    @objc
+    private func warmCaches() {
+        var valueCache = [String: ChatColorValue]()
+
+        // Load built-in colors.
+        for value in Self.builtInValues {
+            guard valueCache[value.id] == nil else {
+                owsFailDebug("Duplicate value: \(value.id).")
+                continue
+            }
+            valueCache[value.id] = value
+        }
+
+        // Load custom colors.
+        Self.databaseStorage.read { transaction in
+            let keys = Self.customColorsStore.allKeys(transaction: transaction)
+            for key in keys {
+                func loadValue() -> ChatColorValue? {
+                    do {
+                        return try Self.customColorsStore.getCodableValue(forKey: key, transaction: transaction)
+                    } catch {
+                        owsFailDebug("Error: \(error)")
+                        return nil
+                    }
+                }
+                guard let value = loadValue() else {
+                    owsFailDebug("Missing value: \(key)")
+                    continue
+                }
+                guard valueCache[value.id] == nil else {
+                    owsFailDebug("Duplicate value: \(value.id).")
+                    continue
+                }
+                valueCache[value.id] = value
+            }
+        }
+
+        Self.unfairLock.withLock {
+            self.valueCache = valueCache
+        }
+    }
+
+    // Represents the current "chat color" setting for a given thread
+    // or the default.  "Custom chat colors" have a lifecycle independent
+    // from the conversations/global defaults which use them.
+    //
+    // The keys in this store are thread unique ids _OR_ defaultKey (String).
+    // The values are ChatColorValue.id (String).
+    private static let chatColorSettingStore = SDSKeyValueStore(collection: "chatColorSettingStore")
+
+    // The keys in this store are ChatColorValue.id (String).
+    // The values are ChatColorValues.
+    private static let customColorsStore = SDSKeyValueStore(collection: "customColorsStore")
 
     private static let defaultKey = "defaultKey"
+
+    private static let unfairLock = UnfairLock()
+    private var valueCache = [String: ChatColorValue]()
+
+    public func upsertCustomValue(_ value: ChatColorValue, transaction: SDSAnyWriteTransaction) {
+        Self.unfairLock.withLock {
+            self.valueCache[value.id] = value
+            do {
+                try Self.customColorsStore.setCodable(value, key: value.id, transaction: transaction)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+        }
+        fireCustomChatColorValueDidChange()
+    }
+
+    public func deleteCustomValue(_ value: ChatColorValue, transaction: SDSAnyWriteTransaction) {
+        Self.unfairLock.withLock {
+            self.valueCache.removeValue(forKey: value.id)
+            Self.customColorsStore.removeValue(forKey: value.id, transaction: transaction)
+        }
+        fireCustomChatColorValueDidChange()
+    }
+
+    private func fireCustomChatColorValueDidChange() {
+        NotificationCenter.default.postNotificationNameAsync(
+            Self.customChatColorValueDidChange,
+            object: nil,
+            userInfo: nil
+        )
+    }
+
+    private func value(forValueId valueId: String) -> ChatColorValue? {
+        Self.unfairLock.withLock {
+            self.valueCache[valueId]
+        }
+    }
+
+    private var allValues: [ChatColorValue] {
+        Self.unfairLock.withLock {
+            Array(self.valueCache.values)
+        }
+    }
+
+    public var allValuesSorted: [ChatColorValue] {
+        allValues.sorted { (left, right) -> Bool in
+            left.creationTimestamp < right.creationTimestamp
+        }
+    }
+    public static var allValuesSorted: [ChatColorValue] { Self.chatColors.allValuesSorted }
 
     private static let noWallpaperAutoChatColor: ChatColorValue = {
         // UIColor.ows_accentBlue = 0x2C6BED
         let color = OWSColor(red: CGFloat(0x2C) / CGFloat(0xff),
                              green: CGFloat(0x6B) / CGFloat(0xff),
                              blue: CGFloat(0xED) / CGFloat(0xff))
-        return .solidColor(color: color)
+        return ChatColorValue(id: "noWallpaperAuto", appearance: .solidColor(color: color))
     }()
 
     public static func autoChatColor(forThread thread: TSThread?,
@@ -138,12 +257,12 @@ public class ChatColors {
     public static func autoChatColor(forWallpaper wallpaper: Wallpaper) -> ChatColorValue {
         // TODO:
         let color = OWSColor(red: 1, green: 0, blue: 0)
-        return .solidColor(color: color)
+        return ChatColorValue(id: wallpaper.rawValue, appearance: .solidColor(color: color))
     }
 
     // Returns nil for default/auto.
     public static func defaultChatColorSetting(transaction: SDSAnyReadTransaction) -> ChatColorValue? {
-        getChatColor(key: defaultKey, transaction: transaction)
+        chatColorSetting(key: defaultKey, transaction: transaction)
     }
 
     // TODO: When is this applied? Lazily?
@@ -155,15 +274,15 @@ public class ChatColors {
         }
     }
 
-    public static func setDefaultChatColor(_ value: ChatColorValue?,
+    public static func setDefaultChatColorSetting(_ value: ChatColorValue?,
                                            transaction: SDSAnyWriteTransaction) {
-        setChatColor(key: defaultKey, value: value, transaction: transaction)
+        setChatColorSetting(key: defaultKey, value: value, transaction: transaction)
     }
 
     // Returns nil for default/auto.
     public static func chatColorSetting(thread: TSThread,
                                         transaction: SDSAnyReadTransaction) -> ChatColorValue? {
-        getChatColor(key: thread.uniqueId, transaction: transaction)
+        chatColorSetting(key: thread.uniqueId, transaction: transaction)
     }
 
     public static func chatColorForRendering(thread: TSThread,
@@ -175,58 +294,60 @@ public class ChatColors {
         }
     }
 
-    public static func setChatColor(_ value: ChatColorValue?,
-                                    thread: TSThread,
-                                    transaction: SDSAnyWriteTransaction) {
-        setChatColor(key: thread.uniqueId, value: value, transaction: transaction)
+    public static func setChatColorSetting(_ value: ChatColorValue?,
+                                           thread: TSThread,
+                                           transaction: SDSAnyWriteTransaction) {
+        setChatColorSetting(key: thread.uniqueId, value: value, transaction: transaction)
     }
 
-    private static func getChatColor(key: String,
-                                     transaction: SDSAnyReadTransaction) -> ChatColorValue? {
-        if let value = { () -> ChatColorValue? in
-            do {
-                return try keyValueStore.getCodableValue(forKey: key,
-                                                         transaction: transaction)
-            } catch {
-                owsFailDebug("Error: \(error)")
-                return nil
-            }
-        }() {
-            return value
-        } else {
+    // Returns nil for default/auto.
+    private static func chatColorSetting(key: String,
+                                         transaction: SDSAnyReadTransaction) -> ChatColorValue? {
+        guard let valueId = Self.chatColorSettingStore.getString(key, transaction: transaction) else {
             return nil
         }
+        guard let value = Self.chatColors.value(forValueId: valueId) else {
+            // This isn't necessarily an error.  A user might apply a custom
+            // chat color value to a conversation (or the global default),
+            // then delete the custom chat color value.  In that case, all
+            // references to the value should behave as "auto" (the default).
+            Logger.warn("Missing value: \(valueId).")
+            return nil
+        }
+        return value
     }
 
-    public static let defaultChatColorDidChange = NSNotification.Name("defaultChatColorDidChange")
-    public static let chatColorDidChange = NSNotification.Name("chatColorDidChange")
-    public static let chatColorDidChangeThreadUniqueIdKey = "chatColorDidChangeThreadUniqueIdKey"
+    public static let defaultChatColorSettingDidChange = NSNotification.Name("defaultChatColorSettingDidChange")
+    public static let chatColorSettingDidChange = NSNotification.Name("chatColorSettingDidChange")
+    public static let chatColorSettingDidChangeThreadUniqueIdKey = "chatColorSettingDidChangeThreadUniqueIdKey"
+    public static let customChatColorValueDidChange = NSNotification.Name("customChatColorValueDidChange")
 
-    private static func setChatColor(key: String,
-                                     value: ChatColorValue?,
-                                     transaction: SDSAnyWriteTransaction) {
-        do {
-            if let value = value {
-                try keyValueStore.setCodable(value, key: key, transaction: transaction)
-            } else {
-                keyValueStore.removeValue(forKey: key, transaction: transaction)
+    private static func setChatColorSetting(key: String,
+                                            value: ChatColorValue?,
+                                            transaction: SDSAnyWriteTransaction) {
+        if let value = value {
+            // Ensure the value is already in the cache.
+            if nil == Self.chatColors.value(forValueId: value.id) {
+                owsFailDebug("Unknown value: \(value.id).")
             }
-        } catch {
-            owsFailDebug("Error: \(error)")
+
+            Self.chatColorSettingStore.setString(value.id, key: key, transaction: transaction)
+        } else {
+            Self.chatColorSettingStore.removeValue(forKey: key, transaction: transaction)
         }
 
         if key == defaultKey {
             NotificationCenter.default.postNotificationNameAsync(
-                Self.defaultChatColorDidChange,
+                Self.defaultChatColorSettingDidChange,
                 object: nil,
                 userInfo: nil
             )
         } else {
             NotificationCenter.default.postNotificationNameAsync(
-                Self.chatColorDidChange,
+                Self.chatColorSettingDidChange,
                 object: nil,
                 userInfo: [
-                    chatColorDidChangeThreadUniqueIdKey: key
+                    chatColorSettingDidChangeThreadUniqueIdKey: key
                 ]
             )
         }
@@ -234,24 +355,35 @@ public class ChatColors {
 
     // MARK: -
 
-    public static var builtInValues: [ChatColorValue] {
+    private static var builtInValues: [ChatColorValue] {
         // TODO:
-        [
-            .solidColor(color: OWSColor(red: 0.5, green: 0.5, blue: 0.5)),
-            .solidColor(color: OWSColor(red: 0, green: 0, blue: 1)),
-            .solidColor(color: OWSColor(red: 0, green: 1, blue: 0)),
-            .solidColor(color: OWSColor(red: 0, green: 1, blue: 0.5)),
-
-            .gradient(gradientColor1: OWSColor(red: 0, green: 1, blue: 0),
-                      gradientColor2: OWSColor(red: 0, green: 1, blue: 0.5),
-                      angleRadians: CGFloat.pi * 0.25)
+        return [
+            // We use fixed timestamps to ensure that built-in values
+            // appear before custom values and to control their relative ordering.
+            ChatColorValue(id: "a",
+                           appearance: .solidColor(color: OWSColor(red: 0.5, green: 0.5, blue: 0.5)),
+                           creationTimestamp: 1),
+            ChatColorValue(id: "b",
+                           appearance: .solidColor(color: OWSColor(red: 0, green: 0, blue: 1)),
+                           creationTimestamp: 2),
+            ChatColorValue(id: "c",
+                           appearance: .solidColor(color: OWSColor(red: 0, green: 1, blue: 0)),
+                           creationTimestamp: 3),
+            ChatColorValue(id: "d",
+                           appearance: .solidColor(color: OWSColor(red: 0, green: 1, blue: 0.5)),
+                           creationTimestamp: 4),
+            ChatColorValue(id: "e",
+                           appearance: .gradient(gradientColor1: OWSColor(red: 0, green: 1, blue: 0),
+                                                 gradientColor2: OWSColor(red: 0, green: 1, blue: 0.5),
+                                                 angleRadians: CGFloat.pi * 0.25),
+                           creationTimestamp: 5)
         ]
     }
 
-    public static func customValues(transaction: SDSAnyReadTransaction) -> [ChatColorValue] {
-        // TODO:
-        [
-            .solidColor(color: OWSColor(red: 0, green: 0, blue: 0))
-        ]
-    }
+//    public static func customValues(transaction: SDSAnyReadTransaction) -> [ChatColorValue] {
+//        // TODO:
+//        [
+//            .solidColor(color: OWSColor(red: 0, green: 0, blue: 0))
+//        ]
+//    }
 }

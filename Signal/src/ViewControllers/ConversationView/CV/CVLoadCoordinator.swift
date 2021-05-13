@@ -155,6 +155,14 @@ public class CVLoadCoordinator: NSObject {
                                                selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
                                                name: OWSContactsManager.skipGroupAvatarBlurDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(chatColorSettingDidChange),
+                                               name: ChatColors.chatColorSettingDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(customChatColorValueDidChange),
+                                               name: ChatColors.customChatColorValueDidChange,
+                                               object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
@@ -249,6 +257,23 @@ public class CVLoadCoordinator: NSObject {
               groupThread.uniqueId == groupUniqueId else {
             return
         }
+        enqueueReloadWithoutCaches()
+    }
+
+    @objc
+    private func chatColorSettingDidChange(_ notification: NSNotification) {
+        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorSettingDidChangeThreadUniqueIdKey] as? String else {
+            owsFailDebug("Missing threadUniqueId.")
+            return
+        }
+        guard threadUniqueId == thread.uniqueId else {
+            return
+        }
+        enqueueReloadWithoutCaches()
+    }
+
+    @objc
+    private func customChatColorValueDidChange(_ notification: NSNotification) {
         enqueueReloadWithoutCaches()
     }
 
