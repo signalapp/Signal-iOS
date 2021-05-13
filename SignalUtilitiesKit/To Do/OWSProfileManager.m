@@ -362,14 +362,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             NSData *encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
             OWSAssertDebug(encryptedAvatarData.length > 0);
             
-            AnyPromise *promise;
-            if (SNFeatures.useV2FileServer) {
-                promise = [SNFileServerAPIV2 upload:encryptedAvatarData];
-            } else {
-                promise = [SNFileServerAPI uploadProfilePicture:encryptedAvatarData];
-            }
+            AnyPromise *promise = [SNFileServerAPIV2 upload:encryptedAvatarData];
             
-            [promise.thenOn(dispatch_get_main_queue(), ^(NSString *downloadURL) {
+            [promise.thenOn(dispatch_get_main_queue(), ^(uint64_t fileID) {
+                NSString *downloadURL = [NSString stringWithFormat:@"%@/files/%llu", SNFileServerAPIV2.server, fileID];
                 [NSUserDefaults.standardUserDefaults setObject:[NSDate new] forKey:@"lastProfilePictureUpload"];
                 [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
                    successBlock(downloadURL);
