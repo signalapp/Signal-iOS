@@ -9,9 +9,31 @@ import PromiseKit
 struct Stripe: Dependencies {
     static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
         firstly { () -> Promise<API.PaymentIntent> in
-            API.createPaymentIntent(for: amount.doubleValue, in: currencyCode)
+            API.createPaymentIntent(for: amount, in: currencyCode)
         }.then { intent in
             API.confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id)
+        }
+    }
+
+    static func isAmountTooLarge(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
+        // Stripe supports a maximum of 8 integral digits.
+        integralAmount(amount, in: currencyCode) > 99_999_999
+    }
+
+    static func isAmountTooSmall(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
+        // Stripe requires different minimums per currency, but they often depend
+        // on conversion rates which we don't have access to. It's okay to do a best
+        // effort here because stripe will reject the payment anyway, this just allows
+        // us to fail sooner / provide a nicer error to the user.
+        let minimumIntegralAmount = minimumIntegralChargePerCurrencyCode[currencyCode] ?? 50
+        return integralAmount(amount, in: currencyCode) < minimumIntegralAmount
+    }
+
+    static func integralAmount(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> UInt {
+        if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
+            return UInt(amount.doubleValue.rounded(.toNearestOrEven))
+        } else {
+            return UInt((amount.doubleValue * 100).rounded(.toNearestOrEven))
         }
     }
 }
@@ -34,27 +56,24 @@ fileprivate extension Stripe {
             let clientSecret: String
         }
         static func createPaymentIntent(
-            for amount: Double,
+            for amount: NSDecimalNumber,
             in currencyCode: Currency.Code
         ) -> Promise<(PaymentIntent)> {
             firstly(on: .sharedUserInitiated) { () -> Promise<TSNetworkManager.Response> in
-                guard amount > 0 else {
-                    throw OWSAssertionError("Invalid amount")
+                guard !isAmountTooSmall(amount, in: currencyCode) else {
+                    throw OWSAssertionError("Amount too small")
+                }
+
+                guard !isAmountTooLarge(amount, in: currencyCode) else {
+                    throw OWSAssertionError("Amount too large")
                 }
 
                 guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
                     throw OWSAssertionError("Unexpected currency code")
                 }
 
-                let integralAmount: UInt
-                if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
-                    integralAmount = UInt(amount.rounded(.toNearestOrEven))
-                } else {
-                    integralAmount = UInt((amount * 100).rounded(.toNearestOrEven))
-                }
-
                 let request = OWSRequestFactory.createPaymentIntent(
-                    withAmount: integralAmount,
+                    withAmount: integralAmount(amount, in: currencyCode),
                     inCurrencyCode: currencyCode
                 )
 
@@ -181,6 +200,7 @@ fileprivate extension Stripe {
 }
 
 // MARK: - Currency
+// See https://stripe.com/docs/currencies
 
 extension Stripe {
     static let supportedCurrencyCodes: [Currency.Code] = [
@@ -361,6 +381,32 @@ extension Stripe {
         "XAF",
         "XOF",
         "XPF"
+    ]
+
+    static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
+        "USD": 50,
+        "AED": 200,
+        "AUD": 50,
+        "BGN": 100,
+        "BRL": 50,
+        "CAD": 50,
+        "CHF": 50,
+        "CZK": 1500,
+        "DKK": 250,
+        "EUR": 50,
+        "GBP": 30,
+        "HKD": 400,
+        "HUF": 17500,
+        "INR": 50,
+        "JPY": 50,
+        "MXN": 10,
+        "MYR": 2,
+        "NOK": 300,
+        "NZD": 50,
+        "PLN": 200,
+        "RON": 200,
+        "SEK": 300,
+        "SGD": 50
     ]
 
     static let defaultCurrencyCode: Currency.Code = {

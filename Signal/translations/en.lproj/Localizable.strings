@@ -1333,8 +1333,14 @@
 /* Text explaining there are other ways to donate on the donation view. */
 "DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
 
-/* Error text notifying the user they must select an ammount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMMOUNT" = "Select an amount to donate";
+/* Error text notifying the user they must select a large amount on the donate to signal view */
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+
+/* Error text notifying the user they must select a smaller amount on the donate to signal view */
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+
+/* Error text notifying the user they must select an amount on the donate to signal view */
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
 
 /* Thank you message on the donate to signal view */
 "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";

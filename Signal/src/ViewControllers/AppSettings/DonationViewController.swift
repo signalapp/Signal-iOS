@@ -34,12 +34,15 @@ class DonationViewController: OWSTableViewController2 {
     private var state: State? {
         didSet {
             guard oldValue != state else { return }
-            if oldValue == .customValueSelected {
-                customValueTextField.text = nil
-                customValueTextField.resignFirstResponder()
-            }
-            updateTableContents()
+            if oldValue == .customValueSelected { clearCustomTextField() }
+            if state == .donatedSuccessfully { updateTableContents() }
+            updatePresetButtonSelection()
         }
+    }
+
+    func clearCustomTextField() {
+        customValueTextField.text = nil
+        customValueTextField.resignFirstResponder()
     }
 
     override func viewDidLoad() {
@@ -87,12 +90,33 @@ class DonationViewController: OWSTableViewController2 {
         return cell
     }
 
+    override var canBecomeFirstResponder: Bool { true }
+    override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        // If we become the first responder, but the user was entering
+        // a customValue, restore the first responder state to the text field.
+        if result, case .customValueSelected = state {
+            customValueTextField.becomeFirstResponder()
+        }
+        return result
+    }
+
+    var presetButtons: [UInt: UIView] = [:]
+    func updatePresetButtonSelection() {
+        for (amount, button) in presetButtons {
+            if case .presetSelected(amount: amount) = self.state {
+                button.layer.borderColor = Theme.accentBlueColor.cgColor
+            } else {
+                button.layer.borderColor = Self.bubbleBorderColor.cgColor
+            }
+        }
+    }
+
     func updateTableContents() {
-        let wasTextFieldFirstResponder = customValueTextField.isFirstResponder
         let contents = OWSTableContents()
         defer {
             self.contents = contents
-            if wasTextFieldFirstResponder { customValueTextField.becomeFirstResponder() }
+            if case .customValueSelected = state { customValueTextField.becomeFirstResponder() }
         }
 
         let section = OWSTableSection()
@@ -114,7 +138,7 @@ class DonationViewController: OWSTableViewController2 {
 
             let label = UILabel()
             label.textAlignment = .center
-            label.font = UIFont.ows_dynamicTypeTitle2.ows_bold
+            label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
             label.text = NSLocalizedString(
                 "DONATION_VIEW_TITLE",
                 comment: "Title for the donate to signal view"
@@ -215,7 +239,7 @@ class DonationViewController: OWSTableViewController2 {
                 let cell = self.newCell()
 
                 let label = UILabel()
-                label.font = UIFont.ows_dynamicTypeTitle2.ows_bold
+                label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
                 label.textColor = Theme.primaryTextColor
                 label.text = NSLocalizedString(
                     "DONATION_VIEW_WHY_DONATE_TITLE",
@@ -347,12 +371,12 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                     Special.noBreakSpace,
                     NSAttributedString.with(
                         image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
-                        font: .ows_dynamicTypeBody2
+                        font: .ows_regularFont(withSize: 17)
                     ).styled(
                         with: .color(Self.bubbleBorderColor)
                     )
                 ]).styled(
-                    with: .font(.ows_dynamicTypeBody2),
+                    with: .font(.ows_regularFont(withSize: 17)),
                     .color(Theme.primaryTextColor)
                 ), for: .normal)
 
@@ -396,6 +420,8 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                     cell.contentView.addSubview(vStack)
                     vStack.autoPinEdgesToSuperviewMargins()
 
+                    self.presetButtons.removeAll()
+
                     for amounts in preset.amounts.chunked(by: 3) {
                         let hStack = UIStackView()
                         hStack.axis = .horizontal
@@ -405,13 +431,6 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                         vStack.addArrangedSubview(hStack)
 
                         for amount in amounts {
-                            let isSelected: Bool
-                            if case .presetSelected(amount: amount) = self.state {
-                                isSelected = true
-                            } else {
-                                isSelected = false
-                            }
-
                             let button = OWSFlatButton()
                             hStack.addArrangedSubview(button)
                             button.setBackgroundColors(
@@ -421,7 +440,6 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                             button.layer.cornerRadius = 12
                             button.clipsToBounds = true
                             button.layer.borderWidth = Self.bubbleBorderWidth
-                            button.layer.borderColor = (isSelected ? Theme.accentBlueColor : Self.bubbleBorderColor).cgColor
                             button.setPressedBlock { [weak self] in
                                 self?.state = .presetSelected(amount: amount)
                             }
@@ -433,8 +451,12 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                             )
 
                             button.autoSetDimension(.height, toSize: 48)
+
+                            self.presetButtons[amount] = button
                         }
                     }
+
+                    self.updatePresetButtonSelection()
 
                     return cell
                 },
@@ -444,6 +466,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
         // Custom donation option
 
+        let applePayButtonIndex = IndexPath(row: section.items.count + 1, section: 0)
         let customValueTextField = self.customValueTextField
         section.add(.init(
             customCellBlock: { [weak self] in
@@ -463,8 +486,9 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
                 return cell
             },
-            actionBlock: {
+            actionBlock: { [weak self] in
                 customValueTextField.becomeFirstResponder()
+                self?.tableView.scrollToRow(at: applePayButtonIndex, at: .bottom, animated: true)
             }
         ))
 
@@ -530,9 +554,25 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
     func requestApplePayDonation() {
         guard let donationAmount = donationAmount else {
             presentToast(text: NSLocalizedString(
-                "DONATION_VIEW_SELECT_AN_AMMOUNT",
-                comment: "Error text notifying the user they must select an ammount on the donate to signal view"
-            ))
+                "DONATION_VIEW_SELECT_AN_AMOUNT",
+                comment: "Error text notifying the user they must select an amount on the donate to signal view"
+            ), extraVInset: view.height - tableView.frame.maxY)
+            return
+        }
+
+        guard !Stripe.isAmountTooSmall(donationAmount, in: currencyCode) else {
+            presentToast(text: NSLocalizedString(
+                "DONATION_VIEW_SELECT_A_LARGER_AMOUNT",
+                comment: "Error text notifying the user they must select a large amount on the donate to signal view"
+            ), extraVInset: view.height - tableView.frame.maxY)
+            return
+        }
+
+        guard !Stripe.isAmountTooLarge(donationAmount, in: currencyCode) else {
+            presentToast(text: NSLocalizedString(
+                "DONATION_VIEW_SELECT_A_SMALLER_AMOUNT",
+                comment: "Error text notifying the user they must select a smaller amount on the donate to signal view"
+            ), extraVInset: view.height - tableView.frame.maxY)
             return
         }
 
@@ -673,7 +713,10 @@ private class CustomValueTextField: UIView {
     }
 
     var text: String? {
-        set { textField.text = newValue }
+        set {
+            textField.text = newValue
+            updateVisibility()
+        }
         get { textField.text }
     }
 
