@@ -29,7 +29,7 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Document kiezen mislukt.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Maak een gecomprimeerd archief aan van deze bestand of map en probeer dat te verzenden.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Niet-ondersteund bestand";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
@@ -43,7 +43,7 @@
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Backup initialiseren";
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Gegevens exporteren";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporteer gegevens";
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "Backup exporteren";
 /* Indicates that the backup export data is being uploaded. */
@@ -53,7 +53,7 @@
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Backup configuratie";
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Download van backup...";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Back-up gegevens downloaden";
 /* Indicates that the backup import data is being finalized. */
 "BACKUP_IMPORT_PHASE_FINALIZING" = "Backup afronden";
 /* Indicates that the backup import data is being imported. */
@@ -61,7 +61,7 @@
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Database Herstellen";
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Bestanden herstellen…";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Bestand terugzetten";
 /* Label for the backup restore decision section. */
 "BACKUP_RESTORE_DECISION_TITLE" = "Backup beschikbaar";
 /* Label for the backup restore description. */
@@ -93,437 +93,436 @@
 /* Error indicating that user does not have an iCloud account. */
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "Geen iCloud-account niet bepalen. log in met je iCloud-account in de iOS-instellingen app om een backup te maken van je Session gegevens.";
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Session was denied access your iCloud account for backups. Grant Session access to your iCloud Account in the iOS settings app to backup your Session data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Session heeft geprobeerd toegang the krijgen tot uw iCloud account met backups Maar werd geweigerd. log in met uw iCloud-account in de iOS-instellingen app om een backup te maken van je Session gegevens.";
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Je kunt geen berichten meer versturen of ontvangen in deze groep.";
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Wilt u echt deze groep verlaten?";
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Dit kan niet ongedaan worden gemaakt.";
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Gesprek verwijderen?";
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Geen overeenkomsten";
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 overeenkomst";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d van de %d overeenkomsten";
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Conversation Settings";
+"CONVERSATION_SETTINGS" = "Conversatie instellingen";
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block This User";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Deze gebruiker blokkeren";
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Dempen";
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mute";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Dempen";
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Niet gedempt";
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Mute for one day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Demp voor 1 dag";
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Mute for one hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Demp voor 1 uur";
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mute for one minute";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Een minuut dempen";
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Mute for one week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Een week dempen";
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mute for one year";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Een jaar dempen";
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "tot %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "Zoek gesprek";
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet langer dempen";
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Verplaatsen en in grootte veranderen";
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dit kan een paar minuten duren.";
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimaliseer Database";
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ Uur geleden";
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ Min geleden";
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Nu";
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Vandaag";
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Gisteren";
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Disappearing Messages";
+"DISAPPEARING_MESSAGES" = "Zelf-wissende berichten";
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in dit gesprek zullen na %@ verdwijnen.";
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Edit Group";
+"EDIT_GROUP_ACTION" = "Groep bewerken";
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "U heeft geen media in dit gesprek.";
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Nieuwere media laden…";
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Oudere media laden…";
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Het ophalen van de gevraagde GIF, is mislukt. Controleer of u online bent.";
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Er is een onbekende fout opgetreden.";
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Kan GIF-Bestand niet kiezen";
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Vul alstublieft uw zoekopdracht in.";
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "Fout. Tik om opnieuw te proberen.";
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Geen resultaten.";
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Group created";
+"GROUP_CREATED" = "Groep aangemaakt";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = " %@ joined the group. ";
+"GROUP_MEMBER_JOINED" = " %@ is toegevoegd aan de groep. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = " %@ left the group. ";
+"GROUP_MEMBER_LEFT" = " %@ heeft de groep verlaten. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " %@ is verwijderd uit de groep. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ zijn uit de groep verwijderd. ";
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Title is now '%@'. ";
+"GROUP_TITLE_CHANGED" = "Titel is nu '%@'. ";
 /* No comment provided by engineer. */
-"GROUP_UPDATED" = "Group updated.";
+"GROUP_UPDATED" = "Groep bijgewerkt.";
 /* No comment provided by engineer. */
-"GROUP_YOU_LEFT" = "You have left the group.";
+"GROUP_YOU_LEFT" = "U heeft de groep verlaten.";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " Je bent verwijderd uit deze groep. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Je kunt niet meer dan %@ items delen.";
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Fout bij het selecteren van de bijlage.";
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ongeldig audio-bestand.";
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Messages do not disappear.";
+"KEEP_MESSAGES_FOREVER" = "Berichten verdwijnen niet.";
 /* Confirmation button within contextual alert */
-"LEAVE_BUTTON_TITLE" = "Leave";
+"LEAVE_BUTTON_TITLE" = "Verlaten";
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Leave Group";
+"LEAVE_GROUP_ACTION" = "Verlaat groep";
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Message";
+"LONG_TEXT_VIEW_TITLE" = "Bericht";
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alle media";
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Fotobibliotheek";
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Verwijder %d Berichten";
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Verwijder bericht";
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ on %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ op %@";
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "U";
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Deze maand";
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_STATUS_DELIVERED" = "Afgeleverd";
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Verzenden mislukt.";
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Mislukt";
 /* status message for read messages */
-"MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_STATUS_READ" = "Lees";
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Overgeslagen";
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Verzenden…";
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_STATUS_SENT" = "Verzonden";
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploading…";
+"MESSAGE_STATUS_UPLOADING" = "Uploaden…";
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "U kunt deze rechten inschakelen in de iOS-instellingen app.";
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Sessie vereist toegang tot uw foto's voor deze functie.";
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "U zal geen meldingen ontvangen voor gedempte gesprekken.";
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ naar %@";
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Note to Self";
+"NOTE_TO_SELF" = "Notitie aan mezelf";
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "U heeft mogelijk berichten ontvangen terwijl u %@ opnieuw aan het opstarten was.";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Due to known bugs in Apple's push framework, message previews will only be shown if the message is retrieved within 30 seconds after being sent. The application badge might be inaccurate as a result.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Vanwege bekende bugs in het push-framework van Apple worden berichtvoorbeelden alleen getoond als het bericht binnen 30 seconden na verzending wordt opgehaald. Hierdoor kan de applicatiebadge onnauwkeurig zijn.";
 /* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "Speel terwijl de app geopend is";
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "Geluiden";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Naam en inhoud";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "Alleen naam";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "Geen naam of inhoud";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Show";
+"NOTIFICATIONS_SHOW" = "Tonen";
 /* No comment provided by engineer. */
 "OK" = "OK";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ disabled disappearing messages.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft zelf-wissende berichten uitgeschakeld.";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor zelf-wissende berichten op %@ ingesteld";
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Kan afbeelding niet vastleggen.";
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Kan afbeelding niet vastleggen.";
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Instellen van de camera mislukt.";
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloze Album";
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We kunnen uw account pas activeren nadat u de code die we u hebben gestuurd verifieert.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Direct";
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Verificatie mislukt";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+"SEND_MEDIA_ABANDON_TITLE" = "Media verwijderen?";
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Media verwijderen";
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Terugkeren naar Camera";
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Terug naar mediabibliotheek";
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (standaard)";
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Backup";
+"SETTINGS_BACKUP" = "Back-up";
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
+"SETTINGS_BACKUP_BACKUP_NOW" = "Nu back-up maken";
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Backup";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Back-up annuleren";
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Back-up Ingeschakeld";
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Back-up herstellen mislukt";
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Back-up herstellen inactief";
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Back-up terugzetten bezig";
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Back-up terugzetten geslaagd";
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Fase";
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "Vooruitgang";
 /* Label for backup status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Status";
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Back-up maken mislukt";
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+"SETTINGS_BACKUP_STATUS_IDLE" = "Bezig met wachten";
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Bezig met Back-up maken";
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Back-up succesvol";
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
+"SETTINGS_CLEAR_HISTORY" = "Gespreksgeschiedenis wissen";
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Verwijder Alles";
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "Gespreksgeschiedenis wissen";
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Geluid van bericht";
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Link Previews verzenden";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Voorbeelden worden ondersteund van Imgur, Instagram, Pinterest Reddit, en YouTube links.";
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Link voorbeelden";
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notificatie Inhoud";
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Leesbevestigingen";
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Bekijk en deel wanneer berichten zijn gelezen. Deze instelling is optioneel en geldt voor alle gesprekken.";
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Time-out schermvergrendeling";
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Schermvergrendeling";
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Schermvergrendeling";
 /* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "Sounds";
+"SETTINGS_SECTION_SOUNDS" = "Geluiden";
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Screen Security";
+"SETTINGS_SECURITY_TITLE" = "Scherm beveiliging";
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Typindicatoren";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Geen";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "%@ dagen";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "%@ uren";
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "%@ minuten";
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "%@ seconden";
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ dag";
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ uur";
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minuut";
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "%@ weken";
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "Cancel";
+"TXT_CANCEL_TITLE" = "Annuleren";
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Delete";
+"TXT_DELETE_TITLE" = "Wissen";
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+"VOICE_MESSAGE_FILE_NAME" = "Spraakbericht";
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Houd deze knop ingedrukt om een audio bericht te versturen.";
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Spraakbericht";
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt zelf-wissende berichten uitgeschakeld.";
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "U heeft de timer voor zelf-wissende berichten op %@ ingesteld";
 // MARK: - Session
-"continue_2" = "Continue";
-"copy" = "Copy";
-"invalid_url" = "Invalid URL";
-"next" = "Next";
-"share" = "Share";
-"invalid_session_id" = "Invalid Session ID";
-"cancel" = "Cancel";
-"your_session_id" = "Your Session ID";
-"vc_landing_title_2" = "Your Session begins here...";
-"vc_landing_register_button_title" = "Create Session ID";
-"vc_landing_restore_button_title" = "Continue Your Session";
-"vc_landing_link_button_title" = "Link a Device";
-"view_fake_chat_bubble_1" = "What's Session?";
-"view_fake_chat_bubble_2" = "It's a decentralized, encrypted messaging app";
-"view_fake_chat_bubble_3" = "So it doesn't collect my personal information or my conversation metadata? How does it work?";
-"view_fake_chat_bubble_4" = "Using a combination of advanced anonymous routing and end-to-end encryption technologies.";
-"view_fake_chat_bubble_5" = "Friends don't let friends use compromised messengers. You're welcome.";
-"vc_register_title" = "Say hello to your Session ID";
-"vc_register_explanation" = "Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
-"vc_restore_title" = "Restore your account";
-"vc_restore_explanation" = "Enter the recovery phrase that was given to you when you signed up to restore your account.";
-"vc_restore_seed_text_field_hint" = "Enter your recovery phrase";
-"vc_link_device_title" = "Link a Device";
-"vc_link_device_scan_qr_code_tab_title" = "Scan QR Code";
-"vc_display_name_title_2" = "Pick your display name";
-"vc_display_name_explanation" = "This will be your name when you use Session. It can be your real name, an alias, or anything else you like.";
-"vc_display_name_text_field_hint" = "Enter a display name";
-"vc_display_name_display_name_missing_error" = "Please pick a display name";
-"vc_display_name_display_name_too_long_error" = "Please pick a shorter display name";
-"vc_pn_mode_recommended_option_tag" = "Recommended";
-"vc_pn_mode_no_option_picked_modal_title" = "Please Pick an Option";
-"vc_home_empty_state_message" = "You don't have any contacts yet";
-"vc_home_empty_state_button_title" = "Start a Session";
-"vc_seed_title" = "Your Recovery Phrase";
-"vc_seed_title_2" = "Meet your recovery phrase";
-"vc_seed_explanation" = "Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone.";
-"vc_seed_reveal_button_title" = "Hold to reveal";
-"view_seed_reminder_subtitle_1" = "Secure your account by saving your recovery phrase";
-"view_seed_reminder_subtitle_2" = "Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.";
-"view_seed_reminder_subtitle_3" = "Make sure to store your recovery phrase in a safe place";
-"vc_path_title" = "Path";
-"vc_path_explanation" = "Session hides your IP by routing your messages through multiple Service Nodes in Session's decentralized network. These are the countries your connection is currently being routed through:";
-"vc_path_device_row_title" = "You";
-"vc_path_guard_node_row_title" = "Entry Node";
-"vc_path_service_node_row_title" = "Service Node";
-"vc_path_destination_row_title" = "Destination";
-"vc_path_learn_more_button_title" = "Learn More";
-"vc_create_private_chat_title" = "New Session";
-"vc_create_private_chat_enter_session_id_tab_title" = "Enter Session ID";
-"vc_create_private_chat_scan_qr_code_tab_title" = "Scan QR Code";
-"vc_create_private_chat_scan_qr_code_explanation" = "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.";
-"vc_enter_public_key_explanation" = "Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.";
-"vc_scan_qr_code_camera_access_explanation" = "Session needs camera access to scan QR codes";
-"vc_scan_qr_code_grant_camera_access_button_title" = "Grant Camera Access";
-"vc_create_closed_group_title" = "New Closed Group";
-"vc_create_closed_group_text_field_hint" = "Enter a group name";
-"vc_create_closed_group_empty_state_message" = "You don't have any contacts yet";
-"vc_create_closed_group_empty_state_button_title" = "Start a Session";
-"vc_create_closed_group_group_name_missing_error" = "Please enter a group name";
-"vc_create_closed_group_group_name_too_long_error" = "Please enter a shorter group name";
-"vc_create_closed_group_too_many_group_members_error" = "A closed group cannot have more than 100 members";
-"vc_join_public_chat_title" = "Join Open Group";
-"vc_join_public_chat_enter_group_url_tab_title" = "Open Group URL";
-"vc_join_public_chat_scan_qr_code_tab_title" = "Scan QR Code";
-"vc_join_public_chat_scan_qr_code_explanation" = "Scan the QR code of the open group you'd like to join";
-"vc_enter_chat_url_text_field_hint" = "Enter an open group URL";
-"vc_settings_title" = "Settings";
-"vc_settings_display_name_text_field_hint" = "Enter a display name";
-"vc_settings_display_name_missing_error" = "Please pick a display name";
-"vc_settings_display_name_too_long_error" = "Please pick a shorter display name";
+"continue_2" = "Doorgaan";
+"copy" = "Kopieer";
+"invalid_url" = "Ongeldige URL";
+"next" = "Volgende";
+"share" = "Delen";
+"invalid_session_id" = "Verkeerde Session ID";
+"cancel" = "Annuleren";
+"your_session_id" = "Uw Session-ID";
+"vc_landing_title_2" = "Uw Sessie begint hier...";
+"vc_landing_register_button_title" = "Session-ID aanmaken";
+"vc_landing_restore_button_title" = "Doorgaan met je sessie";
+"vc_landing_link_button_title" = "Koppel een apparaat";
+"view_fake_chat_bubble_1" = "Wat is Session?";
+"view_fake_chat_bubble_2" = "Het is een gedecentraliseerde, versleutelde berichten-app";
+"view_fake_chat_bubble_3" = "Dus het verzamelt niet mijn persoonlijke informatie of de metagegevens van mijn gesprek? Hoe werkt het?";
+"view_fake_chat_bubble_4" = "Met behulp van een combinatie van geavanceerde anonieme routing en end-to-end encryptietechnologieën.";
+"view_fake_chat_bubble_5" = "Vrienden laten vrienden geen gecompromitteerde berichten apps gebruiken. Graag gedaan.";
+"vc_register_title" = "Zeg hallo tegen uw Session-ID";
+"vc_register_explanation" = "Uw Session-ID is het unieke adres dat mensen kunnen gebruiken om contact met u op te nemen via Session. Zonder verbinding met je echte identiteit, is je Session-ID volledig anoniem en privé.";
+"vc_restore_title" = "Account herstellen";
+"vc_restore_explanation" = "Voer de herstel zin in die je hebt gekregen toen je je hebt aangemeld om je account te herstellen.";
+"vc_restore_seed_text_field_hint" = "Voer uw herstel zin in";
+"vc_link_device_title" = "Koppel een apparaat";
+"vc_link_device_scan_qr_code_tab_title" = "Scan QR-code";
+"vc_display_name_title_2" = "Kies je weergavenaam";
+"vc_display_name_explanation" = "Dit is je naam wanneer je Session gebruikt. Het kan je echte naam zijn, een alias, of wat je maar wilt.";
+"vc_display_name_text_field_hint" = "Kies een weergavenaam";
+"vc_display_name_display_name_missing_error" = "Voer a. u. b. een weergave naam in";
+"vc_display_name_display_name_too_long_error" = "Kies een kortere weergavenaam";
+"vc_pn_mode_recommended_option_tag" = "Aanbevolen";
+"vc_pn_mode_no_option_picked_modal_title" = "Gelieve een optie selecteren";
+"vc_home_empty_state_message" = "U heeft nog geen contactpersonen";
+"vc_home_empty_state_button_title" = "Sessie starten";
+"vc_seed_title" = "Uw Herstel Zin";
+"vc_seed_title_2" = "Maak kennis met uw herstel zin";
+"vc_seed_explanation" = "Uw herstel zin is de hoofdsleutel van uw Session-ID - u kunt deze gebruiken om uw Session-ID te herstellen als u de toegang tot uw apparaat verliest. Sla uw herstel zin op een veilige plek op en geef deze aan niemand op.";
+"vc_seed_reveal_button_title" = "Ingedrukt houden om te onthullen";
+"view_seed_reminder_subtitle_1" = "Beveilig je account door je herstel zin op te slaan";
+"view_seed_reminder_subtitle_2" = "Houd de aangepaste woorden ingedrukt om uw herstelzin te onthullen, en sla het vervolgens veilig op om uw Session-ID te beveiligen.";
+"view_seed_reminder_subtitle_3" = "Zorg ervoor dat u uw herstel zin op een veilige plek opslaat";
+"vc_path_title" = "Locatie";
+"vc_path_explanation" = "Session verbergt uw IP door uw berichten te routeren via meerdere Service Nodes in het gedecentraliseerde netwerk van Session. Dit zijn de landen die uw verbinding momenteel doorvoert:";
+"vc_path_device_row_title" = "U";
+"vc_path_guard_node_row_title" = "Invoer node";
+"vc_path_service_node_row_title" = "Service node";
+"vc_path_destination_row_title" = "Bestemming";
+"vc_path_learn_more_button_title" = "Kom meer te weten";
+"vc_create_private_chat_title" = "Nieuwe sessie";
+"vc_create_private_chat_enter_session_id_tab_title" = "Voer Session-ID in";
+"vc_create_private_chat_scan_qr_code_tab_title" = "Scan QR-code";
+"vc_create_private_chat_scan_qr_code_explanation" = "Scan de QR-code van een gebruiker om een sessie te starten. QR-codes kunnen worden gevonden door op het QR-icoon in de accountinstellingen te tikken.";
+"vc_enter_public_key_explanation" = "Gebruikers kunnen hun Session-ID delen door naar hun accountinstellingen te gaan en op \"Deel Session-ID\" te tikken, of door hun QR-code te delen.";
+"vc_scan_qr_code_camera_access_explanation" = "Session heeft toegang nodig tot de camera om QR codes te scannen";
+"vc_scan_qr_code_grant_camera_access_button_title" = "Toegang tot camera verlenen";
+"vc_create_closed_group_title" = "Nieuwe Gesloten Groep";
+"vc_create_closed_group_text_field_hint" = "Vul een groepsnaam in";
+"vc_create_closed_group_empty_state_message" = "U heeft nog geen contactpersonen";
+"vc_create_closed_group_empty_state_button_title" = "Sessie starten";
+"vc_create_closed_group_group_name_missing_error" = "Vul een groepsnaam in";
+"vc_create_closed_group_group_name_too_long_error" = "Vul a. u. b een kortere groepsnaam in";
+"vc_create_closed_group_too_many_group_members_error" = "Een gesloten groep kan niet meer dan 100 leden hebben";
+"vc_join_public_chat_title" = "Deelnemen aan Open groep";
+"vc_join_public_chat_enter_group_url_tab_title" = "Open Groep-URL openen";
+"vc_join_public_chat_scan_qr_code_tab_title" = "QR-code scannen";
+"vc_join_public_chat_scan_qr_code_explanation" = "Scan de QR-code van de open groep waar u zich bij wilt aansluiten";
+"vc_enter_chat_url_text_field_hint" = "Voer een open groep URL in";
+"vc_settings_title" = "Instellingen";
+"vc_settings_display_name_text_field_hint" = "Kies een weergavenaam";
+"vc_settings_display_name_missing_error" = "Voer a. u. b. een weergave naam in";
+"vc_settings_display_name_too_long_error" = "Kies een kortere weergavenaam";
 "vc_settings_privacy_button_title" = "Privacy";
-"vc_settings_notifications_button_title" = "Notifications";
-"vc_settings_recovery_phrase_button_title" = "Recovery Phrase";
-"vc_settings_clear_all_data_button_title" = "Clear Data";
-"vc_notification_settings_title" = "Notifications";
+"vc_settings_notifications_button_title" = "Meldingen";
+"vc_settings_recovery_phrase_button_title" = "Herstel zin";
+"vc_settings_clear_all_data_button_title" = "Gegevens wissen";
+"vc_notification_settings_title" = "Meldingen";
 "vc_privacy_settings_title" = "Privacy";
-"preferences_notifications_strategy_category_title" = "Notification Strategy";
-"modal_seed_title" = "Your Recovery Phrase";
-"modal_seed_explanation" = "This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.";
-"modal_clear_all_data_title" = "Clear All Data";
-"modal_clear_all_data_explanation" = "This will permanently delete your messages, sessions, and contacts.";
-"vc_qr_code_title" = "QR Code";
-"vc_qr_code_view_my_qr_code_tab_title" = "View My QR Code";
-"vc_qr_code_view_scan_qr_code_tab_title" = "Scan QR Code";
-"vc_qr_code_view_scan_qr_code_explanation" = "Scan someone's QR code to start a conversation with them";
-"vc_view_my_qr_code_explanation" = "This is your QR code. Other users can scan it to start a session with you.";
+"preferences_notifications_strategy_category_title" = "Notificatie Inhoud";
+"modal_seed_title" = "Uw Herstel Zin";
+"modal_seed_explanation" = "Dit is uw herstel zin, Hiermee kun je je sessie-ID herstellen of migreren naar een nieuw apparaat.";
+"modal_clear_all_data_title" = "Wis alle gegevens";
+"modal_clear_all_data_explanation" = "Hiermee worden uw berichten, sessies en contacten permanent verwijderd.";
+"vc_qr_code_title" = "QR-code";
+"vc_qr_code_view_my_qr_code_tab_title" = "Bekijk mijn QR-code";
+"vc_qr_code_view_scan_qr_code_tab_title" = "QR-code scannen";
+"vc_qr_code_view_scan_qr_code_explanation" = "Scan iemands QR-code om een gesprek te beginnen";
+"vc_view_my_qr_code_explanation" = "Dit is je QR-code. Andere gebruikers kunnen deze scannen om een sessie met je te starten.";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
-"fast_mode" = "Fast Mode";
-"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
-"slow_mode" = "Slow Mode";
-"vc_pn_mode_title" = "Message Notifications";
-"vc_notification_settings_notification_mode_title" = "Use Fast Mode";
-"vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
-"vc_enter_recovery_phrase_title" = "Recovery Phrase";
-"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
-"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages";
-"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
-"vc_join_open_group_suggestions_title" = "Or join one of these...";
-"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
-"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
-"copied" = "Copied";
-"vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
-"vc_conversation_input_prompt" = "Message";
-"vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
-"modal_download_attachment_title" = "Trust %@?";
-"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
-"modal_download_button_title" = "Download";
-"modal_open_url_title" = "Open URL?";
-"modal_open_url_explanation" = "Are you sure you want to open %@?";
-"modal_open_url_button_title" = "Open";
-"modal_blocked_title" = "Unblock %@?";
-"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
-"modal_blocked_button_title" = "Unblock";
-"modal_link_previews_title" = "Enable Link Previews?";
-"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
-"modal_link_previews_button_title" = "Enable";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
-"view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"fast_mode_explanation" = "Je wordt op een betrouwbare en onmiddellijke manier op de hoogte gebracht van nieuwe berichten via Apple's notificatieservers.";
+"fast_mode" = "Snelle Modus";
+"slow_mode_explanation" = "Sessie controleert af en toe op nieuwe berichten in de achtergrond.";
+"slow_mode" = "Langzame modus";
+"vc_pn_mode_title" = "Berichtmeldingen";
+"vc_notification_settings_notification_mode_title" = "Gebruik snelle modus";
+"vc_link_device_recovery_phrase_tab_title" = "Herstel zin";
+"vc_link_device_scan_qr_code_explanation" = "Navigeer naar Instellingen → Herstel zin op je andere apparaat om je QR-code te tonen.";
+"vc_enter_recovery_phrase_title" = "Herstel zin";
+"vc_enter_recovery_phrase_explanation" = "Om je apparaat te koppelen, voer je de herstelzin in die je kreeg toen je je aanmeldde.";
+"vc_enter_public_key_text_field_hint" = "Voer Session-ID of ONS naam in";
+"vc_home_title" = "Berichten";
+"admin_group_leave_warning" = "Omdat u de maker van deze groep bent, wordt het voor iedereen verwijderd. Dit kan niet ongedaan worden gemaakt.";
+"vc_join_open_group_suggestions_title" = "Of neem deel aan een van deze...";
+"vc_settings_invite_a_friend_button_title" = "Nodig een vriend uit";
+"vc_settings_help_us_translate_button_title" = "Help ons om Session the vertalen";
+"copied" = "Gekopieerd";
+"vc_conversation_settings_copy_session_id_button_title" = "Session-ID kopiëren";
+"vc_conversation_input_prompt" = "Bericht";
+"vc_conversation_voice_message_cancel_message" = "Veeg om te annuleren";
+"modal_download_attachment_title" = "Vertrouw %@?";
+"modal_download_attachment_explanation" = "Weet je zeker dat je deze media van %@ wilt downloaden?";
+"modal_download_button_title" = "Downloaden";
+"modal_open_url_title" = "URL openen?";
+"modal_open_url_explanation" = "Weet u zeker dat u %@ wilt openen?";
+"modal_open_url_button_title" = "Openen";
+"modal_blocked_title" = "Blokkering opheffen voor %@?";
+"modal_blocked_explanation" = "Weet je zeker dat je %@ weer wilt toelaten?";
+"modal_blocked_button_title" = "Deblokkeren";
+"modal_link_previews_title" = "Linkvoorbeeld inschakelen?";
+"modal_link_previews_explanation" = "Link previews inschakelen zal previews tonen voor URLs die u verstuurt en ontvangt. Dit kan nuttig zijn, maar Session moet contact opnemen met gekoppelde websites om previews te genereren. U kunt links altijd uitschakelen in de Session’s-instellingen.";
+"modal_link_previews_button_title" = "Inschakelen";
+"vc_share_title" = "Delen naar de Session";
+"vc_share_loading_message" = "Bijlagen voorbereiden...";
+"vc_share_sending_message" = "Aan het verzenden...";
+"view_open_group_invitation_description" = "Open groepsuitnodiging";

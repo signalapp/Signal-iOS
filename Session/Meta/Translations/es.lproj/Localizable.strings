@@ -3,7 +3,7 @@
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La versión %@ está disponible en la App Store.";
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Hay disponible una nueva versión de Session";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Hay una nueva versión de Session disponible";
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Actualizar";
 /* No comment provided by engineer. */
@@ -97,11 +97,11 @@
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "No podrás enviar o recibir más mensajes en este grupo.";
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "¿De verdad deseas abandonar el grupo?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "¿De verdad quieres abandonar el grupo?";
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Este paso no se puede deshacer.";
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "¿Eliminar chat?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "¿Eliminar conversación?";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Sin resultados";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -137,7 +137,7 @@
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Editar foto";
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Puede tomar unos minutos.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Esto puede tomar unos minutos.";
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimizando base de datos";
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
@@ -181,7 +181,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ ha abandonado el grupo.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " Fue eliminado del grupo. ";
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
 /* No comment provided by engineer. */
@@ -191,7 +191,7 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Has abandonado el grupo.";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " Has sido eliminado del grupo. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No se pueden compartir más de %@ objetos.";
 /* alert title */
@@ -337,7 +337,7 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Enviar previsualizaciones";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Las previsualizaciones están disponibles para enlaces hacia Imgur, Instagram, Pinterest, Reddit y YouTube.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Previsualizar enlaces";
 /* table section header */
@@ -446,8 +446,8 @@
 "vc_path_title" = "Ruta";
 "vc_path_explanation" = "Session oculta tu dirección IP haciendo rebotar tus mensajes a través de los Nodos de servicio de la red descentralizada de Session. Estos son los países por los que tu conexión está siendo rebotada actualmente.";
 "vc_path_device_row_title" = "Tú";
-"vc_path_guard_node_row_title" = "Entry Node";
-"vc_path_service_node_row_title" = "Service Node";
+"vc_path_guard_node_row_title" = "Nodo de entrada";
+"vc_path_service_node_row_title" = "Nodo de Servicio";
 "vc_path_destination_row_title" = "Destino";
 "vc_path_learn_more_button_title" = "Saber Más";
 "vc_create_private_chat_title" = "Nueva Session";
@@ -490,38 +490,39 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "Escanea el código QR de una persona para comenzar una conversación con ella";
 "vc_view_my_qr_code_explanation" = "Este es tu código QR. Otros usuarios pueden escanearlo para empezar una Session contigo.";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
-"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
-"vc_pn_mode_title" = "Message Notifications";
-"vc_notification_settings_notification_mode_title" = "Use Fast Mode";
-"vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
-"vc_enter_recovery_phrase_title" = "Recovery Phrase";
-"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
-"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages";
-"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
-"vc_join_open_group_suggestions_title" = "Or join one of these...";
-"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
-"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
-"copied" = "Copied";
-"vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
-"vc_conversation_input_prompt" = "Message";
-"vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
-"modal_download_attachment_title" = "Trust %@?";
-"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
-"modal_download_button_title" = "Download";
-"modal_open_url_title" = "Open URL?";
-"modal_open_url_explanation" = "Are you sure you want to open %@?";
-"modal_open_url_button_title" = "Open";
-"modal_blocked_title" = "Unblock %@?";
-"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
-"modal_blocked_button_title" = "Unblock";
-"modal_link_previews_title" = "Enable Link Previews?";
-"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
-"modal_link_previews_button_title" = "Enable";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
-"view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"fast_mode_explanation" = "Se le notificará de los nuevos mensajes de forma fiable e inmediata usando los servidores de notificaciones de Apple.";
+"fast_mode" = "Fast Mode";
+"slow_mode_explanation" = "Session comprobará ocasionalmente si hay nuevos mensajes en segundo plano.";
+"slow_mode" = "Modo lento";
+"vc_pn_mode_title" = "Notificaciones de mensaje";
+"vc_notification_settings_notification_mode_title" = "Usar modo rápido";
+"vc_link_device_recovery_phrase_tab_title" = "Frase de recuperación";
+"vc_link_device_scan_qr_code_explanation" = "Navega a Ajustes → Frase de recuperación en tu otro dispositivo para mostrar tu código QR.";
+"vc_enter_recovery_phrase_title" = "Frase de recuperación";
+"vc_enter_recovery_phrase_explanation" = "Para vincular tú dispositivo, introduce la frase de recuperación que se le dio cuando se registró.";
+"vc_enter_public_key_text_field_hint" = "Introduzca el ID de Session o el nombre ONS";
+"vc_home_title" = "Mensajes";
+"admin_group_leave_warning" = "Debido a que eres el creador de este grupo, se eliminará para todos. Esto no se puede deshacer.";
+"vc_join_open_group_suggestions_title" = "O únase a uno de estos...";
+"vc_settings_invite_a_friend_button_title" = "Invita a un amigo";
+"vc_settings_help_us_translate_button_title" = "Ayúdanos a traducir Session";
+"copied" = "Copiado";
+"vc_conversation_settings_copy_session_id_button_title" = "Copiar ID de Session";
+"vc_conversation_input_prompt" = "Mensaje";
+"vc_conversation_voice_message_cancel_message" = "Desliza para cancelar";
+"modal_download_attachment_title" = "¿Confiar en %@?";
+"modal_download_attachment_explanation" = "¿Estás seguro de que quieres descargar este archivo?";
+"modal_download_button_title" = "Descargar";
+"modal_open_url_title" = "¿Abrir URL?";
+"modal_open_url_explanation" = "¿Estás seguro de que quieres abrir %@?";
+"modal_open_url_button_title" = "Abrir";
+"modal_blocked_title" = "¿Desbloquear a %@?";
+"modal_blocked_explanation" = "¿Estás seguro de que quieres desbloquear a %@?";
+"modal_blocked_button_title" = "Desbloquear";
+"modal_link_previews_title" = "¿Habilitar Previsualizaciones de Enlace?";
+"modal_link_previews_explanation" = "Activar vista previa de enlaces mostrará las vistas previas para las URL que envíe y reciba. Esto puede ser útil, pero Session tendrá que ponerse en contacto con los sitios web enlazados para generar vistas previas. Siempre puedes desactivar las vistas previas de enlaces en la configuración de Session.";
+"modal_link_previews_button_title" = "Activar";
+"vc_share_title" = "Compartir en Session";
+"vc_share_loading_message" = "Preparando archivos adjuntos...";
+"vc_share_sending_message" = "Enviando...";
+"view_open_group_invitation_description" = "Abrir invitación de grupo";
