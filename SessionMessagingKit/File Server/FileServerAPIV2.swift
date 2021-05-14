@@ -74,7 +74,7 @@ public final class FileServerAPIV2 : NSObject {
     // MARK: File Storage
     @objc(upload:)
     public static func objc_upload(file: Data) -> AnyPromise {
-        return AnyPromise.from(upload(file))
+        return AnyPromise.from(upload(file).map { String($0) })
     }
     
     public static func upload(_ file: Data) -> Promise<UInt64> {
