@@ -233,7 +233,9 @@ private class GroupCallMemberCell: UITableViewCell {
     let avatarView = ConversationAvatarView(diameter: 36,
                                             localUserDisplayMode: .asUser)
     let nameLabel = UILabel()
+    let videoMutedSpacer = UIView.spacer(withWidth: 16)
     let videoMutedIndicator = UIImageView()
+    let audioMutedSpacer = UIView.spacer(withWidth: 16)
     let audioMutedIndicator = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -262,9 +264,9 @@ private class GroupCallMemberCell: UITableViewCell {
             avatarView,
             UIView.spacer(withWidth: 8),
             nameLabel,
-            UIView.spacer(withWidth: 16),
+            videoMutedSpacer,
             videoMutedIndicator,
-            UIView.spacer(withWidth: 16),
+            audioMutedSpacer,
             audioMutedIndicator
         ])
         stackView.axis = .horizontal
@@ -279,7 +281,10 @@ private class GroupCallMemberCell: UITableViewCell {
 
     func configure(item: GroupCallMemberSheet.JoinedMember) {
         nameLabel.textColor = Theme.darkThemePrimaryColor
+
+        videoMutedSpacer.isHidden = item.isVideoMuted != true
         videoMutedIndicator.isHidden = item.isVideoMuted != true
+        audioMutedSpacer.isHidden = item.isAudioMuted != true
         audioMutedIndicator.isHidden = item.isAudioMuted != true
 
         if item.address.isLocalAddress {
