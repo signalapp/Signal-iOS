@@ -95,6 +95,7 @@ public struct ChatColorValue: Equatable, Codable {
     public let appearance: ChatColorAppearance
     public let isBuiltIn: Bool
     public let creationTimestamp: UInt64
+    public let updateTimestamp: UInt64
 
     public init(id: String,
                 appearance: ChatColorAppearance,
@@ -104,6 +105,7 @@ public struct ChatColorValue: Equatable, Codable {
         self.appearance = appearance
         self.isBuiltIn = isBuiltIn
         self.creationTimestamp = creationTimestamp
+        self.updateTimestamp = NSDate.ows_millisecondTimeStamp()
     }
 
     public static var randomId: String {
@@ -113,7 +115,7 @@ public struct ChatColorValue: Equatable, Codable {
     // MARK: - Equatable
 
     public static func == (lhs: ChatColorValue, rhs: ChatColorValue) -> Bool {
-        // Ignore creationTimestamp.
+        // Ignore timestamps, etc.
         (lhs.id == rhs.id) && (lhs.appearance == rhs.appearance)
     }
 }
@@ -244,16 +246,14 @@ public class ChatColors: NSObject, Dependencies {
     public static var allValuesSorted: [ChatColorValue] { Self.chatColors.allValuesSorted }
 
     public static let noWallpaperAutoChatColor: ChatColorValue = {
-        // UIColor.ows_accentBlue = 0x2C6BED
-        let color = OWSColor(red: CGFloat(0x2C) / CGFloat(0xff),
-                             green: CGFloat(0x6B) / CGFloat(0xff),
-                             blue: CGFloat(0xED) / CGFloat(0xff))
+        let color = UIColor.ows_accentBlue.asOWSColor
         return ChatColorValue(id: "noWallpaperAuto", appearance: .solidColor(color: color))
     }()
 
     public static func autoChatColor(forThread thread: TSThread?,
                                      transaction: SDSAnyReadTransaction) -> ChatColorValue {
-        if let wallpaper = Wallpaper.get(for: thread, transaction: transaction) {
+        if let wallpaper = Wallpaper.get(for: thread, transaction: transaction),
+           wallpaper != .photo {
             return autoChatColor(forWallpaper: wallpaper)
         } else {
             return Self.noWallpaperAutoChatColor

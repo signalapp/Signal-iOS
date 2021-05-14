@@ -170,24 +170,6 @@ public class ChatColorViewController: OWSTableViewController2 {
         }
     }
 
-    struct Queue<T> {
-        private var items: [T] = []
-
-        var isEmpty: Bool { items.isEmpty }
-
-        mutating func append(_ item: T) {
-            items.append(item)
-        }
-
-        mutating func popHead() -> T? {
-            guard let item = items.first else {
-                return nil
-            }
-            items.remove(at: 0)
-            return item
-        }
-    }
-
     private func didTapOption(option: Option) {
         func showCustomColorView(valueMode: CustomColorViewController.ValueMode) {
             let customColorVC = CustomColorViewController(thread: thread, valueMode: valueMode) { [weak self] (value) in
@@ -238,11 +220,13 @@ public class ChatColorViewController: OWSTableViewController2 {
                 vStackConfig.layoutMargins.totalWidth
         ))
         let optionViewInnerSize: CGFloat = 56
-        let optionViewOuterSize: CGFloat = 62
+        let optionViewSelectionThickness: CGFloat = 4
+        let optionViewSelectionSpacing: CGFloat = 2
+        var optionViewOuterSize: CGFloat { optionViewInnerSize + 2 * optionViewSelectionThickness + 2 * optionViewSelectionSpacing }
         let optionViewMinHSpacing: CGFloat = 16
         let optionsPerRow = max(1, Int(floor(rowWidth + optionViewMinHSpacing) / (optionViewOuterSize + optionViewMinHSpacing)))
 
-        var optionViews = Queue<UIView>()
+        var optionViews = [UIView]()
         databaseStorage.read { transaction in
             let options = Option.allOptions(transaction: transaction)
             for option in options {
@@ -264,7 +248,7 @@ public class ChatColorViewController: OWSTableViewController2 {
                     if isSelected {
                         let selectionView = OWSLayerView.circleView()
                         selectionView.layer.borderColor = Theme.primaryIconColor.cgColor
-                        selectionView.layer.borderWidth = 2
+                        selectionView.layer.borderWidth = optionViewSelectionThickness
                         outerView.addSubview(selectionView)
                         selectionView.autoPinEdgesToSuperviewEdges()
                     }
@@ -282,10 +266,6 @@ public class ChatColorViewController: OWSTableViewController2 {
                     label.textColor = .ows_white
                     label.font = UIFont.systemFont(ofSize: 13)
                     label.adjustsFontSizeToFitWidth = true
-                    label.layer.shadowColor = UIColor.ows_black.cgColor
-                    label.layer.shadowOffset = .zero
-                    label.layer.shadowOpacity = 0.2
-                    label.layer.shadowRadius = 2
                     view.addSubview(label)
                     label.autoCenterInSuperview()
                     label.autoPinEdge(toSuperviewEdge: .leading, withInset: 3, relation: .greaterThanOrEqual)
@@ -323,7 +303,8 @@ public class ChatColorViewController: OWSTableViewController2 {
         while !optionViews.isEmpty {
             var hStackViews = [UIView]()
             while hStackViews.count < optionsPerRow,
-                  let optionView = optionViews.popHead() {
+                  !optionViews.isEmpty {
+                let optionView = optionViews.removeFirst()
                 hStackViews.append(optionView)
             }
             while hStackViews.count < optionsPerRow {
