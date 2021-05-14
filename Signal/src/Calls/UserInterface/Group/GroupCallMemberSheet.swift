@@ -244,31 +244,39 @@ private class GroupCallMemberCell: UITableViewCell {
 
         layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
 
-        contentView.addSubview(avatarView)
-        avatarView.autoPinLeadingToSuperviewMargin()
-        avatarView.autoPinHeightToSuperviewMargins()
+        avatarView.autoSetDimensions(to: CGSize(square: 36))
 
         nameLabel.font = .ows_dynamicTypeBody
-        contentView.addSubview(nameLabel)
-        nameLabel.autoPinLeading(toTrailingEdgeOf: avatarView, offset: 8)
-        nameLabel.autoPinHeightToSuperviewMargins()
 
         videoMutedIndicator.contentMode = .scaleAspectFit
         videoMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
-        contentView.addSubview(videoMutedIndicator)
         videoMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
-        videoMutedIndicator.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 16)
         videoMutedIndicator.setContentHuggingHorizontalHigh()
-        videoMutedIndicator.autoPinHeightToSuperviewMargins()
+        let videoMutedWrapper = UIView()
+        videoMutedWrapper.addSubview(videoMutedIndicator)
+        videoMutedIndicator.autoPinEdgesToSuperviewEdges()
 
         audioMutedIndicator.contentMode = .scaleAspectFit
         audioMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
-        contentView.addSubview(audioMutedIndicator)
         audioMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
-        audioMutedIndicator.autoPinLeading(toTrailingEdgeOf: videoMutedIndicator, offset: 16)
         audioMutedIndicator.setContentHuggingHorizontalHigh()
-        audioMutedIndicator.autoPinHeightToSuperviewMargins()
-        audioMutedIndicator.autoPinTrailingToSuperviewMargin()
+        let audioMutedWrapper = UIView()
+        audioMutedWrapper.addSubview(audioMutedIndicator)
+        audioMutedIndicator.autoPinEdgesToSuperviewEdges()
+
+        let stackView = UIStackView(arrangedSubviews: [
+            avatarView,
+            UIView.spacer(withWidth: 8),
+            nameLabel,
+            UIView.spacer(withWidth: 16),
+            videoMutedWrapper,
+            UIView.spacer(withWidth: 16),
+            audioMutedWrapper
+        ])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        contentView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewMargins()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -277,6 +285,7 @@ private class GroupCallMemberCell: UITableViewCell {
 
     func configure(item: GroupCallMemberSheet.JoinedMember) {
         nameLabel.textColor = Theme.darkThemePrimaryColor
+
         videoMutedIndicator.isHidden = item.isVideoMuted != true
         audioMutedIndicator.isHidden = item.isAudioMuted != true
 
