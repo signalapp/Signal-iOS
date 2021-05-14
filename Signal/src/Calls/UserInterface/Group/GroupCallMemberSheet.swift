@@ -233,9 +233,7 @@ private class GroupCallMemberCell: UITableViewCell {
     let avatarView = ConversationAvatarView(diameter: 36,
                                             localUserDisplayMode: .asUser)
     let nameLabel = UILabel()
-    let videoMutedSpacer = UIView.spacer(withWidth: 16)
     let videoMutedIndicator = UIImageView()
-    let audioMutedSpacer = UIView.spacer(withWidth: 16)
     let audioMutedIndicator = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -254,20 +252,26 @@ private class GroupCallMemberCell: UITableViewCell {
         videoMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
         videoMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
         videoMutedIndicator.setContentHuggingHorizontalHigh()
+        let videoMutedWrapper = UIView()
+        videoMutedWrapper.addSubview(videoMutedIndicator)
+        videoMutedIndicator.autoPinEdgesToSuperviewEdges()
 
         audioMutedIndicator.contentMode = .scaleAspectFit
         audioMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
         audioMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
         audioMutedIndicator.setContentHuggingHorizontalHigh()
+        let audioMutedWrapper = UIView()
+        audioMutedWrapper.addSubview(audioMutedIndicator)
+        audioMutedIndicator.autoPinEdgesToSuperviewEdges()
 
         let stackView = UIStackView(arrangedSubviews: [
             avatarView,
             UIView.spacer(withWidth: 8),
             nameLabel,
-            videoMutedSpacer,
-            videoMutedIndicator,
-            audioMutedSpacer,
-            audioMutedIndicator
+            UIView.spacer(withWidth: 16),
+            videoMutedWrapper,
+            UIView.spacer(withWidth: 16),
+            audioMutedWrapper
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -282,9 +286,7 @@ private class GroupCallMemberCell: UITableViewCell {
     func configure(item: GroupCallMemberSheet.JoinedMember) {
         nameLabel.textColor = Theme.darkThemePrimaryColor
 
-        videoMutedSpacer.isHidden = item.isVideoMuted != true
         videoMutedIndicator.isHidden = item.isVideoMuted != true
-        audioMutedSpacer.isHidden = item.isAudioMuted != true
         audioMutedIndicator.isHidden = item.isAudioMuted != true
 
         if item.address.isLocalAddress {
