@@ -1146,6 +1146,9 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
         if let _value = inviteLinkPassword {
             builder.setInviteLinkPassword(_value)
         }
+        if let _value = descriptionBytes {
+            builder.setDescriptionBytes(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1246,6 +1249,16 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
             proto.inviteLinkPassword = valueParam
         }
 
+        @available(swift, obsoleted: 1.0)
+        public mutating func setDescriptionBytes(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.descriptionBytes = valueParam
+        }
+
+        public mutating func setDescriptionBytes(_ valueParam: Data) {
+            proto.descriptionBytes = valueParam
+        }
+
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -1324,6 +1337,16 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
     }
     public var hasInviteLinkPassword: Bool {
         return !proto.inviteLinkPassword.isEmpty
+    }
+
+    public var descriptionBytes: Data? {
+        guard hasDescriptionBytes else {
+            return nil
+        }
+        return proto.descriptionBytes
+    }
+    public var hasDescriptionBytes: Bool {
+        return !proto.descriptionBytes.isEmpty
     }
 
     public var hasUnknownFields: Bool {
@@ -3698,6 +3721,129 @@ extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction.GroupsProt
 
 #endif
 
+// MARK: - GroupsProtoGroupChangeActionsModifyDescriptionAction
+
+public struct GroupsProtoGroupChangeActionsModifyDescriptionAction: Codable, CustomDebugStringConvertible {
+
+    // MARK: - GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder
+
+    public static func builder() -> GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+        return GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+        var builder = GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder()
+        if let _value = descriptionBytes {
+            builder.setDescriptionBytes(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    public struct GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+
+        private var proto = GroupsProtos_GroupChange.Actions.ModifyDescriptionAction()
+
+        fileprivate init() {}
+
+        @available(swift, obsoleted: 1.0)
+        public mutating func setDescriptionBytes(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.descriptionBytes = valueParam
+        }
+
+        public mutating func setDescriptionBytes(_ valueParam: Data) {
+            proto.descriptionBytes = valueParam
+        }
+
+        public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        public func build() throws -> GroupsProtoGroupChangeActionsModifyDescriptionAction {
+            return try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
+        }
+
+        public func buildSerializedData() throws -> Data {
+            return try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction
+
+    public var descriptionBytes: Data? {
+        guard hasDescriptionBytes else {
+            return nil
+        }
+        return proto.descriptionBytes
+    }
+    public var hasDescriptionBytes: Bool {
+        return !proto.descriptionBytes.isEmpty
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try GroupsProtos_GroupChange.Actions.ModifyDescriptionAction(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction) throws {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyDescriptionAction -
+
+        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyDescriptionAction -
+
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension GroupsProtoGroupChangeActionsModifyDescriptionAction {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension GroupsProtoGroupChangeActionsModifyDescriptionAction.GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyDescriptionAction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - GroupsProtoGroupChangeActions
 
 public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertible {
@@ -3747,6 +3893,9 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         builder.setPromoteRequestingMembers(promoteRequestingMembers)
         if let _value = modifyInviteLinkPassword {
             builder.setModifyInviteLinkPassword(_value)
+        }
+        if let _value = modifyDescription {
+            builder.setModifyDescription(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3924,6 +4073,16 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
             proto.modifyInviteLinkPassword = valueParam.proto
         }
 
+        @available(swift, obsoleted: 1.0)
+        public mutating func setModifyDescription(_ valueParam: GroupsProtoGroupChangeActionsModifyDescriptionAction?) {
+            guard let valueParam = valueParam else { return }
+            proto.modifyDescription = valueParam.proto
+        }
+
+        public mutating func setModifyDescription(_ valueParam: GroupsProtoGroupChangeActionsModifyDescriptionAction) {
+            proto.modifyDescription = valueParam.proto
+        }
+
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -3973,6 +4132,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
 
     public let modifyInviteLinkPassword: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction?
 
+    public let modifyDescription: GroupsProtoGroupChangeActionsModifyDescriptionAction?
+
     public var sourceUuid: Data? {
         guard hasSourceUuid else {
             return nil
@@ -4015,7 +4176,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                  addRequestingMembers: [GroupsProtoGroupChangeActionsAddRequestingMemberAction],
                  deleteRequestingMembers: [GroupsProtoGroupChangeActionsDeleteRequestingMemberAction],
                  promoteRequestingMembers: [GroupsProtoGroupChangeActionsPromoteRequestingMemberAction],
-                 modifyInviteLinkPassword: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction?) {
+                 modifyInviteLinkPassword: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction?,
+                 modifyDescription: GroupsProtoGroupChangeActionsModifyDescriptionAction?) {
         self.proto = proto
         self.addMembers = addMembers
         self.deleteMembers = deleteMembers
@@ -4034,6 +4196,7 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         self.deleteRequestingMembers = deleteRequestingMembers
         self.promoteRequestingMembers = promoteRequestingMembers
         self.modifyInviteLinkPassword = modifyInviteLinkPassword
+        self.modifyDescription = modifyDescription
     }
 
     public func serializedData() throws -> Data {
@@ -4111,6 +4274,11 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
             modifyInviteLinkPassword = try GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto.modifyInviteLinkPassword)
         }
 
+        var modifyDescription: GroupsProtoGroupChangeActionsModifyDescriptionAction?
+        if proto.hasModifyDescription {
+            modifyDescription = try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto.modifyDescription)
+        }
+
         // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActions -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChangeActions -
@@ -4132,7 +4300,8 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
                   addRequestingMembers: addRequestingMembers,
                   deleteRequestingMembers: deleteRequestingMembers,
                   promoteRequestingMembers: promoteRequestingMembers,
-                  modifyInviteLinkPassword: modifyInviteLinkPassword)
+                  modifyInviteLinkPassword: modifyInviteLinkPassword,
+                  modifyDescription: modifyDescription)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -5073,6 +5242,9 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
         if hasPendingAdminApproval {
             builder.setPendingAdminApproval(pendingAdminApproval)
         }
+        if let _value = descriptionBytes {
+            builder.setDescriptionBytes(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5129,6 +5301,16 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
 
         public mutating func setPendingAdminApproval(_ valueParam: Bool) {
             proto.pendingAdminApproval = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public mutating func setDescriptionBytes(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.descriptionBytes = valueParam
+        }
+
+        public mutating func setDescriptionBytes(_ valueParam: Data) {
+            proto.descriptionBytes = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -5213,6 +5395,16 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
     }
     public var hasPendingAdminApproval: Bool {
         return true
+    }
+
+    public var descriptionBytes: Data? {
+        guard hasDescriptionBytes else {
+            return nil
+        }
+        return proto.descriptionBytes
+    }
+    public var hasDescriptionBytes: Bool {
+        return !proto.descriptionBytes.isEmpty
     }
 
     public var hasUnknownFields: Bool {

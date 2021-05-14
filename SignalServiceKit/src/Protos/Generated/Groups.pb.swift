@@ -273,6 +273,8 @@ struct GroupsProtos_Group {
 
   var inviteLinkPassword: Data = Data()
 
+  var descriptionBytes: Data = Data()
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -404,6 +406,7 @@ struct GroupsProtos_GroupChange {
     /// Clears the value of `modifyMemberAccess`. Subsequent reads from it will return its default value.
     mutating func clearModifyMemberAccess() {_uniqueStorage()._modifyMemberAccess = nil}
 
+    /// change epoch = 1
     var modifyAddFromInviteLinkAccess: GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction {
       get {return _storage._modifyAddFromInviteLinkAccess ?? GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction()}
       set {_uniqueStorage()._modifyAddFromInviteLinkAccess = newValue}
@@ -413,21 +416,25 @@ struct GroupsProtos_GroupChange {
     /// Clears the value of `modifyAddFromInviteLinkAccess`. Subsequent reads from it will return its default value.
     mutating func clearModifyAddFromInviteLinkAccess() {_uniqueStorage()._modifyAddFromInviteLinkAccess = nil}
 
+    /// change epoch = 1
     var addRequestingMembers: [GroupsProtos_GroupChange.Actions.AddRequestingMemberAction] {
       get {return _storage._addRequestingMembers}
       set {_uniqueStorage()._addRequestingMembers = newValue}
     }
 
+    /// change epoch = 1
     var deleteRequestingMembers: [GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction] {
       get {return _storage._deleteRequestingMembers}
       set {_uniqueStorage()._deleteRequestingMembers = newValue}
     }
 
+    /// change epoch = 1
     var promoteRequestingMembers: [GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction] {
       get {return _storage._promoteRequestingMembers}
       set {_uniqueStorage()._promoteRequestingMembers = newValue}
     }
 
+    /// change epoch = 1
     var modifyInviteLinkPassword: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction {
       get {return _storage._modifyInviteLinkPassword ?? GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction()}
       set {_uniqueStorage()._modifyInviteLinkPassword = newValue}
@@ -436,6 +443,16 @@ struct GroupsProtos_GroupChange {
     var hasModifyInviteLinkPassword: Bool {return _storage._modifyInviteLinkPassword != nil}
     /// Clears the value of `modifyInviteLinkPassword`. Subsequent reads from it will return its default value.
     mutating func clearModifyInviteLinkPassword() {_uniqueStorage()._modifyInviteLinkPassword = nil}
+
+    /// change epoch = 2
+    var modifyDescription: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction {
+      get {return _storage._modifyDescription ?? GroupsProtos_GroupChange.Actions.ModifyDescriptionAction()}
+      set {_uniqueStorage()._modifyDescription = newValue}
+    }
+    /// Returns true if `modifyDescription` has been explicitly set.
+    var hasModifyDescription: Bool {return _storage._modifyDescription != nil}
+    /// Clears the value of `modifyDescription`. Subsequent reads from it will return its default value.
+    mutating func clearModifyDescription() {_uniqueStorage()._modifyDescription = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -688,6 +705,18 @@ struct GroupsProtos_GroupChange {
       init() {}
     }
 
+    struct ModifyDescriptionAction {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var descriptionBytes: Data = Data()
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+    }
+
     init() {}
 
     fileprivate var _storage = _StorageClass.defaultInstance
@@ -878,6 +907,8 @@ struct GroupsProtos_GroupJoinInfo {
   var revision: UInt32 = 0
 
   var pendingAdminApproval: Bool = false
+
+  var descriptionBytes: Data = Data()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1192,7 +1223,8 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     7: .same(proto: "members"),
     8: .same(proto: "pendingMembers"),
     9: .same(proto: "requestingMembers"),
-    10: .same(proto: "inviteLinkPassword")
+    10: .same(proto: "inviteLinkPassword"),
+    11: .same(proto: "descriptionBytes")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1211,6 +1243,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 8: try { try decoder.decodeRepeatedMessageField(value: &self.pendingMembers) }()
       case 9: try { try decoder.decodeRepeatedMessageField(value: &self.requestingMembers) }()
       case 10: try { try decoder.decodeSingularBytesField(value: &self.inviteLinkPassword) }()
+      case 11: try { try decoder.decodeSingularBytesField(value: &self.descriptionBytes) }()
       default: break
       }
     }
@@ -1247,6 +1280,9 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if !self.inviteLinkPassword.isEmpty {
       try visitor.visitSingularBytesField(value: self.inviteLinkPassword, fieldNumber: 10)
     }
+    if !self.descriptionBytes.isEmpty {
+      try visitor.visitSingularBytesField(value: self.descriptionBytes, fieldNumber: 11)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1261,6 +1297,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if lhs.pendingMembers != rhs.pendingMembers {return false}
     if lhs.requestingMembers != rhs.requestingMembers {return false}
     if lhs.inviteLinkPassword != rhs.inviteLinkPassword {return false}
+    if lhs.descriptionBytes != rhs.descriptionBytes {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1331,7 +1368,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     16: .same(proto: "addRequestingMembers"),
     17: .same(proto: "deleteRequestingMembers"),
     18: .same(proto: "promoteRequestingMembers"),
-    19: .same(proto: "modifyInviteLinkPassword")
+    19: .same(proto: "modifyInviteLinkPassword"),
+    20: .same(proto: "modifyDescription")
   ]
 
   fileprivate class _StorageClass {
@@ -1354,6 +1392,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     var _deleteRequestingMembers: [GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction] = []
     var _promoteRequestingMembers: [GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction] = []
     var _modifyInviteLinkPassword: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction?
+    var _modifyDescription: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction?
 
     static let defaultInstance = _StorageClass()
 
@@ -1379,6 +1418,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       _deleteRequestingMembers = source._deleteRequestingMembers
       _promoteRequestingMembers = source._promoteRequestingMembers
       _modifyInviteLinkPassword = source._modifyInviteLinkPassword
+      _modifyDescription = source._modifyDescription
     }
   }
 
@@ -1416,6 +1456,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         case 17: try { try decoder.decodeRepeatedMessageField(value: &_storage._deleteRequestingMembers) }()
         case 18: try { try decoder.decodeRepeatedMessageField(value: &_storage._promoteRequestingMembers) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._modifyInviteLinkPassword) }()
+        case 20: try { try decoder.decodeSingularMessageField(value: &_storage._modifyDescription) }()
         default: break
         }
       }
@@ -1481,6 +1522,9 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._modifyInviteLinkPassword {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
       }
+      if let v = _storage._modifyDescription {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1509,6 +1553,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._deleteRequestingMembers != rhs_storage._deleteRequestingMembers {return false}
         if _storage._promoteRequestingMembers != rhs_storage._promoteRequestingMembers {return false}
         if _storage._modifyInviteLinkPassword != rhs_storage._modifyInviteLinkPassword {return false}
+        if _storage._modifyDescription != rhs_storage._modifyDescription {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2112,6 +2157,38 @@ extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: Swift
   }
 }
 
+extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyDescriptionAction"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "descriptionBytes")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.descriptionBytes) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.descriptionBytes.isEmpty {
+      try visitor.visitSingularBytesField(value: self.descriptionBytes, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction, rhs: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction) -> Bool {
+    if lhs.descriptionBytes != rhs.descriptionBytes {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChanges"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -2335,7 +2412,8 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
     4: .same(proto: "memberCount"),
     5: .same(proto: "addFromInviteLink"),
     6: .same(proto: "revision"),
-    7: .same(proto: "pendingAdminApproval")
+    7: .same(proto: "pendingAdminApproval"),
+    8: .same(proto: "descriptionBytes")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2351,6 +2429,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
       case 5: try { try decoder.decodeSingularEnumField(value: &self.addFromInviteLink) }()
       case 6: try { try decoder.decodeSingularUInt32Field(value: &self.revision) }()
       case 7: try { try decoder.decodeSingularBoolField(value: &self.pendingAdminApproval) }()
+      case 8: try { try decoder.decodeSingularBytesField(value: &self.descriptionBytes) }()
       default: break
       }
     }
@@ -2378,6 +2457,9 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if self.pendingAdminApproval != false {
       try visitor.visitSingularBoolField(value: self.pendingAdminApproval, fieldNumber: 7)
     }
+    if !self.descriptionBytes.isEmpty {
+      try visitor.visitSingularBytesField(value: self.descriptionBytes, fieldNumber: 8)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2389,6 +2471,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
     if lhs.addFromInviteLink != rhs.addFromInviteLink {return false}
     if lhs.revision != rhs.revision {return false}
     if lhs.pendingAdminApproval != rhs.pendingAdminApproval {return false}
+    if lhs.descriptionBytes != rhs.descriptionBytes {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
