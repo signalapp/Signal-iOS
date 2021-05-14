@@ -289,11 +289,7 @@ private class GroupCallMemberCell: UITableViewCell {
         videoMutedIndicator.isHidden = item.isVideoMuted != true
         audioMutedIndicator.isHidden = item.isAudioMuted != true
 
-        if item.address.isLocalAddress {
-            nameLabel.text = item.displayName
-        } else {
-            nameLabel.text = item.displayName
-        }
+        nameLabel.text = item.displayName
 
         avatarView.configureWithSneakyTransaction(address: item.address)
     }
