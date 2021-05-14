@@ -27,7 +27,8 @@ class PreviewWallpaperViewController: UIViewController {
 
     lazy var mockConversationView = MockConversationView(
         model: buildMockConversationModel(),
-        hasWallpaper: true
+        hasWallpaper: true,
+        customChatColor: nil
     )
 
     init(mode: Mode, thread: TSThread? = nil, delegate: PreviewWallpaperDelegate) {
@@ -55,6 +56,8 @@ class PreviewWallpaperViewController: UIViewController {
         mockConversationView.autoPinWidthToSuperview()
         mockConversationView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 20)
         mockConversationView.isUserInteractionEnabled = false
+        // TODO: Here and elsewhere in this class we need to update
+        // mockConversationView.customChatColor
 
         modeDidChange()
 

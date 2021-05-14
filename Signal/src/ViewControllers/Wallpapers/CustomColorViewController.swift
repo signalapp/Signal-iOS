@@ -325,22 +325,24 @@ public class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
-    func didTapSet() {
+    fileprivate var currentChatColorValue: ChatColorValue {
         let appearance = self.currentChatColorAppearance()
-        let newValue: ChatColorValue
+        Logger.verbose("appearance: \(appearance), ")
         switch valueMode {
         case .createNew:
-            newValue = ChatColorValue(id: ChatColorValue.randomId,
+            return ChatColorValue(id: ChatColorValue.randomId,
                                       appearance: appearance)
         case .editExisting(let oldValue):
             // Preserve the old id and creationTimestamp.
-            newValue = ChatColorValue(id: oldValue.id,
+            return ChatColorValue(id: oldValue.id,
                                       appearance: appearance,
                                       creationTimestamp: oldValue.creationTimestamp)
         }
+    }
 
-        Logger.verbose("appearance: \(appearance), ")
+    @objc
+    func didTapSet() {
+        let newValue = self.currentChatColorValue
         completion(newValue)
         self.navigationController?.popViewController(animated: true)
     }
@@ -766,6 +768,8 @@ private protocol CustomColorPreviewDelegate: class {
     var gradientColor1: OWSColor { get }
     var gradientColor2: OWSColor { get }
 
+    var currentChatColorValue: ChatColorValue { get }
+
     func switchToEditMode(_ value: CustomColorViewController.EditMode)
 }
 
@@ -795,9 +799,11 @@ private class CustomColorPreviewView: UIView {
     init(thread: TSThread?,
          transaction: SDSAnyReadTransaction,
          delegate: CustomColorPreviewDelegate) {
+
         self.mockConversationView = MockConversationView(
             model: CustomColorPreviewView.buildMockConversationModel(),
-            hasWallpaper: true
+            hasWallpaper: true,
+            customChatColor: delegate.currentChatColorValue
         )
         self.delegate = delegate
 
@@ -834,7 +840,8 @@ private class CustomColorPreviewView: UIView {
 
     fileprivate func updateMockConversation() {
         guard let delegate = delegate else { return }
-        // TODO: mockConversationView
+
+        mockConversationView.customChatColor = delegate.currentChatColorValue
 
         if let knobView1 = self.knobView1 {
             knobView1.value = ChatColorValue(id: "knob1",

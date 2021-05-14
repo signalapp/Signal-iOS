@@ -95,7 +95,8 @@ public class ChatColorViewController: OWSTableViewController2 {
 
         let mockConversationView = MockConversationView(
             model: buildMockConversationModel(),
-            hasWallpaper: true
+            hasWallpaper: true,
+            customChatColor: currentValue
         )
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false

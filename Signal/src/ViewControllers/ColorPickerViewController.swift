@@ -150,7 +150,8 @@ class ColorPickerView: UIView, ColorViewDelegate {
                 comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble."
             ))
         ]),
-        hasWallpaper: false
+        hasWallpaper: false,
+        customChatColor: nil
     )
 
     init(thread: TSThread) {

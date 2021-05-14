@@ -8,7 +8,9 @@ import Foundation
 public class ChatColorSwatchView: ManualLayoutViewWithLayer {
     public var chatColorValue: ChatColorValue {
         didSet {
-            configure()
+            if chatColorValue != oldValue {
+                configure()
+            }
         }
     }
 
