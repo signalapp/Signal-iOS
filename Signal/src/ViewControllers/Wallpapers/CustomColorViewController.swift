@@ -18,13 +18,13 @@ public class CustomColorViewController: OWSTableViewController2 {
 
     private let modeControl = UISegmentedControl()
 
-    private enum EditMode: Int {
+    fileprivate enum EditMode: Int {
         case solidColor
         case gradientColor1
         case gradientColor2
     }
 
-    private var editMode: EditMode = .solidColor {
+    fileprivate var editMode: EditMode = .solidColor {
         didSet {
             if isViewLoaded {
                 updateTableContents()
@@ -280,7 +280,7 @@ public class CustomColorViewController: OWSTableViewController2 {
     }
 
     private func updateMockConversation() {
-        // TODO: mockConversationView
+        self.previewView?.updateMockConversation()
     }
 
     // MARK: - Events
@@ -297,17 +297,31 @@ public class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
+    fileprivate var solidColorAppearance: ChatColorAppearance {
+        let solidColor = self.solidColorSetting.asOWSColor(hueSpectrum: self.hueSpectrum)
+        return .solidColor(color: solidColor)
+    }
+
+    fileprivate var gradientColor1: OWSColor {
+        self.gradientColor1Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
+    }
+
+    fileprivate var gradientColor2: OWSColor {
+        self.gradientColor2Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
+    }
+
+    fileprivate var gradientAppearance: ChatColorAppearance {
+        return .gradient(gradientColor1: self.gradientColor1,
+                         gradientColor2: self.gradientColor2,
+                         angleRadians: self.angleRadians)
+    }
+
     private func currentChatColorAppearance() -> ChatColorAppearance {
         switch editMode {
         case .solidColor:
-            let solidColor = self.solidColorSetting.asOWSColor(hueSpectrum: self.hueSpectrum)
-            return .solidColor(color: solidColor)
+            return solidColorAppearance
         case .gradientColor1, .gradientColor2:
-            let gradientColor1 = self.gradientColor1Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
-            let gradientColor2 = self.gradientColor2Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
-            return .gradient(gradientColor1: gradientColor1,
-                             gradientColor2: gradientColor2,
-                             angleRadians: self.angleRadians)
+            return gradientAppearance
         }
     }
 
@@ -441,12 +455,12 @@ private class SpectrumSlider: ManualLayoutView {
 
         self.autoSetDimension(.height, toSize: Self.knobDiameter)
 
-        addGestureRecognizer(SpectrumGestureRecognizer(target: self, action: #selector(handleGesture(_:))))
+        addGestureRecognizer(CustomColorGestureRecognizer(target: self, action: #selector(handleGesture(_:))))
         self.isUserInteractionEnabled = true
     }
 
     @objc
-    private func handleGesture(_ sender: SpectrumGestureRecognizer) {
+    private func handleGesture(_ sender: CustomColorGestureRecognizer) {
         switch sender.state {
         case .began, .changed, .ended:
             let location = sender.location(in: self)
@@ -502,64 +516,6 @@ private class SpectrumSlider: ManualLayoutView {
         owsAssertDebug(image.pixelSize == spectrumImageSizePixels)
 
         spectrumImageView.image = image
-    }
-
-    class SpectrumGestureRecognizer: UIGestureRecognizer {
-        private var isActive = false
-
-        @objc
-        public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-            handle(event: event)
-        }
-
-        @objc
-        public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-            handle(event: event)
-        }
-
-        @objc
-        public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-            handle(event: event)
-        }
-
-        @objc
-        public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-            handle(event: event)
-        }
-
-        private func handle(event: UIEvent) {
-            guard let allTouches = event.allTouches,
-                  allTouches.count == 1,
-                  let firstTouch = allTouches.first else {
-                self.state = .failed
-                self.isActive = false
-                return
-            }
-            switch firstTouch.phase {
-            case .began:
-                if !self.isActive {
-                    self.state = .began
-                    self.isActive = true
-                    return
-                }
-            case .moved, .stationary:
-                if self.isActive {
-                    self.state = .changed
-                    self.isActive = true
-                    return
-                }
-            case .ended:
-                if self.isActive {
-                    self.state = .ended
-                    self.isActive = false
-                    return
-                }
-            default:
-                break
-            }
-            self.state = .failed
-            self.isActive = false
-        }
     }
 }
 
@@ -798,7 +754,10 @@ extension CustomColorViewController: CustomColorPreviewDelegate {
 // MARK: -
 
 private protocol CustomColorPreviewDelegate: class {
-    var angleRadians: CGFloat { get }
+    var angleRadians: CGFloat { get set }
+    var editMode: CustomColorViewController.EditMode { get }
+    var gradientColor1: OWSColor { get }
+    var gradientColor2: OWSColor { get }
 }
 
 // MARK: -
@@ -807,6 +766,22 @@ private class CustomColorPreviewView: UIView {
     private let mockConversationView: MockConversationView
 
     private weak var delegate: CustomColorPreviewDelegate?
+
+    public override var bounds: CGRect {
+        didSet {
+            if oldValue != bounds {
+                updateKnobLayout()
+            }
+        }
+    }
+
+    public override var frame: CGRect {
+        didSet {
+            if oldValue != frame {
+                updateKnobLayout()
+            }
+        }
+    }
 
     init(thread: TSThread?,
          transaction: SDSAnyReadTransaction,
@@ -836,10 +811,240 @@ private class CustomColorPreviewView: UIView {
         mockConversationView.autoPinWidthToSuperview()
         mockConversationView.autoPinEdge(toSuperviewEdge: .top, withInset: 32)
         mockConversationView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 32)
+
+        ensureControlState()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    fileprivate func updateMockConversation() {
+        guard let delegate = delegate else { return }
+        // TODO: mockConversationView
+    }
+
+    private static let swatchSize: CGFloat = 44
+    private static let selectionBorderThickness: CGFloat = 4
+    private static var knobSize: CGFloat { swatchSize + selectionBorderThickness * 2 }
+
+    private func buildKnobView(isSelected: Bool,
+                               chatColorValue: ChatColorValue) -> UIView {
+        let swatchView = ChatColorSwatchView(chatColorValue: chatColorValue, mode: .circle)
+        swatchView.layer.borderWidth = 1
+        swatchView.layer.borderColor = UIColor.ows_white.cgColor
+        swatchView.layer.shadowColor = UIColor.ows_black.cgColor
+        swatchView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        swatchView.layer.shadowOpacity = 0.3
+        swatchView.layer.shadowRadius = 4
+        swatchView.autoSetDimensions(to: .square(Self.swatchSize))
+
+        let wrapper = OWSLayerView.circleView()
+        wrapper.layoutMargins = UIEdgeInsets(margin: Self.selectionBorderThickness)
+        wrapper.addSubview(swatchView)
+        swatchView.autoPinEdgesToSuperviewMargins()
+        wrapper.autoSetDimensions(to: .square(Self.knobSize))
+
+        if isSelected {
+            wrapper.layer.borderWidth = Self.selectionBorderThickness
+            wrapper.layer.borderColor = UIColor(white: 0, alpha: 0.25).cgColor
+        }
+
+        return wrapper
+    }
+
+    private var knobView1: UIView?
+    private var knobView2: UIView?
+
+    private var knobView1ConstraintX: NSLayoutConstraint?
+    private var knobView1ConstraintY: NSLayoutConstraint?
+    private var knobView2ConstraintX: NSLayoutConstraint?
+    private var knobView2ConstraintY: NSLayoutConstraint?
+
+    private func ensureControlState() {
+        guard let delegate = delegate else { return }
+
+        switch delegate.editMode {
+        case .solidColor:
+            return
+        case .gradientColor1, .gradientColor2:
+            break
+        }
+
+        let knobView1 = buildKnobView(isSelected: delegate.editMode == .gradientColor1,
+                                  chatColorValue: ChatColorValue(id: "knob1",
+                                                                 appearance: .solidColor(color: delegate.gradientColor1)))
+        let knobView2 = buildKnobView(isSelected: delegate.editMode == .gradientColor2,
+                                  chatColorValue: ChatColorValue(id: "knob2",
+                                                                 appearance: .solidColor(color: delegate.gradientColor2)))
+        self.knobView1 = knobView1
+        self.knobView2 = knobView2
+
+        addSubview(knobView1)
+        addSubview(knobView2)
+
+        knobView1ConstraintX = NSLayoutConstraint(item: knobView1,
+                                                  attribute: .centerX,
+                                                  relatedBy: .equal,
+                                                  toItem: self,
+                                                  attribute: .centerX,
+                                                  multiplier: 1,
+                                                  constant: 0)
+        knobView1ConstraintY = NSLayoutConstraint(item: knobView1,
+                                                  attribute: .centerY,
+                                                  relatedBy: .equal,
+                                                  toItem: self,
+                                                  attribute: .centerY,
+                                                  multiplier: 1,
+                                                  constant: 0)
+        knobView2ConstraintX = NSLayoutConstraint(item: knobView2,
+                                                  attribute: .centerX,
+                                                  relatedBy: .equal,
+                                                  toItem: self,
+                                                  attribute: .centerX,
+                                                  multiplier: 1,
+                                                  constant: 0)
+        knobView2ConstraintY = NSLayoutConstraint(item: knobView2,
+                                                  attribute: .centerY,
+                                                  relatedBy: .equal,
+                                                  toItem: self,
+                                                  attribute: .centerY,
+                                                  multiplier: 1,
+                                                  constant: 0)
+        knobView1ConstraintX?.autoInstall()
+        knobView1ConstraintY?.autoInstall()
+        knobView2ConstraintX?.autoInstall()
+        knobView2ConstraintY?.autoInstall()
+
+        updateKnobLayout()
+
+        addGestureRecognizer(CustomColorGestureRecognizer(target: self, action: #selector(handleGesture(_:))))
+        self.isUserInteractionEnabled = true
+    }
+
+    private enum GestureMode {
+        case none
+        case knob1
+        case knob2
+    }
+
+    private var gestureMode: GestureMode = .none
+
+    @objc
+    private func handleGesture(_ sender: CustomColorGestureRecognizer) {
+        switch sender.state {
+        case .began, .changed, .ended:
+            guard let delegate = self.delegate,
+                  let knobView1 = self.knobView1,
+                  let knobView2 = self.knobView2 else {
+                gestureMode = .none
+                return
+            }
+            let touchLocation = sender.location(in: self)
+
+            if sender.state == .began {
+                // Only "grab" a knob if the gesture starts near a knob.
+                let knobDistance1 = knobView1.frame.center.distance(touchLocation)
+                let knobDistance2 = knobView2.frame.center.distance(touchLocation)
+                Logger.verbose("---- knobView1.center: \(knobView1.frame.center), knobView2.center: \(knobView2.frame.center)")
+                Logger.verbose("---- knobDistance1: \(knobDistance1), knobDistance2: \(knobDistance2), touchLocation: \(touchLocation)")
+                let minFirstTouchDistance = Self.knobSize * 2
+                if knobDistance1 < minFirstTouchDistance,
+                   knobDistance2 < minFirstTouchDistance {
+                    if knobDistance1 < knobDistance2 {
+                        gestureMode = .knob1
+                    } else {
+                        gestureMode = .knob2
+                    }
+                } else if knobDistance1 < minFirstTouchDistance {
+                    gestureMode = .knob1
+                } else if knobDistance2 < minFirstTouchDistance {
+                    gestureMode = .knob2
+                } else {
+                    gestureMode = .none
+                    return
+                }
+            }
+
+            let viewCenter = self.bounds.center
+            var touchVector = touchLocation - viewCenter
+            // Note the signs.
+            touchVector = CGPoint(x: +touchVector.x, y: -touchVector.y)
+
+            switch gestureMode {
+            case .knob1:
+                break
+            case .knob2:
+                // To simplify the math, pretend we're manipulating the first knob
+                // by inverting the vector.
+                touchVector = touchVector * -1
+            case .none:
+                return
+            }
+
+            let angleRadians = atan2(touchVector.x, touchVector.y)
+            Logger.verbose("---- gestureMode: \(gestureMode), touchVector: \(touchVector), angleRadians \(angleRadians)")
+            Logger.verbose("---- sin: \(sin(angleRadians)), cos: \(cos(angleRadians))")
+            delegate.angleRadians = angleRadians
+            updateKnobLayout()
+            updateMockConversation()
+        default:
+            gestureMode = .none
+            break
+        }
+    }
+
+    private func updateKnobLayout() {
+        guard let delegate = self.delegate,
+              let knobView1 = self.knobView1,
+              let knobView2 = self.knobView2,
+              let knobView1ConstraintX = self.knobView1ConstraintX,
+              let knobView1ConstraintY = self.knobView1ConstraintY,
+              let knobView2ConstraintX = self.knobView2ConstraintX,
+              let knobView2ConstraintY = self.knobView2ConstraintY else {
+            return
+        }
+
+        let knobInset: CGFloat = 20
+        let knobRect = self.bounds.inset(by: UIEdgeInsets(margin: knobInset))
+        guard knobRect.size.width > 0,
+              knobRect.size.height > 0 else {
+            return
+        }
+
+        let angleRadians = delegate.angleRadians
+        // Note the signs.
+        let unitVector = CGPoint(x: +sin(angleRadians), y: -cos(angleRadians))
+        let oversizeVector = unitVector * knobRect.size.largerAxis
+        let scaleFactorX = (knobRect.size.width / 2) / abs(oversizeVector.x)
+        let scaleFactorY = (knobRect.size.height / 2) / abs(oversizeVector.y)
+        let scaleFactor: CGFloat
+        if abs(oversizeVector.x) > 0,
+           abs(oversizeVector.y) > 0 {
+            scaleFactor = min(scaleFactorX, scaleFactorY)
+        } else if abs(oversizeVector.x) > 0 {
+            scaleFactor = scaleFactorX
+        } else if abs(oversizeVector.y) > 0 {
+            scaleFactor = scaleFactorY
+        } else {
+            owsFailDebug("Invalid vector state.")
+            scaleFactor = 1
+        }
+        let vector1 = oversizeVector * +scaleFactor
+        // Knob 2 is always opposite knob 1.
+        let vector2 = vector1 * -1
+
+        Logger.verbose("---- angleRadians: \(angleRadians)")
+        Logger.verbose("---- knobRect: \(knobRect)")
+        Logger.verbose("---- vector1: \(vector1)")
+        Logger.verbose("---- vector2: \(vector2)")
+
+        knobView1ConstraintX.constant = vector1.x
+        knobView1ConstraintY.constant = vector1.y
+        knobView2ConstraintX.constant = vector2.x
+        knobView2ConstraintY.constant = vector2.y
+        knobView1.setNeedsLayout()
+        knobView2.setNeedsLayout()
     }
 
     private static func buildMockConversationMode() -> MockConversationView.Mode {
@@ -855,5 +1060,71 @@ private class CustomColorPreviewView: UIView {
             incomingText: incomingText,
             outgoingText: outgoingText
         )
+    }
+}
+
+// MARK: -
+
+class CustomColorGestureRecognizer: UIGestureRecognizer {
+    private var isActive = false
+
+    @objc
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        handle(event: event)
+    }
+
+    @objc
+    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+        handle(event: event)
+    }
+
+    @objc
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+        handle(event: event)
+    }
+
+    @objc
+    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+        handle(event: event)
+    }
+
+    private func handle(event: UIEvent) {
+        guard let allTouches = event.allTouches,
+              allTouches.count == 1,
+              let firstTouch = allTouches.first else {
+            self.state = .failed
+            self.isActive = false
+            return
+        }
+        switch firstTouch.phase {
+        case .began:
+            guard let view = self.view,
+                  view.bounds.contains(firstTouch.location(in: view)) else {
+                self.state = .failed
+                self.isActive = false
+                return
+            }
+            if !self.isActive {
+                self.state = .began
+                self.isActive = true
+                return
+            }
+        case .moved, .stationary:
+            if self.isActive {
+                self.state = .changed
+                self.isActive = true
+                return
+            }
+        case .ended:
+            if self.isActive {
+                self.state = .ended
+                self.isActive = false
+                return
+            }
+        default:
+            break
+        }
+        self.state = .failed
+        self.isActive = false
     }
 }
