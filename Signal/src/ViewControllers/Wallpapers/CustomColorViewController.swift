@@ -151,6 +151,8 @@ public class CustomColorViewController: OWSTableViewController2 {
             cell.contentView.addSubview(previewView)
             previewView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
             previewView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
+            previewView.autoPinEdge(toSuperviewEdge: .top)
+            previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 6)
             previewView.autoPinHeightToSuperview()
 
             return cell
@@ -843,8 +845,9 @@ private class CustomColorPreviewView: UIView {
     private class KnobView: UIView {
 
         static let swatchSize: CGFloat = 44
-        static let selectionBorderThickness: CGFloat = 4
-        static var knobSize: CGFloat { swatchSize + selectionBorderThickness * 2 }
+        static let selectedBorderThickness: CGFloat = 4
+        static let unselectedBorderThickness: CGFloat = 1
+        static var knobSize: CGFloat { swatchSize + selectedBorderThickness * 2 }
 
         var isSelected: Bool {
             didSet {
@@ -857,7 +860,8 @@ private class CustomColorPreviewView: UIView {
             set { swatchView.chatColorValue = newValue }
         }
 
-        private let wrapper = OWSLayerView.circleView()
+        private let selectedBorder = OWSLayerView.circleView()
+        private let unselectedBorder = OWSLayerView.circleView()
 
         private let swatchView: ChatColorSwatchView
 
@@ -868,23 +872,28 @@ private class CustomColorPreviewView: UIView {
             super.init(frame: .zero)
 
             self.translatesAutoresizingMaskIntoConstraints = false
+            self.autoSetDimensions(to: .square(Self.knobSize))
 
-            swatchView.layer.borderWidth = 1
             swatchView.layer.borderColor = UIColor.ows_white.cgColor
             swatchView.layer.shadowColor = UIColor.ows_black.cgColor
             swatchView.layer.shadowOffset = CGSize(width: 0, height: 2)
             swatchView.layer.shadowOpacity = 0.3
             swatchView.layer.shadowRadius = 4
             swatchView.autoSetDimensions(to: .square(Self.swatchSize))
+            self.addSubview(swatchView)
+            swatchView.autoCenterInSuperview()
 
-            wrapper.layoutMargins = UIEdgeInsets(margin: Self.selectionBorderThickness)
-            wrapper.addSubview(swatchView)
-            swatchView.autoPinEdgesToSuperviewMargins()
-            wrapper.autoSetDimensions(to: .square(Self.knobSize))
+            selectedBorder.layer.borderColor = UIColor(white: 0, alpha: 0.6).cgColor
+            selectedBorder.layer.borderWidth = Self.selectedBorderThickness
+            selectedBorder.autoSetDimensions(to: .square(Self.swatchSize + Self.selectedBorderThickness * 2))
+            self.addSubview(selectedBorder)
+            selectedBorder.autoCenterInSuperview()
 
-            self.addSubview(wrapper)
-            wrapper.autoPinEdgesToSuperviewEdges()
-            self.autoSetDimensions(to: .square(Self.knobSize))
+            unselectedBorder.layer.borderColor = UIColor(white: 0, alpha: 0.1).cgColor
+            unselectedBorder.layer.borderWidth = Self.unselectedBorderThickness
+            unselectedBorder.autoSetDimensions(to: .square(Self.swatchSize + Self.unselectedBorderThickness * 2))
+            self.addSubview(unselectedBorder)
+            unselectedBorder.autoCenterInSuperview()
 
             updateSelection()
         }
@@ -894,13 +903,9 @@ private class CustomColorPreviewView: UIView {
         }
 
         func updateSelection() {
-            if isSelected {
-                wrapper.layer.borderWidth = Self.selectionBorderThickness
-                wrapper.layer.borderColor = UIColor(white: 0, alpha: 0.25).cgColor
-            } else {
-                wrapper.layer.borderWidth = 0
-                wrapper.layer.borderColor = nil
-            }
+            selectedBorder.isHidden = !isSelected
+            unselectedBorder.isHidden = isSelected
+            swatchView.layer.borderWidth = isSelected ? 1 : 2
         }
     }
 
