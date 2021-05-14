@@ -211,7 +211,9 @@ public class ChatColors: NSObject, Dependencies {
                 owsFailDebug("Error: \(error)")
             }
         }
-        fireCustomChatColorValueDidChange()
+        transaction.addAsyncCompletionOffMain {
+            self.fireChatColorsDidChange()
+        }
     }
 
     public func deleteCustomValue(_ value: ChatColorValue, transaction: SDSAnyWriteTransaction) {
@@ -219,12 +221,14 @@ public class ChatColors: NSObject, Dependencies {
             self.valueCache.removeValue(forKey: value.id)
             Self.customColorsStore.removeValue(forKey: value.id, transaction: transaction)
         }
-        fireCustomChatColorValueDidChange()
+        transaction.addAsyncCompletionOffMain {
+            self.fireChatColorsDidChange()
+        }
     }
 
-    private func fireCustomChatColorValueDidChange() {
+    private func fireChatColorsDidChange() {
         NotificationCenter.default.postNotificationNameAsync(
-            Self.customChatColorValueDidChange,
+            Self.chatColorsDidChange,
             object: nil,
             userInfo: nil
         )
@@ -326,10 +330,9 @@ public class ChatColors: NSObject, Dependencies {
         return value
     }
 
-    public static let defaultChatColorSettingDidChange = NSNotification.Name("defaultChatColorSettingDidChange")
+    public static let chatColorsDidChange = NSNotification.Name("chatColorsDidChange")
     public static let chatColorSettingDidChange = NSNotification.Name("chatColorSettingDidChange")
     public static let chatColorSettingDidChangeThreadUniqueIdKey = "chatColorSettingDidChangeThreadUniqueIdKey"
-    public static let customChatColorValueDidChange = NSNotification.Name("customChatColorValueDidChange")
 
     private static func setChatColorSetting(key: String,
                                             value: ChatColorValue?,
@@ -345,20 +348,18 @@ public class ChatColors: NSObject, Dependencies {
             Self.chatColorSettingStore.removeValue(forKey: key, transaction: transaction)
         }
 
-        if key == defaultKey {
-            NotificationCenter.default.postNotificationNameAsync(
-                Self.defaultChatColorSettingDidChange,
-                object: nil,
-                userInfo: nil
-            )
-        } else {
-            NotificationCenter.default.postNotificationNameAsync(
-                Self.chatColorSettingDidChange,
-                object: nil,
-                userInfo: [
-                    chatColorSettingDidChangeThreadUniqueIdKey: key
-                ]
-            )
+        transaction.addAsyncCompletionOffMain {
+            if key == defaultKey {
+                Self.chatColors.fireChatColorsDidChange()
+            } else {
+                NotificationCenter.default.postNotificationNameAsync(
+                    Self.chatColorSettingDidChange,
+                    object: nil,
+                    userInfo: [
+                        chatColorSettingDidChangeThreadUniqueIdKey: key
+                    ]
+                )
+            }
         }
     }
 

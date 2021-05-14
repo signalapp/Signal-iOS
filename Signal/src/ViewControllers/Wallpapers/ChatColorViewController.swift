@@ -32,7 +32,7 @@ public class ChatColorViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: ChatColors.defaultChatColorSettingDidChange,
+            name: ChatColors.chatColorsDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(

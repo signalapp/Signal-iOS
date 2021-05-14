@@ -80,7 +80,9 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         var innerViews = [UIView]()
 
         if isBorderless && conversationStyle.hasWallpaper {
-            innerStack.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            // TODO:
+//            innerStack.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            innerStack.backgroundColor = .clear
             innerStack.layer.cornerRadius = 11
         } else {
             innerStack.backgroundColor = .clear

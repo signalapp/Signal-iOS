@@ -203,8 +203,8 @@ public class CustomColorViewController: OWSTableViewController2 {
     private static let lightnessSpectrum: LightnessSpectrum = {
         var values: [LightnessValue] = [
             .init(lightness: 0.45, alpha: 0.0 / 360.0),
-            .init(lightness: 0.3, alpha: 60.0 / 360.0),
-            .init(lightness: 0.3, alpha: 180.0 / 360.0),
+            .init(lightness: 0.4, alpha: 60.0 / 360.0),
+            .init(lightness: 0.4, alpha: 180.0 / 360.0),
             .init(lightness: 0.5, alpha: 240.0 / 360.0),
             .init(lightness: 0.4, alpha: 300.0 / 360.0),
             .init(lightness: 0.45, alpha: 360.0 / 360.0)

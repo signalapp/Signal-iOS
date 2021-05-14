@@ -18,6 +18,8 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 
     func updateScrollingContent()
 
+    func chatColorDidChange()
+
     var isScrolledToBottom: Bool { get }
 
     var isScrollNearTopOfLoadWindow: Bool { get }
@@ -160,8 +162,8 @@ public class CVLoadCoordinator: NSObject {
                                                name: ChatColors.chatColorSettingDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(customChatColorValueDidChange),
-                                               name: ChatColors.customChatColorValueDidChange,
+                                               selector: #selector(chatColorsDidChange),
+                                               name: ChatColors.chatColorsDidChange,
                                                object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
@@ -269,12 +271,12 @@ public class CVLoadCoordinator: NSObject {
         guard threadUniqueId == thread.uniqueId else {
             return
         }
-        enqueueReloadWithoutCaches()
+        delegate?.chatColorDidChange()
     }
 
     @objc
-    private func customChatColorValueDidChange(_ notification: NSNotification) {
-        enqueueReloadWithoutCaches()
+    private func chatColorsDidChange(_ notification: NSNotification) {
+        delegate?.chatColorDidChange()
     }
 
     @objc

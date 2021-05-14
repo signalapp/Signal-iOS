@@ -74,6 +74,9 @@ extension ConversationViewController {
 // MARK: -
 
 extension ConversationViewController: CVLoadCoordinatorDelegate {
+    func chatColorDidChange() {
+        updateConversationStyle()
+    }
 
     @objc
     public func buildLoadCoordinator(conversationStyle: ConversationStyle,

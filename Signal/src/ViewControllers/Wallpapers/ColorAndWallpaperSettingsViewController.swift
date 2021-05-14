@@ -19,7 +19,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: ChatColors.defaultChatColorSettingDidChange,
+            name: ChatColors.chatColorsDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -78,11 +78,17 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             let chatColorSection = OWSTableSection()
             chatColorSection.customHeaderHeight = 14
 
-            let defaultChatColor: ChatColorValue = Self.databaseStorage.read { transaction in
-                ChatColors.defaultChatColorSetting(transaction: transaction)
-
-            } ?? ChatColors.noWallpaperAutoChatColor
-            let defaultColorView = ChatColorSwatchView(chatColorValue: defaultChatColor,
+            let chatColorValue: ChatColorValue
+            if let thread = self.thread {
+                chatColorValue = Self.databaseStorage.read { transaction in
+                    ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
+                }
+            } else {
+                chatColorValue = Self.databaseStorage.read { transaction in
+                    ChatColors.defaultChatColorForRendering(transaction: transaction)
+                }
+            }
+            let defaultColorView = ChatColorSwatchView(chatColorValue: chatColorValue,
                                                        mode: .circle)
             defaultColorView.autoSetDimensions(to: .square(16))
             defaultColorView.setContentHuggingHigh()

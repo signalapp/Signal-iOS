@@ -82,8 +82,7 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
             backgroundColor = color.asUIColor
             gradientLayer.removeFromSuperlayer()
         case .gradient(let color1, let color2, let angleRadians):
-            // TODO: Support gradients.
-            backgroundColor = color1.asUIColor
+            backgroundColor = nil
             gradientLayer.colors = [
                 color1.asUIColor.cgColor,
                 color2.asUIColor.cgColor

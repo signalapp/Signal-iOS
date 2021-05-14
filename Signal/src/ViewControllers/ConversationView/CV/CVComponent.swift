@@ -242,12 +242,12 @@ extension CVComponentBase: CVNode {
     var isTextOnlyMessage: Bool { messageCellType == .textOnlyMessage }
 
     // This var should only be accessed for messages.
-    var bubbleColorForMessage: UIColor {
+    var bubbleChatColorForMessage: CVChatColor {
         guard let message = interaction as? TSMessage else {
             owsFailDebug("Invalid interaction.")
-            return conversationStyle.bubbleColorIncoming
+            return .solidColor(color: conversationStyle.bubbleColorIncoming)
         }
-        return conversationStyle.bubbleColor(message: message)
+        return conversationStyle.bubbleChatColor(message: message)
     }
 }
 

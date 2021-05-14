@@ -1365,7 +1365,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
+                    backgroundColor:conversationStyle.bubbleColorIncoming
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
@@ -1373,7 +1373,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
+                    backgroundColor:conversationStyle.bubbleColorIncoming
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
@@ -1381,7 +1381,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
+                    backgroundColor:conversationStyle.bubbleColorIncoming
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent

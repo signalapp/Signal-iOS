@@ -314,7 +314,13 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var outerBubbleView: OWSBubbleView?
         func configureBubbleView() {
             let bubbleView = componentView.bubbleView
-            bubbleView.backgroundColor = bubbleBackgroundColor
+
+            if let bubbleChatColor = self.bubbleChatColor {
+                let chatColorView = componentView.chatColorView
+                chatColorView.chatColor = bubbleChatColor
+                bubbleView.addSubview(chatColorView)
+            }
+
             bubbleView.sharpCorners = self.sharpCorners
             if let bubbleStrokeColor = self.bubbleStrokeColor {
                 bubbleView.strokeColor = bubbleStrokeColor
@@ -728,14 +734,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return max(0, reactionsHeight - reactionsVOverlap)
     }
 
-    private var bubbleBackgroundColor: UIColor {
+    private var bubbleChatColor: CVChatColor? {
         if !conversationStyle.hasWallpaper && (wasRemotelyDeleted || isBorderlessViewOnceMessage) {
-            return Theme.backgroundColor
+            return .solidColor(color: Theme.backgroundColor)
         }
         if isBubbleTransparent {
-            return .clear
+            return nil
         }
-        return itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+        return itemModel.conversationStyle.bubbleChatColor(isIncoming: isIncoming)
     }
 
     private var bubbleStrokeColor: UIColor? {
@@ -1173,6 +1179,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let bubbleView = OWSBubbleView()
 
+        // TODO: Combine with OWSBubbleView?
+        fileprivate let chatColorView = CVChatColorView()
+
         // Contains the actual renderable message content, arranged vertically.
         fileprivate let contentStack = ManualStackView(name: "message.contentStack")
 
@@ -1360,6 +1369,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     }
                 }
             }
+
+            chatColorView.removeFromSuperview()
+            chatColorView.reset()
 
             avatarView.image = nil
 
