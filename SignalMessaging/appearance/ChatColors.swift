@@ -191,7 +191,7 @@ public class ChatColors: NSObject, Dependencies {
 
     // The keys in this store are ChatColorValue.id (String).
     // The values are ChatColorValues.
-    private static let customColorsStore = SDSKeyValueStore(collection: "customColorsStore.1")
+    private static let customColorsStore = SDSKeyValueStore(collection: "customColorsStore.2")
 
     private static let defaultKey = "defaultKey"
 
