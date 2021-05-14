@@ -94,7 +94,7 @@ public class ChatColorViewController: OWSTableViewController2 {
         wallpaperPreviewView.clipsToBounds = true
 
         let mockConversationView = MockConversationView(
-            mode: buildMockConversationMode(),
+            model: buildMockConversationModel(),
             hasWallpaper: true
         )
         let previewSection = OWSTableSection()
@@ -104,11 +104,15 @@ public class ChatColorViewController: OWSTableViewController2 {
             cell.selectionStyle = .none
             guard let self = self else { return cell }
 
+            wallpaperPreviewView.setContentHuggingLow()
+            wallpaperPreviewView.setCompressionResistanceLow()
             cell.contentView.addSubview(wallpaperPreviewView)
             wallpaperPreviewView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
             wallpaperPreviewView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
             wallpaperPreviewView.autoPinHeightToSuperview()
 
+            mockConversationView.setContentHuggingVerticalHigh()
+            mockConversationView.setCompressionResistanceVerticalHigh()
             cell.contentView.addSubview(mockConversationView)
             mockConversationView.autoPinEdge(toSuperviewEdge: .left, withInset: self.cellHOuterLeftMargin)
             mockConversationView.autoPinEdge(toSuperviewEdge: .right, withInset: self.cellHOuterRightMargin)
@@ -134,19 +138,18 @@ public class ChatColorViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    func buildMockConversationMode() -> MockConversationView.Mode {
-        let outgoingText = NSLocalizedString(
-            "CHAT_COLOR_OUTGOING_MESSAGE",
-            comment: "The outgoing bubble text when setting a chat color."
-        )
-        let incomingText = NSLocalizedString(
-            "CHAT_COLOR_INCOMING_MESSAGE",
-            comment: "The incoming bubble text when setting a chat color."
-        )
-        return .dateIncomingOutgoing(
-            incomingText: incomingText,
-            outgoingText: outgoingText
-        )
+    func buildMockConversationModel() -> MockConversationView.MockModel {
+        MockConversationView.MockModel(items: [
+            .date,
+            .incoming(text: NSLocalizedString(
+                "CHAT_COLOR_INCOMING_MESSAGE",
+                comment: "The incoming bubble text when setting a chat color."
+            )),
+            .outgoing(text: NSLocalizedString(
+                "CHAT_COLOR_OUTGOING_MESSAGE",
+                comment: "The outgoing bubble text when setting a chat color."
+            ))
+        ])
     }
 
     private enum Option {

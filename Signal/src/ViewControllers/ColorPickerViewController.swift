@@ -140,16 +140,16 @@ class ColorPickerView: UIView, ColorViewDelegate {
     weak var delegate: ColorPickerViewDelegate?
 
     let mockConversationView = MockConversationView(
-        mode: .outgoingIncoming(
-            outgoingText: NSLocalizedString(
-                "COLOR_PICKER_DEMO_MESSAGE_1",
-                comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble."
-            ),
-            incomingText: NSLocalizedString(
+        model: MockConversationView.MockModel(items: [
+            .incoming(text: NSLocalizedString(
                 "COLOR_PICKER_DEMO_MESSAGE_2",
                 comment: "The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble."
-            )
-        ),
+            )),
+            .outgoing(text: NSLocalizedString(
+                "COLOR_PICKER_DEMO_MESSAGE_1",
+                comment: "The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble."
+            ))
+        ]),
         hasWallpaper: false
     )
 

@@ -26,7 +26,7 @@ class PreviewWallpaperViewController: UIViewController {
     )
 
     lazy var mockConversationView = MockConversationView(
-        mode: buildMockConversationMode(),
+        model: buildMockConversationModel(),
         hasWallpaper: true
     )
 
@@ -163,10 +163,10 @@ class PreviewWallpaperViewController: UIViewController {
             blurButton.isHidden = true
         }
 
-        mockConversationView.mode = buildMockConversationMode()
+        mockConversationView.model = buildMockConversationModel()
     }
 
-    func buildMockConversationMode() -> MockConversationView.Mode {
+    func buildMockConversationModel() -> MockConversationView.MockModel {
         let outgoingText: String = {
             guard let thread = thread else {
                 return NSLocalizedString(
@@ -197,10 +197,11 @@ class PreviewWallpaperViewController: UIViewController {
             )
         }
 
-        return .dateIncomingOutgoing(
-            incomingText: incomingText,
-            outgoingText: outgoingText
-        )
+        return MockConversationView.MockModel(items: [
+            .date,
+            .incoming(text: incomingText),
+            .outgoing(text: outgoingText)
+        ])
     }
 }
 

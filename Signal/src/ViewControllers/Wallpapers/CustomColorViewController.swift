@@ -185,7 +185,7 @@ public class CustomColorViewController: OWSTableViewController2 {
         let saturationSection = OWSTableSection()
         saturationSection.hasBackground = false
         saturationSection.headerTitle = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SATURATION",
-                                                   comment: "Title for the 'Saturation' section in the chat color settings view.")
+                                                          comment: "Title for the 'Saturation' section in the chat color settings view.")
         saturationSection.customHeaderHeight = 14
         saturationSection.add(OWSTableItem {
             let cell = OWSTableItem.newCell()
@@ -796,7 +796,7 @@ private class CustomColorPreviewView: UIView {
          transaction: SDSAnyReadTransaction,
          delegate: CustomColorPreviewDelegate) {
         self.mockConversationView = MockConversationView(
-            mode: CustomColorPreviewView.buildMockConversationMode(),
+            model: CustomColorPreviewView.buildMockConversationModel(),
             hasWallpaper: true
         )
         self.delegate = delegate
@@ -813,9 +813,13 @@ private class CustomColorPreviewView: UIView {
         wallpaperPreviewView.layer.cornerRadius = OWSTableViewController2.cellRounding
         wallpaperPreviewView.clipsToBounds = true
 
+        wallpaperPreviewView.setContentHuggingLow()
+        wallpaperPreviewView.setCompressionResistanceLow()
         self.addSubview(wallpaperPreviewView)
         wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
 
+        mockConversationView.setContentHuggingVerticalHigh()
+        mockConversationView.setCompressionResistanceVerticalHigh()
         self.addSubview(mockConversationView)
         mockConversationView.autoPinWidthToSuperview()
         mockConversationView.autoPinEdge(toSuperviewEdge: .top, withInset: 32)
@@ -1147,19 +1151,26 @@ private class CustomColorPreviewView: UIView {
         axisShapeLayer.path = axisPath.cgPath
     }
 
-    private static func buildMockConversationMode() -> MockConversationView.Mode {
-        let outgoingText = NSLocalizedString(
-            "CHAT_COLOR_OUTGOING_MESSAGE",
-            comment: "The outgoing bubble text when setting a chat color."
-        )
-        let incomingText = NSLocalizedString(
-            "CHAT_COLOR_INCOMING_MESSAGE",
-            comment: "The incoming bubble text when setting a chat color."
-        )
-        return .dateIncomingOutgoing(
-            incomingText: incomingText,
-            outgoingText: outgoingText
-        )
+    private static func buildMockConversationModel() -> MockConversationView.MockModel {
+        MockConversationView.MockModel(items: [
+            .date,
+            .incoming(text: NSLocalizedString(
+                "CHAT_COLOR_INCOMING_MESSAGE_1",
+                comment: "The first incoming bubble text when setting a chat color."
+            )),
+            .outgoing(text: NSLocalizedString(
+                "CHAT_COLOR_OUTGOING_MESSAGE_1",
+                comment: "The first outgoing bubble text when setting a chat color."
+            )),
+            .incoming(text: NSLocalizedString(
+                "CHAT_COLOR_INCOMING_MESSAGE_2",
+                comment: "The second incoming bubble text when setting a chat color."
+            )),
+            .outgoing(text: NSLocalizedString(
+                "CHAT_COLOR_OUTGOING_MESSAGE_2",
+                comment: "The second outgoing bubble text when setting a chat color."
+            ))
+        ])
     }
 }
 
