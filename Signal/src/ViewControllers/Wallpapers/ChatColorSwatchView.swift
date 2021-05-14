@@ -6,7 +6,11 @@ import Foundation
 
 // A round "swatch" that offers a preview of a conversation color option.
 public class ChatColorSwatchView: ManualLayoutViewWithLayer {
-    private var chatColorValue: ChatColorValue
+    public var chatColorValue: ChatColorValue {
+        didSet {
+            configure()
+        }
+    }
 
     public enum Mode {
         case circle

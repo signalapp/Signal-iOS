@@ -24,13 +24,7 @@ public class CustomColorViewController: OWSTableViewController2 {
         case gradientColor2
     }
 
-    fileprivate var editMode: EditMode = .solidColor {
-        didSet {
-            if isViewLoaded {
-                updateTableContents()
-            }
-        }
-    }
+    fileprivate var editMode: EditMode = .solidColor
 
     fileprivate class ColorSetting {
         // Represents a position within the hueSpectrum.
@@ -168,22 +162,7 @@ public class CustomColorViewController: OWSTableViewController2 {
         let hueSlider = self.hueSlider
         let saturationSlider = self.saturationSlider
 
-        // Update sliders to reflect editMode.
-        func apply(colorSetting: ColorSetting) {
-            hueSlider.value = colorSetting.hueAlpha
-            saturationSlider.value = colorSetting.saturationAlpha
-
-            // Update saturation slider to reflect hue slider state.
-            updateSaturationSpectrum()
-        }
-        switch editMode {
-        case .solidColor:
-            apply(colorSetting: self.solidColorSetting)
-        case .gradientColor1:
-            apply(colorSetting: self.gradientColor1Setting)
-        case .gradientColor2:
-            apply(colorSetting: self.gradientColor2Setting)
-        }
+        updateSliderContent()
 
         hueSlider.delegate = self
         let hueSection = OWSTableSection()
@@ -279,6 +258,25 @@ public class CustomColorViewController: OWSTableViewController2 {
         self.saturationSlider.spectrum = saturationSpectrum
     }
 
+    private func updateSliderContent() {
+        // Update sliders to reflect editMode.
+        func apply(colorSetting: ColorSetting) {
+            hueSlider.value = colorSetting.hueAlpha
+            saturationSlider.value = colorSetting.saturationAlpha
+
+            // Update saturation slider to reflect hue slider state.
+            updateSaturationSpectrum()
+        }
+        switch editMode {
+        case .solidColor:
+            apply(colorSetting: self.solidColorSetting)
+        case .gradientColor1:
+            apply(colorSetting: self.gradientColor1Setting)
+        case .gradientColor2:
+            apply(colorSetting: self.gradientColor2Setting)
+        }
+    }
+
     private func updateMockConversation() {
         self.previewView?.updateMockConversation()
     }
@@ -295,6 +293,7 @@ public class CustomColorViewController: OWSTableViewController2 {
         default:
             owsFailDebug("Couldn't update editMode.")
         }
+        updateTableContents()
     }
 
     fileprivate var solidColorAppearance: ChatColorAppearance {
@@ -749,6 +748,13 @@ extension CustomColorViewController.ColorSetting {
 // MARK: -
 
 extension CustomColorViewController: CustomColorPreviewDelegate {
+    fileprivate func switchToEditMode(_ value: CustomColorViewController.EditMode) {
+        guard self.editMode != value else {
+            return
+        }
+        self.editMode = value
+        updateSliderContent()
+    }
 }
 
 // MARK: -
@@ -758,6 +764,8 @@ private protocol CustomColorPreviewDelegate: class {
     var editMode: CustomColorViewController.EditMode { get }
     var gradientColor1: OWSColor { get }
     var gradientColor2: OWSColor { get }
+
+    func switchToEditMode(_ value: CustomColorViewController.EditMode)
 }
 
 // MARK: -
@@ -822,39 +830,83 @@ private class CustomColorPreviewView: UIView {
     fileprivate func updateMockConversation() {
         guard let delegate = delegate else { return }
         // TODO: mockConversationView
+
+        if let knobView1 = self.knobView1 {
+            knobView1.value = ChatColorValue(id: "knob1",
+                                             appearance: .solidColor(color: delegate.gradientColor1))
+        }
+        if let knobView2 = self.knobView2 {
+            knobView2.value = ChatColorValue(id: "knob2",
+                                             appearance: .solidColor(color: delegate.gradientColor2))
+        }
     }
 
-    private static let swatchSize: CGFloat = 44
-    private static let selectionBorderThickness: CGFloat = 4
-    private static var knobSize: CGFloat { swatchSize + selectionBorderThickness * 2 }
+    private class KnobView: UIView {
 
-    private func buildKnobView(isSelected: Bool,
-                               chatColorValue: ChatColorValue) -> UIView {
-        let swatchView = ChatColorSwatchView(chatColorValue: chatColorValue, mode: .circle)
-        swatchView.layer.borderWidth = 1
-        swatchView.layer.borderColor = UIColor.ows_white.cgColor
-        swatchView.layer.shadowColor = UIColor.ows_black.cgColor
-        swatchView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        swatchView.layer.shadowOpacity = 0.3
-        swatchView.layer.shadowRadius = 4
-        swatchView.autoSetDimensions(to: .square(Self.swatchSize))
+        static let swatchSize: CGFloat = 44
+        static let selectionBorderThickness: CGFloat = 4
+        static var knobSize: CGFloat { swatchSize + selectionBorderThickness * 2 }
 
-        let wrapper = OWSLayerView.circleView()
-        wrapper.layoutMargins = UIEdgeInsets(margin: Self.selectionBorderThickness)
-        wrapper.addSubview(swatchView)
-        swatchView.autoPinEdgesToSuperviewMargins()
-        wrapper.autoSetDimensions(to: .square(Self.knobSize))
-
-        if isSelected {
-            wrapper.layer.borderWidth = Self.selectionBorderThickness
-            wrapper.layer.borderColor = UIColor(white: 0, alpha: 0.25).cgColor
+        var isSelected: Bool {
+            didSet {
+                updateSelection()
+            }
         }
 
-        return wrapper
+        var value: ChatColorValue {
+            get { swatchView.chatColorValue }
+            set { swatchView.chatColorValue = newValue }
+        }
+
+        private let wrapper = OWSLayerView.circleView()
+
+        private let swatchView: ChatColorSwatchView
+
+        init(isSelected: Bool, chatColorValue: ChatColorValue) {
+            self.isSelected = isSelected
+            self.swatchView = ChatColorSwatchView(chatColorValue: chatColorValue, mode: .circle)
+
+            super.init(frame: .zero)
+
+            self.translatesAutoresizingMaskIntoConstraints = false
+
+            swatchView.layer.borderWidth = 1
+            swatchView.layer.borderColor = UIColor.ows_white.cgColor
+            swatchView.layer.shadowColor = UIColor.ows_black.cgColor
+            swatchView.layer.shadowOffset = CGSize(width: 0, height: 2)
+            swatchView.layer.shadowOpacity = 0.3
+            swatchView.layer.shadowRadius = 4
+            swatchView.autoSetDimensions(to: .square(Self.swatchSize))
+
+            wrapper.layoutMargins = UIEdgeInsets(margin: Self.selectionBorderThickness)
+            wrapper.addSubview(swatchView)
+            swatchView.autoPinEdgesToSuperviewMargins()
+            wrapper.autoSetDimensions(to: .square(Self.knobSize))
+
+            self.addSubview(wrapper)
+            wrapper.autoPinEdgesToSuperviewEdges()
+            self.autoSetDimensions(to: .square(Self.knobSize))
+
+            updateSelection()
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        func updateSelection() {
+            if isSelected {
+                wrapper.layer.borderWidth = Self.selectionBorderThickness
+                wrapper.layer.borderColor = UIColor(white: 0, alpha: 0.25).cgColor
+            } else {
+                wrapper.layer.borderWidth = 0
+                wrapper.layer.borderColor = nil
+            }
+        }
     }
 
-    private var knobView1: UIView?
-    private var knobView2: UIView?
+    private var knobView1: KnobView?
+    private var knobView2: KnobView?
 
     private var knobView1ConstraintX: NSLayoutConstraint?
     private var knobView1ConstraintY: NSLayoutConstraint?
@@ -871,12 +923,12 @@ private class CustomColorPreviewView: UIView {
             break
         }
 
-        let knobView1 = buildKnobView(isSelected: delegate.editMode == .gradientColor1,
-                                  chatColorValue: ChatColorValue(id: "knob1",
-                                                                 appearance: .solidColor(color: delegate.gradientColor1)))
-        let knobView2 = buildKnobView(isSelected: delegate.editMode == .gradientColor2,
-                                  chatColorValue: ChatColorValue(id: "knob2",
-                                                                 appearance: .solidColor(color: delegate.gradientColor2)))
+        let knobView1 = KnobView(isSelected: delegate.editMode == .gradientColor1,
+                                 chatColorValue: ChatColorValue(id: "knob1",
+                                                                appearance: .solidColor(color: delegate.gradientColor1)))
+        let knobView2 = KnobView(isSelected: delegate.editMode == .gradientColor2,
+                                 chatColorValue: ChatColorValue(id: "knob2",
+                                                                appearance: .solidColor(color: delegate.gradientColor2)))
         self.knobView1 = knobView1
         self.knobView2 = knobView2
 
@@ -946,9 +998,7 @@ private class CustomColorPreviewView: UIView {
                 // Only "grab" a knob if the gesture starts near a knob.
                 let knobDistance1 = knobView1.frame.center.distance(touchLocation)
                 let knobDistance2 = knobView2.frame.center.distance(touchLocation)
-                Logger.verbose("---- knobView1.center: \(knobView1.frame.center), knobView2.center: \(knobView2.frame.center)")
-                Logger.verbose("---- knobDistance1: \(knobDistance1), knobDistance2: \(knobDistance2), touchLocation: \(touchLocation)")
-                let minFirstTouchDistance = Self.knobSize * 2
+                let minFirstTouchDistance = KnobView.knobSize * 2
                 if knobDistance1 < minFirstTouchDistance,
                    knobDistance2 < minFirstTouchDistance {
                     if knobDistance1 < knobDistance2 {
@@ -965,6 +1015,12 @@ private class CustomColorPreviewView: UIView {
                     return
                 }
             }
+
+            delegate.switchToEditMode(gestureMode == .knob1
+                                        ? .gradientColor1
+                                        : .gradientColor2)
+            knobView1.isSelected = gestureMode == .knob1
+            knobView2.isSelected = gestureMode == .knob2
 
             let viewCenter = self.bounds.center
             var touchVector = touchLocation - viewCenter
@@ -983,8 +1039,6 @@ private class CustomColorPreviewView: UIView {
             }
 
             let angleRadians = atan2(touchVector.x, touchVector.y)
-            Logger.verbose("---- gestureMode: \(gestureMode), touchVector: \(touchVector), angleRadians \(angleRadians)")
-            Logger.verbose("---- sin: \(sin(angleRadians)), cos: \(cos(angleRadians))")
             delegate.angleRadians = angleRadians
             updateKnobLayout()
             updateMockConversation()
@@ -1033,11 +1087,6 @@ private class CustomColorPreviewView: UIView {
         let vector1 = oversizeVector * +scaleFactor
         // Knob 2 is always opposite knob 1.
         let vector2 = vector1 * -1
-
-        Logger.verbose("---- angleRadians: \(angleRadians)")
-        Logger.verbose("---- knobRect: \(knobRect)")
-        Logger.verbose("---- vector1: \(vector1)")
-        Logger.verbose("---- vector2: \(vector2)")
 
         knobView1ConstraintX.constant = vector1.x
         knobView1ConstraintY.constant = vector1.y
