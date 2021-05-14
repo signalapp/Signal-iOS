@@ -33,6 +33,8 @@ public class ThreadViewModel: NSObject {
     @objc
     public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
 
+    public let chatColor: ChatColorValue
+
     public var isContactThread: Bool {
         return !isGroupThread
     }
@@ -59,6 +61,8 @@ public class ThreadViewModel: NSObject {
 
         let associatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
         self.associatedData = associatedData
+
+        self.chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
 
         if let contactThread = thread as? TSContactThread {
             self.contactAddress = contactThread.contactAddress

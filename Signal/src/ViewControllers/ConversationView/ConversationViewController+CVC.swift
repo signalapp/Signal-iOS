@@ -650,10 +650,33 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier)
     }
 
-    private func buildConversationStyle(hasWallpaper: Bool? = nil) -> ConversationStyle {
+    @objc
+    public static func buildInitialConversationStyle(threadViewModel: ThreadViewModel) -> ConversationStyle {
+        ConversationStyle(type: .initial,
+                          thread: threadViewModel.threadRecord,
+                          viewWidth: 0,
+                          hasWallpaper: threadViewModel.hasWallpaper,
+                          chatColor: .placeholderValue)
+    }
+
+    @objc
+    public static func buildDefaultConversationStyle(thread: TSThread) -> ConversationStyle {
+        ConversationStyle(type: .default,
+                          thread: thread,
+                          viewWidth: 0,
+                          hasWallpaper: false,
+                          chatColor: .placeholderValue)
+    }
+
+    private func buildConversationStyle() -> ConversationStyle {
         AssertIsOnMainThread()
 
-        let hasWallpaper = hasWallpaper ?? viewState.threadViewModel.hasWallpaper
+        var hasWallpaper: Bool = false
+        var chatColor: ChatColorValue = .placeholderValue
+        databaseStorage.read { transaction in
+            hasWallpaper = Wallpaper.exists(for: self.thread, transaction: transaction)
+            chatColor = ChatColors.chatColorForRendering(thread: self.thread, transaction: transaction)
+        }
 
         func buildDefaultConversationStyle(type: ConversationStyleType) -> ConversationStyle {
             // Treat all styles as "initial" (not to be trusted) until
@@ -662,7 +685,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return ConversationStyle(type: type,
                                      thread: thread,
                                      viewWidth: viewWidth,
-                                     hasWallpaper: hasWallpaper)
+                                     hasWallpaper: hasWallpaper,
+                                     chatColor: chatColor)
         }
 
         guard self.conversationStyle.type != .`default` else {
@@ -715,21 +739,18 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return ConversationStyle(type: .placeholder,
                                      thread: thread,
                                      viewWidth: viewWidth,
-                                     hasWallpaper: hasWallpaper)
+                                     hasWallpaper: hasWallpaper,
+                                     chatColor: chatColor)
         }
     }
 
     @objc
     @discardableResult
-    @available(swift, obsoleted: 1.0)
-    public func updateConversationStyle() -> Bool { updateConversationStyle(hasWallpaper: nil) }
-
-    @discardableResult
-    public func updateConversationStyle(hasWallpaper: Bool? = nil) -> Bool {
+    public func updateConversationStyle() -> Bool {
         AssertIsOnMainThread()
 
         let oldConversationStyle = self.conversationStyle
-        let newConversationStyle = buildConversationStyle(hasWallpaper: hasWallpaper)
+        let newConversationStyle = buildConversationStyle()
 
         let didChange = !newConversationStyle.isEqualForCellRendering(oldConversationStyle)
         if !didChange {

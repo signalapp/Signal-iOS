@@ -112,6 +112,10 @@ public struct ChatColorValue: Equatable, Codable {
         UUID().uuidString
     }
 
+    public static var placeholderValue: ChatColorValue {
+        ChatColors.noWallpaperAutoChatColor
+    }
+
     // MARK: - Equatable
 
     public static func == (lhs: ChatColorValue, rhs: ChatColorValue) -> Bool {

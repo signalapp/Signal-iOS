@@ -22,11 +22,7 @@ extension ConversationViewController {
         guard notification.object == nil || (notification.object as? String) == thread.uniqueId else { return }
         updateWallpaperView()
 
-        let hasWallpaper = databaseStorage.read { transaction in
-            Wallpaper.exists(for: self.thread, transaction: transaction)
-        }
-
-        updateConversationStyle(hasWallpaper: hasWallpaper)
+        updateConversationStyle()
     }
 
     func updateWallpaperView() {

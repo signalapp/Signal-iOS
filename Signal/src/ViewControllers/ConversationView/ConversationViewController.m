@@ -158,10 +158,8 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"");
 
-    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeInitial
-                                                                            thread:threadViewModel.threadRecord
-                                                                         viewWidth:0
-                                                                      hasWallpaper:threadViewModel.hasWallpaper];
+    ConversationStyle *conversationStyle =
+        [ConversationViewController buildInitialConversationStyleWithThreadViewModel:threadViewModel];
     _viewState = [[CVViewState alloc] initWithThreadViewModel:threadViewModel conversationStyle:conversationStyle];
     self.viewState.delegate = self;
 

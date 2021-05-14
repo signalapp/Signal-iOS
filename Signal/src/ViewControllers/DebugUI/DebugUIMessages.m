@@ -1334,10 +1334,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                           text:@"⚠️ Outgoing Reserved Color Png ⚠️"]];
     }
 
-    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeDefault
-                                                                            thread:thread
-                                                                         viewWidth:0
-                                                                      hasWallpaper:NO];
+    ConversationStyle *conversationStyle = [ConversationViewController buildDefaultConversationStyleWithThread:thread];
+
     [actions addObjectsFromArray:@[
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing White Png"

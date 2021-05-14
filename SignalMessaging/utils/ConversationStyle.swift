@@ -128,11 +128,13 @@ public class ConversationStyle: NSObject {
     @objc
     public static let messageDirectionSpacing: CGFloat = 12
 
-    @objc
+    public let chatColor: ChatColorValue
+
     public required init(type: ConversationStyleType,
                          thread: TSThread,
                          viewWidth: CGFloat,
-                         hasWallpaper: Bool) {
+                         hasWallpaper: Bool,
+                         chatColor: ChatColorValue) {
 
         self.type = type
         self.conversationColor = ConversationStyle.conversationColor(thread: thread)
@@ -140,6 +142,7 @@ public class ConversationStyle: NSObject {
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
         self.primaryTextColor = Theme.primaryTextColor
         self.hasWallpaper = hasWallpaper
+        self.chatColor = chatColor
 
         if type == .messageDetails {
             gutterLeading = 0

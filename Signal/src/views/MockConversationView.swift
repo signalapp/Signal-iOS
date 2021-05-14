@@ -95,15 +95,17 @@ class MockConversationView: UIView {
         let viewWidth = (bounds.size.width > 0
                             ? bounds.size.width
                             : mockViewWidth)
-        let conversationStyle = ConversationStyle(
-            type: .`default`,
-            thread: self.thread,
-            viewWidth: viewWidth,
-            hasWallpaper: hasWallpaper
-        )
 
         var renderItems = [CVRenderItem]()
         databaseStorage.uiRead { transaction in
+            let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
+            let conversationStyle = ConversationStyle(
+                type: .`default`,
+                thread: self.thread,
+                viewWidth: viewWidth,
+                hasWallpaper: hasWallpaper,
+                chatColor: chatColor
+            )
             for item in model.items {
                 func buildInteraction() -> TSInteraction {
                     switch item {
