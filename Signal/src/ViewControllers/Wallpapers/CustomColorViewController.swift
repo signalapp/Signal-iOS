@@ -253,7 +253,6 @@ public class CustomColorViewController: OWSTableViewController2 {
     private func updateSaturationSpectrum() {
         let hueAlpha = hueSlider.value.clamp01()
         let hueValue = self.hueSpectrum.value(forAlpha: hueAlpha)
-        Logger.verbose("hue alpha: \(hueAlpha), hueValue: \(hueValue)")
         self.saturationSpectrum = Self.buildSaturationSpectrum(referenceValue: hueValue)
         self.saturationSlider.spectrum = saturationSpectrum
     }
@@ -907,6 +906,8 @@ private class CustomColorPreviewView: UIView {
 
     private var knobView1: KnobView?
     private var knobView2: KnobView?
+    private var axisShapeView: UIView?
+    private var axisShapeLayer: CAShapeLayer?
 
     private var knobView1ConstraintX: NSLayoutConstraint?
     private var knobView1ConstraintY: NSLayoutConstraint?
@@ -922,6 +923,14 @@ private class CustomColorPreviewView: UIView {
         case .gradientColor1, .gradientColor2:
             break
         }
+
+        let axisShapeView = UIView()
+        self.axisShapeView = axisShapeView
+        addSubview(axisShapeView)
+        axisShapeView.autoPinEdgesToSuperviewEdges()
+        let axisShapeLayer = CAShapeLayer()
+        self.axisShapeLayer = axisShapeLayer
+        axisShapeView.layer.addSublayer(axisShapeLayer)
 
         let knobView1 = KnobView(isSelected: delegate.editMode == .gradientColor1,
                                  chatColorValue: ChatColorValue(id: "knob1",
@@ -1050,12 +1059,11 @@ private class CustomColorPreviewView: UIView {
 
     private func updateKnobLayout() {
         guard let delegate = self.delegate,
-              let knobView1 = self.knobView1,
-              let knobView2 = self.knobView2,
               let knobView1ConstraintX = self.knobView1ConstraintX,
               let knobView1ConstraintY = self.knobView1ConstraintY,
               let knobView2ConstraintX = self.knobView2ConstraintX,
-              let knobView2ConstraintY = self.knobView2ConstraintY else {
+              let knobView2ConstraintY = self.knobView2ConstraintY,
+              let axisShapeLayer = self.axisShapeLayer else {
             return
         }
 
@@ -1092,8 +1100,46 @@ private class CustomColorPreviewView: UIView {
         knobView1ConstraintY.constant = vector1.y
         knobView2ConstraintX.constant = vector2.x
         knobView2ConstraintY.constant = vector2.y
-        knobView1.setNeedsLayout()
-        knobView2.setNeedsLayout()
+
+        axisShapeLayer.frame = self.bounds
+        axisShapeLayer.fillColor = UIColor.ows_white.cgColor
+        axisShapeLayer.strokeColor = UIColor(white: 0, alpha: 0.1).cgColor
+        let axisPath = UIBezierPath()
+        let knobCenter1 = self.bounds.center + vector1
+        let knobCenter2 = self.bounds.center + vector2
+        let axisVector = knobCenter2 - knobCenter1
+        if axisVector.length > 0 {
+            // We want to draw the "axis" of the gradient.
+            // This is a bar between the two "knobs" which
+            // represent the 2 gradient control points.
+            //
+            // P2                            P3
+            //
+            // K1 ...........................K2
+            //
+            // P1                            P4
+            //
+            // We do this by deriving an "offset vector".
+            // We rotate the axis vector 90 degress.
+            var offAxisVector = CGPoint(x: axisVector.y, y: -axisVector.x)
+            let axisThickness: CGFloat = 8
+            // Then scale it to half the thickness of the axis.
+            offAxisVector = offAxisVector * (axisThickness * 0.5 / offAxisVector.length)
+
+            // By adding the "offset vector" to the two knob locations,
+            // we derive the corners of the axis.
+            let p1 = knobCenter1 + offAxisVector
+            let p2 = knobCenter1 - offAxisVector
+            let p3 = knobCenter2 - offAxisVector
+            let p4 = knobCenter2 + offAxisVector
+
+            axisPath.move(to: p1)
+            axisPath.addLine(to: p2)
+            axisPath.addLine(to: p3)
+            axisPath.addLine(to: p4)
+            axisPath.addLine(to: p1)
+        }
+        axisShapeLayer.path = axisPath.cgPath
     }
 
     private static func buildMockConversationMode() -> MockConversationView.Mode {
