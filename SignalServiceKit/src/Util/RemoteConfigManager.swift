@@ -157,6 +157,11 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
+    public static var reactiveProfileKeyAttemptInterval: TimeInterval {
+        interval(.reactiveProfileKeyAttemptInterval, defaultInterval: kHourInterval)
+    }
+
+    @objc
     public static var researchMegaphone: Bool {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return false }
         return remoteConfig.researchMegaphone
@@ -400,6 +405,7 @@ private struct Flags {
         case automaticSessionResetAttemptInterval
         case donateMegaphone
         case donateMegaphoneSnoozeInterval
+        case reactiveProfileKeyAttemptInterval
     }
 }
 
