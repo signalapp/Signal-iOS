@@ -1024,6 +1024,9 @@
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "മൂവ് ആൻഡ് സ്കെയിൽ";
 
+/* Title for the 'currency picker' view in the app settings. */
+"CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ഇത് കുറച്ച് മിനിറ്റുകൾ എടുക്കും.";
 
@@ -1169,7 +1172,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "ഈ വിൻഡോ ക്ലോസ് ചെയ്യുന്നത് മൂലം നിങ്ങൾക്ക് ഇപ്പോൾ നടന്നുകൊണ്ടിരിക്കുന്ന കൈമാറ്റം അവസാനിക്കും, നിങ്ങൾക്ക് ഇത് തുടരണമെന്ന് ഉറപ്പാണോ?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "കൈമാറ്റം നിറുത്തണമോ?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "കൈമാറ്റം നിർത്തണോ?";
 
 /* The explanation for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "നിങ്ങൾക്കുള്ള പഴയ iOS ഡിവൈസ് ആണെങ്കിൽ, നിങ്ങൾക്ക് നിങ്ങളുടെ അക്കൗണ്ടും സന്ദേശങ്ങളും ഈ ഡിവൈസിലേക്ക് സുരക്ഷിതമായി കൈമാറ്റം ചെയ്യാൻ കഴിയും.";
@@ -1305,6 +1308,51 @@
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "സെൻസർഷിപ്പ് സർക്കംവെൻഷൻ ലൊക്കേഷൻ";
+
+/* Action text for donation megaphone */
+"DONATION_MEGAPHONE_ACTION" = "സംഭാവനചെയ്യുക";
+
+/* Body for donation megaphone */
+"DONATION_MEGAPHONE_BODY" = "Signal-ന്റെ പിന്നണിയിൽ നിങ്ങളെപോലുള്ളവരാണ്. നിങ്ങളുടെ പിന്തുണ അറിയിക്കൂ! ";
+
+/* Cancel text for donation megaphone */
+"DONATION_MEGAPHONE_CANCEL" = "വേണ്ട, നന്ദി";
+
+/* Title for donation megaphone */
+"DONATION_MEGAPHONE_TITLE" = "Signal-ന് സംഭാവന ചെയ്യുക";
+
+/* Donation amount label for the donate to signal view */
+"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+
+/* Default text for the custom amount field of the donation view. */
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+
+/* Text describing to the user that they're going to pay a donation to Signal */
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+
+/* Text explaining there are other ways to donate on the donation view. */
+"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+
+/* Error text notifying the user they must select a large amount on the donate to signal view */
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+
+/* Error text notifying the user they must select a smaller amount on the donate to signal view */
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+
+/* Error text notifying the user they must select an amount on the donate to signal view */
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+
+/* Thank you message on the donate to signal view */
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+
+/* Title for the donate to signal view */
+"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+
+/* The body of the 'Why Donate' section of the donate to signal view */
+"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+
+/* The title of the 'Why Donate' section of the donate to signal view */
+"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS സെറ്റിംഗ്സ് ആപ്പിൽ നിങ്ങൾക്ക് അക്സസ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
@@ -4628,7 +4676,7 @@
 "SET_WALLPAPER_TITLE" = "വാള്‍പേപ്പര്‍ സജ്ജമാക്കു";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "അക്കൗണ്ട്";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "തടയുക";
@@ -5477,7 +5525,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "പരിശോധന പൂർത്തിയാക്കുക";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "നിലവിലുള്ള ഗ്രൂപ്പുകൾ‌ക്ക് ഈ സവിശേഷതകൾ‌ സ്വപ്രേരിതമായി വരും ആഴ്ചകളിൽ‌ ലഭിക്കും.";
@@ -5606,10 +5654,10 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "പൊതുവായി ഗ്രൂപ്പുകളൊന്നുമില്ല. അഭ്യർത്ഥനകൾ ശ്രദ്ധാപൂർവ്വം അവലോകനം ചെയ്യുക.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "ഈ ഗ്രൂപ്പിൽ കോൺടാക്റ്റുകളൊന്നുമില്ല. അഭ്യർത്ഥനകൾ ശ്രദ്ധാപൂർവ്വം അവലോകനം ചെയ്യുക.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ഈ സന്ദേശം ഇല്ലാതാക്കി.";

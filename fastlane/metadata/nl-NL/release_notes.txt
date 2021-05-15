@@ -1,4 +1,5 @@
-• Achtereenvolgende audioberichten spelen vanaf nu acher elkaar af zonder dat je iets hoeft te doen. Vanaf nu blijft ook je audio-opname bewaard als conceptbericht als tijdens het opnemen de opname wordt onderbroken.
-• Iets uit het verleden los laten kan moeilijk zijn, maar met een nieuwe zelf in te stellen tijdspanne voor verlopende berichten heb je meer tijd om afscheid te nemen alvorens een bericht voorgoed wordt gewist.
+• Signal is a nonprofit powered by people like you. We’ve now made it easy to donate to Signal using Apple Pay. Just go to Settings > Donate to get started. Your donation helps Signal stay independent and ad-free. Thank you for standing with us!
+• Curious whether your latest monologue got the attention it deserved? You can now see when someone has listened to your voice messages. If you see the dot on your voice message, it’s still waiting for a listen.
+• You can also now see when a view-once photo or video has been viewed right from message details.
 
 Ben je geïnteresseerd in helpen om Signal te verbeteren? We huren mensen. Bezoek https://signal.org/workworkwork om hier meer over te lezen.

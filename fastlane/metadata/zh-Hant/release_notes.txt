@@ -1,4 +1,5 @@
-•語音筆記已塗上一層新鮮的油漆。 連續的訊息現在可以一起播放，如果某些內容中斷了你的錄製（例如欣賞我們的新外觀），你的訊息將被完全保留在我們的新草稿狀態（呼！）中。
-•放手可能很難，但是我們新的自定義消毀計時器可以幫助你找到更多時間來處理那些短暫的訊息，直到永遠消失。
+• Signal is a nonprofit powered by people like you. We’ve now made it easy to donate to Signal using Apple Pay. Just go to Settings > Donate to get started. Your donation helps Signal stay independent and ad-free. Thank you for standing with us!
+• Curious whether your latest monologue got the attention it deserved? You can now see when someone has listened to your voice messages. If you see the dot on your voice message, it’s still waiting for a listen.
+• You can also now see when a view-once photo or video has been viewed right from message details.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

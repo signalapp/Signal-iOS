@@ -1,4 +1,5 @@
-• Le note vocali hanno ricevuto una nuova mano di vernice. I messaggi consecutivi ora vengono riprodotti insieme e se qualcosa interrompe la registrazione (come ammirare il nostro nuovo aspetto), il tuo messaggio sarà perfettamente conservato nel nostro nuovo stato di bozza (fiu!).
-• Lasciar andare può essere difficile, ma il nostro nuovo timer a scomparsa personalizzato può aiutarti a trovare un po' più di tempo per elaborare quei messaggi fugaci prima che spariscano per sempre.
+• Signal is a nonprofit powered by people like you. We’ve now made it easy to donate to Signal using Apple Pay. Just go to Settings > Donate to get started. Your donation helps Signal stay independent and ad-free. Thank you for standing with us!
+• Curious whether your latest monologue got the attention it deserved? You can now see when someone has listened to your voice messages. If you see the dot on your voice message, it’s still waiting for a listen.
+• You can also now see when a view-once photo or video has been viewed right from message details.
 
 Interessato ad aiutare a migliorare Signal? Stiamo assumendo. Visita https://signal.org/workworkwork per saperne di più.

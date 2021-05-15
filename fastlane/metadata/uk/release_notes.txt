@@ -1,4 +1,5 @@
-• Ми трохи оновили барви голосових повідомлень. Послідовно надіслані повідомлення відтепер програються одне за одним, та якщо щось завадило вам записати голосове повідомлення (як милування нашим новим дизайном), ваші повідомлення пречудово збережуться у новому стані чернетки (еге ж!).
-• Відпускати завжди важко, але наш новий таймер повідомлень, що зникають, допоможе знайти трохи більше часу для опрацювання цих летючих повідомлень перед тим, як вони зникнуть назавжди.
+• Signal is a nonprofit powered by people like you. We’ve now made it easy to donate to Signal using Apple Pay. Just go to Settings > Donate to get started. Your donation helps Signal stay independent and ad-free. Thank you for standing with us!
+• Curious whether your latest monologue got the attention it deserved? You can now see when someone has listened to your voice messages. If you see the dot on your voice message, it’s still waiting for a listen.
+• You can also now see when a view-once photo or video has been viewed right from message details.
 
 Бажаєте допомогти у покращенні Signal? У нас є вакансії. Завітайте по деталі на https://signal.org/workworkwork.

@@ -1024,6 +1024,9 @@
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "يۆتكەش ۋە چوڭلۇقى";
 
+/* Title for the 'currency picker' view in the app settings. */
+"CURRENCY_PICKER_VIEW_TITLE" = "پۇلنى بەلگىلەش";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "بۇنىڭغا بىر مىنۇتتەك ۋەقىت كېتىشى مۇمكىن.";
 
@@ -1085,7 +1088,7 @@
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "ئۆزەمگە يوللا";
 
 /* Label for the 'Share' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "ئورتاقلاش";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "ھەمبەھىر";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "يەنە بىر قەدەم";
@@ -1305,6 +1308,51 @@
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "تەكشۈرۈشتىن دالدىلىنىش ئورنى";
+
+/* Action text for donation megaphone */
+"DONATION_MEGAPHONE_ACTION" = "ئىئانە قىلىڭ";
+
+/* Body for donation megaphone */
+"DONATION_MEGAPHONE_BODY" = "Signal سىزگە ئوخشاش كىشىلەر تەرىپىدىن ماڭدۇرۇلغان. بۈگۈن بىزنى قوللىشىڭىزنى كۆرسىتىڭ!";
+
+/* Cancel text for donation megaphone */
+"DONATION_MEGAPHONE_CANCEL" = "ياق، رەھمەت";
+
+/* Title for donation megaphone */
+"DONATION_MEGAPHONE_TITLE" = "‫Signal غا ئىئانە قىلىڭ";
+
+/* Donation amount label for the donate to signal view */
+"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+
+/* Default text for the custom amount field of the donation view. */
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+
+/* Text describing to the user that they're going to pay a donation to Signal */
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+
+/* Text explaining there are other ways to donate on the donation view. */
+"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+
+/* Error text notifying the user they must select a large amount on the donate to signal view */
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+
+/* Error text notifying the user they must select a smaller amount on the donate to signal view */
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+
+/* Error text notifying the user they must select an amount on the donate to signal view */
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+
+/* Thank you message on the donate to signal view */
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+
+/* Title for the donate to signal view */
+"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+
+/* The body of the 'Why Donate' section of the donate to signal view */
+"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+
+/* The title of the 'Why Donate' section of the donate to signal view */
+"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "سىز iOS تەڭشەكلىرىدىن ئەپ زىيارەت ھوقۇقىنى قوزغىتالايسىز.";
@@ -1943,10 +1991,10 @@
 "GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "گۇرۇپپا ئۇلانمىسىنى راستلا ئەسلىگە قايتۇرامسىز؟ ئەسلىگە قايتۇرۇلغاندىن كېيىن كىشىلەر ئىلگىرىكى ئۇلانما ئارقىلىق گۇرۇپپىغا قوشۇلالمايدۇ.";
 
 /* Label for the 'share link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK" = "ئورتاقلاش";
+"GROUP_LINK_VIEW_SHARE_LINK" = "ھەمبەھىر";
 
 /* Label for the 'share group link via iOS sharing UI' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "ئورتاقلاش";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "ھەمبەھىر";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "QR كودى";
@@ -4772,7 +4820,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "غايىب ئۇچۇرلار";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "سىز باشلىغان بارلىق يېڭى سۆھبەتلەر ئۈچۈن كۆڭۈلدىكى غايىب ئۇچۇر ۋاقىت خاتىرىلىگۈچنى تەڭشەڭ.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "‫Signal غا ئىئانە قىلىڭ";
@@ -5351,7 +5399,7 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "‫Touch ID ئارقىلىق Signal قۇلۇپىنى ئېچىڭ.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "ئەپ بىخەتەرلىگى";
+"SETTINGS_SECURITY_TITLE" = "ئەپ بىخەتەرلىكى";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "تەۋسىيەلەردە سۆھبەتلەرنى كۆرسەت";
@@ -5372,7 +5420,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "مۆھۈرلەنگەن ئەۋەتكۈچى";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ھالەت سىنەلگىسىنى كۆرسەت";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ھالەت سىنبەلگىسىنى كۆرسەت";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ھەممىسىدن قوبۇل قىل";
@@ -5459,22 +5507,22 @@
 "SOUNDS_NONE" = "ھېچنىمە";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "دەلىللەش تامام.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ئەگەر دەلىللەشتىن ئاتلاشنى تاللىسىڭىز، باشقىلار سىزگە يوللىغان ئۇچۇرنى تاپشۇرۇۋالالمايسىز ۋە ئۇچۇرىڭىزنى يوللىغىلى بولماسلىقى مۇمكىن.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "دەلىللىمەي داۋاملاشتۇرامدۇ؟";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Signal دا ئەخلەت ئۇچۇرلاردىن ساقلىنىشقا ياردەم قىلىش ئۈچۈن، دەلىللەشنى تاماملاڭ.\n\nدەلىللىگەندىن كېيىن، ئۇچۇر يوللاشنى داۋاملاشتۇرالايسىز. ۋاقىتلىق توختىتىلغان ئۇچۇرلار ئۆزلۈكىدىن يوللىنىدۇ.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "ئۇچۇرلىشىشنى داۋاملاشتۇرۇش ئۈچۈن دەلىللەش زۆرۈر";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "دەلىللەشتىن ئاتلا";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "دەلىللەش تامام";
@@ -5603,7 +5651,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "دەلىللەش";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "سىز ئۇلارغا ئۇچۇر يوللىغاندا غايىب ئۇچۇر ۋاقتى %@ غا تەڭشەلدى.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "ھېچقانداق ئورتاق گۇرۇپپا يوق. تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";
@@ -5888,7 +5936,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "ئاۋازلىق ئۇچۇر";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "خاتىرىلەش ئۈچۈن چېكىپ بېسىپ تۇرۇڭ.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "‫Signal ئۈستەل يۈزى ئەپىدە سەپلەشنى تاماملاڭ.";
