@@ -200,6 +200,7 @@ message GroupAttributeBlob {
         string title                        = 1;
         bytes  avatar                       = 2;
         uint32 disappearingMessagesDuration = 3;
+        string descriptionText              = 4;
     }
 }
 

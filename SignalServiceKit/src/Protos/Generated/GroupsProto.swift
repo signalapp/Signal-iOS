@@ -4764,6 +4764,7 @@ public enum GroupsProtoGroupAttributeBlobOneOfContent {
     case title(String)
     case avatar(Data)
     case disappearingMessagesDuration(UInt32)
+    case descriptionText(String)
 }
 
 private func GroupsProtoGroupAttributeBlobOneOfContentWrap(_ value: GroupsProtos_GroupAttributeBlob.OneOf_Content) throws -> GroupsProtoGroupAttributeBlobOneOfContent {
@@ -4771,6 +4772,7 @@ private func GroupsProtoGroupAttributeBlobOneOfContentWrap(_ value: GroupsProtos
     case .title(let value): return .title(value)
     case .avatar(let value): return .avatar(value)
     case .disappearingMessagesDuration(let value): return .disappearingMessagesDuration(value)
+    case .descriptionText(let value): return .descriptionText(value)
     }
 }
 
@@ -4779,6 +4781,7 @@ private func GroupsProtoGroupAttributeBlobOneOfContentUnwrap(_ value: GroupsProt
     case .title(let value): return .title(value)
     case .avatar(let value): return .avatar(value)
     case .disappearingMessagesDuration(let value): return .disappearingMessagesDuration(value)
+    case .descriptionText(let value): return .descriptionText(value)
     }
 }
 

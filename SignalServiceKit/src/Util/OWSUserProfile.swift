@@ -89,7 +89,7 @@ public extension OWSUserProfile {
         // Given name is required
         guard nameSegments.count > 0,
               let givenName = String(data: nameSegments[0], encoding: .utf8), !givenName.isEmpty else {
-            owsFailDebug("unexpectedly missing first name")
+            Logger.warn("unexpectedly missing first name")
             return nil
         }
 

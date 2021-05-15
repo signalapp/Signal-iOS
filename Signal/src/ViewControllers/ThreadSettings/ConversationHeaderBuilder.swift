@@ -85,7 +85,18 @@ struct ConversationHeaderBuilder: Dependencies {
             transaction: transaction
         )
 
-        if !groupThread.groupModel.isPlaceholder {
+        var isShowingGroupDescription = false
+        if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
+            if let descriptionText = groupModel.descriptionText {
+                isShowingGroupDescription = true
+                builder.addGroupDescriptionPreview(text: descriptionText)
+            } else if delegate.canEditConversationAttributes {
+                isShowingGroupDescription = true
+                builder.addCreateGroupDescriptionButton()
+            }
+        }
+
+        if !isShowingGroupDescription && !groupThread.groupModel.isPlaceholder {
             let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
             var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
             if groupThread.isGroupV1Thread {
@@ -371,6 +382,37 @@ struct ConversationHeaderBuilder: Dependencies {
         return button
     }
 
+    mutating func addGroupDescriptionPreview(text: String) {
+        let previewView = GroupDescriptionPreviewView()
+        previewView.descriptionText = text
+        previewView.groupName = delegate.threadName(
+            renderLocalUserAsNoteToSelf: true,
+            transaction: transaction
+        )
+        previewView.font = .ows_dynamicTypeSubheadlineClamped
+        previewView.textColor = Theme.secondaryTextAndIconColor
+        previewView.textAlignment = .center
+        previewView.numberOfLines = 2
+
+        subviews.append(UIView.spacer(withHeight: hasSubtitleLabel ? 4 : 8))
+        subviews.append(previewView)
+        hasSubtitleLabel = true
+    }
+
+    mutating func addCreateGroupDescriptionButton() {
+        let button = OWSButton { [weak delegate] in delegate?.didTapAddGroupDescription() }
+        button.setTitle(NSLocalizedString(
+            "GROUP_DESCRIPTION_PLACEHOLDER",
+            comment: "Placeholder text for 'group description' field."
+        ), for: .normal)
+        button.setTitleColor(Theme.secondaryTextAndIconColor, for: .normal)
+        button.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
+
+        subviews.append(UIView.spacer(withHeight: hasSubtitleLabel ? 4 : 8))
+        subviews.append(button)
+        hasSubtitleLabel = true
+    }
+
     func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
         let localUserDisplayMode: LocalUserDisplayMode = (options.contains(.renderLocalUserAsNoteToSelf)
                                                             ? .noteToSelf
@@ -467,6 +509,7 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies {
     var avatarView: UIImageView? { get set }
 
     var isBlockedByMigration: Bool { get }
+    var canEditConversationAttributes: Bool { get }
 
     func tappedAvatar()
     func updateTableContents(shouldReload: Bool)
@@ -477,6 +520,8 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies {
     func tappedButton()
 
     func didTapUnblockThread(completion: @escaping () -> Void)
+
+    func didTapAddGroupDescription()
 }
 
 extension ConversationHeaderDelegate {
@@ -556,4 +601,20 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
     }
 
     func tappedButton() {}
+
+    func didTapAddGroupDescription() {
+        guard let groupThread = thread as? TSGroupThread else { return }
+        let vc = GroupDescriptionViewController(
+            groupModel: groupThread.groupModel,
+            options: [.editable, .updateImmediately]
+        )
+        vc.descriptionDelegate = self
+        presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+    }
+}
+
+extension ConversationSettingsViewController: GroupDescriptionViewControllerDelegate {
+    func groupDescriptionViewControllerDidComplete(groupDescription: String?) {
+        reloadThreadAndUpdateContent()
+    }
 }

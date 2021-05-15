@@ -122,7 +122,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
     // Any views that provide model information are instantiated by the view controller directly
     // Views that are just chrome are put together in the `constructTableContents()` function
 
-    private let descriptionField = SupportRequestTextView()
+    private let descriptionField = TextViewWithPlaceholder()
     private let debugSwitch = UISwitch()
     private let emojiPicker = EmojiMoodPickerView()
 
@@ -150,7 +150,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
     }
 
     func updateRightBarButton() {
-        navigationItem.rightBarButtonItem?.isEnabled = (descriptionField.text.count > 10) && selectedFilter != nil
+        navigationItem.rightBarButtonItem?.isEnabled = ((descriptionField.text?.count ?? 0) > 10) && selectedFilter != nil
     }
 
     override func applyTheme() {
@@ -185,7 +185,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate(alongsideTransition: { (_) in
-            self.scrollToFocus(animated: true)
+            self.descriptionField.scrollToFocus(in: self.tableView, animated: true)
         }, completion: nil)
     }
 
@@ -256,20 +256,20 @@ final class ContactSupportViewController: OWSTableViewController2 {
     }
 }
 
-// MARK: - <SupportRequestTextViewDelegate>
+// MARK: - <TextViewWithPlaceholderDelegate>
 
-extension ContactSupportViewController: SupportRequestTextViewDelegate {
+extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
 
-    func textViewDidUpdateSelection(_ textView: SupportRequestTextView) {
-        scrollToFocus(animated: true)
+    func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder) {
+        textView.scrollToFocus(in: tableView, animated: true)
     }
 
-    func textViewDidUpdateText(_ textView: SupportRequestTextView) {
+    func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
         updateRightBarButton()
 
         // Disable interactive presentation if the user has entered text
         if #available(iOS 13, *) {
-            isModalInPresentation = (textView.text.count > 0)
+            isModalInPresentation = !textView.text.isEmptyOrNil
         }
 
         // Kick the tableview so it recalculates sizes
@@ -277,36 +277,17 @@ extension ContactSupportViewController: SupportRequestTextViewDelegate {
             tableView.performBatchUpdates(nil) { (_) in
                 // And when the size changes have finished, make sure we're scrolled
                 // to the focused line
-                self.scrollToFocus(animated: false)
+                textView.scrollToFocus(in: self.tableView, animated: false)
             }
         }
     }
 
-    /// Ensures the currently focused area is scrolled into the visible content inset
-    /// If it's already visible, this will do nothing
-    func scrollToFocus(animated: Bool) {
-        let visibleRect = tableView.bounds.inset(by: tableView.adjustedContentInset)
-        let rawCursorFocusRect = descriptionField.getUpdatedFocusLine()
-        let cursorFocusRect = tableView.convert(rawCursorFocusRect, from: descriptionField)
-        let paddedCursorRect = cursorFocusRect.insetBy(dx: 0, dy: -6)
-
-        let entireContentFits = tableView.contentSize.height <= visibleRect.height
-        let focusRect = entireContentFits ? visibleRect : paddedCursorRect
-
-        // If we have a null rect, there's nowhere to scroll to
-        // If the focusRect is already visible, there's no need to scroll
-        guard !focusRect.isNull else { return }
-        guard !visibleRect.contains(focusRect) else { return }
-
-        let targetYOffset: CGFloat
-        if focusRect.minY < visibleRect.minY {
-            targetYOffset = focusRect.minY - tableView.adjustedContentInset.top
-        } else {
-            let bottomEdgeOffset = tableView.height - tableView.adjustedContentInset.bottom
-            targetYOffset = focusRect.maxY - bottomEdgeOffset
-        }
-        tableView.setContentOffset(CGPoint(x: 0, y: targetYOffset), animated: animated)
-    }
+    func textView(
+        _ textView: TextViewWithPlaceholder,
+        uiTextView: UITextView,
+        shouldChangeTextIn range: NSRange,
+        replacementText text: String
+    ) -> Bool { true }
 }
 
 // MARK: - Table view content builders

@@ -8,6 +8,7 @@ public struct TSGroupModelBuilder: Dependencies {
 
     public var groupId: Data?
     public var name: String?
+    public var descriptionText: String?
     public var avatarData: Data?
     public var groupMembership = GroupMembership()
     public var groupAccess: GroupAccess?
@@ -31,6 +32,7 @@ public struct TSGroupModelBuilder: Dependencies {
     private init(groupV2Snapshot: GroupV2Snapshot) throws {
         self.groupId = try groupsV2.groupId(forGroupSecretParamsData: groupV2Snapshot.groupSecretParamsData)
         self.name = groupV2Snapshot.title
+        self.descriptionText = groupV2Snapshot.descriptionText
         self.avatarData = groupV2Snapshot.avatarData
         self.groupMembership = groupV2Snapshot.groupMembership
         self.groupAccess = groupV2Snapshot.groupAccess
@@ -165,6 +167,12 @@ public struct TSGroupModelBuilder: Dependencies {
         case .V2:
             owsAssertDebug(addedByAddress == nil)
 
+            var descriptionText: String?
+            if let strippedDescriptionText = self.descriptionText?.stripped,
+               strippedDescriptionText.count > 0 {
+                descriptionText = strippedDescriptionText
+            }
+
             let groupAccess = buildGroupAccess(groupsVersion: groupsVersion)
             guard let groupSecretParamsData = groupSecretParamsData else {
                 throw OWSAssertionError("Missing groupSecretParamsData.")
@@ -176,6 +184,7 @@ public struct TSGroupModelBuilder: Dependencies {
             let droppedMembers = Array(Set(self.droppedMembers).subtracting(groupMembership.allMembersOfAnyKind))
             return TSGroupModelV2(groupId: groupId,
                                   name: name,
+                                  descriptionText: descriptionText,
                                   avatarData: avatarData,
                                   groupMembership: groupMembership,
                                   groupAccess: groupAccess,
@@ -280,6 +289,7 @@ public extension TSGroupModel {
             builder.avatarUrlPath = v2.avatarUrlPath
             builder.inviteLinkPassword = v2.inviteLinkPassword
             builder.droppedMembers = v2.droppedMembers
+            builder.descriptionText = v2.descriptionText
 
             // Do not copy transient properties:
             //

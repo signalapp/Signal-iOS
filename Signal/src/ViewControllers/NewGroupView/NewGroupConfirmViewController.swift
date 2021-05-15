@@ -33,12 +33,13 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         self.newGroupState = newGroupState
 
         let groupId = newGroupState.groupSeed.possibleGroupId
-        let conversationColorName = newGroupState.groupSeed.possibleConversationColorName
-        self.helper = GroupAttributesEditorHelper(groupId: groupId,
-                                                  conversationColorName: conversationColorName.rawValue,
-                                                  groupNameOriginal: newGroupState.groupName,
-                                                  avatarOriginalData: newGroupState.avatarData,
-                                                  iconViewSize: 64)
+        self.helper = GroupAttributesEditorHelper(
+            groupId: groupId,
+            groupNameOriginal: newGroupState.groupName,
+            groupDescriptionOriginal: nil,
+            avatarOriginalData: newGroupState.avatarData,
+            iconViewSize: 64
+        )
 
         super.init()
 
@@ -466,6 +467,8 @@ extension NewGroupConfirmViewController: GroupAttributesEditorHelperDelegate {
         newGroupState.groupName = helper.groupNameCurrent
         newGroupState.avatarData = helper.avatarCurrent?.imageData
     }
+
+    func groupAttributesEditorSelectionDidChange() {}
 }
 
 // MARK: -

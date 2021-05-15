@@ -178,6 +178,9 @@ public class FeatureFlags: BaseFlags {
     public static let universalDisappearingMessages = build.includes(.qa)
 
     @objc
+    public static let groupDescriptionEditing = build.includes(.qa)
+
+    @objc
     public static let linkifyWithNSDataDetector = false
 
     public static func buildFlagMap() -> [String: Any] {

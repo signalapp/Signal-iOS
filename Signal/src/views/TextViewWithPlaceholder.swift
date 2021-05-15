@@ -1,24 +1,27 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-protocol SupportRequestTextViewDelegate: class {
-    /// A method invoked by the description field when its cursor/selection changed without any change
+protocol TextViewWithPlaceholderDelegate: class {
+    /// A method invoked by the text field when its cursor/selection changed without any change
     /// to the text
-    func textViewDidUpdateSelection(_ textView: SupportRequestTextView)
+    func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder)
 
-    /// A method invoked by the description field whenever its text contents have changed
+    /// A method invoked by the text field whenever its text contents have changed
     /// This also implies an update to the selection
-    func textViewDidUpdateText(_ textView: SupportRequestTextView)
+    func textViewDidUpdateText(_ textView: TextViewWithPlaceholder)
+
+    /// A method invoked by the text field whenever the user tries to insert new text
+    func textView(_ textView: TextViewWithPlaceholder, uiTextView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
 }
 
-class SupportRequestTextView: UIView, UITextViewDelegate {
+class TextViewWithPlaceholder: UIView, UITextViewDelegate {
     // MARK: - Public Properties
 
     /// A delegate to receive callbacks on any data updates
-    weak var delegate: SupportRequestTextViewDelegate?
+    weak var delegate: TextViewWithPlaceholderDelegate?
 
     /// Fallback placeholder text if the field is empty
     var placeholderText: String = "" {
@@ -28,8 +31,33 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
         }
     }
 
+    func acceptAutocorrectSuggestion() {
+        textView.acceptAutocorrectSuggestion()
+    }
+
     /// Any text the user has input
-    var text: String { textView.text }
+    var text: String? {
+        get { textView.text }
+        set {
+            textView.text = newValue
+            textViewDidChange(textView)
+        }
+    }
+
+    var dataDetectorTypes: UIDataDetectorTypes {
+        get { textView.dataDetectorTypes }
+        set { textView.dataDetectorTypes = newValue }
+    }
+
+    var isEditable: Bool {
+        get { textView.isEditable }
+        set { textView.isEditable = newValue }
+    }
+
+    var linkTextAttributes: [NSAttributedString.Key: Any] {
+        get { textView.linkTextAttributes }
+        set { textView.linkTextAttributes = newValue }
+    }
 
     // MARK: - Private Properties
 
@@ -130,6 +158,32 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
         return focusedLineRect
     }
 
+    /// Ensures the currently focused area is scrolled into the visible content inset
+    /// If it's already visible, this will do nothing
+    func scrollToFocus(in scrollView: UIScrollView, animated: Bool) {
+        let visibleRect = scrollView.bounds.inset(by: scrollView.adjustedContentInset)
+        let rawCursorFocusRect = getUpdatedFocusLine()
+        let cursorFocusRect = scrollView.convert(rawCursorFocusRect, from: self)
+        let paddedCursorRect = cursorFocusRect.insetBy(dx: 0, dy: -6)
+
+        let entireContentFits = scrollView.contentSize.height <= visibleRect.height
+        let focusRect = entireContentFits ? visibleRect : paddedCursorRect
+
+        // If we have a null rect, there's nowhere to scroll to
+        // If the focusRect is already visible, there's no need to scroll
+        guard !focusRect.isNull else { return }
+        guard !visibleRect.contains(focusRect) else { return }
+
+        let targetYOffset: CGFloat
+        if focusRect.minY < visibleRect.minY {
+            targetYOffset = focusRect.minY - scrollView.adjustedContentInset.top
+        } else {
+            let bottomEdgeOffset = scrollView.height - scrollView.adjustedContentInset.bottom
+            targetYOffset = focusRect.maxY - bottomEdgeOffset
+        }
+        scrollView.setContentOffset(CGPoint(x: 0, y: targetYOffset), animated: animated)
+    }
+
     // MARK: - <UITextViewDelegate>
 
     func textViewDidChangeSelection(_ textView: UITextView) {
@@ -141,6 +195,10 @@ class SupportRequestTextView: UIView, UITextViewDelegate {
         placeholderTextView.isHidden = !showPlaceholder
 
         delegate?.textViewDidUpdateText(self)
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        delegate?.textView(self, uiTextView: textView, shouldChangeTextIn: range, replacementText: text) ?? true
     }
 
     /// Helper to take a rect and horizontally size it to the current bounds

@@ -84,6 +84,7 @@ public extension OWSTableItem {
         return cell
     }
 
+    @available(swift, obsoleted: 1.0)
     static func disclosureItem(icon: ThemeIcon,
                                name: String,
                                accessoryText: String? = nil,
@@ -91,6 +92,22 @@ public extension OWSTableItem {
                                actionBlock: (() -> Void)?) -> OWSTableItem {
         item(icon: icon,
              name: name,
+             accessoryText: accessoryText,
+             accessoryType: .disclosureIndicator,
+             accessibilityIdentifier: accessibilityIdentifier,
+             actionBlock: actionBlock)
+    }
+
+    @nonobjc
+    static func disclosureItem(icon: ThemeIcon,
+                               name: String,
+                               maxNameLines: Int? = nil,
+                               accessoryText: String? = nil,
+                               accessibilityIdentifier: String,
+                               actionBlock: (() -> Void)?) -> OWSTableItem {
+        item(icon: icon,
+             name: name,
+             maxNameLines: maxNameLines,
              accessoryText: accessoryText,
              accessoryType: .disclosureIndicator,
              accessibilityIdentifier: accessibilityIdentifier,
@@ -120,6 +137,7 @@ public extension OWSTableItem {
     static func item(icon: ThemeIcon? = nil,
                      tintColor: UIColor? = nil,
                      name: String,
+                     maxNameLines: Int? = nil,
                      textColor: UIColor? = nil,
                      accessoryText: String? = nil,
                      accessoryType: UITableViewCell.AccessoryType = .none,
@@ -132,6 +150,7 @@ public extension OWSTableItem {
                 icon: icon,
                 tintColor: tintColor,
                 itemName: name,
+                maxItemNameLines: maxNameLines,
                 textColor: textColor,
                 accessoryText: accessoryText,
                 accessoryType: accessoryType,
@@ -161,6 +180,7 @@ public extension OWSTableItem {
     static func buildCellWithAccessoryLabel(icon: ThemeIcon? = nil,
                                             tintColor: UIColor? = nil,
                                             itemName: String,
+                                            maxItemNameLines: Int? = nil,
                                             textColor: UIColor? = nil,
                                             accessoryText: String? = nil,
                                             accessoryType: UITableViewCell.AccessoryType = .disclosureIndicator,
@@ -169,6 +189,7 @@ public extension OWSTableItem {
         buildIconNameCell(icon: icon,
                           tintColor: tintColor,
                           itemName: itemName,
+                          maxItemNameLines: maxItemNameLines,
                           textColor: textColor,
                           accessoryText: accessoryText,
                           accessoryType: accessoryType,
@@ -180,6 +201,7 @@ public extension OWSTableItem {
     static func buildIconNameCell(icon: ThemeIcon? = nil,
                                   tintColor: UIColor? = nil,
                                   itemName: String,
+                                  maxItemNameLines: Int? = nil,
                                   textColor: UIColor? = nil,
                                   accessoryText: String? = nil,
                                   accessoryTextColor: UIColor? = nil,
@@ -221,7 +243,10 @@ public extension OWSTableItem {
         // very strange indeterminant behavior. To work around,
         // we only allow the longer of the two labels to be
         // multi-line.
-        if itemName.count >= (accessoryText ?? "").count {
+        if let maxItemNameLines = maxItemNameLines {
+            nameLabel.numberOfLines = maxItemNameLines
+            nameLabel.lineBreakMode = .byTruncatingTail
+        } else if itemName.count >= (accessoryText ?? "").count {
             nameLabel.numberOfLines = 0
             nameLabel.lineBreakMode = .byWordWrapping
         } else {

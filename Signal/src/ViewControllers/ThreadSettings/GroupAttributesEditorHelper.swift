@@ -8,6 +8,7 @@ import UIKit
 
 protocol GroupAttributesEditorHelperDelegate: class {
     func groupAttributesEditorContentsDidChange()
+    func groupAttributesEditorSelectionDidChange()
 }
 
 // MARK: -
@@ -25,9 +26,9 @@ class GroupAttributesEditorHelper: NSObject {
 
     weak var delegate: GroupAttributesEditorHelperDelegate?
 
-    private let groupId: Data
+    private let groupModelOriginal: TSGroupModel?
 
-    private let conversationColorName: String
+    private let groupId: Data
 
     private let avatarViewHelper = AvatarViewHelper()
 
@@ -44,10 +45,20 @@ class GroupAttributesEditorHelper: NSObject {
 
     let nameTextField = UITextField()
 
-    private var groupNameOriginal: String?
+    var groupNameOriginal: String?
 
     var groupNameCurrent: String? {
-        return nameTextField.text?.filterStringForDisplay()
+        get { nameTextField.text?.nilIfEmpty?.filterStringForDisplay() }
+        set { nameTextField.text = newValue?.nilIfEmpty?.filterStringForDisplay() }
+    }
+
+    let descriptionTextView = TextViewWithPlaceholder()
+
+    var groupDescriptionOriginal: String?
+
+    var groupDescriptionCurrent: String? {
+        get { descriptionTextView.text?.nilIfEmpty?.filterStringForDisplay() }
+        set { descriptionTextView.text = newValue?.nilIfEmpty?.filterStringForDisplay() }
     }
 
     private var avatarOriginal: GroupAvatar?
@@ -56,18 +67,35 @@ class GroupAttributesEditorHelper: NSObject {
 
     var hasUnsavedChanges: Bool {
         return (groupNameOriginal != groupNameCurrent ||
-                avatarOriginal?.imageData != avatarCurrent?.imageData)
+                    groupDescriptionOriginal != groupDescriptionCurrent ||
+                    avatarOriginal?.imageData != avatarCurrent?.imageData)
     }
 
-    public required init(groupId: Data,
-                         conversationColorName: String,
+    public convenience init(
+        groupModel: TSGroupModel,
+        iconViewSize: UInt = kLargeAvatarSize
+    ) {
+        self.init(
+            groupModelOriginal: groupModel,
+            groupId: groupModel.groupId,
+            groupNameOriginal: groupModel.groupName,
+            groupDescriptionOriginal: (groupModel as? TSGroupModelV2)?.descriptionText,
+            avatarOriginalData: groupModel.groupAvatarData,
+            iconViewSize: iconViewSize
+        )
+    }
+
+    public required init(groupModelOriginal: TSGroupModel? = nil,
+                         groupId: Data,
                          groupNameOriginal: String?,
+                         groupDescriptionOriginal: String? = nil,
                          avatarOriginalData: Data?,
                          iconViewSize: UInt) {
 
+        self.groupModelOriginal = groupModelOriginal
         self.groupId = groupId
-        self.conversationColorName = conversationColorName
-        self.groupNameOriginal = groupNameOriginal?.filterStringForDisplay()
+        self.groupNameOriginal = groupNameOriginal?.nilIfEmpty?.filterStringForDisplay()
+        self.groupDescriptionOriginal = groupDescriptionOriginal?.nilIfEmpty?.filterStringForDisplay()
         self.avatarOriginal = GroupAvatar.build(imageData: avatarOriginalData)
         self.avatarCurrent = avatarOriginal
         self.iconViewSize = iconViewSize
@@ -77,7 +105,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     // MARK: -
 
-    func buildContents(avatarViewHelperDelegate: AvatarViewHelperDelegate) {
+    func buildContents(avatarViewHelperDelegate: AvatarViewHelperDelegate? = nil) {
 
         avatarViewHelper.delegate = avatarViewHelperDelegate
 
@@ -114,6 +142,11 @@ class GroupAttributesEditorHelper: NSObject {
         nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         nameTextField.placeholder = NSLocalizedString("GROUP_NAME_PLACEHOLDER",
                                                       comment: "Placeholder text for 'group name' field.")
+
+        descriptionTextView.text = groupDescriptionOriginal
+        descriptionTextView.delegate = self
+        descriptionTextView.placeholderText = NSLocalizedString("GROUP_DESCRIPTION_PLACEHOLDER",
+                                                                comment: "Placeholder text for 'group description' field.")
     }
 
     public static func buildCameraButtonForCorner() -> UIView {
@@ -203,7 +236,82 @@ class GroupAttributesEditorHelper: NSObject {
 
     func showAvatarUI() {
         nameTextField.resignFirstResponder()
+        descriptionTextView.resignFirstResponder()
         avatarViewHelper.showChangeAvatarUI()
+    }
+
+    // MARK: - update
+
+    func updateGroupIfNecessary(fromViewController: UIViewController, completion: @escaping () -> Void) {
+        nameTextField.acceptAutocorrectSuggestion()
+        descriptionTextView.acceptAutocorrectSuggestion()
+
+        guard !groupNameCurrent.isEmptyOrNil else {
+            NewGroupConfirmViewController.showMissingGroupNameAlert()
+            return
+        }
+
+        guard hasUnsavedChanges else {
+            owsFailDebug("!hasUnsavedChanges.")
+            return completion()
+        }
+
+        guard let newGroupModel = buildNewGroupModel() else {
+            let error = OWSAssertionError("Couldn't build group model.")
+            GroupViewUtils.showUpdateErrorUI(error: error)
+            return
+        }
+        GroupViewUtils.updateGroupWithActivityIndicator(
+            fromViewController: fromViewController,
+            updatePromiseBlock: {
+                self.updateGroupThreadPromise(newGroupModel: newGroupModel)
+            },
+            completion: { _ in
+                completion()
+            }
+        )
+    }
+
+    private func buildNewGroupModel() -> TSGroupModel? {
+        guard let groupModelOriginal = groupModelOriginal else { return nil }
+
+        do {
+            return try databaseStorage.read { transaction in
+                var builder = groupModelOriginal.asBuilder
+                builder.name = self.groupNameCurrent
+                builder.descriptionText = self.groupDescriptionCurrent
+                builder.avatarData = self.avatarCurrent?.imageData
+                return try builder.build(transaction: transaction)
+            }
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
+    private func updateGroupThreadPromise(newGroupModel: TSGroupModel) -> Promise<Void> {
+        guard let localAddress = tsAccountManager.localAddress else {
+            return Promise(error: OWSAssertionError("Missing localAddress."))
+        }
+
+        guard let oldGroupModel = groupModelOriginal else {
+            return Promise(error: OWSAssertionError("Missing groupModelOriginal."))
+        }
+
+        return firstly { () -> Promise<Void> in
+            return GroupManager.messageProcessingPromise(
+                for: oldGroupModel,
+                description: self.logTag
+            )
+        }.then(on: .global()) { _ in
+            // dmConfiguration: nil means don't change disappearing messages configuration.
+            GroupManager.localUpdateExistingGroup(
+                oldGroupModel: oldGroupModel,
+                newGroupModel: newGroupModel,
+                dmConfiguration: nil,
+                groupUpdateSourceAddress: localAddress
+            )
+        }.asVoid()
     }
 }
 
@@ -254,6 +362,31 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
             shouldChangeCharactersInRange: range,
             replacementString: replacementString.withoutBidiControlCharacters,
             maxGlyphCount: GroupManager.maxGroupNameGlyphCount
+        )
+    }
+}
+
+extension GroupAttributesEditorHelper: TextViewWithPlaceholderDelegate {
+    func textViewDidUpdateText(_ textView: TextViewWithPlaceholder) {
+        delegate?.groupAttributesEditorContentsDidChange()
+    }
+
+    func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder) {
+        delegate?.groupAttributesEditorSelectionDidChange()
+    }
+
+    func textView(
+        _ textView: TextViewWithPlaceholder,
+        uiTextView: UITextView,
+        shouldChangeTextIn range: NSRange,
+        replacementText text: String
+    ) -> Bool {
+        // Truncate the replacement to fit.
+        return TextViewHelper.textView(
+            uiTextView,
+            shouldChangeTextIn: range,
+            replacementText: text,
+            maxGlyphCount: GroupManager.maxGroupDescriptionGlyphCount
         )
     }
 }

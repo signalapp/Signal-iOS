@@ -35,7 +35,7 @@ public class PinnedThreadManager: NSObject {
     public class func pinnedThreads(transaction: SDSAnyReadTransaction) -> [TSThread] {
         return pinnedThreadIds.compactMap { threadId in
             guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
-//                owsFailDebug("pinned thread record no longer exists \(threadId)")
+                Logger.warn("pinned thread record no longer exists \(threadId)")
                 return nil
             }
 
@@ -44,7 +44,7 @@ public class PinnedThreadManager: NSObject {
             // Ignore deleted or archived pinned threads. These should exist, but it's
             // possible they are incorrectly received from linked devices.
             guard thread.shouldThreadBeVisible, !associatedData.isArchived else {
-                owsFailDebug("Ignoring deleted or archived pinned thread \(threadId)")
+                Logger.warn("Ignoring deleted or archived pinned thread \(threadId)")
                 return nil
             }
             return thread

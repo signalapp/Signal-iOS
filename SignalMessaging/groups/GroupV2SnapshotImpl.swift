@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,6 +16,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
     public let revision: UInt32
 
     public let title: String
+    public let descriptionText: String?
 
     public let avatarUrlPath: String?
     public let avatarData: Data?
@@ -38,6 +39,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
                 groupProto: GroupsProtoGroup,
                 revision: UInt32,
                 title: String,
+                descriptionText: String?,
                 avatarUrlPath: String?,
                 avatarData: Data?,
                 groupMembership: GroupMembership,
@@ -50,6 +52,7 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         self.groupProto = groupProto
         self.revision = revision
         self.title = title
+        self.descriptionText = descriptionText
         self.avatarUrlPath = avatarUrlPath
         self.avatarData = avatarData
         self.groupMembership = groupMembership

@@ -799,12 +799,21 @@ struct GroupsProtos_GroupAttributeBlob {
     set {content = .disappearingMessagesDuration(newValue)}
   }
 
+  var descriptionText: String {
+    get {
+      if case .descriptionText(let v)? = content {return v}
+      return String()
+    }
+    set {content = .descriptionText(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_Content: Equatable {
     case title(String)
     case avatar(Data)
     case disappearingMessagesDuration(UInt32)
+    case descriptionText(String)
 
   #if !swift(>=4.1)
     static func ==(lhs: GroupsProtos_GroupAttributeBlob.OneOf_Content, rhs: GroupsProtos_GroupAttributeBlob.OneOf_Content) -> Bool {
@@ -822,6 +831,10 @@ struct GroupsProtos_GroupAttributeBlob {
       }()
       case (.disappearingMessagesDuration, .disappearingMessagesDuration): return {
         guard case .disappearingMessagesDuration(let l) = lhs, case .disappearingMessagesDuration(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.descriptionText, .descriptionText): return {
+        guard case .descriptionText(let l) = lhs, case .descriptionText(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -2264,7 +2277,8 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "title"),
     2: .same(proto: "avatar"),
-    3: .same(proto: "disappearingMessagesDuration")
+    3: .same(proto: "disappearingMessagesDuration"),
+    4: .same(proto: "descriptionText")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2291,6 +2305,12 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
         try decoder.decodeSingularUInt32Field(value: &v)
         if let v = v {self.content = .disappearingMessagesDuration(v)}
       }()
+      case 4: try {
+        if self.content != nil {try decoder.handleConflictingOneOf()}
+        var v: String?
+        try decoder.decodeSingularStringField(value: &v)
+        if let v = v {self.content = .descriptionText(v)}
+      }()
       default: break
       }
     }
@@ -2312,6 +2332,10 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
     case .disappearingMessagesDuration?: try {
       guard case .disappearingMessagesDuration(let v)? = self.content else { preconditionFailure() }
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }()
+    case .descriptionText?: try {
+      guard case .descriptionText(let v)? = self.content else { preconditionFailure() }
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     }()
     case nil: break
     }

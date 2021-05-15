@@ -214,6 +214,41 @@ public extension GroupV2Params {
         }
     }
 
+    func decryptGroupDescription(_ ciphertext: Data?) -> String? {
+        guard let ciphertext = ciphertext else {
+            // Treat a missing value as no value.
+            return nil
+        }
+        do {
+            let blobProtoData = try decryptBlob(ciphertext)
+            let blobProto = try GroupsProtoGroupAttributeBlob(serializedData: blobProtoData)
+            if let blobContent = blobProto.content {
+                switch blobContent {
+                case .descriptionText(let value):
+                    return value
+                default:
+                    owsFailDebug("Invalid group description value.")
+                }
+            }
+        } catch {
+            owsFailDebug("Could not decrypt group name: \(error).")
+        }
+        return nil
+    }
+
+    func encryptGroupDescription(_ value: String) throws -> Data {
+        do {
+            var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+            blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.descriptionText(value))
+            let blobData = try blobBuilder.buildSerializedData()
+            let ciphertext = try encryptBlob(blobData)
+            return ciphertext
+        } catch {
+            owsFailDebug("Error: \(error)")
+            throw error
+        }
+    }
+
     func decryptGroupAvatar(_ ciphertext: Data) throws -> Data? {
         do {
             let blobProtoData = try decryptBlob(ciphertext)
