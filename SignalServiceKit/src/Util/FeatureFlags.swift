@@ -410,7 +410,7 @@ public class DebugFlags: BaseFlags {
     public static let fastPerfTests = false
 
     @objc
-    public static let forceViewedReceiptSending = build.includes(.qa)
+    public static let forceViewedReceiptSending = build.includes(.beta)
 
     @objc
     public static let extraDebugLogs = build.includes(.openPreview)
