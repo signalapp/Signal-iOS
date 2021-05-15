@@ -178,7 +178,7 @@ public class FeatureFlags: BaseFlags {
     public static let universalDisappearingMessages = build.includes(.qa)
 
     @objc
-    public static let groupDescriptionEditing = build.includes(.qa)
+    public static let groupDescriptionEditing = build.includes(.beta)
 
     @objc
     public static let linkifyWithNSDataDetector = false

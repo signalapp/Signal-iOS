@@ -50,7 +50,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             do {
                 return !(try promise.wait())
             } catch {
-                owsFailDebug("failed to query notification permission")
+                Logger.warn("failed to query notification permission")
                 return false
             }
         case .contactPermissionReminder:

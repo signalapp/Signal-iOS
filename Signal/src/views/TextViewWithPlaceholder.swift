@@ -59,6 +59,24 @@ class TextViewWithPlaceholder: UIView, UITextViewDelegate {
         set { textView.linkTextAttributes = newValue }
     }
 
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        textView.becomeFirstResponder()
+    }
+
+    @discardableResult
+    override func resignFirstResponder() -> Bool {
+        textView.resignFirstResponder()
+    }
+
+    override var canBecomeFirstResponder: Bool {
+        textView.canBecomeFirstResponder
+    }
+
+    override var isFirstResponder: Bool {
+        textView.isFirstResponder
+    }
+
     // MARK: - Private Properties
 
     private func buildTextView() -> UITextView {

@@ -77,6 +77,7 @@ public class TextViewHelper: NSObject {
         if let changedString = changedString {
             owsAssertDebug(!shouldChange)
             textView.text = changedString
+            textView.delegate?.textViewDidChange?(textView)
         }
 
         return shouldChange

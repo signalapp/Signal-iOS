@@ -29,12 +29,24 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         self.init(groupModel: groupModel, options: [])
     }
 
-    required init(
+    convenience init(
         groupModel: TSGroupModel,
         groupDescriptionCurrent: String? = nil,
         options: Options
     ) {
-        self.helper = GroupAttributesEditorHelper(groupModel: groupModel)
+        self.init(
+            helper: GroupAttributesEditorHelper(groupModel: groupModel),
+            groupDescriptionCurrent: groupDescriptionCurrent,
+            options: options
+        )
+    }
+
+    required init(
+        helper: GroupAttributesEditorHelper,
+        groupDescriptionCurrent: String? = nil,
+        options: Options = []
+    ) {
+        self.helper = helper
         self.options = options
 
         if let groupDescriptionCurrent = groupDescriptionCurrent {

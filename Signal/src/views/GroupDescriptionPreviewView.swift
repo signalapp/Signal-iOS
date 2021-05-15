@@ -62,14 +62,20 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         textView.sizeThatFits(size)
     }
 
-    private static let truncatedTextCache = NSCache<NSString, NSAttributedString>()
-    func truncateVisibleTextIfNecessary() {
-        textView.linkTextAttributes = [
-            .foregroundColor: Theme.primaryTextColor,
-            .underlineStyle: 0
-        ]
+    private static let moreTextPrefix = "… "
+    private static let moreText = NSLocalizedString(
+        "GROUP_DESCRIPTION_MORE",
+        comment: "Text indication the user can tap to view the full group description"
+    )
+    private static let moreTextPlusPrefixLength = (moreTextPrefix + moreText).utf16.count
 
-        textView.text = descriptionText
+    private static let textThatFitsCache = NSCache<NSString, NSString>()
+    func truncateVisibleTextIfNecessary() {
+        // When using autolayout, we need to initially set the text
+        // to the full text otherwise the view will never get any width.
+        if !shouldDeactivateConstraints {
+            textView.text = descriptionText
+        }
 
         guard width > 0 else { return }
 
@@ -79,64 +85,77 @@ class GroupDescriptionPreviewView: ManualLayoutView {
 
         // If we have already determine the attributed text for
         // this size + description, use it.
-        if let attributedText = Self.truncatedTextCache.object(forKey: cacheKey) {
-            textView.attributedText = attributedText
-            return
+        if let cachedText = Self.textThatFitsCache.object(forKey: cacheKey) {
+            return setTextThatFits(cachedText as String)
         }
 
+        var textThatFits = descriptionText
         defer {
-            // Cache the attributed text for this size + description.
-            Self.truncatedTextCache.setObject(
-                textView.attributedText,
-                forKey: cacheKey
-            )
+            setTextThatFits(textThatFits)
+
+            // Cache the text that fits for this size + description.
+            Self.textThatFitsCache.setObject(textThatFits as NSString, forKey: cacheKey)
         }
 
-        var visibleCharacterRange = textView.visibleTextRange
+        setTextThatFits(textThatFits)
+        var visibleCharacterRangeUpperBound = textView.visibleTextRange.upperBound
 
         // Check if we're displaying less than the full length of the description
         // text. If so, we will manually truncate and add a "more" button to view
         // the full description.
-        guard visibleCharacterRange.upperBound < textView.text.utf16.count else { return }
-
-        let moreTextPrefix = "… "
-        let moreText = NSLocalizedString(
-            "GROUP_DESCRIPTION_MORE",
-            comment: "Text indication the user can tap to view the full group description"
-        )
-        let moreTextPlusPrefix = moreTextPrefix + moreText
+        guard visibleCharacterRangeUpperBound < textThatFits.utf16.count else { return }
 
         // We might fit without further truncation, for example if the description
         // contains new line characters, so set the possible new text immediately.
-        var truncatedText = (descriptionText as NSString).substring(
-            to: visibleCharacterRange.upperBound
+        textThatFits = (textThatFits as NSString).substring(
+            to: visibleCharacterRangeUpperBound
         )
-        textView.text = truncatedText + moreTextPlusPrefix
-        visibleCharacterRange = textView.visibleTextRange
+
+        setTextThatFits(textThatFits)
+        visibleCharacterRangeUpperBound
+            = textView.visibleTextRange.upperBound - Self.moreTextPlusPrefixLength
 
         // If we're still truncated, trim down the visible text until
         // we have space to fit the "more" link without truncation.
         // This should only take a few iterations.
-        while visibleCharacterRange.upperBound < textView.text.utf16.count {
-            textView.text = truncatedText + moreTextPlusPrefix
-            let truncateToIndex = max(0, visibleCharacterRange.upperBound - moreTextPlusPrefix.utf16.count)
+        while visibleCharacterRangeUpperBound < textThatFits.utf16.count {
+            let truncateToIndex = max(0, visibleCharacterRangeUpperBound)
             guard truncateToIndex > 0 else { break }
-            truncatedText = (truncatedText as NSString).substring(to: truncateToIndex)
 
-            visibleCharacterRange = textView.visibleTextRange
+            textThatFits = (textThatFits as NSString).substring(to: truncateToIndex)
+
+            setTextThatFits(textThatFits)
+            visibleCharacterRangeUpperBound
+                = textView.visibleTextRange.upperBound - Self.moreTextPlusPrefixLength
         }
+    }
 
-        textView.attributedText = NSAttributedString.composed(of: [
-            truncatedText.stripped,
-            moreTextPrefix,
-            moreText.styled(
-                with: .link(Self.viewFullDescriptionURL)
+    func setTextThatFits(_ textThatFits: String) {
+        if textThatFits == descriptionText {
+            textView.dataDetectorTypes = .all
+            textView.linkTextAttributes = [
+                .foregroundColor: textColor ?? Theme.secondaryTextAndIconColor,
+                .underlineStyle: NSUnderlineStyle.single.rawValue
+            ]
+            textView.text = textThatFits
+        } else {
+            textView.dataDetectorTypes = []
+            textView.linkTextAttributes = [
+                .foregroundColor: Theme.primaryTextColor,
+                .underlineStyle: 0
+            ]
+            textView.attributedText = NSAttributedString.composed(of: [
+                textThatFits.stripped,
+                Self.moreTextPrefix,
+                Self.moreText.styled(
+                    with: .link(Self.viewFullDescriptionURL)
+                )
+            ]).styled(
+                with: .font(font ?? .ows_dynamicTypeBody),
+                .color(textColor ?? Theme.secondaryTextAndIconColor),
+                .alignment(textAlignment)
             )
-        ]).styled(
-            with: .font(font ?? .ows_dynamicTypeBody),
-            .color(textColor ?? Theme.secondaryTextAndIconColor),
-            .alignment(textAlignment)
-        )
+        }
     }
 }
 
@@ -144,20 +163,15 @@ extension GroupDescriptionPreviewView: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         guard URL == Self.viewFullDescriptionURL else { return true }
 
-        // Build a fake group model just to present the text.
-        // This allows us to keep `GroupDescriptionViewController`
-        // simple and reusable in many contexts.
-        var builder = TSGroupModelBuilder()
-        builder.name = groupName
-        builder.descriptionText = descriptionText
-        guard let groupModel = databaseStorage.read(
-            block: { try? builder.buildAsV2(transaction: $0) }
-        ) else {
-            owsFailDebug("Failed to prepare group model")
-            return false
-        }
-
-        let vc = GroupDescriptionViewController(groupModel: groupModel)
+        let vc = GroupDescriptionViewController(
+            helper: GroupAttributesEditorHelper(
+                groupId: Data(),
+                groupNameOriginal: groupName,
+                groupDescriptionOriginal: descriptionText,
+                avatarOriginalData: nil,
+                iconViewSize: 0
+            )
+        )
         UIApplication.shared.frontmostViewController?.presentFormSheet(
             OWSNavigationController(rootViewController: vc),
             animated: true
