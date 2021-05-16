@@ -194,9 +194,16 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
-        // This code is very finicky and crashes easily
+        // NOTE: This code is very finicky and crashes easily. Modify with care.
         AssertIsOnMainThread()
-        let notifications = dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
+        // If we don't capture `threads` here, a race condition can occur where the
+        // `thread.snapshotOfLastUpdate != firstSnapshot - 1` check below evaluates to
+        // `false`, but `threads` then changes between that check and the
+        // `ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)`
+        // line. This causes `tableView.endUpdates()` to crash with an `NSInternalInconsistencyException`.
+        let threads = threads!
+        // Create a stable state for the connection and jump to the latest commit
+        let notifications = dbConnection.beginLongLivedReadTransaction()
         guard !notifications.isEmpty else { return }
         let ext = dbConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
         let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
