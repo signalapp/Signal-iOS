@@ -167,7 +167,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Inte nu";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ finns nu tillgänglig i App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versionen %@ finns nu tillgänglig i App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "En ny version av Signal är tillgänglig";
@@ -578,13 +578,13 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivera kontaktåtkomst i appen Inställningar för att se vilka av dina kontakter som är Signal-användare.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "Detta kommer att återställa applikationen genom att ta bort dina meddelanden. Appen stängs när processen är klar.";
+"CONFIRM_DELETE_DATA_TEXT" = "Detta kommer att återställa applikationen genom att ta bort dina meddelanden. Appen stängs när processen är slutförd.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Är du säker på att du vill ta bort alla data?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Detta kommer att återställa appen genom att ta bort alla dina meddelanden från denna enhet. Du kan alltid länka med din telefon igen men det kommer inte återställa borttagna meddelanden. Appen kommer stängas efter att processen är klar.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Detta kommer att återställa appen genom att ta bort alla dina meddelanden från denna enhet. Du kan alltid länka med din telefon igen men det kommer inte återställa borttagna meddelanden. Appen kommer stängas efter att processen är slutförd.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Är du säker på att du vill ta bort alla data?";
@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Inaktiverad";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Välj vem som kan redigera gruppnamnet, fotot och tidsgränsen för de försvinnande meddelandena.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ljud";
@@ -1106,7 +1106,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Ta bort konto";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Detta tar bort ditt Signal-konto och återställer applikationen. Appen stängs när processen är klar.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Detta tar bort ditt Signal-konto och återställer applikationen. Appen stängs när processen är slutförd.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Är du säker på att du vill ta bort ditt konto?";
@@ -1322,37 +1322,37 @@
 "DONATION_MEGAPHONE_TITLE" = "Donera till Signal";
 
 /* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+"DONATION_VIEW_AMOUNT_LABEL" = "Donationsbelopp";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Ange anpassat belopp";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation till Signal";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "Andra sätt att donera";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Välj ett större belopp att donera";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Välj ett lägre belopp att donera";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "Välj ett belopp att donera";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Tack för ditt stöd!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "Signal drivs av människor som du.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Teamet på Signal är engagerat i uppdraget att utveckla öppen källkods integritetsteknik som skyddar yttrandefrihet och möjliggör säker global kommunikation. Ditt bidrag driver upp denna rättsfråga. Inga annonser. Inga spårare. Inget påhitt.\n\nDin donation hjälper till att betala för utveckling, servrar och bandbredd för en app som används av miljoner runt om i världen för privat och omedelbar kommunikation.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "Varför donera?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan ge åtkomst i appen Inställningar i iOS.";
@@ -1379,7 +1379,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Uppdatera";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vill du spara ändringarna du har gjort för denna grupp?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vill du spara ändringarna som du har gjort för denna grupp?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Osparade ändringar";
@@ -1804,6 +1804,21 @@
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Alla medlemmar kunde inte läggas till i gruppen. Tryck för att försöka igen. ";
 
+/* Text indication the user can tap to view the full group description */
+"GROUP_DESCRIPTION_MORE" = "more";
+
+/* Placeholder text for 'group description' field. */
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+
+/* Footer text when editing the group description */
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Gruppbeskrivningar kommer att vara synliga för medlemmar i denna grupp och personer som har bjudits in.";
+
+/* Title for the group description view. */
+"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+
+/* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "En ogiltig inbjudan lades till.";
 
@@ -2120,7 +2135,10 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ gruppmedlemmar har samma namn.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Gruppnamn (obligatoriskt)";
+"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+
+/* Title for the group name view. */
+"GROUP_NAME_VIEW_TITLE" = "Gruppnamn";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepterade en inbjudan till gruppen.";
@@ -2271,6 +2289,24 @@
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ uppdaterade gruppen.";
+
+/* Message indicating that the group's description was removed. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+
+/* Message indicating that the group's description was removed by the local user. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+
+/* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+
+/* Message indicating that the group's description was changed. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+
+/* Message indicating that the group's description was changed by the local user.. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Du ändrade gruppbeskrivningen.";
+
+/* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Gruppnamnet togs bort.";
@@ -2735,7 +2771,7 @@
 "LINK_DEVICE_RESTART" = "Försök igen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skanna QR-koden som visas på enheten du vill länka.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skanna QR-koden som visas på enheten som du vill länka.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Skanna QR-kod för att länka en ny enhet.";
@@ -3119,7 +3155,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte länka fler enheter.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått det högsta antalet enheter du för närvarande kan länka till med ditt konto. Vänligen ta bort en enhet och försök igen.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått det högsta antalet enheter som du för närvarande kan länka till med ditt konto. Vänligen ta bort en enhet och försök igen.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Tystad";
@@ -3443,7 +3479,7 @@
 "OPEN_SETTINGS_BUTTON" = "Inställningar";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ stängde av att meddelanden försvinner.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ inaktiverade att meddelanden försvinner.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ställde in tidsgränsen för försvinnande meddelanden till %@.";
@@ -3602,7 +3638,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Okänt fel";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Klart";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Slutfört";
 
 /* Status indicator for incoming payments which have not yet been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Overifierad";
@@ -3611,7 +3647,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Verifierat";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Klart";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Slutfört";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Skickar...";
@@ -3779,7 +3815,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Alla";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Ditt telefonnummer kommer att vara synligt för personer och grupper du meddelar. Personer som har ditt nummer i sina telefonkontakter ser det också på Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Ditt telefonnummer kommer att vara synligt för personer och grupper som du meddelar. Personer som har ditt nummer i sina telefonkontakter ser det också på Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Ingen";
@@ -3977,7 +4013,7 @@
 "PINS_MEGAPHONE_TOAST" = "PIN-kod skapad. Du kan ändra den i inställningar.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN-kod inaktiverad.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN-koden inaktiverad.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spela media";
@@ -4820,7 +4856,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Försvinnande meddelanden";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ställ in en standardtidtagare för försvinnande meddelanden för alla nya chattar du startar.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ställ in en standardtidtagare för försvinnande meddelanden för alla nya chattar som du startar.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donera till Signal";
@@ -4904,7 +4940,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktivera";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Du kan använda Signal för att skicka och ta emot MobileCoin. Alla betalningar omfattas av användarvillkoren för MobileCoins och MobileCoin Wallet. Detta är en beta-funktion så att du kan stöta på vissa problem och betalningar eller saldon du kan förlora kan inte återställas.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Du kan använda Signal för att skicka och ta emot MobileCoin. Alla betalningar omfattas av användarvillkoren för MobileCoins och MobileCoin Wallet. Detta är en beta-funktion så att du kan stöta på vissa problem och betalningar eller saldon som du kan förlora kan inte återställas.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Aktivera";
@@ -5240,7 +5276,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Överför till växling";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Konfigurationen av återställningsfrasen är klar.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Konfigurationen av återställningsfrasen är slutförd.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Bekräfta";
@@ -5426,7 +5462,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Tillåt från alla";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Aktivera dold avsändare för inkommande meddelanden från icke-kontakter och personer du inte delat din profil med.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Aktivera dold avsändare för inkommande meddelanden från icke-kontakter och personer som du inte har delat din profil med.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";
@@ -5525,7 +5561,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Hoppa över verifiering";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Slutför verifiering";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Slutför verifieringen";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Befintliga grupper kommer automatiskt att få dessa funktioner under de kommande veckorna.";
@@ -5939,7 +5975,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Håll intryckt för att spela in.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Färdigställ länkningen i Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Slutför länkningen i Signal Desktop.";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Kontaktnamn";
@@ -5969,7 +6005,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Rensa bakgrunden för denna chatt?";
 
 /* Confirmation dialog when clearing the global wallpaper. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Rensa bakgrund? Detta rensar inte anpassade bakgrunder du har ställt in för dina chattar.";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_GLOBAL_CONFIRMATION" = "Rensa bakgrund? Detta rensar inte anpassade bakgrunder som du har ställt in för dina chattar.";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Mörkt tema dämpar bakgrunden";
@@ -5987,7 +6023,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL" = "Återställ alla bakgrunder";
 
 /* Confirmation dialog when resetting all wallpapers. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Återställ alla bakgrunder, inklusive anpassade bakgrunder du har ställt in för dina chattar?";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS_CONFIRMATION" = "Återställ alla bakgrunder, inklusive anpassade bakgrunder som du har ställt in för dina chattar?";
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Ställ in bakgrund";
@@ -5999,7 +6035,7 @@
 "YOU_DELETED_THIS_MESSAGE" = "Du tog bort detta meddelande.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du stängde av att meddelanden försvinner.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du inaktiverade att meddelanden försvinner.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Du måste slutföra installationen innan du fortsätter.";

@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "關閉";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "選擇誰可以編輯群組名稱，照片和自動銷毀訊息計時器。";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "聲音";
@@ -1322,37 +1322,37 @@
 "DONATION_MEGAPHONE_TITLE" = "捐贈 Signal";
 
 /* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+"DONATION_VIEW_AMOUNT_LABEL" = "捐款金額";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "輸入自定義金額";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "捐款給Signal";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "其他捐贈方式";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "選擇更大的金額捐贈";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "選擇少量捐款";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "選擇要捐贈的金額";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "謝謝你的支持！";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "Signal 由像你這樣的人提供動力。";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Signal的團隊致力於開發開源隱私技術，以保護自由表達並實現安全的全球通訊。 你的貢獻幫助了這一事業。 無廣告。 沒有追踪器。 不開玩笑。\n\n你的捐款有助於支付應用程式的開發，伺服器和寬頻的費用，該應用程式被世界各地數以百萬計的人用於私密和即時通訊。";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "為什麼要捐贈？";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "你可以在 iOS 設定中允許取用。";
@@ -1804,6 +1804,21 @@
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "不是所有的成員都可以加入此群組。請點擊重試。";
 
+/* Text indication the user can tap to view the full group description */
+"GROUP_DESCRIPTION_MORE" = "more";
+
+/* Placeholder text for 'group description' field. */
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+
+/* Footer text when editing the group description */
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "該群組的成員和被邀請的人都可以看到群組的描述。";
+
+/* Title for the group description view. */
+"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+
+/* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "新增了無效的邀請。";
 
@@ -2120,7 +2135,10 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ 群組成員具有相同的名稱。";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "群組名稱(必要的)";
+"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+
+/* Title for the group name view. */
+"GROUP_NAME_VIEW_TITLE" = "群組名稱";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@接受了邀請到此群組。";
@@ -2271,6 +2289,24 @@
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@更新了此群組。";
+
+/* Message indicating that the group's description was removed. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+
+/* Message indicating that the group's description was removed by the local user. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+
+/* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+
+/* Message indicating that the group's description was changed. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+
+/* Message indicating that the group's description was changed by the local user.. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "你變更了群組描述。";
+
+/* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "群組的名稱被移除了。";

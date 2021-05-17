@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Desabilitada";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Escolha quem pode editar o nome do grupo, foto e o temporizador de mensagens efêmeras.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
@@ -1804,6 +1804,21 @@
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Não foi possível adicional todos os membros ao grupo. Toque para tentar de novo. ";
 
+/* Text indication the user can tap to view the full group description */
+"GROUP_DESCRIPTION_MORE" = "more";
+
+/* Placeholder text for 'group description' field. */
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+
+/* Footer text when editing the group description */
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "A descrição do grupo estará visível para os membros deste grupo e pessoas que foram convidadas.";
+
+/* Title for the group description view. */
+"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+
+/* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "Um convite inválido foi adicionado.";
 
@@ -2120,7 +2135,10 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ membros do grupo têm o mesmo nome.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Nome do grupo (obrigatório)";
+"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+
+/* Title for the group name view. */
+"GROUP_NAME_VIEW_TITLE" = "Nome do grupo";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ aceitou um convite para o grupo.";
@@ -2271,6 +2289,24 @@
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ atualizou o grupo.";
+
+/* Message indicating that the group's description was removed. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+
+/* Message indicating that the group's description was removed by the local user. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+
+/* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+
+/* Message indicating that the group's description was changed. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+
+/* Message indicating that the group's description was changed by the local user.. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Você mudou a descrição do grupo.";
+
+/* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "O nome do grupo foi suprimido.";
