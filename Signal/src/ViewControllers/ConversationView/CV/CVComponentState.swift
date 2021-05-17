@@ -204,6 +204,7 @@ public class CVComponentState: Equatable, Dependencies {
         let bioText: String?
         let detailsText: String?
         let mutualGroupsText: NSAttributedString?
+        let groupDescriptionText: String?
     }
     let threadDetails: ThreadDetails?
 

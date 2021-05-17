@@ -281,6 +281,7 @@ public protocol GroupV2Snapshot {
     var revision: UInt32 { get }
 
     var title: String { get }
+    var descriptionText: String? { get }
 
     var avatarUrlPath: String? { get }
     var avatarData: Data? { get }
@@ -368,6 +369,7 @@ public class GroupInviteLinkInfo: NSObject {
 @objc
 public class GroupInviteLinkPreview: NSObject {
     public let title: String
+    public let descriptionText: String?
     public let avatarUrlPath: String?
     public let memberCount: UInt32
     public let addFromInviteLinkAccess: GroupV2Access
@@ -375,12 +377,14 @@ public class GroupInviteLinkPreview: NSObject {
     public let isLocalUserRequestingMember: Bool
 
     public init(title: String,
+                descriptionText: String?,
                 avatarUrlPath: String?,
                 memberCount: UInt32,
                 addFromInviteLinkAccess: GroupV2Access,
                 revision: UInt32,
                 isLocalUserRequestingMember: Bool) {
         self.title = title
+        self.descriptionText = descriptionText
         self.avatarUrlPath = avatarUrlPath
         self.memberCount = memberCount
         self.addFromInviteLinkAccess = addFromInviteLinkAccess
@@ -392,6 +396,7 @@ public class GroupInviteLinkPreview: NSObject {
     public override func isEqual(_ object: Any?) -> Bool {
         guard let otherRecipient = object as? GroupInviteLinkPreview else { return false }
         return (title == otherRecipient.title &&
+                    descriptionText == otherRecipient.descriptionText &&
                     avatarUrlPath == otherRecipient.avatarUrlPath &&
                     memberCount == otherRecipient.memberCount &&
                     addFromInviteLinkAccess == otherRecipient.addFromInviteLinkAccess &&

@@ -53,7 +53,14 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     }
 
     private var innerVStackConfig: CVStackViewConfig {
-        let layoutMargins = UIEdgeInsets(hMargin: 10, vMargin: 8)
+
+        let layoutMargins: UIEdgeInsets
+        if itemModel.itemViewState.isFirstInCluster {
+            layoutMargins = UIEdgeInsets(hMargin: 10, vMargin: 10)
+        } else {
+            layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
+        }
+
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .center,
                                  spacing: 12,
@@ -731,7 +738,9 @@ extension CVComponentSystemMessage {
              .accessMembers,
              .userRole:
             return Theme.iconName(.megaphone16)
-        case .groupName:
+        case .groupName,
+             .groupDescriptionUpdated,
+             .groupDescriptionRemoved:
             return Theme.iconName(.compose16)
         case .groupAvatar:
             return Theme.iconName(.photo16)
@@ -937,12 +946,25 @@ extension CVComponentSystemMessage {
             }
 
             for groupUpdate in groupUpdates {
-                if groupUpdate.type == .groupMigrated {
-                    return Action(title: CommonStrings.learnMore,
-                                  accessibilityIdentifier: "group_migration_learn_more",
-                                  action: .cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: infoMessage,
-                                                                                            oldGroupModel: oldGroupModel,
-                                                                                            newGroupModel: newGroupModel))
+                switch groupUpdate.type {
+                case .groupMigrated:
+                    return Action(
+                        title: CommonStrings.learnMore,
+                        accessibilityIdentifier: "group_migration_learn_more",
+                        action: .cvc_didTapShowGroupMigrationLearnMoreActionSheet(
+                            infoMessage: infoMessage,
+                            oldGroupModel: oldGroupModel,
+                            newGroupModel: newGroupModel
+                        )
+                    )
+                case .groupDescriptionUpdated:
+                    return Action(
+                        title: CommonStrings.viewButton,
+                        accessibilityIdentifier: "group_description_view",
+                        action: .cvc_didTapViewGroupDescription(groupModel: newGroupModel)
+                    )
+                default:
+                    break
                 }
             }
 

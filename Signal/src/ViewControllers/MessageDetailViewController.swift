@@ -997,6 +997,8 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {}
 
+    func cvc_didTapViewGroupDescription(groupModel: TSGroupModel?) {}
+
     // TODO:
     func cvc_didTapShowConversationSettings() {}
 

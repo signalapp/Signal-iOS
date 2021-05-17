@@ -16,6 +16,17 @@ public class OWSFlatButton: UIView {
     private var downColor: UIColor?
 
     @objc
+    public var cornerRadius: CGFloat {
+        set {
+            button.layer.cornerRadius = newValue
+            button.clipsToBounds = newValue > 0
+        }
+        get {
+            button.layer.cornerRadius
+        }
+    }
+
+    @objc
     public override var accessibilityIdentifier: String? {
         didSet {
             guard let accessibilityIdentifier = self.accessibilityIdentifier else {

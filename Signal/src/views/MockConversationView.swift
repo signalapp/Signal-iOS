@@ -203,6 +203,8 @@ private class MockThread: TSContactThread {
         return false
     }
 
+    override var uniqueId: String { "MockThread" }
+
     override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
         // no - op
         owsFailDebug("shouldn't save mock thread")
@@ -412,6 +414,8 @@ extension MockConversationView: CVComponentDelegate {
                                                           newGroupModel: TSGroupModel) {}
 
     func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {}
+
+    func cvc_didTapViewGroupDescription(groupModel: TSGroupModel?) {}
 
     func cvc_didTapShowConversationSettings() {}
 

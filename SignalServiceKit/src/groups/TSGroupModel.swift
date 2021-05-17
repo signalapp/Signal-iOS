@@ -38,10 +38,13 @@ public class TSGroupModelV2: TSGroupModel {
     public var didJustAddSelfViaGroupLink: Bool = false
     @objc
     public var droppedMembers = [SignalServiceAddress]()
+    @objc
+    public var descriptionText: String?
 
     @objc
     public required init(groupId: Data,
                          name: String?,
+                         descriptionText: String?,
                          avatarData: Data?,
                          groupMembership: GroupMembership,
                          groupAccess: GroupAccess,
@@ -57,6 +60,7 @@ public class TSGroupModelV2: TSGroupModel {
                          droppedMembers: [SignalServiceAddress]) {
         assert(secretParamsData.count > 0)
 
+        self.descriptionText = descriptionText
         self.membership = groupMembership
         self.secretParamsData = secretParamsData
         self.access = groupAccess
@@ -115,8 +119,11 @@ public class TSGroupModelV2: TSGroupModel {
             case .compareAll:
                 return false
             case .userFacingOnly:
-                return true
+                return descriptionText == nil
             }
+        }
+        guard other.descriptionText == descriptionText else {
+            return false
         }
         guard other.membership == membership else {
             return false

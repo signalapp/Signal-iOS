@@ -342,6 +342,8 @@ extension MemberActionSheet: ConversationHeaderDelegate {
     func tappedButton() {
         dismiss(animated: true)
     }
+    func didTapAddGroupDescription() {}
+    var canEditConversationAttributes: Bool { false }
 }
 
 extension MemberActionSheet: CNContactViewControllerDelegate {

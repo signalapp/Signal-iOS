@@ -51,7 +51,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         transaction: SDSAnyReadTransaction
     ) -> ThreadAssociatedData {
         guard let associatedData = fetch(for: threadUniqueId, transaction: transaction) else {
-            if !CurrentAppContext().isRunningTests {
+            if !CurrentAppContext().isRunningTests, threadUniqueId != "MockThread" {
                 owsFailDebug("Unexpectedly missing associated data for thread")
             }
             return .init(threadUniqueId: threadUniqueId)

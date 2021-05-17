@@ -79,8 +79,12 @@ public class GroupManager: NSObject {
     public static let maxGroupNameEncryptedByteCount: Int = 1024
     public static let maxGroupNameGlyphCount: Int = 32
 
+    public static let maxGroupDescriptionEncryptedByteCount: Int = 8192
+    public static let maxGroupDescriptionGlyphCount: Int = 480
+
     // Epoch 1: Group Links
-    public static let changeProtoEpoch: UInt32 = 1
+    // Epoch 2: Group Description
+    public static let changeProtoEpoch: UInt32 = 2
 
     // This matches kOversizeTextMessageSizeThreshold.
     public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
@@ -594,6 +598,7 @@ public class GroupManager: NSObject {
 
     public static func createGroupForTests(members: [SignalServiceAddress],
                                            name: String? = nil,
+                                           descriptionText: String? = nil,
                                            avatarData: Data? = nil,
                                            groupId: Data? = nil,
                                            groupsVersion: GroupsVersion? = nil,
@@ -613,6 +618,7 @@ public class GroupManager: NSObject {
         var builder = TSGroupModelBuilder()
         builder.groupId = groupId
         builder.name = name
+        builder.descriptionText = descriptionText
         builder.avatarData = avatarData
         builder.avatarUrlPath = nil
         builder.groupMembership = groupMembership

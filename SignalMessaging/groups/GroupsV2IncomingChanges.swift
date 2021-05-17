@@ -80,6 +80,7 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
 
         var newGroupName: String? = oldGroupModel.groupName
+        var newGroupDescription: String? = oldGroupModel.descriptionText
         var newAvatarData: Data? = oldGroupModel.groupAvatarData
         var newAvatarUrlPath = oldGroupModel.avatarUrlPath
         var newInviteLinkPassword: Data? = oldGroupModel.inviteLinkPassword
@@ -473,6 +474,15 @@ public class GroupsV2IncomingChanges: Dependencies {
             newGroupName = groupV2Params.decryptGroupName(action.title)
         }
 
+        if let action = changeActionsProto.modifyDescription {
+            if !canEditAttributes {
+                owsFailDebug("Cannot modify description.")
+            }
+
+            // Change clears or updates the group title.
+            newGroupDescription = groupV2Params.decryptGroupDescription(action.descriptionBytes)
+        }
+
         if let action = changeActionsProto.modifyAvatar {
             if !canEditAttributes {
                 owsFailDebug("Cannot modify avatar.")
@@ -567,6 +577,7 @@ public class GroupsV2IncomingChanges: Dependencies {
 
         var builder = oldGroupModel.asBuilder
         builder.name = newGroupName
+        builder.descriptionText = newGroupDescription
         builder.avatarData = newAvatarData
         builder.groupMembership = newGroupMembership
         builder.groupAccess = newGroupAccess

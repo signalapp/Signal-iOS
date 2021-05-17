@@ -85,7 +85,7 @@ open class ManualLayoutView: UIView {
 
     public var preferredSize: CGSize?
 
-    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+    open override func sizeThatFits(_ size: CGSize) -> CGSize {
         preferredSize ?? .zero
     }
 

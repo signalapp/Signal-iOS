@@ -27,6 +27,71 @@ public class TextFieldHelper: NSObject {
                                 replacementString: String,
                                 maxByteCount: Int? = nil,
                                 maxGlyphCount: Int? = nil) -> Bool {
+        let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
+            with: textField.text,
+            editingRange: editingRange,
+            replacementString: replacementString,
+            maxByteCount: maxByteCount,
+            maxGlyphCount: maxGlyphCount
+        )
+
+        if let changedString = changedString {
+            owsAssertDebug(!shouldChange)
+            textField.text = changedString
+        }
+
+        return shouldChange
+    }
+}
+
+@objc
+public class TextViewHelper: NSObject {
+
+    // Used to implement the UITextViewDelegate method: `textView:shouldChangeTextIn:replacementText`
+    // Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
+    @objc
+    public class func textView(_ textView: UITextView,
+                               shouldChangeTextIn range: NSRange,
+                               replacementText: String,
+                               maxByteCount: Int) -> Bool {
+        self.textView(textView,
+                      shouldChangeTextIn: range,
+                      replacementText: replacementText,
+                      maxByteCount: maxByteCount,
+                      maxGlyphCount: nil)
+    }
+
+    public class func textView(_ textView: UITextView,
+                               shouldChangeTextIn range: NSRange,
+                               replacementText: String,
+                               maxByteCount: Int? = nil,
+                               maxGlyphCount: Int? = nil) -> Bool {
+        let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
+            with: textView.text,
+            editingRange: range,
+            replacementString: replacementText,
+            maxByteCount: maxByteCount,
+            maxGlyphCount: maxGlyphCount
+        )
+
+        if let changedString = changedString {
+            owsAssertDebug(!shouldChange)
+            textView.text = changedString
+            textView.delegate?.textViewDidChange?(textView)
+        }
+
+        return shouldChange
+    }
+}
+
+private enum TextHelper {
+    static func shouldChangeCharactersInRange(
+        with existingString: String?,
+        editingRange: NSRange,
+        replacementString: String,
+        maxByteCount: Int? = nil,
+        maxGlyphCount: Int? = nil
+    ) -> (shouldChange: Bool, changedString: String?) {
         // At least one must be set.
         owsAssertDebug(maxByteCount != nil || maxGlyphCount != nil)
 
@@ -46,7 +111,7 @@ public class TextFieldHelper: NSObject {
             return true
         }
 
-        let existingString = textField.text ?? ""
+        let existingString = existingString ?? ""
 
         // Given an NSRange, we need to interact with the NS flavor of substring
 
@@ -73,12 +138,12 @@ public class TextFieldHelper: NSObject {
             //   filtered string, or we would prevent users from
             //   (legitimately) appending whitespace to the tail of
             //   of the string.
-            return true
+            return (shouldChange: true, changedString: nil)
         }
 
         // Don't allow any change if inserting a single char is already over the limit (typically this means typing)
         if replacementString.count < 2 {
-            return false
+            return (shouldChange: false, changedString: nil)
         }
 
         // However if pasting, accept as much of the string as possible.
@@ -99,9 +164,9 @@ public class TextFieldHelper: NSObject {
             }
         }
 
-        textField.text = (existingString as NSString).replacingCharacters(in: editingRange, with: acceptableSubstring)
+        let changedString = (existingString as NSString).replacingCharacters(in: editingRange, with: acceptableSubstring)
 
         // We've already handled any valid editing manually, so prevent further changes.
-        return false
+        return (shouldChange: false, changedString: changedString)
     }
 }

@@ -88,7 +88,10 @@ public class CVLoader: NSObject {
                         owsFailDebug("Missing groupModel.")
                         return false
                     }
+                    let groupDescriptionDidChange = (groupModel as? TSGroupModelV2)?.descriptionText
+                        != (prevGroupModel as? TSGroupModelV2)?.descriptionText
                     return (groupModel.groupName != prevGroupModel.groupName ||
+                                groupDescriptionDidChange ||
                                 groupModel.groupAvatarData != prevGroupModel.groupAvatarData ||
                                 groupModel.groupMembership.fullMembers.count != prevGroupModel.groupMembership.fullMembers.count)
                 }()

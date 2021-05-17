@@ -1818,6 +1818,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 var builder = TSGroupModelBuilder()
                 builder.groupId = groupId
                 builder.name = groupInviteLinkPreview.title
+                builder.descriptionText = groupInviteLinkPreview.descriptionText
                 builder.groupAccess = GroupAccess(members: GroupAccess.defaultForV2.members,
                                                   attributes: GroupAccess.defaultForV2.attributes,
                                                   addFromInviteLink: groupInviteLinkPreview.addFromInviteLinkAccess)

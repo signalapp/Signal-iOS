@@ -47,6 +47,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     // Non-nil if the title changed.
     // When clearing the title, this will be the empty string.
     private var newTitle: String?
+    private var newDescriptionText: String?
 
     public var newAvatarData: Data?
     public var newAvatarUrlPath: String?
@@ -118,6 +119,12 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         let newTitle = newGroupModel.groupName?.ows_stripped() ?? " "
         if oldTitle != newTitle {
             setTitle(newTitle)
+        }
+
+        let oldDescription = oldGroupModel.descriptionText?.nilIfEmpty?.ows_stripped()
+        let newDescription = newGroupModel.descriptionText?.nilIfEmpty?.ows_stripped()
+        if oldDescription != newDescription {
+            setDescriptionText(newDescription)
         }
 
         if oldGroupModel.groupAvatarData != newGroupModel.groupAvatarData {
@@ -214,6 +221,12 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         assert(self.newTitle == nil)
         // Non-nil if the title changed.
         self.newTitle = value ?? ""
+    }
+
+    @objc
+    public func setDescriptionText(_ value: String?) {
+        assert(self.newDescriptionText == nil)
+        self.newDescriptionText = value ?? ""
     }
 
     @objc
@@ -433,6 +446,24 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
                 var actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
                 actionsBuilder.setModifyTitle(try actionBuilder.build())
+                didChange = true
+            }
+        }
+
+        if let newDescriptionText = self.newDescriptionText {
+            if newDescriptionText.nilIfEmpty == currentGroupModel.descriptionText?.nilIfEmpty {
+                // Redundant change, not a conflict.
+            } else {
+                guard newDescriptionText.glyphCount <= GroupManager.maxGroupDescriptionGlyphCount else {
+                    throw OWSAssertionError("group description is too long.")
+                }
+                let encryptedData = try groupV2Params.encryptGroupDescription(newDescriptionText)
+                guard encryptedData.count <= GroupManager.maxGroupDescriptionEncryptedByteCount else {
+                    throw OWSAssertionError("Encrypted group description is too long.")
+                }
+                var actionBuilder = GroupsProtoGroupChangeActionsModifyDescriptionAction.builder()
+                actionBuilder.setDescriptionBytes(encryptedData)
+                actionsBuilder.setModifyDescription(try actionBuilder.build())
                 didChange = true
             }
         }

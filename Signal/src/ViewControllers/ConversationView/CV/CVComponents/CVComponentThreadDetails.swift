@@ -20,6 +20,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private var bioText: String? { threadDetails.bioText }
     private var detailsText: String? { threadDetails.detailsText }
     private var mutualGroupsText: NSAttributedString? { threadDetails.mutualGroupsText }
+    private var groupDescriptionText: String? { threadDetails.groupDescriptionText }
 
     required init(itemModel: CVItemModel, threadDetails: CVComponentState.ThreadDetails) {
         self.threadDetails = threadDetails
@@ -146,6 +147,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             innerViews.append(mutualGroupsLabel)
         }
 
+        if let groupDescriptionText = self.groupDescriptionText {
+            let groupDescriptionPreviewView = componentView.groupDescriptionPreviewView
+            let config = groupDescriptionTextLabelConfig(text: groupDescriptionText)
+            groupDescriptionPreviewView.apply(config: config)
+            groupDescriptionPreviewView.groupName = titleLabelConfig.stringValue
+            innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
+            innerViews.append(groupDescriptionPreviewView)
+        }
+
         innerStackView.configure(config: innerStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_innerStack,
@@ -196,6 +206,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
+    private func groupDescriptionTextLabelConfig(text: String) -> CVLabelConfig {
+        CVLabelConfig(text: text,
+                      font: .ows_dynamicTypeSubheadline,
+                      textColor: Theme.secondaryTextAndIconColor,
+                      numberOfLines: 2,
+                      lineBreakMode: .byTruncatingTail,
+                      textAlignment: .center)
+    }
+
     private static let avatarDiameter: UInt = 112
     private var avatarDiameter: CGFloat { CGFloat(Self.avatarDiameter) }
 
@@ -218,7 +237,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                                   titleText: TSGroupThread.defaultGroupName,
                                                   bioText: nil,
                                                   detailsText: nil,
-                                                  mutualGroupsText: nil)
+                                                  mutualGroupsText: nil,
+                                                  groupDescriptionText: nil)
         }
     }
 
@@ -361,7 +381,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                               titleText: titleText,
                                               bioText: bioText,
                                               detailsText: detailsText,
-                                              mutualGroupsText: mutualGroupsText)
+                                              mutualGroupsText: mutualGroupsText,
+                                              groupDescriptionText: nil)
     }
 
     private static func buildComponentState(groupThread: TSGroupThread,
@@ -389,12 +410,18 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         }()
 
+        let descriptionText: String? = {
+            guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else { return nil }
+            return groupModelV2.descriptionText
+        }()
+
         return CVComponentState.ThreadDetails(avatar: avatar,
                                               isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
                                               bioText: nil,
                                               detailsText: detailsText,
-                                              mutualGroupsText: nil)
+                                              mutualGroupsText: nil,
+                                              groupDescriptionText: descriptionText)
     }
 
     private var outerStackConfig: CVStackViewConfig {
@@ -447,6 +474,16 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                                        maxWidth: maxContentWidth)
             innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
             innerSubviewInfos.append(mutualGroupsSize.asManualSubviewInfo)
+        }
+
+        if let groupDescriptionText = self.groupDescriptionText {
+            var groupDescriptionSize = CVText.measureLabel(
+                config: groupDescriptionTextLabelConfig(text: groupDescriptionText),
+                maxWidth: maxContentWidth
+            )
+            groupDescriptionSize.width = maxContentWidth
+            innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
+            innerSubviewInfos.append(groupDescriptionSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
         let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
@@ -511,6 +548,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let detailsLabel = CVLabel()
 
         fileprivate let mutualGroupsLabel = CVLabel()
+        fileprivate let groupDescriptionPreviewView = GroupDescriptionPreviewView(
+            shouldDeactivateConstraints: true
+        )
 
         fileprivate let outerStackView = ManualStackView(name: "Thread details outer")
         fileprivate let innerStackView = ManualStackView(name: "Thread details inner")
@@ -543,6 +583,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             bioLabel.text = nil
             detailsLabel.text = nil
             mutualGroupsLabel.text = nil
+            groupDescriptionPreviewView.descriptionText = nil
             avatarView = nil
 
             wallpaperBlurView?.removeFromSuperview()

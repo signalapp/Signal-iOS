@@ -605,13 +605,10 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 owsFailDebug("Invalid interactions.")
                 return
             }
-            if infoMessage.messageType == .verificationStateChange {
-                return
-            }
+            if infoMessage.messageType == .verificationStateChange { return }
+            if infoMessage.messageType == .typeGroupUpdate { return }
             previousItem.itemViewState.shouldCollapseSystemMessageAction
-                = (previousInfoMessage.messageType == infoMessage.messageType
-                    && !previousInfoMessage.isGroupMigrationMessage
-                    && !previousInfoMessage.isGroupWasJustCreatedByLocalUserMessage)
+                = previousInfoMessage.messageType == infoMessage.messageType
         case .call:
             previousItem.itemViewState.shouldCollapseSystemMessageAction = true
         default:

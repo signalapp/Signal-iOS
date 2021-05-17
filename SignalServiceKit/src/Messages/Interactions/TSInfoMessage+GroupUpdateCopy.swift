@@ -43,6 +43,8 @@ public enum GroupUpdateType: Int {
     case userMembershipState_invalidInvitesRemoved
     case userRole
     case groupName
+    case groupDescriptionUpdated
+    case groupDescriptionRemoved
     case groupAvatar
     case accessMembers
     case accessAttributes
@@ -349,6 +351,71 @@ extension GroupUpdateCopy {
                 case .unknown:
                     addItem(.groupAvatar, copy: NSLocalizedString("GROUP_UPDATED_AVATAR_REMOVED",
                                                                   comment: "Message indicating that the group's avatar was removed."))
+                }
+            }
+        }
+
+        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2,
+              let newGroupModel = newGroupModel as? TSGroupModelV2 else { return }
+
+        let groupDescription = { (groupModel: TSGroupModelV2) -> String? in
+            if let name = groupModel.descriptionText?.stripped, name.count > 0 {
+                return name
+            }
+            return nil
+        }
+        let oldGroupDescription = groupDescription(oldGroupModel)
+        let newGroupDescription = groupDescription(newGroupModel)
+        if oldGroupDescription != newGroupDescription {
+            if newGroupDescription != nil {
+                switch updater {
+                case .localUser:
+                    addItem(
+                        .groupDescriptionUpdated,
+                        copy: NSLocalizedString(
+                            "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER",
+                            comment: "Message indicating that the group's description was changed by the local user.."
+                        )
+                    )
+                case .otherUser(let updaterName, _):
+                    let format = NSLocalizedString(
+                        "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT",
+                        comment: "Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}."
+                    )
+                    addItem(.groupDescriptionUpdated, format: format, updaterName)
+                case .unknown:
+                    addItem(
+                        .groupDescriptionUpdated,
+                        copy: NSLocalizedString(
+                            "GROUP_UPDATED_DESCRIPTION_UPDATED",
+                            comment: "Message indicating that the group's description was changed."
+                        )
+                    )
+                }
+            } else {
+                switch updater {
+                case .localUser:
+                    addItem(
+                        .groupDescriptionRemoved,
+                        copy: NSLocalizedString(
+                            "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER",
+                            comment: "Message indicating that the group's description was removed by the local user."
+                        )
+                    )
+                case .otherUser(let updaterName, _):
+                    let format = NSLocalizedString(
+                        "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT",
+                        comment: "Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}."
+                    )
+                    addItem(.groupDescriptionRemoved, format: format, updaterName)
+                case .unknown:
+                    addItem(
+                        .groupDescriptionRemoved,
+                        copy: NSLocalizedString(
+                            "GROUP_UPDATED_DESCRIPTION_REMOVED",
+                            comment: "Message indicating that the group's description was removed."
+                        )
+                    )
                 }
             }
         }

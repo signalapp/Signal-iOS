@@ -263,6 +263,7 @@ public class GroupsV2Protos {
                             groupV2Params: GroupV2Params) throws -> GroupV2Snapshot {
 
         let title = groupV2Params.decryptGroupName(groupProto.title) ?? ""
+        let descriptionText = groupV2Params.decryptGroupDescription(groupProto.descriptionBytes)
 
         var avatarUrlPath: String?
         var avatarData: Data?
@@ -420,6 +421,7 @@ public class GroupsV2Protos {
                                    groupProto: groupProto,
                                    revision: revision,
                                    title: title,
+                                   descriptionText: descriptionText,
                                    avatarUrlPath: avatarUrlPath,
                                    avatarData: avatarData,
                                    groupMembership: groupMembership,
@@ -441,6 +443,8 @@ public class GroupsV2Protos {
         guard let title = groupV2Params.decryptGroupName(titleData) else {
             throw OWSAssertionError("Missing or invalid title.")
         }
+
+        let descriptionText: String? = groupV2Params.decryptGroupDescription(joinInfoProto.descriptionBytes)
 
         let avatarUrlPath: String? = joinInfoProto.avatar
         guard joinInfoProto.hasMemberCount,
@@ -464,6 +468,7 @@ public class GroupsV2Protos {
         let isLocalUserRequestingMember = joinInfoProto.hasPendingAdminApproval && joinInfoProto.pendingAdminApproval
 
         return GroupInviteLinkPreview(title: title,
+                                      descriptionText: descriptionText,
                                       avatarUrlPath: avatarUrlPath,
                                       memberCount: memberCount,
                                       addFromInviteLinkAccess: addFromInviteLinkAccess,

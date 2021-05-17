@@ -3943,6 +3943,26 @@ typedef enum : NSUInteger {
     [self showGroupLinkPromotionActionSheet];
 }
 
+- (void)cvc_didTapViewGroupDescriptionWithGroupModel:(nullable TSGroupModel *)groupModel
+{
+    OWSAssertIsOnMainThread();
+
+    if (!groupModel && self.isGroup) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        groupModel = groupThread.groupModel;
+    }
+
+    if (!groupModel) {
+        OWSFailDebug(@"Unexpectedly missing group model.");
+        return;
+    }
+
+    GroupDescriptionViewController *vc = [[GroupDescriptionViewController alloc] initWithGroupModel:groupModel];
+    [self presentFormSheetViewController:[[OWSNavigationController alloc] initWithRootViewController:vc]
+                                animated:YES
+                              completion:nil];
+}
+
 - (void)cvc_didTapShowUpgradeAppUI
 {
     OWSAssertIsOnMainThread();
