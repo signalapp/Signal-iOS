@@ -162,6 +162,7 @@ public class ContactCellView: ManualStackView {
 
     public func configure(configuration: ContactCellConfiguration,
                           transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
         owsAssertDebug(!shouldDeactivateConstraints)
 
         self.configuration = configuration
@@ -262,6 +263,8 @@ public class ContactCellView: ManualStackView {
 
     private func updateNameLabels(configuration: ContactCellConfiguration,
                                   transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
+
         nameLabel.attributedText = { () -> NSAttributedString in
             if let customName = configuration.customName?.nilIfEmpty {
                 return customName.asAttributedString
@@ -305,9 +308,6 @@ public class ContactCellView: ManualStackView {
                 return nameForAddress(contactAddress)
             }
         }()
-
-        // TODO: Is this necessary?
-        nameLabel.setNeedsLayout()
     }
 
     public override func reset() {

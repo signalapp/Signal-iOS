@@ -68,6 +68,7 @@ public class ConversationAvatarView: AvatarImageView {
     private func configure(content: ConversationContent,
                            configuration: Configuration,
                            transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
 
         let didDiameterChange = self.configuration.diameter != configuration.diameter
         let didLocalUserDisplayModeChange = self.configuration.localUserDisplayMode != configuration.localUserDisplayMode
@@ -77,8 +78,11 @@ public class ConversationAvatarView: AvatarImageView {
         self.content = content
 
         if didDiameterChange {
-            invalidateIntrinsicContentSize()
-            setNeedsLayout()
+            DispatchMainThreadSafe { [weak self] in
+                guard let self = self else { return }
+                self.invalidateIntrinsicContentSize()
+                self.setNeedsLayout()
+            }
             shouldUpdateImage = true
         }
 
@@ -203,11 +207,15 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     private func themeDidChange() {
+        AssertIsOnMainThread()
+
         updateImageWithSneakyTransaction()
     }
 
     @objc
     private func handleSignalAccountsChanged(notification: Notification) {
+        AssertIsOnMainThread()
+
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
 
@@ -216,6 +224,8 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     private func otherUsersProfileDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
         guard let content = self.content else {
             return
         }
@@ -239,6 +249,8 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     private func handleGroupAvatarChanged(notification: Notification) {
+        AssertIsOnMainThread()
+
         guard let content = self.content else {
             return
         }
@@ -264,6 +276,8 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     private func skipContactAvatarBlurDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
         guard let content = self.content else {
             return
         }
@@ -280,6 +294,8 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     private func skipGroupAvatarBlurDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
         guard let groupUniqueId = notification.userInfo?[OWSContactsManager.skipGroupAvatarBlurGroupUniqueIdKey] as? String else {
             owsFailDebug("Missing groupId.")
             return
@@ -297,6 +313,8 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     public func updateImage(transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
+
         if shouldLoadAsync {
             updateImageAsync()
         } else {
@@ -309,6 +327,8 @@ public class ConversationAvatarView: AvatarImageView {
     private static let serialQueue = DispatchQueue(label: "org.signal.ConversationAvatarView")
 
     public func updateImageAsync() {
+        AssertIsOnMainThread()
+
         let configuration = self.configuration
         guard configuration.diameter > 0,
               let content = self.content else {
@@ -426,6 +446,8 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     public func reset() {
+        AssertIsOnMainThread()
+
         self.content = nil
         self.image = nil
     }
