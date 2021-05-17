@@ -104,11 +104,6 @@ open class OWSTableViewController2: OWSViewController {
         navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
     }
 
-    deinit {
-        // Avoid retain cycles by dumping the contents.
-        _contents = OWSTableContents()
-    }
-
     open override func viewDidLoad() {
         super.viewDidLoad()
 

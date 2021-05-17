@@ -621,14 +621,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     self.tableViewStyle = UITableViewStyleGrouped;
 }
 
-- (void)dealloc
-{
-    // Avoid retain cycles by dumping the contents.
-    _contents = [OWSTableContents new];
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)loadView
 {
     [super loadView];
