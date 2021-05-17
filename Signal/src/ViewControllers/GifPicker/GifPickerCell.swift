@@ -166,6 +166,7 @@ class GifPickerCell: UICollectionViewCell {
             assetDescription: previewAssetDescription,
             priority: .low,
             success: { [weak self] assetRequest, asset in
+                AssertIsOnMainThread()
                 guard let self = self else { return }
                 guard assetRequest == self.previewAssetRequest else {
                     owsFailDebug("Obsolete request callback.")
@@ -176,6 +177,7 @@ class GifPickerCell: UICollectionViewCell {
                 self.ensureViewState()
             },
             failure: { [weak self] assetRequest in
+                AssertIsOnMainThread()
                 guard let self = self else { return }
                 guard assetRequest == self.previewAssetRequest else {
                     owsFailDebug("Obsolete request callback.")
@@ -187,6 +189,8 @@ class GifPickerCell: UICollectionViewCell {
     }
 
     private func ensureViewState() {
+        AssertIsOnMainThread()
+
         guard isCellVisible, let asset = previewAsset else {
             // Nothing to show,
             clearViewState()
@@ -216,6 +220,8 @@ class GifPickerCell: UICollectionViewCell {
     }
 
     private func clearViewState() {
+        AssertIsOnMainThread()
+
         imageView.image = nil
         imageView.isHidden = true
         mp4View.video = nil

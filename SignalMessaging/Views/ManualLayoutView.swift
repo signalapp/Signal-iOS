@@ -113,6 +113,8 @@ open class ManualLayoutView: UIView {
     }
 
     func viewSizeDidChange() {
+        AssertIsOnMainThread()
+
         layoutSubviews()
     }
 
@@ -151,6 +153,8 @@ open class ManualLayoutView: UIView {
     // MARK: - Reset
 
     open func reset() {
+        AssertIsOnMainThread()
+
         removeAllSubviews()
         layoutBlocks.removeAll()
 

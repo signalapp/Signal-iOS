@@ -98,8 +98,10 @@ open class ManualStackView: ManualLayoutView {
     // We cache the resolved layout of the subviews.
     private var arrangement: Arrangement? {
         didSet {
-            invalidateIntrinsicContentSize()
-            setNeedsLayout()
+            if arrangement != nil {
+                invalidateIntrinsicContentSize()
+                setNeedsLayout()
+            }
         }
     }
 
@@ -111,8 +113,6 @@ open class ManualStackView: ManualLayoutView {
 
     public func invalidateArrangement() {
         arrangement = nil
-        invalidateIntrinsicContentSize()
-        setNeedsLayout()
     }
 
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -587,6 +587,8 @@ open class ManualStackView: ManualLayoutView {
     }
 
     open override func reset() {
+        AssertIsOnMainThread()
+
         super.reset()
 
         alignment = .fill
