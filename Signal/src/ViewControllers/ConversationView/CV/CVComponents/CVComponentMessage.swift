@@ -289,6 +289,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         CVComponentViewMessage()
     }
 
+    public override func updateScrollingContent(componentView: CVComponentView) {
+        super.updateScrollingContent(componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewMessage else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        componentView.chatColorView.updateAppearance()
+    }
+
     public static let textViewVSpacing: CGFloat = 2
     public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
     public static let quotedReplyTopMargin: CGFloat = 6
@@ -317,7 +327,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             if let bubbleChatColor = self.bubbleChatColor {
                 let chatColorView = componentView.chatColorView
-                chatColorView.chatColor = bubbleChatColor
+                chatColorView.configure(chatColor: bubbleChatColor,
+                                        referenceView: componentDelegate.view)
                 bubbleView.addSubview(chatColorView)
             }
 
@@ -1335,6 +1346,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         public func setIsCellVisible(_ isCellVisible: Bool) {
             for subcomponentView in allSubcomponentViews {
                 subcomponentView.setIsCellVisible(isCellVisible)
+            }
+            if isCellVisible {
+                chatColorView.updateAppearance()
             }
         }
 

@@ -876,7 +876,7 @@ private class CustomColorPreviewView: UIView {
 
         private let swatchView: ChatColorSwatchView
 
-        init(isSelected: Bool, chatColorValue: ChatColorValue) {
+        init(isSelected: Bool, chatColorValue: ChatColorValue, name: String? = nil) {
             self.isSelected = isSelected
             self.swatchView = ChatColorSwatchView(chatColorValue: chatColorValue, mode: .circle)
 
@@ -905,6 +905,16 @@ private class CustomColorPreviewView: UIView {
             unselectedBorder.autoSetDimensions(to: .square(Self.swatchSize + Self.unselectedBorderThickness * 2))
             self.addSubview(unselectedBorder)
             unselectedBorder.autoCenterInSuperview()
+
+            let showKnobLabels = true
+            if showKnobLabels, let name = name {
+                let label = UILabel()
+                label.text = name
+                label.font = .ows_dynamicTypeCaption1
+                label.textColor = .ows_white
+                self.addSubview(label)
+                label.autoCenterInSuperview()
+            }
 
             updateSelection()
         }

@@ -74,7 +74,7 @@ public protocol CVRootComponent: CVComponent {
 
     var isDedicatedCell: Bool { get }
 
-    func updateWallpaperBlur(componentView: CVComponentView)
+    func updateScrollingContent(componentView: CVComponentView)
 }
 
 // MARK: -
@@ -199,7 +199,11 @@ public class CVComponentBase: NSObject {
         }
     }
 
-    public final func updateWallpaperBlur(componentView: CVComponentView) {
+    public func updateScrollingContent(componentView: CVComponentView) {
+        updateWallpaperBlur(componentView: componentView)
+    }
+
+    private func updateWallpaperBlur(componentView: CVComponentView) {
         guard let wallpaperBlurView = self.wallpaperBlurView(componentView: componentView) else {
             return
         }

@@ -8,7 +8,6 @@ import Foundation
 public protocol CVBackgroundContainerDelegate: class {
     func updateSelectionHighlight()
     func updateScrollingContent()
-    func updateCellWallpaperBlur()
 }
 
 // MARK: -
@@ -85,7 +84,7 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
         wallpaperView?.dimmingView?.frame = bounds
         selectionHighlightView.frame = bounds
 
-        delegate?.updateCellWallpaperBlur()
+        delegate?.updateScrollingContent()
         if shouldUpdateSelectionHighlight {
             delegate?.updateSelectionHighlight()
         }
@@ -112,17 +111,14 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
     public func updateScrollingContent() {
         AssertIsOnMainThread()
 
-        updateCellWallpaperBlur()
-        updateSelectionHighlight()
-    }
-
-    public func updateCellWallpaperBlur() {
         for cell in collectionView.visibleCells {
             guard let cell = cell as? CVCell else {
                 owsFailDebug("Invalid cell.")
                 continue
             }
-            cell.updateWallpaperBlur()
+            cell.updateScrollingContent()
         }
+
+        updateSelectionHighlight()
     }
 }
