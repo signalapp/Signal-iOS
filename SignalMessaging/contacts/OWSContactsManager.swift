@@ -315,11 +315,13 @@ public extension OWSContactsManager {
         Self.skipContactAvatarBlurByUuidStore.setBool(true,
                                                       key: uuid.uuidString,
                                                       transaction: transaction)
-        NotificationCenter.default.postNotificationNameAsync(Self.skipContactAvatarBlurDidChange,
-                                                             object: nil,
-                                                             userInfo: [
-                                                                Self.skipContactAvatarBlurAddressKey: address
-                                                             ])
+        transaction.addAsyncCompletionOffMain {
+            NotificationCenter.default.postNotificationNameAsync(Self.skipContactAvatarBlurDidChange,
+                                                                 object: nil,
+                                                                 userInfo: [
+                                                                    Self.skipContactAvatarBlurAddressKey: address
+                                                                 ])
+        }
     }
 
     func doNotBlurGroupAvatar(groupThread: TSGroupThread,
@@ -330,11 +332,13 @@ public extension OWSContactsManager {
         Self.skipGroupAvatarBlurByGroupIdStore.setBool(true,
                                                        key: groupId.hexadecimalString,
                                                        transaction: transaction)
-        NotificationCenter.default.postNotificationNameAsync(Self.skipGroupAvatarBlurDidChange,
-                                                             object: nil,
-                                                             userInfo: [
-                                                                Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
-                                                             ])
+        transaction.addAsyncCompletionOffMain {
+            NotificationCenter.default.postNotificationNameAsync(Self.skipGroupAvatarBlurDidChange,
+                                                                 object: nil,
+                                                                 userInfo: [
+                                                                    Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
+                                                                 ])
+        }
     }
 
     @nonobjc
