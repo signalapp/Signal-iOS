@@ -128,11 +128,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIColor *)highlightColor
 {
-    // TODO:
-    return UIColor.redColor;
-    //    BOOL isQuotingSelf = self.quotedMessage.authorAddress.isLocalAddress;
-    //    return (isQuotingSelf ? [self.conversationStyle bubbleColorWithIsIncoming:NO]
-    //                          : [self.conversationStyle quotingSelfHighlightColor]);
+    // TODO: Finalize with design.
+    BOOL isQuotingSelf = self.quotedMessage.authorAddress.isLocalAddress;
+    return (isQuotingSelf ? [self.conversationStyle quotingSelfHighlightColor] : UIColor.ows_accentBlueColor);
 }
 
 #pragma mark -

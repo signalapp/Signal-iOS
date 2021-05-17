@@ -187,12 +187,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var highlightColor: UIColor {
-            // TODO:
-            return .red
-//            let isQuotingSelf = quotedReplyModel.authorAddress.isLocalAddress
-//            return (isQuotingSelf
-//                        ? conversationStyle.bubbleColor(isIncoming: false)
-//                        : conversationStyle.quotingSelfHighlightColor())
+            // TODO: Finalize with design.
+            let isQuotingSelf = quotedReplyModel.authorAddress.isLocalAddress
+            return (isQuotingSelf
+                        ? conversationStyle.quotingSelfHighlightColor()
+                        : .ows_accentBlue)
+
         }
 
         var quotedAuthorLabelConfig: CVLabelConfig {
