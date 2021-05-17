@@ -28,8 +28,8 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
         imageView.layer.masksToBounds = true
         addSubview(imageView)
 
-        self.layer.disableCALayerAnimationsActions()
-        maskLayer.disableCALayerAnimationsActions()
+        self.layer.disableCALayerAnimations()
+        maskLayer.disableCALayerAnimations()
 
         addLayoutBlock { [weak self] _ in
             self?.applyLayout()

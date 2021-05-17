@@ -64,16 +64,21 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
     self.layoutMargins = UIEdgeInsetsZero;
 
+    [self.layer disableCALayerAnimations];
+
     self.shapeLayer = [CAShapeLayer new];
+    [self.shapeLayer disableCALayerAnimations];
     [self.layer addSublayer:self.shapeLayer];
     self.shapeLayer.hidden = YES;
 
     self.gradientLayer = [CAGradientLayer new];
+    [self.gradientLayer disableCALayerAnimations];
     [self.layer addSublayer:self.gradientLayer];
     self.gradientLayer.hidden = YES;
 
     self.layer.masksToBounds = YES;
     self.maskLayer = [CAShapeLayer new];
+    [self.maskLayer disableCALayerAnimations];
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -177,10 +182,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
     UIBezierPath *bezierPath = [self maskPath];
 
-    // Prevent the shape layer from animating changes.
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-
     self.shapeLayer.fillColor = self.fillColor.CGColor;
     self.shapeLayer.strokeColor = self.strokeColor.CGColor;
     self.shapeLayer.lineWidth = self.strokeThickness;
@@ -214,8 +215,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
         self.layer.cornerRadius = 0;
         self.layer.mask = self.maskLayer;
     }
-
-    [CATransaction commit];
 
     [self ensureSubviewLayout];
 }

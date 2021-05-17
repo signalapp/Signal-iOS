@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBezierPathView.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.opaque = NO;
     self.userInteractionEnabled = NO;
     self.backgroundColor = [UIColor clearColor];
+    [self.layer disableCALayerAnimations];
 }
 
 - (void)setFrame:(CGRect)frame
@@ -84,17 +86,12 @@ NS_ASSUME_NONNULL_BEGIN
         [layer removeFromSuperlayer];
     }
 
-    // Prevent the shape layer from animating changes.
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-
     for (ConfigureShapeLayerBlock configureShapeLayerBlock in self.configureShapeLayerBlocks) {
         CAShapeLayer *shapeLayer = [CAShapeLayer new];
+        [shapeLayer disableCALayerAnimations];
         configureShapeLayerBlock(shapeLayer, self.bounds);
         [self.layer addSublayer:shapeLayer];
     }
-
-    [CATransaction commit];
 
     [self setNeedsDisplay];
 }

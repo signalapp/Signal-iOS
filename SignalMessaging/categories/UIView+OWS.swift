@@ -1067,9 +1067,20 @@ extension CALayer {
         "shadowOpacity",
         "shadowOffset",
         "shadowRadius",
-        "shadowPath"
+        "shadowPath",
+        "fillColor",
+        "strokeColor",
+        "lineWidth",
+        "zPosition",
+        "mask",
+        "masksToBounds",
+        "hidden",
+        // CAGradientLayer
+        "startPoint",
+        "endPoint",
+        "colors"
     ]
-    private static let disableCALayerAnimationsActions: [String: CAAction] = {
+    private static let disableCALayerAnimations: [String: CAAction] = {
         var actions = [String: CAAction]()
         for key in allCALayerAnimationKeys {
             actions[key] = NSNull()
@@ -1078,7 +1089,7 @@ extension CALayer {
     }()
 
     @objc
-    public func disableCALayerAnimationsActions() {
-        self.actions = Self.disableCALayerAnimationsActions
+    public func disableCALayerAnimations() {
+        self.actions = Self.disableCALayerAnimations
     }
 }
