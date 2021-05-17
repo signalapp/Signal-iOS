@@ -31,7 +31,6 @@
 #import "OWSLinkDeviceViewController.h"
 #import "OWSMessageTextView.h"
 #import "OWSNavigationController.h"
-#import "OWSProgressView.h"
 #import "OWSQuotedMessageView.h"
 #import "OWSWindowManager.h"
 #import "Pastelog.h"
