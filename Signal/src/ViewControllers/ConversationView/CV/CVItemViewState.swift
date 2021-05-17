@@ -15,7 +15,6 @@ import PromiseKit
 // the passage of time, etc.
 public struct CVItemViewState: Equatable {
     let shouldShowSenderAvatar: Bool
-    let senderName: NSAttributedString?
     let accessibilityAuthorName: String?
     let shouldHideFooter: Bool
     let isFirstInCluster: Bool
@@ -23,6 +22,7 @@ public struct CVItemViewState: Equatable {
     let shouldCollapseSystemMessageAction: Bool
 
     // Some components have transient state.
+    let senderNameState: CVComponentState.SenderName?
     let footerState: CVComponentFooter.State?
     let dateHeaderState: CVComponentDateHeader.State?
     let bodyTextState: CVComponentBodyText.State?
@@ -32,12 +32,12 @@ public struct CVItemViewState: Equatable {
 
     public class Builder {
         var shouldShowSenderAvatar = false
-        var senderName: NSAttributedString?
         var accessibilityAuthorName: String?
         var shouldHideFooter = false
         var isFirstInCluster = false
         var isLastInCluster = false
         var shouldCollapseSystemMessageAction = false
+        var senderNameState: CVComponentState.SenderName?
         var footerState: CVComponentFooter.State?
         var dateHeaderState: CVComponentDateHeader.State?
         var bodyTextState: CVComponentBodyText.State?
@@ -46,12 +46,12 @@ public struct CVItemViewState: Equatable {
 
         func build() -> CVItemViewState {
             CVItemViewState(shouldShowSenderAvatar: shouldShowSenderAvatar,
-                            senderName: senderName,
                             accessibilityAuthorName: accessibilityAuthorName,
                             shouldHideFooter: shouldHideFooter,
                             isFirstInCluster: isFirstInCluster,
                             isLastInCluster: isLastInCluster,
                             shouldCollapseSystemMessageAction: shouldCollapseSystemMessageAction,
+                            senderNameState: senderNameState,
                             footerState: footerState,
                             dateHeaderState: dateHeaderState,
                             bodyTextState: bodyTextState,
@@ -154,6 +154,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(item != nil)
         }
 
+        let groupNameColors = ChatColors.groupNameColors(forThread: thread)
+
         // Update the properties of the view items.
         //
         // NOTE: This logic uses the break properties which are set in the previous pass.
@@ -167,6 +169,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                         thread: thread,
                                         threadViewModel: threadViewModel,
                                         viewStateSnapshot: viewStateSnapshot,
+                                        groupNameColors: groupNameColors,
                                         transaction: transaction)
         }
 
@@ -192,12 +195,15 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             return nil
         }
 
+        let groupNameColors = ChatColors.groupNameColors(forThread: thread)
+
         configureItemViewState(item: itemBuilder,
                                previousItem: nil,
                                nextItem: nil,
                                thread: thread,
                                threadViewModel: threadViewModel,
                                viewStateSnapshot: viewStateSnapshot,
+                               groupNameColors: groupNameColors,
                                transaction: transaction)
 
         return itemBuilder.build(coreState: viewStateSnapshot.coreState)
@@ -209,6 +215,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                thread: TSThread,
                                                threadViewModel: ThreadViewModel,
                                                viewStateSnapshot: CVViewStateSnapshot,
+                                               groupNameColors: ChatColors.GroupNameColors,
                                                transaction: SDSAnyReadTransaction) {
         let itemViewState = item.itemViewState
         itemViewState.shouldShowSenderAvatar = false
@@ -339,7 +346,10 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                     shouldShowSenderName = incomingSenderAddress != previousIncomingSenderAddress
                 }
                 if shouldShowSenderName {
-                    itemViewState.senderName = NSAttributedString(string: authorName)
+                    let senderName = NSAttributedString(string: authorName)
+                    let senderNameColor = groupNameColors.color(for: incomingSenderAddress)
+                    itemViewState.senderNameState = CVComponentState.SenderName(senderName: senderName,
+                                                                                senderNameColor: senderNameColor)
                 }
 
                 // Show the sender avatar for incoming group messages unless

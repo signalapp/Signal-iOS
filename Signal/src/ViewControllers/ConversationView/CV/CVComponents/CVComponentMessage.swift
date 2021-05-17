@@ -78,7 +78,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var sharpCornersForQuotedMessage: OWSDirectionalRectCorner {
-        if itemViewState.senderName != nil {
+        if itemViewState.senderNameState != nil {
             return .allCorners
         } else {
             var rawValue = sharpCorners.rawValue
@@ -173,8 +173,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         hasSendFailureBadge = componentState.sendFailureBadge != nil
 
-        if let senderName = itemViewState.senderName {
-            self.senderName = CVComponentSenderName(itemModel: itemModel, senderName: senderName)
+        if let senderNameState = itemViewState.senderNameState {
+            self.senderName = CVComponentSenderName(itemModel: itemModel, senderNameState: senderNameState)
         }
         if let senderAvatar = componentState.senderAvatar {
             self.senderAvatar = senderAvatar

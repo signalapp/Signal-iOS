@@ -414,3 +414,139 @@ public extension UIColor {
         return OWSColor(red: red.clamp01(), green: green.clamp01(), blue: blue.clamp01())
     }
 }
+
+// MARK: -
+
+public extension ChatColors {
+
+    // Represents the "message sender" to "group name color" mapping
+    // for a given CVC load.
+    struct GroupNameColors {
+        fileprivate let map: [SignalServiceAddress: UIColor]
+        fileprivate let defaultColor: UIColor
+
+        public func color(for address: SignalServiceAddress) -> UIColor {
+            guard let color = map[address] else {
+                return defaultColor
+            }
+            return color
+        }
+
+        fileprivate static var defaultColors: GroupNameColors {
+            GroupNameColors(map: [:], defaultColor: Theme.primaryTextColor)
+        }
+    }
+
+    static func groupNameColors(forThread thread: TSThread) -> GroupNameColors {
+        guard let groupThread = thread as? TSGroupThread else {
+            return .defaultColors
+        }
+        let groupMembership = groupThread.groupMembership
+        let values = Self.groupNameColorValues
+        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
+        var lastIndex: Int = 0
+        var map = [SignalServiceAddress: UIColor]()
+        let addresses = Array(groupMembership.fullMembers).stableSort()
+        for (index, address) in addresses.enumerated() {
+            let valueIndex = index % values.count
+            guard let value = values[safe: valueIndex] else {
+                owsFailDebug("Invalid values.")
+                return .defaultColors
+            }
+            map[address] = value.color(isDarkThemeEnabled: isDarkThemeEnabled)
+            lastIndex = index
+        }
+        let defaultValueIndex = (lastIndex + 1) % values.count
+        guard let defaultValue = values[safe: defaultValueIndex] else {
+            owsFailDebug("Invalid values.")
+            return .defaultColors
+        }
+        let defaultColor = defaultValue.color(isDarkThemeEnabled: isDarkThemeEnabled)
+        return GroupNameColors(map: map, defaultColor: defaultColor)
+    }
+
+    private struct GroupNameColorValue {
+        let lightTheme: UIColor
+        let darkTheme: UIColor
+
+        func color(isDarkThemeEnabled: Bool) -> UIColor {
+            isDarkThemeEnabled ? darkTheme : lightTheme
+        }
+    }
+
+    // In descending order of contrast with the other values.
+    private static let groupNameColorValues: [GroupNameColorValue] = [
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xD00B0B),
+                            darkTheme: UIColor(rgbHex: 0xF76E6E)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x067906),
+                            darkTheme: UIColor(rgbHex: 0x0AB80A)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x5151F6),
+                            darkTheme: UIColor(rgbHex: 0x8B8BF9)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x866118),
+                            darkTheme: UIColor(rgbHex: 0xD08F0B)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x067953),
+                            darkTheme: UIColor(rgbHex: 0x09B37B)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xA20CED),
+                            darkTheme: UIColor(rgbHex: 0xCB72F8)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x507406),
+                            darkTheme: UIColor(rgbHex: 0x77AE09)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x086DA0),
+                            darkTheme: UIColor(rgbHex: 0x0DA6F2)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xC70A88),
+                            darkTheme: UIColor(rgbHex: 0xF76EC9)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xB34209),
+                            darkTheme: UIColor(rgbHex: 0xF4702F)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x06792D),
+                            darkTheme: UIColor(rgbHex: 0x0AB844)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x7A3DF5),
+                            darkTheme: UIColor(rgbHex: 0xAC86F9)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x6C6C13),
+                            darkTheme: UIColor(rgbHex: 0xA5A509)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x067474),
+                            darkTheme: UIColor(rgbHex: 0x09AEAE)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xB80AB8),
+                            darkTheme: UIColor(rgbHex: 0xF75FF7)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x2D7906),
+                            darkTheme: UIColor(rgbHex: 0x42B309)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x0D59F2),
+                            darkTheme: UIColor(rgbHex: 0x6495F7)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xD00B4D),
+                            darkTheme: UIColor(rgbHex: 0xF76998)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xC72A0A),
+                            darkTheme: UIColor(rgbHex: 0xF67055)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x067919),
+                            darkTheme: UIColor(rgbHex: 0x0AB827)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x6447F5),
+                            darkTheme: UIColor(rgbHex: 0x9986F9)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x76681E),
+                            darkTheme: UIColor(rgbHex: 0xB89B0A)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x067462),
+                            darkTheme: UIColor(rgbHex: 0x09B397)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xAF0BD0),
+                            darkTheme: UIColor(rgbHex: 0xE06EF7)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x3D7406),
+                            darkTheme: UIColor(rgbHex: 0x5EB309)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x0A69C7),
+                            darkTheme: UIColor(rgbHex: 0x429CF5)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xCB0B6B),
+                            darkTheme: UIColor(rgbHex: 0xF76EB2)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x9C5711),
+                            darkTheme: UIColor(rgbHex: 0xE97A0C)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x067940),
+                            darkTheme: UIColor(rgbHex: 0x09B35E)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x8F2AF4),
+                            darkTheme: UIColor(rgbHex: 0xBD81F8)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x5E6E0C),
+                            darkTheme: UIColor(rgbHex: 0x8FAA09)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x077288),
+                            darkTheme: UIColor(rgbHex: 0x0BABCB)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xC20AA3),
+                            darkTheme: UIColor(rgbHex: 0xF75FDD)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x1A7906),
+                            darkTheme: UIColor(rgbHex: 0x27B80A)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x3454F4),
+                            darkTheme: UIColor(rgbHex: 0x778DF8)),
+        GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xD00B2C),
+                            darkTheme: UIColor(rgbHex: 0xF76E85))
+    ]
+}

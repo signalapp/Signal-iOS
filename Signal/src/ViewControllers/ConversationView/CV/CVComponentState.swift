@@ -11,6 +11,7 @@ public class CVComponentState: Equatable, Dependencies {
     // TODO: Can/should we eliminate/populate this?
     struct SenderName: Equatable {
         let senderName: NSAttributedString
+        let senderNameColor: UIColor
     }
     let senderName: SenderName?
 
