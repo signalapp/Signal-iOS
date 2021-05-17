@@ -82,20 +82,23 @@ public class ChatColorViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let wallpaperPreviewView: UIView
+        let hasWallpaper: Bool
         if let wallpaperView = (databaseStorage.read { transaction in
             Wallpaper.view(for: thread, transaction: transaction)
         }) {
             wallpaperPreviewView = wallpaperView.asPreviewView()
+            hasWallpaper = true
         } else {
             wallpaperPreviewView = UIView()
             wallpaperPreviewView.backgroundColor = Theme.backgroundColor
+            hasWallpaper = false
         }
         wallpaperPreviewView.layer.cornerRadius = OWSTableViewController2.cellRounding
         wallpaperPreviewView.clipsToBounds = true
 
         let mockConversationView = MockConversationView(
             model: buildMockConversationModel(),
-            hasWallpaper: true,
+            hasWallpaper: hasWallpaper,
             customChatColor: currentValue
         )
         let previewSection = OWSTableSection()
