@@ -75,6 +75,37 @@ public extension TSGroupThread {
         return groupThreads
     }
 
+    class func enumerateGroupThreads(
+        with address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction,
+        block: (TSGroupThread, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        let sql = """
+            SELECT \(groupMemberColumn: .groupThreadId) FROM \(GroupMemberRecord.databaseTableName)
+            WHERE (\(groupMemberColumn: .uuidString) = ? OR \(groupMemberColumn: .uuidString) IS NULL)
+            AND (\(groupMemberColumn: .phoneNumber) = ? OR \(groupMemberColumn: .phoneNumber) IS NULL)
+            AND NOT (\(groupMemberColumn: .uuidString) IS NULL AND \(groupMemberColumn: .phoneNumber) IS NULL)
+            ORDER BY \(groupMemberColumn: .lastInteractionTimestamp) DESC
+        """
+
+        let cursor = try! String.fetchCursor(
+            transaction.unwrapGrdbRead.database,
+            sql: sql,
+            arguments: [address.uuidString, address.phoneNumber]
+        )
+
+        while let groupThreadId = try! cursor.next() {
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
+                                                                      transaction: transaction) else {
+                owsFailDebug("Missing group thread")
+                continue
+            }
+            var stop: ObjCBool = false
+            block(groupThread, &stop)
+            if stop.boolValue { return }
+        }
+    }
+
     @objc(groupThreadIdsWithAddress:transaction:)
     class func groupThreadIds(with address: SignalServiceAddress,
                               transaction: SDSAnyReadTransaction) -> [String] {

@@ -205,7 +205,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return
         }
 
-        let store = SDSKeyValueStore(collection: "OWSMessageDecrypter")
+        let store = SDSKeyValueStore(collection: "OWSMessageDecrypter+NullMessage")
 
         let lastNullMessageDate = store.getDate(senderId, transaction: transaction)
         let timeSinceNullMessage = abs(lastNullMessageDate?.timeIntervalSinceNow ?? .infinity)
@@ -232,6 +232,47 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 } else {
                     owsFailDebug("Failed to send null message after session reset " +
                                     "for undecryptable message from \(senderId) (\(error))")
+                }
+            })
+        }
+    }
+
+    private func trySendReactiveProfileKey(
+        to sourceAddress: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard let sourceUuid = sourceAddress.uuidString else {
+            return owsFailDebug("Unexpectedly missing UUID for sender \(sourceAddress)")
+        }
+
+        let store = SDSKeyValueStore(collection: "OWSMessageDecrypter+ReactiveProfileKey")
+
+        let lastProfileKeyMessageDate = store.getDate(sourceUuid, transaction: transaction)
+        let timeSinceProfileKeyMessage = abs(lastProfileKeyMessageDate?.timeIntervalSinceNow ?? .infinity)
+        guard timeSinceProfileKeyMessage > RemoteConfig.reactiveProfileKeyAttemptInterval else {
+            Logger.warn("Skipping reactive profile key message after non-UD message from \(sourceAddress), last reactive profile key message sent \(lastProfileKeyMessageDate!.ows_millisecondsSince1970).")
+            return
+        }
+
+        Logger.info("Sending reactive profile key message after non-UD message from: \(sourceAddress)")
+        store.setDate(Date(), key: sourceUuid, transaction: transaction)
+
+        let contactThread = TSContactThread.getOrCreateThread(
+            withContactAddress: sourceAddress,
+            transaction: transaction
+        )
+
+        transaction.addAsyncCompletion {
+            let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread)
+            Self.messageSender.sendMessage(profileKeyMessage.asPreparer, success: {
+                Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")
+            }, failure: { error in
+                let nsError = error as NSError
+                if nsError.domain == OWSSignalServiceKitErrorDomain &&
+                    nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
+                    Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
+                } else {
+                    owsFailDebug("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
                 }
             })
         }
@@ -387,6 +428,43 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                               sessionStore: Self.sessionStore,
                                               identityStore: Self.identityManager,
                                               context: transaction)
+
+                // We do this work in an async completion so we don't delay
+                // receipt of this message.
+                transaction.addAsyncCompletionOffMain {
+                    let needsReactiveProfileKeyMessage: Bool = self.databaseStorage.read { transaction in
+                        // This user is whitelisted, they should have our profile key / be sending UD messages
+                        // Send them our profile key in case they somehow lost it.
+                        if self.profileManager.isUser(
+                            inProfileWhitelist: sourceAddress,
+                            transaction: transaction
+                        ) {
+                            return true
+                        }
+
+                        // If we're in a V2 group with this user, they should also have our profile key /
+                        // be sending UD messages. Send them it in case they somehow lost it.
+                        var needsReactiveProfileKeyMessage = false
+                        TSGroupThread.enumerateGroupThreads(
+                            with: sourceAddress,
+                            transaction: transaction
+                        ) { thread, stop in
+                            guard thread.isGroupV2Thread else { return }
+                            stop.pointee = true
+                            needsReactiveProfileKeyMessage = true
+                        }
+                        return needsReactiveProfileKeyMessage
+                    }
+
+                    if needsReactiveProfileKeyMessage {
+                        self.databaseStorage.write { transaction in
+                            self.trySendReactiveProfileKey(
+                                to: sourceAddress,
+                                transaction: transaction
+                            )
+                        }
+                    }
+                }
 
             case .preKey:
                 let message = try PreKeySignalMessage(bytes: encryptedData)
