@@ -1040,3 +1040,45 @@ extension UIImage {
         return imageView.renderAsImage(opaque: imageView.isOpaque, scale: UIScreen.main.scale)
     }
 }
+
+// MARK: -
+
+extension CALayer {
+    private static let allCALayerAnimationKeys: [String] = [
+        // In our codebase, it's simplest to disable all possible animation keys,
+        // even if they don't apply to a particular layer.
+        //
+        // I've added keys for most of the properties/events that we
+        // use.  We can add more keys here as necessary.
+        "opacity",
+        "content",
+        "sublayers",
+        "borderWidth",
+        "borderColor",
+        "cornerRadius",
+        "backgroundColor",
+        "onOrderIn",
+        "onOrderOut",
+        "frame",
+        "bounds",
+        "center",
+        "path",
+        "shadowColor",
+        "shadowOpacity",
+        "shadowOffset",
+        "shadowRadius",
+        "shadowPath"
+    ]
+    private static let disableCALayerAnimationsActions: [String: CAAction] = {
+        var actions = [String: CAAction]()
+        for key in allCALayerAnimationKeys {
+            actions[key] = NSNull()
+        }
+        return actions
+    }()
+
+    @objc
+    public func disableCALayerAnimationsActions() {
+        self.actions = Self.disableCALayerAnimationsActions
+    }
+}
