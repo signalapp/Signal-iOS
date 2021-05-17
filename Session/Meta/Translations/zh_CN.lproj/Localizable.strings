@@ -286,6 +286,8 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "在验证发给你的验证码之前，我们无法激活你的帐户.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "立即";
+/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "认证来打开 Session。";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "认证失败";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */

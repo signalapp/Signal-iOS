@@ -286,6 +286,8 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nemôžeme aktivovať váš účet kým neoveríte kód, ktorý sme vám poslali.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Okamžite";
+/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Session.";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Overenie zlyhalo";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
