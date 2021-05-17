@@ -78,6 +78,10 @@
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokir %@?";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Buka blokir";
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Pengguna telah diblokir";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Pengguna terblokir tidak bisa menghubungi atau mengirimkan pesan kepada Anda.";
 /* Label for generic done button. */
