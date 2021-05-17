@@ -327,7 +327,6 @@ public class CustomColorViewController: OWSTableViewController2 {
 
     fileprivate var currentChatColorValue: ChatColorValue {
         let appearance = self.currentChatColorAppearance()
-        Logger.verbose("appearance: \(appearance), ")
         switch valueMode {
         case .createNew:
             return ChatColorValue(id: ChatColorValue.randomId,
@@ -960,10 +959,12 @@ private class CustomColorPreviewView: UIView {
 
         let knobView1 = KnobView(isSelected: delegate.editMode == .gradientColor1,
                                  chatColorValue: ChatColorValue(id: "knob1",
-                                                                appearance: .solidColor(color: delegate.gradientColor1)))
+                                                                appearance: .solidColor(color: delegate.gradientColor1)),
+                                 name: "1")
         let knobView2 = KnobView(isSelected: delegate.editMode == .gradientColor2,
                                  chatColorValue: ChatColorValue(id: "knob2",
-                                                                appearance: .solidColor(color: delegate.gradientColor2)))
+                                                                appearance: .solidColor(color: delegate.gradientColor2)),
+                                 name: "2")
         self.knobView1 = knobView1
         self.knobView2 = knobView2
 

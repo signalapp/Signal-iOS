@@ -87,8 +87,6 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 chatColorValue = Self.databaseStorage.read { transaction in
                     ChatColors.defaultChatColorForRendering(transaction: transaction)
                 }
-//                    ChatColors.defaultChatColorSetting(transaction: transaction)
-//                } ?? ChatColors.noWallpaperAutoChatColor
             }
             let defaultColorView = ChatColorSwatchView(chatColorValue: chatColorValue,
                                                        mode: .circle)
