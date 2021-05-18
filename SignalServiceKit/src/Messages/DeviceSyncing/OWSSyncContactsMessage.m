@@ -110,7 +110,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress transaction:transaction];
 
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
-        NSString *conversationColorName;
 
         TSContactThread *_Nullable contactThread =
             [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress transaction:transaction];
@@ -123,19 +122,14 @@ NS_ASSUME_NONNULL_BEGIN
         if (contactThread) {
             isArchived = [NSNumber numberWithBool:associatedData.isArchived];
             inboxPosition = [[AnyThreadFinder new] sortIndexObjcWithThread:contactThread transaction:transaction];
-            conversationColorName = contactThread.conversationColorName;
             disappearingMessagesConfiguration =
                 [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
-        } else {
-            conversationColorName =
-                [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientAddress.stringForDisplay];
         }
 
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
                                   profileKeyData:profileKeyData
                                  contactsManager:self.contactsManager
-                           conversationColorName:conversationColorName
                disappearingMessagesConfiguration:disappearingMessagesConfiguration
                                       isArchived:isArchived
                                    inboxPosition:inboxPosition];

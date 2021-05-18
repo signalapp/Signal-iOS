@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
                     recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
                        profileKeyData:(nullable NSData *)profileKeyData
                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                conversationColorName:(NSString *)conversationColorName
     disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
                            isArchived:(nullable NSNumber *)isArchived
                         inboxPosition:(nullable NSNumber *)inboxPosition
@@ -38,7 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
     [contactBuilder setContactE164:signalAccount.recipientAddress.phoneNumber];
     [contactBuilder setContactUuid:signalAccount.recipientAddress.uuidString];
     [contactBuilder setName:signalAccount.contact.fullName];
-    [contactBuilder setColor:conversationColorName];
 
     if (isArchived != nil) {
         [contactBuilder setArchived:isArchived.boolValue];

@@ -490,7 +490,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         self.paymentItem = PaymentsHistoryItem(paymentModel: paymentModel,
                                                displayName: paymentItem.displayName,
-                                               conversationColorName: paymentItem.conversationColorName)
+                                               avatarColor: paymentItem.avatarColor)
 
         updateTableContents()
     }

@@ -41,7 +41,7 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           conversationColorName:(ConversationColorName)conversationColorName
+   conversationColorNameObsolete:(NSString *)conversationColorNameObsolete
                     creationDate:(nullable NSDate *)creationDate
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
@@ -60,7 +60,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-             conversationColorName:conversationColorName
+     conversationColorNameObsolete:conversationColorNameObsolete
                       creationDate:creationDate
                 isArchivedObsolete:isArchivedObsolete
             isMarkedUnreadObsolete:isMarkedUnreadObsolete
@@ -111,11 +111,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
         _contactUUID = contactAddress.uuidString;
         _contactPhoneNumber = contactAddress.phoneNumber;
         _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
-
-        // Reset the conversation color to use our phone number, if available. The super initializer just uses the
-        // uniqueId
-        self.conversationColorName =
-            [[self class] stableColorNameForNewConversationWithString:contactAddress.stringForDisplay];
+        self.conversationColorNameObsolete = @"Obsolete";
     }
 
     return self;
@@ -204,19 +200,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     }
 
     return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
-}
-
-+ (ConversationColorName)conversationColorNameForContactAddress:(SignalServiceAddress *)address
-                                                    transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address);
-
-    TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactAddress:address
-                                                                                transaction:transaction];
-    if (contactThread) {
-        return contactThread.conversationColorName;
-    }
-    return [self stableColorNameForNewConversationWithString:address.stringForDisplay];
 }
 
 @end

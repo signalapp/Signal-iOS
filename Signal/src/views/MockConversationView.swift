@@ -23,19 +23,6 @@ class MockConversationView: UIView {
         }
     }
 
-    // TODO: Right now, we don't respect the conversation
-    // color when rendering message bubbles. If we
-    // re-introduce colors we'll of course need to fix that,
-    // but hopefully no changes are needed here.
-    var conversationColor: ConversationColorName {
-        set {
-            AssertIsOnMainThread()
-            thread.conversationColorName = newValue
-            update()
-        }
-        get { thread.conversationColorName }
-    }
-
     public var customChatColor: ChatColorValue? {
         didSet {
             update()

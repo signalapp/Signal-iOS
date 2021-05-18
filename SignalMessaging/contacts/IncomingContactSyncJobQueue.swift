@@ -278,7 +278,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
         let contactThread: TSContactThread
         let isNewThread: Bool
-        var threadDidChange = false
         if let existingThread = TSContactThread.getWithContactAddress(contactDetails.address, transaction: transaction) {
             contactThread = existingThread
             isNewThread = false
@@ -290,14 +289,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             isNewThread = true
         }
 
-        if let conversationColorNameValue = contactDetails.conversationColorName {
-            let conversationColorName = ConversationColorName(rawValue: conversationColorNameValue)
-            if contactThread.conversationColorName != conversationColorName {
-                threadDidChange = true
-                contactThread.conversationColorName = conversationColorName
-            }
-        }
-
         if isNewThread {
             contactThread.anyInsert(transaction: transaction)
             let inboxSortOrder = contactDetails.inboxSortOrder ?? UInt32.max
@@ -306,8 +297,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 let associatedData = ThreadAssociatedData.fetchOrDefault(for: contactThread, transaction: transaction)
                 associatedData.updateWith(isArchived: true, updateStorageService: false, transaction: transaction)
             }
-        } else if threadDidChange {
-            contactThread.anyOverwritingUpdate(transaction: transaction)
         }
 
         let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: contactDetails.expireTimer)

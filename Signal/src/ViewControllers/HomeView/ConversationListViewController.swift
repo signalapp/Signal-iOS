@@ -37,9 +37,10 @@ public extension ConversationListViewController {
                                                 localUserDisplayMode: .asUser)
         avatarView.configure(address: address, transaction: transaction)
 
+        let avatarColor = ChatColors.avatarColor(forAddress: address)
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
                                                       displayName: userName,
-                                                      conversationColorName: contactThread.conversationColorName)
+                                                      avatarColor: avatarColor)
 
         configureUnreadPaymentsBanner(paymentsReminderView,
                                       title: title,

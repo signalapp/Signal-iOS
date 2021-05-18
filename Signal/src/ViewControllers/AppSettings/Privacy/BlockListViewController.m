@@ -148,10 +148,9 @@ NS_ASSUME_NONNULL_BEGIN
         for (TSGroupModel *blockedGroup in blockedGroups) {
             UIImage *_Nullable image = blockedGroup.groupAvatarImage;
             if (!image) {
-                NSString *conversationColorName =
-                    [TSGroupThread defaultConversationColorNameForGroupId:blockedGroup.groupId];
+                UIColor *avatarColor = [ChatColors avatarColorForGroupId:blockedGroup.groupId];
                 image = [OWSGroupAvatarBuilder defaultAvatarForGroupId:blockedGroup.groupId
-                                                 conversationColorName:conversationColorName
+                                                           avatarColor:avatarColor
                                                               diameter:kStandardAvatarSize];
             }
             [blockedGroupsSection

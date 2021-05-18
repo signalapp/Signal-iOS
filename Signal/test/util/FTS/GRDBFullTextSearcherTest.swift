@@ -87,10 +87,6 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         (mockDisplayNameMap[address] ?? "").count > 0
     }
 
-    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ConversationColorName {
-        ConversationColorName.taupe
-    }
-
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         owsFailDebug("if this method ends up being used by the tests, we should provide a better implementation.")
 
