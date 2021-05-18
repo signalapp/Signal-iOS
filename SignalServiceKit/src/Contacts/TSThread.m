@@ -57,7 +57,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    return [super init];
+    self = [super init];
+
+    if (self) {
+        _conversationColorNameObsolete = @"Obsolete";
+    }
+
+    return self;
 }
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId

@@ -28,7 +28,7 @@ public struct ThreadRecord: SDSRecord {
     public let uniqueId: String
 
     // Properties
-    public let conversationColorNameObsolete: String
+    public let conversationColorName: String
     public let creationDate: Double?
     public let isArchived: Bool
     public let lastInteractionRowId: Int64
@@ -50,7 +50,7 @@ public struct ThreadRecord: SDSRecord {
         case id
         case recordType
         case uniqueId
-        case conversationColorNameObsolete
+        case conversationColorName = "conversationColorNameObsolete"
         case creationDate
         case isArchived
         case lastInteractionRowId
@@ -93,7 +93,7 @@ public extension ThreadRecord {
         id = row[0]
         recordType = row[1]
         uniqueId = row[2]
-        conversationColorNameObsolete = row[3]
+        conversationColorName = row[3]
         creationDate = row[4]
         isArchived = row[5]
         lastInteractionRowId = row[6]
@@ -141,7 +141,7 @@ extension TSThread {
         case .contactThread:
 
             let uniqueId: String = record.uniqueId
-            let conversationColorNameObsolete: String = record.conversationColorNameObsolete
+            let conversationColorNameObsolete: String = record.conversationColorName
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
@@ -183,7 +183,7 @@ extension TSThread {
         case .groupThread:
 
             let uniqueId: String = record.uniqueId
-            let conversationColorNameObsolete: String = record.conversationColorNameObsolete
+            let conversationColorNameObsolete: String = record.conversationColorName
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
@@ -222,7 +222,7 @@ extension TSThread {
         case .thread:
 
             let uniqueId: String = record.uniqueId
-            let conversationColorNameObsolete: String = record.conversationColorNameObsolete
+            let conversationColorNameObsolete: String = record.conversationColorName
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
@@ -920,7 +920,7 @@ class TSThreadSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Properties
-        let conversationColorNameObsolete: String = model.conversationColorNameObsolete
+        let conversationColorName: String = model.conversationColorNameObsolete
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchivedObsolete
         let lastInteractionRowId: Int64 = model.lastInteractionRowId
@@ -938,7 +938,7 @@ class TSThreadSerializer: SDSSerializer {
         let mentionNotificationMode: UInt = model.mentionNotificationMode.rawValue
         let mutedUntilTimestamp: UInt64 = model.mutedUntilTimestampObsolete
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorNameObsolete: conversationColorNameObsolete, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp)
     }
 }
 
