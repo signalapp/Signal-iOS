@@ -226,8 +226,22 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             switch rowChange.type {
             case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
             case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.automatic)
-            case .move: tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
             case .update: tableView.reloadRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
+            default: break
+            }
+        }
+        tableView.endUpdates()
+        // HACK: Moves can have conflicts with other 3 types of change.
+        // Just batch perform all the moves seperately to prevent crashing.
+        // Since all the changes are from original state to final state,
+        // it will still be correct if we pick the Moves out.
+        tableView.beginUpdates()
+        rowChanges.forEach { rowChange in
+            let rowChange = rowChange as! YapDatabaseViewRowChange
+            let key = rowChange.collectionKey.key
+            threadViewModelCache[key] = nil
+            switch rowChange.type {
+            case .move: tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
             default: break
             }
         }
