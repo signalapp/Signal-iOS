@@ -145,7 +145,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         }
     }
 
-    if (_conversationColorName.length == 0) {
+    if (_conversationColorNameObsolete.length == 0) {
         _conversationColorNameObsolete = @"Obsolete";
     }
 

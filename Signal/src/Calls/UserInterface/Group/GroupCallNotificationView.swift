@@ -242,7 +242,6 @@ private class BannerView: UIView {
 
             let avatarBuilder = OWSContactAvatarBuilder(
                 address: address,
-                avatarColor: ChatColors.avatarColor(forAddress: address),
                 diameter: 40,
                 localUserDisplayMode: .asUser
             )

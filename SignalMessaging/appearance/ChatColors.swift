@@ -755,7 +755,7 @@ public extension ChatColors {
 
     private static func avatarColor(forHash hash: Int) -> UIColor {
         let values = Self.groupNameColorValues
-        guard let value = values[safe: hash % values.count] else {
+        guard let value = values[safe: abs(hash) % values.count] else {
             owsFailDebug("Could not determine avatar color.")
             return Self.defaultAvatarColor
         }

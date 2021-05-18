@@ -1549,7 +1549,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].primaryColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
@@ -1557,7 +1557,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].shadeColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
@@ -1565,7 +1565,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].primaryColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:NO
@@ -1573,7 +1573,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].shadeColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:NO

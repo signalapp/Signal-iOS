@@ -370,7 +370,6 @@ public class ConversationAvatarView: AvatarImageView {
             switch content {
             case .contact(let contactThread):
                 return buildContactAvatar(address: contactThread.contactAddress,
-                                          avatarColor: ChatColors.avatarColor(forThread: contactThread),
                                           diameter: diameter,
                                           localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
@@ -379,9 +378,7 @@ public class ConversationAvatarView: AvatarImageView {
                                         diameter: diameter,
                                         transaction: transaction)
             case .unknownContact(let contactAddress):
-                let avatarColor = ChatColors.avatarColor(forAddress: contactAddress)
                 return buildContactAvatar(address: contactAddress,
-                                          avatarColor: avatarColor,
                                           diameter: diameter,
                                           localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
@@ -401,12 +398,10 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     private static func buildContactAvatar(address: SignalServiceAddress,
-                                           avatarColor: UIColor,
                                            diameter: UInt,
                                            localUserDisplayMode: LocalUserDisplayMode,
                                            transaction: SDSAnyReadTransaction) -> UIImage? {
         let builder = OWSContactAvatarBuilder(address: address,
-                                              avatarColor: avatarColor,
                                               diameter: diameter,
                                               localUserDisplayMode: localUserDisplayMode,
                                               transaction: transaction)

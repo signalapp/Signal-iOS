@@ -25,11 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
     NS_SWIFT_NAME(buildImageForNonLocalAddress(_:diameter:transaction:));
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
-                    avatarColor:(UIColor *)avatarColor
                        diameter:(NSUInteger)diameter
            localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode;
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
-                    avatarColor:(UIColor *)avatarColor
                        diameter:(NSUInteger)diameter
            localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                     transaction:(SDSAnyReadTransaction *)transaction;

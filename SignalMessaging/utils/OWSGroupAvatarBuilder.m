@@ -47,16 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildDefaultImage
 {
-    UIColor *avatarColor = [ChatColors avatarColorForThread:self.thread];
     return [self.class defaultAvatarForGroupId:self.thread.groupModel.groupId
-                                   avatarColor:avatarColor
                                       diameter:self.diameter];
 }
 
 + (nullable UIImage *)defaultAvatarForGroupId:(NSData *)groupId
-                                  avatarColor:(UIColor *)avatarColor
                                      diameter:(NSUInteger)diameter
 {
+    UIColor *avatarColor = [ChatColors avatarColorForGroupId:groupId];
     NSString *cacheKey = [NSString
         stringWithFormat:@"%@-%d-%lu", groupId.hexadecimalString, Theme.isDarkThemeEnabled, (unsigned long)diameter];
 

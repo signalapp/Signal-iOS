@@ -75,10 +75,8 @@ public class NonContactTableViewCell: UITableViewCell {
 
         if isRegistered {
             let address = SignalServiceAddress(phoneNumber: phoneNumber)
-            let avatarColor = ChatColors.avatarColor(forAddress: address)
             let avatarBuilder = OWSContactAvatarBuilder(
                 address: address,
-                avatarColor: avatarColor,
                 diameter: 48,
                 localUserDisplayMode: .asUser
             )

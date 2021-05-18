@@ -54,10 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
-                    avatarColor:(UIColor *)avatarColor
                        diameter:(NSUInteger)diameter
            localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
 {
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     // Components for avatar initials.
     __block NSPersonNameComponents *_Nullable nameComponents;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -78,11 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
-                    avatarColor:(UIColor *)avatarColor
                        diameter:(NSUInteger)diameter
            localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                     transaction:(SDSAnyReadTransaction *)transaction
 {
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     return [self initWithAddress:address
                   nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
                      avatarColor:avatarColor
@@ -109,12 +109,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
     SignalServiceAddress *address = TSAccountManager.localAddress;
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     __block OWSContactAvatarBuilder *instance;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         instance = [self initWithAddress:address
                           nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address
                                                                                transaction:transaction]
-                             avatarColor:ChatColors.defaultAvatarColor
+                             avatarColor:avatarColor
                                 diameter:diameter
                     localUserDisplayMode:localUserDisplayMode];
     }];
@@ -129,9 +130,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
     SignalServiceAddress *address = TSAccountManager.localAddress;
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     return [self initWithAddress:address
                   nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
-                     avatarColor:ChatColors.defaultAvatarColor
+                     avatarColor:avatarColor
                         diameter:diameter
             localUserDisplayMode:localUserDisplayMode];
 }
