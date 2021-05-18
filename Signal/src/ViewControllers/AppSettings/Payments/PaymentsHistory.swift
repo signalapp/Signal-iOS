@@ -7,7 +7,6 @@ import Foundation
 public struct PaymentsHistoryItem {
     let paymentModel: TSPaymentModel
     let displayName: String
-    let avatarColor: UIColor
 
     var address: SignalServiceAddress? {
         paymentModel.address
@@ -139,12 +138,10 @@ class PaymentsHistoryDataSource: Dependencies {
             }
 
             return paymentModels.map { paymentModel in
-                var avatarColor = ChatColors.defaultAvatarColor
                 var displayName: String
                 if paymentModel.isUnidentified {
                     displayName = PaymentsViewUtils.buildUnidentifiedTransactionString(paymentModel: paymentModel)
                 } else if let address = paymentModel.address {
-                    avatarColor = ChatColors.avatarColor(forAddress: address)
                     displayName = Self.contactsManager.displayName(for: address, transaction: transaction)
                 } else if paymentModel.isOutgoingTransfer {
                     displayName = NSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
@@ -156,9 +153,7 @@ class PaymentsHistoryDataSource: Dependencies {
                     displayName = NSLocalizedString("PAYMENTS_UNKNOWN_PAYMENT",
                                                     comment: "Label for unknown payments.")
                 }
-                return PaymentsHistoryItem(paymentModel: paymentModel,
-                                          displayName: displayName,
-                                          avatarColor: avatarColor)
+                return PaymentsHistoryItem(paymentModel: paymentModel, displayName: displayName)
             }
         }
     }

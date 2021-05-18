@@ -224,13 +224,11 @@ public class BaseGroupMemberViewController: OWSViewController {
             let displayName = self.contactsManager.displayName(for: address, transaction: transaction)
             let shortDisplayName = self.contactsManager.shortDisplayName(for: address, transaction: transaction)
             let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
-            let avatarColor = ChatColors.avatarColor(forAddress: address)
             return NewGroupMember(recipient: recipient,
                                   address: address,
                                   displayName: displayName,
                                   shortName: shortDisplayName,
-                                  comparableName: comparableName,
-                                  avatarColor: avatarColor)
+                                  comparableName: comparableName)
         }
         if shouldSort {
             members.sort { (left, right) in
