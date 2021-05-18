@@ -63,22 +63,21 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     }
 
     self.layoutMargins = UIEdgeInsetsZero;
-
-    [self.layer disableCALayerAnimations];
+    OWSAssertDebug(self.layer.delegate == self);
 
     self.shapeLayer = [CAShapeLayer new];
-    [self.shapeLayer disableCALayerAnimations];
+    [self.shapeLayer disableAnimationsWithDelegate];
     [self.layer addSublayer:self.shapeLayer];
     self.shapeLayer.hidden = YES;
 
     self.gradientLayer = [CAGradientLayer new];
-    [self.gradientLayer disableCALayerAnimations];
+    [self.gradientLayer disableAnimationsWithDelegate];
     [self.layer addSublayer:self.gradientLayer];
     self.gradientLayer.hidden = YES;
 
     self.layer.masksToBounds = YES;
     self.maskLayer = [CAShapeLayer new];
-    [self.maskLayer disableCALayerAnimations];
+    [self.maskLayer disableAnimationsWithDelegate];
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -327,6 +326,14 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [super updateConstraints];
 
     [self deactivateAllConstraints];
+}
+
+// MARK: - CALayerDelegate
+
+- (nullable id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
+{
+    // Disable all implicit CALayer animations.
+    return [NSNull new];
 }
 
 @end

@@ -47,9 +47,9 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         self.backgroundColor = .clear
         self.layoutMargins = .zero
 
-        self.layer.disableCALayerAnimations()
-        shapeLayer.disableCALayerAnimations()
-        maskLayer.disableCALayerAnimations()
+        owsAssertDebug(self.layer.delegate === self)
+        shapeLayer.disableAnimationsWithDelegate()
+        maskLayer.disableAnimationsWithDelegate()
 
         layer.addSublayer(shapeLayer)
 
@@ -219,5 +219,13 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
             shapeLayer.shadowOffset = .zero
             shapeLayer.shadowPath = shadowPath.cgPath
         }
+    }
+
+    // MARK: - CALayerDelegate
+
+    @objc
+    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        // Disable all implicit CALayer animations.
+        NSNull()
     }
 }

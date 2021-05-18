@@ -1043,53 +1043,25 @@ extension UIImage {
 
 // MARK: -
 
+private class CALayerDelegateNoAnimations: NSObject, CALayerDelegate {
+    /* If defined, called by the default implementation of the
+     * -actionForKey: method. Should return an object implementing the
+     * CAAction protocol. May return 'nil' if the delegate doesn't specify
+     * a behavior for the current event. Returning the null object (i.e.
+     * '[NSNull null]') explicitly forces no further search. (I.e. the
+     * +defaultActionForKey: method will not be called.) */
+    func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        NSNull()
+    }
+}
+
 extension CALayer {
-    private static let allCALayerAnimationKeys: [String] = [
-        // In our codebase, it's simplest to disable all possible animation keys,
-        // even if they don't apply to a particular layer.
-        //
-        // I've added keys for most of the properties/events that we
-        // use.  We can add more keys here as necessary.
-        "opacity",
-        "content",
-        "sublayers",
-        "borderWidth",
-        "borderColor",
-        "cornerRadius",
-        "backgroundColor",
-        "onOrderIn",
-        "onOrderOut",
-        "frame",
-        "bounds",
-        "center",
-        "path",
-        "shadowColor",
-        "shadowOpacity",
-        "shadowOffset",
-        "shadowRadius",
-        "shadowPath",
-        "fillColor",
-        "strokeColor",
-        "lineWidth",
-        "zPosition",
-        "mask",
-        "masksToBounds",
-        "hidden",
-        // CAGradientLayer
-        "startPoint",
-        "endPoint",
-        "colors"
-    ]
-    private static let disableCALayerAnimations: [String: CAAction] = {
-        var actions = [String: CAAction]()
-        for key in allCALayerAnimationKeys {
-            actions[key] = NSNull()
-        }
-        return actions
-    }()
+    private static let delegateNoAnimations = CALayerDelegateNoAnimations()
 
     @objc
-    public func disableCALayerAnimations() {
-        self.actions = Self.disableCALayerAnimations
+    public func disableAnimationsWithDelegate() {
+        owsAssertDebug(self.delegate == nil)
+
+        self.delegate = Self.delegateNoAnimations
     }
 }

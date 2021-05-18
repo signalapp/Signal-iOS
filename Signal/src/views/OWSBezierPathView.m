@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.opaque = NO;
     self.userInteractionEnabled = NO;
     self.backgroundColor = [UIColor clearColor];
-    [self.layer disableCALayerAnimations];
+    OWSAssertDebug(self.layer.delegate == self);
 }
 
 - (void)setFrame:(CGRect)frame
@@ -88,12 +88,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (ConfigureShapeLayerBlock configureShapeLayerBlock in self.configureShapeLayerBlocks) {
         CAShapeLayer *shapeLayer = [CAShapeLayer new];
-        [shapeLayer disableCALayerAnimations];
+        [shapeLayer disableAnimationsWithDelegate];
         configureShapeLayerBlock(shapeLayer, self.bounds);
         [self.layer addSublayer:shapeLayer];
     }
 
     [self setNeedsDisplay];
+}
+
+// MARK: - CALayerDelegate
+
+- (nullable id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
+{
+    // Disable all implicit CALayer animations.
+    return [NSNull new];
 }
 
 @end

@@ -28,8 +28,8 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
         imageView.layer.masksToBounds = true
         addSubview(imageView)
 
-        self.layer.disableCALayerAnimations()
-        maskLayer.disableCALayerAnimations()
+        owsAssertDebug(self.layer.delegate === self)
+        maskLayer.disableAnimationsWithDelegate()
 
         addLayoutBlock { [weak self] _ in
             self?.applyLayout()
@@ -128,5 +128,13 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
         maskCornerRadius = 0
 
         resetContent()
+    }
+
+    // MARK: - CALayerDelegate
+
+    @objc
+    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        // Disable all implicit CALayer animations.
+        NSNull()
     }
 }
