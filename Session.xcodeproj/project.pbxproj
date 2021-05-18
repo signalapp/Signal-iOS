@@ -1174,6 +1174,7 @@
 		B82B408B239A068800A248E7 /* RegisterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterVC.swift; sourceTree = "<group>"; };
 		B82B408D239DC00D00A248E7 /* DisplayNameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayNameVC.swift; sourceTree = "<group>"; };
 		B82B408F239DD75000A248E7 /* RestoreVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreVC.swift; sourceTree = "<group>"; };
+		B834C6DD26533AE5001091B2 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B835246D25C38ABF0089A44F /* ConversationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationVC.swift; sourceTree = "<group>"; };
 		B835247825C38D880089A44F /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		B835249A25C3AB650089A44F /* VisibleMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleMessageCell.swift; sourceTree = "<group>"; };
@@ -4042,6 +4043,7 @@
 				"id-ID",
 				sk,
 				nl,
+				"zh-Hant",
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -5106,6 +5108,7 @@
 				C3F0A5B2255C915C007BE2A3 /* en */,
 				B8EB20E6263F7E4B00773E52 /* sk */,
 				B87588582644CA9D000E60D0 /* nl */,
+				B834C6DD26533AE5001091B2 /* zh-Hant */,
 			);
 			name = Localizable.strings;
 			path = Meta/Translations;
