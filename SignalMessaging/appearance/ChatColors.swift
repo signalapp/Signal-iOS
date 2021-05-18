@@ -88,8 +88,6 @@ public enum ChatColorAppearance: Equatable, Codable {
 
 // MARK: -
 
-// TODO: We might end up renaming this to ChatColor
-//       depending on how the design shakes out.
 public struct ChatColor: Equatable, Codable {
     public let id: String
     public let appearance: ChatColorAppearance

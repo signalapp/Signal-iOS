@@ -42,6 +42,7 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         let adapter = QuotedMessageViewAdapter(interactionUniqueId: interaction.uniqueId)
         quotedMessageView.configureForRendering(state: quotedReply.viewState,
                                                 delegate: adapter,
+                                                componentDelegate: componentDelegate,
                                                 sharpCorners: sharpCornersForQuotedMessage,
                                                 cellMeasurement: cellMeasurement)
     }

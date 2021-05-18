@@ -220,7 +220,7 @@ public class ConversationStyle: NSObject {
         } else if message is TSIncomingMessage {
             return .solidColor(color: bubbleColorIncoming)
         } else if message is TSOutgoingMessage {
-            return cvChatColor
+            return bubbleChatColorOutgoing
         } else {
             owsFailDebug("Unexpected message type: \(message)")
             return .solidColor(color: UIColor.ows_accentBlue)
@@ -231,8 +231,12 @@ public class ConversationStyle: NSObject {
         if isIncoming {
             return .solidColor(color: bubbleColorIncoming)
         } else {
-            return cvChatColor
+            return bubbleChatColorOutgoing
         }
+    }
+
+    public var bubbleChatColorOutgoing: CVChatColor {
+        cvChatColor
     }
 
     @objc
@@ -306,26 +310,6 @@ public class ConversationStyle: NSObject {
             return bubbleSecondaryTextColorIncoming
         } else {
             return bubbleSecondaryTextColorOutgoing
-        }
-    }
-
-    @objc
-    public var quotedReplyBubbleColor: UIColor {
-        isDarkThemeEnabled ? .ows_signalBlueDark : .ows_accentBlueTint
-    }
-
-    @objc
-    public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
-        if isDarkThemeEnabled {
-            if isIncoming {
-                return .ows_accentBlueTint
-            } else {
-                return .ows_black
-            }
-        } else if isIncoming {
-            return .ows_accentBlue
-        } else {
-            return .ows_white
         }
     }
 

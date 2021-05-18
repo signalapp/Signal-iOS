@@ -4,6 +4,7 @@
 
 import Foundation
 
+@objc
 public class CVChatColorView: ManualLayoutViewWithLayer {
 
     private weak var referenceView: UIView?
@@ -25,6 +26,15 @@ public class CVChatColorView: ManualLayoutViewWithLayer {
         self.chatColor = chatColor
         self.referenceView = referenceView
         updateAppearance()
+    }
+
+    @objc
+    public static func build(conversationStyle: ConversationStyle,
+                             referenceView: UIView) -> CVChatColorView {
+        let chatColorView = CVChatColorView()
+        chatColorView.configure(chatColor: conversationStyle.bubbleChatColorOutgoing,
+                                referenceView: referenceView)
+        return chatColorView
     }
 
     @available(swift, obsoleted: 1.0)

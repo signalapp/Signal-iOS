@@ -8,7 +8,6 @@ import PromiseKit
 public class CVComponentState: Equatable, Dependencies {
     let messageCellType: CVMessageCellType
 
-    // TODO: Can/should we eliminate/populate this?
     struct SenderName: Equatable {
         let senderName: NSAttributedString
         let senderNameColor: UIColor
