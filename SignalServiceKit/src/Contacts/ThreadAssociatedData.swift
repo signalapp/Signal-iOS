@@ -82,10 +82,10 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         }
     }
 
-    @objc(createForThreadUniqueId:transaction:)
-    public static func create(for threadUniqueId: String, transaction: SDSAnyWriteTransaction) {
+    @objc(createIfMissingForThreadUniqueId:transaction:)
+    public static func createIfMissing(for threadUniqueId: String, transaction: SDSAnyWriteTransaction) {
         guard fetch(for: threadUniqueId, transaction: transaction) == nil else {
-            return owsFailDebug("Unexpectedly tried to create for a thread that already exists.")
+            return Logger.warn("Unexpectedly tried to create for a thread that already exists.")
         }
 
         do {
