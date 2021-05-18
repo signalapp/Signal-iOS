@@ -10,7 +10,7 @@ struct NewGroupMember {
     let displayName: String
     let shortName: String
     let comparableName: String
-    let conversationColorName: ConversationColorName
+    let avatarColor: UIColor
 }
 
 // MARK: -

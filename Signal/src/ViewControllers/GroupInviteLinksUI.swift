@@ -201,10 +201,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func loadDefaultContent() {
-        let avatarColor = databaseStorage.read { transaction in
-            ChatColors.avatarColor(forGroupId: groupV2ContextInfo.groupId,
-                                   transaction: transaction)
-        }
+        let avatarColor = ChatColors.avatarColor(forGroupId: groupV2ContextInfo.groupId)
         avatarView.image = OWSGroupAvatarBuilder.defaultAvatar(forGroupId: groupV2ContextInfo.groupId,
                                                                avatarColor: avatarColor,
                                                                diameter: Self.avatarSize)
@@ -259,7 +256,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             memberCount: Int(groupInviteLinkPreview.memberCount)
         )
         if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay?.nilIfEmpty {
-            groupDescriptionPreview.descriptionText = groupInviteLinkPreview.descriptionText
+            groupDescriptionPreview.descriptionText = descriptionText
             groupDescriptionPreview.groupName = groupName
             groupDescriptionPreview.isHidden = false
         }

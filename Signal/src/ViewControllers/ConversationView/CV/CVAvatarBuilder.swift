@@ -36,7 +36,7 @@ public class CVAvatarBuilder: Dependencies {
         if let avatar = cache[cacheKey] {
             return avatar
         }
-        let avatarColor = ChatColors.avatarColor(forAddress: address, transaction: transaction)
+        let avatarColor = ChatColors.avatarColor(forAddress: address)
         guard let rawAvatar = OWSContactAvatarBuilder(address: address,
                                                       avatarColor: avatarColor,
                                                       diameter: diameter,

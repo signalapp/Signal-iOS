@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           diameter:(NSUInteger)diameter
                                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    UIColor *avatarColor = [ChatColors avatarColorForAddress:address transaction:transaction];
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     OWSContactAvatarBuilder *avatarBuilder =
         [[self alloc] initWithAddress:address
                        nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]

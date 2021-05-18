@@ -49,11 +49,6 @@ public class NewGroupSeed: NSObject {
         return groupIdV1
     }
 
-    @objc
-    public var possibleConversationColorName: ConversationColorName {
-        return TSGroupThread.defaultConversationColorName(forGroupId: possibleGroupId)
-    }
-
     public var deriveNewGroupSeedForRetry: NewGroupSeed {
         // If group creation fails, we generate a new seed before retrying.
         // We want to re-use the same group id for v1 but generate a new

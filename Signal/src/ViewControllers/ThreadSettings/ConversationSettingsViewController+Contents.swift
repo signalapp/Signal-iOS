@@ -29,18 +29,6 @@ extension ConversationSettingsViewController {
         return contactsManagerImpl.hasSignalAccount(for: contactThread.contactAddress)
     }
 
-    private func buildCell(name: String, icon: ThemeIcon,
-                           disclosureIconColor: UIColor? = nil,
-                           accessibilityIdentifier: String? = nil) -> UITableViewCell {
-        let cell = OWSTableItem.buildCell(name: name, icon: icon, accessibilityIdentifier: accessibilityIdentifier)
-        if let disclosureIconColor = disclosureIconColor {
-            let accessoryView = OWSColorPickerAccessoryView(color: disclosureIconColor)
-            accessoryView.sizeToFit()
-            cell.accessoryView = accessoryView
-        }
-        return cell
-    }
-
     // MARK: - Table
 
     override func themeDidChange() {

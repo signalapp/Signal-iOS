@@ -379,7 +379,7 @@ public class ConversationAvatarView: AvatarImageView {
                                         diameter: diameter,
                                         transaction: transaction)
             case .unknownContact(let contactAddress):
-                let avatarColor = ChatColors.avatarColor(forAddress: contactAddress, transaction: transaction)
+                let avatarColor = ChatColors.avatarColor(forAddress: contactAddress)
                 return buildContactAvatar(address: contactAddress,
                                           avatarColor: avatarColor,
                                           diameter: diameter,

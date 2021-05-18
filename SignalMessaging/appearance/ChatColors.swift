@@ -722,37 +722,38 @@ public extension ChatColors {
         Self.defaultGroupNameColor
     }
 
-    static func avatarColor(forAddress address: SignalServiceAddress,
-                            transaction: SDSAnyReadTransaction) -> UIColor {
-        guard let thread = TSContactThread.getWithContactAddress(address,
-                                                                 transaction: transaction) else {
-            guard let seed = address.serviceIdentifier else {
-                owsFailDebug("Missing serviceIdentifier.")
-                return Self.defaultAvatarColor
-            }
-            return avatarColor(forSeed: seed)
-        }
-        return avatarColor(forThread: thread)
-    }
-
     static func avatarColor(forThread thread: TSThread) -> UIColor {
-        avatarColor(forSeed: thread.uniqueId)
+        if let contactThread = thread as? TSContactThread {
+            return avatarColor(forAddress: contactThread.contactAddress)
+        } else if let groupThread = thread as? TSGroupThread {
+            return avatarColor(forGroupId: groupThread.groupId)
+        } else {
+            owsFailDebug("Invalid thread.")
+            return Self.defaultAvatarColor
+        }
     }
 
-    static func avatarColor(forGroupModel groupModel: TSGroupModel,
-                            transaction: SDSAnyReadTransaction) -> UIColor {
-        avatarColor(forGroupId: groupModel.groupId, transaction: transaction)
+    static func avatarColor(forGroupModel groupModel: TSGroupModel) -> UIColor {
+        avatarColor(forGroupId: groupModel.groupId)
     }
 
-    static func avatarColor(forGroupId groupId: Data,
-                            transaction: SDSAnyReadTransaction) -> UIColor {
-        let threadUniqueId = TSGroupThread.threadId(forGroupId: groupId,
-                                                    transaction: transaction)
-        return avatarColor(forSeed: groupId)
+    static func avatarColor(forGroupId groupId: Data) -> UIColor {
+        avatarColor(forHash: groupId.hashValue)
+    }
+
+    static func avatarColor(forAddress address: SignalServiceAddress) -> UIColor {
+        guard let seed = address.serviceIdentifier else {
+            owsFailDebug("Missing serviceIdentifier.")
+            return Self.defaultAvatarColor
+        }
+        return avatarColor(forSeed: seed)
     }
 
     static func avatarColor(forSeed seed: String) -> UIColor {
-        let hash = seed.hash
+        avatarColor(forHash: seed.hashValue)
+    }
+
+    private static func avatarColor(forHash hash: Int) -> UIColor {
         let values = Self.groupNameColorValues
         guard let value = values[safe: hash % values.count] else {
             owsFailDebug("Could not determine avatar color.")
