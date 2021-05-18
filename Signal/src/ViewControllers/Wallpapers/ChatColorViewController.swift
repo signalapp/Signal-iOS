@@ -300,6 +300,7 @@ class ChatColorViewController: OWSTableViewController2 {
         case .auto, .builtInValue, .addNewOption:
             return
         case .customValue(let value):
+            // TODO: Use new context menus when they are available.
             let actionSheet = ActionSheetController()
 
             let editAction = ActionSheetAction(
