@@ -212,8 +212,8 @@ class GroupCallLocalMemberView: GroupCallMemberView {
             return owsFailDebug("missing local address")
         }
 
-        let conversationColorName = databaseStorage.uiRead { transaction in
-            return self.contactsManager.conversationColorName(for: localAddress, transaction: transaction)
+        let chatColorValue = databaseStorage.read { transaction in
+            ChatColors.chatColorForRendering(address: localAddress, transaction: transaction)
         }
 
         backgroundAvatarView.image = profileManager.localProfileAvatarImage()

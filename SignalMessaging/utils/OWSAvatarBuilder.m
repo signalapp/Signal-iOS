@@ -48,9 +48,9 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        ConversationColorName colorName = thread.conversationColorName;
+        UIColor *avatarColor = [ChatColors avatarColorForThread:thread];
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:contactThread.contactAddress
-                                                               colorName:colorName
+                                                             avatarColor:avatarColor
                                                                 diameter:diameter
                                                     localUserDisplayMode:localUserDisplayMode
                                                              transaction:transaction];

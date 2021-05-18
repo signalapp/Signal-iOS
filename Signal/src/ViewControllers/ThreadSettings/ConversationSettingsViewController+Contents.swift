@@ -67,10 +67,6 @@ extension ConversationSettingsViewController {
         addSystemContactItemIfNecessary(to: mainSection)
         addSafetyNumberItemIfNecessary(to: mainSection)
 
-        if DebugFlags.shouldShowColorPicker {
-            addColorPickerItems(to: mainSection)
-        }
-
         contents.addSection(mainSection)
 
         addAllMediaSectionIfNecessary(to: contents)
@@ -311,27 +307,6 @@ extension ConversationSettingsViewController {
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-    }
-
-    private func addColorPickerItems(to section: OWSTableSection) {
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            let colorName = self.thread.conversationColorName
-            let currentColor = OWSConversationColor.conversationColorOrDefault(colorName: colorName).themeColor
-            let title = NSLocalizedString("CONVERSATION_SETTINGS_CONVERSATION_COLOR",
-                                          comment: "Label for table cell which leads to picking a new conversation color")
-            return self.buildCell(name: title,
-                                  icon: .settingsColorPalette,
-                                  disclosureIconColor: currentColor,
-                                  accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "conversation_color"))
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showColorPicker()
-        }))
     }
 
     private func buildBlockAndLeaveSection() -> OWSTableSection {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSThread;
 @class UIImage;
-
-typedef NSString *ConversationColorName NS_STRING_ENUM;
 
 @protocol ContactsManagerProtocol <NSObject>
 
@@ -42,9 +40,6 @@ typedef NSString *ConversationColorName NS_STRING_ENUM;
 ///     * Full Names Only
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
                              transaction:(SDSAnyReadTransaction *)transaction;
-
-- (ConversationColorName)conversationColorNameForAddress:(SignalServiceAddress *)address
-                                             transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address

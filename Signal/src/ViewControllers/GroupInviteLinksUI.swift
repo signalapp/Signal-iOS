@@ -201,8 +201,12 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func loadDefaultContent() {
+        let avatarColor = databaseStorage.read { transaction in
+            ChatColors.avatarColor(forGroupId: groupV2ContextInfo.groupId,
+                                   transaction: transaction)
+        }
         avatarView.image = OWSGroupAvatarBuilder.defaultAvatar(forGroupId: groupV2ContextInfo.groupId,
-                                                               conversationColorName: ConversationColorName.default.rawValue,
+                                                               avatarColor: avatarColor,
                                                                diameter: Self.avatarSize)
         groupTitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
                                                  comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet.")

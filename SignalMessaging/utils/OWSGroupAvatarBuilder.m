@@ -47,13 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildDefaultImage
 {
+    UIColor *avatarColor = [ChatColors avatarColorForThread:self.thread];
     return [self.class defaultAvatarForGroupId:self.thread.groupModel.groupId
-                         conversationColorName:self.thread.conversationColorName
+                                   avatarColor:avatarColor
                                       diameter:self.diameter];
 }
 
 + (nullable UIImage *)defaultAvatarForGroupId:(NSData *)groupId
-                        conversationColorName:(NSString *)conversationColorName
+                                  avatarColor:(UIColor *)avatarColor
                                      diameter:(NSUInteger)diameter
 {
     NSString *cacheKey = [NSString
@@ -65,14 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
-#ifdef SHOW_COLOR_PICKER
-    UIColor *backgroundColor =
-        [OWSConversationColor conversationColorOrDefaultForColorName:conversationColorName].themeColor;
-#else
-    UIColor *backgroundColor = [OWSConversationColor ows_steelColor];
-#endif
-    UIImage *_Nullable image =
-        [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:backgroundColor diameter:diameter];
+    UIImage *_Nullable image = [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:avatarColor
+                                                                                 diameter:diameter];
     if (!image) {
         OWSFailDebug(@"Could not create group avatar.");
         return nil;

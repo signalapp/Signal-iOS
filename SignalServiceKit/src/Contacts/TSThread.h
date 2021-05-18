@@ -96,6 +96,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 // --- CODE GENERATION MARKER
 
+// TODO: Obsolete.
 @property (nonatomic) ConversationColorName conversationColorName;
 
 - (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;

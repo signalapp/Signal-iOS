@@ -370,7 +370,7 @@ public class ConversationAvatarView: AvatarImageView {
             switch content {
             case .contact(let contactThread):
                 return buildContactAvatar(address: contactThread.contactAddress,
-                                          conversationColorName: contactThread.conversationColorName,
+                                          avatarColor: ChatColors.avatarColor(forThread: contactThread),
                                           diameter: diameter,
                                           localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
@@ -379,10 +379,9 @@ public class ConversationAvatarView: AvatarImageView {
                                         diameter: diameter,
                                         transaction: transaction)
             case .unknownContact(let contactAddress):
-                let conversationColorName = TSContactThread.conversationColorName(forContactAddress: contactAddress,
-                                                                                  transaction: transaction)
+                let avatarColor = ChatColors.avatarColor(forAddress: contactAddress, transaction: transaction)
                 return buildContactAvatar(address: contactAddress,
-                                          conversationColorName: conversationColorName,
+                                          avatarColor: avatarColor,
                                           diameter: diameter,
                                           localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
@@ -402,12 +401,12 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     private static func buildContactAvatar(address: SignalServiceAddress,
-                                           conversationColorName: ConversationColorName,
+                                           avatarColor: UIColor,
                                            diameter: UInt,
                                            localUserDisplayMode: LocalUserDisplayMode,
                                            transaction: SDSAnyReadTransaction) -> UIImage? {
         let builder = OWSContactAvatarBuilder(address: address,
-                                              colorName: conversationColorName,
+                                              avatarColor: avatarColor,
                                               diameter: diameter,
                                               localUserDisplayMode: localUserDisplayMode,
                                               transaction: transaction)

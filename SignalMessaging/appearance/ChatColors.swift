@@ -113,7 +113,7 @@ public struct ChatColorValue: Equatable, Codable {
     }
 
     public static var placeholderValue: ChatColorValue {
-        ChatColors.noWallpaperAutoChatColor
+        ChatColors.defaultChatColorValue
     }
 
     // MARK: - Equatable
@@ -253,7 +253,7 @@ public class ChatColors: NSObject, Dependencies {
     }
     public static var allValuesSorted: [ChatColorValue] { Self.chatColors.allValuesSorted }
 
-    public static var noWallpaperAutoChatColor: ChatColorValue { Self.value_ultramarine }
+    public static var defaultChatColorValue: ChatColorValue { Self.value_ultramarine }
 
     public static func autoChatColor(forThread thread: TSThread?,
                                      transaction: SDSAnyReadTransaction) -> ChatColorValue {
@@ -261,7 +261,7 @@ public class ChatColors: NSObject, Dependencies {
            wallpaper != .photo {
             return autoChatColor(forWallpaper: wallpaper)
         } else {
-            return Self.noWallpaperAutoChatColor
+            return Self.defaultChatColorValue
         }
     }
 
@@ -302,6 +302,14 @@ public class ChatColors: NSObject, Dependencies {
         } else {
             return autoChatColor(forThread: thread, transaction: transaction)
         }
+    }
+
+    public static func chatColorForRendering(address: SignalServiceAddress,
+                                             transaction: SDSAnyReadTransaction) -> ChatColorValue {
+        guard let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {
+            return Self.defaultChatColorValue
+        }
+        return chatColorForRendering(thread: thread, transaction: transaction)
     }
 
     public static func setChatColorSetting(_ value: ChatColorValue?,
@@ -615,7 +623,12 @@ public extension ChatColors {
         return GroupNameColors(colorMap: colorMap, defaultColor: defaultColor)
     }
 
-    private struct GroupNameColorValue {
+    private static var defaultGroupNameColor: UIColor {
+        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
+        return Self.groupNameColorValues.first!.color(isDarkThemeEnabled: isDarkThemeEnabled)
+    }
+
+    fileprivate struct GroupNameColorValue {
         let lightTheme: UIColor
         let darkTheme: UIColor
 
@@ -625,7 +638,7 @@ public extension ChatColors {
     }
 
     // In descending order of contrast with the other values.
-    private static let groupNameColorValues: [GroupNameColorValue] = [
+    fileprivate static let groupNameColorValues: [GroupNameColorValue] = [
         GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xD00B0B),
                             darkTheme: UIColor(rgbHex: 0xF76E6E)),
         GroupNameColorValue(lightTheme: UIColor(rgbHex: 0x067906),
@@ -699,4 +712,53 @@ public extension ChatColors {
         GroupNameColorValue(lightTheme: UIColor(rgbHex: 0xD00B2C),
                             darkTheme: UIColor(rgbHex: 0xF76E85))
     ]
+}
+
+// MARK: - Avatar Colors
+
+@objc
+public extension ChatColors {
+    static var defaultAvatarColor: UIColor {
+        Self.defaultGroupNameColor
+    }
+
+    static func avatarColor(forAddress address: SignalServiceAddress,
+                            transaction: SDSAnyReadTransaction) -> UIColor {
+        guard let thread = TSContactThread.getWithContactAddress(address,
+                                                                 transaction: transaction) else {
+            guard let seed = address.serviceIdentifier else {
+                owsFailDebug("Missing serviceIdentifier.")
+                return Self.defaultAvatarColor
+            }
+            return avatarColor(forSeed: seed)
+        }
+        return avatarColor(forThread: thread)
+    }
+
+    static func avatarColor(forThread thread: TSThread) -> UIColor {
+        avatarColor(forSeed: thread.uniqueId)
+    }
+
+    static func avatarColor(forGroupModel groupModel: TSGroupModel,
+                            transaction: SDSAnyReadTransaction) -> UIColor {
+        avatarColor(forGroupId: groupModel.groupId, transaction: transaction)
+    }
+
+    static func avatarColor(forGroupId groupId: Data,
+                            transaction: SDSAnyReadTransaction) -> UIColor {
+        let threadUniqueId = TSGroupThread.threadId(forGroupId: groupId,
+                                                    transaction: transaction)
+        return avatarColor(forSeed: groupId)
+    }
+
+    static func avatarColor(forSeed seed: String) -> UIColor {
+        let hash = seed.hash
+        let values = Self.groupNameColorValues
+        guard let value = values[safe: hash % values.count] else {
+            owsFailDebug("Could not determine avatar color.")
+            return Self.defaultAvatarColor
+        }
+        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
+        return value.color(isDarkThemeEnabled: isDarkThemeEnabled)
+    }
 }

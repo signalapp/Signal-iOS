@@ -424,10 +424,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let fakeLinkedDevices = false
 
-    // TODO: Remove
-    @objc
-    public static let shouldShowColorPicker = false
-
     @objc
     public static let paymentsOnlyInContactThreads = true
 

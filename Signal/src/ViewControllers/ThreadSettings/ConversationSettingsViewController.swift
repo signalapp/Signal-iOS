@@ -61,9 +61,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     var avatarView: UIImageView?
 
-    // This is currently disabled behind a feature flag.
-    private var colorPicker: ColorPicker?
-
     var isShowingAllGroupMembers = false
     var isShowingAllMutualGroups = false
 
@@ -157,12 +154,6 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         let backgroundTopSize: CGFloat = 300
         backgroundTopView.autoSetDimension(.height, toSize: backgroundTopSize)
         backgroundTopView.autoPinEdge(.bottom, to: .top, of: tableView, withOffset: 0)
-
-        if DebugFlags.shouldShowColorPicker {
-            let colorPicker = ColorPicker(thread: self.thread)
-            colorPicker.delegate = self
-            self.colorPicker = colorPicker
-        }
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
@@ -941,43 +932,6 @@ extension ConversationSettingsViewController: CNContactViewControllerDelegate {
     public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
         updateTableContents()
         navigationController?.popToViewController(self, animated: true)
-    }
-}
-
-// MARK: -
-
-extension ConversationSettingsViewController: ColorPickerDelegate {
-
-    func showColorPicker() {
-        guard let colorPicker = colorPicker else {
-            owsFailDebug("Missing colorPicker.")
-            return
-        }
-        let sheetViewController = colorPicker.sheetViewController
-        sheetViewController.dismissHandler = { [weak self] _ in
-            self?.dismiss(animated: true)
-        }
-        self.present(sheetViewController, animated: true) {
-            Logger.info("presented sheet view")
-        }
-    }
-
-    public func colorPicker(_ colorPicker: ColorPicker, didPickConversationColor conversationColor: OWSConversationColor) {
-        Logger.debug("picked color: \(conversationColor.name)")
-        databaseStorage.write { transaction in
-            self.thread.updateConversationColorName(conversationColor.name, transaction: transaction)
-        }
-
-        contactsManagerImpl.removeAllFromAvatarCache()
-        contactsManagerImpl.clearColorNameCache()
-        updateTableContents()
-        conversationSettingsViewDelegate?.conversationColorWasUpdated()
-
-        DispatchQueue.global().async {
-            let operation = ConversationConfigurationSyncOperation(thread: self.thread)
-            assert(operation.isReady)
-            operation.start()
-        }
     }
 }
 

@@ -80,10 +80,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 // This method should only be called by GroupManager.
 - (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction;
 
-#pragma mark -
-
-+ (ConversationColorName)defaultConversationColorNameForGroupId:(NSData *)groupId;
-
 @end
 
 NS_ASSUME_NONNULL_END

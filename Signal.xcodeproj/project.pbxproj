@@ -186,9 +186,7 @@
 		34684DB125C2228D00C5A93C /* indeterminate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */; };
 		34684DB225C2228D00C5A93C /* indeterminate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */; };
 		346941A1215D2EE400B5BFAD /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 3469419D215D2EE400B5BFAD /* Theme.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419E215D2EE400B5BFAD /* OWSConversationColor.m */; };
 		346941A3215D2EE400B5BFAD /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = 3469419F215D2EE400B5BFAD /* Theme.m */; };
-		346941A4215D2EE400B5BFAD /* OWSConversationColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 346941A0215D2EE400B5BFAD /* OWSConversationColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346B4A772369BFC600B56007 /* PermissiveGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */; };
@@ -599,7 +597,6 @@
 		4C10B1BC23176D250099396B /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
 		4C10B1C723176DD60099396B /* SDSPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */; };
 		4C10B1C9231778880099396B /* PerformanceBaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C10B1C8231778880099396B /* PerformanceBaseTest.swift */; };
-		4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */; };
 		4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */; };
 		4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C19A0FB227B356F007A0C7F /* DebugUIMessages+OWS.swift */; };
 		4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF51208B82E9007B4E76 /* ThreadViewModel.swift */; };
@@ -1225,9 +1222,7 @@
 		34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_blue.json; sourceTree = "<group>"; };
 		34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_white.json; sourceTree = "<group>"; };
 		3469419D215D2EE400B5BFAD /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
-		3469419E215D2EE400B5BFAD /* OWSConversationColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSConversationColor.m; sourceTree = "<group>"; };
 		3469419F215D2EE400B5BFAD /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
-		346941A0215D2EE400B5BFAD /* OWSConversationColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationColor.h; sourceTree = "<group>"; };
 		346B4A762369BFC600B56007 /* PermissiveGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissiveGestureRecognizer.swift; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSettingsTableViewController.swift; sourceTree = "<group>"; };
@@ -1658,7 +1653,6 @@
 		4C10B1C323176D250099396B /* SignalPerformanceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalPerformanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSPerformanceTest.swift; sourceTree = "<group>"; };
 		4C10B1C8231778880099396B /* PerformanceBaseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceBaseTest.swift; sourceTree = "<group>"; };
-		4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		4C1885D1218F8E1C00B67051 /* PhotoGridViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoGridViewCell.swift; sourceTree = "<group>"; };
 		4C19A0FB227B356F007A0C7F /* DebugUIMessages+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugUIMessages+OWS.swift"; sourceTree = "<group>"; };
 		4C1D2333218B692800A0598F /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = translations/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2680,8 +2674,6 @@
 			isa = PBXGroup;
 			children = (
 				343DA0002645CA720000833C /* ChatColors.swift */,
-				346941A0215D2EE400B5BFAD /* OWSConversationColor.h */,
-				3469419E215D2EE400B5BFAD /* OWSConversationColor.m */,
 				3469419D215D2EE400B5BFAD /* Theme.h */,
 				3469419F215D2EE400B5BFAD /* Theme.m */,
 				4C29587F233AE23000AAB2AA /* Theme+OWS.swift */,
@@ -2881,7 +2873,6 @@
 				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
 				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
 				4C46361022EB98EC00185951 /* CameraFirstNavigationController.swift */,
-				4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */,
 				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
 				34E88D252098C5AE00A608F4 /* ContactViewController.swift */,
@@ -4150,7 +4141,6 @@
 				346941A1215D2EE400B5BFAD /* Theme.h in Headers */,
 				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
-				346941A4215D2EE400B5BFAD /* OWSConversationColor.h in Headers */,
 				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
 				450C801020AD1AE400F3A091 /* OWSWindowManager.h in Headers */,
 				34480B631FD0A98800BC14EF /* UIView+OWS.h in Headers */,
@@ -4893,7 +4883,6 @@
 				3498A0A824DC936300CA492C /* ContactsViewHelper.swift in Sources */,
 				88EFF4F625AD1C82000FAFBA /* ThemeHeaderView.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
-				346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */,
 				34AC0A17211B39EA00997B47 /* VideoPlayerView.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
@@ -5378,7 +5367,6 @@
 				34848D6325D44EBD00E5034B /* PaymentsTransferInViewController.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
-				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,

@@ -187,14 +187,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                                       userInfo:userInfo];
 }
 
-+ (ConversationColorName)defaultConversationColorNameForGroupId:(NSData *)groupId
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    NSString *threadUniqueId = [self defaultThreadIdForGroupId:groupId];
-    return [self.class stableColorNameForNewConversationWithString:threadUniqueId];
-}
-
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     if (self.isGroupV2Thread) {

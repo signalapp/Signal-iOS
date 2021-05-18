@@ -140,7 +140,6 @@ public class ConversationStyle: NSObject {
                          chatColor chatColorValue: ChatColorValue) {
 
         self.type = type
-        self.conversationColor = ConversationStyle.conversationColor(thread: thread)
         self.viewWidth = viewWidth
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
         self.primaryTextColor = Theme.primaryTextColor
@@ -202,15 +201,6 @@ public class ConversationStyle: NSObject {
     }
 
     // MARK: Colors
-
-    @objc
-    public let conversationColor: OWSConversationColor
-
-    private class func conversationColor(thread: TSThread) -> OWSConversationColor {
-        let colorName = thread.conversationColorName
-
-        return OWSConversationColor.conversationColorOrDefault(colorName: colorName)
-    }
 
     @objc
     public var bubbleColorIncoming: UIColor {
@@ -367,7 +357,6 @@ public class ConversationStyle: NSObject {
         (type.isValid == other.type.isValid &&
             viewWidth == other.viewWidth &&
             dynamicBodyTypePointSize == other.dynamicBodyTypePointSize &&
-            conversationColor == other.conversationColor &&
             isDarkThemeEnabled == other.isDarkThemeEnabled &&
             hasWallpaper == other.hasWallpaper &&
             maxMessageWidth == other.maxMessageWidth &&
@@ -390,7 +379,6 @@ public class ConversationStyle: NSObject {
             "type.isValid: \(type.isValid), " +
             "viewWidth: \(viewWidth), " +
             "dynamicBodyTypePointSize: \(dynamicBodyTypePointSize), " +
-            "conversationColor: \(conversationColor), " +
             "isDarkThemeEnabled: \(isDarkThemeEnabled), " +
             "maxMessageWidth: \(maxMessageWidth), " +
             "maxMediaMessageWidth: \(maxMediaMessageWidth), " +
