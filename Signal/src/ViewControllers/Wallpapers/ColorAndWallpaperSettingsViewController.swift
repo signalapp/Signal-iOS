@@ -163,7 +163,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             })
         } else {
             wallpaperSection.add(.actionItem(
-                name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER",
+                name: NSLocalizedString("WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER",
                                         comment: "Reset wallpapers action in wallpaper settings view."),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpapers")
             ) { [weak self] in

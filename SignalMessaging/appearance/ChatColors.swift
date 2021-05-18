@@ -327,6 +327,19 @@ public class ChatColors: NSObject, Dependencies {
         return value
     }
 
+    // Returns the number of conversations that use a given value.
+    public static func usageCount(forValue value: ChatColorValue,
+                                  transaction: SDSAnyReadTransaction) -> Int {
+        let keys = chatColorSettingStore.allKeys(transaction: transaction)
+        var count: Int = 0
+        for key in keys {
+            if value.id == Self.chatColorSettingStore.getString(key, transaction: transaction) {
+                count += 1
+            }
+        }
+        return count
+    }
+
     public static let chatColorsDidChange = NSNotification.Name("chatColorsDidChange")
     public static let chatColorSettingDidChange = NSNotification.Name("chatColorSettingDidChange")
     public static let chatColorSettingDidChangeThreadUniqueIdKey = "chatColorSettingDidChangeThreadUniqueIdKey"

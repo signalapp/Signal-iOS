@@ -412,6 +412,9 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "Done";
 
+/* Label for the 'duplicate' button. */
+"BUTTON_DUPLICATE" = "Duplicate";
+
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Edit";
 
@@ -565,8 +568,23 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
 
+/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "This custom color is used in 1 chat. Do you want to delete it?";
+
+/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "This custom color is used in %@ chats. Do you want to delete it for all chats?";
+
+/* Title for the 'delete chat color confirm alert' in the chat color settings view. */
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Delete Color";
+
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Chat Color";
+
+/* Title for the 'edit chat color confirm alert' in the chat color settings view. */
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edit Color";
+
+/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
@@ -6085,9 +6103,11 @@
 /* Reset global chat colors action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
 
-/* Label for 'reset default wallpaper' action in the global wallpaper settings.
-   Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Wallpapers";
+/* Label for 'reset default wallpaper' action in the global wallpaper settings. */
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
+
+/* Reset wallpapers action in wallpaper settings view. */
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Reset Wallpapers";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Would you like to override all wallpapers?";

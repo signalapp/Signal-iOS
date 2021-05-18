@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class CustomColorViewController: OWSTableViewController2 {
+class CustomColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
@@ -42,7 +42,13 @@ public class CustomColorViewController: OWSTableViewController2 {
     private var solidColorSetting = CustomColorViewController.randomColorSetting()
     private var gradientColor1Setting = CustomColorViewController.randomColorSetting()
     private var gradientColor2Setting = CustomColorViewController.randomColorSetting()
-    fileprivate var angleRadians: CGFloat = 0
+    fileprivate var angleRadians: CGFloat = 0 {
+        didSet {
+            if isViewLoaded {
+                updateNavigation()
+            }
+        }
+    }
 
     fileprivate let hueSpectrum: HSLSpectrum
     private let hueSlider: SpectrumSlider
@@ -107,6 +113,8 @@ public class CustomColorViewController: OWSTableViewController2 {
 
         createSubviews()
 
+        updateNavigation()
+
         updateTableContents()
     }
 
@@ -128,6 +136,42 @@ public class CustomColorViewController: OWSTableViewController2 {
         modeControl.addTarget(self,
                               action: #selector(modeControlDidChange),
                               for: .valueChanged)
+    }
+
+    private var hasUnsavedChanges: Bool {
+        switch valueMode {
+        case .createNew:
+            return true
+        case .editExisting(let value):
+            return currentChatColorAppearance() != value.appearance
+        }
+    }
+
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
+    }
+
+    private func updateNavigation() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(didTapCancel),
+            accessibilityIdentifier: "cancel_button"
+        )
+
+        if hasUnsavedChanges {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: CommonStrings.setButton,
+                style: .done,
+                target: self,
+                action: #selector(didTapDone),
+                accessibilityIdentifier: "set_button"
+            )
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
     }
 
     private var previewView: CustomColorPreviewView?
@@ -295,6 +339,7 @@ public class CustomColorViewController: OWSTableViewController2 {
             owsFailDebug("Couldn't update editMode.")
         }
         updateTableContents()
+        updateNavigation()
     }
 
     fileprivate var solidColorAppearance: ChatColorAppearance {
@@ -339,11 +384,72 @@ public class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
-    @objc
-    func didTapSet() {
+    private func showSaveUI() {
+        switch valueMode {
+        case .createNew:
+            saveAndDismiss()
+            return
+        case .editExisting(let value):
+            break
+        }
+
+        let value = self.currentChatColorValue
+        let usageCount = databaseStorage.read { transaction in
+            ChatColors.usageCount(forValue: value, transaction: transaction)
+        }
+        guard usageCount > 1 else {
+            saveAndDismiss()
+            return
+        }
+
+        let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT",
+                                              comment: "Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.")
+        let message = String(format: messageFormat, OWSFormat.formatInt(usageCount))
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE",
+                                     comment: "Title for the 'edit chat color confirm alert' in the chat color settings view."),
+            message: message
+        )
+
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.saveButton
+        ) { [weak self] _ in
+            self?.saveAndDismiss()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+    private func saveAndDismiss() {
         let newValue = self.currentChatColorValue
         completion(newValue)
         self.navigationController?.popViewController(animated: true)
+    }
+
+    private func dismissWithoutSaving() {
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    @objc
+    func didTapSet() {
+        showSaveUI()
+    }
+
+    @objc
+    func didTapCancel() {
+        guard hasUnsavedChanges else {
+            dismissWithoutSaving()
+            return
+        }
+
+        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
+            self?.dismissWithoutSaving()
+        })
+    }
+
+    @objc
+    func didTapDone() {
+        showSaveUI()
     }
 }
 
@@ -373,6 +479,7 @@ extension CustomColorViewController: SpectrumSliderDelegate {
         }
 
         updateMockConversation()
+        updateNavigation()
     }
 }
 

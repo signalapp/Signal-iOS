@@ -4,10 +4,11 @@
 
 import Foundation
 
-public class ChatColorViewController: OWSTableViewController2 {
+class ChatColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
+    private var originalValue: ChatColorValue?
     private var currentValue: ChatColorValue?
 
     public init(thread: TSThread? = nil) {
@@ -15,13 +16,14 @@ public class ChatColorViewController: OWSTableViewController2 {
 
         super.init()
 
-        self.currentValue = Self.databaseStorage.read { transaction in
+        self.originalValue = Self.databaseStorage.read { transaction in
             if let thread = self.thread {
                 return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
             } else {
                 return ChatColors.defaultChatColorSetting(transaction: transaction)
             }
         }
+        self.currentValue = self.originalValue
 
         NotificationCenter.default.addObserver(
             self,
@@ -75,6 +77,37 @@ public class ChatColorViewController: OWSTableViewController2 {
                                                   action: #selector(didTapSet))
 
         updateTableContents()
+    }
+
+    private var hasUnsavedChanges: Bool {
+        currentValue != originalValue
+    }
+
+    // Don't allow interactive dismiss when there are unsaved changes.
+    override var isModalInPresentation: Bool {
+        get { hasUnsavedChanges }
+        set {}
+    }
+
+    private func updateNavigation() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(didTapCancel),
+            accessibilityIdentifier: "cancel_button"
+        )
+
+        if hasUnsavedChanges {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: CommonStrings.setButton,
+                style: .done,
+                target: self,
+                action: #selector(didTapDone),
+                accessibilityIdentifier: "set_button"
+            )
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
     }
 
     @objc
@@ -140,6 +173,8 @@ public class ChatColorViewController: OWSTableViewController2 {
         contents.addSection(colorsSection)
 
         self.contents = contents
+
+        updateNavigation()
     }
 
     func buildMockConversationModel() -> MockConversationView.MockModel {
@@ -177,19 +212,70 @@ public class ChatColorViewController: OWSTableViewController2 {
         }
     }
 
-    private func didTapOption(option: Option) {
-        func showCustomColorView(valueMode: CustomColorViewController.ValueMode) {
-            let customColorVC = CustomColorViewController(thread: thread, valueMode: valueMode) { [weak self] (value) in
-                guard let self = self else { return }
-                Self.databaseStorage.write { transaction in
-                    Self.chatColors.upsertCustomValue(value, transaction: transaction)
-                }
-                self.currentValue = value
-                self.updateTableContents()
+    private func showCustomColorView(valueMode: CustomColorViewController.ValueMode) {
+        let customColorVC = CustomColorViewController(thread: thread,
+                                                      valueMode: valueMode) { [weak self] (value) in
+            guard let self = self else { return }
+            Self.databaseStorage.write { transaction in
+                Self.chatColors.upsertCustomValue(value, transaction: transaction)
             }
-            self.navigationController?.pushViewController(customColorVC, animated: true)
+            self.currentValue = value
+            self.updateTableContents()
+        }
+        self.navigationController?.pushViewController(customColorVC, animated: true)
+    }
+
+    private func showDeleteUI(_ value: ChatColorValue) {
+
+        func deleteValue() {
+            Self.databaseStorage.write { transaction in
+                Self.chatColors.deleteCustomValue(value, transaction: transaction)
+            }
         }
 
+        let usageCount = databaseStorage.read { transaction in
+            ChatColors.usageCount(forValue: value, transaction: transaction)
+        }
+        guard usageCount > 0 else {
+            deleteValue()
+            return
+        }
+
+        let message: String
+        if usageCount > 1 {
+            let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT",
+                                                  comment: "Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.")
+            message = String(format: messageFormat, OWSFormat.formatInt(usageCount))
+        } else {
+            message = NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1",
+                                        comment: "Message for the 'delete chat color confirm alert' in the chat color settings view.")
+        }
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE",
+                                     comment: "Title for the 'delete chat color confirm alert' in the chat color settings view."),
+            message: message
+        )
+
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.deleteButton
+        ) { _ in
+            deleteValue()
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet)
+    }
+
+    private func duplicateValue(_ oldValue: ChatColorValue) {
+        let newValue = ChatColorValue(id: ChatColorValue.randomId,
+                                       appearance: oldValue.appearance,
+                                       isBuiltIn: false)
+        Self.databaseStorage.write { transaction in
+            Self.chatColors.upsertCustomValue(newValue, transaction: transaction)
+        }
+    }
+
+    private func didTapOption(option: Option) {
         switch option {
         case .auto:
             self.currentValue = nil
@@ -206,6 +292,43 @@ public class ChatColorViewController: OWSTableViewController2 {
             }
         case .addNewOption:
             showCustomColorView(valueMode: .createNew)
+        }
+    }
+
+    private func didLongPressOption(option: Option) {
+        switch option {
+        case .auto, .builtInValue, .addNewOption:
+            return
+        case .customValue(let value):
+            let actionSheet = ActionSheetController()
+
+            let editAction = ActionSheetAction(
+                title: CommonStrings.editButton
+            ) { [weak self] _ in
+                self?.showCustomColorView(valueMode: .editExisting(value: value))
+            }
+            editAction.trailingIcon = .compose24
+            actionSheet.addAction(editAction)
+
+            let duplicateAction = ActionSheetAction(
+                title: NSLocalizedString("BUTTON_DUPLICATE",
+                                         comment: "Label for the 'duplicate' button.")
+            ) { [weak self] _ in
+                self?.duplicateValue(value)
+            }
+            duplicateAction.trailingIcon = .copy24
+            actionSheet.addAction(duplicateAction)
+
+            let deleteAction = ActionSheetAction(
+                title: CommonStrings.deleteButton
+            ) { [weak self] _ in
+                self?.showDeleteUI(value)
+            }
+            deleteAction.trailingIcon = .trash24
+            actionSheet.addAction(deleteAction)
+
+            actionSheet.addAction(OWSActionSheets.cancelAction)
+            presentActionSheet(actionSheet)
         }
     }
 
@@ -243,7 +366,9 @@ public class ChatColorViewController: OWSTableViewController2 {
                     outerView.addTapGesture { [weak self] in
                         self?.didTapOption(option: option)
                     }
-                    // TODO: Add long-press to delete.
+                    outerView.addLongPressGesture { [weak self] in
+                        self?.didLongPressOption(option: option)
+                    }
                     outerView.autoSetDimensions(to: .square(optionViewOuterSize))
                     outerView.setCompressionResistanceHigh()
                     outerView.setContentHuggingHigh()
@@ -332,8 +457,7 @@ public class ChatColorViewController: OWSTableViewController2 {
         return vStack
     }
 
-    @objc
-    func didTapSet() {
+    private func saveAndDismiss() {
         databaseStorage.write { transaction in
             if let thread = self.thread {
                 ChatColors.setChatColorSetting(self.currentValue, thread: thread, transaction: transaction)
@@ -342,5 +466,31 @@ public class ChatColorViewController: OWSTableViewController2 {
             }
         }
         self.navigationController?.popViewController(animated: true)
+    }
+
+    private func dismissWithoutSaving() {
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    @objc
+    func didTapSet() {
+        saveAndDismiss()
+    }
+
+    @objc
+    func didTapCancel() {
+        guard hasUnsavedChanges else {
+            dismissWithoutSaving()
+            return
+        }
+
+        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
+            self?.dismissWithoutSaving()
+        })
+    }
+
+    @objc
+    func didTapDone() {
+        saveAndDismiss()
     }
 }
