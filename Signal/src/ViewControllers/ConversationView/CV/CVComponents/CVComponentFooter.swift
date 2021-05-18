@@ -60,6 +60,16 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         CVComponentViewFooter()
     }
 
+    public override func updateScrollingContent(componentView: CVComponentView) {
+        super.updateScrollingContent(componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewFooter else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        componentView.chatColorView.updateAppearance()
+    }
+
     public static let textViewVSpacing: CGFloat = 2
     public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
     public static let quotedReplyTopMargin: CGFloat = 6
@@ -75,18 +85,18 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         let outerStack = componentView.outerStack
         let innerStack = componentView.innerStack
+        innerStack.reset()
+        outerStack.reset()
 
         var outerViews = [UIView]()
         var innerViews = [UIView]()
 
         if isBorderless && conversationStyle.hasWallpaper {
-            // TODO:
-//            innerStack.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
-            innerStack.backgroundColor = .clear
-            innerStack.layer.cornerRadius = 11
-        } else {
-            innerStack.backgroundColor = .clear
-            innerStack.layer.cornerRadius = 0
+            let chatColorView = componentView.chatColorView
+            chatColorView.configure(chatColor: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
+                                    referenceView: componentDelegate.view)
+            chatColorView.layer.cornerRadius = 11
+            innerStack.addSubviewToFillSuperviewEdges(chatColorView)
         }
 
         if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
@@ -138,7 +148,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             }
         }
 
-        innerStack.reset()
         innerStack.configure(config: innerStackConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_innerStack,
@@ -146,7 +155,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         if isIncoming {
             outerViews.reverse()
         }
-        outerStack.reset()
         outerStack.configure(config: outerStackConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_outerStack,
@@ -375,6 +383,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let timestampLabel = CVLabel()
         fileprivate let statusIndicatorImageView = CVImageView()
         fileprivate let messageTimerView = MessageTimerView()
+        fileprivate let chatColorView = CVChatColorView()
 
         public var isDedicatedCellView = false
 
@@ -400,6 +409,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             statusIndicatorImageView.layer.removeAllAnimations()
             messageTimerView.prepareForReuse()
             messageTimerView.removeFromSuperview()
+            chatColorView.reset()
+            chatColorView.removeFromSuperview()
         }
 
         fileprivate func animateSpinningIcon() {

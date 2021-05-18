@@ -298,12 +298,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         componentView.chatColorView.updateAppearance()
 
-        if let subcomponentAndView = findActiveComponentAndView(key: .quotedReply,
-                                                                messageView: componentView,
-                                                                ignoreMissing: true) {
-            let subcomponent = subcomponentAndView.component
-            let subcomponentView = subcomponentAndView.componentView
-            subcomponent.updateScrollingContent(componentView: subcomponentView)
+        // We propagate this event to all subcomponents that use the CVChatColorView.
+        let keys: [CVComponentKey] = [.quotedReply, .footer]
+        for key in keys {
+            if let subcomponentAndView = findActiveComponentAndView(key: key,
+                                                                    messageView: componentView,
+                                                                    ignoreMissing: true) {
+                let subcomponent = subcomponentAndView.component
+                let subcomponentView = subcomponentAndView.componentView
+                subcomponent.updateScrollingContent(componentView: subcomponentView)
+            }
         }
     }
 
