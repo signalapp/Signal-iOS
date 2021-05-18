@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildDefaultImage
 {
+    UIColor *avatarColor = [ChatColors avatarColorForThread:self.thread];
     return [self.class defaultAvatarForGroupId:self.thread.groupModel.groupId
                                       diameter:self.diameter];
 }
