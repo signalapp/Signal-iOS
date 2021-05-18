@@ -47,6 +47,10 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         self.backgroundColor = .clear
         self.layoutMargins = .zero
 
+        owsAssertDebug(self.layer.delegate === self)
+        shapeLayer.disableAnimationsWithDelegate()
+        maskLayer.disableAnimationsWithDelegate()
+
         layer.addSublayer(shapeLayer)
 
         isConfigured = true
@@ -133,10 +137,6 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         let bubbleOffset = state.bubbleOffset
         let bubbleBezierPath = state.bubbleBezierPath
 
-        // Prevent the layer from animating changes.
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-
         let bezierPath = UIBezierPath()
 
         let transform: CGAffineTransform = CGAffineTransform.translate(bubbleOffset)
@@ -219,7 +219,13 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
             shapeLayer.shadowOffset = .zero
             shapeLayer.shadowPath = shadowPath.cgPath
         }
+    }
 
-        CATransaction.commit()
+    // MARK: - CALayerDelegate
+
+    @objc
+    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        // Disable all implicit CALayer animations.
+        NSNull()
     }
 }

@@ -143,6 +143,8 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public func switchToStyle(_ style: NavigationBarStyle, animated: Bool = false) {
+        AssertIsOnMainThread()
+
         guard currentStyle != style else { return }
 
         if animated {

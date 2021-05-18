@@ -63,17 +63,21 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     }
 
     self.layoutMargins = UIEdgeInsetsZero;
+    OWSAssertDebug(self.layer.delegate == self);
 
     self.shapeLayer = [CAShapeLayer new];
+    [self.shapeLayer disableAnimationsWithDelegate];
     [self.layer addSublayer:self.shapeLayer];
     self.shapeLayer.hidden = YES;
 
     self.gradientLayer = [CAGradientLayer new];
+    [self.gradientLayer disableAnimationsWithDelegate];
     [self.layer addSublayer:self.gradientLayer];
     self.gradientLayer.hidden = YES;
 
     self.layer.masksToBounds = YES;
     self.maskLayer = [CAShapeLayer new];
+    [self.maskLayer disableAnimationsWithDelegate];
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -177,10 +181,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
     UIBezierPath *bezierPath = [self maskPath];
 
-    // Prevent the shape layer from animating changes.
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-
     self.shapeLayer.fillColor = self.fillColor.CGColor;
     self.shapeLayer.strokeColor = self.strokeColor.CGColor;
     self.shapeLayer.lineWidth = self.strokeThickness;
@@ -214,8 +214,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
         self.layer.cornerRadius = 0;
         self.layer.mask = self.maskLayer;
     }
-
-    [CATransaction commit];
 
     [self ensureSubviewLayout];
 }
@@ -328,6 +326,14 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [super updateConstraints];
 
     [self deactivateAllConstraints];
+}
+
+// MARK: - CALayerDelegate
+
+- (nullable id<CAAction>)actionForLayer:(CALayer *)layer forKey:(NSString *)event
+{
+    // Disable all implicit CALayer animations.
+    return [NSNull new];
 }
 
 @end

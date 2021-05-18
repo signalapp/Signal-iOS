@@ -1040,3 +1040,28 @@ extension UIImage {
         return imageView.renderAsImage(opaque: imageView.isOpaque, scale: UIScreen.main.scale)
     }
 }
+
+// MARK: -
+
+private class CALayerDelegateNoAnimations: NSObject, CALayerDelegate {
+    /* If defined, called by the default implementation of the
+     * -actionForKey: method. Should return an object implementing the
+     * CAAction protocol. May return 'nil' if the delegate doesn't specify
+     * a behavior for the current event. Returning the null object (i.e.
+     * '[NSNull null]') explicitly forces no further search. (I.e. the
+     * +defaultActionForKey: method will not be called.) */
+    func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        NSNull()
+    }
+}
+
+extension CALayer {
+    private static let delegateNoAnimations = CALayerDelegateNoAnimations()
+
+    @objc
+    public func disableAnimationsWithDelegate() {
+        owsAssertDebug(self.delegate == nil)
+
+        self.delegate = Self.delegateNoAnimations
+    }
+}
