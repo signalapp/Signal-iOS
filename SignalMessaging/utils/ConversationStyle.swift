@@ -128,24 +128,24 @@ public class ConversationStyle: NSObject {
     @objc
     public static let messageDirectionSpacing: CGFloat = 12
 
-    // ChatColorValue is used for logging and comparison.
-    public let chatColorValue: ChatColorValue
+    // ChatColor is used for logging and comparison.
+    public let chatColor: ChatColor
     // CVChatColor is used for rendering.
-    public let chatColor: CVChatColor
+    public let cvChatColor: CVChatColor
 
     public required init(type: ConversationStyleType,
                          thread: TSThread,
                          viewWidth: CGFloat,
                          hasWallpaper: Bool,
-                         chatColor chatColorValue: ChatColorValue) {
+                         chatColor: ChatColor) {
 
         self.type = type
         self.viewWidth = viewWidth
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
         self.primaryTextColor = Theme.primaryTextColor
         self.hasWallpaper = hasWallpaper
-        self.chatColorValue = chatColorValue
-        self.chatColor = chatColorValue.appearance.asCVChatColor
+        self.chatColor = chatColor
+        self.cvChatColor = chatColor.appearance.asCVChatColor
 
         if type == .messageDetails {
             gutterLeading = 0
@@ -220,7 +220,7 @@ public class ConversationStyle: NSObject {
         } else if message is TSIncomingMessage {
             return .solidColor(color: bubbleColorIncoming)
         } else if message is TSOutgoingMessage {
-            return chatColor
+            return cvChatColor
         } else {
             owsFailDebug("Unexpected message type: \(message)")
             return .solidColor(color: UIColor.ows_accentBlue)
@@ -231,7 +231,7 @@ public class ConversationStyle: NSObject {
         if isIncoming {
             return .solidColor(color: bubbleColorIncoming)
         } else {
-            return chatColor
+            return cvChatColor
         }
     }
 
@@ -368,9 +368,9 @@ public class ConversationStyle: NSObject {
             fullWidthGutterTrailing == other.fullWidthGutterTrailing &&
             textInsets == other.textInsets &&
             lastTextLineAxis == other.lastTextLineAxis &&
-            // We don't need to compare chatColor or all of chatColorValue;
-            // it is sufficient to compare chatColorValue.appearance.
-            chatColorValue.appearance == other.chatColorValue.appearance)
+            // We don't need to compare chatColor or all of chatColor;
+            // it is sufficient to compare chatColor.appearance.
+            chatColor.appearance == other.chatColor.appearance)
     }
 
     @objc
@@ -389,7 +389,7 @@ public class ConversationStyle: NSObject {
             "fullWidthGutterTrailing: \(fullWidthGutterTrailing), " +
             "textInsets: \(textInsets), " +
             "lastTextLineAxis: \(lastTextLineAxis), " +
-            "chatColor: \(chatColorValue), " +
+            "chatColor: \(chatColor), " +
             "]"
     }
 }

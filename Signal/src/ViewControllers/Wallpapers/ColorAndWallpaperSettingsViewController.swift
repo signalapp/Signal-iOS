@@ -78,17 +78,17 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             let chatColorSection = OWSTableSection()
             chatColorSection.customHeaderHeight = 14
 
-            let chatColorValue: ChatColorValue
+            let chatColor: ChatColor
             if let thread = self.thread {
-                chatColorValue = Self.databaseStorage.read { transaction in
+                chatColor = Self.databaseStorage.read { transaction in
                     ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
                 }
             } else {
-                chatColorValue = Self.databaseStorage.read { transaction in
+                chatColor = Self.databaseStorage.read { transaction in
                     ChatColors.defaultChatColorForRendering(transaction: transaction)
                 }
             }
-            let defaultColorView = ChatColorSwatchView(chatColorValue: chatColorValue,
+            let defaultColorView = ChatColorSwatchView(chatColor: chatColor,
                                                        mode: .circle)
             defaultColorView.autoSetDimensions(to: .square(16))
             defaultColorView.setContentHuggingHigh()

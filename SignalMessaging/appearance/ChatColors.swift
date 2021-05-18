@@ -90,7 +90,7 @@ public enum ChatColorAppearance: Equatable, Codable {
 
 // TODO: We might end up renaming this to ChatColor
 //       depending on how the design shakes out.
-public struct ChatColorValue: Equatable, Codable {
+public struct ChatColor: Equatable, Codable {
     public let id: String
     public let appearance: ChatColorAppearance
     public let isBuiltIn: Bool
@@ -112,13 +112,13 @@ public struct ChatColorValue: Equatable, Codable {
         UUID().uuidString
     }
 
-    public static var placeholderValue: ChatColorValue {
-        ChatColors.defaultChatColorValue
+    public static var placeholderValue: ChatColor {
+        ChatColors.defaultChatColor
     }
 
     // MARK: - Equatable
 
-    public static func == (lhs: ChatColorValue, rhs: ChatColorValue) -> Bool {
+    public static func == (lhs: ChatColor, rhs: ChatColor) -> Bool {
         // Ignore timestamps, etc.
         (lhs.id == rhs.id) && (lhs.appearance == rhs.appearance)
     }
@@ -145,7 +145,7 @@ public class ChatColors: NSObject, Dependencies {
     // The cache should contain all current values at all times.
     @objc
     private func warmCaches() {
-        var valueCache = [String: ChatColorValue]()
+        var valueCache = [String: ChatColor]()
 
         // Load built-in colors.
         for value in Self.builtInValues {
@@ -160,7 +160,7 @@ public class ChatColors: NSObject, Dependencies {
         Self.databaseStorage.read { transaction in
             let keys = Self.customColorsStore.allKeys(transaction: transaction)
             for key in keys {
-                func loadValue() -> ChatColorValue? {
+                func loadValue() -> ChatColor? {
                     do {
                         return try Self.customColorsStore.getCodableValue(forKey: key, transaction: transaction)
                     } catch {
@@ -190,19 +190,19 @@ public class ChatColors: NSObject, Dependencies {
     // from the conversations/global defaults which use them.
     //
     // The keys in this store are thread unique ids _OR_ defaultKey (String).
-    // The values are ChatColorValue.id (String).
+    // The values are ChatColor.id (String).
     private static let chatColorSettingStore = SDSKeyValueStore(collection: "chatColorSettingStore")
 
-    // The keys in this store are ChatColorValue.id (String).
-    // The values are ChatColorValues.
+    // The keys in this store are ChatColor.id (String).
+    // The values are ChatColors.
     private static let customColorsStore = SDSKeyValueStore(collection: "customColorsStore.2")
 
     private static let defaultKey = "defaultKey"
 
     private static let unfairLock = UnfairLock()
-    private var valueCache = [String: ChatColorValue]()
+    private var valueCache = [String: ChatColor]()
 
-    public func upsertCustomValue(_ value: ChatColorValue, transaction: SDSAnyWriteTransaction) {
+    public func upsertCustomValue(_ value: ChatColor, transaction: SDSAnyWriteTransaction) {
         Self.unfairLock.withLock {
             self.valueCache[value.id] = value
             do {
@@ -216,7 +216,7 @@ public class ChatColors: NSObject, Dependencies {
         }
     }
 
-    public func deleteCustomValue(_ value: ChatColorValue, transaction: SDSAnyWriteTransaction) {
+    public func deleteCustomValue(_ value: ChatColor, transaction: SDSAnyWriteTransaction) {
         Self.unfairLock.withLock {
             self.valueCache.removeValue(forKey: value.id)
             Self.customColorsStore.removeValue(forKey: value.id, transaction: transaction)
@@ -234,49 +234,49 @@ public class ChatColors: NSObject, Dependencies {
         )
     }
 
-    private func value(forValueId valueId: String) -> ChatColorValue? {
+    private func value(forValueId valueId: String) -> ChatColor? {
         Self.unfairLock.withLock {
             self.valueCache[valueId]
         }
     }
 
-    private var allValues: [ChatColorValue] {
+    private var allValues: [ChatColor] {
         Self.unfairLock.withLock {
             Array(self.valueCache.values)
         }
     }
 
-    public var allValuesSorted: [ChatColorValue] {
+    public var allValuesSorted: [ChatColor] {
         allValues.sorted { (left, right) -> Bool in
             left.creationTimestamp < right.creationTimestamp
         }
     }
-    public static var allValuesSorted: [ChatColorValue] { Self.chatColors.allValuesSorted }
+    public static var allValuesSorted: [ChatColor] { Self.chatColors.allValuesSorted }
 
-    public static var defaultChatColorValue: ChatColorValue { Self.value_ultramarine }
+    public static var defaultChatColor: ChatColor { Self.value_ultramarine }
 
     public static func autoChatColor(forThread thread: TSThread?,
-                                     transaction: SDSAnyReadTransaction) -> ChatColorValue {
+                                     transaction: SDSAnyReadTransaction) -> ChatColor {
         if let wallpaper = Wallpaper.get(for: thread, transaction: transaction),
            wallpaper != .photo {
             return autoChatColor(forWallpaper: wallpaper)
         } else {
-            return Self.defaultChatColorValue
+            return Self.defaultChatColor
         }
     }
 
-    public static func autoChatColor(forWallpaper wallpaper: Wallpaper) -> ChatColorValue {
+    public static func autoChatColor(forWallpaper wallpaper: Wallpaper) -> ChatColor {
         // TODO: Derive actual value from wallpaper.
         let color = OWSColor(red: 1, green: 0, blue: 0)
-        return ChatColorValue(id: wallpaper.rawValue, appearance: .solidColor(color: color))
+        return ChatColor(id: wallpaper.rawValue, appearance: .solidColor(color: color))
     }
 
     // Returns nil for default/auto.
-    public static func defaultChatColorSetting(transaction: SDSAnyReadTransaction) -> ChatColorValue? {
+    public static func defaultChatColorSetting(transaction: SDSAnyReadTransaction) -> ChatColor? {
         chatColorSetting(key: defaultKey, transaction: transaction)
     }
 
-    public static func defaultChatColorForRendering(transaction: SDSAnyReadTransaction) -> ChatColorValue {
+    public static func defaultChatColorForRendering(transaction: SDSAnyReadTransaction) -> ChatColor {
         if let value = defaultChatColorSetting(transaction: transaction) {
             return value
         } else {
@@ -284,19 +284,19 @@ public class ChatColors: NSObject, Dependencies {
         }
     }
 
-    public static func setDefaultChatColorSetting(_ value: ChatColorValue?,
+    public static func setDefaultChatColorSetting(_ value: ChatColor?,
                                            transaction: SDSAnyWriteTransaction) {
         setChatColorSetting(key: defaultKey, value: value, transaction: transaction)
     }
 
     // Returns nil for default/auto.
     public static func chatColorSetting(thread: TSThread,
-                                        transaction: SDSAnyReadTransaction) -> ChatColorValue? {
+                                        transaction: SDSAnyReadTransaction) -> ChatColor? {
         chatColorSetting(key: thread.uniqueId, transaction: transaction)
     }
 
     public static func chatColorForRendering(thread: TSThread,
-                                             transaction: SDSAnyReadTransaction) -> ChatColorValue {
+                                             transaction: SDSAnyReadTransaction) -> ChatColor {
         if let value = chatColorSetting(thread: thread, transaction: transaction) {
             return value
         } else {
@@ -305,14 +305,14 @@ public class ChatColors: NSObject, Dependencies {
     }
 
     public static func chatColorForRendering(address: SignalServiceAddress,
-                                             transaction: SDSAnyReadTransaction) -> ChatColorValue {
+                                             transaction: SDSAnyReadTransaction) -> ChatColor {
         guard let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {
-            return Self.defaultChatColorValue
+            return Self.defaultChatColor
         }
         return chatColorForRendering(thread: thread, transaction: transaction)
     }
 
-    public static func setChatColorSetting(_ value: ChatColorValue?,
+    public static func setChatColorSetting(_ value: ChatColor?,
                                            thread: TSThread,
                                            transaction: SDSAnyWriteTransaction) {
         setChatColorSetting(key: thread.uniqueId, value: value, transaction: transaction)
@@ -320,7 +320,7 @@ public class ChatColors: NSObject, Dependencies {
 
     // Returns nil for default/auto.
     private static func chatColorSetting(key: String,
-                                         transaction: SDSAnyReadTransaction) -> ChatColorValue? {
+                                         transaction: SDSAnyReadTransaction) -> ChatColor? {
         guard let valueId = Self.chatColorSettingStore.getString(key, transaction: transaction) else {
             return nil
         }
@@ -336,7 +336,7 @@ public class ChatColors: NSObject, Dependencies {
     }
 
     // Returns the number of conversations that use a given value.
-    public static func usageCount(forValue value: ChatColorValue,
+    public static func usageCount(forValue value: ChatColor,
                                   transaction: SDSAnyReadTransaction) -> Int {
         let keys = chatColorSettingStore.allKeys(transaction: transaction)
         var count: Int = 0
@@ -353,7 +353,7 @@ public class ChatColors: NSObject, Dependencies {
     public static let chatColorSettingDidChangeThreadUniqueIdKey = "chatColorSettingDidChangeThreadUniqueIdKey"
 
     private static func setChatColorSetting(key: String,
-                                            value: ChatColorValue?,
+                                            value: ChatColor?,
                                             transaction: SDSAnyWriteTransaction) {
         if let value = value {
             // Ensure the value is already in the cache.
@@ -387,7 +387,7 @@ public class ChatColors: NSObject, Dependencies {
 
     // MARK: -
 
-    private static var value_ultramarine = ChatColorValue(
+    private static var value_ultramarine = ChatColor(
         id: "Ultramarine",
         appearance: .gradient(gradientColor1: UIColor(rgbHex: 0x0552F0).asOWSColor,
                               gradientColor2: UIColor(rgbHex: 0x2C6BED).asOWSColor,
@@ -396,7 +396,7 @@ public class ChatColors: NSObject, Dependencies {
         creationTimestamp: 0
     )
 
-    private static var builtInValues: [ChatColorValue] {
+    private static var builtInValues: [ChatColor] {
         func parseAngleDegreesFromSpec(_ angleDegreesFromSpec: CGFloat) -> CGFloat {
             // In our models:
             // If angleRadians = 0, gradientColor1 is N.
@@ -410,7 +410,6 @@ public class ChatColors: NSObject, Dependencies {
             return ((angleDegreesFromSpec - 180) / 180) * CGFloat.pi
         }
 
-        // TODO: Apply values from design.
         return [
             // We use fixed timestamps to ensure that built-in values
             // appear before custom values and to control their relative ordering.
@@ -419,73 +418,73 @@ public class ChatColors: NSObject, Dependencies {
             Self.value_ultramarine,
 
             // Solid Colors
-            ChatColorValue(
+            ChatColor(
                 id: "Crimson",
                 appearance: .solidColor(color: UIColor(rgbHex: 0xCF163E).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 1
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Vermilion",
                 appearance: .solidColor(color: UIColor(rgbHex: 0xC73F0A).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 2
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Burlap",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x6F6A58).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 3
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Forest",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x3B7845).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 4
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Wintergreen",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x1D8663).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 5
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Teal",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x077D92).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 6
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Blue",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x336BA3).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 7
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Indigo",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x6058CA).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 8
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Violet",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x9932C8).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 9
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Plum",
                 appearance: .solidColor(color: UIColor(rgbHex: 0xAA377A).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 10
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Taupe",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x8F616A).asOWSColor),
                 isBuiltIn: true,
                 creationTimestamp: 11
             ),
-            ChatColorValue(
+            ChatColor(
                 id: "Steel",
                 appearance: .solidColor(color: UIColor(rgbHex: 0x71717F).asOWSColor),
                 isBuiltIn: true,
@@ -493,63 +492,63 @@ public class ChatColors: NSObject, Dependencies {
             ),
 
             // Gradients
-            ChatColorValue(id: "Ember",
+            ChatColor(id: "Ember",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0xE57C00).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x5E0000).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(168)),
                            isBuiltIn: true,
                            creationTimestamp: 13
             ),
-            ChatColorValue(id: "Midnight",
+            ChatColor(id: "Midnight",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0x52526B).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x105FD5).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(180)),
                            isBuiltIn: true,
                            creationTimestamp: 14
             ),
-            ChatColorValue(id: "Infrared",
+            ChatColor(id: "Infrared",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0xF65560).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x442CED).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(192)),
                            isBuiltIn: true,
                            creationTimestamp: 15
             ),
-            ChatColorValue(id: "Lagoon",
+            ChatColor(id: "Lagoon",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0x0975B3).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x1B8377).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(180)),
                            isBuiltIn: true,
                            creationTimestamp: 16
             ),
-            ChatColorValue(id: "Fluorescent",
+            ChatColor(id: "Fluorescent",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0xB418EC).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0xA30A99).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(192)),
                            isBuiltIn: true,
                            creationTimestamp: 17
             ),
-            ChatColorValue(id: "Basil",
+            ChatColor(id: "Basil",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0x2F9373).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x077343).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(180)),
                            isBuiltIn: true,
                            creationTimestamp: 18
             ),
-            ChatColorValue(id: "Sublime",
+            ChatColor(id: "Sublime",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0x6281D5).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x974460).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(180)),
                            isBuiltIn: true,
                            creationTimestamp: 19
             ),
-            ChatColorValue(id: "Sea",
+            ChatColor(id: "Sea",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0x498FD4).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x2C66A0).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(180)),
                            isBuiltIn: true,
                            creationTimestamp: 20
             ),
-            ChatColorValue(id: "Tangerine",
+            ChatColor(id: "Tangerine",
                            appearance: .gradient(gradientColor1: UIColor(rgbHex: 0xDB7133).asOWSColor,
                                                  gradientColor2: UIColor(rgbHex: 0x911231).asOWSColor,
                                                  angleRadians: parseAngleDegreesFromSpec(192)),

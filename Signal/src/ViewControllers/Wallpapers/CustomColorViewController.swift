@@ -10,11 +10,11 @@ class CustomColorViewController: OWSTableViewController2 {
 
     public enum ValueMode {
         case createNew
-        case editExisting(value: ChatColorValue)
+        case editExisting(value: ChatColor)
     }
     private let valueMode: ValueMode
 
-    private let completion: (ChatColorValue) -> Void
+    private let completion: (ChatColor) -> Void
 
     private let modeControl = UISegmentedControl()
 
@@ -58,7 +58,7 @@ class CustomColorViewController: OWSTableViewController2 {
 
     public init(thread: TSThread? = nil,
                 valueMode: ValueMode,
-                completion: @escaping (ChatColorValue) -> Void) {
+                completion: @escaping (ChatColor) -> Void) {
         self.thread = thread
         self.valueMode = valueMode
         self.completion = completion
@@ -370,22 +370,22 @@ class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
-    fileprivate var currentChatColorValue: ChatColorValue {
+    fileprivate var currentChatColor: ChatColor {
         let appearance = self.currentChatColorAppearance()
         switch valueMode {
         case .createNew:
-            return ChatColorValue(id: ChatColorValue.randomId,
+            return ChatColor(id: ChatColor.randomId,
                                       appearance: appearance)
         case .editExisting(let oldValue):
             // Preserve the old id and creationTimestamp.
-            return ChatColorValue(id: oldValue.id,
+            return ChatColor(id: oldValue.id,
                                       appearance: appearance,
                                       creationTimestamp: oldValue.creationTimestamp)
         }
     }
 
     private func showSaveUI() {
-        let newValue = self.currentChatColorValue
+        let newValue = self.currentChatColor
 
         switch valueMode {
         case .createNew:
@@ -425,7 +425,7 @@ class CustomColorViewController: OWSTableViewController2 {
         presentActionSheet(actionSheet)
     }
     private func saveAndDismiss() {
-        let newValue = self.currentChatColorValue
+        let newValue = self.currentChatColor
         completion(newValue)
         self.navigationController?.popViewController(animated: true)
     }
@@ -878,7 +878,7 @@ private protocol CustomColorPreviewDelegate: class {
     var gradientColor1: OWSColor { get }
     var gradientColor2: OWSColor { get }
 
-    var currentChatColorValue: ChatColorValue { get }
+    var currentChatColor: ChatColor { get }
 
     func switchToEditMode(_ value: CustomColorViewController.EditMode)
 }
@@ -913,7 +913,7 @@ private class CustomColorPreviewView: UIView {
         self.mockConversationView = MockConversationView(
             model: CustomColorPreviewView.buildMockConversationModel(),
             hasWallpaper: true,
-            customChatColor: delegate.currentChatColorValue
+            customChatColor: delegate.currentChatColor
         )
         self.delegate = delegate
 
@@ -951,14 +951,14 @@ private class CustomColorPreviewView: UIView {
     fileprivate func updateMockConversation() {
         guard let delegate = delegate else { return }
 
-        mockConversationView.customChatColor = delegate.currentChatColorValue
+        mockConversationView.customChatColor = delegate.currentChatColor
 
         if let knobView1 = self.knobView1 {
-            knobView1.value = ChatColorValue(id: "knob1",
+            knobView1.value = ChatColor(id: "knob1",
                                              appearance: .solidColor(color: delegate.gradientColor1))
         }
         if let knobView2 = self.knobView2 {
-            knobView2.value = ChatColorValue(id: "knob2",
+            knobView2.value = ChatColor(id: "knob2",
                                              appearance: .solidColor(color: delegate.gradientColor2))
         }
     }
@@ -976,9 +976,9 @@ private class CustomColorPreviewView: UIView {
             }
         }
 
-        var value: ChatColorValue {
-            get { swatchView.chatColorValue }
-            set { swatchView.chatColorValue = newValue }
+        var value: ChatColor {
+            get { swatchView.chatColor }
+            set { swatchView.chatColor = newValue }
         }
 
         private let selectedBorder = OWSLayerView.circleView()
@@ -986,9 +986,9 @@ private class CustomColorPreviewView: UIView {
 
         private let swatchView: ChatColorSwatchView
 
-        init(isSelected: Bool, chatColorValue: ChatColorValue, name: String? = nil) {
+        init(isSelected: Bool, chatColor: ChatColor, name: String? = nil) {
             self.isSelected = isSelected
-            self.swatchView = ChatColorSwatchView(chatColorValue: chatColorValue, mode: .circle)
+            self.swatchView = ChatColorSwatchView(chatColor: chatColor, mode: .circle)
 
             super.init(frame: .zero)
 
@@ -1072,11 +1072,11 @@ private class CustomColorPreviewView: UIView {
         axisShapeView.layer.addSublayer(axisShapeLayer)
 
         let knobView1 = KnobView(isSelected: delegate.editMode == .gradientColor1,
-                                 chatColorValue: ChatColorValue(id: "knob1",
+                                 chatColor: ChatColor(id: "knob1",
                                                                 appearance: .solidColor(color: delegate.gradientColor1)),
                                  name: "1")
         let knobView2 = KnobView(isSelected: delegate.editMode == .gradientColor2,
-                                 chatColorValue: ChatColorValue(id: "knob2",
+                                 chatColor: ChatColor(id: "knob2",
                                                                 appearance: .solidColor(color: delegate.gradientColor2)),
                                  name: "2")
         self.knobView1 = knobView1

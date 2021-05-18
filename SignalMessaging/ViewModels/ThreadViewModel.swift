@@ -33,7 +33,7 @@ public class ThreadViewModel: NSObject {
     @objc
     public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
 
-    public let chatColor: ChatColorValue
+    public let chatColor: ChatColor
 
     public var isContactThread: Bool {
         return !isGroupThread

@@ -675,7 +675,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         AssertIsOnMainThread()
 
         var hasWallpaper: Bool = false
-        var chatColor: ChatColorValue = .placeholderValue
+        var chatColor: ChatColor = .placeholderValue
         databaseStorage.read { transaction in
             hasWallpaper = Wallpaper.exists(for: self.thread, transaction: transaction)
             chatColor = ChatColors.chatColorForRendering(thread: self.thread, transaction: transaction)

@@ -6,9 +6,9 @@ import Foundation
 
 // A round "swatch" that offers a preview of a conversation color option.
 public class ChatColorSwatchView: ManualLayoutViewWithLayer {
-    public var chatColorValue: ChatColorValue {
+    public var chatColor: ChatColor {
         didSet {
-            if chatColorValue != oldValue {
+            if chatColor != oldValue {
                 configure()
             }
         }
@@ -22,8 +22,8 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
 
     private let gradientLayer = CAGradientLayer()
 
-    public init(chatColorValue: ChatColorValue, mode: Mode) {
-        self.chatColorValue = chatColorValue
+    public init(chatColor: ChatColor, mode: Mode) {
+        self.chatColor = chatColor
         self.mode = mode
 
         super.init(name: "ChatColorSwatchView")
@@ -59,7 +59,7 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
 
     private func configure() {
         let size = bounds.size
-        let appearance = chatColorValue.appearance
+        let appearance = chatColor.appearance
         let newState = State(size: size, appearance: appearance)
         // Exit early if the appearance and bounds haven't changed.
         guard state != newState else {

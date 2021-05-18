@@ -8,8 +8,8 @@ class ChatColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
-    private var originalValue: ChatColorValue?
-    private var currentValue: ChatColorValue?
+    private var originalValue: ChatColor?
+    private var currentValue: ChatColor?
 
     public init(thread: TSThread? = nil) {
         self.thread = thread
@@ -193,8 +193,8 @@ class ChatColorViewController: OWSTableViewController2 {
 
     private enum Option {
         case auto
-        case builtInValue(value: ChatColorValue)
-        case customValue(value: ChatColorValue)
+        case builtInValue(value: ChatColor)
+        case customValue(value: ChatColor)
         case addNewOption
 
         static func allOptions(transaction: SDSAnyReadTransaction) -> [Option] {
@@ -225,7 +225,7 @@ class ChatColorViewController: OWSTableViewController2 {
         self.navigationController?.pushViewController(customColorVC, animated: true)
     }
 
-    private func showDeleteUI(_ value: ChatColorValue) {
+    private func showDeleteUI(_ value: ChatColor) {
 
         func deleteValue() {
             Self.databaseStorage.write { transaction in
@@ -266,8 +266,8 @@ class ChatColorViewController: OWSTableViewController2 {
         presentActionSheet(actionSheet)
     }
 
-    private func duplicateValue(_ oldValue: ChatColorValue) {
-        let newValue = ChatColorValue(id: ChatColorValue.randomId,
+    private func duplicateValue(_ oldValue: ChatColor) {
+        let newValue = ChatColor(id: ChatColor.randomId,
                                        appearance: oldValue.appearance,
                                        isBuiltIn: false)
         Self.databaseStorage.write { transaction in
@@ -391,7 +391,7 @@ class ChatColorViewController: OWSTableViewController2 {
                 switch option {
                 case .auto:
                     let value = ChatColors.autoChatColor(forThread: self.thread, transaction: transaction)
-                    let view = ChatColorSwatchView(chatColorValue: value, mode: .circle)
+                    let view = ChatColorSwatchView(chatColor: value, mode: .circle)
 
                     let label = UILabel()
                     label.text = NSLocalizedString("CHAT_COLOR_SETTINGS_AUTO",
@@ -407,10 +407,10 @@ class ChatColorViewController: OWSTableViewController2 {
                     // nil represents auto.
                     addOptionView(innerView: view, isSelected: currentValue == nil)
                 case .builtInValue(let value):
-                    let view = ChatColorSwatchView(chatColorValue: value, mode: .circle)
+                    let view = ChatColorSwatchView(chatColor: value, mode: .circle)
                     addOptionView(innerView: view, isSelected: currentValue == value)
                 case .customValue(let value):
-                    let view = ChatColorSwatchView(chatColorValue: value, mode: .circle)
+                    let view = ChatColorSwatchView(chatColor: value, mode: .circle)
 
                     let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
                     view.addSubview(imageView)

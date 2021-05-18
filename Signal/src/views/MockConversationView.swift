@@ -23,13 +23,13 @@ class MockConversationView: UIView {
         }
     }
 
-    public var customChatColor: ChatColorValue? {
+    public var customChatColor: ChatColor? {
         didSet {
             update()
         }
     }
 
-    init(model: MockModel, hasWallpaper: Bool, customChatColor: ChatColorValue?) {
+    init(model: MockModel, hasWallpaper: Bool, customChatColor: ChatColor?) {
         self.model = model
         self.hasWallpaper = hasWallpaper
         self.customChatColor = customChatColor
