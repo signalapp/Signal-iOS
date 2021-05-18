@@ -1,5 +1,5 @@
-• Signal is a nonprofit powered by people like you. We’ve now made it easy to donate to Signal using Apple Pay. Just go to Settings > Donate to get started. Your donation helps Signal stay independent and ad-free. Thank you for standing with us!
-• Curious whether your latest monologue got the attention it deserved? You can now see when someone has listened to your voice messages. If you see the dot on your voice message, it’s still waiting for a listen.
-• You can also now see when a view-once photo or video has been viewed right from message details.
+• Signal is een organisatie zonder winstoogmerk welke onder andere mogelijk wordt gemaakt door donaties van mensen zoals jij. We hebben het nu makkelijk gemaakt om met Apple Pay aan Signal te doneren via Instellingen > Doneren. Jouw donatie help Signal onafhankelijk en advertentie vrij te houden. Dank voor alle steun!
+• Je kunt vanaf nu zien of iemand naar je audiobericht heeft geluisterd. Als je een stip op je audiobericht ziet dan is het nog niet beluisterd.
+• Je kunt vanaf nu in de berichtdetails zien of een eenmaligeweergave-afbeelding of -video is bekeken.
 
 Ben je geïnteresseerd in helpen om Signal te verbeteren? We huren mensen. Bezoek https://signal.org/workworkwork om hier meer over te lezen.

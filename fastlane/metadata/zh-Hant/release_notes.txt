@@ -1,5 +1,5 @@
-• Signal is a nonprofit powered by people like you. We’ve now made it easy to donate to Signal using Apple Pay. Just go to Settings > Donate to get started. Your donation helps Signal stay independent and ad-free. Thank you for standing with us!
-• Curious whether your latest monologue got the attention it deserved? You can now see when someone has listened to your voice messages. If you see the dot on your voice message, it’s still waiting for a listen.
-• You can also now see when a view-once photo or video has been viewed right from message details.
+•Signal是由像你這樣的人支持的非營利組織。 現在，我們可以輕鬆使用Apple Pay捐款給Signal。 只須轉到“設定”>“捐贈”即可開始。 你的捐款可幫助Signal保持獨立和無廣告。 感謝你與我們站在一起！
+•好奇你最近的獨白是否得到了應有的關注？ 現在，你可以看到某人何時收聽了你的語音留言。 如果你在語音留言中看到圓點，表示仍在等待收聽。
+•現在，你還可以直接從訊息詳細資訊中查看何時查看過一次的照片或影片。
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

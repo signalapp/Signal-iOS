@@ -1,5 +1,5 @@
-• Signal is a nonprofit powered by people like you. We’ve now made it easy to donate to Signal using Apple Pay. Just go to Settings > Donate to get started. Your donation helps Signal stay independent and ad-free. Thank you for standing with us!
-• Curious whether your latest monologue got the attention it deserved? You can now see when someone has listened to your voice messages. If you see the dot on your voice message, it’s still waiting for a listen.
-• You can also now see when a view-once photo or video has been viewed right from message details.
+• Signal jest organizacją non-profit, funkcjonującą dzięki ludziom takim, jak Ty. Ułatwiliśmy dokonywanie darowizny na Signal, przy użyciu Apple Pay. Po prostu przejdź do Ustawienia > Datek. Twoja dotacja pomoże Signal zachować niezależność i brak reklam. Dziękujemy, że nas wspierasz!
+• Ciekawi Cię czy Twój najnowszy monolog został potraktowany z uwagą, na jaką zasługiwał? Teraz możesz zobaczyć, kiedy ktoś wysłuchał Twoich wiadomości głosowych. Jeśli widzisz kropkę na swojej wiadomości głosowej, to wciąż czeka ona na odtworzenie.
+• Teraz możesz też zobaczyć w szczegółach wiadomości, kiedy zdjęcie lub wideo jednorazowe zostały obejrzane.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
