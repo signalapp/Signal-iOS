@@ -385,17 +385,21 @@ class CustomColorViewController: OWSTableViewController2 {
     }
 
     private func showSaveUI() {
+        let newValue = self.currentChatColorValue
+
         switch valueMode {
         case .createNew:
             saveAndDismiss()
             return
-        case .editExisting(let value):
-            break
+        case .editExisting(let oldValue):
+            guard oldValue != newValue else {
+                saveAndDismiss()
+                return
+            }
         }
 
-        let value = self.currentChatColorValue
         let usageCount = databaseStorage.read { transaction in
-            ChatColors.usageCount(forValue: value, transaction: transaction)
+            ChatColors.usageCount(forValue: newValue, transaction: transaction)
         }
         guard usageCount > 1 else {
             saveAndDismiss()
@@ -1000,7 +1004,10 @@ private class CustomColorPreviewView: UIView {
             self.addSubview(swatchView)
             swatchView.autoCenterInSuperview()
 
-            selectedBorder.layer.borderColor = UIColor(white: 0, alpha: 0.6).cgColor
+            let selectedColor = (Theme.isDarkThemeEnabled
+                                    ? UIColor.ows_white
+                                    : UIColor(white: 0, alpha: 0.6))
+            selectedBorder.layer.borderColor = selectedColor.cgColor
             selectedBorder.layer.borderWidth = Self.selectedBorderThickness
             selectedBorder.autoSetDimensions(to: .square(Self.swatchSize + Self.selectedBorderThickness * 2))
             self.addSubview(selectedBorder)
@@ -1012,7 +1019,7 @@ private class CustomColorPreviewView: UIView {
             self.addSubview(unselectedBorder)
             unselectedBorder.autoCenterInSuperview()
 
-            let showKnobLabels = true
+            let showKnobLabels = false
             if showKnobLabels, let name = name {
                 let label = UILabel()
                 label.text = name

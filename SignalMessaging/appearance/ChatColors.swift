@@ -719,7 +719,7 @@ public extension ChatColors {
 @objc
 public extension ChatColors {
     static var defaultAvatarColor: UIColor {
-        Self.defaultGroupNameColor
+        Self.groupNameColorValues.first!.lightTheme
     }
 
     static func avatarColor(forThread thread: TSThread) -> UIColor {
@@ -759,7 +759,6 @@ public extension ChatColors {
             owsFailDebug("Could not determine avatar color.")
             return Self.defaultAvatarColor
         }
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
-        return value.color(isDarkThemeEnabled: isDarkThemeEnabled)
+        return value.lightTheme
     }
 }
