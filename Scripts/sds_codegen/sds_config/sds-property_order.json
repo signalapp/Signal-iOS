@@ -212,7 +212,7 @@
     "TestModelRecord.uint64Value": 9, 
     "ThreadRecord.contactPhoneNumber": 8, 
     "ThreadRecord.contactUUID": 9, 
-    "ThreadRecord.conversationColorName": 1, 
+    "ThreadRecord.conversationColorNameObsolete": 1, 
     "ThreadRecord.creationDate": 2, 
     "ThreadRecord.groupModel": 10, 
     "ThreadRecord.hasDismissedOffers": 11, 

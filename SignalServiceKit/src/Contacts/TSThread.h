@@ -16,23 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
-typedef NSString *ConversationColorName NS_STRING_ENUM;
-
-extern ConversationColorName const ConversationColorNameCrimson;
-extern ConversationColorName const ConversationColorNameVermilion;
-extern ConversationColorName const ConversationColorNameBurlap;
-extern ConversationColorName const ConversationColorNameForest;
-extern ConversationColorName const ConversationColorNameWintergreen;
-extern ConversationColorName const ConversationColorNameTeal;
-extern ConversationColorName const ConversationColorNameBlue;
-extern ConversationColorName const ConversationColorNameIndigo;
-extern ConversationColorName const ConversationColorNameViolet;
-extern ConversationColorName const ConversationColorNamePlum;
-extern ConversationColorName const ConversationColorNameTaupe;
-extern ConversationColorName const ConversationColorNameSteel;
-
-extern ConversationColorName const ConversationColorNameDefault;
-
 typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMentionNotificationMode_Default = 0,
     TSThreadMentionNotificationMode_Always,
     TSThreadMentionNotificationMode_Never };
@@ -96,12 +79,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 // --- CODE GENERATION MARKER
 
-// TODO: Obsolete.
-@property (nonatomic) ConversationColorName conversationColorName;
-
-- (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;
-+ (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
-@property (class, nonatomic, readonly) NSArray<ConversationColorName> *conversationColorNames;
+@property (nonatomic, readonly) NSString *conversationColorNameObsolete;
 
 /**
  * @returns recipientId for each recipient in the thread
