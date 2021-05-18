@@ -41,16 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont fontWithName:@"FontAwesome" size:size];
 }
 
-+ (UIFont *)ows_dripIconsFont:(CGFloat)size
-{
-    return [UIFont fontWithName:@"dripicons-v2" size:size];
-}
-
-+ (UIFont *)ows_elegantIconsFont:(CGFloat)size
-{
-    return [UIFont fontWithName:@"ElegantIcons" size:size];
-}
-
 #pragma mark - Dynamic Type
 
 + (UIFont *)ows_dynamicTypeTitle1Font

@@ -21,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Icon Fonts
 
 + (UIFont *)ows_fontAwesomeFont:(CGFloat)size;
-+ (UIFont *)ows_dripIconsFont:(CGFloat)size;
-+ (UIFont *)ows_elegantIconsFont:(CGFloat)size;
 
 #pragma mark - Dynamic Type
 
