@@ -29,6 +29,16 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         CVComponentViewQuotedReply()
     }
 
+    public override func updateScrollingContent(componentView: CVComponentView) {
+        super.updateScrollingContent(componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewQuotedReply else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        componentView.quotedMessageView.updateAppearance()
+    }
+
     public func configureForRendering(componentView componentViewParam: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {

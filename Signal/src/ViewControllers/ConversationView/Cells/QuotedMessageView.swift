@@ -44,6 +44,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private let quotedImageView = CVImageView()
     private let remotelySourcedContentIconView = CVImageView()
 
+    // Background
+    private let bubbleView = ManualLayoutViewWithLayer(name: "bubbleView")
+    private let chatColorView = CVChatColorView()
+    private let tintView = ManualLayoutViewWithLayer(name: "tintView")
+
     static func stateForConversation(quotedReplyModel: OWSQuotedReplyModel,
                                      displayableQuotedText: DisplayableText?,
                                      conversationStyle: ConversationStyle,
@@ -296,14 +301,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let sharpCornerRadius: CGFloat = 4
         let wideCornerRadius: CGFloat = 12
 
-        let bubbleView = ManualLayoutViewWithLayer(name: "bubbleView")
-
         // Background
-        let chatColorView = CVChatColorView()
         chatColorView.configure(chatColor: conversationStyle.bubbleChatColorOutgoing,
                                 referenceView: componentDelegate.view)
         bubbleView.addSubviewToFillSuperviewEdges(chatColorView)
-        let tintView = ManualLayoutViewWithLayer(name: "tintView")
         tintView.backgroundColor = (conversationStyle.isDarkThemeEnabled
                                         ? UIColor(white: 0, alpha: 0.4)
                                         : UIColor(white: 1, alpha: 0.6))
@@ -651,6 +652,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                     failedThumbnailDownloadAttachmentPointer: thumbnailAttachmentPointer)
     }
 
+    public func updateAppearance() {
+        chatColorView.updateAppearance()
+    }
+
     public override func reset() {
         super.reset()
 
@@ -667,5 +672,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         quoteContentSourceLabel.text = nil
         quotedImageView.image = nil
         remotelySourcedContentIconView.image = nil
+
+        bubbleView.reset()
+        bubbleView.removeFromSuperview()
+        chatColorView.reset()
+        chatColorView.removeFromSuperview()
+        tintView.reset()
+        tintView.removeFromSuperview()
     }
 }

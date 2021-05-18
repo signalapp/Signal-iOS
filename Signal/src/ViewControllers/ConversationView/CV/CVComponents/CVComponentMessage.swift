@@ -297,6 +297,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return
         }
         componentView.chatColorView.updateAppearance()
+
+        if let subcomponentAndView = findActiveComponentAndView(key: .quotedReply,
+                                                                messageView: componentView,
+                                                                ignoreMissing: true) {
+            let subcomponent = subcomponentAndView.component
+            let subcomponentView = subcomponentAndView.componentView
+            subcomponent.updateScrollingContent(componentView: subcomponentView)
+        }
     }
 
     public static let textViewVSpacing: CGFloat = 2

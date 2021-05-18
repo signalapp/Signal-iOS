@@ -55,6 +55,8 @@ public protocol CVComponent: class {
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
                               messageSwipeActionState: CVMessageSwipeActionState)
+
+    func updateScrollingContent(componentView: CVComponentView)
 }
 
 // MARK: -
@@ -73,8 +75,6 @@ public protocol CVRootComponent: CVComponent {
                                     componentView: CVComponentView)
 
     var isDedicatedCell: Bool { get }
-
-    func updateScrollingContent(componentView: CVComponentView)
 }
 
 // MARK: -
