@@ -203,6 +203,9 @@ public class ChatColors: NSObject, Dependencies {
     public static func chatColorSetting(thread: TSThread,
                                         transaction: SDSAnyReadTransaction) -> ChatColor? {
         chatColorSetting(key: thread.uniqueId, transaction: transaction)
+//        if let value = chatColorSetting(key: thread.uniqueId, transaction: transaction) {
+//            return value
+//        }
     }
 
     public static func chatColorForRendering(thread: TSThread,
