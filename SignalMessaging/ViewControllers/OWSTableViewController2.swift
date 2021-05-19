@@ -344,6 +344,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         let isFirstInSection = indexPath.row == 0
         let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
 
+        let sectionSeparatorInsetLeading = section.separatorInsetLeading
+        let sectionSeparatorInsetTrailing = section.separatorInsetTrailing
+
         let pillLayer = CAShapeLayer()
         var separatorLayer: CAShapeLayer?
         let backgroundView = OWSLayerView(frame: .zero) { [weak self] view in
@@ -380,14 +383,14 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
                 separatorFrame.size.height = separatorThickness
 
                 let separatorInsetLeading: CGFloat
-                if let sectionSeparatorInsetLeading = section.separatorInsetLeading {
+                if let sectionSeparatorInsetLeading = sectionSeparatorInsetLeading {
                     separatorInsetLeading = CGFloat(sectionSeparatorInsetLeading.floatValue)
                 } else {
                     separatorInsetLeading = self.defaultSeparatorInsetLeading
                 }
 
                 let separatorInsetTrailing: CGFloat
-                if let sectionSeparatorInsetTrailing = section.separatorInsetTrailing {
+                if let sectionSeparatorInsetTrailing = sectionSeparatorInsetTrailing {
                     separatorInsetTrailing = CGFloat(sectionSeparatorInsetTrailing.floatValue)
                 } else {
                     separatorInsetTrailing = self.defaultSeparatorInsetTrailing
