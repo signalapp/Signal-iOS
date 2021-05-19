@@ -424,12 +424,18 @@ const NSUInteger kMinimumSearchLength = 1;
                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                     RecipientPickerViewController, @"find_by_phone")
                                     actionBlock:^{
+                                        typeof(self) strongSelf = weakSelf;
+                                        if (!strongSelf) {
+                                            return;
+                                        }
                                         FindByPhoneNumberViewController *viewController =
                                             [[FindByPhoneNumberViewController alloc]
-                                                        initWithDelegate:self
-                                                              buttonText:self.findByPhoneNumberButtonTitle
-                                                requiresRegisteredNumber:!self.allowsSelectingUnregisteredPhoneNumbers];
-                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                                        initWithDelegate:strongSelf
+                                                              buttonText:strongSelf.findByPhoneNumberButtonTitle
+                                                requiresRegisteredNumber:!strongSelf
+                                                                              .allowsSelectingUnregisteredPhoneNumbers];
+                                        [strongSelf.navigationController pushViewController:viewController
+                                                                                   animated:YES];
                                     }]];
     }
 
