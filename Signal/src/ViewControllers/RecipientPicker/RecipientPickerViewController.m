@@ -424,12 +424,18 @@ const NSUInteger kMinimumSearchLength = 1;
                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                     RecipientPickerViewController, @"find_by_phone")
                                     actionBlock:^{
+                                        typeof(self) strongSelf = weakSelf;
+                                        if (!strongSelf) {
+                                            return;
+                                        }
                                         FindByPhoneNumberViewController *viewController =
                                             [[FindByPhoneNumberViewController alloc]
-                                                        initWithDelegate:self
-                                                              buttonText:self.findByPhoneNumberButtonTitle
-                                                requiresRegisteredNumber:!self.allowsSelectingUnregisteredPhoneNumbers];
-                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                                        initWithDelegate:strongSelf
+                                                              buttonText:strongSelf.findByPhoneNumberButtonTitle
+                                                requiresRegisteredNumber:!strongSelf
+                                                                              .allowsSelectingUnregisteredPhoneNumbers];
+                                        [strongSelf.navigationController pushViewController:viewController
+                                                                                   animated:YES];
                                     }]];
     }
 
@@ -490,9 +496,11 @@ const NSUInteger kMinimumSearchLength = 1;
         }
 
         if (self.shouldShowAlphabetSlider) {
+            __weak OWSTableContents *weakContents = contents;
             contents.sectionForSectionIndexTitleBlock = ^NSInteger(NSString *_Nonnull title, NSInteger index) {
                 typeof(self) strongSelf = weakSelf;
-                if (!strongSelf) {
+                OWSTableContents *_Nullable strongContents = weakContents;
+                if (strongSelf == nil || strongContents == nil) {
                     return 0;
                 }
 
@@ -504,7 +512,7 @@ const NSUInteger kMinimumSearchLength = 1;
                     OWSCFailDebug(@"Unexpected negative section index");
                     return 0;
                 }
-                if (sectionIndex >= (NSInteger)contents.sections.count) {
+                if (sectionIndex >= (NSInteger)strongContents.sections.count) {
                     // Sentinal in case we change our section ordering in a surprising way.
                     OWSCFailDebug(@"Unexpectedly large index");
                     return 0;
