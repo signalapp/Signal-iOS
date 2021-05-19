@@ -193,7 +193,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var highlightColor: UIColor {
-            conversationStyle.quotingSelfHighlightColor()
+            conversationStyle.quotedReplyHighlightColor()
         }
 
         var quotedAuthorLabelConfig: CVLabelConfig {

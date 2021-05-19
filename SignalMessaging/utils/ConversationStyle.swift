@@ -314,8 +314,7 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public func quotingSelfHighlightColor() -> UIColor {
-        // TODO:
+    public func quotedReplyHighlightColor() -> UIColor {
         UIColor.init(rgbHex: 0xB5B5B5)
     }
 

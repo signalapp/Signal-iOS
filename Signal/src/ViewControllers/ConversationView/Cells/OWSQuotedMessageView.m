@@ -128,7 +128,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIColor *)highlightColor
 {
-    return [self.conversationStyle quotingSelfHighlightColor];
+    return [self.conversationStyle quotedReplyHighlightColor];
 }
 
 #pragma mark -
