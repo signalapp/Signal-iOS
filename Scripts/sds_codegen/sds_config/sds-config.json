@@ -131,6 +131,7 @@
 		"TSThread.mutedUntilDateObsolete": "mutedUntilDate",
 		"TSThread.isArchivedObsolete": "isArchived",
 		"TSThread.isMarkedUnreadObsolete": "isMarkedUnread",
-		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp"
+		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp",
+		"TSThread.conversationColorNameObsolete": "conversationColorName"
 	}
 }

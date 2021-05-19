@@ -50,7 +50,7 @@ public struct ThreadRecord: SDSRecord {
         case id
         case recordType
         case uniqueId
-        case conversationColorName = "conversationColorNameObsolete"
+        case conversationColorName
         case creationDate
         case isArchived
         case lastInteractionRowId
