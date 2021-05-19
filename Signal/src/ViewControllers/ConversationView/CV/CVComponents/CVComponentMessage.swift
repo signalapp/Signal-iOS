@@ -339,7 +339,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             if let bubbleChatColor = self.bubbleChatColor {
                 let chatColorView = componentView.chatColorView
-                chatColorView.configure(chatColor: bubbleChatColor,
+                chatColorView.configure(value: bubbleChatColor,
                                         referenceView: componentDelegate.view)
                 bubbleView.addSubview(chatColorView)
             }

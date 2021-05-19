@@ -4,11 +4,22 @@
 
 import Foundation
 
+// Compare with ColorOrGradientSwatchView:
+//
+// * CVColorOrGradientView is intended to be used in CVC cells.
+//   It does not assume the gradient bounds corresponds to the
+//   view bounds.
+// * ColorOrGradientSwatchView is for use elsewhere.
+//   It can pin gradient bounds to the edges of a circle for previews.
+//   It can be used to render wallpapers.
+//
+// Although we could combine these two views, these two scenarios are
+// just different enough that its convenient to have two separate views.
 @objc
 public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     private weak var referenceView: UIView?
-    private var chatColor: ColorOrGradientValue?
+    private var value: ColorOrGradientValue?
 
     private let gradientLayer = CAGradientLayer()
 
@@ -22,8 +33,8 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         }
     }
 
-    public func configure(chatColor: ColorOrGradientValue, referenceView: UIView) {
-        self.chatColor = chatColor
+    public func configure(value: ColorOrGradientValue, referenceView: UIView) {
+        self.value = value
         self.referenceView = referenceView
         updateAppearance()
     }
@@ -31,10 +42,10 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     @objc
     public static func build(conversationStyle: ConversationStyle,
                              referenceView: UIView) -> CVColorOrGradientView {
-        let chatColorView = CVColorOrGradientView()
-        chatColorView.configure(chatColor: conversationStyle.bubbleChatColorOutgoing,
-                                referenceView: referenceView)
-        return chatColorView
+        let view = CVColorOrGradientView()
+        view.configure(value: conversationStyle.bubbleChatColorOutgoing,
+                       referenceView: referenceView)
+        return view
     }
 
     @available(swift, obsoleted: 1.0)
@@ -43,7 +54,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     }
 
     public func updateAppearance() {
-        guard let chatColor = self.chatColor,
+        guard let value = self.value,
               let referenceView = self.referenceView else {
             self.backgroundColor = nil
             gradientLayer.removeFromSuperlayer()
@@ -53,7 +64,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
 
-        switch chatColor {
+        switch value {
         case .solidColor(let color):
             backgroundColor = color
             gradientLayer.removeFromSuperlayer()
@@ -177,7 +188,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         super.reset()
 
         self.referenceView = nil
-        self.chatColor = nil
+        self.value = nil
         self.backgroundColor = nil
         gradientLayer.removeFromSuperlayer()
     }

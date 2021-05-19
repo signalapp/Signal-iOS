@@ -302,7 +302,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let wideCornerRadius: CGFloat = 12
 
         // Background
-        chatColorView.configure(chatColor: conversationStyle.bubbleChatColorOutgoing,
+        chatColorView.configure(value: conversationStyle.bubbleChatColorOutgoing,
                                 referenceView: componentDelegate.view)
         bubbleView.addSubviewToFillSuperviewEdges(chatColorView)
         tintView.backgroundColor = (conversationStyle.isDarkThemeEnabled

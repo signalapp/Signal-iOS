@@ -4,11 +4,21 @@
 
 import Foundation
 
-// A round "swatch" that offers a preview of a conversation color option.
+// Compare with CVColorOrGradientView:
+//
+// * CVColorOrGradientView is intended to be used in CVC cells.
+//   It does not assume the gradient bounds corresponds to the
+//   view bounds.
+// * ColorOrGradientSwatchView is for use elsewhere.
+//   It can pin gradient bounds to the edges of a circle for previews.
+//   It can be used to render wallpapers.
+//
+// Although we could combine these two views, these two scenarios are
+// just different enough that its convenient to have two separate views.
 public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
-    public var chatColor: ChatColor {
+    public var setting: ColorOrGradientSetting {
         didSet {
-            if chatColor != oldValue {
+            if setting != oldValue {
                 configure()
             }
         }
@@ -22,8 +32,8 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
 
     private let gradientLayer = CAGradientLayer()
 
-    public init(chatColor: ChatColor, mode: Mode) {
-        self.chatColor = chatColor
+    public init(setting: ColorOrGradientSetting, mode: Mode) {
+        self.setting = setting
         self.mode = mode
 
         super.init(name: "ColorOrGradientSwatchView")
@@ -59,7 +69,6 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
 
     private func configure() {
         let size = bounds.size
-        let setting = chatColor.setting
         let newState = State(size: size, setting: setting)
         // Exit early if the appearance and bounds haven't changed.
         guard state != newState else {

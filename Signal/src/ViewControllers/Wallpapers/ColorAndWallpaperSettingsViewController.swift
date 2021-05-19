@@ -88,8 +88,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     ChatColors.defaultChatColorForRendering(transaction: transaction)
                 }
             }
-            let defaultColorView = ColorOrGradientSwatchView(chatColor: chatColor,
-                                                       mode: .circle)
+            let defaultColorView = ColorOrGradientSwatchView(setting: chatColor.setting, mode: .circle)
             defaultColorView.autoSetDimensions(to: .square(16))
             defaultColorView.setContentHuggingHigh()
             defaultColorView.setCompressionResistanceHigh()

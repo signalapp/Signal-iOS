@@ -93,7 +93,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         if isBorderless && conversationStyle.hasWallpaper {
             let chatColorView = componentView.chatColorView
-            chatColorView.configure(chatColor: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
+            chatColorView.configure(value: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
                                     referenceView: componentDelegate.view)
             chatColorView.layer.cornerRadius = 11
             chatColorView.layer.masksToBounds = true

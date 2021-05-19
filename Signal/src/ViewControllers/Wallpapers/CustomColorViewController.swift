@@ -947,12 +947,12 @@ private class CustomColorPreviewView: UIView {
         mockConversationView.customChatColor = delegate.currentChatColor
 
         if let knobView1 = self.knobView1 {
-            knobView1.value = ChatColor(id: "knob1",
-                                        setting: .solidColor(color: delegate.gradientColor1))
+            knobView1.setChatColor(ChatColor(id: "knob1",
+                                             setting: .solidColor(color: delegate.gradientColor1)))
         }
         if let knobView2 = self.knobView2 {
-            knobView2.value = ChatColor(id: "knob2",
-                                        setting: .solidColor(color: delegate.gradientColor2))
+            knobView2.setChatColor(ChatColor(id: "knob2",
+                                             setting: .solidColor(color: delegate.gradientColor2)))
         }
     }
 
@@ -969,9 +969,8 @@ private class CustomColorPreviewView: UIView {
             }
         }
 
-        var value: ChatColor {
-            get { swatchView.chatColor }
-            set { swatchView.chatColor = newValue }
+        func setChatColor(_ value: ChatColor) {
+            swatchView.setting = value.setting
         }
 
         private let selectedBorder = OWSLayerView.circleView()
@@ -981,7 +980,7 @@ private class CustomColorPreviewView: UIView {
 
         init(isSelected: Bool, chatColor: ChatColor, name: String? = nil) {
             self.isSelected = isSelected
-            self.swatchView = ColorOrGradientSwatchView(chatColor: chatColor, mode: .circle)
+            self.swatchView = ColorOrGradientSwatchView(setting: chatColor.setting, mode: .circle)
 
             super.init(frame: .zero)
 

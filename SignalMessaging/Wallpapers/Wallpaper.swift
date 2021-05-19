@@ -195,16 +195,16 @@ public enum Wallpaper: String, CaseIterable {
         AssertIsOnMainThread()
 
         guard let mode = { () -> WallpaperView.Mode? in
-            if let solidColor = wallpaper.solidColor {
-                return .solidColor(solidColor: solidColor)
-            } else if let gradientView = wallpaper.gradientView {
-                return .gradientView(gradientView: gradientView)
-            } else if case .photo = wallpaper {
+            if case .photo = wallpaper {
                 guard let photo = photo else {
                     owsFailDebug("Missing photo for wallpaper \(wallpaper)")
                     return nil
                 }
                 return .image(image: photo)
+            } else if let solidColor = wallpaper.asSolidColor {
+                return .solidColor(solidColor: solidColor)
+            } else if let swatchView = wallpaper.asSwatchView(mode: .rectangle) {
+                return .gradientView(gradientView: swatchView)
             } else {
                 owsFailDebug("Unexpected wallpaper type \(wallpaper)")
                 return nil
@@ -226,10 +226,10 @@ fileprivate extension Wallpaper {
 
 // MARK: -
 
-fileprivate extension Wallpaper {
+extension Wallpaper {
     private static let enumStore = SDSKeyValueStore(collection: "Wallpaper+Enum")
 
-    static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
+    fileprivate static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(photo == nil || wallpaper == .photo)
 
         try cleanupPhotoIfNecessary(for: thread)
@@ -247,7 +247,7 @@ fileprivate extension Wallpaper {
         return get(for: key(for: thread), transaction: transaction)
     }
 
-    static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
+    fileprivate static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
         guard let rawValue = enumStore.getString(key, transaction: transaction) else {
             return nil
         }
