@@ -13,12 +13,6 @@ public final class BackgroundPoller : NSObject {
         promises = []
         promises.append(pollForMessages())
         promises.append(contentsOf: pollForClosedGroupMessages())
-        let openGroups: [String:OpenGroup] = Storage.shared.getAllUserOpenGroups()
-        openGroups.values.forEach { openGroup in
-            let poller = OpenGroupPoller(for: openGroup)
-            poller.stop()
-            promises.append(poller.pollForNewMessages(isBackgroundPoll: true))
-        }
         let v2OpenGroupServers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
         v2OpenGroupServers.forEach { server in
             let poller = OpenGroupPollerV2(for: server)
@@ -27,7 +21,8 @@ public final class BackgroundPoller : NSObject {
         }
         when(resolved: promises).done { _ in
             completionHandler(.newData)
-        }.catch { _ in
+        }.catch { error in
+            SNLog("Background poll failed due to error: \(error)")
             completionHandler(.failed)
         }
     }
@@ -43,19 +38,21 @@ public final class BackgroundPoller : NSObject {
     }
     
     private static func getMessages(for publicKey: String) -> Promise<Void> {
-        return SnodeAPI.getSwarm(for: publicKey).then2 { swarm -> Promise<Void> in
+        return SnodeAPI.getSwarm(for: publicKey).then(on: DispatchQueue.main) { swarm -> Promise<Void> in
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
-            return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
-                let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
-                let promises = messages.compactMap { json -> Promise<Void>? in
-                    // Use a best attempt approach here; we don't want to fail the entire process if one of the
-                    // messages failed to parse.
-                    guard let envelope = SNProtoEnvelope.from(json),
-                        let data = try? envelope.serializedData() else { return nil }
-                    let job = MessageReceiveJob(data: data, isBackgroundPoll: true)
-                    return job.execute()
+            return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
+                return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
+                    let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                    let promises = messages.compactMap { json -> Promise<Void>? in
+                        // Use a best attempt approach here; we don't want to fail the entire process if one of the
+                        // messages failed to parse.
+                        guard let envelope = SNProtoEnvelope.from(json),
+                            let data = try? envelope.serializedData() else { return nil }
+                        let job = MessageReceiveJob(data: data, isBackgroundPoll: true)
+                        return job.execute()
+                    }
+                    return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                 }
-                return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
             }
         }
     }
