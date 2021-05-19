@@ -76,6 +76,8 @@ class CustomColorViewController: OWSTableViewController2 {
                 self.gradientColor1Setting = gradientColor1.asColorSetting
                 self.gradientColor2Setting = gradientColor2.asColorSetting
                 self.angleRadians = angleRadians
+            case .themedColor, .themedGradient:
+                owsFail("Case not supported by this view.")
             }
         }
 

@@ -32,23 +32,37 @@ public struct OWSColor: Equatable, Codable {
 
 public enum ChatColorAppearance: Equatable, Codable {
     case solidColor(color: OWSColor)
+    case themedColor(lightThemeColor: OWSColor, darkThemeColor: OWSColor)
     // If angleRadians = 0, gradientColor1 is N.
     // If angleRadians = PI / 2, gradientColor1 is E.
     // etc.
     case gradient(gradientColor1: OWSColor,
                   gradientColor2: OWSColor,
                   angleRadians: CGFloat)
+    case themedGradient(lightGradientColor1: OWSColor,
+                        lightGradientColor2: OWSColor,
+                        darkGradientColor1: OWSColor,
+                        darkGradientColor2: OWSColor,
+                        angleRadians: CGFloat)
 
     private enum TypeKey: UInt, Codable {
         case solidColor = 0
         case gradient = 1
+        case themedColor = 2
+        case themedGradient = 3
     }
 
     private enum CodingKeys: String, CodingKey {
         case typeKey
         case solidColor
+        case lightThemeColor
+        case darkThemeColor
         case gradientColor1
         case gradientColor2
+        case lightGradientColor1
+        case lightGradientColor2
+        case darkGradientColor1
+        case darkGradientColor2
         case angleRadians
     }
 
@@ -60,6 +74,10 @@ public enum ChatColorAppearance: Equatable, Codable {
         case .solidColor:
             let color = try container.decode(OWSColor.self, forKey: .solidColor)
             self = .solidColor(color: color)
+        case .themedColor:
+            let lightThemeColor = try container.decode(OWSColor.self, forKey: .lightThemeColor)
+            let darkThemeColor = try container.decode(OWSColor.self, forKey: .darkThemeColor)
+            self = .themedColor(lightThemeColor: lightThemeColor, darkThemeColor: darkThemeColor)
         case .gradient:
             let gradientColor1 = try container.decode(OWSColor.self, forKey: .gradientColor1)
             let gradientColor2 = try container.decode(OWSColor.self, forKey: .gradientColor2)
@@ -67,6 +85,17 @@ public enum ChatColorAppearance: Equatable, Codable {
             self = .gradient(gradientColor1: gradientColor1,
                              gradientColor2: gradientColor2,
                              angleRadians: angleRadians)
+        case .themedGradient:
+            let lightGradientColor1 = try container.decode(OWSColor.self, forKey: .lightGradientColor1)
+            let lightGradientColor2 = try container.decode(OWSColor.self, forKey: .lightGradientColor2)
+            let darkGradientColor1 = try container.decode(OWSColor.self, forKey: .darkGradientColor1)
+            let darkGradientColor2 = try container.decode(OWSColor.self, forKey: .darkGradientColor2)
+            let angleRadians = try container.decode(CGFloat.self, forKey: .angleRadians)
+            self = .themedGradient(lightGradientColor1: lightGradientColor1,
+                                   lightGradientColor2: lightGradientColor2,
+                                   darkGradientColor1: darkGradientColor1,
+                                   darkGradientColor2: darkGradientColor2,
+                                   angleRadians: angleRadians)
         }
     }
 
@@ -77,11 +106,81 @@ public enum ChatColorAppearance: Equatable, Codable {
         case .solidColor(let solidColor):
             try container.encode(TypeKey.solidColor, forKey: .typeKey)
             try container.encode(solidColor, forKey: .solidColor)
+        case .themedColor(let lightThemeColor, let darkThemeColor):
+            try container.encode(TypeKey.themedColor, forKey: .typeKey)
+            try container.encode(lightThemeColor, forKey: .lightThemeColor)
+            try container.encode(darkThemeColor, forKey: .darkThemeColor)
         case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
             try container.encode(TypeKey.gradient, forKey: .typeKey)
             try container.encode(gradientColor1, forKey: .gradientColor1)
             try container.encode(gradientColor2, forKey: .gradientColor2)
             try container.encode(angleRadians, forKey: .angleRadians)
+        case .themedGradient(let lightGradientColor1,
+                             let lightGradientColor2,
+                             let darkGradientColor1,
+                             let darkGradientColor2,
+                             let angleRadians):
+            try container.encode(TypeKey.themedGradient, forKey: .typeKey)
+            try container.encode(lightGradientColor1, forKey: .lightGradientColor1)
+            try container.encode(lightGradientColor2, forKey: .lightGradientColor2)
+            try container.encode(darkGradientColor1, forKey: .darkGradientColor1)
+            try container.encode(darkGradientColor2, forKey: .darkGradientColor2)
+            try container.encode(angleRadians, forKey: .angleRadians)
+        }
+    }
+}
+
+// MARK: -
+
+public enum CVChatColor: CustomStringConvertible {
+    case solidColor(color: UIColor)
+    // If angleRadians = 0, gradientColor1 is N.
+    // If angleRadians = PI / 2, gradientColor1 is E.
+    // etc.
+    case gradient(gradientColor1: UIColor,
+                  gradientColor2: UIColor,
+                  angleRadians: CGFloat)
+
+    public var description: String {
+        switch self {
+        case .solidColor(let color):
+            return "[solidColor: \(color.asOWSColor)]"
+        case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
+            return "[gradient gradientColor1: \(gradientColor1.asOWSColor), gradientColor2: \(gradientColor2.asOWSColor), angleRadians: \(angleRadians)]"
+        }
+    }
+}
+
+// MARK: -
+
+extension ChatColorAppearance {
+    var asCVChatColor: CVChatColor {
+        switch self {
+        case .solidColor(let solidColor):
+            return .solidColor(color: solidColor.asUIColor)
+        case .themedColor(let lightThemeColor, let darkThemeColor):
+            let color = (Theme.isDarkThemeEnabled
+                            ? darkThemeColor
+                            : lightThemeColor)
+            return .solidColor(color: color.asUIColor)
+        case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
+            return .gradient(gradientColor1: gradientColor1.asUIColor,
+                             gradientColor2: gradientColor2.asUIColor,
+                             angleRadians: angleRadians)
+        case .themedGradient(let lightGradientColor1,
+                             let lightGradientColor2,
+                             let darkGradientColor1,
+                             let darkGradientColor2,
+                             let angleRadians):
+            let gradientColor1 = (Theme.isDarkThemeEnabled
+                                    ? darkGradientColor1
+                                    : lightGradientColor1)
+            let gradientColor2 = (Theme.isDarkThemeEnabled
+                                    ? darkGradientColor2
+                                    : lightGradientColor2)
+            return .gradient(gradientColor1: gradientColor1.asUIColor,
+                             gradientColor2: gradientColor2.asUIColor,
+                             angleRadians: angleRadians)
         }
     }
 }

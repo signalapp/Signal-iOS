@@ -377,39 +377,3 @@ public class ConversationStyle: NSObject {
             "]"
     }
 }
-
-// MARK: -
-
-public enum CVChatColor: CustomStringConvertible {
-    case solidColor(color: UIColor)
-    // If angleRadians = 0, gradientColor1 is N.
-    // If angleRadians = PI / 2, gradientColor1 is E.
-    // etc.
-    case gradient(gradientColor1: UIColor,
-                  gradientColor2: UIColor,
-                  angleRadians: CGFloat)
-
-    public var description: String {
-        switch self {
-        case .solidColor(let color):
-            return "[solidColor: \(color.asOWSColor)]"
-        case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
-            return "[gradient gradientColor1: \(gradientColor1.asOWSColor), gradientColor2: \(gradientColor2.asOWSColor), angleRadians: \(angleRadians)]"
-        }
-    }
-}
-
-// MARK: -
-
-extension ChatColorAppearance {
-    var asCVChatColor: CVChatColor {
-        switch self {
-        case .solidColor(let solidColor):
-            return .solidColor(color: solidColor.asUIColor)
-        case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
-            return .gradient(gradientColor1: gradientColor1.asUIColor,
-                             gradientColor2: gradientColor2.asUIColor,
-                             angleRadians: angleRadians)
-        }
-    }
-}
