@@ -8,6 +8,7 @@ public enum SNUserDefaults {
         case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
         case isMigratingToV2KeyPair
+        case hasSeenFileServerInstabilityNotification
     }
 
     public enum Date : Swift.String {
