@@ -141,19 +141,24 @@ public enum Wallpaper: String, CaseIterable {
         return dimInDarkMode
     }
 
+    public static func wallpaperForRendering(for thread: TSThread?,
+                                             transaction: SDSAnyReadTransaction) -> Wallpaper? {
+        if let wallpaper = get(for: thread, transaction: transaction) {
+            return wallpaper
+        } else if thread != nil, let wallpaper = get(for: nil, transaction: transaction) {
+            return wallpaper
+        } else {
+            return nil
+        }
+    }
+
     public static func view(for thread: TSThread? = nil,
                             transaction: SDSAnyReadTransaction) -> WallpaperView? {
         AssertIsOnMainThread()
 
-        guard let wallpaper: Wallpaper = {
-            if let wallpaper = get(for: thread, transaction: transaction) {
-                return wallpaper
-            } else if thread != nil, let wallpaper = get(for: nil, transaction: transaction) {
-                return wallpaper
-            } else {
-                return nil
-            }
-        }() else { return nil }
+        guard let wallpaper = Self.wallpaperForRendering(for: thread, transaction: transaction) else {
+            return nil
+        }
 
         let photo: UIImage? = {
             guard case .photo = wallpaper else { return nil }
@@ -226,10 +231,10 @@ fileprivate extension Wallpaper {
 
 // MARK: -
 
-extension Wallpaper {
+fileprivate extension Wallpaper {
     private static let enumStore = SDSKeyValueStore(collection: "Wallpaper+Enum")
 
-    fileprivate static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
+    static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(photo == nil || wallpaper == .photo)
 
         try cleanupPhotoIfNecessary(for: thread)
@@ -243,11 +248,11 @@ extension Wallpaper {
         }
     }
 
-    public static func get(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Wallpaper? {
+    static func get(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Wallpaper? {
         return get(for: key(for: thread), transaction: transaction)
     }
 
-    fileprivate static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
+    static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
         guard let rawValue = enumStore.getString(key, transaction: transaction) else {
             return nil
         }

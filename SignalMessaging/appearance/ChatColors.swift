@@ -167,14 +167,14 @@ public class ChatColors: NSObject, Dependencies {
     }
     public static var allValuesSorted: [ChatColor] { Self.chatColors.allValuesSorted }
 
-    public static var defaultChatColor: ChatColor { Self.value_ultramarine }
+    public static var defaultChatColor: ChatColor { Values.ultramarine }
 
     public static func autoChatColorForRendering(forThread thread: TSThread?,
                                                  transaction: SDSAnyReadTransaction) -> ChatColor {
         if let value = defaultChatColorSetting(transaction: transaction) {
             return value
-        } else if let wallpaper = Wallpaper.get(for: thread, transaction: transaction),
-           wallpaper != .photo {
+        } else if let wallpaper = Wallpaper.wallpaperForRendering(for: thread,
+                                                                  transaction: transaction) {
             return autoChatColorForRendering(forWallpaper: wallpaper)
         } else {
             return Self.defaultChatColor
@@ -182,10 +182,7 @@ public class ChatColors: NSObject, Dependencies {
     }
 
     public static func autoChatColorForRendering(forWallpaper wallpaper: Wallpaper) -> ChatColor {
-        // TODO: Derive actual value from wallpaper.
-        let color = OWSColor(red: 1, green: 0, blue: 0)
-        return ChatColor(id: wallpaper.rawValue,
-                         setting: .solidColor(color: color))
+        wallpaper.defaultChatColor
     }
 
     // Returns nil for default/auto.
@@ -206,9 +203,6 @@ public class ChatColors: NSObject, Dependencies {
     public static func chatColorSetting(thread: TSThread,
                                         transaction: SDSAnyReadTransaction) -> ChatColor? {
         chatColorSetting(key: thread.uniqueId, transaction: transaction)
-//        if let value = chatColorSetting(key: thread.uniqueId, transaction: transaction) {
-//            return value
-//        }
     }
 
     public static func chatColorForRendering(thread: TSThread,
@@ -303,17 +297,169 @@ public class ChatColors: NSObject, Dependencies {
 
     // MARK: -
 
-    private static var value_ultramarine = ChatColor(
-        id: "Ultramarine",
-        setting: .gradient(gradientColor1: UIColor(rgbHex: 0x0552F0).asOWSColor,
-                           gradientColor2: UIColor(rgbHex: 0x2C6BED).asOWSColor,
-                           angleRadians: CGFloat.pi * 0),
-        isBuiltIn: true,
-        creationTimestamp: 0
-    )
+    public class Values {
+        @available(*, unavailable, message: "Do not instantiate this class.")
+        private init() {}
 
-    private static var builtInValues: [ChatColor] {
-        func parseAngleDegreesFromSpec(_ angleDegreesFromSpec: CGFloat) -> CGFloat {
+        // Default Gradient
+        static let ultramarine = ChatColor(
+            id: "Ultramarine",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x0552F0).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x2C6BED).asOWSColor,
+                               angleRadians: CGFloat.pi * 0),
+            isBuiltIn: true,
+            creationTimestamp: 0
+        )
+
+        // Solid Colors
+        static let crimson = ChatColor(
+            id: "Crimson",
+            setting: .solidColor(color: UIColor(rgbHex: 0xCF163E).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 1
+        )
+        static let vermilion = ChatColor(
+            id: "Vermilion",
+            setting: .solidColor(color: UIColor(rgbHex: 0xC73F0A).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 2
+        )
+        static let burlap = ChatColor(
+            id: "Burlap",
+            setting: .solidColor(color: UIColor(rgbHex: 0x6F6A58).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 3
+        )
+        static let forest = ChatColor(
+            id: "Forest",
+            setting: .solidColor(color: UIColor(rgbHex: 0x3B7845).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 4
+        )
+        static let wintergreen = ChatColor(
+            id: "Wintergreen",
+            setting: .solidColor(color: UIColor(rgbHex: 0x1D8663).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 5
+        )
+        static let teal = ChatColor(
+            id: "Teal",
+            setting: .solidColor(color: UIColor(rgbHex: 0x077D92).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 6
+        )
+        static let blue = ChatColor(
+            id: "Blue",
+            setting: .solidColor(color: UIColor(rgbHex: 0x336BA3).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 7
+        )
+        static let indigo = ChatColor(
+            id: "Indigo",
+            setting: .solidColor(color: UIColor(rgbHex: 0x6058CA).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 8
+        )
+        static let violet = ChatColor(
+            id: "Violet",
+            setting: .solidColor(color: UIColor(rgbHex: 0x9932C8).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 9
+        )
+        static let plum = ChatColor(
+            id: "Plum",
+            setting: .solidColor(color: UIColor(rgbHex: 0xAA377A).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 10
+        )
+        static let taupe = ChatColor(
+            id: "Taupe",
+            setting: .solidColor(color: UIColor(rgbHex: 0x8F616A).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 11
+        )
+        static let steel = ChatColor(
+            id: "Steel",
+            setting: .solidColor(color: UIColor(rgbHex: 0x71717F).asOWSColor),
+            isBuiltIn: true,
+            creationTimestamp: 12
+        )
+
+        // Gradients
+        static let ember = ChatColor(
+            id: "Ember",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0xE57C00).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x5E0000).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(168)),
+            isBuiltIn: true,
+            creationTimestamp: 13
+        )
+        static let midnight = ChatColor(
+            id: "Midnight",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x52526B).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x105FD5).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(180)),
+            isBuiltIn: true,
+            creationTimestamp: 14
+        )
+        static let infrared = ChatColor(
+            id: "Infrared",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0xF65560).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x442CED).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(192)),
+            isBuiltIn: true,
+            creationTimestamp: 15
+        )
+        static let lagoon = ChatColor(
+            id: "Lagoon",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x0975B3).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x1B8377).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(180)),
+            isBuiltIn: true,
+            creationTimestamp: 16
+        )
+        static let fluorescent = ChatColor(
+            id: "Fluorescent",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0xB418EC).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0xA30A99).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(192)),
+            isBuiltIn: true,
+            creationTimestamp: 17
+        )
+        static let basil = ChatColor(
+            id: "Basil",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x2F9373).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x077343).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(180)),
+            isBuiltIn: true,
+            creationTimestamp: 18
+        )
+        static let sublime = ChatColor(
+            id: "Sublime",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x6281D5).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x974460).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(180)),
+            isBuiltIn: true,
+            creationTimestamp: 19
+        )
+        static let sea = ChatColor(
+            id: "Sea",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x498FD4).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x2C66A0).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(180)),
+            isBuiltIn: true,
+            creationTimestamp: 20
+        )
+        static let tangerine = ChatColor(
+            id: "Tangerine",
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0xDB7133).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x911231).asOWSColor,
+                               angleRadians: parseAngleDegreesFromSpec(192)),
+            isBuiltIn: true,
+            creationTimestamp: 21
+        )
+
+        private static func parseAngleDegreesFromSpec(_ angleDegreesFromSpec: CGFloat) -> CGFloat {
             // In our models:
             // If angleRadians = 0, gradientColor1 is N.
             // If angleRadians = PI / 2, gradientColor1 is E.
@@ -325,152 +471,40 @@ public class ChatColors: NSObject, Dependencies {
             // etc.
             return ((angleDegreesFromSpec - 180) / 180) * CGFloat.pi
         }
+    }
 
+    private static var builtInValues: [ChatColor] {
         return [
             // We use fixed timestamps to ensure that built-in values
             // appear before custom values and to control their relative ordering.
 
             // Default Gradient
-            Self.value_ultramarine,
+            Values.ultramarine,
 
             // Solid Colors
-            ChatColor(
-                id: "Crimson",
-                setting: .solidColor(color: UIColor(rgbHex: 0xCF163E).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 1
-            ),
-            ChatColor(
-                id: "Vermilion",
-                setting: .solidColor(color: UIColor(rgbHex: 0xC73F0A).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 2
-            ),
-            ChatColor(
-                id: "Burlap",
-                setting: .solidColor(color: UIColor(rgbHex: 0x6F6A58).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 3
-            ),
-            ChatColor(
-                id: "Forest",
-                setting: .solidColor(color: UIColor(rgbHex: 0x3B7845).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 4
-            ),
-            ChatColor(
-                id: "Wintergreen",
-                setting: .solidColor(color: UIColor(rgbHex: 0x1D8663).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 5
-            ),
-            ChatColor(
-                id: "Teal",
-                setting: .solidColor(color: UIColor(rgbHex: 0x077D92).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 6
-            ),
-            ChatColor(
-                id: "Blue",
-                setting: .solidColor(color: UIColor(rgbHex: 0x336BA3).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 7
-            ),
-            ChatColor(
-                id: "Indigo",
-                setting: .solidColor(color: UIColor(rgbHex: 0x6058CA).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 8
-            ),
-            ChatColor(
-                id: "Violet",
-                setting: .solidColor(color: UIColor(rgbHex: 0x9932C8).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 9
-            ),
-            ChatColor(
-                id: "Plum",
-                setting: .solidColor(color: UIColor(rgbHex: 0xAA377A).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 10
-            ),
-            ChatColor(
-                id: "Taupe",
-                setting: .solidColor(color: UIColor(rgbHex: 0x8F616A).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 11
-            ),
-            ChatColor(
-                id: "Steel",
-                setting: .solidColor(color: UIColor(rgbHex: 0x71717F).asOWSColor),
-                isBuiltIn: true,
-                creationTimestamp: 12
-            ),
+            Values.crimson,
+            Values.vermilion,
+            Values.burlap,
+            Values.forest,
+            Values.wintergreen,
+            Values.teal,
+            Values.blue,
+            Values.indigo,
+            Values.violet,
+            Values.plum,
+            Values.taupe,
+            Values.steel,
 
             // Gradients
-            ChatColor(id: "Ember",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0xE57C00).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x5E0000).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(168)),
-                      isBuiltIn: true,
-                      creationTimestamp: 13
-            ),
-            ChatColor(id: "Midnight",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0x52526B).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x105FD5).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(180)),
-                      isBuiltIn: true,
-                      creationTimestamp: 14
-            ),
-            ChatColor(id: "Infrared",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0xF65560).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x442CED).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(192)),
-                      isBuiltIn: true,
-                      creationTimestamp: 15
-            ),
-            ChatColor(id: "Lagoon",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0x0975B3).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x1B8377).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(180)),
-                      isBuiltIn: true,
-                      creationTimestamp: 16
-            ),
-            ChatColor(id: "Fluorescent",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0xB418EC).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0xA30A99).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(192)),
-                      isBuiltIn: true,
-                      creationTimestamp: 17
-            ),
-            ChatColor(id: "Basil",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0x2F9373).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x077343).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(180)),
-                      isBuiltIn: true,
-                      creationTimestamp: 18
-            ),
-            ChatColor(id: "Sublime",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0x6281D5).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x974460).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(180)),
-                      isBuiltIn: true,
-                      creationTimestamp: 19
-            ),
-            ChatColor(id: "Sea",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0x498FD4).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x2C66A0).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(180)),
-                      isBuiltIn: true,
-                      creationTimestamp: 20
-            ),
-            ChatColor(id: "Tangerine",
-                      setting: .gradient(gradientColor1: UIColor(rgbHex: 0xDB7133).asOWSColor,
-                                         gradientColor2: UIColor(rgbHex: 0x911231).asOWSColor,
-                                         angleRadians: parseAngleDegreesFromSpec(192)),
-                      isBuiltIn: true,
-                      creationTimestamp: 21
-            )
+            Values.ember,
+            Values.midnight,
+            Values.infrared,
+            Values.lagoon,
+            Values.fluorescent,
+            Values.basil,
+            Values.sublime,
+            Values.sea,
+            Values.tangerine
         ]
     }
 }

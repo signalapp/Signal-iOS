@@ -56,8 +56,6 @@ class PreviewWallpaperViewController: UIViewController {
         mockConversationView.autoPinWidthToSuperview()
         mockConversationView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 20)
         mockConversationView.isUserInteractionEnabled = false
-        // TODO: Here and elsewhere in this class we need to update
-        // mockConversationView.customChatColor
 
         modeDidChange()
 
@@ -152,6 +150,8 @@ class PreviewWallpaperViewController: UIViewController {
             addChild(standalonePage)
             standalonePage.view.autoPinEdgesToSuperviewEdges()
             blurButton.isHidden = false
+
+            mockConversationView.customChatColor = Wallpaper.photo.defaultChatColor
         case .preset(let selectedWallpaper):
             if pageViewController.view.superview == nil {
                 view.insertSubview(pageViewController.view, at: 0)
@@ -164,6 +164,8 @@ class PreviewWallpaperViewController: UIViewController {
             currentPage = WallpaperPage(wallpaper: selectedWallpaper,
                                         thread: thread)
             blurButton.isHidden = true
+
+            mockConversationView.customChatColor = selectedWallpaper.defaultChatColor
         }
 
         mockConversationView.model = buildMockConversationModel()
