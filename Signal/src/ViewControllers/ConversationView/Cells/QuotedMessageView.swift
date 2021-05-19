@@ -46,7 +46,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
     // Background
     private let bubbleView = ManualLayoutViewWithLayer(name: "bubbleView")
-    private let chatColorView = CVChatColorView()
+    private let chatColorView = CVColorOrGradientView()
     private let tintView = ManualLayoutViewWithLayer(name: "tintView")
 
     static func stateForConversation(quotedReplyModel: OWSQuotedReplyModel,

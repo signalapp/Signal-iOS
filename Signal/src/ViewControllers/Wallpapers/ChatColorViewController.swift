@@ -268,8 +268,8 @@ class ChatColorViewController: OWSTableViewController2 {
 
     private func duplicateValue(_ oldValue: ChatColor) {
         let newValue = ChatColor(id: ChatColor.randomId,
-                                       appearance: oldValue.appearance,
-                                       isBuiltIn: false)
+                                 setting: oldValue.setting,
+                                 isBuiltIn: false)
         Self.databaseStorage.write { transaction in
             Self.chatColors.upsertCustomValue(newValue, transaction: transaction)
         }
@@ -391,7 +391,7 @@ class ChatColorViewController: OWSTableViewController2 {
                 switch option {
                 case .auto:
                     let value = ChatColors.autoChatColor(forThread: self.thread, transaction: transaction)
-                    let view = ChatColorSwatchView(chatColor: value, mode: .circle)
+                    let view = ColorOrGradientSwatchView(chatColor: value, mode: .circle)
 
                     let label = UILabel()
                     label.text = NSLocalizedString("CHAT_COLOR_SETTINGS_AUTO",
@@ -407,10 +407,10 @@ class ChatColorViewController: OWSTableViewController2 {
                     // nil represents auto.
                     addOptionView(innerView: view, isSelected: currentValue == nil)
                 case .builtInValue(let value):
-                    let view = ChatColorSwatchView(chatColor: value, mode: .circle)
+                    let view = ColorOrGradientSwatchView(chatColor: value, mode: .circle)
                     addOptionView(innerView: view, isSelected: currentValue == value)
                 case .customValue(let value):
-                    let view = ChatColorSwatchView(chatColor: value, mode: .circle)
+                    let view = ColorOrGradientSwatchView(chatColor: value, mode: .circle)
 
                     let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
                     view.addSubview(imageView)

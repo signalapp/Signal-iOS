@@ -191,8 +191,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     innerBubbleView.layer.mask = maskLayer;
 
     // Background
-    CVChatColorView *chatColorView = [CVChatColorView buildWithConversationStyle:self.conversationStyle
-                                                                   referenceView:self];
+    CVColorOrGradientView *chatColorView = [CVColorOrGradientView buildWithConversationStyle:self.conversationStyle
+                                                                               referenceView:self];
     chatColorView.shouldDeactivateConstraints = NO;
     [innerBubbleView addSubview:chatColorView];
     [chatColorView autoPinEdgesToSuperviewEdges];

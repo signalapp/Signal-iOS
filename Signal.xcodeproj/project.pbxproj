@@ -120,7 +120,7 @@
 		343D69AA260B870600F8638C /* ManualStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343D69A9260B870600F8638C /* ManualStackView.swift */; };
 		343D69B1260B874800F8638C /* OWSStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343D69B0260B874800F8638C /* OWSStackView.swift */; };
 		343DA0012645CA720000833C /* ChatColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343DA0002645CA720000833C /* ChatColors.swift */; };
-		3444E6BB264EDFF300B32E3B /* CVChatColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3444E6BA264EDFF200B32E3B /* CVChatColorView.swift */; };
+		3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */; };
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
 		34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
@@ -215,6 +215,7 @@
 		3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */; };
 		347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		3472A4AC2620911D000803AE /* ManualLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472A4AB2620911D000803AE /* ManualLayoutView.swift */; };
+		3472D7B226553DAA004D11E1 /* ColorOrGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472D7B126553DAA004D11E1 /* ColorOrGradient.swift */; };
 		347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */; };
 		3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56626111605006723D2 /* PaymentsReconciliation.swift */; };
 		3474C56F26111605006723D2 /* PaymentsProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56726111605006723D2 /* PaymentsProcessor.swift */; };
@@ -456,7 +457,7 @@
 		34FB6A5125D1CD6000E599B1 /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */; };
 		34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */; };
 		34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */; };
-		34FCCA022649A69E00A63EDE /* ChatColorSwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FCCA012649A69E00A63EDE /* ChatColorSwatchView.swift */; };
+		34FCCA022649A69E00A63EDE /* ColorOrGradientSwatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FCCA012649A69E00A63EDE /* ColorOrGradientSwatchView.swift */; };
 		34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */; };
 		34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FDB29121FF986600A01202 /* UIView+OWS.swift */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
@@ -1146,7 +1147,7 @@
 		343D69A9260B870600F8638C /* ManualStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualStackView.swift; sourceTree = "<group>"; };
 		343D69B0260B874800F8638C /* OWSStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSStackView.swift; sourceTree = "<group>"; };
 		343DA0002645CA720000833C /* ChatColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColors.swift; sourceTree = "<group>"; };
-		3444E6BA264EDFF200B32E3B /* CVChatColorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVChatColorView.swift; sourceTree = "<group>"; };
+		3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVColorOrGradientView.swift; sourceTree = "<group>"; };
 		34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareAppExtensionContext.h; sourceTree = "<group>"; };
 		34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareAppExtensionContext.m; sourceTree = "<group>"; };
 		34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalShareExtension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1251,6 +1252,7 @@
 		3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsReconciliationTest.swift; sourceTree = "<group>"; };
 		347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AvatarDownloadOperation.swift; sourceTree = "<group>"; };
 		3472A4AB2620911D000803AE /* ManualLayoutView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManualLayoutView.swift; sourceTree = "<group>"; };
+		3472D7B126553DAA004D11E1 /* ColorOrGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradient.swift; sourceTree = "<group>"; };
 		347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BottomBar.swift"; sourceTree = "<group>"; };
 		3474C56626111605006723D2 /* PaymentsReconciliation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsReconciliation.swift; sourceTree = "<group>"; };
 		3474C56726111605006723D2 /* PaymentsProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsProcessor.swift; sourceTree = "<group>"; };
@@ -1526,7 +1528,7 @@
 		34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewUtils.swift; sourceTree = "<group>"; };
 		34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentModelCell.swift; sourceTree = "<group>"; };
-		34FCCA012649A69E00A63EDE /* ChatColorSwatchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorSwatchView.swift; sourceTree = "<group>"; };
+		34FCCA012649A69E00A63EDE /* ColorOrGradientSwatchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorOrGradientSwatchView.swift; sourceTree = "<group>"; };
 		34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomColorViewController.swift; sourceTree = "<group>"; };
 		34FDB29121FF986600A01202 /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+OWS.swift"; sourceTree = "<group>"; };
 		38AD4FA92310B7E00038BA75 /* SignalRingRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SignalRingRTC.framework; path = ThirdParty/WebRTC/Build/SignalRingRTC.framework; sourceTree = "<group>"; };
@@ -2674,6 +2676,7 @@
 			isa = PBXGroup;
 			children = (
 				343DA0002645CA720000833C /* ChatColors.swift */,
+				3472D7B126553DAA004D11E1 /* ColorOrGradient.swift */,
 				3469419D215D2EE400B5BFAD /* Theme.h */,
 				3469419F215D2EE400B5BFAD /* Theme.m */,
 				4C29587F233AE23000AAB2AA /* Theme+OWS.swift */,
@@ -2712,7 +2715,7 @@
 				348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */,
 				348815B92552063D00D4F4C4 /* CVAvatarBuilder.swift */,
 				347C3822252CE69400F3D941 /* CVCell.swift */,
-				3444E6BA264EDFF200B32E3B /* CVChatColorView.swift */,
+				3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */,
 				348815C6255346A500D4F4C4 /* CVComponent.swift */,
 				348815C3255343FC00D4F4C4 /* CVComponentDelegate.swift */,
 				347C3839252CE6C900F3D941 /* CVComponents */,
@@ -3744,9 +3747,9 @@
 		88A51B9825BA079500CDB45C /* Wallpapers */ = {
 			isa = PBXGroup;
 			children = (
-				34FCCA012649A69E00A63EDE /* ChatColorSwatchView.swift */,
 				34546F4F2649989C007C4958 /* ChatColorViewController.swift */,
 				88ABAB8A25B8B3CC0008C78A /* ColorAndWallpaperSettingsViewController.swift */,
+				34FCCA012649A69E00A63EDE /* ColorOrGradientSwatchView.swift */,
 				34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */,
 				88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */,
 				88ABAB8C25B8BE1E0008C78A /* SetWallpaperViewController.swift */,
@@ -5060,6 +5063,7 @@
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
 				342BF24D227A03F8005CEAA9 /* StickerHorizontalListView.swift in Sources */,
 				451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */,
+				3472D7B226553DAA004D11E1 /* ColorOrGradient.swift in Sources */,
 				34AC0A1E211B39EA00997B47 /* ThreadViewHelper.m in Sources */,
 				34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */,
 				88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */,
@@ -5346,7 +5350,7 @@
 				346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */,
 				88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
-				3444E6BB264EDFF300B32E3B /* CVChatColorView.swift in Sources */,
+				3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */,
 				327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */,
 				8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */,
 				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,
@@ -5517,7 +5521,7 @@
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				3490D57D25ADDC2A00F5F96C /* GroupLinkPromotionActionSheet.swift in Sources */,
 				887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */,
-				34FCCA022649A69E00A63EDE /* ChatColorSwatchView.swift in Sources */,
+				34FCCA022649A69E00A63EDE /* ColorOrGradientSwatchView.swift in Sources */,
 				34635332257549F2003C5428 /* CVReactionCountsView.swift in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				D044E6A42495A4A90087A0C2 /* OWSCellAccessibilityCustomAction.swift in Sources */,

@@ -298,7 +298,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         componentView.chatColorView.updateAppearance()
 
-        // We propagate this event to all subcomponents that use the CVChatColorView.
+        // We propagate this event to all subcomponents that use the CVColorOrGradientView.
         let keys: [CVComponentKey] = [.quotedReply, .footer]
         for key in keys {
             if let subcomponentAndView = findActiveComponentAndView(key: key,
@@ -757,7 +757,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return max(0, reactionsHeight - reactionsVOverlap)
     }
 
-    private var bubbleChatColor: CVChatColor? {
+    private var bubbleChatColor: ColorOrGradientValue? {
         if !conversationStyle.hasWallpaper && (wasRemotelyDeleted || isBorderlessViewOnceMessage) {
             return .solidColor(color: Theme.backgroundColor)
         }
@@ -1203,7 +1203,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let bubbleView = OWSBubbleView()
 
         // TODO: Combine with OWSBubbleView?
-        fileprivate let chatColorView = CVChatColorView()
+        fileprivate let chatColorView = CVColorOrGradientView()
 
         // Contains the actual renderable message content, arranged vertically.
         fileprivate let contentStack = ManualStackView(name: "message.contentStack")

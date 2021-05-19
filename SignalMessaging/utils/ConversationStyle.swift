@@ -128,10 +128,10 @@ public class ConversationStyle: NSObject {
     @objc
     public static let messageDirectionSpacing: CGFloat = 12
 
-    // ChatColor is used for logging and comparison.
+    // ChatColor is used for persistence, logging and comparison.
     public let chatColor: ChatColor
-    // CVChatColor is used for rendering.
-    public let cvChatColor: CVChatColor
+    // ColorOrGradientValue is used for rendering.
+    public let chatColorValue: ColorOrGradientValue
 
     public required init(type: ConversationStyleType,
                          thread: TSThread,
@@ -145,7 +145,7 @@ public class ConversationStyle: NSObject {
         self.primaryTextColor = Theme.primaryTextColor
         self.hasWallpaper = hasWallpaper
         self.chatColor = chatColor
-        self.cvChatColor = chatColor.appearance.asCVChatColor
+        self.chatColorValue = chatColor.setting.asValue
 
         if type == .messageDetails {
             gutterLeading = 0
@@ -214,7 +214,7 @@ public class ConversationStyle: NSObject {
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60
 
-    public func bubbleChatColor(message: TSMessage) -> CVChatColor {
+    public func bubbleChatColor(message: TSMessage) -> ColorOrGradientValue {
         if message.wasRemotelyDeleted {
             return .solidColor(color: Theme.backgroundColor)
         } else if message is TSIncomingMessage {
@@ -227,7 +227,7 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    public func bubbleChatColor(isIncoming: Bool) -> CVChatColor {
+    public func bubbleChatColor(isIncoming: Bool) -> ColorOrGradientValue {
         if isIncoming {
             return .solidColor(color: bubbleColorIncoming)
         } else {
@@ -235,8 +235,8 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    public var bubbleChatColorOutgoing: CVChatColor {
-        cvChatColor
+    public var bubbleChatColorOutgoing: ColorOrGradientValue {
+        chatColorValue
     }
 
     @objc
@@ -353,8 +353,8 @@ public class ConversationStyle: NSObject {
             textInsets == other.textInsets &&
             lastTextLineAxis == other.lastTextLineAxis &&
             // We don't need to compare chatColor or all of chatColor;
-            // it is sufficient to compare chatColor.appearance.
-            chatColor.appearance == other.chatColor.appearance)
+            // it is sufficient to compare chatColor.setting.
+            chatColor.setting == other.chatColor.setting)
     }
 
     @objc

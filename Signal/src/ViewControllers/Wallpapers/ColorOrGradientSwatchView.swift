@@ -5,7 +5,7 @@
 import Foundation
 
 // A round "swatch" that offers a preview of a conversation color option.
-public class ChatColorSwatchView: ManualLayoutViewWithLayer {
+public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
     public var chatColor: ChatColor {
         didSet {
             if chatColor != oldValue {
@@ -26,7 +26,7 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
         self.chatColor = chatColor
         self.mode = mode
 
-        super.init(name: "ChatColorSwatchView")
+        super.init(name: "ColorOrGradientSwatchView")
 
         self.shouldDeactivateConstraints = false
 
@@ -35,7 +35,7 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
         NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
 
         addLayoutBlock { view in
-            guard let view = view as? ChatColorSwatchView else { return }
+            guard let view = view as? ColorOrGradientSwatchView else { return }
             view.gradientLayer.frame = view.bounds
             view.configure()
         }
@@ -53,14 +53,14 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
 
     fileprivate struct State: Equatable {
         let size: CGSize
-        let appearance: ChatColorAppearance
+        let setting: ColorOrGradientSetting
     }
     private var state: State?
 
     private func configure() {
         let size = bounds.size
-        let appearance = chatColor.appearance
-        let newState = State(size: size, appearance: appearance)
+        let setting = chatColor.setting
+        let newState = State(size: size, setting: setting)
         // Exit early if the appearance and bounds haven't changed.
         guard state != newState else {
             return
@@ -76,9 +76,9 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
             self.clipsToBounds = false
         }
 
-        switch appearance {
+        switch setting.asValue {
         case .solidColor(let color):
-            backgroundColor = color.asUIColor
+            backgroundColor = color
             gradientLayer.removeFromSuperlayer()
         case .gradient(let color1, let color2, let angleRadians):
             backgroundColor = nil
@@ -141,12 +141,11 @@ public class ChatColorSwatchView: ManualLayoutViewWithLayer {
             gradientLayer.endPoint = endPointLL
 
             gradientLayer.colors = [
-                color1.asUIColor.cgColor,
-                color2.asUIColor.cgColor
+                color1.cgColor,
+                color2.cgColor
             ]
 
             CATransaction.commit()
         }
-
     }
 }

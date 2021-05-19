@@ -5,24 +5,24 @@
 import Foundation
 
 @objc
-public class CVChatColorView: ManualLayoutViewWithLayer {
+public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     private weak var referenceView: UIView?
-    private var chatColor: CVChatColor?
+    private var chatColor: ColorOrGradientValue?
 
     private let gradientLayer = CAGradientLayer()
 
     public init() {
-        super.init(name: "CVChatColorView")
+        super.init(name: "CVColorOrGradientView")
 
         addLayoutBlock { view in
-            guard let view = view as? CVChatColorView else { return }
+            guard let view = view as? CVColorOrGradientView else { return }
             view.gradientLayer.frame = view.bounds
             view.updateAppearance()
         }
     }
 
-    public func configure(chatColor: CVChatColor, referenceView: UIView) {
+    public func configure(chatColor: ColorOrGradientValue, referenceView: UIView) {
         self.chatColor = chatColor
         self.referenceView = referenceView
         updateAppearance()
@@ -30,8 +30,8 @@ public class CVChatColorView: ManualLayoutViewWithLayer {
 
     @objc
     public static func build(conversationStyle: ConversationStyle,
-                             referenceView: UIView) -> CVChatColorView {
-        let chatColorView = CVChatColorView()
+                             referenceView: UIView) -> CVColorOrGradientView {
+        let chatColorView = CVColorOrGradientView()
         chatColorView.configure(chatColor: conversationStyle.bubbleChatColorOutgoing,
                                 referenceView: referenceView)
         return chatColorView

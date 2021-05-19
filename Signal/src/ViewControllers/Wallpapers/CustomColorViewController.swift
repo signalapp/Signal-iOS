@@ -67,7 +67,7 @@ class CustomColorViewController: OWSTableViewController2 {
         case .createNew:
             editMode = .solidColor
         case .editExisting(let value):
-            switch value.appearance {
+            switch value.setting {
             case .solidColor(let color):
                 editMode = .solidColor
                 self.solidColorSetting = color.asColorSetting
@@ -145,7 +145,7 @@ class CustomColorViewController: OWSTableViewController2 {
         case .createNew:
             return true
         case .editExisting(let value):
-            return currentChatColorAppearance() != value.appearance
+            return currentColorOrGradientSetting() != value.setting
         }
     }
 
@@ -344,45 +344,36 @@ class CustomColorViewController: OWSTableViewController2 {
         updateNavigation()
     }
 
-    fileprivate var solidColorAppearance: ChatColorAppearance {
-        let solidColor = self.solidColorSetting.asOWSColor(hueSpectrum: self.hueSpectrum)
-        return .solidColor(color: solidColor)
-    }
-
     fileprivate var gradientColor1: OWSColor {
-        self.gradientColor1Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
+        gradientColor1Setting.asOWSColor(hueSpectrum: hueSpectrum)
     }
 
     fileprivate var gradientColor2: OWSColor {
-        self.gradientColor2Setting.asOWSColor(hueSpectrum: self.hueSpectrum)
+        gradientColor2Setting.asOWSColor(hueSpectrum: hueSpectrum)
     }
 
-    fileprivate var gradientAppearance: ChatColorAppearance {
-        return .gradient(gradientColor1: self.gradientColor1,
-                         gradientColor2: self.gradientColor2,
-                         angleRadians: self.angleRadians)
-    }
-
-    private func currentChatColorAppearance() -> ChatColorAppearance {
+    private func currentColorOrGradientSetting() -> ColorOrGradientSetting {
         switch editMode {
         case .solidColor:
-            return solidColorAppearance
+            let solidColor = self.solidColorSetting.asOWSColor(hueSpectrum: hueSpectrum)
+            return .solidColor(color: solidColor)
         case .gradientColor1, .gradientColor2:
-            return gradientAppearance
+            return .gradient(gradientColor1: gradientColor1,
+                             gradientColor2: gradientColor2,
+                             angleRadians: self.angleRadians)
         }
     }
 
     fileprivate var currentChatColor: ChatColor {
-        let appearance = self.currentChatColorAppearance()
+        let setting = self.currentColorOrGradientSetting()
         switch valueMode {
         case .createNew:
-            return ChatColor(id: ChatColor.randomId,
-                                      appearance: appearance)
+            return ChatColor(id: ChatColor.randomId, setting: setting)
         case .editExisting(let oldValue):
             // Preserve the old id and creationTimestamp.
             return ChatColor(id: oldValue.id,
-                                      appearance: appearance,
-                                      creationTimestamp: oldValue.creationTimestamp)
+                             setting: setting,
+                             creationTimestamp: oldValue.creationTimestamp)
         }
     }
 
@@ -957,11 +948,11 @@ private class CustomColorPreviewView: UIView {
 
         if let knobView1 = self.knobView1 {
             knobView1.value = ChatColor(id: "knob1",
-                                             appearance: .solidColor(color: delegate.gradientColor1))
+                                        setting: .solidColor(color: delegate.gradientColor1))
         }
         if let knobView2 = self.knobView2 {
             knobView2.value = ChatColor(id: "knob2",
-                                             appearance: .solidColor(color: delegate.gradientColor2))
+                                        setting: .solidColor(color: delegate.gradientColor2))
         }
     }
 
@@ -986,11 +977,11 @@ private class CustomColorPreviewView: UIView {
         private let selectedBorder = OWSLayerView.circleView()
         private let unselectedBorder = OWSLayerView.circleView()
 
-        private let swatchView: ChatColorSwatchView
+        private let swatchView: ColorOrGradientSwatchView
 
         init(isSelected: Bool, chatColor: ChatColor, name: String? = nil) {
             self.isSelected = isSelected
-            self.swatchView = ChatColorSwatchView(chatColor: chatColor, mode: .circle)
+            self.swatchView = ColorOrGradientSwatchView(chatColor: chatColor, mode: .circle)
 
             super.init(frame: .zero)
 
@@ -1021,8 +1012,7 @@ private class CustomColorPreviewView: UIView {
             self.addSubview(unselectedBorder)
             unselectedBorder.autoCenterInSuperview()
 
-            let showKnobLabels = false
-            if showKnobLabels, let name = name {
+            if Self.showKnobLabels, let name = name {
                 let label = UILabel()
                 label.text = name
                 label.font = .ows_dynamicTypeCaption1
@@ -1033,6 +1023,8 @@ private class CustomColorPreviewView: UIView {
 
             updateSelection()
         }
+
+        private static let showKnobLabels = false
 
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
@@ -1075,11 +1067,11 @@ private class CustomColorPreviewView: UIView {
 
         let knobView1 = KnobView(isSelected: delegate.editMode == .gradientColor1,
                                  chatColor: ChatColor(id: "knob1",
-                                                                appearance: .solidColor(color: delegate.gradientColor1)),
+                                                      setting: .solidColor(color: delegate.gradientColor1)),
                                  name: "1")
         let knobView2 = KnobView(isSelected: delegate.editMode == .gradientColor2,
                                  chatColor: ChatColor(id: "knob2",
-                                                                appearance: .solidColor(color: delegate.gradientColor2)),
+                                                      setting: .solidColor(color: delegate.gradientColor2)),
                                  name: "2")
         self.knobView1 = knobView1
         self.knobView2 = knobView2

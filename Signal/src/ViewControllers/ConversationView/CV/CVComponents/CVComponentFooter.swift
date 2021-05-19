@@ -384,7 +384,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate let timestampLabel = CVLabel()
         fileprivate let statusIndicatorImageView = CVImageView()
         fileprivate let messageTimerView = MessageTimerView()
-        fileprivate let chatColorView = CVChatColorView()
+        fileprivate let chatColorView = CVColorOrGradientView()
 
         public var isDedicatedCellView = false
 
