@@ -169,17 +169,19 @@ public class ChatColors: NSObject, Dependencies {
 
     public static var defaultChatColor: ChatColor { Self.value_ultramarine }
 
-    public static func autoChatColor(forThread thread: TSThread?,
-                                     transaction: SDSAnyReadTransaction) -> ChatColor {
-        if let wallpaper = Wallpaper.get(for: thread, transaction: transaction),
+    public static func autoChatColorForRendering(forThread thread: TSThread?,
+                                                 transaction: SDSAnyReadTransaction) -> ChatColor {
+        if let value = defaultChatColorSetting(transaction: transaction) {
+            return value
+        } else if let wallpaper = Wallpaper.get(for: thread, transaction: transaction),
            wallpaper != .photo {
-            return autoChatColor(forWallpaper: wallpaper)
+            return autoChatColorForRendering(forWallpaper: wallpaper)
         } else {
             return Self.defaultChatColor
         }
     }
 
-    public static func autoChatColor(forWallpaper wallpaper: Wallpaper) -> ChatColor {
+    public static func autoChatColorForRendering(forWallpaper wallpaper: Wallpaper) -> ChatColor {
         // TODO: Derive actual value from wallpaper.
         let color = OWSColor(red: 1, green: 0, blue: 0)
         return ChatColor(id: wallpaper.rawValue,
@@ -192,11 +194,7 @@ public class ChatColors: NSObject, Dependencies {
     }
 
     public static func defaultChatColorForRendering(transaction: SDSAnyReadTransaction) -> ChatColor {
-        if let value = defaultChatColorSetting(transaction: transaction) {
-            return value
-        } else {
-            return autoChatColor(forThread: nil, transaction: transaction)
-        }
+        autoChatColorForRendering(forThread: nil, transaction: transaction)
     }
 
     public static func setDefaultChatColorSetting(_ value: ChatColor?,
@@ -218,7 +216,7 @@ public class ChatColors: NSObject, Dependencies {
         if let value = chatColorSetting(thread: thread, transaction: transaction) {
             return value
         } else {
-            return autoChatColor(forThread: thread, transaction: transaction)
+            return autoChatColorForRendering(forThread: thread, transaction: transaction)
         }
     }
 

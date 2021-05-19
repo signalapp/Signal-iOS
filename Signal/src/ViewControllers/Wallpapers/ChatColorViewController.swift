@@ -390,7 +390,8 @@ class ChatColorViewController: OWSTableViewController2 {
                 }
                 switch option {
                 case .auto:
-                    let value = ChatColors.autoChatColor(forThread: self.thread, transaction: transaction)
+                    let value = ChatColors.autoChatColorForRendering(forThread: self.thread,
+                                                                     transaction: transaction)
                     let view = ColorOrGradientSwatchView(setting: value.setting, mode: .circle)
 
                     let label = UILabel()
