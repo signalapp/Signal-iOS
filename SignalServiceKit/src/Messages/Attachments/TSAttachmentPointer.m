@@ -222,11 +222,11 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
     TSAttachmentType attachmentType = TSAttachmentTypeDefault;
     if ([attachmentProto hasFlags]) {
         UInt32 flags = attachmentProto.flags;
-        if (flags == SSKProtoAttachmentPointerFlagsVoiceMessage) {
+        if ((flags & SSKProtoAttachmentPointerFlagsVoiceMessage) > 0) {
             attachmentType = TSAttachmentTypeVoiceMessage;
-        } else if (flags == SSKProtoAttachmentPointerFlagsBorderless) {
+        } else if ((flags & SSKProtoAttachmentPointerFlagsBorderless) > 0) {
             attachmentType = TSAttachmentTypeBorderless;
-        } else if (flags == SSKProtoAttachmentPointerFlagsGif) {
+        } else if ((flags & SSKProtoAttachmentPointerFlagsGif) > 0) {
             attachmentType = TSAttachmentTypeGIF;
         }
     }
