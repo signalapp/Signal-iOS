@@ -93,7 +93,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_READ_RECEIPT",
                 comment: "Label for the 'read receipts' setting."
             ),
-            isOn: { self.receiptManager.areReadReceiptsEnabled() },
+            isOn: { Self.receiptManager.areReadReceiptsEnabled() },
             target: self,
             selector: #selector(didToggleReadReceiptsSwitch)
         ))
