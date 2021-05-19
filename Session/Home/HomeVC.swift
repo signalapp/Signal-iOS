@@ -231,10 +231,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             }
         }
         tableView.endUpdates()
-        // HACK: Moves can have conflicts with other 3 types of change.
-        // Just batch perform all the moves seperately to prevent crashing.
-        // Since all the changes are from original state to final state,
-        // it will still be correct if we pick the Moves out.
+        // HACK: Moves can have conflicts with the other 3 types of change.
+        // Just batch perform all the moves separately to prevent crashing.
+        // Since all the changes are from the original state to the final state,
+        // it will still be correct if we pick the moves out.
         tableView.beginUpdates()
         rowChanges.forEach { rowChange in
             let rowChange = rowChange as! YapDatabaseViewRowChange
