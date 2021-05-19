@@ -927,6 +927,7 @@ private class CustomColorPreviewView: UIView {
         self.addSubview(wallpaperPreviewView)
         wallpaperPreviewView.autoPinEdgesToSuperviewEdges()
 
+        mockConversationView.delegate = self
         mockConversationView.setContentHuggingVerticalHigh()
         mockConversationView.setCompressionResistanceVerticalHigh()
         self.addSubview(mockConversationView)
@@ -1363,4 +1364,10 @@ class CustomColorGestureRecognizer: UIGestureRecognizer {
         self.state = .failed
         self.isActive = false
     }
+}
+
+// MARK: -
+
+extension CustomColorPreviewView: MockConversationDelegate {
+    var mockConversationViewWidth: CGFloat { self.width }
 }

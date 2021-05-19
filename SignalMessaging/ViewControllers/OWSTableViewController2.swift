@@ -34,7 +34,7 @@ open class OWSTableViewController2: OWSViewController {
     }
 
     @objc
-    public let tableView = UITableView(frame: .zero, style: .grouped)
+    public let tableView = OWSTableView(frame: .zero, style: .grouped)
 
     // This is an alternative to/replacement for UITableView.tableHeaderView.
     //
@@ -102,6 +102,8 @@ open class OWSTableViewController2: OWSViewController {
         // We also do this in applyTheme(), but we also need to do it here
         // for the case where we push multiple table views at the same time.
         navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
+
+        tableView.tableViewDelegate = self
     }
 
     open override func viewDidLoad() {
@@ -172,6 +174,19 @@ open class OWSTableViewController2: OWSViewController {
 
         applyContents()
         applyTheme()
+
+        // Reload when dynamic type settings change.
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(contentSizeCategoryDidChange),
+                                               name: UIContentSizeCategory.didChangeNotification,
+                                               object: nil)
+    }
+
+    @objc
+    private func contentSizeCategoryDidChange(_ notification: Notification) {
+        Logger.debug("")
+
+        applyContents()
     }
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -218,6 +233,10 @@ open class OWSTableViewController2: OWSViewController {
         if let title = contents.title, !title.isEmpty {
             self.title = title
         }
+
+        let shouldReload = (shouldReload &&
+                                self.isViewLoaded &&
+                                tableView.width > 0)
 
         if shouldReload { tableView.reloadData() }
     }
@@ -789,7 +808,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         super.themeDidChange()
 
-        tableView.reloadData()
+        applyContents()
     }
 
     @objc
@@ -1002,18 +1021,18 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         // transition occurs. For iPhone, this moment is _during_ the
         // transition. We reload in the right places accordingly.
         if UIDevice.current.isIPad {
-            tableView.reloadData()
+            applyContents()
         }
 
         coordinator.animate { [weak self] _ in
-            self?.tableView.reloadData()
+            self?.applyContents()
         } completion: { [weak self] _ in
-            self?.tableView.reloadData()
+            self?.applyContents()
         }
     }
 
     public override func viewSafeAreaInsetsDidChange() {
-        tableView.reloadData()
+        applyContents()
     }
 }
 
@@ -1026,5 +1045,44 @@ public extension UITableViewCell {
         contentView.addSubview(backgroundView)
         contentView.sendSubviewToBack(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
+    }
+}
+
+// MARK: -
+
+extension OWSTableViewController2: OWSTableViewDelegate {
+    func tableViewDidChangeWidth() {
+        applyContents()
+    }
+}
+
+// MARK: -
+
+private protocol OWSTableViewDelegate: class {
+    func tableViewDidChangeWidth()
+}
+
+// MARK: -
+
+@objc
+public class OWSTableView: UITableView {
+    fileprivate weak var tableViewDelegate: OWSTableViewDelegate?
+
+    public override var frame: CGRect {
+        didSet {
+            let didChangeWidth = frame.width != oldValue.width
+            if didChangeWidth {
+                tableViewDelegate?.tableViewDidChangeWidth()
+            }
+        }
+    }
+
+    public override var bounds: CGRect {
+        didSet {
+            let didChangeWidth = bounds.width != oldValue.width
+            if didChangeWidth {
+                tableViewDelegate?.tableViewDidChangeWidth()
+            }
+        }
     }
 }

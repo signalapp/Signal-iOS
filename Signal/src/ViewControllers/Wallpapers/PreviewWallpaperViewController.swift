@@ -37,6 +37,8 @@ class PreviewWallpaperViewController: UIViewController {
         self.delegate = delegate
 
         super.init(nibName: nil, bundle: nil)
+
+        mockConversationView.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -535,4 +537,10 @@ class BlurButton: UIButton {
         isSelected = !isSelected
         action(isSelected)
     }
+}
+
+// MARK: -
+
+extension PreviewWallpaperViewController: MockConversationDelegate {
+    var mockConversationViewWidth: CGFloat { self.view.width }
 }

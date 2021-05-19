@@ -4,7 +4,15 @@
 
 import Foundation
 
+protocol MockConversationDelegate: class {
+    var mockConversationViewWidth: CGFloat { get }
+}
+
+// MARK: -
+
 class MockConversationView: UIView {
+
+    weak var delegate: MockConversationDelegate?
 
     let hasWallpaper: Bool
 
@@ -41,6 +49,13 @@ class MockConversationView: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+
+        update()
     }
 
     private func setup() {
@@ -86,10 +101,19 @@ class MockConversationView: UIView {
 
         reset()
 
-        let mockViewWidth = UIScreen.main.bounds.size.smallerAxis
-        let viewWidth = (bounds.size.width > 0
-                            ? bounds.size.width
-                            : mockViewWidth)
+        guard let delegate = self.delegate else {
+            return
+        }
+        // We create our contents using the size of this view.
+        // The wrinkle is that this view is often embedded within
+        // a UITableView that will measure the contents of this
+        // view (it's cell) before this view & its cell have been
+        // displayed, when they still have zero width.  Therefore
+        // we need to consult our delegate for the expected width.
+        let viewWidth = delegate.mockConversationViewWidth
+        guard viewWidth > 0 else {
+            return
+        }
 
         var renderItems = [CVRenderItem]()
         databaseStorage.uiRead { transaction in

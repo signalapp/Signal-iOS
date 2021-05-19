@@ -659,6 +659,19 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self configureTableLayoutMargins];
     [self applyContents];
     [self applyTheme];
+
+    // Reload when dynamic type settings change.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(uiContentSizeCategoryDidChange:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
+}
+
+- (void)uiContentSizeCategoryDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyContents];
 }
 
 - (void)viewWillAppear:(BOOL)animated

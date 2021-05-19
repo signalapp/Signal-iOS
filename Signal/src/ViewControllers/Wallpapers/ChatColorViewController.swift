@@ -134,6 +134,7 @@ class ChatColorViewController: OWSTableViewController2 {
             hasWallpaper: hasWallpaper,
             customChatColor: currentValue
         )
+        mockConversationView.delegate = self
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false
         previewSection.add(OWSTableItem { [weak self] in
@@ -214,7 +215,7 @@ class ChatColorViewController: OWSTableViewController2 {
 
     private func showCustomColorView(valueMode: CustomColorViewController.ValueMode) {
         let customColorVC = CustomColorViewController(thread: thread,
-                                                      valueMode: valueMode) { [weak self] (value) in
+                                                      valueMode: valueMode) { [weak self] (value: ChatColor) in
             guard let self = self else { return }
             Self.databaseStorage.write { transaction in
                 Self.chatColors.upsertCustomValue(value, transaction: transaction)
@@ -494,5 +495,13 @@ class ChatColorViewController: OWSTableViewController2 {
     @objc
     func didTapDone() {
         saveAndDismiss()
+    }
+}
+
+// MARK: -
+
+extension ChatColorViewController: MockConversationDelegate {
+    var mockConversationViewWidth: CGFloat {
+        self.view.width - cellOuterInsets.totalWidth
     }
 }
