@@ -115,7 +115,6 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     // MARK: -
 
     private func updateTableContents() {
-        let tableView = self.tableView
         let contents = OWSTableContents()
 
         let nameAndAvatarSection = OWSTableSection()
@@ -248,7 +247,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
             for address in members {
                 section.add(OWSTableItem(
-                    customCellBlock: {
+                                dequeueCellBlock: { tableView in
                         guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                             owsFailDebug("Missing cell.")
                             return UITableViewCell()
@@ -494,7 +493,6 @@ class NewLegacyGroupView: UIView {
     }
 
     func present(fromViewController: UIViewController) {
-        let tableView = tableViewController.tableView
 
         let wrapViewWithHMargins = { (viewToWrap: UIView) -> UIView in
             let stackView = UIStackView(arrangedSubviews: [viewToWrap])
@@ -541,7 +539,8 @@ class NewLegacyGroupView: UIView {
         let section = OWSTableSection()
         for address in members {
             section.add(OWSTableItem(
-                customCellBlock: {
+                            dequeueCellBlock: { tableView in
+
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                         owsFailDebug("Missing cell.")
                         return UITableViewCell()

@@ -269,7 +269,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         item.tableViewController = self
 
-        if let cell = item.getOrBuildCustomCell() {
+        if let cell = item.getOrBuildCustomCell(tableView) {
             configureCellBackground(cell, indexPath: indexPath)
             return cell
         }

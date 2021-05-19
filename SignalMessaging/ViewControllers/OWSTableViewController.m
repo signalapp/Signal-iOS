@@ -113,6 +113,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 @property (nonatomic, nullable) OWSTableActionBlock actionBlock;
 
 @property (nonatomic) OWSTableCustomCellBlock customCellBlock;
+@property (nonatomic) OWSTableDequeueCellBlock dequeueCellBlock;
 @property (nonatomic, nullable) UITableViewCell *customCell;
 
 @end
@@ -190,6 +191,16 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = customCellBlock;
+    item.customRowHeight = @(UITableViewAutomaticDimension);
+    return item;
+}
+
++ (OWSTableItem *)itemWithDequeueCellBlock:(OWSTableDequeueCellBlock)dequeueCellBlock
+                               actionBlock:(nullable OWSTableActionBlock)actionBlock
+{
+    OWSTableItem *item = [OWSTableItem new];
+    item.actionBlock = actionBlock;
+    item.dequeueCellBlock = dequeueCellBlock;
     item.customRowHeight = @(UITableViewAutomaticDimension);
     return item;
 }
@@ -559,13 +570,19 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
-- (nullable UITableViewCell *)getOrBuildCustomCell
+- (nullable UITableViewCell *)getOrBuildCustomCell:(UITableView *)tableView
 {
     if (_customCell) {
+        OWSAssertDebug(_dequeueCellBlock == nil);
+        OWSAssertDebug(_customCellBlock == nil);
         return _customCell;
     }
     if (_customCellBlock) {
+        OWSAssertDebug(_dequeueCellBlock == nil);
         return _customCellBlock();
+    }
+    if (_dequeueCellBlock) {
+        return _dequeueCellBlock(tableView);
     }
     return nil;
 }
@@ -644,11 +661,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self applyTheme];
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -717,7 +729,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     item.tableViewController = self;
 
-    UITableViewCell *_Nullable customCell = [item getOrBuildCustomCell];
+    UITableViewCell *_Nullable customCell = [item getOrBuildCustomCell:self.tableView];
     if (customCell != nil) {
         if (self.useThemeBackgroundColors) {
             customCell.backgroundColor = Theme.tableCellBackgroundColor;

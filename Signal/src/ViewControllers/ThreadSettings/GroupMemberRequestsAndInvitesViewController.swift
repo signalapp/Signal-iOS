@@ -240,7 +240,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             return
         }
 
-        let tableView = self.tableView
         let groupMembership = groupModel.groupMembership
         let allPendingMembersSorted = databaseStorage.uiRead { transaction in
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
@@ -275,7 +274,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                                      comment: "Title for the 'people you invited' section of the 'member requests and invites' view.")
         if membersInvitedByLocalUser.count > 0 {
             for address in membersInvitedByLocalUser {
-                localSection.add(OWSTableItem(customCellBlock: {
+                localSection.add(OWSTableItem(dequeueCellBlock: { tableView in
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                         owsFailDebug("Missing cell.")
                         return UITableViewCell()
@@ -316,12 +315,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     continue
                 }
 
-                otherUsersSection.add(OWSTableItem(customCellBlock: { [weak self] in
-                    guard let self = self else {
-                        owsFailDebug("Missing self")
-                        return OWSTableItem.newCell()
-                    }
-
+                otherUsersSection.add(OWSTableItem(dequeueCellBlock: { tableView in
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                         owsFailDebug("Missing cell.")
                         return UITableViewCell()
@@ -333,7 +327,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         let configuration = ContactCellConfiguration.build(address: inviterAddress,
                                                                            localUserDisplayMode: .asUser,
                                                                            transaction: transaction)
-                        let inviterName = self.contactsManager.displayName(for: inviterAddress,
+                        let inviterName = Self.contactsManager.displayName(for: inviterAddress,
                                                                            transaction: transaction)
                         if invitedAddresses.count > 1 {
                             let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT",

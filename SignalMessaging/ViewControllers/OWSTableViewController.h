@@ -62,6 +62,7 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 typedef void (^OWSTableActionBlock)(void);
 typedef void (^OWSTableSubPageBlock)(UIViewController *viewController);
 typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
+typedef UITableViewCell *_Nonnull (^OWSTableDequeueCellBlock)(UITableView *tableView);
 typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @interface OWSTableItemEditAction : NSObject
@@ -98,6 +99,9 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                               actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)itemWithDequeueCellBlock:(OWSTableDequeueCellBlock)dequeueCellBlock
+                               actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
@@ -183,7 +187,7 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
                               target:(id)target
                             selector:(SEL)selector;
 
-- (nullable UITableViewCell *)getOrBuildCustomCell;
+- (nullable UITableViewCell *)getOrBuildCustomCell:(UITableView *)tableView;
 
 @end
 
