@@ -222,8 +222,7 @@ extension ConversationSettingsViewController {
             }
 
             let cell = OWSTableItem.buildCellWithAccessoryLabel(
-                // TODO: Change icon.
-                icon: .settingsWallpaper,
+                icon: .color24,
                 itemName: NSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
                                             comment: "Label for settings view that allows user to change the chat color and wallpaper."),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "color_and_wallpaper")
