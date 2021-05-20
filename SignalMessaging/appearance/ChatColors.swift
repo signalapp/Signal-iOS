@@ -675,7 +675,7 @@ public extension ChatColors {
     }
 
     static func avatarColor(forGroupId groupId: Data) -> UIColor {
-        avatarColor(forHash: groupId.hashValue)
+        avatarColor(forData: groupId)
     }
 
     static func avatarColor(forAddress address: SignalServiceAddress) -> UIColor {
@@ -687,15 +687,47 @@ public extension ChatColors {
     }
 
     static func avatarColor(forSeed seed: String) -> UIColor {
-        avatarColor(forHash: seed.hashValue)
+        guard let data = seed.data(using: .utf8) else {
+            owsFailDebug("Invalid seed.")
+            return Self.defaultAvatarColor
+        }
+        return avatarColor(forData: data)
     }
 
-    private static func avatarColor(forHash hash: Int) -> UIColor {
+    private static func avatarColor(forData data: Data) -> UIColor {
+        var hash: UInt = 0
+        for value in data {
+            // A primitive hashing function.
+            // We only require it to be stable and fast.
+            hash = hash.rotateLeft(3) ^ UInt(value)
+        }
         let values = Self.groupNameColorValues
-        guard let value = values[safe: abs(hash) % values.count] else {
+        guard let value = values[safe: Int(hash % UInt(values.count))] else {
             owsFailDebug("Could not determine avatar color.")
             return Self.defaultAvatarColor
         }
         return value.lightTheme
+    }
+}
+
+// MARK: -
+
+extension UInt {
+    public static let is64bit = { UInt.bitWidth == UInt64.bitWidth }()
+    public static let is32bit = { UInt.bitWidth == UInt32.bitWidth }()
+
+    public static let highestBit: UInt = {
+        if is32bit {
+            return UInt(1).rotateLeft(31)
+        } else if is64bit {
+            return UInt(1).rotateLeft(63)
+        } else {
+            owsFail("Unexpected UInt width.")
+        }
+    }()
+
+    // <<<
+    public func rotateLeft(_ count: Int) -> UInt {
+        (self << count) | (self >> (UInt.bitWidth - count))
     }
 }

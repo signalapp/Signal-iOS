@@ -402,6 +402,7 @@
 		34BEDB1321C43F6A007B0EAE /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */; };
 		34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34BEDB1721C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */; };
+		34C1A93B2656E905004FA478 /* MiscTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C1A93A2656E904004FA478 /* MiscTest.swift */; };
 		34C2EEAC2270A69400BCA1D0 /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEAB2270A69400BCA1D0 /* CircleView.swift */; };
 		34C2EEB02270B8E200BCA1D0 /* StickerKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEAF2270B8E100BCA1D0 /* StickerKeyboard.swift */; };
 		34C2EEB22270CC8E00BCA1D0 /* StickerPackCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2EEB12270CC8D00BCA1D0 /* StickerPackCollectionView.swift */; };
@@ -1450,6 +1451,7 @@
 		34BEDB1221C43F69007B0EAE /* ImageEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
 		34BEDB1421C80BC9007B0EAE /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
+		34C1A93A2656E904004FA478 /* MiscTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiscTest.swift; sourceTree = "<group>"; };
 		34C2EEAB2270A69400BCA1D0 /* CircleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
 		34C2EEAF2270B8E100BCA1D0 /* StickerKeyboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerKeyboard.swift; sourceTree = "<group>"; };
 		34C2EEB12270CC8D00BCA1D0 /* StickerPackCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerPackCollectionView.swift; sourceTree = "<group>"; };
@@ -3971,6 +3973,7 @@
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
 				4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */,
 				455AC69D1F4F8B0300134004 /* ImageCacheTest.swift */,
+				34C1A93A2656E904004FA478 /* MiscTest.swift */,
 				34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */,
 				45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */,
 				34E8A8D02085238900B272B1 /* ProtoParsingTest.m */,
@@ -5565,6 +5568,7 @@
 				345AE2B62317048300DB6225 /* GRDBFinderTest.swift in Sources */,
 				34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
+				34C1A93B2656E905004FA478 /* MiscTest.swift in Sources */,
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
