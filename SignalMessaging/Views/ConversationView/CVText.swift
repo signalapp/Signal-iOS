@@ -243,8 +243,6 @@ public struct CVTextViewConfig {
 public class CVText {
     public enum MeasurementMode { case view, layoutManager }
 
-    public static var measurementQueue: DispatchQueue { CVUtils.workQueue }
-
     private static var reuseLabels: Bool {
         false
     }
@@ -275,10 +273,6 @@ public class CVText {
         if Thread.isMainThread {
             return label_main
         } else {
-            if !CurrentAppContext().isRunningTests {
-                assertOnQueue(measurementQueue)
-            }
-
             return label_workQueue
         }
     }
@@ -355,10 +349,6 @@ public class CVText {
         if Thread.isMainThread {
             return textView_main
         } else {
-            if !CurrentAppContext().isRunningTests {
-                assertOnQueue(measurementQueue)
-            }
-
             return textView_workQueue
         }
     }

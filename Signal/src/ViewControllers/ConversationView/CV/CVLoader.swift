@@ -45,7 +45,7 @@ public class CVLoader: NSObject {
             let threadInteractionCount: UInt
         }
 
-        return firstly(on: CVUtils.workQueue) { () -> CVUpdate in
+        return firstly(on: CVUtils.workQueue(isInitialLoad: loadRequest.isInitialLoad)) { () -> CVUpdate in
             // To ensure coherency, the entire load should be done with a single transaction.
             let loadState: LoadState = try Self.databaseStorage.read { transaction in
 
