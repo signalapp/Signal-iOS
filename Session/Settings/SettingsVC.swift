@@ -204,26 +204,17 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             button.set(.height, to: SettingsVC.buttonHeight)
             return button
         }
-        var result = [
+        return [
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
-            getSeparator()
-        ]
-        if !KeyPairUtilities.hasV2KeyPair() {
-            result += [
-                getSettingButton(withTitle: "Upgrade Session ID", color: Colors.text, action: #selector(upgradeSessionID)),
-                getSeparator()
-            ]
-        }
-        result += [
+            getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_clear_all_data_button_title", comment: ""), color: Colors.destructive, action: #selector(clearAllData)),
             getSeparator()
         ]
-        return result
     }
     
     // MARK: General
@@ -346,7 +337,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss {
                         var isMaxFileSizeExceeded = false
-                        if let error = error as? DotNetAPI.Error {
+                        if let error = error as? FileServerAPIV2.Error {
                             isMaxFileSizeExceeded = (error == .maxFileSizeExceeded)
                         }
                         let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"
@@ -456,16 +447,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func helpTranslate() {
         let url = URL(string: "https://crowdin.com/project/session-ios")!
         UIApplication.shared.open(url)
-    }
-    
-    @objc private func upgradeSessionID() {
-        let message = "You’re upgrading to a new Session ID. This will give you improved privacy and security, but it will clear ALL app data. Contacts and conversations will be lost. Proceed?"
-        let alert = UIAlertController(title: "Upgrade Session ID?", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Yes", style: .destructive) { _ in
-            Storage.prepareForV2KeyPairMigration()
-        })
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
     }
     
     @objc private func showSeed() {

@@ -37,10 +37,6 @@ NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
             return @"TSOutgoingMessageStateSending";
         case TSOutgoingMessageStateFailed:
             return @"TSOutgoingMessageStateFailed";
-        case TSOutgoingMessageStateSent_OBSOLETE:
-            return @"TSOutgoingMessageStateSent_OBSOLETE";
-        case TSOutgoingMessageStateDelivered_OBSOLETE:
-            return @"TSOutgoingMessageStateDelivered_OBSOLETE";
         case TSOutgoingMessageStateSent:
             return @"TSOutgoingMessageStateSent";
     }
@@ -82,13 +78,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 @property (atomic) BOOL hasSyncedTranscript;
 @property (atomic) NSString *customMessage;
 @property (atomic) NSString *mostRecentFailureText;
-@property (atomic) BOOL isFromLinkedDevice;
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
-
-@property (nonatomic, readonly) TSOutgoingMessageState legacyMessageState;
-@property (nonatomic, readonly) BOOL legacyWasDelivered;
-@property (nonatomic, readonly) BOOL hasLegacyMessageState;
-
 @property (atomic, nullable) NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap;
 
 @end
@@ -105,116 +95,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         if (!_attachmentFilenameMap) {
             _attachmentFilenameMap = [NSMutableDictionary new];
         }
-
-        if (!self.recipientStateMap) {
-            [self migrateRecipientStateMapWithCoder:coder];
-        }
     }
 
     return self;
-}
-
-- (void)migrateRecipientStateMapWithCoder:(NSCoder *)coder
-{
-    // Determine the "overall message state."
-    TSOutgoingMessageState oldMessageState = TSOutgoingMessageStateFailed;
-    NSNumber *_Nullable messageStateValue = [coder decodeObjectForKey:@"messageState"];
-    if (messageStateValue) {
-        oldMessageState = (TSOutgoingMessageState)messageStateValue.intValue;
-    }
-    _hasLegacyMessageState = YES;
-    _legacyMessageState = oldMessageState;
-
-    OWSOutgoingMessageRecipientState defaultState;
-    switch (oldMessageState) {
-        case TSOutgoingMessageStateFailed:
-            defaultState = OWSOutgoingMessageRecipientStateFailed;
-            break;
-        case TSOutgoingMessageStateSending:
-            defaultState = OWSOutgoingMessageRecipientStateSending;
-            break;
-        case TSOutgoingMessageStateSent:
-        case TSOutgoingMessageStateSent_OBSOLETE:
-        case TSOutgoingMessageStateDelivered_OBSOLETE:
-            // Convert legacy values.
-            defaultState = OWSOutgoingMessageRecipientStateSent;
-            break;
-    }
-
-    // Try to leverage the "per-recipient state."
-    NSDictionary<NSString *, NSNumber *> *_Nullable recipientDeliveryMap =
-        [coder decodeObjectForKey:@"recipientDeliveryMap"];
-    NSDictionary<NSString *, NSNumber *> *_Nullable recipientReadMap = [coder decodeObjectForKey:@"recipientReadMap"];
-    NSArray<NSString *> *_Nullable sentRecipients = [coder decodeObjectForKey:@"sentRecipients"];
-
-    NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
-    __block BOOL isGroupThread = NO;
-    // Our default recipient list is the current thread members.
-    __block NSArray<NSString *> *recipientIds = @[];
-    // To avoid deadlock while migrating these records, we use a dedicated
-    // migration connection.  For legacy records (created more than ~9 months
-    // before the migration), we need to infer the recipient list for this
-    // message from the current thread membership.  This inference isn't
-    // always accurate, so not using the same connection for both reads is
-    // acceptable.
-    [TSOutgoingMessage.dbMigrationConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        TSThread *thread = [self threadWithTransaction:transaction];
-        recipientIds = [thread recipientIdentifiers];
-        isGroupThread = [thread isGroupThread];
-    }];
-
-    NSNumber *_Nullable wasDelivered = [coder decodeObjectForKey:@"wasDelivered"];
-    _legacyWasDelivered = wasDelivered && wasDelivered.boolValue;
-    BOOL wasDeliveredToContact = NO;
-    if (isGroupThread) {
-        // If we have a `sentRecipients` list, prefer that as it is more accurate.
-        if (sentRecipients) {
-            recipientIds = sentRecipients;
-        }
-    } else {
-        // Special-case messages in contact threads; if "was delivered", we know
-        // it was delivered to the contact.
-        wasDeliveredToContact = _legacyWasDelivered;
-    }
-
-    NSString *_Nullable singleGroupRecipient = [coder decodeObjectForKey:@"singleGroupRecipient"];
-    if (singleGroupRecipient) {
-        // If this is a "single group recipient message", treat it as such.
-        recipientIds = @[
-            singleGroupRecipient,
-        ];
-    }
-
-    for (NSString *recipientId in recipientIds) {
-        TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
-
-        NSNumber *_Nullable readTimestamp = recipientReadMap[recipientId];
-        NSNumber *_Nullable deliveryTimestamp = recipientDeliveryMap[recipientId];
-        if (readTimestamp) {
-            // If we have a read timestamp for this recipient, mark it as read.
-            recipientState.state = OWSOutgoingMessageRecipientStateSent;
-            recipientState.readTimestamp = readTimestamp;
-            // deliveryTimestamp might be nil here.
-            recipientState.deliveryTimestamp = deliveryTimestamp;
-        } else if (deliveryTimestamp) {
-            // If we have a delivery timestamp for this recipient, mark it as delivered.
-            recipientState.state = OWSOutgoingMessageRecipientStateSent;
-            recipientState.deliveryTimestamp = deliveryTimestamp;
-        } else if (wasDeliveredToContact) {
-            recipientState.state = OWSOutgoingMessageRecipientStateSent;
-            // Use message time as an estimate of delivery time.
-            recipientState.deliveryTimestamp = @(self.timestamp);
-        } else if ([sentRecipients containsObject:recipientId]) {
-            // If this recipient is in `sentRecipients`, mark it as sent.
-            recipientState.state = OWSOutgoingMessageRecipientStateSent;
-        } else {
-            // Use the default state for this message.
-            recipientState.state = defaultState;
-        }
-
-        recipientStateMap[recipientId] = recipientState;
-    }
-    self.recipientStateMap = [recipientStateMap copy];
 }
 
 + (YapDatabaseConnection *)dbMigrationConnection
@@ -388,30 +271,17 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (TSOutgoingMessageState)messageState
 {
-    TSOutgoingMessageState newMessageState =
-        [TSOutgoingMessage messageStateForRecipientStates:self.recipientStateMap.allValues];
-    if (self.hasLegacyMessageState) {
-        if (newMessageState == TSOutgoingMessageStateSent || self.legacyMessageState == TSOutgoingMessageStateSent) {
-            return TSOutgoingMessageStateSent;
-        }
-    }
-    return newMessageState;
+    return [TSOutgoingMessage messageStateForRecipientStates:self.recipientStateMap.allValues];
 }
 
 - (BOOL)wasDeliveredToAnyRecipient
 {
-    if ([self deliveredRecipientIds].count > 0) {
-        return YES;
-    }
-    return (self.hasLegacyMessageState && self.legacyWasDelivered && self.messageState == TSOutgoingMessageStateSent);
+    return [self deliveredRecipientIds].count > 0;
 }
 
 - (BOOL)wasSentToAnyRecipient
 {
-    if ([self sentRecipientIds].count > 0) {
-        return YES;
-    }
-    return (self.hasLegacyMessageState && self.messageState == TSOutgoingMessageStateSent);
+    return [self sentRecipientIds].count > 0;
 }
 
 + (TSOutgoingMessageState)messageStateForRecipientStates:(NSArray<TSOutgoingMessageRecipientState *> *)recipientStates
@@ -483,16 +353,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         
         return NO;
     }
-}
-
-- (BOOL)isSilent
-{
-    return NO;
-}
-
-- (BOOL)isOnline
-{
-    return NO;
 }
 
 + (nullable instancetype)findMessageWithTimestamp:(uint64_t)timestamp
@@ -628,15 +488,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              }];
 }
 
-- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
-                          transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setHasSyncedTranscript:hasSyncedTranscript];
-                             }];
-}
-
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self applyChangeToSelfAndLatestCopy:transaction
@@ -706,325 +557,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.readTimestamp = @(readTimestamp);
                              }];
-}
-
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
-                                          nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
-                                               isSentUpdate:(BOOL)isSentUpdate
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self
-        applyChangeToSelfAndLatestCopy:transaction
-                           changeBlock:^(TSOutgoingMessage *message) {
-                               if (udRecipientIds.count > 0 || nonUdRecipientIds.count > 0) {
-                                   // If we have specific recipient info from the transcript,
-                                   // build a new recipient state map.
-                                   NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap
-                                       = [NSMutableDictionary new];
-                                   for (NSString *recipientId in udRecipientIds) {
-                                       if (recipientStateMap[recipientId]) {
-                                           continue;
-                                       }
-                                       TSOutgoingMessageRecipientState *recipientState =
-                                           [TSOutgoingMessageRecipientState new];
-                                       recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                       recipientState.wasSentByUD = YES;
-                                       recipientStateMap[recipientId] = recipientState;
-                                   }
-                                   for (NSString *recipientId in nonUdRecipientIds) {
-                                       if (recipientStateMap[recipientId]) {
-                                           continue;
-                                       }
-                                       TSOutgoingMessageRecipientState *recipientState =
-                                           [TSOutgoingMessageRecipientState new];
-                                       recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                       recipientState.wasSentByUD = NO;
-                                       recipientStateMap[recipientId] = recipientState;
-                                   }
-
-                                   if (isSentUpdate) {
-                                       // If this is a "sent update", make sure that:
-                                       //
-                                       // a) "Sent updates" should never remove any recipients.  We end up with the
-                                       //    union of the existing and new recipients.
-                                       // b) "Sent updates" should never downgrade the "recipient state" for any
-                                       //    recipients.  Prefer existing "recipient state"; "sent updates" only
-                                       //    add new recipients at the "sent" state.
-                                       //
-                                       // Therefore we retain all existing entries in the recipient state map.
-                                       [recipientStateMap addEntriesFromDictionary:self.recipientStateMap];
-                                   }
-
-                                   [message setRecipientStateMap:recipientStateMap];
-                               } else {
-                                   // Otherwise assume this is a legacy message before UD was introduced, and mark
-                                   // any "sending" recipient as "sent".  Note that this will apply to non-legacy
-                                   // messages with no recipients.
-                                   for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
-                                            .allValues) {
-                                       if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
-                                           recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                       }
-                                   }
-                               }
-                               
-                               if (!isSentUpdate) {
-                                   [message setIsFromLinkedDevice:YES];
-                               }
-                           }];
-}
-
-- (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 TSOutgoingMessageRecipientState *recipientState =
-                                     [TSOutgoingMessageRecipientState new];
-                                 recipientState.state = OWSOutgoingMessageRecipientStateSending;
-                                 [message setRecipientStateMap:@{
-                                     singleGroupRecipient : recipientState,
-                                 }];
-                             }];
-}
-
-- (nullable NSNumber *)firstRecipientReadTimestamp
-{
-    NSNumber *result = nil;
-    for (TSOutgoingMessageRecipientState *recipientState in self.recipientStateMap.allValues) {
-        if (!recipientState.readTimestamp) {
-            continue;
-        }
-        if (!result || (result.unsignedLongLongValue > recipientState.readTimestamp.unsignedLongLongValue)) {
-            result = recipientState.readTimestamp;
-        }
-    }
-    return result;
-}
-
-- (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
-                       transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
-                                          .allValues) {
-                                     switch (messageState) {
-                                         case TSOutgoingMessageStateSending:
-                                             recipientState.state = OWSOutgoingMessageRecipientStateSending;
-                                             break;
-                                         case TSOutgoingMessageStateFailed:
-                                             recipientState.state = OWSOutgoingMessageRecipientStateFailed;
-                                             break;
-                                         case TSOutgoingMessageStateSent:
-                                             recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                             break;
-                                         default:
-                                             break;
-                                     }
-                                 }
-                             }];
-}
-
-#pragma mark -
-
-- (nullable id)dataMessageBuilder
-{
-    TSThread *thread = self.thread;
-
-    SNProtoDataMessageBuilder *builder = [SNProtoDataMessage builder];
-    [builder setTimestamp:self.timestamp];
-
-    if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
-        [builder setBody:self.body];
-    } else {
-        NSString *truncatedBody = [self.body copy];
-        while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
-            truncatedBody = [truncatedBody substringToIndex:truncatedBody.length / 2];
-        }
-        [builder setBody:truncatedBody];
-    }
-    [builder setExpireTimer:self.expiresInSeconds];
-    
-    // Group Messages
-    BOOL attachmentWasGroupAvatar = NO;
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *gThread = (TSGroupThread *)thread;
-        SNProtoGroupContextType groupMessageType;
-        switch (self.groupMetaMessage) {
-            case TSGroupMetaMessageQuit:
-                groupMessageType = SNProtoGroupContextTypeQuit;
-                break;
-            case TSGroupMetaMessageUpdate:
-            case TSGroupMetaMessageNew:
-                groupMessageType = SNProtoGroupContextTypeUpdate;
-                break;
-            default:
-                groupMessageType = SNProtoGroupContextTypeDeliver;
-                break;
-        }
-        SNProtoGroupContextBuilder *groupBuilder =
-            [SNProtoGroupContext builderWithId:gThread.groupModel.groupId type:groupMessageType];
-        if (groupMessageType == SNProtoGroupContextTypeUpdate) {
-            if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
-                attachmentWasGroupAvatar = YES;
-                SNProtoAttachmentPointer *_Nullable attachmentProto =
-                    [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
-                if (!attachmentProto) {
-                    return nil;
-                }
-                [groupBuilder setAvatar:attachmentProto];
-            }
-
-            [groupBuilder setMembers:gThread.groupModel.groupMemberIds];
-            [groupBuilder setName:gThread.groupModel.groupName];
-            [groupBuilder setAdmins:gThread.groupModel.groupAdminIds];
-        }
-        NSError *error;
-        SNProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
-        if (error || !groupContextProto) {
-            return nil;
-        }
-        [builder setGroup:groupContextProto];
-    }
-    
-    // Message Attachments
-    if (!attachmentWasGroupAvatar) {
-        NSMutableArray *attachments = [NSMutableArray new];
-        for (NSString *attachmentId in self.attachmentIds) {
-            SNProtoAttachmentPointer *_Nullable attachmentProto =
-                [TSAttachmentStream buildProtoForAttachmentId:attachmentId];
-            if (!attachmentProto) {
-                return nil;
-            }
-            [attachments addObject:attachmentProto];
-        }
-        [builder setAttachments:attachments];
-    }
-
-    // Quoted Reply
-    SNProtoDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
-    if (quotedMessageBuilder) {
-        NSError *error;
-        SNProtoDataMessageQuote *_Nullable quoteProto = [quotedMessageBuilder buildAndReturnError:&error];
-        if (error || !quoteProto) {
-            return nil;
-        }
-        [builder setQuote:quoteProto];
-    }
-
-    // Link Preview
-    if (self.linkPreview) {
-        SNProtoDataMessagePreviewBuilder *previewBuilder =
-            [SNProtoDataMessagePreview builderWithUrl:self.linkPreview.urlString];
-        if (self.linkPreview.title.length > 0) {
-            [previewBuilder setTitle:self.linkPreview.title];
-        }
-        if (self.linkPreview.imageAttachmentId) {
-            SNProtoAttachmentPointer *_Nullable attachmentProto =
-                [TSAttachmentStream buildProtoForAttachmentId:self.linkPreview.imageAttachmentId];
-            if (!attachmentProto) {
-
-            } else {
-                [previewBuilder setImage:attachmentProto];
-            }
-        }
-
-        NSError *error;
-        SNProtoDataMessagePreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];
-        if (error || !previewProto) {
-
-        } else {
-            [builder addPreview:previewProto];
-        }
-    }
-
-    return builder;
-}
-
-- (nullable SNProtoDataMessageQuoteBuilder *)quotedMessageBuilder
-{
-    if (!self.quotedMessage) {
-        return nil;
-    }
-    TSQuotedMessage *quotedMessage = self.quotedMessage;
-
-    SNProtoDataMessageQuoteBuilder *quoteBuilder =
-        [SNProtoDataMessageQuote builderWithId:quotedMessage.timestamp author:quotedMessage.authorId];
-
-    BOOL hasQuotedText = NO;
-    BOOL hasQuotedAttachment = NO;
-    if (self.quotedMessage.body.length > 0) {
-        hasQuotedText = YES;
-        [quoteBuilder setText:quotedMessage.body];
-    }
-
-    if (quotedMessage.quotedAttachments) {
-        for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
-            hasQuotedAttachment = YES;
-
-            SNProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
-                [SNProtoDataMessageQuoteQuotedAttachment builder];
-
-            quotedAttachmentBuilder.contentType = attachment.contentType;
-            quotedAttachmentBuilder.fileName = attachment.sourceFilename;
-            if (attachment.thumbnailAttachmentStreamId) {
-                quotedAttachmentBuilder.thumbnail =
-                    [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
-            }
-
-            NSError *error;
-            SNProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
-                [quotedAttachmentBuilder buildAndReturnError:&error];
-            if (error || !quotedAttachmentMessage) {
-                return nil;
-            }
-
-            [quoteBuilder addAttachments:quotedAttachmentMessage];
-        }
-    }
-
-    if (hasQuotedText || hasQuotedAttachment) {
-        return quoteBuilder;
-    } else {
-        return nil;
-    }
-}
-
-// recipientId is nil when building "sent" sync messages for messages sent to groups.
-- (nullable SNProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
-{
-    return nil; // Shouldn't be in use anymore
-}
-
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
-{
-    SNProtoContentBuilder *contentBuilder = [self prepareCustomContentBuilder:recipient];
-
-    NSError *error;
-    NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
-    if (error != nil || contentData == nil) {
-        return nil;
-    }
-    
-    return contentData;
-}
-
-- (BOOL)shouldSyncTranscript
-{
-    return YES;
-}
-
-- (NSString *)statusDescription
-{
-    NSMutableString *result = [NSMutableString new];
-    [result appendFormat:@"[status: %@", NSStringForOutgoingMessageState(self.messageState)];
-    for (NSString *recipientId in self.recipientStateMap) {
-        TSOutgoingMessageRecipientState *recipientState = self.recipientStateMap[recipientId];
-        [result appendFormat:@", %@: %@", recipientId, NSStringForOutgoingMessageRecipientState(recipientState.state)];
-    }
-    [result appendString:@"]"];
-    return [result copy];
 }
 
 @end

@@ -396,18 +396,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                            avatarUrl:(nullable NSString *)avatarURL
                              success:(void (^)(void))successBlock
                              failure:(ProfileManagerFailureBlock)failureBlock {
-    OWSAssertDebug(successBlock);
-    OWSAssertDebug(failureBlock);
-
-    NSDictionary *publicChats = [LKStorage.shared getAllUserOpenGroups];
-
-    NSSet *servers = [NSSet setWithArray:[publicChats.allValues map:^NSString *(SNOpenGroup *publicChat) { return publicChat.server; }]];
-
-    for (NSString *server in servers) {
-        [[SNOpenGroupAPI setDisplayName:localProfileName on:server] retainUntilComplete];
-        [[SNOpenGroupAPI setProfilePictureURL:avatarURL usingProfileKey:self.localProfileKey.keyData on:server] retainUntilComplete];
-    }
-    
     successBlock();
 }
 
@@ -805,14 +793,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         NSString *profilePictureURL = userProfile.avatarUrlPath;
         
-        AnyPromise *promise;
-        if ([profilePictureURL containsString:SNFileServerAPIV2.server] || [profilePictureURL containsString:SNFileServerAPIV2.oldServer]) {
-            NSString *file = [profilePictureURL lastPathComponent];
-            BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPIV2.oldServer];
-            promise = [SNFileServerAPIV2 download:file useOldServer:useOldServer];
-        } else {
-            promise = [SNFileServerAPI downloadAttachmentFrom:profilePictureURL];
-        }
+        NSString *file = [profilePictureURL lastPathComponent];
+        BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPIV2.oldServer];
+        AnyPromise *promise = [SNFileServerAPIV2 download:file useOldServer:useOldServer];
         
         [promise.then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)

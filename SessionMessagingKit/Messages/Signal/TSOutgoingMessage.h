@@ -19,9 +19,6 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     TSOutgoingMessageStateSending,
     // The failure state.
     TSOutgoingMessageStateFailed,
-    // These two enum values have been combined into TSOutgoingMessageStateSent.
-    TSOutgoingMessageStateSent_OBSOLETE,
-    TSOutgoingMessageStateDelivered_OBSOLETE,
     // The message has been sent to the service.
     TSOutgoingMessageStateSent,
 };
@@ -135,41 +132,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 
-// This property won't be accurate for legacy messages.
-@property (atomic, readonly) BOOL isFromLinkedDevice;
-
-@property (nonatomic, readonly) BOOL isSilent;
-
-@property (nonatomic, readonly) BOOL isOnline;
-
-@property (nonatomic, readonly) uint ttl;
-
 + (nullable instancetype)findMessageWithTimestamp:(uint64_t)timestamp;
-
-/**
- * The data representation of this message, to be encrypted, before being sent.
- */
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient;
-
-/**
- * Intermediate protobuf representation
- * Subclasses can augment if they want to manipulate the data message before building.
- */
-- (nullable id)dataMessageBuilder;
-
-- (nullable SNProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
-
-/**
- * Allows subclasses to supply a custom content builder that has already prepared part of the message.
- */
-- (nullable id)prepareCustomContentBuilder:(SignalRecipient *)recipient;
-
-/**
- * Should this message be synced to the users other registered devices? This is
- * generally always true, except in the case of the sync messages themseleves
- * (so we don't end up in an infinite loop).
- */
-- (BOOL)shouldSyncTranscript;
 
 - (BOOL)shouldBeSaved;
 

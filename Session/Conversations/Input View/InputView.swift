@@ -312,9 +312,6 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         if let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
             mentionsView.openGroupServer = openGroupV2.server
             mentionsView.openGroupRoom = openGroupV2.room
-        } else if let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!) {
-            mentionsView.openGroupServer = openGroup.server
-            mentionsView.openGroupChannel = openGroup.channel
         }
         mentionsView.candidates = candidates
         let mentionCellHeight = Values.smallProfilePictureSize + 2 * Values.smallSpacing

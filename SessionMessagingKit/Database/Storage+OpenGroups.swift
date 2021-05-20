@@ -49,26 +49,6 @@ extension Storage {
     
     
     
-    // MARK: - Quotes
-    
-    @objc(getServerIDForQuoteWithID:quoteeHexEncodedPublicKey:threadID:transaction:)
-    public func getServerID(quoteID: UInt64, quoteeHexEncodedPublicKey: String, threadID: String, transaction: YapDatabaseReadTransaction) -> UInt64 {
-        guard let message = TSInteraction.interactions(withTimestamp: quoteID, filter: { interaction in
-            let senderPublicKey: String
-            if let message = interaction as? TSIncomingMessage {
-                senderPublicKey = message.authorId
-            } else if interaction is TSOutgoingMessage {
-                senderPublicKey = getUserHexEncodedPublicKey()
-            } else {
-                return false
-            }
-            return (senderPublicKey == quoteeHexEncodedPublicKey) && (interaction.uniqueThreadId == threadID)
-        }, with: transaction).first as! TSMessage? else { return 0 }
-        return message.openGroupServerMessageID
-    }
-    
-    
-    
     // MARK: - Authorization
 
     private static let authTokenCollection = "SNAuthTokenCollection"
@@ -192,10 +172,6 @@ extension Storage {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection)
     }
     
-    public func setLastProfilePictureUploadDate(_ date: Date)  {
-        UserDefaults.standard[.lastProfilePictureUpload] = date
-    }
-    
     public func getOpenGroupImage(for room: String, on server: String) -> Data? {
         var result: Data?
         Storage.read { transaction in
@@ -206,149 +182,5 @@ extension Storage {
     
     public func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(data, forKey: "\(server).\(room)", inCollection: Storage.openGroupImageCollection)
-    }
-
-
-    
-    // MARK: - Deprecated
-
-    private static let oldOpenGroupUserCountCollection = "LokiPublicChatUserCountCollection"
-
-    public func getUserCount(forOpenGroupWithID openGroupID: String) -> Int? {
-        var result: Int?
-        Storage.read { transaction in
-            result = transaction.object(forKey: openGroupID, inCollection: Storage.oldOpenGroupUserCountCollection) as? Int
-        }
-        return result
-    }
-
-    public func setUserCount(to newValue: Int, forOpenGroupWithID openGroupID: String, using transaction: Any) {
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        transaction.setObject(newValue, forKey: openGroupID, inCollection: Storage.oldOpenGroupUserCountCollection)
-        transaction.addCompletionQueue(.main) {
-            NotificationCenter.default.post(name: .groupThreadUpdated, object: nil)
-        }
-    }
-
-    private static let oldOpenGroupCollection = "LokiPublicChatCollection"
-
-    @objc public func getAllUserOpenGroups() -> [String:OpenGroup] {
-        var result = [String:OpenGroup]()
-        Storage.read { transaction in
-            transaction.enumerateKeysAndObjects(inCollection: Storage.oldOpenGroupCollection) { threadID, object, _ in
-                guard let openGroup = object as? OpenGroup else { return }
-                result[threadID] = openGroup
-            }
-        }
-        return result
-    }
-
-    @objc(getOpenGroupForThreadID:)
-    public func getOpenGroup(for threadID: String) -> OpenGroup? {
-        var result: OpenGroup?
-        Storage.read { transaction in
-            result = transaction.object(forKey: threadID, inCollection: Storage.oldOpenGroupCollection) as? OpenGroup
-        }
-        return result
-    }
-
-    public func getThreadID(for openGroupID: String) -> String? {
-        var result: String?
-        Storage.read { transaction in
-            transaction.enumerateKeysAndObjects(inCollection: Storage.oldOpenGroupCollection, using: { threadID, object, stop in
-                guard let openGroup = object as? OpenGroup, "\(openGroup.server).\(openGroup.channel)" == openGroupID else { return }
-                result = threadID
-                stop.pointee = true
-            })
-        }
-        return result
-    }
-
-    @objc(setOpenGroup:forThreadWithID:using:)
-    public func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(openGroup, forKey: threadID, inCollection: Storage.oldOpenGroupCollection)
-    }
-
-    @objc(removeOpenGroupForThreadID:using:)
-    public func removeOpenGroup(for threadID: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: threadID, inCollection: Storage.oldOpenGroupCollection)
-    }
-
-    private static func getAuthTokenCollection(for server: String) -> String {
-        return (server == FileServerAPI.server) ? "LokiStorageAuthTokenCollection" : "LokiGroupChatAuthTokenCollection"
-    }
-
-    public func getAuthToken(for server: String) -> String? {
-        let collection = Storage.getAuthTokenCollection(for: server)
-        var result: String? = nil
-        Storage.read { transaction in
-            result = transaction.object(forKey: server, inCollection: collection) as? String
-        }
-        return result
-    }
-
-    public func setAuthToken(for server: String, to newValue: String, using transaction: Any) {
-        let collection = Storage.getAuthTokenCollection(for: server)
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: server, inCollection: collection)
-    }
-
-    public func removeAuthToken(for server: String, using transaction: Any) {
-        let collection = Storage.getAuthTokenCollection(for: server)
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
-    }
-
-    public static let oldLastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
-
-    public func getLastMessageServerID(for group: UInt64, on server: String) -> UInt64? {
-        var result: UInt64? = nil
-        Storage.read { transaction in
-            result = transaction.object(forKey: "\(server).\(group)", inCollection: Storage.oldLastMessageServerIDCollection) as? UInt64
-        }
-        return result
-    }
-
-    public func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: "\(server).\(group)", inCollection: Storage.oldLastMessageServerIDCollection)
-    }
-
-    public func removeLastMessageServerID(for group: UInt64, on server: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.oldLastMessageServerIDCollection)
-    }
-
-    public static let oldLastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
-
-    public func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt64? {
-        var result: UInt64? = nil
-        Storage.read { transaction in
-            result = transaction.object(forKey: "\(server).\(group)", inCollection: Storage.oldLastDeletionServerIDCollection) as? UInt64
-        }
-        return result
-    }
-
-    public func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: "\(server).\(group)", inCollection: Storage.oldLastDeletionServerIDCollection)
-    }
-
-    public func removeLastDeletionServerID(for group: UInt64, on server: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "\(server).\(group)", inCollection: Storage.oldLastDeletionServerIDCollection)
-    }
-    
-    public func setOpenGroupDisplayName(to displayName: String, for publicKey: String, inOpenGroupWithID openGroupID: String, using transaction: Any) {
-        let collection = openGroupID
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(displayName, forKey: publicKey, inCollection: collection)
-    }
-    
-    private static let openGroupProfilePictureURLCollection = "LokiPublicChatAvatarURLCollection"
-    
-    public func getProfilePictureURL(forOpenGroupWithID openGroupID: String) -> String? {
-        var result: String?
-        Storage.read { transaction in
-            result = transaction.object(forKey: openGroupID, inCollection: Storage.openGroupProfilePictureURLCollection) as? String
-        }
-        return result
-    }
-    
-    public func setProfilePictureURL(to profilePictureURL: String?, forOpenGroupWithID openGroupID: String, using transaction: Any) {
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(profilePictureURL, forKey: openGroupID, inCollection: Storage.openGroupProfilePictureURLCollection)
     }
 }

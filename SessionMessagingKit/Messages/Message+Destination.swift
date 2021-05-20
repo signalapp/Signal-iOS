@@ -15,12 +15,8 @@ public extension Message {
                 let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                 return .closedGroup(groupPublicKey: groupPublicKey)
             } else if let thread = thread as? TSGroupThread, thread.isOpenGroup {
-                if let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
-                    return .openGroupV2(room: openGroupV2.room, server: openGroupV2.server)
-                } else {
-                    let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)!
-                    return .openGroup(channel: openGroup.channel, server: openGroup.server)
-                }
+                let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!)!
+                return .openGroupV2(room: openGroupV2.room, server: openGroupV2.server)
             } else {
                 preconditionFailure("TODO: Handle legacy closed groups.")
             }

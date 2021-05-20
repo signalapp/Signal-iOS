@@ -67,23 +67,8 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         let storage = SNMessagingKitConfiguration.shared.storage
         if let v2OpenGroup = storage.getV2OpenGroup(for: threadID) {
             AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: handleSuccess, onFailure: handleFailure)
-        } else if Features.useV2FileServer && storage.getOpenGroup(for: threadID) == nil {
+        } else {
             AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: handleSuccess, onFailure: handleFailure)
-        } else { // Legacy
-            let openGroup = storage.getOpenGroup(for: threadID)
-            let server = openGroup?.server ?? FileServerAPI.server
-            // FIXME: A lot of what's currently happening in FileServerAPI should really be happening here
-            FileServerAPI.uploadAttachment(stream, with: attachmentID, to: server).done(on: DispatchQueue.global(qos: .userInitiated)) { // Intentionally capture self
-                self.handleSuccess()
-            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-                if let error = error as? Error, case .noAttachment = error {
-                    self.handlePermanentFailure(error: error)
-                } else if let error = error as? DotNetAPI.Error, !error.isRetryable {
-                    self.handlePermanentFailure(error: error)
-                } else {
-                    self.handleFailure(error: error)
-                }
-            }
         }
     }
     
@@ -107,8 +92,8 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         }
         // Check the file size
         SNLog("File size: \(data.count) bytes.")
-        if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
-            onFailure?(FileServerAPI.Error.maxFileSizeExceeded); return
+        if Double(data.count) > Double(FileServerAPIV2.maxFileSize) / FileServerAPIV2.fileSizeORMultiplier {
+            onFailure?(FileServerAPIV2.Error.maxFileSizeExceeded); return
         }
         // Send the request
         stream.isUploaded = false

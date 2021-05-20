@@ -216,8 +216,6 @@ extension MessageReceiver {
             for openGroupURL in message.openGroups {
                 if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: openGroupURL) {
                     OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction).retainUntilComplete()
-                } else {
-                    OpenGroupManager.shared.add(with: openGroupURL, using: transaction).retainUntilComplete()
                 }
             }
         }
@@ -244,16 +242,10 @@ extension MessageReceiver {
         message.attachmentIDs = attachmentIDs
         var attachmentsToDownload = attachmentIDs
         // Update profile if needed
-        if let newProfile = message.profile {
+        if let profile = message.profile {
             let sessionID = message.sender!
-            updateProfileIfNeeded(publicKey: sessionID, name: newProfile.displayName, profilePictureURL: newProfile.profilePictureURL,
-                profileKey: given(newProfile.profileKey) { OWSAES256Key(data: $0)! }, sentTimestamp: message.sentTimestamp!, transaction: transaction)
-            if let rawDisplayName = newProfile.displayName, let openGroupID = openGroupID {
-                let endIndex = sessionID.endIndex
-                let cutoffIndex = sessionID.index(endIndex, offsetBy: -8)
-                let displayName = "\(rawDisplayName) (...\(sessionID[cutoffIndex..<endIndex]))"
-                Storage.shared.setOpenGroupDisplayName(to: displayName, for: sessionID, inOpenGroupWithID: openGroupID, using: transaction)
-            }
+            updateProfileIfNeeded(publicKey: sessionID, name: profile.displayName, profilePictureURL: profile.profilePictureURL,
+                profileKey: given(profile.profileKey) { OWSAES256Key(data: $0)! }, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         }
         // Get or create thread
         guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }

@@ -281,67 +281,41 @@ public final class MessageSender : NSObject {
             #endif
         }
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
-        // There's quite a bit of overlap between the two clauses of this if statement for now, but that'll be fixed
-        // when we remove support for V1 open groups
-        if case .openGroup(let channel, let server) = destination {
-            // The back-end doesn't accept messages without a body so we use this as a workaround
-            if message.text?.isEmpty != false {
-                message.text = String(message.sentTimestamp!)
-            }
-            // Convert the message to an open group message
-            guard let openGroupMessage = OpenGroupMessage.from(message, for: server, using: transaction) else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
-            // Send the result
-            OpenGroupAPI.sendMessage(openGroupMessage, to: channel, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
-                message.openGroupServerMessageID = openGroupMessage.serverID
-                storage.write(with: { transaction in
-                    MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-                    seal.fulfill(())
-                }, completion: { })
-            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-                storage.write(with: { transaction in
-                    handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-                }, completion: { })
-            }
-            // Return
-            return promise
-        } else if case .openGroupV2(let room, let server) = destination {
-            // Attach the user's profile
-            guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
-            if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
-                message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
-            } else {
-                message.profile = VisibleMessage.Profile(displayName: name)
-            }
-            // Convert it to protobuf
-            guard let proto = message.toProto(using: transaction) else { handleFailure(with: Error.protoConversionFailed, using: transaction); return promise }
-            // Serialize the protobuf
-            let plaintext: Data
-            do {
-                plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
-            } catch {
-                SNLog("Couldn't serialize proto due to error: \(error).")
-                handleFailure(with: error, using: transaction)
-                return promise
-            }
-            // Send the result
-            let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
-                base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
-            OpenGroupAPIV2.send(openGroupMessage, to: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
-                message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
-                storage.write(with: { transaction in
-                    MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-                    seal.fulfill(())
-                }, completion: { })
-            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-                storage.write(with: { transaction in
-                    handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-                }, completion: { })
-            }
-            // Return
-            return promise
+        // Attach the user's profile
+        guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
+        if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+            message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
         } else {
-            preconditionFailure()
+            message.profile = VisibleMessage.Profile(displayName: name)
         }
+        // Convert it to protobuf
+        guard let proto = message.toProto(using: transaction) else { handleFailure(with: Error.protoConversionFailed, using: transaction); return promise }
+        // Serialize the protobuf
+        let plaintext: Data
+        do {
+            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+        } catch {
+            SNLog("Couldn't serialize proto due to error: \(error).")
+            handleFailure(with: error, using: transaction)
+            return promise
+        }
+        // Send the result
+        guard case .openGroupV2(let room, let server) = destination else { preconditionFailure() }
+        let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
+            base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
+        OpenGroupAPIV2.send(openGroupMessage, to: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
+            message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
+            storage.write(with: { transaction in
+                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
+                seal.fulfill(())
+            }, completion: { })
+        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+            storage.write(with: { transaction in
+                handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
+            }, completion: { })
+        }
+        // Return
+        return promise
     }
 
     // MARK: Success & Failure Handling

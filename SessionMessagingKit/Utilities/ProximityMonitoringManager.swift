@@ -3,7 +3,7 @@
 //
 
 @objc
-public protocol OWSProximityMonitoringManager: class {
+public protocol OWSProximityMonitoringManager: AnyObject {
     func add(lifetime: AnyObject)
     func remove(lifetime: AnyObject)
 }

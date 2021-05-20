@@ -7,11 +7,9 @@ public enum SNUserDefaults {
         case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
-        case isMigratingToV2KeyPair
     }
 
     public enum Date : Swift.String {
-        case lastProfilePictureUpload
         case lastConfigurationSync
         case lastDisplayNameUpdate
         case lastProfilePictureUpdate
@@ -28,8 +26,6 @@ public enum SNUserDefaults {
     
     public enum String : Swift.String {
         case deviceToken
-        /// Just used for migration purposes.
-        case displayName
     }
 }
 
