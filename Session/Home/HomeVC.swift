@@ -164,14 +164,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         reload()
-        let userDefaults = UserDefaults.standard
-        if !userDefaults[.hasSeenFileServerInstabilityNotification] {
-            let fileServerModal = FileServerModal()
-            fileServerModal.modalPresentationStyle = .overFullScreen
-            fileServerModal.modalTransitionStyle = .crossDissolve
-            present(fileServerModal, animated: true, completion: nil)
-            userDefaults[.hasSeenFileServerInstabilityNotification] = true
-        }
     }
     
     deinit {

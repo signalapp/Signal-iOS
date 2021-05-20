@@ -773,7 +773,6 @@
 		C3DB66CC260AF1F3001EFC55 /* OpenGroupAPIV2+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DB66CB260AF1F3001EFC55 /* OpenGroupAPIV2+ObjC.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
-		C3ECBBDB2654D4640081996B /* FileServerModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECBBDA2654D4640081996B /* FileServerModal.swift */; };
 		C3ECBF7B257056B700EA7FCE /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ECBF7A257056B700EA7FCE /* Threading.swift */; };
 		C3F0A530255C80BC007BE2A3 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */; };
 		D2179CFC16BB0B3A0006F3AB /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
@@ -1763,7 +1762,6 @@
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditClosedGroupVC.swift; sourceTree = "<group>"; };
 		C3E7134E251C867C009649BB /* Sodium+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sodium+Conversion.swift"; sourceTree = "<group>"; };
-		C3ECBBDA2654D4640081996B /* FileServerModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileServerModal.swift; sourceTree = "<group>"; };
 		C3ECBF7A257056B700EA7FCE /* Threading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
 		C3F0A52F255C80BC007BE2A3 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		C3F0A5B2255C915C007BE2A3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2874,7 +2872,6 @@
 				B8A14D6F2589CE9000E70D57 /* KeyPairMigrationSuccessSheet.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
 				C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */,
-				C3ECBBDA2654D4640081996B /* FileServerModal.swift */,
 			);
 			path = "Sheets & Modals";
 			sourceTree = "<group>";
@@ -4891,7 +4888,6 @@
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
 				450DF2051E0D74AC003D14BE /* Platform.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,
-				C3ECBBDB2654D4640081996B /* FileServerModal.swift in Sources */,
 				B82149B825D60393009C0F2A /* BlockedModal.swift in Sources */,
 				B82B408C239A068800A248E7 /* RegisterVC.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
