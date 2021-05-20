@@ -39,9 +39,9 @@ class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
-    private var solidColorSetting = CustomColorViewController.randomColorSetting()
     private var gradientColor1Setting = CustomColorViewController.randomColorSetting()
-    private var gradientColor2Setting = CustomColorViewController.randomColorSetting()
+    // The "solid color" value is the same as the "gradient 2" color.
+    private var solidOrGradientColor2Setting = CustomColorViewController.randomColorSetting()
     fileprivate var angleRadians: CGFloat = 0 {
         didSet {
             if isViewLoaded {
@@ -70,11 +70,11 @@ class CustomColorViewController: OWSTableViewController2 {
             switch value.setting {
             case .solidColor(let color):
                 editMode = .solidColor
-                self.solidColorSetting = color.asColorSetting
+                self.solidOrGradientColor2Setting = color.asColorSetting
             case .gradient(let gradientColor1, let gradientColor2, let angleRadians):
                 editMode = .gradientColor1
                 self.gradientColor1Setting = gradientColor1.asColorSetting
-                self.gradientColor2Setting = gradientColor2.asColorSetting
+                self.solidOrGradientColor2Setting = gradientColor2.asColorSetting
                 self.angleRadians = angleRadians
             case .themedColor, .themedGradient:
                 owsFail("Case not supported by this view.")
@@ -316,11 +316,11 @@ class CustomColorViewController: OWSTableViewController2 {
         }
         switch editMode {
         case .solidColor:
-            apply(colorSetting: self.solidColorSetting)
+            apply(colorSetting: self.solidOrGradientColor2Setting)
         case .gradientColor1:
             apply(colorSetting: self.gradientColor1Setting)
         case .gradientColor2:
-            apply(colorSetting: self.gradientColor2Setting)
+            apply(colorSetting: self.solidOrGradientColor2Setting)
         }
     }
 
@@ -336,7 +336,7 @@ class CustomColorViewController: OWSTableViewController2 {
         case EditMode.solidColor.rawValue:
             self.editMode = .solidColor
         case EditMode.gradientColor1.rawValue, EditMode.gradientColor2.rawValue:
-            self.editMode = .gradientColor1
+            self.editMode = .gradientColor2
         default:
             owsFailDebug("Couldn't update editMode.")
         }
@@ -349,13 +349,13 @@ class CustomColorViewController: OWSTableViewController2 {
     }
 
     fileprivate var gradientColor2: OWSColor {
-        gradientColor2Setting.asOWSColor(hueSpectrum: hueSpectrum)
+        solidOrGradientColor2Setting.asOWSColor(hueSpectrum: hueSpectrum)
     }
 
     private func currentColorOrGradientSetting() -> ColorOrGradientSetting {
         switch editMode {
         case .solidColor:
-            let solidColor = self.solidColorSetting.asOWSColor(hueSpectrum: hueSpectrum)
+            let solidColor = self.solidOrGradientColor2Setting.asOWSColor(hueSpectrum: hueSpectrum)
             return .solidColor(color: solidColor)
         case .gradientColor1, .gradientColor2:
             return .gradient(gradientColor1: gradientColor1,
@@ -457,11 +457,11 @@ extension CustomColorViewController: SpectrumSliderDelegate {
         let currentColorSetting: ColorSetting
         switch editMode {
         case .solidColor:
-            currentColorSetting = self.solidColorSetting
+            currentColorSetting = self.solidOrGradientColor2Setting
         case .gradientColor1:
             currentColorSetting = self.gradientColor1Setting
         case .gradientColor2:
-            currentColorSetting = self.gradientColor2Setting
+            currentColorSetting = self.solidOrGradientColor2Setting
         }
 
         if spectrumSlider == self.hueSlider {
