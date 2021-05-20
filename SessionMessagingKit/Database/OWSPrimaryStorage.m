@@ -69,9 +69,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
         _dbReadPool = [[YapDatabaseConnectionPool alloc] initWithDatabase:self.database];
         _dbReadWriteConnection = [self newDatabaseConnection];
         _uiDatabaseConnection = [self newDatabaseConnection];
-
-        // Vacuum the database
-        [self.dbReadWriteConnection vacuum];
         
         // Increase object cache limit. Default is 250.
         _uiDatabaseConnection.objectCacheLimit = 500;
