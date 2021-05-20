@@ -70,19 +70,28 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
  */
 - (NSString *)descriptionForContent:(SSKProtoContent *)content
 {
+    NSMutableString *message = [[NSMutableString alloc] init];
     if (content.syncMessage) {
-        return [NSString stringWithFormat:@"<SyncMessage: %@ />", [self descriptionForSyncMessage:content.syncMessage]];
+        [message appendFormat:@"<SyncMessage: %@ />", [self descriptionForSyncMessage:content.syncMessage]];
     } else if (content.dataMessage) {
-        return [NSString stringWithFormat:@"<DataMessage: %@ />", [self descriptionForDataMessage:content.dataMessage]];
+        [message appendFormat:@"<DataMessage: %@ />", [self descriptionForDataMessage:content.dataMessage]];
     } else if (content.callMessage) {
-        NSString *callMessageDescription = [self descriptionForCallMessage:content.callMessage];
-        return [NSString stringWithFormat:@"<CallMessage %@ />", callMessageDescription];
+        [message appendFormat:@"<CallMessage %@ />", [self descriptionForCallMessage:content.callMessage]];
     } else if (content.nullMessage) {
-        return [NSString stringWithFormat:@"<NullMessage: %@ />", content.nullMessage];
+        [message appendFormat:@"<NullMessage: %@ />", content.nullMessage];
     } else if (content.receiptMessage) {
-        return [NSString stringWithFormat:@"<ReceiptMessage: %@ />", content.receiptMessage];
+        [message appendFormat:@"<ReceiptMessage: %@ />", content.receiptMessage];
     } else if (content.typingMessage) {
-        return [NSString stringWithFormat:@"<TypingMessage: %@ />", content.typingMessage];
+        [message appendFormat:@"<TypingMessage: %@ />", content.typingMessage];
+    }
+
+    // SKDM's are not mutually exclusive with other content types
+    if (content.hasSenderKeyDistributionMessage) {
+        [message appendString:@" + SenderKeyDistributionMessage"];
+    }
+
+    if (message.length > 0) {
+        return message;
     } else {
         // Don't fire an analytics event; if we ever add a new content type, we'd generate a ton of
         // analytics traffic.

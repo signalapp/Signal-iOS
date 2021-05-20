@@ -1224,7 +1224,8 @@ extension MessageSender {
             let secretCipher = try SMKSecretSessionCipher(sessionStore: Self.sessionStore,
                                                           preKeyStore: Self.preKeyStore,
                                                           signedPreKeyStore: Self.signedPreKeyStore,
-                                                          identityStore: Self.identityManager)
+                                                          identityStore: Self.identityManager,
+                                                          senderKeyStore: Self.senderKeyStore)
 
             serializedMessage = try secretCipher.throwswrapped_encryptMessage(
                 recipient: SMKAddress(uuid: recipientAddress.uuid, e164: recipientAddress.phoneNumber),

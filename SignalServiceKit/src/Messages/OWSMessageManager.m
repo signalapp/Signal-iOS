@@ -416,6 +416,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
 
+        // SKDM's are not mutually exclusive.
+        // They can be sent in isolation or along with another message type
+        if (contentProto.hasSenderKeyDistributionMessage) {
+            [self handleIncomingEnvelope:envelope
+                withSenderKeyDistributionMessage:contentProto.senderKeyDistributionMessage
+                                     transaction:transaction];
+        }
+
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
@@ -458,7 +466,9 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope
                       withReceiptMessage:contentProto.receiptMessage
                              transaction:transaction];
-        } else {
+        } else if (!contentProto.hasSenderKeyDistributionMessage) {
+            // An SKDM can be sent in isolation. Only warn if we don't have any
+            // of the above messages *and* no sender key
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
         }
     } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.

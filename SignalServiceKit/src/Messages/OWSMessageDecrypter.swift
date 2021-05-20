@@ -156,7 +156,13 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
         case .unidentifiedSender:
             return decryptUnidentifiedSenderEnvelope(envelope, transaction: transaction)
-        default:
+        case .senderkeyMessage:
+            return decrypt(
+                envelope,
+                envelopeData: envelopeData,
+                cipherType: .senderKey,
+                transaction: transaction)
+        @unknown default:
             Logger.warn("Received unhandled envelope type: \(envelope.unwrappedType)")
             return .failure(OWSGenericError("Received unhandled envelope type: \(envelope.unwrappedType)"))
         }
@@ -284,6 +290,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         envelope: SSKProtoEnvelope,
         transaction: SDSAnyWriteTransaction
     ) -> Error {
+        // TODO: Handle missing sender key recovery
         let logString = "Error while decrypting \(Self.description(forEnvelopeType: envelope)) message: \(error)"
 
         if case SignalError.duplicatedMessage(_) = error {
@@ -475,9 +482,15 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                     preKeyStore: Self.preKeyStore,
                                                     signedPreKeyStore: Self.signedPreKeyStore,
                                                     context: transaction)
+            case .senderKey:
+                plaintext = try groupDecrypt(
+                    encryptedData,
+                    from: protocolAddress,
+                    store: Self.senderKeyStore,
+                    context: transaction)
 
-            // FIXME: return this to @unknown default once SenderKey messages are handled.
-            // (Right now CiphertextMessage.MessageType erroneously includes SenderKeyDistributionMessage.)
+            // FIXME: return this to @unknown default once cipherType is represented
+            // as a finite enum.
             default:
                 owsFailDebug("Unexpected ciphertext type: \(cipherType.rawValue)")
                 throw OWSErrorWithCodeDescription(.failedToDecryptMessage,
@@ -533,7 +546,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 sessionStore: Self.sessionStore,
                 preKeyStore: Self.preKeyStore,
                 signedPreKeyStore: Self.signedPreKeyStore,
-                identityStore: Self.identityManager
+                identityStore: Self.identityManager,
+                senderKeyStore: Self.senderKeyStore
             )
         } catch {
             owsFailDebug("Could not create secret session cipher \(error)")
@@ -552,6 +566,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 protocolContext: transaction
             )
         } catch {
+            // TODO: Handle decryption failure because of missing sender key
             // Decrypt Failure Part 1: Unwrap failure details
 
             let nsError = error as NSError
