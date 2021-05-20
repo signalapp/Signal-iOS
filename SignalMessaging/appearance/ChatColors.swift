@@ -422,18 +422,15 @@ public extension ChatColors {
     // Represents the "message sender" to "group name color" mapping
     // for a given CVC load.
     struct GroupNameColors {
-        fileprivate let map: [SignalServiceAddress: UIColor]
+        fileprivate let colorMap: [SignalServiceAddress: UIColor]
         fileprivate let defaultColor: UIColor
 
         public func color(for address: SignalServiceAddress) -> UIColor {
-            guard let color = map[address] else {
-                return defaultColor
-            }
-            return color
+            colorMap[address] ?? defaultColor
         }
 
         fileprivate static var defaultColors: GroupNameColors {
-            GroupNameColors(map: [:], defaultColor: Theme.primaryTextColor)
+            GroupNameColors(colorMap: [:], defaultColor: Theme.primaryTextColor)
         }
     }
 
@@ -445,7 +442,7 @@ public extension ChatColors {
         let values = Self.groupNameColorValues
         let isDarkThemeEnabled = Theme.isDarkThemeEnabled
         var lastIndex: Int = 0
-        var map = [SignalServiceAddress: UIColor]()
+        var colorMap = [SignalServiceAddress: UIColor]()
         let addresses = Array(groupMembership.fullMembers).stableSort()
         for (index, address) in addresses.enumerated() {
             let valueIndex = index % values.count
@@ -453,7 +450,7 @@ public extension ChatColors {
                 owsFailDebug("Invalid values.")
                 return .defaultColors
             }
-            map[address] = value.color(isDarkThemeEnabled: isDarkThemeEnabled)
+            colorMap[address] = value.color(isDarkThemeEnabled: isDarkThemeEnabled)
             lastIndex = index
         }
         let defaultValueIndex = (lastIndex + 1) % values.count
@@ -462,7 +459,7 @@ public extension ChatColors {
             return .defaultColors
         }
         let defaultColor = defaultValue.color(isDarkThemeEnabled: isDarkThemeEnabled)
-        return GroupNameColors(map: map, defaultColor: defaultColor)
+        return GroupNameColors(colorMap: colorMap, defaultColor: defaultColor)
     }
 
     private struct GroupNameColorValue {
