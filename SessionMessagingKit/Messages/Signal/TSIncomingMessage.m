@@ -144,14 +144,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    BOOL isAllAttachmentDownloaded = YES;
+    BOOL areAllAttachmentsDownloaded = YES;
     for (NSString *attachmentId in self.attachmentIds) {
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-        isAllAttachmentDownloaded = isAllAttachmentDownloaded && attachment.isDownloaded;
-        if (!isAllAttachmentDownloaded) break;
+        areAllAttachmentsDownloaded = areAllAttachmentsDownloaded && attachment.isDownloaded;
+        if (!areAllAttachmentsDownloaded) break;
     }
     
-    if (!isAllAttachmentDownloaded) {
+    if (!areAllAttachmentsDownloaded) {
         return;
     }
     
