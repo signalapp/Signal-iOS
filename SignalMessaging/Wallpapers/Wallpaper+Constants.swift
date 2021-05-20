@@ -6,11 +6,11 @@ import Foundation
 
 extension Wallpaper {
 
-    var asSolidColor: UIColor? {
+    func asSolidColor(themeMode: ColorOrGradientThemeMode) -> UIColor? {
         guard let setting = self.asColorOrGradientSetting else {
             return nil
         }
-        switch setting.asValue {
+        switch setting.asValue(themeMode: themeMode) {
         case .solidColor(let color):
             return color
         case .gradient:
@@ -18,11 +18,14 @@ extension Wallpaper {
         }
     }
 
-    func asSwatchView(mode: ColorOrGradientSwatchView.Mode) -> ColorOrGradientSwatchView? {
+    func asSwatchView(shapeMode: ColorOrGradientSwatchView.ShapeMode,
+                      themeMode: ColorOrGradientThemeMode) -> ColorOrGradientSwatchView? {
         guard let setting = self.asColorOrGradientSetting else {
             return nil
         }
-        return ColorOrGradientSwatchView(setting: setting, mode: mode)
+        return ColorOrGradientSwatchView(setting: setting,
+                                         shapeMode: shapeMode,
+                                         themeMode: themeMode)
     }
 
     var asColorOrGradientSetting: ColorOrGradientSetting? {

@@ -176,29 +176,31 @@ public enum Wallpaper: String, CaseIterable {
             return nil
         }
 
-        let shouldDim = (Theme.isDarkThemeEnabled &&
-                            dimInDarkMode(for: thread, transaction: transaction))
+        let shouldDimInDarkTheme = dimInDarkMode(for: thread, transaction: transaction)
 
         guard let view = view(for: wallpaper,
                               photo: photo,
-                              shouldDim: shouldDim) else {
+                              shouldDimInDarkTheme: shouldDimInDarkTheme) else {
             return nil
        }
 
         return view
     }
 
-    public static func shouldDim(thread: TSThread?,
-                                 transaction: SDSAnyReadTransaction) -> Bool {
-        (Theme.isDarkThemeEnabled &&
-            dimInDarkMode(for: thread, transaction: transaction))
+    public static func themeMode(shouldDimInDarkTheme: Bool) -> ColorOrGradientThemeMode {
+        if shouldDimInDarkTheme {
+            return .auto
+        } else {
+            return .alwaysLight
+        }
     }
 
     public static func view(for wallpaper: Wallpaper,
                             photo: UIImage? = nil,
-                            shouldDim: Bool) -> WallpaperView? {
+                            shouldDimInDarkTheme: Bool) -> WallpaperView? {
         AssertIsOnMainThread()
 
+        let themeMode = self.themeMode(shouldDimInDarkTheme: shouldDimInDarkTheme)
         guard let mode = { () -> WallpaperView.Mode? in
             if case .photo = wallpaper {
                 guard let photo = photo else {
@@ -206,9 +208,10 @@ public enum Wallpaper: String, CaseIterable {
                     return nil
                 }
                 return .image(image: photo)
-            } else if let solidColor = wallpaper.asSolidColor {
+            } else if let solidColor = wallpaper.asSolidColor(themeMode: themeMode) {
                 return .solidColor(solidColor: solidColor)
-            } else if let swatchView = wallpaper.asSwatchView(mode: .rectangle) {
+            } else if let swatchView = wallpaper.asSwatchView(shapeMode: .rectangle,
+                                                              themeMode: themeMode) {
                 return .gradientView(gradientView: swatchView)
             } else {
                 owsFailDebug("Unexpected wallpaper type \(wallpaper)")
@@ -217,7 +220,7 @@ public enum Wallpaper: String, CaseIterable {
         }() else {
             return nil
         }
-        return WallpaperView(mode: mode, shouldDim: shouldDim)
+        return WallpaperView(mode: mode, shouldDimInDarkTheme: shouldDimInDarkTheme)
     }
 }
 
@@ -361,6 +364,15 @@ public class WallpaperView {
         case solidColor(solidColor: UIColor)
         case gradientView(gradientView: UIView)
         case image(image: UIImage)
+
+        var isImage: Bool {
+            switch self {
+            case .solidColor, .gradientView:
+                return false
+            case .image:
+                return true
+            }
+        }
     }
 
     public private(set) var contentView: UIView?
@@ -371,10 +383,10 @@ public class WallpaperView {
 
     private let mode: Mode
 
-    fileprivate init(mode: Mode, shouldDim: Bool) {
+    fileprivate init(mode: Mode, shouldDimInDarkTheme: Bool) {
         self.mode = mode
 
-        configure(shouldDim: shouldDim)
+        configure(shouldDimInDarkTheme: shouldDimInDarkTheme)
     }
 
     @available(swift, obsoleted: 1.0)
@@ -395,29 +407,15 @@ public class WallpaperView {
         return previewView
     }
 
-    private func configure(shouldDim: Bool) {
-        func addDimmingViewIfNecessary() {
-            if shouldDim {
-                let dimmingView = UIView()
-                dimmingView.backgroundColor = .ows_blackAlpha20
-                self.dimmingView = dimmingView
-            }
-        }
-
+    private func configure(shouldDimInDarkTheme: Bool) {
         let contentView: UIView = {
             switch mode {
             case .solidColor(let solidColor):
-                // Bake the dimming into the color.
-                let color = (shouldDim
-                                ? solidColor.blended(with: .ows_black, alpha: 0.2)
-                                : solidColor)
-
+                let color = solidColor
                 let contentView = UIView()
                 contentView.backgroundColor = color
                 return contentView
             case .gradientView(let gradientView):
-
-                addDimmingViewIfNecessary()
 
                 return gradientView
             case .image(let image):
@@ -426,7 +424,12 @@ public class WallpaperView {
                 imageView.clipsToBounds = true
 
                 // TODO: Bake dimming into the image.
-                addDimmingViewIfNecessary()
+                let shouldDim = Theme.isDarkThemeEnabled && shouldDimInDarkTheme
+                if shouldDim {
+                    let dimmingView = UIView()
+                    dimmingView.backgroundColor = .ows_blackAlpha20
+                    self.dimmingView = dimmingView
+                }
 
                 return imageView
             }

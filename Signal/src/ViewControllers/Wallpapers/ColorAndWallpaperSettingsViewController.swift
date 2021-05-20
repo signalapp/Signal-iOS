@@ -88,7 +88,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     ChatColors.defaultChatColorForRendering(transaction: transaction)
                 }
             }
-            let defaultColorView = ColorOrGradientSwatchView(setting: chatColor.setting, mode: .circle)
+            let defaultColorView = ColorOrGradientSwatchView(setting: chatColor.setting, shapeMode: .circle)
             defaultColorView.autoSetDimensions(to: .square(16))
             defaultColorView.setContentHuggingHigh()
             defaultColorView.setCompressionResistanceHigh()
@@ -421,7 +421,7 @@ private class MiniPreviewView: UIView {
         let bubbleView = UIView()
         bubbleView.layer.cornerRadius = 10
         bubbleView.autoSetDimensions(to: CGSize(width: 100, height: 30))
-        bubbleView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray95 : .ows_white
+        bubbleView.backgroundColor = ConversationStyle.bubbleTextColorIncoming
         containerView.addSubview(bubbleView)
         bubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
         bubbleView.autoPinHeightToSuperview()
@@ -437,8 +437,8 @@ private class MiniPreviewView: UIView {
                 return ChatColors.defaultChatColorForRendering(transaction: transaction)
             }
         }
-        let chatColorView = ColorOrGradientSwatchView(setting: chatColor.setting,
-                                                      mode: .rectangle)
+        let chatColorView = CVColorOrGradientView()
+        chatColorView.configure(value: chatColor.setting.asValue, referenceView: self)
 
         let bubbleView = UIView()
         bubbleView.layer.cornerRadius = 10

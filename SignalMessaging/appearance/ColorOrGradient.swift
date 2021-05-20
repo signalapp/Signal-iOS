@@ -131,13 +131,36 @@ public enum ColorOrGradientValue: CustomStringConvertible {
 
 // MARK: -
 
+public enum ColorOrGradientThemeMode: Int {
+    case auto
+    case alwaysLight
+    case alwaysDark
+}
+
+// MARK: -
+
 public extension ColorOrGradientSetting {
     var asValue: ColorOrGradientValue {
+        asValue(themeMode: .auto)
+    }
+
+    func asValue(themeMode: ColorOrGradientThemeMode) -> ColorOrGradientValue {
+        let shouldUseDarkColors: Bool = {
+            switch themeMode {
+            case .auto:
+                return Theme.isDarkThemeEnabled
+            case .alwaysDark:
+                return true
+            case .alwaysLight:
+                return false
+            }
+        }()
+
         switch self {
         case .solidColor(let solidColor):
             return .solidColor(color: solidColor.asUIColor)
         case .themedColor(let lightThemeColor, let darkThemeColor):
-            let color = (Theme.isDarkThemeEnabled
+            let color = (shouldUseDarkColors
                             ? darkThemeColor
                             : lightThemeColor)
             return .solidColor(color: color.asUIColor)
@@ -150,10 +173,10 @@ public extension ColorOrGradientSetting {
                              let darkGradientColor1,
                              let darkGradientColor2,
                              let angleRadians):
-            let gradientColor1 = (Theme.isDarkThemeEnabled
+            let gradientColor1 = (shouldUseDarkColors
                                     ? darkGradientColor1
                                     : lightGradientColor1)
-            let gradientColor2 = (Theme.isDarkThemeEnabled
+            let gradientColor2 = (shouldUseDarkColors
                                     ? darkGradientColor2
                                     : lightGradientColor2)
             return .gradient(gradientColor1: gradientColor1.asUIColor,

@@ -991,7 +991,7 @@ private class CustomColorPreviewView: UIView {
 
         init(isSelected: Bool, chatColor: ChatColor, name: String? = nil) {
             self.isSelected = isSelected
-            self.swatchView = ColorOrGradientSwatchView(setting: chatColor.setting, mode: .circle)
+            self.swatchView = ColorOrGradientSwatchView(setting: chatColor.setting, shapeMode: .circle)
 
             super.init(frame: .zero)
 

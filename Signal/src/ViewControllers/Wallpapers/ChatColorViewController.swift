@@ -252,12 +252,15 @@ class ChatColorViewController: OWSTableViewController2 {
         }
     }
 
+    // TODO: Use new context menus when they are available.
+    //       Until we do, hide the trailing icons.
+    private let showTrailingIcons = false
+
     private func didLongPressOption(option: Option) {
         switch option {
         case .auto, .builtInValue, .addNewOption:
             return
         case .customValue(let value):
-            // TODO: Use new context menus when they are available.
             let actionSheet = ActionSheetController()
 
             let editAction = ActionSheetAction(
@@ -265,7 +268,9 @@ class ChatColorViewController: OWSTableViewController2 {
             ) { [weak self] _ in
                 self?.showCustomColorView(valueMode: .editExisting(value: value))
             }
-            editAction.trailingIcon = .compose24
+            if showTrailingIcons {
+                editAction.trailingIcon = .compose24
+            }
             actionSheet.addAction(editAction)
 
             let duplicateAction = ActionSheetAction(
@@ -274,7 +279,9 @@ class ChatColorViewController: OWSTableViewController2 {
             ) { [weak self] _ in
                 self?.duplicateValue(value)
             }
-            duplicateAction.trailingIcon = .copy24
+            if showTrailingIcons {
+                duplicateAction.trailingIcon = .copy24
+            }
             actionSheet.addAction(duplicateAction)
 
             let deleteAction = ActionSheetAction(
@@ -282,7 +289,9 @@ class ChatColorViewController: OWSTableViewController2 {
             ) { [weak self] _ in
                 self?.showDeleteUI(value)
             }
-            deleteAction.trailingIcon = .trash24
+            if showTrailingIcons {
+                deleteAction.trailingIcon = .trash24
+            }
             actionSheet.addAction(deleteAction)
 
             actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -349,7 +358,7 @@ class ChatColorViewController: OWSTableViewController2 {
                 case .auto:
                     let value = ChatColors.autoChatColorForRendering(forThread: self.thread,
                                                                      transaction: transaction)
-                    let view = ColorOrGradientSwatchView(setting: value.setting, mode: .circle)
+                    let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
 
                     let label = UILabel()
                     label.text = NSLocalizedString("CHAT_COLOR_SETTINGS_AUTO",
@@ -365,10 +374,10 @@ class ChatColorViewController: OWSTableViewController2 {
                     // nil represents auto.
                     addOptionView(innerView: view, isSelected: currentValue == nil)
                 case .builtInValue(let value):
-                    let view = ColorOrGradientSwatchView(setting: value.setting, mode: .circle)
+                    let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
                     addOptionView(innerView: view, isSelected: currentValue == value)
                 case .customValue(let value):
-                    let view = ColorOrGradientSwatchView(setting: value.setting, mode: .circle)
+                    let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
 
                     let isSelected = currentValue == value
                     if isSelected {

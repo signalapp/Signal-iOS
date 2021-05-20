@@ -238,11 +238,11 @@ class WallpaperCell: UICollectionViewCell {
 
         self.wallpaper = wallpaper
         wallpaperView?.removeFromSuperview()
-        let shouldDim = databaseStorage.read { transaction in
-            Wallpaper.shouldDim(thread: thread, transaction: transaction)
+        let shouldDimInDarkTheme = databaseStorage.read { transaction in
+            Wallpaper.dimInDarkMode(for: thread, transaction: transaction)
         }
         wallpaperView = Wallpaper.view(for: wallpaper,
-                                       shouldDim: shouldDim)?.asPreviewView()
+                                       shouldDimInDarkTheme: shouldDimInDarkTheme)?.asPreviewView()
 
         guard let wallpaperView = wallpaperView else {
             return owsFailDebug("Missing wallpaper view")
@@ -251,5 +251,16 @@ class WallpaperCell: UICollectionViewCell {
         contentView.addSubview(wallpaperView)
         contentView.clipsToBounds = true
         wallpaperView.autoPinEdgesToSuperviewEdges()
+
+        if showChatColorPreview {
+            let chatColor = wallpaper.defaultChatColor
+            let chatColorView = ColorOrGradientSwatchView(setting: chatColor.setting,
+                                                          shapeMode: .rectangle)
+            contentView.addSubview(chatColorView)
+            chatColorView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .leading)
+            chatColorView.autoSetDimension(.width, toSize: 20)
+        }
     }
+
+    private let showChatColorPreview = false
 }

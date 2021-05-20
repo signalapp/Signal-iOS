@@ -24,17 +24,22 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
         }
     }
 
-    public enum Mode {
+    public enum ShapeMode {
         case circle
         case rectangle
     }
-    private let mode: Mode
+    private let shapeMode: ShapeMode
+
+    private let themeMode: ColorOrGradientThemeMode
 
     private let gradientLayer = CAGradientLayer()
 
-    public init(setting: ColorOrGradientSetting, mode: Mode) {
+    public init(setting: ColorOrGradientSetting,
+                shapeMode: ShapeMode,
+                themeMode: ColorOrGradientThemeMode = .auto) {
         self.setting = setting
-        self.mode = mode
+        self.shapeMode = shapeMode
+        self.themeMode = themeMode
 
         super.init(name: "ColorOrGradientSwatchView")
 
@@ -76,7 +81,7 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
         }
         self.state = newState
 
-        switch mode {
+        switch shapeMode {
         case .circle:
             self.layer.cornerRadius = size.smallerAxis * 0.5
             self.clipsToBounds = true
@@ -85,7 +90,7 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
             self.clipsToBounds = false
         }
 
-        switch setting.asValue {
+        switch setting.asValue(themeMode: themeMode) {
         case .solidColor(let color):
             backgroundColor = color
             gradientLayer.removeFromSuperlayer()
@@ -108,7 +113,7 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
             // Note the signs.
             let startVector = CGPoint(x: +sin(angleRadians), y: -cos(angleRadians))
             let startScale: CGFloat
-            switch mode {
+            switch shapeMode {
             case .circle:
                 // In circle mode, we want the startPoint and endPoint to reside
                 // on the circumference of the circle.
