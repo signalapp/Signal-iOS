@@ -141,6 +141,14 @@ class PreviewWallpaperViewController: UIViewController {
 
     private var standalonePage: WallpaperPage?
     func modeDidChange() {
+        let chatColor = Self.databaseStorage.read { transaction -> ChatColor? in
+            if let thread = self.thread {
+                return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
+            } else {
+                return ChatColors.defaultChatColorSetting(transaction: transaction)
+            }
+        }
+
         switch mode {
         case .photo(let selectedPhoto):
             owsAssertDebug(self.standalonePage == nil)
@@ -153,7 +161,7 @@ class PreviewWallpaperViewController: UIViewController {
             standalonePage.view.autoPinEdgesToSuperviewEdges()
             blurButton.isHidden = false
 
-            mockConversationView.customChatColor = Wallpaper.photo.defaultChatColor
+            mockConversationView.customChatColor = chatColor ?? Wallpaper.photo.defaultChatColor
         case .preset(let selectedWallpaper):
             if pageViewController.view.superview == nil {
                 view.insertSubview(pageViewController.view, at: 0)
@@ -167,7 +175,7 @@ class PreviewWallpaperViewController: UIViewController {
                                         thread: thread)
             blurButton.isHidden = true
 
-            mockConversationView.customChatColor = selectedWallpaper.defaultChatColor
+            mockConversationView.customChatColor = chatColor ?? selectedWallpaper.defaultChatColor
         }
 
         mockConversationView.model = buildMockConversationModel()

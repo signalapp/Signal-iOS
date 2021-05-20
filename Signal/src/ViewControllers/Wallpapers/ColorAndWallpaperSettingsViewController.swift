@@ -348,24 +348,29 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
 private class MiniPreviewView: UIView {
     private let thread: TSThread?
+    private let hasWallpaper: Bool
 
     init(thread: TSThread?) {
         self.thread = thread
+
+        let hasWallpaper: Bool
+        let stackViewContainer: UIView
+        if let wallpaperView = (Self.databaseStorage.read { transaction in
+            Wallpaper.view(for: thread, transaction: transaction)
+        }) {
+            stackViewContainer = wallpaperView.asPreviewView()
+            hasWallpaper = true
+        } else {
+            stackViewContainer = UIView()
+            stackViewContainer.backgroundColor = Theme.backgroundColor
+            hasWallpaper = false
+        }
+        self.hasWallpaper = hasWallpaper
 
         super.init(frame: .zero)
 
         layer.cornerRadius = OWSTableViewController2.cellRounding
         backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
-
-        let stackViewContainer: UIView
-        if let wallpaperView = (databaseStorage.read { transaction in
-            Wallpaper.view(for: thread, transaction: transaction)
-        }) {
-            stackViewContainer = wallpaperView.asPreviewView()
-        } else {
-            stackViewContainer = UIView()
-            stackViewContainer.backgroundColor = Theme.backgroundColor
-        }
 
         stackViewContainer.layer.cornerRadius = 8
         stackViewContainer.clipsToBounds = true
@@ -421,7 +426,8 @@ private class MiniPreviewView: UIView {
         let bubbleView = UIView()
         bubbleView.layer.cornerRadius = 10
         bubbleView.autoSetDimensions(to: CGSize(width: 100, height: 30))
-        bubbleView.backgroundColor = ConversationStyle.bubbleTextColorIncoming
+        bubbleView.backgroundColor = ConversationStyle.bubbleColorIncoming(hasWallpaper: hasWallpaper,
+                                                                           isDarkThemeEnabled: Theme.isDarkThemeEnabled)
         containerView.addSubview(bubbleView)
         bubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
         bubbleView.autoPinHeightToSuperview()

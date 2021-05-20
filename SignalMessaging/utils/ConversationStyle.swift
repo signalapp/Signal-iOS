@@ -203,12 +203,18 @@ public class ConversationStyle: NSObject {
     // MARK: Colors
 
     @objc
-    public var bubbleColorIncoming: UIColor {
+    public static func bubbleColorIncoming(hasWallpaper: Bool,
+                                           isDarkThemeEnabled: Bool) -> UIColor {
         if hasWallpaper {
             return isDarkThemeEnabled ? .ows_gray95 : .white
         } else {
             return isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
         }
+    }
+    @objc
+    public var bubbleColorIncoming: UIColor {
+        Self.bubbleColorIncoming(hasWallpaper: hasWallpaper,
+                                 isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
     @objc

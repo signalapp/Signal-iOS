@@ -16,11 +16,11 @@ class ChatColorViewController: OWSTableViewController2 {
         super.init()
 
         self.currentValue = Self.databaseStorage.read { transaction in
-            if let thread = self.thread,
-               let value = ChatColors.chatColorSetting(thread: thread, transaction: transaction) {
-                return value
+            if let thread = self.thread {
+                return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
+            } else {
+                return ChatColors.defaultChatColorSetting(transaction: transaction)
             }
-            return ChatColors.defaultChatColorSetting(transaction: transaction)
         }
 
         NotificationCenter.default.addObserver(
