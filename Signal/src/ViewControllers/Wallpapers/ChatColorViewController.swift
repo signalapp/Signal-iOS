@@ -311,7 +311,7 @@ class ChatColorViewController: OWSTableViewController2 {
         let optionViewSelectionThickness: CGFloat = 4
         let optionViewSelectionSpacing: CGFloat = 2
         var optionViewOuterSize: CGFloat { optionViewInnerSize + 2 * optionViewSelectionThickness + 2 * optionViewSelectionSpacing }
-        let optionViewMinHSpacing: CGFloat = 16
+        let optionViewMinHSpacing: CGFloat = 10
         let optionsPerRow = max(1, Int(floor(rowWidth + optionViewMinHSpacing) / (optionViewOuterSize + optionViewMinHSpacing)))
 
         var optionViews = [UIView]()
