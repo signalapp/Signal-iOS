@@ -100,11 +100,12 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
-        } else if pointer.downloadURL.contains(FileServerAPIV2.server) {
+        } else if pointer.downloadURL.contains(FileServerAPIV2.server) || pointer.downloadURL.contains(FileServerAPIV2.oldServer) {
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
                 return handleFailure(Error.invalidURL)
             }
-            FileServerAPIV2.download(file).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+            let useOldServer = pointer.downloadURL.contains(FileServerAPIV2.oldServer)
+            FileServerAPIV2.download(file, useOldServer: useOldServer).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
