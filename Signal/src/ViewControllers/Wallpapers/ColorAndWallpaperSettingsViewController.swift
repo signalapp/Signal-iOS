@@ -347,7 +347,11 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 // MARK: -
 
 private class MiniPreviewView: UIView {
+    private let thread: TSThread?
+
     init(thread: TSThread?) {
+        self.thread = thread
+
         super.init(frame: .zero)
 
         layer.cornerRadius = OWSTableViewController2.cellRounding
@@ -425,11 +429,25 @@ private class MiniPreviewView: UIView {
     }
 
     func buildOutgoingBubble() -> UIView {
-        let containerView = UIView()
+        let chatColor: ChatColor = databaseStorage.read { transaction in
+            if let thread = self.thread {
+                return ChatColors.chatColorForRendering(thread: thread,
+                                                        transaction: transaction)
+            } else {
+                return ChatColors.defaultChatColorForRendering(transaction: transaction)
+            }
+        }
+        let chatColorView = ColorOrGradientSwatchView(setting: chatColor.setting,
+                                                      mode: .rectangle)
+
         let bubbleView = UIView()
         bubbleView.layer.cornerRadius = 10
+        bubbleView.layer.masksToBounds = true
         bubbleView.autoSetDimensions(to: CGSize(width: 100, height: 30))
-        bubbleView.backgroundColor = .ows_accentBlue
+        bubbleView.addSubview(chatColorView)
+        chatColorView.autoPinEdgesToSuperviewEdges()
+
+        let containerView = UIView()
         containerView.addSubview(bubbleView)
         bubbleView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 8)
         bubbleView.autoPinHeightToSuperview()
