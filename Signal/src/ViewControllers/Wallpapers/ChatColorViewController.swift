@@ -370,12 +370,15 @@ class ChatColorViewController: OWSTableViewController2 {
                 case .customValue(let value):
                     let view = ColorOrGradientSwatchView(setting: value.setting, mode: .circle)
 
-                    let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
-                    view.addSubview(imageView)
-                    imageView.autoSetDimensions(to: .square(24))
-                    imageView.autoCenterInSuperview()
+                    let isSelected = currentValue == value
+                    if isSelected {
+                        let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
+                        view.addSubview(imageView)
+                        imageView.autoSetDimensions(to: .square(24))
+                        imageView.autoCenterInSuperview()
+                    }
 
-                    addOptionView(innerView: view, isSelected: currentValue == value)
+                    addOptionView(innerView: view, isSelected: isSelected)
                 case .addNewOption:
                     let view = OWSLayerView.circleView()
                     view.backgroundColor = Theme.washColor
