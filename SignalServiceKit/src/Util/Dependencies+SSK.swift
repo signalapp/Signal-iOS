@@ -457,6 +457,14 @@ public extension NSObject {
     static var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
     }
+
+    var senderKeyStore: SenderKeyStore {
+        SSKEnvironment.shared.senderKeyStoreRef
+    }
+
+    static var senderKeyStore: SenderKeyStore {
+        SSKEnvironment.shared.senderKeyStoreRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -905,6 +913,14 @@ public extension Dependencies {
 
     static var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
+    }
+
+    var senderKeyStore: SenderKeyStore {
+        SSKEnvironment.shared.senderKeyStoreRef
+    }
+
+    static var senderKeyStore: SenderKeyStore {
+        SSKEnvironment.shared.senderKeyStoreRef
     }
 }
 

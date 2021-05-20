@@ -91,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<Payments> payments = [MockPayments new];
     id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
     SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
+    SenderKeyStore *senderKeyStore = [SenderKeyStore new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -139,7 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
                          messageProcessor:messageProcessor
                                  payments:payments
                        paymentsCurrencies:paymentsCurrencies
-                    spamChallengeResolver:spamChallengeResolver];
+                    spamChallengeResolver:spamChallengeResolver
+                           senderKeyStore:senderKeyStore];
 
     if (!self) {
         return nil;

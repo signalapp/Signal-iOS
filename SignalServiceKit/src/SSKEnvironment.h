@@ -33,6 +33,7 @@ extern NSNotificationName const WarmCachesNotification;
 @class SSKPreferences;
 @class SSKSessionStore;
 @class SSKSignedPreKeyStore;
+@class SenderKeyStore;
 @class SignalServiceAddressCache;
 @class SpamChallengeResolver;
 @class StickerManager;
@@ -110,7 +111,8 @@ extern NSNotificationName const WarmCachesNotification;
                        messageProcessor:(MessageProcessor *)messageProcessor
                                payments:(id<Payments>)payments
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
-                  spamChallengeResolver:(SpamChallengeResolver *)spamResolver NS_DESIGNATED_INITIALIZER;
+                  spamChallengeResolver:(SpamChallengeResolver *)spamResolver
+                         senderKeyStore:(SenderKeyStore *)senderKeyStore NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -171,6 +173,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) id<Payments> paymentsRef;
 @property (nonatomic, readonly) id<PaymentsCurrencies> paymentsCurrenciesRef;
 @property (nonatomic, readonly) SpamChallengeResolver *spamChallengeResolverRef;
+@property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;
