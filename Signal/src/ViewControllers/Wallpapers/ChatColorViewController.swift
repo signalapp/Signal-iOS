@@ -8,7 +8,6 @@ class ChatColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
-    private var originalValue: ChatColor?
     private var currentValue: ChatColor?
 
     public init(thread: TSThread? = nil) {
@@ -16,14 +15,13 @@ class ChatColorViewController: OWSTableViewController2 {
 
         super.init()
 
-        self.originalValue = Self.databaseStorage.read { transaction in
+        self.currentValue = Self.databaseStorage.read { transaction in
             if let thread = self.thread {
                 return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
             } else {
                 return ChatColors.defaultChatColorSetting(transaction: transaction)
             }
         }
-        self.currentValue = self.originalValue
 
         NotificationCenter.default.addObserver(
             self,
@@ -71,43 +69,7 @@ class ChatColorViewController: OWSTableViewController2 {
 
         title = NSLocalizedString("CHAT_COLOR_SETTINGS_TITLE", comment: "Title for the chat color settings view.")
 
-        navigationItem.rightBarButtonItem = .init(title: CommonStrings.setButton,
-                                                  style: .done,
-                                                  target: self,
-                                                  action: #selector(didTapSet))
-
         updateTableContents()
-    }
-
-    private var hasUnsavedChanges: Bool {
-        currentValue != originalValue
-    }
-
-    // Don't allow interactive dismiss when there are unsaved changes.
-    override var isModalInPresentation: Bool {
-        get { hasUnsavedChanges }
-        set {}
-    }
-
-    private func updateNavigation() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
-        )
-
-        if hasUnsavedChanges {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: CommonStrings.setButton,
-                style: .done,
-                target: self,
-                action: #selector(didTapDone),
-                accessibilityIdentifier: "set_button"
-            )
-        } else {
-            navigationItem.rightBarButtonItem = nil
-        }
     }
 
     @objc
@@ -174,8 +136,6 @@ class ChatColorViewController: OWSTableViewController2 {
         contents.addSection(colorsSection)
 
         self.contents = contents
-
-        updateNavigation()
     }
 
     func buildMockConversationModel() -> MockConversationView.MockModel {
@@ -220,8 +180,7 @@ class ChatColorViewController: OWSTableViewController2 {
             Self.databaseStorage.write { transaction in
                 Self.chatColors.upsertCustomValue(value, transaction: transaction)
             }
-            self.currentValue = value
-            self.updateTableContents()
+            self.setNewValue(value)
         }
         self.navigationController?.pushViewController(customColorVC, animated: true)
     }
@@ -279,17 +238,14 @@ class ChatColorViewController: OWSTableViewController2 {
     private func didTapOption(option: Option) {
         switch option {
         case .auto:
-            self.currentValue = nil
-            updateTableContents()
+            setNewValue(nil)
         case .builtInValue(let value):
-            self.currentValue = value
-            updateTableContents()
+            setNewValue(value)
         case .customValue(let value):
             if self.currentValue == value {
                 showCustomColorView(valueMode: .editExisting(value: value))
             } else {
-                self.currentValue = value
-                updateTableContents()
+                setNewValue(value)
             }
         case .addNewOption:
             showCustomColorView(valueMode: .createNew)
@@ -460,41 +416,16 @@ class ChatColorViewController: OWSTableViewController2 {
         return vStack
     }
 
-    private func saveAndDismiss() {
+    private func setNewValue(_ newValue: ChatColor?) {
+        self.currentValue = newValue
         databaseStorage.write { transaction in
             if let thread = self.thread {
-                ChatColors.setChatColorSetting(self.currentValue, thread: thread, transaction: transaction)
+                ChatColors.setChatColorSetting(newValue, thread: thread, transaction: transaction)
             } else {
-                ChatColors.setDefaultChatColorSetting(self.currentValue, transaction: transaction)
+                ChatColors.setDefaultChatColorSetting(newValue, transaction: transaction)
             }
         }
-        self.navigationController?.popViewController(animated: true)
-    }
-
-    private func dismissWithoutSaving() {
-        self.navigationController?.popViewController(animated: true)
-    }
-
-    @objc
-    func didTapSet() {
-        saveAndDismiss()
-    }
-
-    @objc
-    func didTapCancel() {
-        guard hasUnsavedChanges else {
-            dismissWithoutSaving()
-            return
-        }
-
-        OWSActionSheets.showPendingChangesActionSheet(discardAction: { [weak self] in
-            self?.dismissWithoutSaving()
-        })
-    }
-
-    @objc
-    func didTapDone() {
-        saveAndDismiss()
+        self.updateTableContents()
     }
 }
 
