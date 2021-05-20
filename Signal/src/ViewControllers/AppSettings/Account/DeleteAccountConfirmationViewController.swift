@@ -54,7 +54,10 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
-        headerSection.add(.init(customCell: buildHeaderCell()))
+        headerSection.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            return self.buildHeaderCell()
+        }))
         contents.addSection(headerSection)
 
         let confirmSection = OWSTableSection()
@@ -76,8 +79,10 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 self.present(OWSNavigationController(rootViewController: countryCodeController), animated: true)
             }
         ))
-        confirmSection.add(.init(
-            customCell: buildPhoneNumberCell(),
+        confirmSection.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            return self.buildPhoneNumberCell()
+        },
             actionBlock: { [weak self] in
                 self?.phoneNumberTextField.becomeFirstResponder()
             }

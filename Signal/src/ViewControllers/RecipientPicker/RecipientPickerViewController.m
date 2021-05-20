@@ -573,9 +573,10 @@ const NSUInteger kMinimumSearchLength = 1;
                 loadingCell.accessibilityIdentifier
                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"loading");
 
-                OWSTableItem *loadingItem = [OWSTableItem itemWithCustomCell:loadingCell
-                                                             customRowHeight:40
-                                                                 actionBlock:nil];
+                OWSTableItem *loadingItem = [OWSTableItem
+                    itemWithCustomCellBlock:^{ return loadingCell; }
+                            customRowHeight:40
+                                actionBlock:nil];
                 [contactsSection addItem:loadingItem];
             }
         }

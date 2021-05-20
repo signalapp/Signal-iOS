@@ -144,8 +144,10 @@ class ProfileNameViewController: OWSTableViewController2 {
 
         let namesSection = OWSTableSection()
         func addTextField(_ textField: UITextField) {
-            namesSection.add(.init(
-                customCell: nameCell(textField: textField),
+            namesSection.add(.init(customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                return self.nameCell(textField: textField)
+            },
                 actionBlock: {
                     textField.becomeFirstResponder()
                 }

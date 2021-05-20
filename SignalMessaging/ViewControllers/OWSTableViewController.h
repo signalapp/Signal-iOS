@@ -90,14 +90,11 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 + (OWSTableItem *)itemWithTitle:(NSString *)title
                     actionBlock:(nullable OWSTableActionBlock)actionBlock NS_SWIFT_NAME(init(title:actionBlock:));
 
-+ (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
-                     customRowHeight:(CGFloat)customRowHeight
-                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
-
-+ (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
-                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
++ (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
+                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
+                          customRowHeight:(CGFloat)customRowHeight
                               actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)itemWithDequeueCellBlock:(OWSTableDequeueCellBlock)dequeueCellBlock

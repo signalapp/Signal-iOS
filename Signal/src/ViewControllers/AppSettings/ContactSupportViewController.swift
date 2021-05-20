@@ -309,17 +309,20 @@ extension ContactSupportViewController {
             OWSTableSection(title: contactHeaderText, items: [
 
                 // Filter selection
-                OWSTableItem(customCell: OWSTableItem.buildIconNameCell(
-                    itemName: NSLocalizedString(
-                        "CONTACT_SUPPORT_FILTER_PROMPT",
-                        comment: "Prompt telling the user to select a filter for their support request."
-                    ),
-                    accessoryText: self.selectedFilter?.localizedShortString ?? NSLocalizedString(
-                        "CONTACT_SUPPORT_SELECT_A_FILTER",
-                        comment: "Placeholder telling user they must select a filter."
-                    ),
-                    accessoryTextColor: self.selectedFilter == nil ? Theme.placeholderColor : nil
-                ),
+                OWSTableItem(customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    return OWSTableItem.buildIconNameCell(
+                        itemName: NSLocalizedString(
+                            "CONTACT_SUPPORT_FILTER_PROMPT",
+                            comment: "Prompt telling the user to select a filter for their support request."
+                        ),
+                        accessoryText: self.selectedFilter?.localizedShortString ?? NSLocalizedString(
+                            "CONTACT_SUPPORT_SELECT_A_FILTER",
+                            comment: "Placeholder telling user they must select a filter."
+                        ),
+                        accessoryTextColor: self.selectedFilter == nil ? Theme.placeholderColor : nil
+                    )
+                },
                 actionBlock: { [weak self] in
                     self?.showFilterPicker()
                 }),
@@ -335,7 +338,10 @@ extension ContactSupportViewController {
                 }),
 
                 // Debug log switch
-                OWSTableItem(customCell: createDebugLogCell(), customRowHeight: UITableView.automaticDimension),
+                OWSTableItem(customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    return self.createDebugLogCell()
+                }),
 
                 // FAQ prompt
                 OWSTableItem(customCellBlock: {

@@ -146,21 +146,21 @@ public extension OWSTableItem {
                      accessibilityIdentifier: String,
                      actionBlock: (() -> Void)? = nil) -> OWSTableItem {
 
-        OWSTableItem(
-            customCell: OWSTableItem.buildCellWithAccessoryLabel(
-                icon: icon,
-                tintColor: tintColor,
-                itemName: name,
-                maxItemNameLines: maxNameLines,
-                textColor: textColor,
-                accessoryText: accessoryText,
-                accessoryType: accessoryType,
-                accessoryImage: accessoryImage,
-                accessoryView: accessoryView,
-                accessibilityIdentifier: accessibilityIdentifier
-            ),
-            actionBlock: actionBlock
-        )
+        OWSTableItem(customCellBlock: {
+            OWSTableItem.buildCellWithAccessoryLabel(
+            icon: icon,
+            tintColor: tintColor,
+            itemName: name,
+            maxItemNameLines: maxNameLines,
+            textColor: textColor,
+            accessoryText: accessoryText,
+            accessoryType: accessoryType,
+            accessoryImage: accessoryImage,
+            accessoryView: accessoryView,
+            accessibilityIdentifier: accessibilityIdentifier
+            )
+        },
+                     actionBlock: actionBlock)
     }
 
     @available(swift, obsoleted: 1.0)
@@ -401,15 +401,5 @@ public extension OWSTableSection {
                   header: header(),
                   items: items,
                   footer: footer())
-    }
-}
-
-public extension OWSTableItem {
-    convenience init(
-        customCell: UITableViewCell,
-        rowHeight: CGFloat = UITableView.automaticDimension,
-        actionBlock: OWSTableActionBlock? = nil) {
-
-        self.init(customCell: customCell, customRowHeight: rowHeight, actionBlock: actionBlock)
     }
 }
