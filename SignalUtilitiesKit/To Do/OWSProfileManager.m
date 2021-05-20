@@ -806,9 +806,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSString *profilePictureURL = userProfile.avatarUrlPath;
         
         AnyPromise *promise;
-        if ([profilePictureURL containsString:SNFileServerAPIV2.server]) {
+        if ([profilePictureURL containsString:SNFileServerAPIV2.server] || [profilePictureURL containsString:SNFileServerAPIV2.oldServer]) {
             NSString *file = [profilePictureURL lastPathComponent];
-            promise = [SNFileServerAPIV2 download:file];
+            BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPIV2.oldServer];
+            promise = [SNFileServerAPIV2 download:file useOldServer:useOldServer];
         } else {
             promise = [SNFileServerAPI downloadAttachmentFrom:profilePictureURL];
         }
