@@ -861,6 +861,10 @@ extension CustomColorViewController: CustomColorPreviewDelegate {
         self.editMode = value
         updateSliderContent()
     }
+
+    var previewWidth: CGFloat {
+        self.view.width - cellOuterInsets.totalWidth
+    }
 }
 
 // MARK: -
@@ -874,6 +878,8 @@ private protocol CustomColorPreviewDelegate: class {
     var currentChatColor: ChatColor { get }
 
     func switchToEditMode(_ value: CustomColorViewController.EditMode)
+
+    var previewWidth: CGFloat { get }
 }
 
 // MARK: -
@@ -886,7 +892,7 @@ private class CustomColorPreviewView: UIView {
     public override var bounds: CGRect {
         didSet {
             if oldValue != bounds {
-                updateKnobLayout()
+                viewSizeDidChange()
             }
         }
     }
@@ -894,9 +900,13 @@ private class CustomColorPreviewView: UIView {
     public override var frame: CGRect {
         didSet {
             if oldValue != frame {
-                updateKnobLayout()
+                viewSizeDidChange()
             }
         }
+    }
+
+    private func viewSizeDidChange() {
+        updateKnobLayout()
     }
 
     init(thread: TSThread?,
@@ -1369,5 +1379,5 @@ class CustomColorGestureRecognizer: UIGestureRecognizer {
 // MARK: -
 
 extension CustomColorPreviewView: MockConversationDelegate {
-    var mockConversationViewWidth: CGFloat { self.width }
+    var mockConversationViewWidth: CGFloat { delegate?.previewWidth ?? 0 }
 }
