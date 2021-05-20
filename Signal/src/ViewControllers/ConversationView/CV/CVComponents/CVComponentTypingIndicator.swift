@@ -64,7 +64,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         }
 
         let bubbleView = componentView.bubbleView
-        bubbleView.fillColor = conversationStyle.bubbleColorIncoming
+        bubbleView.backgroundColor = conversationStyle.bubbleColorIncoming
         innerStackView.addSubviewToFillSuperviewEdges(bubbleView)
 
         let typingIndicatorView = componentView.typingIndicatorView
@@ -151,7 +151,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         fileprivate let innerStackView = ManualStackView(name: "Typing indicator inner")
 
         fileprivate let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
-        fileprivate let bubbleView = OWSBubbleView()
+        fileprivate let bubbleView = ManualLayoutViewWithLayer.pillView(name: "bubbleView")
         fileprivate let typingIndicatorView = TypingIndicatorView()
 
         public var isDedicatedCellView = false
@@ -175,6 +175,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
             outerStackView.reset()
             innerStackView.reset()
+            bubbleView.reset()
 
             avatarView.image = nil
 
