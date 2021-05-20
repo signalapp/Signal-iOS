@@ -206,6 +206,8 @@ open class ManualStackView: ManualLayoutView {
         self.measurement = measurement
 
         invalidateArrangement()
+
+        layoutSubviews()
     }
 
     private func ensureArrangement() -> Arrangement? {
