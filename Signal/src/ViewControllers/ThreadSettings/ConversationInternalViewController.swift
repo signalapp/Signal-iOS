@@ -87,6 +87,10 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                                                              transaction: transaction) {
                     capabilities.append("announcementGroup")
                 }
+                if GroupManager.doesUserHaveSenderKeyCapability(address: address,
+                                                                transaction: transaction) {
+                    capabilities.append("senderKey")
+                }
                 section.add(.label(withText: String(format: "Capabilities: %@",
                                                     capabilities.joined(separator: ", "))))
 

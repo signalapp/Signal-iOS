@@ -517,6 +517,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     }
 
     capabilities[@"transfer"] = @(YES);
+    capabilities[@"senderKey"] = @(YES);
 
     return [capabilities copy];
 }

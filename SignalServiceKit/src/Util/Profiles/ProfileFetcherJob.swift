@@ -576,6 +576,7 @@ public class ProfileFetcherJob: NSObject {
                                              hasGroupsV2Capability: profile.supportsGroupsV2,
                                              hasGroupsV2MigrationCapability: profile.supportsGroupsV2Migration,
                                              hasAnnouncementOnlyGroupsCapability: profile.supportsAnnouncementOnlyGroups,
+                                             hasSenderKeyCapability: profile.supportsSenderKey,
                                              transaction: transaction)
 
             self.verifyIdentityUpToDate(address: address,
