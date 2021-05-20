@@ -3809,6 +3809,8 @@ typedef enum : NSUInteger {
         return;
     }
 
+    self.scrollContinuity = ScrollContinuityBottom;
+
     if (self.shouldAnimateKeyboardChanges && animationDuration > 0) {
         if (self.hasViewDidAppearEverCompleted) {
             // Make note of when the keyboard animation will block
