@@ -9,7 +9,7 @@ public final class Poller : NSObject {
     private var pollCount = 0
 
     // MARK: Settings
-    private static let pollInterval: TimeInterval = 1
+    private static let pollInterval: TimeInterval = 1.5
     private static let retryInterval: TimeInterval = 0.25
     /// After polling a given snode this many times we always switch to a new one.
     ///

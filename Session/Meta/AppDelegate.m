@@ -48,7 +48,6 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
 @property (nonatomic) LKPoller *poller;
-@property (nonatomic) LKClosedGroupPoller *closedGroupPoller;
 
 @end
 
@@ -413,7 +412,7 @@ static NSTimeInterval launchStartedAt;
             [[SNSnodeAPI getSnodePool] retainUntilComplete];
             
             [self startPollerIfNeeded];
-            [self startClosedGroupPollerIfNeeded];
+            [self startClosedGroupPoller];
             [self startOpenGroupPollersIfNeeded];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
@@ -563,7 +562,7 @@ static NSTimeInterval launchStartedAt;
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
 
         [self startPollerIfNeeded];
-        [self startClosedGroupPollerIfNeeded];
+        [self startClosedGroupPoller];
         [self startOpenGroupPollersIfNeeded];
     }
 }
@@ -725,19 +724,6 @@ static NSTimeInterval launchStartedAt;
 }
 
 - (void)stopPoller { [self.poller stop]; }
-
-- (void)startClosedGroupPollerIfNeeded
-{
-    if (self.closedGroupPoller == nil) {
-        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
-        if (userPublicKey != nil) {
-            self.closedGroupPoller = [[LKClosedGroupPoller alloc] init];
-        }
-    }
-    [self.closedGroupPoller startIfNeeded];
-}
-
-- (void)stopClosedGroupPoller { [self.closedGroupPoller stop]; }
 
 - (void)startOpenGroupPollersIfNeeded
 {

@@ -78,7 +78,7 @@ public final class ExpirationTimerUpdate : ControlMessage {
     public override var description: String {
         """
         ExpirationTimerUpdate(
-            syncTarget: \(syncTarget ?? "null")
+            syncTarget: \(syncTarget ?? "null"),
             duration: \(duration?.description ?? "null")
         )
         """

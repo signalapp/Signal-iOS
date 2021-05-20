@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
                   serverTimestamp:(nullable NSNumber *)serverTimestamp
                   wasReceivedByUD:(BOOL)wasReceivedByUD
+          openGroupInvitationName:(nullable NSString *)openGroupInvitationName
+           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -61,7 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:0
                              quotedMessage:quotedMessage
-                               linkPreview:linkPreview];
+                               linkPreview:linkPreview
+                   openGroupInvitationName:openGroupInvitationName
+                    openGroupInvitationURL:openGroupInvitationURL];
 
     if (!self) {
         return self;
@@ -137,6 +141,17 @@ NS_ASSUME_NONNULL_BEGIN
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
     if (_read && readTimestamp >= self.expireStartedAt) {
+        return;
+    }
+    
+    BOOL areAllAttachmentsDownloaded = YES;
+    for (NSString *attachmentId in self.attachmentIds) {
+        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        areAllAttachmentsDownloaded = areAllAttachmentsDownloaded && attachment.isDownloaded;
+        if (!areAllAttachmentsDownloaded) break;
+    }
+    
+    if (!areAllAttachmentsDownloaded) {
         return;
     }
     

@@ -364,7 +364,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             
             AnyPromise *promise = [SNFileServerAPIV2 upload:encryptedAvatarData];
             
-            [promise.thenOn(dispatch_get_main_queue(), ^(NSString *downloadURL) {
+            [promise.thenOn(dispatch_get_main_queue(), ^(NSString *fileID) {
+                NSString *downloadURL = [NSString stringWithFormat:@"%@/files/%@", SNFileServerAPIV2.server, fileID];
                 [NSUserDefaults.standardUserDefaults setObject:[NSDate new] forKey:@"lastProfilePictureUpload"];
                 [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
                    successBlock(downloadURL);
@@ -792,8 +793,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         NSString *profilePictureURL = userProfile.avatarUrlPath;
         
-        uint64_t *file = (uint64_t)[[profilePictureURL lastPathComponent] intValue];
-        AnyPromise *promise = [SNFileServerAPIV2 download:file];
+        NSString *file = [profilePictureURL lastPathComponent];
+        BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPIV2.oldServer];
+        AnyPromise *promise = [SNFileServerAPIV2 download:file useOldServer:useOldServer];
         
         [promise.then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)

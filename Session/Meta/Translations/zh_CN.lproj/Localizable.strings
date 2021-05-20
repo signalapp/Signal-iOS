@@ -78,6 +78,10 @@
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "屏蔽 %@？";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "从黑名单中移除";
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "已屏蔽 %@。";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "该用户已被加入黑名单";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "被屏蔽的用户将无法向您发起通话，或发送消息。";
 /* Label for generic done button. */
@@ -282,6 +286,8 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "在验证发给你的验证码之前，我们无法激活你的帐户.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "立即";
+/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "认证来打开 Session。";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "认证失败";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -523,3 +529,5 @@
 "vc_share_title" = "Share to Session";
 "vc_share_loading_message" = "Preparing attachments...";
 "vc_share_sending_message" = "Sending...";
+"view_open_group_invitation_description" = "Open group invitation";
+"vc_conversation_settings_invite_button_title" = "Add Members";

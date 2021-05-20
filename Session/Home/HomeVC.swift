@@ -142,7 +142,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
-            appDelegate.startClosedGroupPollerIfNeeded()
+            appDelegate.startClosedGroupPoller()
             appDelegate.startOpenGroupPollersIfNeeded()
             // Do this only if we created a new Session ID, or if we already received the initial configuration message
             if UserDefaults.standard[.hasSyncedInitialConfiguration] {
@@ -192,9 +192,16 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
-        // This code is very finicky and crashes easily
+        // NOTE: This code is very finicky and crashes easily. Modify with care.
         AssertIsOnMainThread()
-        let notifications = dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
+        // If we don't capture `threads` here, a race condition can occur where the
+        // `thread.snapshotOfLastUpdate != firstSnapshot - 1` check below evaluates to
+        // `false`, but `threads` then changes between that check and the
+        // `ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)`
+        // line. This causes `tableView.endUpdates()` to crash with an `NSInternalInconsistencyException`.
+        let threads = threads!
+        // Create a stable state for the connection and jump to the latest commit
+        let notifications = dbConnection.beginLongLivedReadTransaction()
         guard !notifications.isEmpty else { return }
         let ext = dbConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
         let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
@@ -217,8 +224,22 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             switch rowChange.type {
             case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
             case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.automatic)
-            case .move: tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
             case .update: tableView.reloadRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
+            default: break
+            }
+        }
+        tableView.endUpdates()
+        // HACK: Moves can have conflicts with the other 3 types of change.
+        // Just batch perform all the moves separately to prevent crashing.
+        // Since all the changes are from the original state to the final state,
+        // it will still be correct if we pick the moves out.
+        tableView.beginUpdates()
+        rowChanges.forEach { rowChange in
+            let rowChange = rowChange as! YapDatabaseViewRowChange
+            let key = rowChange.collectionKey.key
+            threadViewModelCache[key] = nil
+            switch rowChange.type {
+            case .move: tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
             default: break
             }
         }

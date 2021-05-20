@@ -78,6 +78,10 @@
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloquer %@ ?";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Débloquer";
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ a été bloqué.";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "L’utilisateur est bloqué";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler ni vous envoyer des messages.";
 /* Label for generic done button. */
@@ -282,16 +286,18 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nous ne pouvons pas activer votre compte tant que vous n’aurez pas vérifié le code que nous vous avons envoyé.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instantané";
+/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authentifiez-vous pour ouvrir Session.";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Échec d’authentification";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
-"SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
+"SEND_MEDIA_ABANDON_TITLE" = "Abandonner le média ?";
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Abandonner le média";
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Retourner à l’appareil photo";
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Retourner à la bibliothèque média";
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (par défaut)";
 /* Label for the backup view in app settings. */
@@ -359,7 +365,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicateurs de saisie";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Aucun";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ jours";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -490,36 +496,39 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "Scannez le code QR d'un autre utilisateur pour démarrer une session";
 "vc_view_my_qr_code_explanation" = "Ceci est votre code QR. Les autres utilisateurs peuvent le scanner pour démarrer une session avec vous.";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
-"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
-"vc_pn_mode_title" = "Message Notifications";
-"vc_notification_settings_notification_mode_title" = "Use Fast Mode";
-"vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
-"vc_enter_recovery_phrase_title" = "Recovery Phrase";
-"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
-"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
+"fast_mode_explanation" = "Vous serez notifiés de nouveaux messages de manière certaine et immédiate en utilisant les serveurs de notification d’Apple.";
+"fast_mode" = "Mode rapide";
+"slow_mode_explanation" = "Session vérifiera occasionnellement la présence de nouveaux message en tâche de fond.";
+"slow_mode" = "Mode lent";
+"vc_pn_mode_title" = "Notifications de message";
+"vc_notification_settings_notification_mode_title" = "Utiliser le mode rapide";
+"vc_link_device_recovery_phrase_tab_title" = "Phrase de récupération";
+"vc_link_device_scan_qr_code_explanation" = "Allez dans paramètre → Phrase de récupération sur votre autre appareil pour afficher votre QR Code.";
+"vc_enter_recovery_phrase_title" = "Phrase de récupération";
+"vc_enter_recovery_phrase_explanation" = "Pour lier votre appareil, entrez la phrase de récupération qui vous a été donné lors de la création du compte.";
+"vc_enter_public_key_text_field_hint" = "Entrez un ID Session ou un nom ONS";
 "vc_home_title" = "Messages";
-"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
-"vc_join_open_group_suggestions_title" = "Or join one of these...";
-"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
-"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
-"copied" = "Copied";
-"vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
+"admin_group_leave_warning" = "Puisque vous êtes le créateur de ce groupe, il sera supprimé pour tout le monde. Ceci ne peut pas être annulé.";
+"vc_join_open_group_suggestions_title" = "Ou rejoignez un de ceux-ci...";
+"vc_settings_invite_a_friend_button_title" = "Inviter un ami";
+"vc_settings_help_us_translate_button_title" = "Aidez-nous à traduire Session";
+"copied" = "Copié";
+"vc_conversation_settings_copy_session_id_button_title" = "Copier l’ID Session";
 "vc_conversation_input_prompt" = "Message";
-"vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
-"modal_download_attachment_title" = "Trust %@?";
-"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
-"modal_download_button_title" = "Download";
-"modal_open_url_title" = "Open URL?";
-"modal_open_url_explanation" = "Are you sure you want to open %@?";
-"modal_open_url_button_title" = "Open";
-"modal_blocked_title" = "Unblock %@?";
-"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
-"modal_blocked_button_title" = "Unblock";
-"modal_link_previews_title" = "Enable Link Previews?";
-"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
-"modal_link_previews_button_title" = "Enable";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
+"vc_conversation_voice_message_cancel_message" = "Glisser pour annuler";
+"modal_download_attachment_title" = "Faire confiance à %@?";
+"modal_download_attachment_explanation" = "Êtes-vous sûr de vouloir télécharger la sélection de %@ ?";
+"modal_download_button_title" = "Télécharger";
+"modal_open_url_title" = "Ouvrir l'URL?";
+"modal_open_url_explanation" = "Êtes-vous sûr de vouloir ouvrir %@?";
+"modal_open_url_button_title" = "Ouvrir";
+"modal_blocked_title" = "Débloquer %@ ?";
+"modal_blocked_explanation" = "Confirmez-vous le déblocage de %@ ?";
+"modal_blocked_button_title" = "Débloquer";
+"modal_link_previews_title" = "Activer les aperçus de lien?";
+"modal_link_previews_explanation" = "L'activation des aperçus de lien affichera des aperçus pour les URL que vous envoyez et recevez. Cela peut être utile, mais Session devra contacter les sites Web liés pour générer des aperçus. Vous pouvez toujours désactiver les aperçus de lien dans les paramètres de Session.";
+"modal_link_previews_button_title" = "Activer";
+"vc_share_title" = "Partager en Session";
+"vc_share_loading_message" = "Préparation des pièces jointes ...";
+"vc_share_sending_message" = "Envoi...";
+"view_open_group_invitation_description" = "Invitation à un groupe ouvert";

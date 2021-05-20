@@ -354,6 +354,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 // the previous value when the keyboard is shown.
                 self.messagesTableView.reloadData()
             }
+            self.markAllAsRead()
         }
         if shouldAnimate {
             messagesTableView.performBatchUpdates(batchUpdates, completion: batchUpdatesCompletion)

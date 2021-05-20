@@ -12,6 +12,7 @@ public final class VisibleMessage : Message {
     @objc public var linkPreview: LinkPreview?
     @objc public var contact: Contact?
     @objc public var profile: Profile?
+    @objc public var openGroupInvitation: OpenGroupInvitation?
 
     public override var isSelfSendValid: Bool { true }
     
@@ -22,6 +23,7 @@ public final class VisibleMessage : Message {
     public override var isValid: Bool {
         guard super.isValid else { return false }
         if !attachmentIDs.isEmpty { return true }
+        if openGroupInvitation != nil { return true }
         if let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty { return true }
         return false
     }
@@ -36,6 +38,7 @@ public final class VisibleMessage : Message {
         if let linkPreview = coder.decodeObject(forKey: "linkPreview") as! LinkPreview? { self.linkPreview = linkPreview }
         // TODO: Contact
         if let profile = coder.decodeObject(forKey: "profile") as! Profile? { self.profile = profile }
+        if let openGroupInvitation = coder.decodeObject(forKey: "openGroupInvitation") as! OpenGroupInvitation? { self.openGroupInvitation = openGroupInvitation }
     }
 
     public override func encode(with coder: NSCoder) {
@@ -47,6 +50,7 @@ public final class VisibleMessage : Message {
         coder.encode(linkPreview, forKey: "linkPreview")
         // TODO: Contact
         coder.encode(profile, forKey: "profile")
+        coder.encode(openGroupInvitation, forKey: "openGroupInvitation")
     }
 
     // MARK: Proto Conversion
@@ -59,6 +63,8 @@ public final class VisibleMessage : Message {
         if let linkPreviewProto = dataMessage.preview.first, let linkPreview = LinkPreview.fromProto(linkPreviewProto) { result.linkPreview = linkPreview }
         // TODO: Contact
         if let profile = Profile.fromProto(dataMessage) { result.profile = profile }
+        if let openGroupInvitationProto = dataMessage.openGroupInvitation,
+            let openGroupInvitation = OpenGroupInvitation.fromProto(openGroupInvitationProto) { result.openGroupInvitation = openGroupInvitation }
         result.syncTarget = dataMessage.syncTarget
         return result
     }
@@ -95,6 +101,8 @@ public final class VisibleMessage : Message {
         let attachmentProtos = attachments.compactMap { $0.buildProto() }
         dataMessage.setAttachments(attachmentProtos)
         // TODO: Contact
+        // Open group invitation
+        if let openGroupInvitation = openGroupInvitation, let openGroupInvitationProto = openGroupInvitation.toProto() { dataMessage.setOpenGroupInvitation(openGroupInvitationProto) }
         // Expiration timer
         // TODO: We * want * expiration timer updates to be explicit. But currently Android will disable the expiration timer for a conversation
         // if it receives a message without the current expiration timer value attached to it...
@@ -128,12 +136,13 @@ public final class VisibleMessage : Message {
     public override var description: String {
         """
         VisibleMessage(
-            text: \(text ?? "null")
-            attachmentIDs: \(attachmentIDs)
-            quote: \(quote?.description ?? "null")
-            linkPreview: \(linkPreview?.description ?? "null")
-            contact: \(contact?.description ?? "null")
+            text: \(text ?? "null"),
+            attachmentIDs: \(attachmentIDs),
+            quote: \(quote?.description ?? "null"),
+            linkPreview: \(linkPreview?.description ?? "null"),
+            contact: \(contact?.description ?? "null"),
             profile: \(profile?.description ?? "null")
+            "openGroupInvitation": \(openGroupInvitation?.description ?? "null")
         )
         """
     }

@@ -73,6 +73,8 @@ NS_ASSUME_NONNULL_BEGIN
         YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
         NSArray<NSString *> *allGroups = [unreadMessages allGroups];
         for (NSString *groupID in allGroups) {
+            TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
+            if (thread.isMuted) continue;
             [unreadMessages enumerateKeysAndObjectsInGroup:groupID
                                                 usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                 if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {

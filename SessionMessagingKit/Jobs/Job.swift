@@ -1,6 +1,6 @@
 
 @objc(SNJob)
-public protocol Job : class, NSCoding {
+public protocol Job : NSCoding {
     var delegate: JobDelegate? { get set }
     var id: String? { get set }
     var failureCount: UInt { get set }
