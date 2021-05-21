@@ -107,8 +107,10 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
             return
         }
         let referenceView = state.referenceView
-        self.imageViewFrame = self.convert(referenceView.bounds, from: referenceView)
-        self.maskFrame = referenceView.convert(self.bounds, from: self)
+        let referenceLayer = referenceView.layer.presentation() ?? referenceView.layer
+        let selfLayer = self.layer.presentation() ?? self.layer
+        self.imageViewFrame = selfLayer.convert(referenceLayer.bounds, from: referenceLayer)
+        self.maskFrame = referenceLayer.convert(selfLayer.bounds, from: selfLayer)
 
         applyLayout()
     }
