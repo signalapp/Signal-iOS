@@ -97,13 +97,19 @@ class MemberActionSheet: InteractiveSheetViewController {
         handleContainer.addSubview(handle)
         handle.autoPinHeightToSuperview(withMargin: 12)
         handle.autoHCenterInSuperview()
+
+        updateViewState()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updateViewState()
     }
 
     private var previousMinimizedHeight: CGFloat?
     private var previousSafeAreaInsets: UIEdgeInsets?
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
+    private func updateViewState() {
         if previousSafeAreaInsets != tableViewController.view.safeAreaInsets {
             updateTableContents()
             previousSafeAreaInsets = tableViewController.view.safeAreaInsets
