@@ -421,16 +421,16 @@ public class CVAttachmentProgressView: ManualLayoutView {
         updateState(downloadProgress: progress)
     }
 
-    private func updateState(downloadProgress: CGFloat?) {
+    private func updateState(downloadProgress progress: CGFloat?) {
         guard let progress = progress else {
             stateView.state = .downloadUnknownProgress
             return
         }
-        if progress.isNan {
+        if progress.isNaN {
             owsFailDebug("Progress is nan.")
             stateView.state = .downloadUnknownProgress
-        } else if progress.floatValue > 0 {
-            stateView.state = .downloadProgress(progress: CGFloat(progress.floatValue))
+        } else if progress > 0 {
+            stateView.state = .downloadProgress(progress: CGFloat(progress))
         } else {
             stateView.state = .downloadUnknownProgress
         }
@@ -461,25 +461,21 @@ public class CVAttachmentProgressView: ManualLayoutView {
             owsFailDebug("Invalid attachment.")
             stateView.state = .uploadUnknownProgress
             return
-        @unknown default:
-            owsFailDebug("Invalid value.")
-            stateView.state = .uploadUnknownProgress
-            return
         }
 
         updateState(uploadProgress: progress)
     }
 
-    private func updateState(uploadProgress: CGFloat?) {
-        guard let progress = progress else {
+    private func updateState(uploadProgress progress: NSNumber?) {
+        guard let progress = progress?.floatValue else {
             stateView.state = .uploadUnknownProgress
             return
         }
-        if progress.isNan {
+        if progress.isNaN {
             owsFailDebug("Progress is nan.")
             stateView.state = .uploadUnknownProgress
-        } else if progress.floatValue > 0 {
-            stateView.state = .uploadProgress(progress: CGFloat(progress.floatValue))
+        } else if progress > 0 {
+            stateView.state = .uploadProgress(progress: CGFloat(progress))
         } else {
             stateView.state = .uploadUnknownProgress
         }

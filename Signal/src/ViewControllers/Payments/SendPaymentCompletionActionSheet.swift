@@ -32,9 +32,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             switch self {
             case .payment(let paymentInfo):
                 return paymentInfo
-            @unknown default:
-                owsFail("Unknown mode.")
-                return nil
             }
         }
     }
@@ -82,8 +79,6 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         switch mode {
         case .payment(let paymentInfo):
             currentStep = .confirmPay(paymentInfo: paymentInfo)
-        @unknown default:
-            owsFail("Unknown mode.")
         }
 
         super.init(theme: .default)

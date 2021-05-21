@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import "NSTimer+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/AppContext.h>
@@ -10,7 +11,6 @@
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSTimer *fallbackTimer;
 
 @end
+
+void AssertIsOnDisappearingMessagesQueue(void);
 
 void AssertIsOnDisappearingMessagesQueue()
 {

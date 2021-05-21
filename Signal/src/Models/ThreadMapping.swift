@@ -219,7 +219,7 @@ class ThreadMapping: NSObject {
         var pinnedThreads = [TSThread]()
         var threads = [TSThread]()
 
-        var pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
+        let pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
 
         defer {
             // Pinned threads are always ordered in the order they were pinned.
