@@ -42,7 +42,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         for thread: TSThread,
         transaction: SDSAnyReadTransaction
     ) -> ThreadAssociatedData {
-        fetchOrDefault(for: thread.uniqueId, transaction: transaction)
+        fetchOrDefault(for: thread.uniqueId, ignoreMissing: false, transaction: transaction)
     }
 
     @objc(fetchOrDefaultForThreadUniqueId:transaction:)
@@ -50,8 +50,26 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         for threadUniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> ThreadAssociatedData {
+        fetchOrDefault(for: threadUniqueId, ignoreMissing: false, transaction: transaction)
+    }
+
+    @objc(fetchOrDefaultForThread:ignoreMissing:transaction:)
+    public static func fetchOrDefault(
+        for thread: TSThread,
+        ignoreMissing: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> ThreadAssociatedData {
+        fetchOrDefault(for: thread.uniqueId, ignoreMissing: ignoreMissing, transaction: transaction)
+    }
+
+    @objc(fetchOrDefaultForThreadUniqueId:ignoreMissing:transaction:)
+    public static func fetchOrDefault(
+        for threadUniqueId: String,
+        ignoreMissing: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> ThreadAssociatedData {
         guard let associatedData = fetch(for: threadUniqueId, transaction: transaction) else {
-            if !CurrentAppContext().isRunningTests, threadUniqueId != "MockThread" {
+            if !ignoreMissing, !CurrentAppContext().isRunningTests, threadUniqueId != "MockThread" {
                 owsFailDebug("Unexpectedly missing associated data for thread")
             }
             return .init(threadUniqueId: threadUniqueId)

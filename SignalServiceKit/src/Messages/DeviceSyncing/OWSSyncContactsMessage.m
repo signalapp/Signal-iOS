@@ -115,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *_Nullable contactThread =
             [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress transaction:transaction];
         ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:contactThread
+                                                                               ignoreMissing:contactThread == nil
                                                                                  transaction:transaction];
 
         NSNumber *_Nullable isArchived;
