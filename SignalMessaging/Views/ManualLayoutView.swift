@@ -50,6 +50,10 @@ open class ManualLayoutView: UIView {
         notImplemented()
     }
 
+    deinit {
+        AssertIsOnMainThread()
+    }
+
     @objc
     public var shouldDeactivateConstraints = true
 

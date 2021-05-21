@@ -84,6 +84,11 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     return self;
 }
 
+- (void)dealloc
+{
+    OWSAssertIsOnMainThread();
+}
+
 - (void)setFrame:(CGRect)frame
 {
     // We only need to update our layers if the _size_ of this view
