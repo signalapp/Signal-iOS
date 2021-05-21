@@ -97,6 +97,10 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             } else {
                 owsFailDebug("Invalid thread.")
             }
+
+            addCopyableItem(title: "thread.uniqueId",
+                            value: thread.uniqueId,
+                            accessibilityIdentifier: "thread.uniqueId")
         }
 
         contents.addSection(section)
