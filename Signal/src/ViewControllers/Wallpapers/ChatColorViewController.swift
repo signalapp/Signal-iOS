@@ -9,7 +9,12 @@ class ChatColorViewController: OWSTableViewController2 {
     private let thread: TSThread?
 
     private struct CurrentValue {
+        // When we enter the view, "auto" should reflect the current resolved "auto" value,
+        // not auto itself.
+        //
+        // Later, we should explicitly reflect the actions of the user.
         let selected: ChatColor?
+        // Always render the current resolved value in the preview.
         let appearance: ChatColor
     }
     private var currentValue: CurrentValue
