@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Deaktiviert";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Wähle aus, wer Gruppenname, -foto, -beschreibung und die Ablaufzeit für »Verschwindende Nachrichten« bearbeiten kann.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "Audio";
@@ -1331,7 +1331,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Spende für Signal";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Weitere Möglichkeiten, zu spenden";
+"DONATION_VIEW_OTHER_WAYS" = "Weitere Möglichkeiten für Spenden";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Wähle einen höheren Spendenbetrag aus";
@@ -1775,7 +1775,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ und %2$@ nehmen an diesem Anruf teil";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du wurdest vom Anruf getrennt. Überprüfe deine Verbindung und versuche es erneut.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du wurdest vom Anruf getrennt. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Du";
@@ -1805,19 +1805,19 @@
 "GROUP_CREATION_FAILED" = "Nicht alle Mitglieder konnten zur Gruppe hinzugefügt werden. Für erneuten Versuch antippen.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "more";
+"GROUP_DESCRIPTION_MORE" = "mehr";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Gruppenbeschreibung hinzufügen …";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Gruppenbeschreibungen sind für Mitglieder dieser Gruppe und eingeladene Personen sichtbar.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "Gruppenbeschreibung";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Gruppenbeschreibung (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "Eine ungültige Einladung wurde hinzugefügt.";
@@ -2135,7 +2135,7 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ Gruppenmitglieder haben denselben Namen.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "Gruppenname (erforderlich)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "Gruppenname";
@@ -2291,22 +2291,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ hat die Gruppe aktualisiert.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Die Gruppenbeschreibung wurde entfernt.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Du hast die Gruppenbeschreibung entfernt.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ hat die Gruppenbeschreibung entfernt.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "Die Gruppenbeschreibung wurde geändert.";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Du hast die Gruppenbeschreibung geändert.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ hat die Gruppenbeschreibung geändert.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Der Gruppenname wurde entfernt.";
@@ -3566,7 +3566,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Aktualisiere Signal, um Zahlungen verwenden zu können.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Zahlung konnte nicht abgeschlossen werden. Überprüfe deine Verbindung und versuche es erneut.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Zahlung konnte nicht abgeschlossen werden. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Netzwerkgebühr";
@@ -4967,10 +4967,10 @@
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Zahlungen in Signal sind nicht mehr verfügbar. Du kannst weiterhin Guthaben an eine Handelsplattform überweisen, aber keine Zahlungen senden und empfangen oder Guthaben hinzufügen.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Zahlungen können nicht deaktivieren werden, da dein Kontostand nicht verfügbar ist. Überprüfe deine Verbindung und versuche es erneut.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Zahlungen können nicht deaktivieren werden, da dein Kontostand nicht verfügbar ist. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Zahlung konnte nicht abgeschlossen werden, da dein Kontostand nicht verfügbar ist. Überprüfe deine Verbindung und versuche es erneut.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Zahlung konnte nicht abgeschlossen werden, da dein Kontostand nicht verfügbar ist. Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Zahlungen in Signal sind nicht mehr verfügbar. Du kannst weiterhin Guthaben an eine Handelsplattform überweisen, aber keine Zahlungen senden und empfangen oder Guthaben hinzufügen.";
@@ -5063,7 +5063,7 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Ungültige Wallet-Adresse";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Bisher keine Aktivitäten.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Bisher noch keine Aktivitäten.";
 
 /* Message for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Möchtest du Zahlungen aktivieren?";
@@ -5084,7 +5084,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Zahlungen aktiviert.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Verwende Signal, um MobileCoin zu senden und zu empfangen, eine neue und auf Datenschutz ausgerichtete digitale Währung. Aktivieren, um loszulegen.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Nutze Signal für das Senden und Empfangen von MobileCoin, einer neuen und auf Datenschutz ausgerichteten digitalen Währung. Aktivieren, um loszulegen.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Zahlungen wieder aktivieren";
@@ -5552,7 +5552,7 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Ohne Verifikation fortfahren?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Bitte hilf dabei, Spam auf Signal zu verhindern, und schließe die Verifikation ab.\n\nNach erfolgter Verifikation kannst du wieder kommunizieren. Alle pausierten Nachrichten werden dann automatisch versendet.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Bitte hilf dabei, Spam auf Signal zu verhindern, und schließe die Verifikation ab.\n\nNach abgeschlossener Verifikation kannst du wieder kommunizieren. Alle pausierten Nachrichten werden dann automatisch versendet.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "Verifizieren, um weiterhin zu kommunizieren";

@@ -434,7 +434,7 @@
 "BUTTON_SELECT" = "Select";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Set";
+"BUTTON_SET" = "Podesi";
 
 /* Label for the 'start' button. */
 "BUTTON_START" = "Započni";
@@ -914,7 +914,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 sati";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Utišaj";
@@ -923,16 +923,16 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nije utišano";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 day";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 dan";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 hour";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 sat";
 
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 minute";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 week";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 sedmica";
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Stalno";
@@ -1277,31 +1277,31 @@
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "dana";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kada je aktivirano, nove poslane i primljene poruke u ovoj konverzaciji nestat će nakon što su viđene.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Trenutno poruke nestaju nakon %@";
 
 /* The unit for a number of hours */
-"DISAPPEARING_MESSAGES_HOURS" = "hours";
+"DISAPPEARING_MESSAGES_HOURS" = "sati";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Podešavanje nestajućih poruka";
 
 /* The unit for a number of minutes */
-"DISAPPEARING_MESSAGES_MINUTES" = "minutes";
+"DISAPPEARING_MESSAGES_MINUTES" = "minuta";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "sekundi";
 
 /* subheading in privacy settings */
 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "sedmica";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Odbaci";
@@ -1805,7 +1805,7 @@
 "GROUP_CREATION_FAILED" = "Nisu svi članovi mogli biti dodani u grupu. Dodirni za ponovni pokušaj.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "more";
+"GROUP_DESCRIPTION_MORE" = "više";
 
 /* Placeholder text for 'group description' field. */
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
@@ -4856,7 +4856,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Nestajuće poruke";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Podesite vrijeme za nestajanje poruka koje će se automatski primijeniti na sve nove konverzacije kada ih Vi započnete.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donirajte za Signal";

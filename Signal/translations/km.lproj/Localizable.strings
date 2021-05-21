@@ -278,7 +278,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "ពេលអ្នកបានថតរូប អ្នកនឹងអាចផ្ញើទៅកាន់អ្នកទទួលនៅទីនេះ។";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "ការទូទាត់";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់";
@@ -908,7 +908,7 @@
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
 
 /* Label for button to mute a thread forever. */
-"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "ជានិច្ច";
 
 /* Button to mute the chat */
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
@@ -935,7 +935,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 សប្តាហ៍";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "ជានិច្ច";
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
@@ -1310,16 +1310,16 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ចៀងវាងការឃ្លាំមើលទីតាំង";
 
 /* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Donate";
+"DONATION_MEGAPHONE_ACTION" = "ឧបត្ថម្ភ";
 
 /* Body for donation megaphone */
 "DONATION_MEGAPHONE_BODY" = "Signal is powered by people like you. Show your support today!";
 
 /* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "No Thanks";
+"DONATION_MEGAPHONE_CANCEL" = "ទេ អរគុណ";
 
 /* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Donate to Signal";
+"DONATION_MEGAPHONE_TITLE" = "ឧបត្ថម្ភទៅ Signal";
 
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
@@ -1694,7 +1694,7 @@
 "GROUP_CALL_IS_FULL" = "Call is Full";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Join Call";
+"GROUP_CALL_JOIN_BUTTON" = "ចូលរួមការហៅ";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Leave Call";
@@ -1715,7 +1715,7 @@
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Can't receive audio and video from %@";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "No one else is here";
+"GROUP_CALL_NO_ONE_HERE" = "គ្មាននរណាម្នាក់នៅទីនេះទេ";
 
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
@@ -1757,7 +1757,7 @@
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Swipe up to change views";
 
 /* Button to start a group call */
-"GROUP_CALL_START_BUTTON" = "Start Call";
+"GROUP_CALL_START_BUTTON" = "ចាប់ផ្តើមការហៅ";
 
 /* Tooltip highlighting group calls. */
 "GROUP_CALL_START_TOOLTIP" = "ប៉ះនៅទីនេះដើម្បីចាប់ផ្តើមការហៅជាក្រុម";
@@ -1787,10 +1787,10 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "You (on another device)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Open a New Group to start a free encrypted group call";
+"GROUP_CALLS_MEGAPHONE_BODY" = "បើកក្រុមថ្មីមួយ ដើម្បីចាប់ផ្តើមការហៅជាក្រុមដោយសម្ងាត់ឥតគិតថ្លៃ";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducing Group Calls";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "ការណែនាំ ការហៅជាក្រុម";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "អ្នកបានបង្កើតក្រុមនេះ។";
@@ -1859,7 +1859,7 @@
 "GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "អ្នកបានបិទតំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
@@ -1886,7 +1886,7 @@
 "GROUP_INVITE_LINK_RESET" = " The group link was reset.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "អ្នកបានកំណត់តំណភ្ជាប់សារឡើងវិញ";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
@@ -1940,7 +1940,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "កំពុងផ្ទុក...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "តើអ្នកចង់ចូលរួមក្រុមនេះ និងចែករំលែកឈ្មោះអ្នក និងរូបភាពជាមួយសមាជិកក្រុម?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "សូមពិនិត្យថា អ្នកកំពុងលើបណ្តាញ និងព្យាយាមម្តងទៀត។";
@@ -2303,7 +2303,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "You changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "អ្នកបានផ្លាស់ប្តូរការពណ៌នាក្រុម។";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
@@ -3059,7 +3059,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "បើកវិញ";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "បោះបង់ការស្នើសុំ";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
@@ -3083,7 +3083,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "បានផ្ញើផ្នែកខ្លះ ប៉ះព័ត៌មើលលម្អិត";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "ការផ្ញើបានផ្អាក";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Paused";
@@ -4031,7 +4031,7 @@
 "PRIVACY_TAP_TO_SCAN" = "ចុច ដើម្បីស្កេន";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "សំអាត់ ការផ្ទៀងផ្ទាត់";
+"PRIVACY_UNVERIFY_BUTTON" = "សំអាត ការផ្ទៀងផ្ទាត់";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "នេះទំនងមិនមែនជាលេខសុវត្ថិភាពរបស់អ្នកជាមួយ%@ ទេ។ តើអ្នកផ្ទៀងផ្ទាត់លេខទំនាក់ទំនង ត្រឹមត្រូវឬនៅ?";
@@ -4859,7 +4859,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donate to Signal";
+"SETTINGS_DONATE" = "ឧបត្ថម្ភទៅ Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "ជំនួយ";
@@ -5561,7 +5561,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "បញ្ចប់ ការផ្ទៀងផ្ទាត់";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";

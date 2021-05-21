@@ -830,7 +830,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Desactivada";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Selecciona quién puede modificar el nombre, descripción e imagen del grupo y la desaparición de mensajes.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "llamada";
@@ -1313,7 +1313,7 @@
 "DONATION_MEGAPHONE_ACTION" = "Donar";
 
 /* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal se mantiene por gente como tú. ¡Muestra hoy tu apoyo!";
+"DONATION_MEGAPHONE_BODY" = "Signal se mantiene gracias a ti. ¡Muestra tu apoyo hoy!";
 
 /* Cancel text for donation megaphone */
 "DONATION_MEGAPHONE_CANCEL" = "No, gracias";
@@ -1346,10 +1346,10 @@
 "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "¡Gracias por tu apoyo!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal se mantiene por gente como tú.";
+"DONATION_VIEW_TITLE" = "Signal se mantiene gracias a gente como tú.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "El equipo de Signal está comprometido con la misión de desarrollar tecnología privada de código abierto que protege la libre expresión y habilita comunicaciones globales seguras. Tu contribución alimenta esta causa. Sin anuncios. Sin rastreadores. En serio.\n\nTu donación ayuda a pagar por el desarrollo, servidores, y ancho de banda de una aplicación usada por millones de personas en todo el mundo para comunicarse de manera privada e instantánea.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "El equipo de Signal está comprometido con la misión de desarrollar tecnología privada de código abierto que protege la libre expresión y habilita comunicaciones globales seguras. Tu contribución alimenta esta causa. Sin anuncios. Sin rastreadores. Sin bromas.\n\nTu donación ayuda a costear el desarrollo, servidores, y ancho de banda de una aplicación usada por millones de personas en todo el mundo para comunicarse de manera privada e instantánea.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "¿Por qué donar?";
@@ -1805,19 +1805,19 @@
 "GROUP_CREATION_FAILED" = "No se ha podido añadir a tod@s l@s participantes al grupo. Toca para intentarlo de nuevo.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "more";
+"GROUP_DESCRIPTION_MORE" = "más";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Añade la descripción del grupo …";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "La descripción del grupo será visible para participantes en este grupo y gente que ha sido invitada.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "Descripción del grupo";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Descripción del grupo (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "Se añadió una invitación inválida.";
@@ -2135,7 +2135,7 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ participantes usan el mismo nombre.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "Nombre del grupo (necesario)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "Nombre del grupo";
@@ -2291,22 +2291,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ha actualizado el grupo.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Se eliminó la descripción del grupo.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Has eliminado la descripción del grupo.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ha eliminado la descripción del grupo.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "Se ha actualizado la descripción del grupo.";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Has actualizado la descripción del grupo";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ha actualizado la descripción del grupo.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Se ha eliminado el nombre del grupo.";

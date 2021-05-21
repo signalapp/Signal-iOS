@@ -434,7 +434,7 @@
 "BUTTON_SELECT" = "انتخاب";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Set";
+"BUTTON_SET" = "تنظیم";
 
 /* Label for the 'start' button. */
 "BUTTON_START" = "شروع";
@@ -1277,10 +1277,10 @@
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "روز";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "وقتی فعال شود، پیام‌های جدید ارسال و دریافت شده در این گفتگو پس از دیده شدن ناپدید خواهند شد.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "در حال حاضر پیام‌ها پس از %@ ناپدید خواهد شد.";
@@ -1295,13 +1295,13 @@
 "DISAPPEARING_MESSAGES_MINUTES" = "دقیقه";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "ثانیه";
 
 /* subheading in privacy settings */
 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "هفته";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "رد";
@@ -1805,7 +1805,7 @@
 "GROUP_CREATION_FAILED" = "بعضی از اعضا به گروه اضافه نشدند. برای امتحان دوباره لمس کنید.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "more";
+"GROUP_DESCRIPTION_MORE" = "بیشتر";
 
 /* Placeholder text for 'group description' field. */
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
@@ -4856,7 +4856,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "پیام‌های ناپدید شونده";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "یک زمان‌سنج پیام ناپدید شونده پیش‌فرض برای همهٔ گفتگوهایی که شما آغاز می‌کنید تنظیم کنید.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "حمایت از سیگنال";
@@ -5546,10 +5546,10 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "اگر رد کردن مرحلهٔ تأیید را انتخاب کنید، ممکن است پیام‌ها را از افراد دیگر از دست بدهید و پیام‌های شما موفق به ارسال نشوند.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ادامه بدون تأیید کردن؟";
 
 /* Body for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
