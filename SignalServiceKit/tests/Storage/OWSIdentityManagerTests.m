@@ -2,13 +2,13 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "MockSSKEnvironment.h"
-#import "OWSIdentityManager.h"
-#import "OWSRecipientIdentity.h"
-#import "SSKBaseTestObjC.h"
-#import "SSKEnvironment.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/MockSSKEnvironment.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/SSKBaseTestObjC.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface OWSIdentityManagerTests : SSKBaseTestObjC

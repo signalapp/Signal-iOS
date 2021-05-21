@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSLinkedDeviceReadReceipt.h"
+#import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

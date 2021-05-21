@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSUnknownProtocolVersionMessage.h"
 #import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

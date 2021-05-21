@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "LegacyChainKey.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/LegacyChainKey.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

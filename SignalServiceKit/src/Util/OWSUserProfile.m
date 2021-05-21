@@ -2,7 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSUserProfile.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
@@ -10,6 +9,7 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

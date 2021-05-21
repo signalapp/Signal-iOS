@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "PhoneNumber.h"
 #import "NSString+SSK.h"
-#import "PhoneNumberUtil.h"
+#import <SignalServiceKit/PhoneNumber.h>
+#import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <libPhoneNumber_iOS/NBAsYouTypeFormatter.h>
 #import <libPhoneNumber_iOS/NBMetadataHelper.h>

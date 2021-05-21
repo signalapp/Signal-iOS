@@ -2,16 +2,16 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSIncomingSentMessageTranscript.h"
-#import "OWSContact.h"
-#import "OWSMessageManager.h"
-#import "TSContactThread.h"
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
-#import "TSOutgoingMessage.h"
-#import "TSQuotedMessage.h"
-#import "TSThread.h"
+#import <SignalServiceKit/OWSContact.h>
+#import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
+#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupModel.h>
+#import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TSQuotedMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

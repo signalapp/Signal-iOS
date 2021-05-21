@@ -2,13 +2,13 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKSignedPreKeyStore.h"
-#import "OWSIdentityManager.h"
 #import "SDSKeyValueStore+ObjC.h"
-#import "SSKPreKeyStore.h"
 #import <Curve25519Kit/Ed25519.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/SSKPreKeyStore.h>
+#import <SignalServiceKit/SSKSignedPreKeyStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/SignedPreKeyRecord.h>
 

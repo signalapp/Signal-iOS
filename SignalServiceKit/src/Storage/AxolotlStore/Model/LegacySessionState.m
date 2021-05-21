@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "LegacySessionState.h"
-#import "LegacyReceivingChain.h"
-#import "LegacySendingChain.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/LegacyReceivingChain.h>
+#import <SignalServiceKit/LegacySendingChain.h>
+#import <SignalServiceKit/LegacySessionState.h>
 
 @implementation LegacyPendingPreKey
 

@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOutgoingPaymentMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSOutgoingPaymentMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

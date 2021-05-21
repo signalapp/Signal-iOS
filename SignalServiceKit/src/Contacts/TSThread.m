@@ -2,21 +2,21 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSThread.h"
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSReadTracking.h"
-#import "SSKEnvironment.h"
-#import "TSAccountManager.h"
-#import "TSIncomingMessage.h"
-#import "TSInfoMessage.h"
-#import "TSInteraction.h"
-#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
-#import "TSOutgoingMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSReadTracking.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSInfoMessage.h>
+#import <SignalServiceKit/TSInteraction.h>
+#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 @import Intents;
 

@@ -2,19 +2,19 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessage.h"
-#import "AppContext.h"
-#import "MIMETypeUtil.h"
-#import "OWSContact.h"
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "TSAttachment.h"
-#import "TSAttachmentStream.h"
-#import "TSQuotedMessage.h"
-#import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/OWSContact.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAttachment.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSMessage.h>
+#import <SignalServiceKit/TSQuotedMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

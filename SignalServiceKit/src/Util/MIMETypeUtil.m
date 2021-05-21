@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "MIMETypeUtil.h"
-#import "OWSFileSystem.h"
+#import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/OWSFileSystem.h>
 
 #if TARGET_OS_IPHONE
 #import <MobileCoreServices/MobileCoreServices.h>

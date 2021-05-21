@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDisappearingMessagesConfigurationMessage.h"
-#import "OWSDisappearingMessagesConfiguration.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfigurationMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

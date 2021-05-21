@@ -1,16 +1,16 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSSyncGroupsMessage.h"
-#import "OWSGroupsOutputStream.h"
-#import "TSAttachment.h"
-#import "TSAttachmentStream.h"
-#import "TSContactThread.h"
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSGroupsOutputStream.h>
+#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAttachment.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupModel.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

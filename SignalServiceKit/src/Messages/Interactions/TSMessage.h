@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContact.h"
-#import "TSInteraction.h"
-#import "TSQuotedMessage.h"
+#import <SignalServiceKit/OWSContact.h>
+#import <SignalServiceKit/TSInteraction.h>
+#import <SignalServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

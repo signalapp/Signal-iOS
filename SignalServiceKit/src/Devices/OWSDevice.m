@@ -2,15 +2,15 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDevice.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSError.h"
-#import "SSKEnvironment.h"
-#import "TSAccountManager.h"
 #import <Mantle/MTLValueTransformer.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSDevice.h>
+#import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

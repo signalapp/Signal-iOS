@@ -2,16 +2,16 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKBaseTestObjC.h"
-#import "TSAccountManager.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
-#import "TSIncomingMessage.h"
-#import "TSMessage.h"
-#import "TSOutgoingMessage.h"
-#import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/SSKBaseTestObjC.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSMessage.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 @interface TSMessageStorageTests : SSKBaseTestObjC
 

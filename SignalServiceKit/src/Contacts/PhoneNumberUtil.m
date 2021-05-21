@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "PhoneNumberUtil.h"
-#import "ContactsManagerProtocol.h"
-#import "FunctionalUtil.h"
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/FunctionalUtil.h>
+#import <SignalServiceKit/PhoneNumberUtil.h>
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
 
 NS_ASSUME_NONNULL_BEGIN

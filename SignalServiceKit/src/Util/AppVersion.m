@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "AppVersion.h"
+#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

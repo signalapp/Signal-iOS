@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSInfoMessage.h"
-#import "ContactsManagerProtocol.h"
-#import "SSKEnvironment.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSInfoMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

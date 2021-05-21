@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSVerificationStateSyncMessage.h"
-#import "OWSIdentityManager.h"
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSVerificationStateSyncMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

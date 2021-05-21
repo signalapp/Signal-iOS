@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDeviceProvisioningCodeService.h"
-#import "OWSRequestFactory.h"
-#import "TSNetworkManager.h"
+#import <SignalServiceKit/OWSDeviceProvisioningCodeService.h>
+#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

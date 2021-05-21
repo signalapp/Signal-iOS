@@ -2,21 +2,21 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "MessageSender.h"
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSError.h"
-#import "OWSFakeNetworkManager.h"
-#import "OWSUploadOperation.h"
-#import "SSKBaseTestObjC.h"
-#import "TSAccountManager.h"
-#import "TSContactThread.h"
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
-#import "TSNetworkManager.h"
-#import "TSOutgoingMessage.h"
-#import "TSRequest.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
+#import <SignalServiceKit/MessageSender.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSFakeNetworkManager.h>
+#import <SignalServiceKit/OWSUploadOperation.h>
+#import <SignalServiceKit/SSKBaseTestObjC.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupModel.h>
+#import <SignalServiceKit/TSGroupThread.h>
+#import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TSRequest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

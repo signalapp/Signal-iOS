@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "StorageCoordinator.h"
-#import "AppReadiness.h"
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/YDBStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN

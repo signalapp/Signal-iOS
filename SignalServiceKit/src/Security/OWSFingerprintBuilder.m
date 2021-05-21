@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSFingerprintBuilder.h"
-#import "ContactsManagerProtocol.h"
-#import "OWSFingerprint.h"
-#import "OWSIdentityManager.h"
-#import "TSAccountManager.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/OWSFingerprintBuilder.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -2,13 +2,13 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSRequest.h"
-#import "TSAccountManager.h"
-#import "TSConstants.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSConstants.h>
+#import <SignalServiceKit/TSRequest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

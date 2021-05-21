@@ -2,15 +2,15 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "Contact.h"
-#import "PhoneNumber.h"
-#import "SSKEnvironment.h"
-#import "SignalRecipient.h"
-#import "TSAccountManager.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/Contact.h>
+#import <SignalServiceKit/PhoneNumber.h>
+#import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

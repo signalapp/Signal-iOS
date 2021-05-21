@@ -2,15 +2,15 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SignalAccount.h"
-#import "Contact.h"
-#import "ContactsManagerProtocol.h"
 #import "NSData+Image.h"
-#import "SSKEnvironment.h"
-#import "SignalRecipient.h"
 #import "UIImage+OWS.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/Contact.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDynamicOutgoingMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

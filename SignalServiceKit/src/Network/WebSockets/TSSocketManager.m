@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSSocketManager.h"
-#import "SSKEnvironment.h"
+#import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

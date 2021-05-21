@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSAddToProfileWhitelistOfferMessage.h"
-#import "TSThread.h"
+#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

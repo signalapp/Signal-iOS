@@ -2,15 +2,15 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSDisappearingMessagesFinder.h"
-#import "OWSDisappearingMessagesJob.h"
-#import "SSKBaseTestObjC.h"
-#import "TSContactThread.h"
-#import "TSIncomingMessage.h"
-#import "TSMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
+#import <SignalServiceKit/SSKBaseTestObjC.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

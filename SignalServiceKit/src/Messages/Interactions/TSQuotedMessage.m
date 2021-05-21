@@ -1,17 +1,17 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSQuotedMessage.h"
-#import "TSAccountManager.h"
-#import "TSAttachment.h"
-#import "TSAttachmentPointer.h"
-#import "TSAttachmentStream.h"
-#import "TSIncomingMessage.h"
-#import "TSInteraction.h"
-#import "TSOutgoingMessage.h"
-#import "TSThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAttachment.h>
+#import <SignalServiceKit/TSAttachmentPointer.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSInteraction.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TSQuotedMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
