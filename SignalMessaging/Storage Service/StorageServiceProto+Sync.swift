@@ -252,7 +252,9 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
 
         let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
-        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId, transaction: transaction)
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId,
+                                                                       ignoreMissing: true,
+                                                                       transaction: transaction)
 
         builder.setArchived(threadAssociatedData.isArchived)
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
@@ -314,6 +316,7 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         }
 
         let localThreadId = TSGroupThread.threadId(forGroupId: id, transaction: transaction)
+        ThreadAssociatedData.createIfMissing(for: localThreadId, transaction: transaction)
         let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
 
         if archived != localThreadAssociatedData.isArchived {
@@ -355,7 +358,9 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
 
         let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
-        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId, transaction: transaction)
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId,
+                                                                       ignoreMissing: true,
+                                                                       transaction: transaction)
 
         builder.setArchived(threadAssociatedData.isArchived)
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
@@ -454,7 +459,9 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         }
 
         let localThreadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
-        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId, transaction: transaction)
+        ThreadAssociatedData.createIfMissing(for: localThreadId, transaction: transaction)
+        let localThreadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: localThreadId,
+                                                                            transaction: transaction)
 
         if archived != localThreadAssociatedData.isArchived {
             localThreadAssociatedData.updateWith(isArchived: archived, updateStorageService: false, transaction: transaction)
