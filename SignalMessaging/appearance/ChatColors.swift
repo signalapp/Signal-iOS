@@ -728,6 +728,7 @@ extension UInt {
 
     // <<<
     public func rotateLeft(_ count: Int) -> UInt {
-        (self << count) | (self >> (UInt.bitWidth - count))
+        let count = count % UInt.bitWidth
+        return (self << count) | (self >> (UInt.bitWidth - count))
     }
 }
