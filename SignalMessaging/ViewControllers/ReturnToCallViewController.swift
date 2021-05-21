@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public protocol CallViewControllerWindowReference: class {
+public protocol CallViewControllerWindowReference: AnyObject {
     var localVideoViewReference: UIView { get }
     var remoteVideoViewReference: UIView { get }
     var remoteVideoAddress: SignalServiceAddress { get }

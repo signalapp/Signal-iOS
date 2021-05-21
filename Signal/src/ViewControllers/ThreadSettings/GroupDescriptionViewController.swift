@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol GroupDescriptionViewControllerDelegate: class {
+protocol GroupDescriptionViewControllerDelegate: AnyObject {
     func groupDescriptionViewControllerDidComplete(groupDescription: String?)
 }
 

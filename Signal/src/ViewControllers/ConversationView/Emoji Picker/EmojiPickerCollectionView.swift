@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol EmojiPickerCollectionViewDelegate: class {
+protocol EmojiPickerCollectionViewDelegate: AnyObject {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones)
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int)
 }

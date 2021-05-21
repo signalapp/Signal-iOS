@@ -8,7 +8,7 @@ import ContactsUI
 import MessageUI
 
 @objc
-public protocol ContactShareViewHelperDelegate: class {
+public protocol ContactShareViewHelperDelegate: AnyObject {
     func didCreateOrEditContact()
 }
 

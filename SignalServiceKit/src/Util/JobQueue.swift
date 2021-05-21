@@ -42,7 +42,7 @@ public enum JobError: Error {
     case obsolete(description: String)
 }
 
-public protocol DurableOperation: class, Equatable {
+public protocol DurableOperation: AnyObject, Equatable {
     associatedtype JobRecordType: SSKJobRecord
     associatedtype DurableOperationDelegateType: DurableOperationDelegate
 
@@ -52,7 +52,7 @@ public protocol DurableOperation: class, Equatable {
     var remainingRetries: UInt { get set }
 }
 
-public protocol DurableOperationDelegate: class {
+public protocol DurableOperationDelegate: AnyObject {
     associatedtype DurableOperationType: DurableOperation
 
     func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction)

@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-protocol MessageActionsDelegate: class {
+protocol MessageActionsDelegate: AnyObject {
     func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsReplyToItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl)

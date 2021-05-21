@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public protocol ImageEditorViewDelegate: class {
+public protocol ImageEditorViewDelegate: AnyObject {
     func imageEditor(presentFullScreenView viewController: UIViewController,
                      isTransparent: Bool)
     func imageEditorUpdateNavigationBar()

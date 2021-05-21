@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public protocol TextApprovalViewControllerDelegate: class {
+public protocol TextApprovalViewControllerDelegate: AnyObject {
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?)
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController)

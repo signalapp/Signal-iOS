@@ -81,7 +81,7 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
     }
 }
 
-protocol GifPickerViewControllerDelegate: class {
+protocol GifPickerViewControllerDelegate: AnyObject {
     func gifPickerDidSelect(attachment: SignalAttachment)
     func gifPickerDidCancel()
 }

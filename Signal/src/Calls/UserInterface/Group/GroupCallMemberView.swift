@@ -5,7 +5,7 @@
 import Foundation
 import SignalRingRTC
 
-protocol GroupCallMemberViewDelegate: class {
+protocol GroupCallMemberViewDelegate: AnyObject {
     func memberView(_: GroupCallMemberView, userRequestedInfoAboutError: GroupCallMemberView.ErrorState)
 }
 

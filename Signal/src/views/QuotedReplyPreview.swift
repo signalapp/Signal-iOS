@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-protocol QuotedReplyPreviewDelegate: class {
+protocol QuotedReplyPreviewDelegate: AnyObject {
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview)
 }
 

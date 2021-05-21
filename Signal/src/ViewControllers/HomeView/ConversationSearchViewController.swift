@@ -6,7 +6,7 @@ import Foundation
 import BonMot
 
 @objc
-protocol ConversationSearchViewDelegate: class {
+protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchViewWillBeginDragging()
 }
 

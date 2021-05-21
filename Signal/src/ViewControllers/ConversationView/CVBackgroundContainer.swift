@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public protocol CVBackgroundContainerDelegate: class {
+public protocol CVBackgroundContainerDelegate: AnyObject {
     func updateSelectionHighlight()
     func updateScrollingContent()
 }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol PreviewWallpaperDelegate: class {
+protocol PreviewWallpaperDelegate: AnyObject {
     func previewWallpaperDidCancel(_ vc: PreviewWallpaperViewController)
     func previewWallpaperDidComplete(_ vc: PreviewWallpaperViewController)
 }

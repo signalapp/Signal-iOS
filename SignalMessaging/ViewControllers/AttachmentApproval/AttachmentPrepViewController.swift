@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 import AVFoundation
 
-protocol AttachmentPrepViewControllerDelegate: class {
+protocol AttachmentPrepViewControllerDelegate: AnyObject {
     func prepViewControllerUpdateNavigationBar()
 
     func prepViewControllerUpdateControls()

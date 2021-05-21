@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-protocol GroupMemberViewDelegate: class {
+protocol GroupMemberViewDelegate: AnyObject {
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> { get }
 
     var groupMemberViewHasUnsavedChanges: Bool { get }

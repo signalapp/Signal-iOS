@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-protocol LongTextViewDelegate: class {
+protocol LongTextViewDelegate: AnyObject {
     func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController)
 }
 

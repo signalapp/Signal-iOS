@@ -1241,7 +1241,7 @@ private enum Amount {
 
 // MARK: -
 
-private protocol AmountsDelegate: class {
+private protocol AmountsDelegate: AnyObject {
     func amountDidChange(oldValue: Amount, newValue: Amount)
 }
 

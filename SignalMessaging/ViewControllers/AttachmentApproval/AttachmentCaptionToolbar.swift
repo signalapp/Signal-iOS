@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-protocol AttachmentCaptionToolbarDelegate: class {
+protocol AttachmentCaptionToolbarDelegate: AnyObject {
     func attachmentCaptionToolbarDidEdit(_ attachmentCaptionToolbar: AttachmentCaptionToolbar)
     func attachmentCaptionToolbarDidComplete()
 }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public protocol PaymentsViewPassphraseDelegate: class {
+public protocol PaymentsViewPassphraseDelegate: AnyObject {
     func viewPassphraseDidComplete()
 }
 

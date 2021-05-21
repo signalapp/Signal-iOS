@@ -90,7 +90,7 @@ public class ToastController: NSObject, ToastViewDelegate {
     }
 }
 
-protocol ToastViewDelegate: class {
+protocol ToastViewDelegate: AnyObject {
     func didTapToastView(_ toastView: ToastView)
     func didSwipeToastView(_ toastView: ToastView)
 }

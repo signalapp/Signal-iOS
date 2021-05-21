@@ -6,14 +6,14 @@ import Foundation
 import SignalServiceKit
 
 // Supplies sticker pack data
-public protocol StickerPackDataSourceDelegate: class {
+public protocol StickerPackDataSourceDelegate: AnyObject {
     func stickerPackDataDidChange()
 }
 
 // MARK: -
 
 // Supplies sticker pack data
-public protocol StickerPackDataSource: class {
+public protocol StickerPackDataSource: AnyObject {
     func add(delegate: StickerPackDataSourceDelegate)
 
     // This will be nil for the "recents" source.

@@ -7,7 +7,7 @@ import SignalMessaging
 import PureLayout
 
 // All Observer methods will be invoked from the main thread.
-protocol SAEFailedViewDelegate: class {
+protocol SAEFailedViewDelegate: AnyObject {
     func shareViewWasCancelled()
 }
 

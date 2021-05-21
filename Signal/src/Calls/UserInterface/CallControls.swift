@@ -6,7 +6,7 @@ import Foundation
 import SignalRingRTC
 
 @objc
-protocol CallControlsDelegate: class {
+protocol CallControlsDelegate: AnyObject {
     func didPressHangup(sender: UIButton)
     func didPressAudioSource(sender: UIButton)
     func didPressMute(sender: UIButton)

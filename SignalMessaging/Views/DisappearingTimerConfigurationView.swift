@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public protocol DisappearingTimerConfigurationViewDelegate: class {
+public protocol DisappearingTimerConfigurationViewDelegate: AnyObject {
     func disappearingTimerConfigurationViewWasTapped(_ disappearingTimerView: DisappearingTimerConfigurationView)
 }
 

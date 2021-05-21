@@ -251,7 +251,7 @@ extension CVAudioPlayer: CVAudioPlaybackDelegate {
 
 // MARK: -
 
-private protocol CVAudioPlaybackDelegate: class {
+private protocol CVAudioPlaybackDelegate: AnyObject {
     func audioPlaybackStateDidChange(_ audioPlayback: CVAudioPlayback)
     func audioPlaybackDidFinish(_ audioPlayback: CVAudioPlayback)
 }

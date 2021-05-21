@@ -4,7 +4,7 @@
 
 import UIKit
 
-public protocol ImageEditorPaletteViewDelegate: class {
+public protocol ImageEditorPaletteViewDelegate: AnyObject {
     func selectedColorDidChange()
 }
 

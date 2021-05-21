@@ -222,7 +222,7 @@ class ExperienceUpgradeManager: NSObject {
 
 // MARK: -
 
-protocol ExperienceUpgradeView: class, Dependencies {
+protocol ExperienceUpgradeView: AnyObject, Dependencies {
     var experienceUpgrade: ExperienceUpgrade { get }
     var isPresented: Bool { get }
     func dismiss(animated: Bool, completion: (() -> Void)?)

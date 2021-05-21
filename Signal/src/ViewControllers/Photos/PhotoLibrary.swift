@@ -6,7 +6,7 @@ import Foundation
 import Photos
 import PromiseKit
 
-protocol PhotoLibraryDelegate: class {
+protocol PhotoLibraryDelegate: AnyObject {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)
 }
 

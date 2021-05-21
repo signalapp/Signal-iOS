@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public protocol VAlignTextViewDelegate: class {
+public protocol VAlignTextViewDelegate: AnyObject {
     func textViewDidComplete()
 }
 
@@ -91,7 +91,7 @@ private class VAlignTextView: UITextView {
 // MARK: -
 
 @objc
-public protocol ImageEditorTextViewControllerDelegate: class {
+public protocol ImageEditorTextViewControllerDelegate: AnyObject {
     func textEditDidComplete(textItem: ImageEditorTextItem)
     func textEditDidDelete(textItem: ImageEditorTextItem)
     func textEditDidCancel()

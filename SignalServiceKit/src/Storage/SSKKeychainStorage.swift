@@ -13,7 +13,7 @@ public enum KeychainStorageError: Error {
 // MARK: -
 
 @objc
-public protocol SSKKeychainStorage: class {
+public protocol SSKKeychainStorage: AnyObject {
 
     @objc func string(forService service: String, key: String) throws -> String
 

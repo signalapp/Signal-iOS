@@ -6,7 +6,7 @@ import Foundation
 import AVFoundation
 
 @objc
-public protocol OWSVideoPlayerDelegate: class {
+public protocol OWSVideoPlayerDelegate: AnyObject {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer)
 }
 

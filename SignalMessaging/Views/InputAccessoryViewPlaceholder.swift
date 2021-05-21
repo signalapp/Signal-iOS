@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-protocol InputAccessoryViewPlaceholderDelegate: class {
+protocol InputAccessoryViewPlaceholderDelegate: AnyObject {
     func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
     func inputAccessoryPlaceholderKeyboardDidPresent()
     func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)

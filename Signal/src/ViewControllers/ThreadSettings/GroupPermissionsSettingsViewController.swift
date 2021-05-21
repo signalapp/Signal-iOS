@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-protocol GroupPermissionsSettingsDelegate: class {
+protocol GroupPermissionsSettingsDelegate: AnyObject {
     func groupPermissionSettingsDidUpdate()
 }
 

@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-protocol GroupMemberRequestsAndInvitesViewControllerDelegate: class {
+protocol GroupMemberRequestsAndInvitesViewControllerDelegate: AnyObject {
     func requestsAndInvitesViewDidUpdate()
 }
 

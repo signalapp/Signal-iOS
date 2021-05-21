@@ -6,7 +6,7 @@ import Foundation
 import Photos
 import PromiseKit
 
-protocol PhotoCollectionPickerDelegate: class {
+protocol PhotoCollectionPickerDelegate: AnyObject {
     func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection)
 }
 

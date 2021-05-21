@@ -6,7 +6,7 @@ import Foundation
 import MultipeerConnectivity
 import PromiseKit
 
-protocol DeviceTransferServiceObserver: class {
+protocol DeviceTransferServiceObserver: AnyObject {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?)
 
     func deviceTransferServiceDidStartTransfer(progress: Progress)

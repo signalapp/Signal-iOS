@@ -7,7 +7,7 @@ import Photos
 import PhotosUI
 import PromiseKit
 
-protocol RecentPhotosDelegate: class {
+protocol RecentPhotosDelegate: AnyObject {
     var isMediaLibraryAccessGranted: Bool { get }
     var isMediaLibraryAccessLimited: Bool { get }
     func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)

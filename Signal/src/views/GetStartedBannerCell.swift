@@ -12,7 +12,7 @@ enum GetStartedBannerEntry: String, CaseIterable {
     var identifier: String { rawValue }
 }
 
-protocol GetStartedBannerCellDelegate: class {
+protocol GetStartedBannerCellDelegate: AnyObject {
     func didTapClose(_ cell: GetStartedBannerCell)
     func didTapAction(_ cell: GetStartedBannerCell)
 }

@@ -143,7 +143,7 @@ extension NewGroupMembersBar: UICollectionViewDelegate {
 
 // MARK: -
 
-public protocol NewGroupMemberCellDelegate: class {
+public protocol NewGroupMemberCellDelegate: AnyObject {
     func removeRecipient(_ recipient: PickedRecipient)
 }
 
@@ -262,7 +262,7 @@ extension NewGroupMembersBar: NewGroupMembersBarLayoutDelegate {
 
 // MARK: -
 
-private protocol NewGroupMembersBarLayoutDelegate: class {
+private protocol NewGroupMembersBarLayoutDelegate: AnyObject {
     func cellForLayoutMeasurement(at indexPath: IndexPath) -> UICollectionViewCell
 }
 

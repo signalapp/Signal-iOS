@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-public protocol FindByPhoneNumberDelegate: class {
+public protocol FindByPhoneNumberDelegate: AnyObject {
     func findByPhoneNumber(_ findByPhoneNumber: FindByPhoneNumberViewController,
                            didSelectAddress address: SignalServiceAddress)
 }

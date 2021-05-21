@@ -30,7 +30,7 @@ public struct SendRequestInfo {
 
 // MARK: -
 
-protocol SendPaymentHelperDelegate: class {
+protocol SendPaymentHelperDelegate: AnyObject {
     func balanceDidChange()
     func currencyConversionDidChange()
 }

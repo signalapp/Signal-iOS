@@ -6,7 +6,7 @@ import Foundation
 
 // Represents some _renderable_ portion of an Conversation View item.
 // It could be the entire item or some part thereof.
-public protocol CVComponent: class {
+public protocol CVComponent: AnyObject {
 
     var itemModel: CVItemModel { get }
 

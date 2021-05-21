@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSBlockListCacheDelegate)
-public protocol BlockListCacheDelegate: class {
+public protocol BlockListCacheDelegate: AnyObject {
     func blockListCacheDidUpdate(_ blocklistCache: BlockListCache)
 }
 

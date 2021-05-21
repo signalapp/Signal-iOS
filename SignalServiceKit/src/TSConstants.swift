@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-private protocol TSConstantsProtocol: class {
+private protocol TSConstantsProtocol: AnyObject {
     var textSecureWebSocketAPI: String { get }
     var textSecureServerURL: String { get }
     var textSecureCDN0ServerURL: String { get }

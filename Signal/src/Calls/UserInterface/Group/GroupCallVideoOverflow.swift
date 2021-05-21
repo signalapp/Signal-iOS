@@ -5,7 +5,7 @@
 import Foundation
 import SignalRingRTC
 
-protocol GroupCallVideoOverflowDelegate: class {
+protocol GroupCallVideoOverflowDelegate: AnyObject {
     var firstOverflowMemberIndex: Int { get }
     func updateVideoOverflowTrailingConstraint()
 }
