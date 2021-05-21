@@ -234,10 +234,10 @@ fileprivate extension Wallpaper {
 
 // MARK: -
 
-extension Wallpaper {
+fileprivate extension Wallpaper {
     private static let enumStore = SDSKeyValueStore(collection: "Wallpaper+Enum")
 
-    fileprivate static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
+    static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
         owsAssertDebug(photo == nil || wallpaper == .photo)
 
         try cleanupPhotoIfNecessary(for: thread)
@@ -255,7 +255,7 @@ extension Wallpaper {
         return get(for: key(for: thread), transaction: transaction)
     }
 
-    fileprivate static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
+    static func get(for key: String, transaction: SDSAnyReadTransaction) -> Wallpaper? {
         guard let rawValue = enumStore.getString(key, transaction: transaction) else {
             return nil
         }
