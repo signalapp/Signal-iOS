@@ -215,7 +215,6 @@
 		347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */; };
 		3472A4AC2620911D000803AE /* ManualLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3472A4AB2620911D000803AE /* ManualLayoutView.swift */; };
 		347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */; };
-		3474C56126111588006723D2 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56626111605006723D2 /* PaymentsReconciliation.swift */; };
 		3474C56F26111605006723D2 /* PaymentsProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56726111605006723D2 /* PaymentsProcessor.swift */; };
 		3474C57026111605006723D2 /* PaymentsUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3474C56826111605006723D2 /* PaymentsUI.swift */; };
@@ -5025,7 +5024,6 @@
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
 				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
 				348D8E72262DF67A0019CAA8 /* ConversationAvatarView.swift in Sources */,
-				3474C56126111588006723D2 /* (null) in Sources */,
 				3474C57226111605006723D2 /* PaymentsFormat.swift in Sources */,
 				34AC0A18211B39EA00997B47 /* TappableStackView.swift in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
