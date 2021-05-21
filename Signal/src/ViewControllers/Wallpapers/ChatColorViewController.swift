@@ -356,8 +356,18 @@ class ChatColorViewController: OWSTableViewController2 {
                 }
                 switch option {
                 case .auto:
-                    let value = ChatColors.autoChatColorForRendering(forThread: self.thread,
+                    let value: ChatColor
+                    if let thread = self.thread {
+                        value = ChatColors.autoChatColorForRendering(forThread: thread,
                                                                      transaction: transaction)
+                    } else {
+                        if let wallpaper = Wallpaper.wallpaperForRendering(for: thread,
+                                                                           transaction: transaction) {
+                            value = ChatColors.autoChatColorForRendering(forWallpaper: wallpaper)
+                        } else {
+                            value = ChatColors.defaultChatColor
+                        }
+                    }
                     let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
 
                     let label = UILabel()

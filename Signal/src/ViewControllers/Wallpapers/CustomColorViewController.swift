@@ -377,6 +377,10 @@ class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
+    fileprivate func hasWallpaper(transaction: SDSAnyReadTransaction) -> Bool {
+        nil != Wallpaper.wallpaperForRendering(for: self.thread, transaction: transaction)
+    }
+
     private func showSaveUI() {
         let newValue = self.currentChatColor
 
@@ -876,6 +880,7 @@ private protocol CustomColorPreviewDelegate: class {
     var gradientColor2: OWSColor { get }
 
     var currentChatColor: ChatColor { get }
+    func hasWallpaper(transaction: SDSAnyReadTransaction) -> Bool
 
     func switchToEditMode(_ value: CustomColorViewController.EditMode)
 
@@ -915,7 +920,7 @@ private class CustomColorPreviewView: UIView {
 
         self.mockConversationView = MockConversationView(
             model: CustomColorPreviewView.buildMockConversationModel(),
-            hasWallpaper: true,
+            hasWallpaper: delegate.hasWallpaper(transaction: transaction),
             customChatColor: delegate.currentChatColor
         )
         self.delegate = delegate
