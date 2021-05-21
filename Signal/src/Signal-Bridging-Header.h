@@ -50,7 +50,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSAnyTouchGestureRecognizer.h>
 #import <SignalMessaging/OWSAudioPlayer.h>
-#import <SignalMessaging/OWSContactAvatarBuilder.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>

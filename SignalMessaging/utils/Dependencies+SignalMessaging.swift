@@ -155,6 +155,14 @@ public extension NSObject {
     static var chatColors: ChatColors {
         Environment.shared.chatColorsRef
     }
+
+    var avatarBuilder: AvatarBuilder {
+        Environment.shared.avatarBuilderRef
+    }
+
+    static var avatarBuilder: AvatarBuilder {
+        Environment.shared.avatarBuilderRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -306,6 +314,14 @@ public extension Dependencies {
 
     static var chatColors: ChatColors {
         Environment.shared.chatColorsRef
+    }
+
+    var avatarBuilder: AvatarBuilder {
+        Environment.shared.avatarBuilderRef
+    }
+
+    static var avatarBuilder: AvatarBuilder {
+        Environment.shared.avatarBuilderRef
     }
 }
 

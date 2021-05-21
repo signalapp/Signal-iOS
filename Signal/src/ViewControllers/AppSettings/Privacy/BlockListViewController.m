@@ -146,10 +146,13 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
 
         for (TSGroupModel *blockedGroup in blockedGroups) {
-            UIImage *_Nullable image = blockedGroup.groupAvatarImage;
+            __block UIImage *_Nullable image = blockedGroup.groupAvatarImage;
             if (!image) {
-                image = [OWSGroupAvatarBuilder defaultAvatarForGroupId:blockedGroup.groupId
-                                                              diameter:kStandardAvatarSize];
+                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                    image = [self.avatarBuilder avatarImageForGroupId:blockedGroup.groupId
+                                                       diameterPoints:AvatarBuilder.standardAvatarSizePoints
+                                                          transaction:transaction];
+                }];
             }
             [blockedGroupsSection
                 addItem:[OWSTableItem

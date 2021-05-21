@@ -153,7 +153,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
 
     static let reuseIdentifier = "NewGroupMemberCell"
 
-    private let avatarView = ConversationAvatarView(diameter: NewGroupMemberCell.minAvatarDiameter,
+    private let avatarView = ConversationAvatarView(diameterPoints: NewGroupMemberCell.minAvatarDiameter,
                                                     localUserDisplayMode: .asUser)
     private let textLabel = UILabel(frame: .zero)
 

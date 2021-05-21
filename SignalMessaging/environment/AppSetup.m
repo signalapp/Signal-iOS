@@ -115,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         ChatColors *chatColors = [ChatColors new];
+        AvatarBuilder *avatarBuilder = [AvatarBuilder new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -127,7 +128,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                       contactsViewHelper:contactsViewHelper
                                            broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
                                                        orphanDataCleaner:orphanDataCleaner
-                                                              chatColors:chatColors]];
+                                                              chatColors:chatColors
+                                                           avatarBuilder:avatarBuilder]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
                                                                linkPreviewManager:linkPreviewManager

@@ -235,7 +235,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     private let hSpacing: CGFloat = 8
     private let labelVSpacing: CGFloat = 2
-    private let iconSize = CGSize(width: 36, height: CGFloat(kStandardAvatarSize))
+    private let iconSize = CGSize(width: 36, height: CGFloat(AvatarBuilder.standardAvatarSizePoints))
     private let progressSize: CGFloat = 36
 
     private static let measurementKey_hStack = "CVComponentGenericAttachment.measurementKey_hStack"

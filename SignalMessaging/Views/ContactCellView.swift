@@ -51,7 +51,7 @@ public class ContactCellConfiguration: NSObject {
     }
 
     fileprivate var avatarSize: UInt {
-        useLargeAvatars ? kStandardAvatarSize : kSmallAvatarSize
+        useLargeAvatars ? AvatarBuilder.standardAvatarSizePoints : AvatarBuilder.smallAvatarSizePoints
     }
 
     public init(content: ConversationContent,
@@ -112,7 +112,7 @@ public class ContactCellView: ManualStackView {
     private var content: ConversationContent? { configuration?.content }
 
     // TODO: Update localUserDisplayMode.
-    private let avatarView = ConversationAvatarView(diameter: kSmallAvatarSize,
+    private let avatarView = ConversationAvatarView(diameterPoints: AvatarBuilder.smallAvatarSizePoints,
                                                     localUserDisplayMode: .asUser)
 
     @objc
@@ -169,7 +169,7 @@ public class ContactCellView: ManualStackView {
         self.isUserInteractionEnabled = configuration.allowUserInteraction
 
         avatarView.configure(content: configuration.content,
-                             diameter: configuration.avatarSize,
+                             diameterPoints: configuration.avatarSize,
                              localUserDisplayMode: configuration.localUserDisplayMode,
                              transaction: transaction)
 

@@ -240,16 +240,14 @@ private class BannerView: UIView {
             avatarView.autoVCenterInSuperview()
             avatarView.autoMatch(.height, to: .width, of: avatarView)
 
-            let avatarBuilder = OWSContactAvatarBuilder(
-                address: address,
-                diameter: 40,
-                localUserDisplayMode: .asUser
-            )
-
-            if address.isLocalAddress {
-                avatarView.image = profileManager.localProfileAvatarImage() ?? avatarBuilder.buildDefaultImage()
+            if address.isLocalAddress,
+               let avatarImage = profileManager.localProfileAvatarImage() {
+                avatarView.image = avatarImage
             } else {
-                avatarView.image = avatarBuilder.build()
+                let avatar = Self.avatarBuilder.avatarImageWithSneakyTransaction(forAddress: address,
+                                                                                 diameterPoints: 40,
+                                                                                 localUserDisplayMode: .asUser)
+                avatarView.image = avatar
             }
         }
 

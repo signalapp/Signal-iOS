@@ -279,25 +279,25 @@ class AppSettingsViewController: OWSTableViewController2 {
 
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
 
-        let avatarDiameter: CGFloat = 64
+        let avatarDiameter: UInt = 64
         let avatarImageView = AvatarImageView()
         avatarImageView.contentMode = .scaleAspectFit
         if let avatarData = snapshot.avatarData {
             avatarImageView.image = UIImage(data: avatarData)
         } else {
-            let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarDiameter),
-                                                        localUserDisplayMode: .asUser)
-            avatarImageView.image = avatarBuilder.buildDefaultImage()
+            let avatar = Self.avatarBuilder.avatarImageForLocalUserWithSneakyTransaction(diameterPoints: avatarDiameter,
+                                                                                         localUserDisplayMode: .asUser)
+            avatarImageView.image = avatar
         }
         avatarImageView.clipsToBounds = true
-        avatarImageView.layer.cornerRadius = avatarDiameter / 2
-        avatarImageView.autoSetDimensions(to: CGSize(square: avatarDiameter))
+        avatarImageView.layer.cornerRadius = CGFloat(avatarDiameter) / 2
+        avatarImageView.autoSetDimensions(to: CGSize(square: CGFloat(avatarDiameter)))
 
         let avatarContainer = UIView()
         avatarContainer.addSubview(avatarImageView)
         avatarImageView.autoPinWidthToSuperview()
         avatarImageView.autoVCenterInSuperview()
-        avatarContainer.autoSetDimension(.height, toSize: avatarDiameter, relation: .greaterThanOrEqual)
+        avatarContainer.autoSetDimension(.height, toSize: CGFloat(avatarDiameter), relation: .greaterThanOrEqual)
 
         hStackView.addArrangedSubview(avatarContainer)
 

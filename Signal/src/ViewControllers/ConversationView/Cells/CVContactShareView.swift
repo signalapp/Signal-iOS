@@ -36,7 +36,7 @@ public class CVContactShareView: ManualStackView {
                      avatar: avatar)
     }
 
-    private static var avatarSize: CGFloat { CGFloat(kStandardAvatarSize) }
+    private static var avatarSize: CGFloat { CGFloat(AvatarBuilder.standardAvatarSizePoints) }
     private static let disclosureIconSize = CGSize.square(20)
 
     func configureForRendering(state: State,

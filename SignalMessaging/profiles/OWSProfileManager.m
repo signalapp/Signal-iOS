@@ -1481,6 +1481,11 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
+    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
+        // Try to fill in missing avatar.
+        [self downloadAvatarForUserProfile:userProfile];
+    }
+
     return userProfile.avatarUrlPath;
 }
 

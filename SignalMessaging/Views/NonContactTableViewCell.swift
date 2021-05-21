@@ -27,7 +27,7 @@ public class NonContactTableViewCell: UITableViewCell {
         stackView.autoPinWidthToSuperviewMargins()
         stackView.autoPinHeightToSuperview(withMargin: 7)
 
-        let avatarSize = CGFloat(kSmallAvatarSize)
+        let avatarSize = CGFloat(AvatarBuilder.smallAvatarSizePoints)
         iconView.autoSetDimensions(to: CGSize(square: avatarSize))
         iconView.layer.cornerRadius = avatarSize * 0.5
         iconView.clipsToBounds = true
@@ -75,13 +75,10 @@ public class NonContactTableViewCell: UITableViewCell {
 
         if isRegistered {
             let address = SignalServiceAddress(phoneNumber: phoneNumber)
-            let avatarBuilder = OWSContactAvatarBuilder(
-                address: address,
-                diameter: 48,
-                localUserDisplayMode: .asUser
-            )
-
-            iconView.image = avatarBuilder.build()
+            let avatar = Self.avatarBuilder.avatarImageWithSneakyTransaction(forAddress: address,
+                                                                             diameterPoints: 48,
+                                                                             localUserDisplayMode: .asUser)
+            iconView.image = avatar
             headerLabel.text = NSLocalizedString("NON_CONTACT_TABLE_CELL_NEW_MESSAGE",
                                                  comment: "A string prompting the user to send a new mesaage to a user")
         } else {

@@ -7,10 +7,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
+extern NSNotificationName const OWSContactsManagerSignalAccountsDidChangeNotification;
+extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 @class AnyPromise;
-@class ImageCache;
 @class SDSAnyReadTransaction;
 @class SDSKeyValueStore;
 @class SignalAccount;
@@ -25,9 +25,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 #pragma mark - Accessors
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
-
-// Do not access this property directly.
-@property (nonnull, readonly) ImageCache *avatarCachePrivate;
 
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 
@@ -92,11 +89,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
                                  transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
-- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
-                          transaction:(SDSAnyReadTransaction *)transaction;
-- (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+
+- (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)isKnownRegisteredUserWithSneakyTransaction:(SignalServiceAddress *)address
     NS_SWIFT_NAME(isKnownRegisteredUserWithSneakyTransaction(address:));

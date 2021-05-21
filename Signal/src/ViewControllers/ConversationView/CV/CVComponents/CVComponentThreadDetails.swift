@@ -248,7 +248,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress,
                                                localUserDisplayMode: .noteToSelf,
-                                               diameter: avatarDiameter)
+                                               diameterPoints: avatarDiameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(contactThread: contactThread,
                                                                           transaction: transaction)
@@ -392,7 +392,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         // If we need to reload this cell to reflect changes to any of the
         // state captured here, we need update the didThreadDetailsChange().        
 
-        let avatar = avatarBuilder.buildAvatar(forGroupThread: groupThread, diameter: avatarDiameter)
+        let avatar = avatarBuilder.buildAvatar(forGroupThread: groupThread, diameterPoints: avatarDiameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
                                                                         transaction: transaction)

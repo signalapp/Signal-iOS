@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,5 +66,13 @@ extension Data {
         // PNG and all iOS devices use big-endian (MSB) byte order,
         // so this should be redundant, but it will future-proof the code.
         return CFSwapInt32BigToHost(rawValue)
+    }
+
+    public var ows_isValidImage: Bool {
+        (self as NSData).ows_isValidImage()
+    }
+
+    public func ows_isValidImage(mimeType: String?) -> Bool {
+        (self as NSData).ows_isValidImage(withMimeType: mimeType)
     }
 }

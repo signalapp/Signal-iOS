@@ -33,7 +33,7 @@ public extension ConversationListViewController {
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
         let title = String(format: format, userName, formattedAmount)
 
-        let avatarView = ConversationAvatarView(diameter: Self.paymentsBannerAvatarSize,
+        let avatarView = ConversationAvatarView(diameterPoints: Self.paymentsBannerAvatarSize,
                                                 localUserDisplayMode: .asUser)
         avatarView.configure(address: address, transaction: transaction)
 

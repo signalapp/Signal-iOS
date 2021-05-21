@@ -22,8 +22,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
+NSNotificationName const OWSContactsManagerSignalAccountsDidChangeNotification
     = @"OWSContactsManagerSignalAccountsDidChangeNotification";
+NSNotificationName const OWSContactsManagerContactsDidChangeNotification
+    = @"OWSContactsManagerContactsDidChangeNotification";
 
 NSString *const OWSContactsManagerCollection = @"OWSContactsManagerCollection";
 NSString *const OWSContactsManagerKeyLastKnownContactPhoneNumbers
@@ -59,9 +61,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSContactsManagerCollection];
 
-    // TODO: We need to configure the limits of this cache.
-    _avatarCachePrivate = [ImageCache new];
-
     _allContacts = @[];
     _allContactsMap = @{};
     _signalAccounts = @[];
@@ -76,8 +75,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     AppReadinessRunNowOrWhenAppWillBecomeReady(^{
         [self setup];
-        
-        [self startObserving];
     });
 
     return self;
@@ -477,26 +474,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                         failure:failure];
 }
 
-- (void)startObserving
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(otherUsersProfileWillChange:)
-                                                 name:kNSNotificationNameOtherUsersProfileWillChange
-                                               object:nil];
-}
-
-- (void)otherUsersProfileWillChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
-        OWSAssertDebug(address.isValid);
-
-        [self removeAllFromAvatarCacheWithKey:address.stringForDisplay];
-    });
-}
-
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts
                    didLoad:(BOOL)didLoad
            isUserRequested:(BOOL)isUserRequested
@@ -532,7 +509,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             [self.cnContactCache removeAllObjects];
             [self.cnContactAvatarCache removeAllObjects];
 
-            [self removeAllFromAvatarCache];
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:OWSContactsManagerContactsDidChangeNotification
+                                   object:nil];
 
             [self intersectContacts:allContacts
                     isUserRequested:isUserRequested
@@ -1164,60 +1143,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self fetchSignalAccountForAddress:address transaction:transaction] != nil;
 }
 
-- (nullable UIImage *)systemContactOrSyncedImageForAddress:(nullable SignalServiceAddress *)address
-                                               transaction:(SDSAnyReadTransaction *)transaction
-{
-    if (address == nil) {
-        OWSFailDebug(@"address was unexpectedly nil");
-        return nil;
-    }
-
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
-    Contact *_Nullable contact = self.allContactsMap[phoneNumber];
-
-    if (contact != nil && contact.cnContactId != nil) {
-        UIImage *_Nullable systemContactImage = [self avatarImageForCNContactId:contact.cnContactId];
-        if (systemContactImage != nil) {
-            return systemContactImage;
-        }
-    }
-
-    // If we haven't loaded system contacts yet, we may have a cached copy in the db
-    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    if (signalAccount == nil) {
-        return nil;
-    }
-
-    contact = signalAccount.contact;
-    OWSAssertDebug(signalAccount.contact);
-    if (contact != nil && contact.cnContactId != nil) {
-        UIImage *_Nullable systemContactImage = [self avatarImageForCNContactId:contact.cnContactId];
-        if (systemContactImage != nil) {
-            return systemContactImage;
-        }
-    }
-
-    if (signalAccount.contactAvatarJpegData != nil) {
-        return [[UIImage alloc] initWithData:signalAccount.contactAvatarJpegData];
-    }
-
-    return nil;
-}
-
-- (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
-{
-    if (address == nil) {
-        OWSFailDebug(@"address was unexpectedly nil");
-        return nil;
-    }
-
-    __block UIImage *_Nullable image;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        image = [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction];
-    }];
-    return image;
-}
-
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
@@ -1230,41 +1155,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         data = [self.profileManager profileAvatarDataForAddress:address transaction:transaction];
     }];
     return data;
-}
-
-- (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
-{
-    if (address == nil) {
-        OWSFailDebug(@"address was unexpectedly nil");
-        return nil;
-    }
-
-    __block UIImage *_Nullable image;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        image = [self imageForAddress:address transaction:transaction];
-    }];
-    return image;
-}
-
-- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
-                          transaction:(SDSAnyReadTransaction *)transaction
-{
-    if (address == nil) {
-        OWSFailDebug(@"address was unexpectedly nil");
-        return nil;
-    }
-
-    __block UIImage *_Nullable image = nil;
-    if ([SSKPreferences preferContactAvatarsWithTransaction:transaction]) {
-        // Grab the system contact avatar if available. Otherwise, profile avatar.
-        image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
-        image = image ?: [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction];
-    } else {
-        // Grab the profile avatar if available. Otherwise, system contact avatar.
-        image = image ?: [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction];
-        image = image ?: [self systemContactOrSyncedImageForAddress:address transaction:transaction];
-    }
-    return image;
 }
 
 - (BOOL)shouldSortByGivenName

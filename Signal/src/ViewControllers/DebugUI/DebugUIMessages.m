@@ -3080,7 +3080,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   ];
 
                                                   UIImage *avatarImage =
-                                                      [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
+                                                      [AvatarBuilder buildRandomAvatarWithDiameterPoints:200];
                                                   [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;
@@ -3264,7 +3264,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   ];
 
                                                   UIImage *avatarImage =
-                                                      [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
+                                                      [AvatarBuilder buildRandomAvatarWithDiameterPoints:200];
                                                   [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;

@@ -646,7 +646,7 @@ fileprivate extension CVComponentState.Builder {
                 }
                 return self.avatarBuilder.buildAvatar(forAddress: typingIndicatorInteraction.address,
                                                       localUserDisplayMode: .asUser,
-                                                      diameter: UInt(ConversationStyle.groupMessageAvatarDiameter))
+                                                      diameterPoints: ConversationStyle.groupMessageAvatarDiameter)
             }()
             self.typingIndicator = TypingIndicator(address: typingIndicatorInteraction.address,
                                                    avatar: avatar)
@@ -686,7 +686,7 @@ fileprivate extension CVComponentState.Builder {
         }
         guard let avatar = self.avatarBuilder.buildAvatar(forAddress: incomingMessage.authorAddress,
                                                           localUserDisplayMode: .asUser,
-                                                          diameter: UInt(ConversationStyle.groupMessageAvatarDiameter)) else {
+                                                          diameterPoints: ConversationStyle.groupMessageAvatarDiameter) else {
             owsFailDebug("Could build avatar image")
             return nil
         }

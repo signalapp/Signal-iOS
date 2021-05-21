@@ -9,8 +9,12 @@ import UIKit
 public class ConversationAvatarView: AvatarImageView {
 
     private struct Configuration: Equatable {
-        let diameter: UInt
+        let diameterPoints: UInt
         let localUserDisplayMode: LocalUserDisplayMode
+
+        var diameterPixels: CGFloat {
+            CGFloat(diameterPoints).pointsAsPixels
+        }
     }
     private var configuration: Configuration
 
@@ -20,8 +24,8 @@ public class ConversationAvatarView: AvatarImageView {
     public var shouldLoadAsync: Bool
 
     @objc
-    public var diameter: UInt {
-        configuration.diameter
+    public var diameterPoints: UInt {
+        configuration.diameterPoints
     }
 
     @objc
@@ -37,29 +41,29 @@ public class ConversationAvatarView: AvatarImageView {
 
     @objc
     public override var intrinsicContentSize: CGSize {
-        .square(CGFloat(diameter))
+        .square(CGFloat(diameterPoints))
     }
 
     @objc
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
-        .square(CGFloat(diameter))
+        .square(CGFloat(diameterPoints))
     }
 
     private var heightConstraint: NSLayoutConstraint?
     private var widthConstraint: NSLayoutConstraint?
 
     @objc
-    public required init(diameter: UInt,
+    public required init(diameterPoints: UInt,
                          localUserDisplayMode: LocalUserDisplayMode,
                          shouldLoadAsync: Bool = true) {
-        self.configuration = Configuration(diameter: diameter,
+        self.configuration = Configuration(diameterPoints: diameterPoints,
                                            localUserDisplayMode: localUserDisplayMode)
         self.shouldLoadAsync = shouldLoadAsync
 
         super.init(frame: .zero)
 
-        self.heightConstraint = autoSetDimension(.height, toSize: CGFloat(diameter))
-        self.widthConstraint = autoSetDimension(.width, toSize: CGFloat(diameter))
+        self.heightConstraint = autoSetDimension(.height, toSize: CGFloat(diameterPoints))
+        self.widthConstraint = autoSetDimension(.width, toSize: CGFloat(diameterPoints))
         setContentHuggingHigh()
         setCompressionResistanceHigh()
     }
@@ -82,7 +86,7 @@ public class ConversationAvatarView: AvatarImageView {
                            transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
 
-        let didDiameterChange = self.configuration.diameter != configuration.diameter
+        let didDiameterChange = self.configuration.diameterPoints != configuration.diameterPoints
         let didLocalUserDisplayModeChange = self.configuration.localUserDisplayMode != configuration.localUserDisplayMode
         var shouldUpdateImage = self.content != content
 
@@ -92,8 +96,8 @@ public class ConversationAvatarView: AvatarImageView {
         if didDiameterChange {
             DispatchMainThreadSafe { [weak self] in
                 guard let self = self else { return }
-                self.widthConstraint?.constant = CGFloat(configuration.diameter)
-                self.heightConstraint?.constant = CGFloat(configuration.diameter)
+                self.widthConstraint?.constant = CGFloat(configuration.diameterPoints)
+                self.heightConstraint?.constant = CGFloat(configuration.diameterPoints)
                 self.invalidateIntrinsicContentSize()
                 self.setNeedsLayout()
             }
@@ -142,38 +146,39 @@ public class ConversationAvatarView: AvatarImageView {
     @objc
     public func configure(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
         configure(address: address,
-                  diameter: diameter,
+                  diameterPoints: diameterPoints,
                   localUserDisplayMode: localUserDisplayMode,
                   transaction: transaction)
     }
 
     @objc
     public func configure(address: SignalServiceAddress,
-                          diameter: UInt,
+                          diameterPoints: UInt,
                           localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         configure(content: ConversationContent.forAddress(address, transaction: transaction),
-                  diameter: diameter,
+                  diameterPoints: diameterPoints,
                   localUserDisplayMode: localUserDisplayMode,
                   transaction: transaction)
     }
 
     @objc
     public func configure(thread: TSThread,
-                          diameter: UInt,
+                          diameterPoints: UInt,
                           localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
         configure(content: ConversationContent.forThread(thread),
-                  diameter: diameter,
+                  diameterPoints: diameterPoints,
                   localUserDisplayMode: localUserDisplayMode,
                   transaction: transaction)
     }
 
     public func configure(content: ConversationContent,
-                          diameter: UInt,
+                          diameterPoints: UInt,
                           localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
-        let configuration = Configuration(diameter: diameter, localUserDisplayMode: localUserDisplayMode)
+        let configuration = Configuration(diameterPoints: diameterPoints,
+                                          localUserDisplayMode: localUserDisplayMode)
         configure(content: content,
                   configuration: configuration,
                   transaction: transaction)
@@ -344,7 +349,7 @@ public class ConversationAvatarView: AvatarImageView {
         AssertIsOnMainThread()
 
         let configuration = self.configuration
-        guard configuration.diameter > 0,
+        guard configuration.diameterPoints > 0,
               let content = self.content else {
             self.image = nil
             return
@@ -374,8 +379,8 @@ public class ConversationAvatarView: AvatarImageView {
     private static func buildImage(configuration: Configuration,
                                    content: ConversationContent?,
                                    transaction: SDSAnyReadTransaction) -> UIImage? {
-        let diameter = configuration.diameter
-        guard configuration.diameter > 0,
+        let diameterPoints = configuration.diameterPoints
+        guard diameterPoints > 0,
               let content = content else {
             return nil
         }
@@ -384,25 +389,22 @@ public class ConversationAvatarView: AvatarImageView {
             switch content {
             case .contact(let contactThread):
                 return buildContactAvatar(address: contactThread.contactAddress,
-                                          diameter: diameter,
-                                          localUserDisplayMode: configuration.localUserDisplayMode,
+                                          configuration: configuration,
                                           transaction: transaction)
             case .group(let groupThread):
                 return buildGroupAvatar(groupThread: groupThread,
-                                        diameter: diameter,
+                                        configuration: configuration,
                                         transaction: transaction)
             case .unknownContact(let contactAddress):
                 return buildContactAvatar(address: contactAddress,
-                                          diameter: diameter,
-                                          localUserDisplayMode: configuration.localUserDisplayMode,
+                                          configuration: configuration,
                                           transaction: transaction)
             }
         }() else {
             owsFailDebug("Could not build avatar image.")
             return nil
         }
-        let screenScale = UIScreen.main.scale
-        let targetSizePixels = CGFloat(diameter) * screenScale
+        let targetSizePixels = configuration.diameterPixels
         guard CGFloat(image.pixelWidth) <= targetSizePixels,
               CGFloat(image.pixelHeight) <= targetSizePixels else {
             let resizedImage = image.resizedImage(toFillPixelSize: .square(targetSizePixels))
@@ -412,44 +414,20 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     private static func buildContactAvatar(address: SignalServiceAddress,
-                                           diameter: UInt,
-                                           localUserDisplayMode: LocalUserDisplayMode,
+                                           configuration: Configuration,
                                            transaction: SDSAnyReadTransaction) -> UIImage? {
-        let builder = OWSContactAvatarBuilder(address: address,
-                                              diameter: diameter,
-                                              localUserDisplayMode: localUserDisplayMode,
-                                              transaction: transaction)
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
-                                                                           transaction: transaction)
-        return buildAvatar(avatarBuilder: builder,
-                           shouldBlurAvatar: shouldBlurAvatar,
-                           transaction: transaction)
+        Self.avatarBuilder.avatarImage(forAddress: address,
+                                       diameterPoints: configuration.diameterPoints,
+                                       localUserDisplayMode: configuration.localUserDisplayMode,
+                                       transaction: transaction)
     }
 
     private static func buildGroupAvatar(groupThread: TSGroupThread,
-                                         diameter: UInt,
+                                         configuration: Configuration,
                                          transaction: SDSAnyReadTransaction) -> UIImage? {
-        let builder = OWSGroupAvatarBuilder(thread: groupThread,
-                                            diameter: diameter)
-        let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
-                                                                           transaction: transaction)
-        return buildAvatar(avatarBuilder: builder,
-                           shouldBlurAvatar: shouldBlurAvatar,
-                           transaction: transaction)
-    }
-
-    private static func buildAvatar(avatarBuilder: OWSAvatarBuilder,
-                                    shouldBlurAvatar: Bool,
-                                    transaction: SDSAnyReadTransaction) -> UIImage? {
-        guard let image = avatarBuilder.build(with: transaction) else {
-            owsFailDebug("Could not build contact avatar.")
-            return nil
-        }
-        if shouldBlurAvatar {
-            return contactsManagerImpl.blurAvatar(image)
-        } else {
-            return image
-        }
+        Self.avatarBuilder.avatarImage(forGroupThread: groupThread,
+                                       diameterPoints: configuration.diameterPoints,
+                                       transaction: transaction)
     }
 
     @objc

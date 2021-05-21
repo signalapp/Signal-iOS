@@ -73,7 +73,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     public convenience init(
         groupModel: TSGroupModel,
-        iconViewSize: UInt = kLargeAvatarSize
+        iconViewSize: UInt = AvatarBuilder.largeAvatarSizePoints
     ) {
         self.init(
             groupModelOriginal: groupModel,
@@ -325,7 +325,7 @@ struct GroupAvatar {
         guard let imageData = imageData else {
             return nil
         }
-        guard (imageData as NSData).ows_isValidImage() else {
+        guard imageData.ows_isValidImage else {
             owsFailDebug("Invalid image data.")
             return nil
         }

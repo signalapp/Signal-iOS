@@ -213,10 +213,10 @@ public extension ConversationViewController {
                 if address.isLocalAddress, let profileAvatar = self.profileManager.localProfileAvatarImage() {
                     return profileAvatar.resizedImage(to: CGSize(square: 24))
                 } else {
-                    return OWSContactAvatarBuilder.buildImageForNonLocalAddress(
-                        address,
-                        diameter: 24,
-                        transaction: readTx)
+                    return Self.avatarBuilder.avatarImage(forAddress: address,
+                                                          diameterPoints: 24,
+                                                          localUserDisplayMode: .asUser,
+                                                          transaction: readTx)
                 }
             }
 

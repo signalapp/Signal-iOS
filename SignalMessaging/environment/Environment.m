@@ -21,6 +21,7 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic) ChatColors *chatColorsRef;
+@property (nonatomic) AvatarBuilder *avatarBuilderRef;
 
 @end
 
@@ -64,6 +65,7 @@ static Environment *sharedEnvironment = nil;
        broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
                    orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
                           chatColors:(ChatColors *)chatColors
+                       avatarBuilder:(AvatarBuilder *)avatarBuilder
 {
     self = [super init];
     if (!self) {
@@ -82,6 +84,7 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(broadcastMediaMessageJobQueue);
     OWSAssertDebug(orphanDataCleaner);
     OWSAssertDebug(chatColors);
+    OWSAssertDebug(avatarBuilder);
 
     _audioSessionRef = audioSession;
     _incomingContactSyncJobQueueRef = incomingContactSyncJobQueue;
@@ -95,6 +98,7 @@ static Environment *sharedEnvironment = nil;
     _broadcastMediaMessageJobQueueRef = broadcastMediaMessageJobQueue;
     _orphanDataCleanerRef = orphanDataCleaner;
     _chatColorsRef = chatColors;
+    _avatarBuilderRef = avatarBuilder;
 
     OWSSingletonAssert();
 

@@ -201,8 +201,11 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func loadDefaultContent() {
-        avatarView.image = OWSGroupAvatarBuilder.defaultAvatar(forGroupId: groupV2ContextInfo.groupId,
-                                                               diameter: Self.avatarSize)
+        avatarView.image = databaseStorage.read { transaction in
+            Self.avatarBuilder.avatarImage(forGroupId: groupV2ContextInfo.groupId,
+                                           diameterPoints: Self.avatarSize,
+                                           transaction: transaction)
+        }
         groupTitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
                                                  comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet.")
         groupSubtitleLabel.text = ""
@@ -263,7 +266,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     private func applyGroupAvatar(_ groupAvatar: Data) {
         AssertIsOnMainThread()
 
-        guard (groupAvatar as NSData).ows_isValidImage() else {
+        guard groupAvatar.ows_isValidImage else {
             owsFailDebug("Invalid group avatar.")
             return
         }
