@@ -568,11 +568,11 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     private static let sqlClauseForIgnoringInteractionsWithMutedThread: String = {
         return """
-        INNER JOIN \(ThreadRecord.databaseTableName) AS thread
-        ON \(interactionColumn: .threadUniqueId) = thread.\(threadColumn: .uniqueId)
+        INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
+            ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
         AND (
-            thread.\(threadColumn: .mutedUntilTimestamp) <= strftime('%s','now') * 1000
-            OR thread.\(threadColumn: .mutedUntilTimestamp) = 0
+            associatedData.mutedUntilTimestamp <= strftime('%s','now') * 1000
+            OR associatedData.mutedUntilTimestamp = 0
         )
         """
     }()
