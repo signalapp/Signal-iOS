@@ -319,8 +319,17 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                                                                                              newGroupSeed: newGroupSeed,
                                                                                              shouldSendMessage: true)
                                                         }.done { groupThread in
-                                                            self.groupWasCreated(groupThread: groupThread,
-                                                                                 modalActivityIndicator: modalActivityIndicator)
+                                                            Self.databaseStorage.write { transaction in
+                                                                Self.databaseStorage.touch(thread: groupThread,
+                                                                                           shouldReindex: false,
+                                                                                           transaction: transaction)
+                                                                Self.databaseStorage.add(uiDatabaseSnapshotFlushBlock: {
+                                                                    DispatchQueue.main.async {
+                                                                        self.groupWasCreated(groupThread: groupThread,
+                                                                                             modalActivityIndicator: modalActivityIndicator)
+                                                                    }
+                                                                })
+                                                            }
                                                         }.catch { error in
                                                             owsFailDebug("Could not create group: \(error)")
 
