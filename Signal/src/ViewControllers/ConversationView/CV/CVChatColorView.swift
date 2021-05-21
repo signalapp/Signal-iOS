@@ -170,8 +170,6 @@ public class CVChatColorView: ManualLayoutViewWithLayer {
             gradientLayer.endPoint = endPointLayerUnitsLL
         }
 
-        self.layer.masksToBounds = true
-
         CATransaction.commit()
     }
 

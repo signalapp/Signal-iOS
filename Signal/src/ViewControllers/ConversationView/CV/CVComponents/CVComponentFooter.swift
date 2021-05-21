@@ -96,6 +96,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             chatColorView.configure(chatColor: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
                                     referenceView: componentDelegate.view)
             chatColorView.layer.cornerRadius = 11
+            chatColorView.layer.masksToBounds = true
             innerStack.addSubviewToFillSuperviewEdges(chatColorView)
         }
 
