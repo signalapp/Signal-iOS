@@ -599,7 +599,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                   displayableText.shouldAllowLinkification else {
                 return []
             }
-            return [.link, .address, .calendarEvent]
+            return [.link, .address, .calendarEvent, .phoneNumber]
         }()
         if textView.dataDetectorTypes != dataDetectorTypes {
             // Setting dataDetectorTypes is expensive, so we only
