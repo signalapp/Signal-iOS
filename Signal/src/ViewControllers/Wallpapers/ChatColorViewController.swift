@@ -8,20 +8,20 @@ class ChatColorViewController: OWSTableViewController2 {
 
     private let thread: TSThread?
 
-    private var currentValue: ChatColor?
+    private struct CurrentValue {
+        let selected: ChatColor?
+        let appearance: ChatColor
+    }
+    private var currentValue: CurrentValue
 
     public init(thread: TSThread? = nil) {
         self.thread = thread
 
-        super.init()
-
         self.currentValue = Self.databaseStorage.read { transaction in
-            if let thread = self.thread {
-                return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
-            } else {
-                return ChatColors.defaultChatColorSetting(transaction: transaction)
-            }
+            ChatColorViewController.buildCurrentValue_Initial(thread: thread, transaction: transaction)
         }
+
+        super.init()
 
         NotificationCenter.default.addObserver(
             self,
@@ -47,6 +47,34 @@ class ChatColorViewController: OWSTableViewController2 {
             name: .ThemeDidChange,
             object: nil
         )
+    }
+
+    private static func buildCurrentValue_Initial(thread: TSThread?,
+                                                  transaction: SDSAnyReadTransaction) -> CurrentValue {
+        let selected: ChatColor?
+        let appearance: ChatColor
+        if let thread = thread {
+            selected = ChatColors.chatColorSetting(thread: thread, transaction: transaction)
+            appearance = ChatColors.autoChatColorForRendering(forThread: thread,
+                                                              transaction: transaction)
+        } else {
+            selected = ChatColors.defaultChatColorSetting(transaction: transaction)
+            appearance = ChatColors.defaultChatColorForRendering(transaction: transaction)
+        }
+        return CurrentValue(selected: selected, appearance: appearance)
+    }
+
+    private static func buildCurrentValue_Update(thread: TSThread?,
+                                                 selected: ChatColor?,
+                                                 transaction: SDSAnyReadTransaction) -> CurrentValue {
+        let appearance: ChatColor
+        if let thread = thread {
+            appearance = ChatColors.autoChatColorForRendering(forThread: thread,
+                                                              transaction: transaction)
+        } else {
+            appearance = ChatColors.defaultChatColorForRendering(transaction: transaction)
+        }
+        return CurrentValue(selected: selected, appearance: appearance)
     }
 
     @objc
@@ -94,7 +122,7 @@ class ChatColorViewController: OWSTableViewController2 {
         let mockConversationView = MockConversationView(
             model: buildMockConversationModel(),
             hasWallpaper: hasWallpaper,
-            customChatColor: currentValue
+            customChatColor: currentValue.appearance
         )
         mockConversationView.delegate = self
         let previewSection = OWSTableSection()
@@ -242,7 +270,7 @@ class ChatColorViewController: OWSTableViewController2 {
         case .builtInValue(let value):
             setNewValue(value)
         case .customValue(let value):
-            if self.currentValue == value {
+            if self.currentValue.selected == value {
                 showCustomColorView(valueMode: .editExisting(value: value))
             } else {
                 setNewValue(value)
@@ -382,14 +410,14 @@ class ChatColorViewController: OWSTableViewController2 {
                     label.autoPinEdge(toSuperviewEdge: .trailing, withInset: 3, relation: .greaterThanOrEqual)
 
                     // nil represents auto.
-                    addOptionView(innerView: view, isSelected: currentValue == nil)
+                    addOptionView(innerView: view, isSelected: currentValue.selected == nil)
                 case .builtInValue(let value):
                     let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
-                    addOptionView(innerView: view, isSelected: currentValue == value)
+                    addOptionView(innerView: view, isSelected: currentValue.selected == value)
                 case .customValue(let value):
                     let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
 
-                    let isSelected = currentValue == value
+                    let isSelected = currentValue.selected == value
                     if isSelected {
                         let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
                         view.addSubview(imageView)
@@ -439,13 +467,15 @@ class ChatColorViewController: OWSTableViewController2 {
     }
 
     private func setNewValue(_ newValue: ChatColor?) {
-        self.currentValue = newValue
         databaseStorage.write { transaction in
             if let thread = self.thread {
                 ChatColors.setChatColorSetting(newValue, thread: thread, transaction: transaction)
             } else {
                 ChatColors.setDefaultChatColorSetting(newValue, transaction: transaction)
             }
+            self.currentValue = ChatColorViewController.buildCurrentValue_Update(thread: thread,
+                                                                                 selected: newValue,
+                                                                                 transaction: transaction)
         }
         self.updateTableContents()
     }
