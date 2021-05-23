@@ -212,9 +212,11 @@ public final class MessageSender : NSObject {
                     storage.write(with: { transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
                         var shouldNotify = (message is VisibleMessage && !isSyncMessage)
+                        /*
                         if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
                             shouldNotify = true
                         }
+                         */
                         if shouldNotify {
                             let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
                             if isMainAppAndActive {
