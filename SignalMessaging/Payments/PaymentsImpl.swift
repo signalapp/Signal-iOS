@@ -54,12 +54,20 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     private var currentApiHandle: ApiHandle?
 
     public func didReceiveMCAuthError() {
+        discardApiHandle()
+    }
+
+    private func discardApiHandle() {
         Self.unfairLock.withLock {
             currentApiHandle = nil
         }
     }
 
     private func getOrBuildCurrentApi(paymentsEntropy: Data) -> Promise<MobileCoinAPI> {
+        guard !isKillSwitchActive else {
+            return Promise(error: PaymentsError.killSwitch)
+        }
+
         func getCurrentApi() -> MobileCoinAPI? {
             return Self.unfairLock.withLock { () -> MobileCoinAPI? in
                 if let handle = self.currentApiHandle,
@@ -107,6 +115,10 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         guard FeatureFlags.paymentsEnabled else {
             return false
         }
+        return hasValidPhoneNumberForPayments
+    }
+
+    private var hasValidPhoneNumberForPayments: Bool {
         guard Self.tsAccountManager.isRegisteredAndReady else {
             return false
         }
@@ -127,6 +139,10 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         let countryCodePartsOfUK: Int = 44
         let validCountryCodes = [ countryCodePartsOfUK ]
         return validCountryCodes.contains(nsCountryCode.intValue)
+    }
+
+    public var isKillSwitchActive: Bool {
+        RemoteConfig.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
     }
 
     public var shouldShowPaymentsUI: Bool {
@@ -295,6 +311,15 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     public static func generateRandomPaymentsEntropy() -> Data {
         Cryptography.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
+    }
+
+    public func clearState(transaction: SDSAnyWriteTransaction) {
+        Self.keyValueStore.removeAll(transaction: transaction)
+
+        paymentStateCache.set(nil)
+        paymentBalanceCache.set(nil)
+
+        discardApiHandle()
     }
 
     // MARK: - Public Keys
@@ -702,7 +727,7 @@ public extension PaymentsImpl {
         switch recipient {
         case .address(let recipientAddress):
             // Cannot send "user-to-user" payment if kill switch is active.
-            guard !RemoteConfig.paymentsResetKillSwitch else {
+            guard !payments.isKillSwitchActive else {
                 return Promise(error: PaymentsError.killSwitch)
             }
 

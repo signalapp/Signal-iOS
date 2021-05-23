@@ -111,7 +111,11 @@ public protocol Payments: AnyObject {
 
     func didReceiveMCAuthError()
 
+    var isKillSwitchActive: Bool { get }
+
     func warmCaches()
+
+    func clearState(transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -
@@ -328,8 +332,14 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
+    public var isKillSwitchActive: Bool { false }
+
     public func warmCaches() {
         // Do nothing.
+    }
+
+    public func clearState(transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
     }
 
     public var currentPaymentBalance: PaymentBalance? {

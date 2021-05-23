@@ -907,7 +907,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func enablePayments() {
         AssertIsOnMainThread()
 
-        guard !RemoteConfig.paymentsResetKillSwitch else {
+        guard !payments.isKillSwitchActive else {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH",
                                                                       comment: "Error message indicating that payments could not be activated because the feature is not currently available."))
             return
@@ -1017,7 +1017,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapAddMoneyButton(sender: UIGestureRecognizer) {
-        guard !RemoteConfig.paymentsResetKillSwitch else {
+        guard !payments.isKillSwitchActive else {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH",
                                                                       comment: "Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available."))
             return
@@ -1029,7 +1029,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapSendPaymentButton(sender: UIGestureRecognizer) {
-        guard !RemoteConfig.paymentsResetKillSwitch else {
+        guard !payments.isKillSwitchActive else {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH",
                                                                       comment: "Error message indicating that payments cannot be sent because the feature is not currently available."))
             return

@@ -64,6 +64,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
             var profilePaymentAddressData: Data?
             if Self.payments.arePaymentsEnabled,
+               !Self.payments.isKillSwitchActive,
                let addressProtoData = Self.payments.localPaymentAddressProtoData() {
 
                 var paymentAddressDataWithLength = Data()
