@@ -9,6 +9,7 @@ public final class OpenGroupPollerV2 : NSObject {
 
     // MARK: Settings
     private let pollInterval: TimeInterval = 4
+    static let maxInactivityPeriod: Double = 14 * 24 * 60 * 60 * 1000
 
     // MARK: Lifecycle
     public init(for server: String) {

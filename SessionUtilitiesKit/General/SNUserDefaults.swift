@@ -18,6 +18,7 @@ public enum SNUserDefaults {
 
     public enum Double : Swift.String {
         case lastDeviceTokenUpload = "lastDeviceTokenUploadTime"
+        case lastOpenDate
     }
 
     public enum Int : Swift.String {
