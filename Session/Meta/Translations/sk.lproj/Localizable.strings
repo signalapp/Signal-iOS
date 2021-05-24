@@ -79,9 +79,9 @@
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Odblokovať";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ bol/a zablokovaný/á.";
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "User Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Používateľ blokovaný";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokovaný používateľ vám nebude mocť volať ani posielať správy.";
 /* Label for generic done button. */
@@ -497,7 +497,9 @@
 "vc_view_my_qr_code_explanation" = "Toto je váš QR kód. Ostatní používatelia ho môžu oskenovať a začať tak stretnutie s vami.";
 // MARK: - Not Yet Translated
 "fast_mode_explanation" = "Budete upozornený/á na nové správy spoľahlivo a okamžite použitím serverov Apple.";
+"fast_mode" = "Rýchly režim";
 "slow_mode_explanation" = "Session občas na pozadí skontroluje nové správy.";
+"slow_mode" = "Pomalý režim";
 "vc_pn_mode_title" = "Upozornenia na správy";
 "vc_notification_settings_notification_mode_title" = "Použiť rýchly režim";
 "vc_link_device_recovery_phrase_tab_title" = "Fráza pre obnovenie";
@@ -527,7 +529,7 @@
 "modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
 "modal_link_previews_button_title" = "Povoliť";
 "vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
-"view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"vc_share_loading_message" = "Pripravujú sa prílohy...";
+"vc_share_sending_message" = "Odosiela sa...";
+"view_open_group_invitation_description" = "Otvoriť skupinovú pozvánku";
+"vc_conversation_settings_invite_button_title" = "Pridať členov";

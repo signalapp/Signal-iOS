@@ -497,7 +497,9 @@
 "vc_view_my_qr_code_explanation" = "Это ваш QR-код. Другие пользователи могут сканировать его, чтобы начать диалог с вами.";
 // MARK: - Not Yet Translated
 "fast_mode_explanation" = "Вы будете получать уведомления о новых сообщениях надежно и сразу же с помощью серверов уведомлений Apple.";
+"fast_mode" = "Fast Mode";
 "slow_mode_explanation" = "Время от времени в фоновом режиме будут проверяться новые сообщения.";
+"slow_mode" = "Slow Mode";
 "vc_pn_mode_title" = "Уведомления о Сообщениях";
 "vc_notification_settings_notification_mode_title" = "Использовать быстрый режим";
 "vc_link_device_recovery_phrase_tab_title" = "Секретная фраза";

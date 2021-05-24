@@ -1,15 +1,15 @@
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Pas maintenant";
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %@ est maintenant proposée dans la logithèque App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %@ est maintenant disponible dans l’App Store.";
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Session est proposée";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Session est disponible";
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Mise à jour";
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Fichier joint";
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "La limite de la légende est atteinte.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "La taille maximale de légende est atteinte.";
 /* placeholder text for an empty captioning field */
 "ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Ajouter une légende…";
 /* Title for 'caption' mode of the attachment approval view. */
@@ -19,7 +19,7 @@
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Taille : %@";
 /* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "La limite du message a été atteinte.";
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "La taille maximale de message est atteinte";
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
 /* Generic filename for an attachment with no known name */
@@ -29,7 +29,7 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Échec de sélection du document.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Veuillez compresser ce fichier ou ce dossier et essayez plutôt d’envoyer le fichier compressé.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Veuillez compresser ce dossier ou fichier et essayez plutôt d’envoyer cela à la place.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non pris en charge";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
@@ -81,7 +81,7 @@
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ a été bloqué.";
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "L’utilisateur est bloqué";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Utilisateur Bloqué";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler ni vous envoyer des messages.";
 /* Label for generic done button. */
@@ -532,3 +532,4 @@
 "vc_share_loading_message" = "Préparation des pièces jointes ...";
 "vc_share_sending_message" = "Envoi...";
 "view_open_group_invitation_description" = "Invitation à un groupe ouvert";
+"vc_conversation_settings_invite_button_title" = "Ajouter des membres";

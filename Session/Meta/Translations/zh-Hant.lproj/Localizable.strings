@@ -287,7 +287,7 @@
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "即時";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Session.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "驗證您的身分以打開 Session。";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "驗證失敗";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -299,7 +299,7 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "回到媒體庫";
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (預設)";
 /* Label for the backup view in app settings. */
 "SETTINGS_BACKUP" = "備份";
 /* Label for 'backup now' button in the backup settings view. */
@@ -351,134 +351,134 @@
 /* Label for the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPT" = "已讀回條";
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "當訊息已被讀取時可以查看與分享，這個選項可以隨時修改且當啟用時將套用至所有對話。";
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "螢幕鎖定已逾時";
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "螢幕鎖定";
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "螢幕鎖定";
 /* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "Sounds";
+"SETTINGS_SECTION_SOUNDS" = "聲音";
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Screen Security";
+"SETTINGS_SECURITY_TITLE" = "螢幕顯示安全";
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "輸入中指示";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "無";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "%@ 天";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@天";
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "%@ 小時";
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@小時";
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "%@ 分鐘";
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@分鐘";
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "%@ 秒";
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@秒";
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ 天";
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ 小時";
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ 分鐘";
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ 週";
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "%@ 週";
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@週";
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "Cancel";
+"TXT_CANCEL_TITLE" = "關閉";
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Delete";
+"TXT_DELETE_TITLE" = "刪除";
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Voice Message";
+"VOICE_MESSAGE_FILE_NAME" = "語音訊息";
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "點擊並長按來錄製語音訊息。";
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice Message";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "語音訊息";
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您取消了閱後即焚模式。";
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您將閱後即焚模式時間調整為 %@";
 // MARK: - Session
-"continue_2" = "Continue";
-"copy" = "Copy";
-"invalid_url" = "Invalid URL";
-"next" = "Next";
-"share" = "Share";
-"invalid_session_id" = "Invalid Session ID";
-"cancel" = "Cancel";
-"your_session_id" = "Your Session ID";
-"vc_landing_title_2" = "Your Session begins here...";
-"vc_landing_register_button_title" = "Create Session ID";
-"vc_landing_restore_button_title" = "Continue Your Session";
-"vc_landing_link_button_title" = "Link a Device";
-"view_fake_chat_bubble_1" = "What's Session?";
-"view_fake_chat_bubble_2" = "It's a decentralized, encrypted messaging app";
-"view_fake_chat_bubble_3" = "So it doesn't collect my personal information or my conversation metadata? How does it work?";
-"view_fake_chat_bubble_4" = "Using a combination of advanced anonymous routing and end-to-end encryption technologies.";
-"view_fake_chat_bubble_5" = "Friends don't let friends use compromised messengers. You're welcome.";
-"vc_register_title" = "Say hello to your Session ID";
-"vc_register_explanation" = "Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
-"vc_restore_title" = "Restore your account";
+"continue_2" = "繼續";
+"copy" = "複製";
+"invalid_url" = "無效的網址";
+"next" = "下一個";
+"share" = "分享";
+"invalid_session_id" = "無效的 Session ID";
+"cancel" = "取消";
+"your_session_id" = "您的 Session ID";
+"vc_landing_title_2" = "您的 Session 將從此開始⋯";
+"vc_landing_register_button_title" = "註冊 Session ID";
+"vc_landing_restore_button_title" = "繼續使用 Session";
+"vc_landing_link_button_title" = "連結設備";
+"view_fake_chat_bubble_1" = "什麼是 Session?";
+"view_fake_chat_bubble_2" = "這是一個去中心化並且加密的訊息 app";
+"view_fake_chat_bubble_3" = "所以 Session 不會搜集我的個人資料以及對話中與我連結的資料？ 這究竟是怎麼辦到的？";
+"view_fake_chat_bubble_4" = "我們結合了進階匿名連線與端對端加密技術。";
+"view_fake_chat_bubble_5" = "我們不會讓自己的朋友使用不夠好的聊天 app，不客氣。";
+"vc_register_title" = "跟您的 Session ID 說 Hi";
+"vc_register_explanation" = "您的 Session ID 是一個獨特的位址讓您的朋友可以透過它來與您聯繫，且其將不會與您的個人身分連結，透過這樣的設計，Session ID 是完全匿名與隱私的。";
+"vc_restore_title" = "回復您的帳號";
 "vc_restore_explanation" = "請輸入註冊時的回復用字句來回復中您的帳號。";
 "vc_restore_seed_text_field_hint" = "請輸入您的回復用字句";
 "vc_link_device_title" = "連結設備";
 "vc_link_device_scan_qr_code_tab_title" = "掃描 QR Code";
 "vc_display_name_title_2" = "請輸入您的名稱";
-"vc_display_name_explanation" = "This will be your name when you use Session. It can be your real name, an alias, or anything else you like.";
-"vc_display_name_text_field_hint" = "Enter a display name";
-"vc_display_name_display_name_missing_error" = "Please pick a display name";
-"vc_display_name_display_name_too_long_error" = "Please pick a shorter display name";
-"vc_pn_mode_recommended_option_tag" = "Recommended";
-"vc_pn_mode_no_option_picked_modal_title" = "Please Pick an Option";
-"vc_home_empty_state_message" = "You don't have any contacts yet";
-"vc_home_empty_state_button_title" = "Start a Session";
-"vc_seed_title" = "Your Recovery Phrase";
-"vc_seed_title_2" = "Meet your recovery phrase";
-"vc_seed_explanation" = "Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone.";
-"vc_seed_reveal_button_title" = "Hold to reveal";
-"view_seed_reminder_subtitle_1" = "Secure your account by saving your recovery phrase";
-"view_seed_reminder_subtitle_2" = "Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.";
-"view_seed_reminder_subtitle_3" = "Make sure to store your recovery phrase in a safe place";
-"vc_path_title" = "Path";
-"vc_path_explanation" = "Session hides your IP by routing your messages through multiple Service Nodes in Session's decentralized network. These are the countries your connection is currently being routed through:";
-"vc_path_device_row_title" = "You";
-"vc_path_guard_node_row_title" = "Entry Node";
-"vc_path_service_node_row_title" = "Service Node";
-"vc_path_destination_row_title" = "Destination";
-"vc_path_learn_more_button_title" = "Learn More";
-"vc_create_private_chat_title" = "New Session";
-"vc_create_private_chat_enter_session_id_tab_title" = "Enter Session ID";
-"vc_create_private_chat_scan_qr_code_tab_title" = "Scan QR Code";
-"vc_create_private_chat_scan_qr_code_explanation" = "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.";
-"vc_enter_public_key_explanation" = "Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.";
-"vc_scan_qr_code_camera_access_explanation" = "Session needs camera access to scan QR codes";
-"vc_scan_qr_code_grant_camera_access_button_title" = "Grant Camera Access";
-"vc_create_closed_group_title" = "New Closed Group";
-"vc_create_closed_group_text_field_hint" = "Enter a group name";
-"vc_create_closed_group_empty_state_message" = "You don't have any contacts yet";
-"vc_create_closed_group_empty_state_button_title" = "Start a Session";
-"vc_create_closed_group_group_name_missing_error" = "Please enter a group name";
-"vc_create_closed_group_group_name_too_long_error" = "Please enter a shorter group name";
-"vc_create_closed_group_too_many_group_members_error" = "A closed group cannot have more than 100 members";
-"vc_join_public_chat_title" = "Join Open Group";
-"vc_join_public_chat_enter_group_url_tab_title" = "Open Group URL";
-"vc_join_public_chat_scan_qr_code_tab_title" = "Scan QR Code";
-"vc_join_public_chat_scan_qr_code_explanation" = "Scan the QR code of the open group you'd like to join";
-"vc_enter_chat_url_text_field_hint" = "Enter an open group URL";
-"vc_settings_title" = "Settings";
-"vc_settings_display_name_text_field_hint" = "Enter a display name";
-"vc_settings_display_name_missing_error" = "Please pick a display name";
-"vc_settings_display_name_too_long_error" = "Please pick a shorter display name";
+"vc_display_name_explanation" = "這將會成為您 Session 的名稱，它可以是您的真名、別名或任何您喜歡的名字。";
+"vc_display_name_text_field_hint" = "輸入您的名稱";
+"vc_display_name_display_name_missing_error" = "請選擇一個名稱";
+"vc_display_name_display_name_too_long_error" = "請使用一個較短的名稱";
+"vc_pn_mode_recommended_option_tag" = "建議";
+"vc_pn_mode_no_option_picked_modal_title" = "請選擇其中一項選項";
+"vc_home_empty_state_message" = "您尚未添加聯絡人";
+"vc_home_empty_state_button_title" = "開始一個 Session";
+"vc_seed_title" = "您的回復用字句";
+"vc_seed_title_2" = "看看您的回復用字句";
+"vc_seed_explanation" = "您的回復用字句是您的 Session ID 的金鑰—如果您無法使用您的裝置，您可以使用它來回復您的帳號。請妥善保管您的回復用字句，請不要將其分享給任何人。";
+"vc_seed_reveal_button_title" = "按住以解除隱藏";
+"view_seed_reminder_subtitle_1" = "儲存您的回復用字句以確保您的帳號安全";
+"view_seed_reminder_subtitle_2" = "點擊與長按已編輯文字來解除隱藏您的回復用字句，然後將其妥善保管以確保您的帳號安全。";
+"view_seed_reminder_subtitle_3" = "請確定您會將回復用字句儲存在一個安全的地方";
+"vc_path_title" = "路徑";
+"vc_path_explanation" = "Session 將您傳送的訊息經由 Session 的去中心化網絡做多重的路徑與節點傳輸以隱藏您的 IP，這些是您現在傳送訊息將經過的節點服務所設立之國家。";
+"vc_path_device_row_title" = "您";
+"vc_path_guard_node_row_title" = "入口節點";
+"vc_path_service_node_row_title" = "服務節點";
+"vc_path_destination_row_title" = "目的地";
+"vc_path_learn_more_button_title" = "更多";
+"vc_create_private_chat_title" = "新的 Session";
+"vc_create_private_chat_enter_session_id_tab_title" = "輸入 Session ID";
+"vc_create_private_chat_scan_qr_code_tab_title" = "掃描 QR Code";
+"vc_create_private_chat_scan_qr_code_explanation" = "掃描 QR Code 以開始一個 Session，您可以在帳戶設定中找到您的 QR Code。";
+"vc_enter_public_key_explanation" = "使用者可以進入帳戶設定中，點擊分享 Session ID 或直接分享其 QR Code。";
+"vc_scan_qr_code_camera_access_explanation" = "Session 需要使用相機來掃描 QR Codes";
+"vc_scan_qr_code_grant_camera_access_button_title" = "授與相機權限";
+"vc_create_closed_group_title" = "新的私密群組";
+"vc_create_closed_group_text_field_hint" = "請輸入群組名稱";
+"vc_create_closed_group_empty_state_message" = "您尚未加入聯絡人";
+"vc_create_closed_group_empty_state_button_title" = "開始一個 Session";
+"vc_create_closed_group_group_name_missing_error" = "請輸入群組名稱";
+"vc_create_closed_group_group_name_too_long_error" = "請輸入一個較短的群組名稱";
+"vc_create_closed_group_too_many_group_members_error" = "私密群組的使用者上限不能超過100人";
+"vc_join_public_chat_title" = "加入開放式群組";
+"vc_join_public_chat_enter_group_url_tab_title" = "打開群組連結";
+"vc_join_public_chat_scan_qr_code_tab_title" = "掃描 QR Code";
+"vc_join_public_chat_scan_qr_code_explanation" = "掃描開放式群組的 QR Code 來加入";
+"vc_enter_chat_url_text_field_hint" = "請輸入開放式群組的網址";
+"vc_settings_title" = "設定";
+"vc_settings_display_name_text_field_hint" = "輸入一個名稱";
+"vc_settings_display_name_missing_error" = "請選擇一個名稱";
+"vc_settings_display_name_too_long_error" = "請選擇一個較短的名稱";
 "vc_settings_privacy_button_title" = "隱私權條款";
 "vc_settings_notifications_button_title" = "通知";
 "vc_settings_recovery_phrase_button_title" = "回復用字句";

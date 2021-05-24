@@ -532,3 +532,4 @@
 "vc_share_loading_message" = "Preparando anexos...";
 "vc_share_sending_message" = "Enviando...";
 "view_open_group_invitation_description" = "Convite para grupo aberto";
+"vc_conversation_settings_invite_button_title" = "Add Members";

@@ -287,7 +287,7 @@
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Direct";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Session.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticeer om Session te openen.";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Verificatie mislukt";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -532,3 +532,4 @@
 "vc_share_loading_message" = "Bijlagen voorbereiden...";
 "vc_share_sending_message" = "Aan het verzenden...";
 "view_open_group_invitation_description" = "Open groepsuitnodiging";
+"vc_conversation_settings_invite_button_title" = "Voeg deelnemers toe";
