@@ -59,11 +59,6 @@ Build and Run and you are ready to go!
 
 ## Known issues
 
-### PureLayout
-The PureLayout post install hook doesn't get applied correctly upon running
-`pod install` if you're on Xcode 12. See https://github.com/CocoaPods/CocoaPods/issues/10087 
-for more information.
-
 ### Push Notifications
 Features related to push notifications are known to be not working for
 third-party contributors since Apple's Push Notification service pushes

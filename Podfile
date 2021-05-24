@@ -9,7 +9,7 @@ target 'Session' do
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
-  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'Sodium', '~> 0.8.0', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
@@ -23,7 +23,7 @@ target 'SessionShareExtension' do
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
-  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
 end
@@ -43,7 +43,7 @@ target 'SignalUtilitiesKit' do
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
-  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'SAMKeychain', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
@@ -63,7 +63,7 @@ target 'SessionMessagingKit' do
   pod 'HKDFKit', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
-  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'SAMKeychain', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
@@ -87,7 +87,7 @@ target 'SessionUtilitiesKit' do
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
-  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
+  pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'SAMKeychain', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
@@ -95,7 +95,6 @@ end
 
 post_install do |installer|
   enable_whole_module_optimization_for_crypto_swift(installer)
-  enable_extension_support_for_pure_layout(installer)
   set_minimum_deployment_target(installer)
 end
 
@@ -105,18 +104,6 @@ def enable_whole_module_optimization_for_crypto_swift(installer)
       target.build_configurations.each do |config|
         config.build_settings['GCC_OPTIMIZATION_LEVEL'] = 'fast'
         config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-O'
-      end
-    end
-  end
-end
-
-def enable_extension_support_for_pure_layout(installer)
-  installer.pods_project.targets.each do |target|
-    if target.name.end_with? "PureLayout"
-      target.build_configurations.each do |build_configuration|
-        if build_configuration.build_settings['APPLICATION_EXTENSION_API_ONLY'] == 'YES'
-          build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = [ '$(inherited)', 'PURELAYOUT_APP_EXTENSIONS=1' ]
-        end
       end
     end
   end
