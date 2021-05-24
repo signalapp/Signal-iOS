@@ -6,6 +6,12 @@ import Foundation
 import PromiseKit
 import SignalServiceKit
 
+public enum AccountManagerError: Error {
+    case reregistrationDifferentAccount
+}
+
+// MARK: -
+
 /**
  * Signal is actually two services - textSecure for messages and red phone (for calls). 
  * AccountManager delegates to both.
@@ -181,6 +187,25 @@ public class AccountManager: NSObject {
     }
 
     func completeSecondaryLinking(provisionMessage: ProvisionMessage, deviceName: String) -> Promise<Void> {
+        if tsAccountManager.isReregistering,
+           !tsAccountManager.isPrimaryDevice,
+           let oldUUID = tsAccountManager.reregistrationUUID(),
+           let newUUID = provisionMessage.uuid,
+           oldUUID != newUUID {
+            Logger.verbose("oldUUID: \(oldUUID)")
+            Logger.verbose("newUUID: \(newUUID)")
+            Logger.warn("Cannot re-link with a different uuid.")
+            return Promise(error: AccountManagerError.reregistrationDifferentAccount)
+        }
+        if tsAccountManager.isReregistering,
+           let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber(),
+           reregistrationPhoneNumber != provisionMessage.phoneNumber {
+            Logger.verbose("reregistrationPhoneNumber: \(reregistrationPhoneNumber)")
+            Logger.verbose("provisionMessage.phoneNumber: \(provisionMessage.phoneNumber)")
+            Logger.warn("Cannot re-register with a different phone number.")
+            return Promise(error: AccountManagerError.reregistrationDifferentAccount)
+        }
+
         tsAccountManager.phoneNumberAwaitingVerification = provisionMessage.phoneNumber
         tsAccountManager.uuidAwaitingVerification = provisionMessage.uuid
 

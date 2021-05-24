@@ -4669,6 +4669,15 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
 
+/* Message for error alert indicating that re-registration failed because the account did not match. */
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+
+/* Label for the 'reset device' action in the 're-registration failed because the account did not match' alert. */
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Delete Everything";
+
+/* Title for error alert indicating that re-registration failed because the account did not match. */
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
+
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
 

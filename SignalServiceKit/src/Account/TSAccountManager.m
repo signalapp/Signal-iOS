@@ -33,6 +33,7 @@ NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumb
 NSString *const TSAccountManager_RegisteredUUIDKey = @"TSStorageRegisteredUUIDKey";
 NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
 NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
+NSString *const TSAccountManager_ReregisteringUUIDKey = @"TSAccountManager_ReregisteringUUIDKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
 NSString *const TSAccountManager_IsOnboardedKey = @"TSAccountManager_IsOnboardedKey";
 NSString *const TSAccountManager_IsTransferInProgressKey = @"TSAccountManager_IsTransferInProgressKey";
@@ -78,6 +79,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 @property (nonatomic, readonly, nullable) NSString *localNumber;
 @property (nonatomic, readonly, nullable) NSUUID *localUuid;
 @property (nonatomic, readonly, nullable) NSString *reregistrationPhoneNumber;
+@property (nonatomic, readonly, nullable) NSUUID *reregistrationUUID;
 
 @property (nonatomic, readonly) BOOL isRegistered;
 @property (nonatomic, readonly) BOOL isDeregistered;
@@ -116,6 +118,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     _localUuid = (uuidString != nil ? [[NSUUID alloc] initWithUUIDString:uuidString] : nil);
     _reregistrationPhoneNumber = [keyValueStore getString:TSAccountManager_ReregisteringPhoneNumberKey
                                               transaction:transaction];
+    NSString *_Nullable reregistrationUUIDString = [keyValueStore getString:TSAccountManager_ReregisteringUUIDKey
+                                                                transaction:transaction];
+    _reregistrationUUID
+        = (reregistrationUUIDString != nil ? [[NSUUID alloc] initWithUUIDString:reregistrationUUIDString] : nil);
     _isDeregistered = [keyValueStore getBool:TSAccountManager_IsDeregisteredKey
                                 defaultValue:NO
                                  transaction:transaction];
@@ -162,6 +168,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (BOOL)isReregistering
 {
+    // TODO: Support re-registration with only reregistrationUUID.
+    // TODO: Eventually require reregistrationUUID during re-registration.
     return nil != self.reregistrationPhoneNumber;
 }
 
@@ -508,6 +516,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:localUuid phoneNumber:localNumber];
 
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
+        [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringUUIDKey transaction:transaction];
 
         [self loadAccountStateWithTransaction:transaction];
 
@@ -856,6 +865,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         OWSFailDebug(@"can't re-register without valid local number.");
         return NO;
     }
+    NSUUID *_Nullable localUUID = [self getOrLoadAccountStateWithSneakyTransaction].localUuid;
+    if (!localUUID) {
+        OWSFailDebug(@"can't re-register without valid uuid.");
+        return NO;
+    }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
@@ -870,6 +884,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
             [self.keyValueStore setObject:localNumber
                                       key:TSAccountManager_ReregisteringPhoneNumberKey
+                              transaction:transaction];
+            [self.keyValueStore setObject:localUUID.UUIDString
+                                      key:TSAccountManager_ReregisteringUUIDKey
                               transaction:transaction];
 
             [self.keyValueStore setBool:NO key:TSAccountManager_IsOnboardedKey transaction:transaction];
@@ -897,6 +914,13 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     OWSAssertDebug([self isReregistering]);
 
     return [self getOrLoadAccountStateWithSneakyTransaction].reregistrationPhoneNumber;
+}
+
+- (nullable NSUUID *)reregistrationUUID
+{
+    OWSAssertDebug([self isReregistering]);
+
+    return [self getOrLoadAccountStateWithSneakyTransaction].reregistrationUUID;
 }
 
 - (BOOL)isReregistering

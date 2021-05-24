@@ -176,6 +176,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 // Returns YES on success.
 - (BOOL)resetForReregistration;
 - (nullable NSString *)reregistrationPhoneNumber;
+- (nullable NSUUID *)reregistrationUUID;
 @property (nonatomic, readonly) BOOL isReregistering;
 
 #pragma mark - Manual Message Fetch
