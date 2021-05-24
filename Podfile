@@ -95,7 +95,6 @@ end
 
 post_install do |installer|
   enable_whole_module_optimization_for_crypto_swift(installer)
-  enable_extension_support_for_pure_layout(installer)
   set_minimum_deployment_target(installer)
 end
 
