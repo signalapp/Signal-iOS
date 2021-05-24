@@ -31,17 +31,3 @@ public class LocalDevice: NSObject {
         UInt(max(1, activeCoreCount - 1))
     }
 }
-
-// MARK: -
-
-@objc
-public extension OperationQueue {
-    var maxConcurrentOperationCountSafe: Int {
-        get {
-            maxConcurrentOperationCount
-        }
-        set {
-            maxConcurrentOperationCount = max(1, min(newValue, Int(LocalDevice.offMainCoreCount)))
-        }
-    }
-}
