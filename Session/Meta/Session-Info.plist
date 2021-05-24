@@ -11,27 +11,27 @@
 		<key>OSXVersion</key>
 		<string>10.15.6</string>
 	</dict>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSExceptionDomains</key>
-        <dict>
-            <key>public.loki.foundation</key>
-            <dict>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
-            </dict>
-            <key>storage.seed1.loki.network</key>
-            <dict>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
-            </dict>
-            <key>storage.seed3.loki.network</key>
-            <dict>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
-            </dict>
-        </dict>
-    </dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>public.loki.foundation</key>
+			<dict>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			<key>storage.seed1.loki.network</key>
+			<dict>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			<key>storage.seed3.loki.network</key>
+			<dict>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -91,9 +91,7 @@
 	<string>Session needs access to your library to send photos.</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>dripicons-v2.ttf</string>
 		<string>ElegantIcons.ttf</string>
-		<string>fontawesome-webfont.ttf</string>
 		<string>SpaceMono-Bold.ttf</string>
 		<string>SpaceMono-Regular.ttf</string>
 	</array>
