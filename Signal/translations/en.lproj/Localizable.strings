@@ -4420,6 +4420,12 @@
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
 
+/* Message for error alert indicating that re-registration failed because the account did not match. */
+"REREGISTRATION_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To re-register with a different account, you must first reset this device.";
+
+/* Title for error alert indicating that re-registration failed because the account did not match. */
+"REREGISTRATION_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
+
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
 
@@ -4669,13 +4675,13 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
 
-/* Message for error alert indicating that re-registration failed because the account did not match. */
+/* Message for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
 
-/* Label for the 'reset device' action in the 're-registration failed because the account did not match' alert. */
+/* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Delete Everything";
 
-/* Title for error alert indicating that re-registration failed because the account did not match. */
+/* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
