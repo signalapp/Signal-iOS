@@ -4,18 +4,17 @@ import SessionSnodeKit
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var authTokenPromises: [String:Promise<String>] = [:]
+    private static var hasPerformedInitialPoll: [String:Bool] = [:]
+    private static var hasUpdatedLastOpenDate = false
     public static let workQueue = DispatchQueue(label: "OpenGroupAPIV2.workQueue", qos: .userInitiated) // It's important that this is a serial queue
     public static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
     public static var defaultRoomsPromise: Promise<[Info]>?
     public static var groupImagePromises: [String:Promise<Data>] = [:]
-    
-    private static var hasPerformedInitialPoll: [String:Bool] = [:]
-    private static var hasUpdatedLastOpenDate = false
 
-    static var timeSinceLastOpen:Double = {
-        let lastOpenDate = UserDefaults.standard[.lastOpenDate]
-        let now = Double(NSDate.millisecondTimestamp())
-        return now - lastOpenDate
+    private static let timeSinceLastOpen: TimeInterval = {
+        guard let lastOpen = UserDefaults.standard[.lastOpen] else { return .greatestFiniteMagnitude }
+        let now = Date()
+        return now.timeIntervalSince(lastOpen)
     }()
 
     // MARK: Settings
@@ -153,21 +152,20 @@ public final class OpenGroupAPIV2 : NSObject {
         let rooms = storage.getAllV2OpenGroups().values.filter { $0.server == server }.map { $0.room }
         var body: [JSON] = []
         var authTokenPromises: [String:Promise<String>] = [:]
-        let timeSinceLastOpen = self.timeSinceLastOpen
-        let useMessageLimit = (!(hasPerformedInitialPoll[server] ?? false) && timeSinceLastOpen > OpenGroupPollerV2.maxInactivityPeriod)
+        let useMessageLimit = (hasPerformedInitialPoll[server] != true && timeSinceLastOpen > OpenGroupPollerV2.maxInactivityPeriod)
         hasPerformedInitialPoll[server] = true
-        if(!hasUpdatedLastOpenDate) {
-            UserDefaults.standard[.lastOpenDate] = Double(NSDate.millisecondTimestamp())
+        if !hasUpdatedLastOpenDate {
+            UserDefaults.standard[.lastOpen] = Date()
             hasUpdatedLastOpenDate = true
         }
         for room in rooms {
             authTokenPromises[room] = getAuthToken(for: room, on: server)
             var json: JSON = [ "room_id" : room ]
             if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
-                json["from_message_server_id"] = (useMessageLimit) ? nil : lastMessageServerID
+                json["from_message_server_id"] = useMessageLimit ? nil : lastMessageServerID
             }
             if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
-                json["from_deletion_server_id"] = (useMessageLimit) ? nil : lastDeletionServerID
+                json["from_deletion_server_id"] = useMessageLimit ? nil : lastDeletionServerID
             }
             body.append(json)
         }
