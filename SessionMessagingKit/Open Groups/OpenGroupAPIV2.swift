@@ -4,11 +4,19 @@ import SessionSnodeKit
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
     private static var authTokenPromises: [String:Promise<String>] = [:]
+    private static var hasPerformedInitialPoll: [String:Bool] = [:]
+    private static var hasUpdatedLastOpenDate = false
     public static let workQueue = DispatchQueue(label: "OpenGroupAPIV2.workQueue", qos: .userInitiated) // It's important that this is a serial queue
     public static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
     public static var defaultRoomsPromise: Promise<[Info]>?
     public static var groupImagePromises: [String:Promise<Data>] = [:]
-    
+
+    private static let timeSinceLastOpen: TimeInterval = {
+        guard let lastOpen = UserDefaults.standard[.lastOpen] else { return .greatestFiniteMagnitude }
+        let now = Date()
+        return now.timeIntervalSince(lastOpen)
+    }()
+
     // MARK: Settings
     public static let defaultServer = "http://116.203.70.33"
     public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
@@ -144,14 +152,20 @@ public final class OpenGroupAPIV2 : NSObject {
         let rooms = storage.getAllV2OpenGroups().values.filter { $0.server == server }.map { $0.room }
         var body: [JSON] = []
         var authTokenPromises: [String:Promise<String>] = [:]
+        let useMessageLimit = (hasPerformedInitialPoll[server] != true && timeSinceLastOpen > OpenGroupPollerV2.maxInactivityPeriod)
+        hasPerformedInitialPoll[server] = true
+        if !hasUpdatedLastOpenDate {
+            UserDefaults.standard[.lastOpen] = Date()
+            hasUpdatedLastOpenDate = true
+        }
         for room in rooms {
             authTokenPromises[room] = getAuthToken(for: room, on: server)
             var json: JSON = [ "room_id" : room ]
             if let lastMessageServerID = storage.getLastMessageServerID(for: room, on: server) {
-                json["from_message_server_id"] = lastMessageServerID
+                json["from_message_server_id"] = useMessageLimit ? nil : lastMessageServerID
             }
             if let lastDeletionServerID = storage.getLastDeletionServerID(for: room, on: server) {
-                json["from_deletion_server_id"] = lastDeletionServerID
+                json["from_deletion_server_id"] = useMessageLimit ? nil : lastDeletionServerID
             }
             body.append(json)
         }

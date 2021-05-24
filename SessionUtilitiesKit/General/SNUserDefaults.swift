@@ -14,6 +14,7 @@ public enum SNUserDefaults {
         case lastDisplayNameUpdate
         case lastProfilePictureUpdate
         case lastOpenGroupImageUpdate
+        case lastOpen
     }
 
     public enum Double : Swift.String {
