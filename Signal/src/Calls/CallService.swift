@@ -563,6 +563,8 @@ public final class CallService: NSObject {
     }
 
     private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
+        AssertIsOnMainThread()
+
         // Make sure we're working with the latest group state.
         databaseStorage.read { thread.anyReload(transaction: $0) }
 

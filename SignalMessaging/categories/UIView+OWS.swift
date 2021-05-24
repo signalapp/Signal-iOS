@@ -177,7 +177,13 @@ public extension UIView {
         @objc
         public override var backgroundColor: UIColor? {
             didSet {
-                owsFailDebug("This is a non-rendering view.")
+                // iOS 12 sometimes clears the backgroundColor for views in
+                // table view cells. This assert is only intended to catch
+                // bugs in our own code, so we can ignore older versions
+                // of iOS.
+                if #available(iOS 14, *) {
+                    owsFailDebug("This is a non-rendering view.")
+                }
             }
         }
         #endif
