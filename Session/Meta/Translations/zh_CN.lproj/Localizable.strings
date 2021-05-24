@@ -81,7 +81,7 @@
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "已屏蔽 %@。";
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "该用户已被加入黑名单";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "用户已屏蔽";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "被屏蔽的用户将无法向您发起通话，或发送消息。";
 /* Label for generic done button. */
@@ -185,9 +185,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ 已退出群组。";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = "%@ 已被移出群组。";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = "%@ 已被移出群组。";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "群组名称已改为 '%@'。";
 /* No comment provided by engineer. */
@@ -195,7 +195,7 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "您退出了这个群。";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " 您已被移出群组 ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "您最多分享%@项。";
 /* alert title */
@@ -287,7 +287,7 @@
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "立即";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "认证来打开 Session。";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "验证以打开Session";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "认证失败";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -343,7 +343,7 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "发送链接预览";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "现支持Imgur, Instagram, Pinterest, Reddit, 以及YouTube的链接预览.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "链接预览";
 /* table section header */
@@ -365,7 +365,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "“正在输入”提示";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "无";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@天";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -496,38 +496,40 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "扫描对方的二维码以发起对话";
 "vc_view_my_qr_code_explanation" = "这是您的二维码。其他用户可以对其进行扫描以发起与您的对话。";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
-"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
-"vc_pn_mode_title" = "Message Notifications";
-"vc_notification_settings_notification_mode_title" = "Use Fast Mode";
-"vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
-"vc_enter_recovery_phrase_title" = "Recovery Phrase";
-"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
-"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages";
-"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
-"vc_join_open_group_suggestions_title" = "Or join one of these...";
-"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
-"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
-"copied" = "Copied";
-"vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
-"vc_conversation_input_prompt" = "Message";
-"vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
-"modal_download_attachment_title" = "Trust %@?";
-"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
-"modal_download_button_title" = "Download";
-"modal_open_url_title" = "Open URL?";
-"modal_open_url_explanation" = "Are you sure you want to open %@?";
-"modal_open_url_button_title" = "Open";
-"modal_blocked_title" = "Unblock %@?";
-"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
-"modal_blocked_button_title" = "Unblock";
-"modal_link_previews_title" = "Enable Link Previews?";
-"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
-"modal_link_previews_button_title" = "Enable";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
-"view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"fast_mode_explanation" = "新消息将快捷可靠地通过Apple通知服务发送。";
+"fast_mode" = "高速模式";
+"slow_mode_explanation" = "Session将不时在后台获取新消息。";
+"slow_mode" = "慢速模式";
+"vc_pn_mode_title" = "消息通知";
+"vc_notification_settings_notification_mode_title" = "使用快速模式";
+"vc_link_device_recovery_phrase_tab_title" = "恢复口令";
+"vc_link_device_scan_qr_code_explanation" = "在您的其他设备上导航到设置 -> 恢复短语以显示您的 QR 代码。";
+"vc_enter_recovery_phrase_title" = "恢复口令";
+"vc_enter_recovery_phrase_explanation" = "输入您注册时获得的恢复口令以连接你的设备";
+"vc_enter_public_key_text_field_hint" = "输入Session ID或ONS名称";
+"vc_home_title" = "消息";
+"admin_group_leave_warning" = "因为您是这个组的创建者，该组将被解散。该操作无法恢复。";
+"vc_join_open_group_suggestions_title" = "也可以加入这些…";
+"vc_settings_invite_a_friend_button_title" = "邀请朋友";
+"vc_settings_help_us_translate_button_title" = "帮助我们翻译Session界面";
+"copied" = "已复制";
+"vc_conversation_settings_copy_session_id_button_title" = "复制Session ID";
+"vc_conversation_input_prompt" = "消息";
+"vc_conversation_voice_message_cancel_message" = "滑动以取消";
+"modal_download_attachment_title" = "是否信任 %@?";
+"modal_download_attachment_explanation" = "您确定要下载%@发送的媒体消息吗?";
+"modal_download_button_title" = "下载";
+"modal_open_url_title" = "打开链接?";
+"modal_open_url_explanation" = "确定要打开 %@ 吗?";
+"modal_open_url_button_title" = "打开";
+"modal_blocked_title" = "从黑名单中移除 %@ 吗？";
+"modal_blocked_explanation" = "确定解除屏蔽%@吗?";
+"modal_blocked_button_title" = "解除屏蔽";
+"modal_link_previews_title" = "是否启用链接预览?";
+"modal_link_previews_explanation" = "链接预览将为您发送或收到的URL生成预览内容。 该功能非常实用，但Session需要访问该链接指向的网站以生成预览。您可以随后在会话设置中禁用该功能。";
+"modal_link_previews_button_title" = "启用";
+"vc_share_title" = "分享到 Session";
+"vc_share_loading_message" = "正在准备附件......";
+"vc_share_sending_message" = "正在发送…";
+"view_open_group_invitation_description" = "打开群组邀请";
+"vc_conversation_settings_invite_button_title" = "添加成员";
