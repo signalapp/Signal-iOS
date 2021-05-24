@@ -187,23 +187,35 @@ public class AccountManager: NSObject {
     }
 
     func completeSecondaryLinking(provisionMessage: ProvisionMessage, deviceName: String) -> Promise<Void> {
-        if tsAccountManager.isReregistering,
-           !tsAccountManager.isPrimaryDevice,
-           let oldUUID = tsAccountManager.reregistrationUUID(),
-           let newUUID = provisionMessage.uuid,
-           oldUUID != newUUID {
-            Logger.verbose("oldUUID: \(oldUUID)")
-            Logger.verbose("newUUID: \(newUUID)")
-            Logger.warn("Cannot re-link with a different uuid.")
-            return Promise(error: AccountManagerError.reregistrationDifferentAccount)
-        }
-        if tsAccountManager.isReregistering,
-           let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber(),
-           reregistrationPhoneNumber != provisionMessage.phoneNumber {
-            Logger.verbose("reregistrationPhoneNumber: \(reregistrationPhoneNumber)")
-            Logger.verbose("provisionMessage.phoneNumber: \(provisionMessage.phoneNumber)")
-            Logger.warn("Cannot re-register with a different phone number.")
-            return Promise(error: AccountManagerError.reregistrationDifferentAccount)
+        // * Primary devices _can_ re-register with a new uuid.
+        // * Secondary devices _cannot_ be re-linked to primaries with a different uuid.
+        if tsAccountManager.isReregistering {
+            var canChangePhoneNumbers = false
+            if let oldUUID = tsAccountManager.reregistrationUUID(),
+               let newUUID = provisionMessage.uuid {
+                if !tsAccountManager.isPrimaryDevice,
+                   oldUUID != newUUID {
+                    Logger.verbose("oldUUID: \(oldUUID)")
+                    Logger.verbose("newUUID: \(newUUID)")
+                    Logger.warn("Cannot re-link with a different uuid.")
+                    return Promise(error: AccountManagerError.reregistrationDifferentAccount)
+                } else if oldUUID == newUUID {
+                    // Secondary devices _can_ re-link to primaries with different
+                    // phone numbers if the uuid is present and has not changed.
+                    canChangePhoneNumbers = true
+                }
+            }
+            // * Primary devices _cannot_ re-register with a new phone number.
+            // * Secondary devices _cannot_ be re-linked to primaries with a different phone number
+            //   unless the uuid is present and has not changed.
+            if !canChangePhoneNumbers,
+               let reregistrationPhoneNumber = tsAccountManager.reregistrationPhoneNumber(),
+               reregistrationPhoneNumber != provisionMessage.phoneNumber {
+                Logger.verbose("reregistrationPhoneNumber: \(reregistrationPhoneNumber)")
+                Logger.verbose("provisionMessage.phoneNumber: \(provisionMessage.phoneNumber)")
+                Logger.warn("Cannot re-register with a different phone number.")
+                return Promise(error: AccountManagerError.reregistrationDifferentAccount)
+            }
         }
 
         tsAccountManager.phoneNumberAwaitingVerification = provisionMessage.phoneNumber
