@@ -42,6 +42,9 @@ public class ConversationAvatarView: AvatarImageView {
         .square(CGFloat(diameter))
     }
 
+    private var heightConstraint: NSLayoutConstraint?
+    private var widthConstraint: NSLayoutConstraint?
+
     @objc
     public required init(diameter: UInt,
                          localUserDisplayMode: LocalUserDisplayMode,
@@ -52,6 +55,8 @@ public class ConversationAvatarView: AvatarImageView {
 
         super.init(frame: .zero)
 
+        self.heightConstraint = autoSetDimension(.height, toSize: CGFloat(diameter))
+        self.widthConstraint = autoSetDimension(.width, toSize: CGFloat(diameter))
         setContentHuggingHigh()
         setCompressionResistanceHigh()
     }
@@ -80,6 +85,8 @@ public class ConversationAvatarView: AvatarImageView {
         if didDiameterChange {
             DispatchMainThreadSafe { [weak self] in
                 guard let self = self else { return }
+                self.widthConstraint?.constant = CGFloat(configuration.diameter)
+                self.heightConstraint?.constant = CGFloat(configuration.diameter)
                 self.invalidateIntrinsicContentSize()
                 self.setNeedsLayout()
             }
