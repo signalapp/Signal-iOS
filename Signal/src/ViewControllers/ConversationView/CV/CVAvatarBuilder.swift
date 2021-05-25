@@ -36,9 +36,7 @@ public class CVAvatarBuilder: Dependencies {
         if let avatar = cache[cacheKey] {
             return avatar
         }
-        let colorName = contactsManager.conversationColorName(for: address, transaction: transaction)
         guard let rawAvatar = OWSContactAvatarBuilder(address: address,
-                                                      colorName: colorName,
                                                       diameter: diameter,
                                                       localUserDisplayMode: localUserDisplayMode,
                                                       transaction: transaction).build(with: transaction) else {

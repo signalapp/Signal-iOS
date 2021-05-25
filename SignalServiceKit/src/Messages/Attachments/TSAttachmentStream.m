@@ -881,7 +881,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                 return;
             }
 
-            CGSize originalSizePixels = self.imageSizePixels;
             CGSize originalSizePoints = self.imageSizePoints;
             if (originalSizePoints.width < 1 || originalSizePoints.height < 1) {
                 failure();

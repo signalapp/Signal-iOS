@@ -78,7 +78,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var sharpCornersForQuotedMessage: OWSDirectionalRectCorner {
-        if itemViewState.senderName != nil {
+        if itemViewState.senderNameState != nil {
             return .allCorners
         } else {
             var rawValue = sharpCorners.rawValue
@@ -173,8 +173,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         hasSendFailureBadge = componentState.sendFailureBadge != nil
 
-        if let senderName = itemViewState.senderName {
-            self.senderName = CVComponentSenderName(itemModel: itemModel, senderName: senderName)
+        if let senderNameState = itemViewState.senderNameState {
+            self.senderName = CVComponentSenderName(itemModel: itemModel, senderNameState: senderNameState)
         }
         if let senderAvatar = componentState.senderAvatar {
             self.senderAvatar = senderAvatar
@@ -289,6 +289,28 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         CVComponentViewMessage()
     }
 
+    public override func updateScrollingContent(componentView: CVComponentView) {
+        super.updateScrollingContent(componentView: componentView)
+
+        guard let componentView = componentView as? CVComponentViewMessage else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        componentView.chatColorView.updateAppearance()
+
+        // We propagate this event to all subcomponents that use the CVColorOrGradientView.
+        let keys: [CVComponentKey] = [.quotedReply, .footer]
+        for key in keys {
+            if let subcomponentAndView = findActiveComponentAndView(key: key,
+                                                                    messageView: componentView,
+                                                                    ignoreMissing: true) {
+                let subcomponent = subcomponentAndView.component
+                let subcomponentView = subcomponentAndView.componentView
+                subcomponent.updateScrollingContent(componentView: subcomponentView)
+            }
+        }
+    }
+
     public static let textViewVSpacing: CGFloat = 2
     public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
     public static let quotedReplyTopMargin: CGFloat = 6
@@ -314,7 +336,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var outerBubbleView: OWSBubbleView?
         func configureBubbleView() {
             let bubbleView = componentView.bubbleView
-            bubbleView.backgroundColor = bubbleBackgroundColor
+
+            if let bubbleChatColor = self.bubbleChatColor {
+                let chatColorView = componentView.chatColorView
+                chatColorView.configure(value: bubbleChatColor,
+                                        referenceView: componentDelegate.view)
+                bubbleView.addSubview(chatColorView)
+            }
+
             bubbleView.sharpCorners = self.sharpCorners
             if let bubbleStrokeColor = self.bubbleStrokeColor {
                 bubbleView.strokeColor = bubbleStrokeColor
@@ -410,7 +439,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             sendFailureBadge.contentMode = .center
             sendFailureBadge.setTemplateImageName("error-outline-24", tintColor: badgeConfig.color)
             if conversationStyle.hasWallpaper {
-                sendFailureBadge.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+                sendFailureBadge.backgroundColor = conversationStyle.bubbleColorIncoming
                 sendFailureBadge.layer.cornerRadius = sendFailureBadgeSize / 2
                 sendFailureBadge.clipsToBounds = true
             }
@@ -451,7 +480,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         let swipeToReplySize: CGFloat
         if conversationStyle.hasWallpaper {
-            swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColor(isIncoming: true)
+            swipeToReplyIconView.backgroundColor = conversationStyle.bubbleColorIncoming
             swipeToReplyIconView.clipsToBounds = true
             swipeToReplySize = 34
             swipeToReplyIconView.setTemplateImageName("reply-outline-20",
@@ -728,14 +757,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return max(0, reactionsHeight - reactionsVOverlap)
     }
 
-    private var bubbleBackgroundColor: UIColor {
+    private var bubbleChatColor: ColorOrGradientValue? {
         if !conversationStyle.hasWallpaper && (wasRemotelyDeleted || isBorderlessViewOnceMessage) {
-            return Theme.backgroundColor
+            return .solidColor(color: Theme.backgroundColor)
         }
         if isBubbleTransparent {
-            return .clear
+            return nil
         }
-        return itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+        return itemModel.conversationStyle.bubbleChatColor(isIncoming: isIncoming)
     }
 
     private var bubbleStrokeColor: UIColor? {
@@ -1173,6 +1202,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let bubbleView = OWSBubbleView()
 
+        // TODO: Combine with OWSBubbleView?
+        fileprivate let chatColorView = CVColorOrGradientView()
+
         // Contains the actual renderable message content, arranged vertically.
         fileprivate let contentStack = ManualStackView(name: "message.contentStack")
 
@@ -1327,6 +1359,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             for subcomponentView in allSubcomponentViews {
                 subcomponentView.setIsCellVisible(isCellVisible)
             }
+            if isCellVisible {
+                chatColorView.updateAppearance()
+            }
         }
 
         public func setSwipeToReplyOffset(fastOffset: CGPoint,
@@ -1360,6 +1395,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     }
                 }
             }
+
+            chatColorView.removeFromSuperview()
+            chatColorView.reset()
 
             avatarView.image = nil
 

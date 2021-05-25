@@ -61,7 +61,7 @@ class TSContactThreadSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Properties
-        let conversationColorName: String = model.conversationColorName.rawValue
+        let conversationColorName: String = model.conversationColorNameObsolete
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchivedObsolete
         let lastInteractionRowId: Int64 = model.lastInteractionRowId

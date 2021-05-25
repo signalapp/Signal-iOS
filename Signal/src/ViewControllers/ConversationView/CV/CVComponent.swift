@@ -55,6 +55,8 @@ public protocol CVComponent: class {
     func cellDidBecomeVisible(componentView: CVComponentView,
                               renderItem: CVRenderItem,
                               messageSwipeActionState: CVMessageSwipeActionState)
+
+    func updateScrollingContent(componentView: CVComponentView)
 }
 
 // MARK: -
@@ -73,8 +75,6 @@ public protocol CVRootComponent: CVComponent {
                                     componentView: CVComponentView)
 
     var isDedicatedCell: Bool { get }
-
-    func updateWallpaperBlur(componentView: CVComponentView)
 }
 
 // MARK: -
@@ -199,7 +199,11 @@ public class CVComponentBase: NSObject {
         }
     }
 
-    public final func updateWallpaperBlur(componentView: CVComponentView) {
+    public func updateScrollingContent(componentView: CVComponentView) {
+        updateWallpaperBlur(componentView: componentView)
+    }
+
+    private func updateWallpaperBlur(componentView: CVComponentView) {
         guard let wallpaperBlurView = self.wallpaperBlurView(componentView: componentView) else {
             return
         }
@@ -242,12 +246,12 @@ extension CVComponentBase: CVNode {
     var isTextOnlyMessage: Bool { messageCellType == .textOnlyMessage }
 
     // This var should only be accessed for messages.
-    var bubbleColorForMessage: UIColor {
+    var bubbleChatColorForMessage: ColorOrGradientValue {
         guard let message = interaction as? TSMessage else {
             owsFailDebug("Invalid interaction.")
-            return conversationStyle.bubbleColor(isIncoming: true)
+            return .solidColor(color: conversationStyle.bubbleColorIncoming)
         }
-        return conversationStyle.bubbleColor(message: message)
+        return conversationStyle.bubbleChatColor(message: message)
     }
 }
 

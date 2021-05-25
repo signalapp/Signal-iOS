@@ -7,7 +7,6 @@ import Foundation
 public struct PaymentsHistoryItem {
     let paymentModel: TSPaymentModel
     let displayName: String
-    let conversationColorName: ConversationColorName
 
     var address: SignalServiceAddress? {
         paymentModel.address
@@ -138,22 +137,11 @@ class PaymentsHistoryDataSource: Dependencies {
                 paymentModels = Array(paymentModels.prefix(maxRecordCount))
             }
 
-            var conversationColorNameCache = [SignalServiceAddress: ConversationColorName]()
-            let getConversationColorName = { (address: SignalServiceAddress) -> ConversationColorName in
-                if let cachedValue = conversationColorNameCache[address] {
-                    return cachedValue
-                }
-                let value = TSContactThread.conversationColorName(forContactAddress: address, transaction: transaction)
-                conversationColorNameCache[address] = value
-                return value
-            }
             return paymentModels.map { paymentModel in
-                var conversationColorName: ConversationColorName = .default
                 var displayName: String
                 if paymentModel.isUnidentified {
                     displayName = PaymentsViewUtils.buildUnidentifiedTransactionString(paymentModel: paymentModel)
                 } else if let address = paymentModel.address {
-                    conversationColorName = getConversationColorName(address)
                     displayName = Self.contactsManager.displayName(for: address, transaction: transaction)
                 } else if paymentModel.isOutgoingTransfer {
                     displayName = NSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
@@ -165,9 +153,7 @@ class PaymentsHistoryDataSource: Dependencies {
                     displayName = NSLocalizedString("PAYMENTS_UNKNOWN_PAYMENT",
                                                     comment: "Label for unknown payments.")
                 }
-                return PaymentsHistoryItem(paymentModel: paymentModel,
-                                          displayName: displayName,
-                                          conversationColorName: conversationColorName)
+                return PaymentsHistoryItem(paymentModel: paymentModel, displayName: displayName)
             }
         }
     }

@@ -128,9 +128,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIColor *)highlightColor
 {
-    BOOL isQuotingSelf = self.quotedMessage.authorAddress.isLocalAddress;
-    return (isQuotingSelf ? [self.conversationStyle bubbleColorWithIsIncoming:NO]
-                          : [self.conversationStyle quotingSelfHighlightColor]);
+    return [self.conversationStyle quotedReplyHighlightColor];
 }
 
 #pragma mark -
@@ -191,7 +189,19 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
-    innerBubbleView.backgroundColor = self.conversationStyle.quotedReplyBubbleColor;
+
+    // Background
+    CVColorOrGradientView *chatColorView = [CVColorOrGradientView buildWithConversationStyle:self.conversationStyle
+                                                                               referenceView:self];
+    chatColorView.shouldDeactivateConstraints = NO;
+    [innerBubbleView addSubview:chatColorView];
+    [chatColorView autoPinEdgesToSuperviewEdges];
+    UIView *tintView = [UIView new];
+    tintView.backgroundColor = (self.conversationStyle.isDarkThemeEnabled ? [UIColor colorWithWhite:0 alpha:0.4]
+                                                                          : [UIColor colorWithWhite:1 alpha:0.6]);
+    [innerBubbleView addSubview:tintView];
+    [tintView autoPinEdgesToSuperviewEdges];
+
     [self addSubview:innerBubbleView];
     [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
@@ -205,10 +215,11 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     hStackView.spacing = self.hSpacing;
 
     UIView *stripeView = [UIView new];
-    if (self.isForPreview) {
-        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:YES];
+    if (self.isForPreview || self.isOutgoing) {
+        stripeView.backgroundColor = UIColor.ows_whiteColor;
     } else {
-        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
+        // We render the stripe by manipulating the chat color overlay.
+        stripeView.backgroundColor = UIColor.clearColor;
     }
     [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];

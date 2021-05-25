@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "BaseModel.h"
+#import <SignalServiceKit/BaseModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,23 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
-
-typedef NSString *ConversationColorName NS_STRING_ENUM;
-
-extern ConversationColorName const ConversationColorNameCrimson;
-extern ConversationColorName const ConversationColorNameVermilion;
-extern ConversationColorName const ConversationColorNameBurlap;
-extern ConversationColorName const ConversationColorNameForest;
-extern ConversationColorName const ConversationColorNameWintergreen;
-extern ConversationColorName const ConversationColorNameTeal;
-extern ConversationColorName const ConversationColorNameBlue;
-extern ConversationColorName const ConversationColorNameIndigo;
-extern ConversationColorName const ConversationColorNameViolet;
-extern ConversationColorName const ConversationColorNamePlum;
-extern ConversationColorName const ConversationColorNameTaupe;
-extern ConversationColorName const ConversationColorNameSteel;
-
-extern ConversationColorName const ConversationColorNameDefault;
 
 typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMentionNotificationMode_Default = 0,
     TSThreadMentionNotificationMode_Always,
@@ -77,7 +60,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMe
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           conversationColorName:(ConversationColorName)conversationColorName
+   conversationColorNameObsolete:(NSString *)conversationColorNameObsolete
                     creationDate:(nullable NSDate *)creationDate
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
@@ -90,17 +73,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
           mutedUntilDateObsolete:(nullable NSDate *)mutedUntilDateObsolete
      mutedUntilTimestampObsolete:(uint64_t)mutedUntilTimestampObsolete
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-@property (nonatomic) ConversationColorName conversationColorName;
-
-- (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;
-+ (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
-@property (class, nonatomic, readonly) NSArray<ConversationColorName> *conversationColorNames;
+@property (nonatomic, readonly) NSString *conversationColorNameObsolete;
 
 /**
  * @returns recipientId for each recipient in the thread

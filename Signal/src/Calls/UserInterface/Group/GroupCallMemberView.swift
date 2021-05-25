@@ -212,10 +212,6 @@ class GroupCallLocalMemberView: GroupCallMemberView {
             return owsFailDebug("missing local address")
         }
 
-        let conversationColorName = databaseStorage.uiRead { transaction in
-            return self.contactsManager.conversationColorName(for: localAddress, transaction: transaction)
-        }
-
         backgroundAvatarView.image = profileManager.localProfileAvatarImage()
 
         muteIndicatorImage.isHidden = isFullScreen || !call.groupCall.isOutgoingAudioMuted
@@ -225,9 +221,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 
         videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
 
-        noVideoView.backgroundColor = OWSConversationColor.conversationColorOrDefault(
-            colorName: conversationColorName
-        ).themeColor
+        noVideoView.backgroundColor = ChatColors.avatarColor(forAddress: localAddress)
 
         layer.cornerRadius = isFullScreen ? 0 : 10
         clipsToBounds = true
@@ -311,17 +305,14 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         hasBeenConfigured = true
         deferredReconfigTimer?.invalidate()
 
-        let (profileImage, conversationColorName) = databaseStorage.uiRead { transaction -> (UIImage?, ConversationColorName) in
+        let profileImage = databaseStorage.uiRead { transaction -> UIImage? in
             avatarView.configure(address: device.address,
                                  diameter: avatarDiameter,
                                  localUserDisplayMode: .asUser,
                                  transaction: transaction)
             avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
-            return (
-                self.contactsManagerImpl.image(for: device.address, transaction: transaction),
-                self.contactsManager.conversationColorName(for: device.address, transaction: transaction)
-            )
+            return self.contactsManagerImpl.image(for: device.address, transaction: transaction)
         }
 
         backgroundAvatarView.image = profileImage
@@ -331,9 +322,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         muteBottomConstraint.constant = -muteInsets
         muteHeightConstraint.constant = muteHeight
 
-        noVideoView.backgroundColor = OWSConversationColor.conversationColorOrDefault(
-            colorName: conversationColorName
-        ).themeColor
+        noVideoView.backgroundColor = ChatColors.avatarColor(forAddress: device.address)
 
         configureRemoteVideo(device: device)
         let isRemoteDeviceBlocked = blockingManager.isAddressBlocked(device.address)

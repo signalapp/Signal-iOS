@@ -1334,10 +1334,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                           text:@"⚠️ Outgoing Reserved Color Png ⚠️"]];
     }
 
-    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithType:ConversationStyleTypeDefault
-                                                                            thread:thread
-                                                                         viewWidth:0
-                                                                      hasWallpaper:NO];
+    ConversationStyle *conversationStyle = [ConversationViewController buildDefaultConversationStyleWithThread:thread];
+
     [actions addObjectsFromArray:@[
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing White Png"
@@ -1367,7 +1365,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
+                    backgroundColor:conversationStyle.bubbleColorIncoming
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
@@ -1375,7 +1373,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
+                    backgroundColor:conversationStyle.bubbleColorIncoming
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
@@ -1383,7 +1381,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
+                    backgroundColor:conversationStyle.bubbleColorIncoming
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent
@@ -1551,7 +1549,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].primaryColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
@@ -1559,7 +1557,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].shadeColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
@@ -1567,7 +1565,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].primaryColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:NO
@@ -1575,7 +1573,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle conversationColor].shadeColor
+                    backgroundColor:Theme.accentBlueColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:NO

@@ -218,15 +218,16 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
         }()
 
         return OWSTableSection(title: header, items: [
-            OWSTableItem(
-                customCell: NameCollisionCell.createWithModel(model, actions: actions),
-                actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    MemberActionSheet(
-                        address: model.address,
-                        groupViewHelper: self.groupViewHelper
-                    ).present(from: self)
-                }
+            OWSTableItem(customCellBlock: {
+                NameCollisionCell.createWithModel(model, actions: actions)
+            },
+            actionBlock: { [weak self] in
+                guard let self = self else { return }
+                MemberActionSheet(
+                    address: model.address,
+                    groupViewHelper: self.groupViewHelper
+                ).present(from: self)
+            }
             )
         ])
     }

@@ -65,6 +65,10 @@ import Foundation
     static public let editButton = NSLocalizedString("BUTTON_EDIT", comment: "Label for the 'edit' button.")
 
     @objc
+    static public let saveButton = NSLocalizedString("ALERT_SAVE",
+                                                     comment: "The label for the 'save' button in action sheets.")
+
+    @objc
     static public let help = NSLocalizedString("SETTINGS_HELP", comment: "Title for help button and help pages in app settings.")
 
     @objc

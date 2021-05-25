@@ -66,18 +66,14 @@ open class ManualLayoutView: UIView {
     @objc
     public static func circleView(name: String) -> ManualLayoutView {
         let result = ManualLayoutViewWithLayer(name: name)
-        result.addLayoutBlock { view in
-            view.layer.cornerRadius = min(view.width, view.height) * 0.5
-        }
+        result.addPillBlock()
         return result
     }
 
     @objc
     public static func pillView(name: String) -> ManualLayoutView {
         let result = ManualLayoutViewWithLayer(name: name)
-        result.addLayoutBlock { view in
-            view.layer.cornerRadius = min(view.width, view.height) * 0.5
-        }
+        result.addPillBlock()
         return result
     }
 
@@ -170,6 +166,12 @@ open class ManualLayoutView: UIView {
     }
 
     // MARK: - Convenience Methods
+
+    public func addPillBlock() {
+        addLayoutBlock { view in
+            view.layer.cornerRadius = view.bounds.size.smallerAxis * 0.5
+        }
+    }
 
     public func addSubview(_ subview: UIView,
                            withLayoutBlock layoutBlock: @escaping LayoutBlock) {

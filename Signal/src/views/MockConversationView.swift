@@ -4,39 +4,44 @@
 
 import Foundation
 
+protocol MockConversationDelegate: class {
+    var mockConversationViewWidth: CGFloat { get }
+}
+
+// MARK: -
+
 class MockConversationView: UIView {
+
+    weak var delegate: MockConversationDelegate?
 
     let hasWallpaper: Bool
 
-    var mode: Mode {
+    enum MockItem {
+        case date
+        case outgoing(text: String)
+        case incoming(text: String)
+    }
+    struct MockModel {
+        let items: [MockItem]
+    }
+    var model: MockModel {
         didSet {
             AssertIsOnMainThread()
             update()
         }
     }
 
-    // TODO: Right now, we don't respect the conversation
-    // color when rendering message bubbles. If we
-    // re-introduce colors we'll of course need to fix that,
-    // but hopefully no changes are needed here.
-    var conversationColor: ConversationColorName {
-        set {
-            AssertIsOnMainThread()
-            thread.conversationColorName = newValue
+    public var customChatColor: ChatColor? {
+        didSet {
             update()
         }
-        get { thread.conversationColorName }
     }
 
-    // TODO: This could definitely be smarter / support more variants.
-    enum Mode {
-        case outgoingIncoming(outgoingText: String, incomingText: String)
-        case dateIncomingOutgoing(incomingText: String, outgoingText: String)
-    }
-
-    init(mode: Mode, hasWallpaper: Bool) {
-        self.mode = mode
+    init(model: MockModel, hasWallpaper: Bool, customChatColor: ChatColor?) {
+        self.model = model
         self.hasWallpaper = hasWallpaper
+        self.customChatColor = customChatColor
+
         super.init(frame: .zero)
 
         setup()
@@ -44,6 +49,13 @@ class MockConversationView: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+
+        update()
     }
 
     private func setup() {
@@ -61,36 +73,17 @@ class MockConversationView: UIView {
         return stackView
     }()
 
-    private var incomingText: String {
-        switch mode {
-        case .dateIncomingOutgoing(let incomingText, _):
-            return incomingText
-        case .outgoingIncoming(_, let incomingText):
-            return incomingText
-        }
-    }
-
-    private var outgoingText: String {
-        switch mode {
-        case .dateIncomingOutgoing(_, let outgoingText):
-            return outgoingText
-        case .outgoingIncoming(let outgoingText, _):
-            return outgoingText
-        }
-    }
-
     private let thread = MockThread(contactAddress: SignalServiceAddress(phoneNumber: "+fake-id"))
-    private lazy var conversationStyle = ConversationStyle(
-        type: .`default`,
-        thread: thread,
-        viewWidth: 0,
-        hasWallpaper: hasWallpaper
-    )
 
-    // This is mostly a developer convenience - OWSMessageCell asserts at some point
-    // that the available method width is greater than 0.
-    // We ultimately use the width of the picker view which will be larger.
-    private let kMinimumConversationWidth: CGFloat = 300
+    override var frame: CGRect {
+        didSet {
+            let didChangeWidth = frame.width != oldValue.width
+            if didChangeWidth {
+                update()
+            }
+        }
+    }
+
     override var bounds: CGRect {
         didSet {
             let didChangeWidth = bounds.width != oldValue.width
@@ -100,97 +93,82 @@ class MockConversationView: UIView {
         }
     }
 
-    private let outgoingMessageView = CVCellView()
-    private let incomingMessageView = CVCellView()
-    private let dateHeaderView = CVCellView()
-
     private func reset() {
         stackView.removeAllSubviews()
-
-        outgoingMessageView.reset()
-        incomingMessageView.reset()
-        dateHeaderView.reset()
     }
 
     private func update() {
-        let viewWidth = max(bounds.size.width, kMinimumConversationWidth)
-        self.conversationStyle = ConversationStyle(
-            type: .`default`,
-            thread: self.thread,
-            viewWidth: viewWidth,
-            hasWallpaper: hasWallpaper
-        )
 
         reset()
 
-        var outgoingRenderItem: CVRenderItem?
-        var incomingRenderItem: CVRenderItem?
-        var dateHeaderRenderItem: CVRenderItem?
+        guard let delegate = self.delegate else {
+            return
+        }
+        // We create our contents using the size of this view.
+        // The wrinkle is that this view is often embedded within
+        // a UITableView that will measure the contents of this
+        // view (it's cell) before this view & its cell have been
+        // displayed, when they still have zero width.  Therefore
+        // we need to consult our delegate for the expected width.
+        let viewWidth = delegate.mockConversationViewWidth
+        guard viewWidth > 0 else {
+            return
+        }
 
+        var renderItems = [CVRenderItem]()
         databaseStorage.uiRead { transaction in
-            let outgoingMessage = MockOutgoingMessage(messageBody: self.outgoingText, thread: self.thread)
-            outgoingRenderItem = CVLoader.buildStandaloneRenderItem(
-                interaction: outgoingMessage,
+            let chatColor = self.customChatColor ?? ChatColors.chatColorForRendering(thread: thread,
+                                                                                     transaction: transaction)
+            let conversationStyle = ConversationStyle(
+                type: .`default`,
                 thread: self.thread,
-                conversationStyle: self.conversationStyle,
-                transaction: transaction
+                viewWidth: viewWidth,
+                hasWallpaper: hasWallpaper,
+                chatColor: chatColor
             )
-
-            let incomingMessage = MockIncomingMessage(messageBody: self.incomingText, thread: self.thread)
-            incomingRenderItem = CVLoader.buildStandaloneRenderItem(
-                interaction: incomingMessage,
-                thread: self.thread,
-                conversationStyle: self.conversationStyle,
-                transaction: transaction
-            )
-
-            let dateHeader = DateHeaderInteraction(thread: self.thread, timestamp: NSDate.ows_millisecondTimeStamp())
-            dateHeaderRenderItem = CVLoader.buildStandaloneRenderItem(
-                interaction: dateHeader,
-                thread: self.thread,
-                conversationStyle: self.conversationStyle,
-                transaction: transaction
-            )
+            for item in model.items {
+                func buildInteraction() -> TSInteraction {
+                    switch item {
+                    case .date:
+                        return DateHeaderInteraction(thread: self.thread,
+                                                     timestamp: NSDate.ows_millisecondTimeStamp())
+                    case .outgoing(let text):
+                        return MockOutgoingMessage(messageBody: text, thread: self.thread)
+                    case .incoming(let text):
+                        return MockIncomingMessage(messageBody: text, thread: self.thread)
+                    }
+                }
+                let interaction = buildInteraction()
+                guard let renderItem = CVLoader.buildStandaloneRenderItem(
+                    interaction: interaction,
+                    thread: self.thread,
+                    conversationStyle: conversationStyle,
+                    transaction: transaction
+                ) else {
+                    owsFailDebug("Could not build renderItem.")
+                    continue
+                }
+                renderItems.append(renderItem)
+            }
         }
 
-        if let renderItem = outgoingRenderItem {
-            outgoingMessageView.configure(renderItem: renderItem, componentDelegate: self)
-            outgoingMessageView.isCellVisible = true
-            outgoingMessageView.autoSetDimension(.height,
-                                                 toSize: renderItem.cellMeasurement.cellSize.height)
-        } else {
-            owsFailDebug("Missing outgoingRenderItem.")
-        }
+        var nextSpacerHeight: CGFloat = 0
+        for (index, renderItem) in renderItems.enumerated() {
+            if index > 0 {
+                stackView.addArrangedSubview(.spacer(withHeight: nextSpacerHeight))
+            }
+            let cellView = CVCellView()
+            cellView.configure(renderItem: renderItem, componentDelegate: self)
+            cellView.isCellVisible = true
+            cellView.autoSetDimension(.height, toSize: renderItem.cellMeasurement.cellSize.height)
+            stackView.addArrangedSubview(cellView)
 
-        if let renderItem = incomingRenderItem {
-            incomingMessageView.configure(renderItem: renderItem, componentDelegate: self)
-            incomingMessageView.isCellVisible = true
-            incomingMessageView.autoSetDimension(.height,
-                                                 toSize: renderItem.cellMeasurement.cellSize.height)
-        } else {
-            owsFailDebug("Missing incomingRenderItem.")
-        }
-
-        if let renderItem = dateHeaderRenderItem {
-            dateHeaderView.configure(renderItem: renderItem, componentDelegate: self)
-            dateHeaderView.isCellVisible = true
-            dateHeaderView.autoSetDimension(.height,
-                                            toSize: renderItem.cellMeasurement.cellSize.height)
-        } else {
-            owsFailDebug("Missing incomingRenderItem.")
-        }
-
-        switch mode {
-        case .outgoingIncoming:
-            stackView.addArrangedSubview(outgoingMessageView)
-            stackView.addArrangedSubview(.spacer(withHeight: 12))
-            stackView.addArrangedSubview(incomingMessageView)
-        case .dateIncomingOutgoing:
-            stackView.addArrangedSubview(dateHeaderView)
-            stackView.addArrangedSubview(.spacer(withHeight: 20))
-            stackView.addArrangedSubview(incomingMessageView)
-            stackView.addArrangedSubview(.spacer(withHeight: 12))
-            stackView.addArrangedSubview(outgoingMessageView)
+            switch renderItem.interaction {
+            case is DateHeaderInteraction:
+                nextSpacerHeight = 20
+            default:
+                nextSpacerHeight = 12
+            }
         }
     }
 }

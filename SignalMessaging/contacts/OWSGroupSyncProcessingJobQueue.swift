@@ -215,14 +215,6 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             groupNeedsUpdate = true
         }
 
-        if let rawSyncedColorName = groupDetails.conversationColorName {
-            let conversationColorName = ConversationColorName(rawValue: rawSyncedColorName)
-            if conversationColorName != groupThread.conversationColorName {
-                groupThread.conversationColorName = conversationColorName
-                groupNeedsUpdate = true
-            }
-        }
-
         if groupDetails.isBlocked {
             if !self.blockingManager.isGroupIdBlocked(groupDetails.groupId) {
                 self.blockingManager.addBlockedGroup(groupModel, blockMode: .remote, transaction: transaction)

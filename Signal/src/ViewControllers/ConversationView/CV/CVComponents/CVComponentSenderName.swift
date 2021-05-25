@@ -7,10 +7,12 @@ import Foundation
 @objc
 public class CVComponentSenderName: CVComponentBase, CVComponent {
 
-    private let senderName: NSAttributedString
+    private let state: CVComponentState.SenderName
+    private var senderName: NSAttributedString { state.senderName }
+    private var senderNameColor: UIColor { state.senderNameColor }
 
-    init(itemModel: CVItemModel, senderName: NSAttributedString) {
-        self.senderName = senderName
+    init(itemModel: CVItemModel, senderNameState: CVComponentState.SenderName) {
+        self.state = senderNameState
 
         super.init(itemModel: itemModel)
     }
@@ -43,8 +45,9 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         innerStack.reset()
 
         if isBorderlessWithWallpaper {
+            owsAssertDebug(isIncoming)
             let backgroundView = OWSLayerView.pillView()
-            backgroundView.backgroundColor = itemModel.conversationStyle.bubbleColor(isIncoming: isIncoming)
+            backgroundView.backgroundColor = itemModel.conversationStyle.bubbleColorIncoming
             innerStack.addSubviewToFillSuperviewEdges(backgroundView)
         }
 
@@ -67,7 +70,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
     private var labelConfig: CVLabelConfig {
         CVLabelConfig(attributedText: senderName,
                       font: UIFont.ows_dynamicTypeCaption1.ows_semibold,
-                      textColor: bodyTextColor,
+                      textColor: senderNameColor,
                       lineBreakMode: .byTruncatingTail)
     }
 

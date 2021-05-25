@@ -114,7 +114,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 @property (nonatomic) OWSTableCustomCellBlock customCellBlock;
 @property (nonatomic) OWSTableDequeueCellBlock dequeueCellBlock;
-@property (nonatomic, nullable) UITableViewCell *customCell;
 
 @end
 
@@ -164,26 +163,16 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return item;
 }
 
-+ (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
-                     customRowHeight:(CGFloat)customRowHeight
-                         actionBlock:(nullable OWSTableActionBlock)actionBlock
++ (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
+                              actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssertDebug(customCell);
-    OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
-
-    OWSTableItem *item = [OWSTableItem new];
-    item.actionBlock = actionBlock;
-    item.customCell = customCell;
-    item.customRowHeight = @(customRowHeight);
-    return item;
-}
-
-+ (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell actionBlock:(nullable OWSTableActionBlock)actionBlock
-{
-    return [self itemWithCustomCell:customCell customRowHeight:UITableViewAutomaticDimension actionBlock:actionBlock];
+    return [self itemWithCustomCellBlock:customCellBlock
+                         customRowHeight:UITableViewAutomaticDimension
+                             actionBlock:actionBlock];
 }
 
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
+                          customRowHeight:(CGFloat)customRowHeight
                               actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     OWSAssertDebug(customCellBlock);
@@ -191,7 +180,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = customCellBlock;
-    item.customRowHeight = @(UITableViewAutomaticDimension);
+    item.customRowHeight = @(customRowHeight);
     return item;
 }
 
@@ -572,11 +561,6 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 - (nullable UITableViewCell *)getOrBuildCustomCell:(UITableView *)tableView
 {
-    if (_customCell) {
-        OWSAssertDebug(_dequeueCellBlock == nil);
-        OWSAssertDebug(_customCellBlock == nil);
-        return _customCell;
-    }
     if (_customCellBlock) {
         OWSAssertDebug(_dequeueCellBlock == nil);
         return _customCellBlock();
@@ -659,6 +643,19 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self configureTableLayoutMargins];
     [self applyContents];
     [self applyTheme];
+
+    // Reload when dynamic type settings change.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(uiContentSizeCategoryDidChange:)
+                                                 name:UIContentSizeCategoryDidChangeNotification
+                                               object:nil];
+}
+
+- (void)uiContentSizeCategoryDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyContents];
 }
 
 - (void)viewWillAppear:(BOOL)animated

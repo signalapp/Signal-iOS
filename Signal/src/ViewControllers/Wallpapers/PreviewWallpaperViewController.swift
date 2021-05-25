@@ -26,8 +26,9 @@ class PreviewWallpaperViewController: UIViewController {
     )
 
     lazy var mockConversationView = MockConversationView(
-        mode: buildMockConversationMode(),
-        hasWallpaper: true
+        model: buildMockConversationModel(),
+        hasWallpaper: true,
+        customChatColor: nil
     )
 
     init(mode: Mode, thread: TSThread? = nil, delegate: PreviewWallpaperDelegate) {
@@ -36,6 +37,8 @@ class PreviewWallpaperViewController: UIViewController {
         self.delegate = delegate
 
         super.init(nibName: nil, bundle: nil)
+
+        mockConversationView.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -138,6 +141,14 @@ class PreviewWallpaperViewController: UIViewController {
 
     private var standalonePage: WallpaperPage?
     func modeDidChange() {
+        let chatColor = Self.databaseStorage.read { transaction -> ChatColor? in
+            if let thread = self.thread {
+                return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
+            } else {
+                return ChatColors.defaultChatColorSetting(transaction: transaction)
+            }
+        }
+
         switch mode {
         case .photo(let selectedPhoto):
             owsAssertDebug(self.standalonePage == nil)
@@ -149,6 +160,8 @@ class PreviewWallpaperViewController: UIViewController {
             addChild(standalonePage)
             standalonePage.view.autoPinEdgesToSuperviewEdges()
             blurButton.isHidden = false
+
+            mockConversationView.customChatColor = chatColor ?? Wallpaper.photo.defaultChatColor
         case .preset(let selectedWallpaper):
             if pageViewController.view.superview == nil {
                 view.insertSubview(pageViewController.view, at: 0)
@@ -161,12 +174,14 @@ class PreviewWallpaperViewController: UIViewController {
             currentPage = WallpaperPage(wallpaper: selectedWallpaper,
                                         thread: thread)
             blurButton.isHidden = true
+
+            mockConversationView.customChatColor = chatColor ?? selectedWallpaper.defaultChatColor
         }
 
-        mockConversationView.mode = buildMockConversationMode()
+        mockConversationView.model = buildMockConversationModel()
     }
 
-    func buildMockConversationMode() -> MockConversationView.Mode {
+    func buildMockConversationModel() -> MockConversationView.MockModel {
         let outgoingText: String = {
             guard let thread = thread else {
                 return NSLocalizedString(
@@ -197,10 +212,11 @@ class PreviewWallpaperViewController: UIViewController {
             )
         }
 
-        return .dateIncomingOutgoing(
-            incomingText: incomingText,
-            outgoingText: outgoingText
-        )
+        return MockConversationView.MockModel(items: [
+            .date,
+            .incoming(text: incomingText),
+            .outgoing(text: outgoingText)
+        ])
     }
 }
 
@@ -311,12 +327,12 @@ private class WallpaperPage: UIViewController {
         rootView.backgroundColor = Theme.darkThemeBackgroundColor
         view = rootView
 
-        let shouldDim = databaseStorage.read { transaction in
-            Wallpaper.shouldDim(thread: thread, transaction: transaction)
+        let shouldDimInDarkTheme = databaseStorage.read { transaction in
+            Wallpaper.dimInDarkMode(for: thread, transaction: transaction)
         }
         guard let wallpaperView = Wallpaper.view(for: wallpaper,
                                                  photo: photo,
-                                                 shouldDim: shouldDim) else {
+                                                 shouldDimInDarkTheme: shouldDimInDarkTheme) else {
             return owsFailDebug("Failed to create photo wallpaper view")
         }
         self.wallpaperView = wallpaperView
@@ -529,4 +545,10 @@ class BlurButton: UIButton {
         isSelected = !isSelected
         action(isSelected)
     }
+}
+
+// MARK: -
+
+extension PreviewWallpaperViewController: MockConversationDelegate {
+    var mockConversationViewWidth: CGFloat { self.view.width }
 }

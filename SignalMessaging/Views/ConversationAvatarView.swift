@@ -370,7 +370,6 @@ public class ConversationAvatarView: AvatarImageView {
             switch content {
             case .contact(let contactThread):
                 return buildContactAvatar(address: contactThread.contactAddress,
-                                          conversationColorName: contactThread.conversationColorName,
                                           diameter: diameter,
                                           localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
@@ -379,10 +378,7 @@ public class ConversationAvatarView: AvatarImageView {
                                         diameter: diameter,
                                         transaction: transaction)
             case .unknownContact(let contactAddress):
-                let conversationColorName = TSContactThread.conversationColorName(forContactAddress: contactAddress,
-                                                                                  transaction: transaction)
                 return buildContactAvatar(address: contactAddress,
-                                          conversationColorName: conversationColorName,
                                           diameter: diameter,
                                           localUserDisplayMode: configuration.localUserDisplayMode,
                                           transaction: transaction)
@@ -402,12 +398,10 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     private static func buildContactAvatar(address: SignalServiceAddress,
-                                           conversationColorName: ConversationColorName,
                                            diameter: UInt,
                                            localUserDisplayMode: LocalUserDisplayMode,
                                            transaction: SDSAnyReadTransaction) -> UIImage? {
         let builder = OWSContactAvatarBuilder(address: address,
-                                              colorName: conversationColorName,
                                               diameter: diameter,
                                               localUserDisplayMode: localUserDisplayMode,
                                               transaction: transaction)

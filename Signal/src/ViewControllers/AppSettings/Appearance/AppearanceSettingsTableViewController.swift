@@ -35,12 +35,12 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
             self.navigationController?.pushViewController(vc, animated: true)
         })
         firstSection.add(OWSTableItem.disclosureItem(
-            withText: NSLocalizedString("SETTINGS_ITEM_WALLPAPER",
-                                        comment: "Label for settings view that allows user to change the wallpaper."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "wallpaper")
+            withText: NSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
+                                        comment: "Label for settings view that allows user to change the chat color and wallpaper."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "color_and_wallpaper")
         ) { [weak self] in
             guard let self = self else { return }
-            let vc = WallpaperSettingsViewController()
+            let vc = ColorAndWallpaperSettingsViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         })
 

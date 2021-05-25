@@ -42,7 +42,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
-@property (nonatomic, readonly) NSCache<SignalServiceAddress *, NSString *> *colorNameCache;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -62,7 +61,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     // TODO: We need to configure the limits of this cache.
     _avatarCachePrivate = [ImageCache new];
-    _colorNameCache = [NSCache new];
 
     _allContacts = @[];
     _allContactsMap = @{};
@@ -899,26 +897,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     return addressLabel.filterStringForDisplay;
-}
-
-- (void)clearColorNameCache
-{
-    [self.colorNameCache removeAllObjects];
-}
-
-- (ConversationColorName)conversationColorNameForAddress:(SignalServiceAddress *)address
-                                             transaction:(SDSAnyReadTransaction *)transaction
-{
-    _Nullable ConversationColorName cachedColorName = [self.colorNameCache objectForKey:address];
-    if (cachedColorName != nil) {
-        return cachedColorName;
-    }
-
-    ConversationColorName colorName = [TSContactThread conversationColorNameForContactAddress:address
-                                                                                  transaction:transaction];
-    [self.colorNameCache setObject:colorName forKey:address];
-
-    return colorName;
 }
 
 - (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2

@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) SignalServiceAddress *address;
 @property (nonatomic, readonly, nullable) NSPersonNameComponents *contactNameComponents;
-@property (nonatomic, readonly) ConversationColorName colorName;
+@property (nonatomic, readonly) UIColor *avatarColor;
 @property (nonatomic, readonly) NSUInteger diameter;
 @property (nonatomic, readonly) LocalUserDisplayMode localUserDisplayMode;
 
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAddress:(nullable SignalServiceAddress *)address
                  nameComponents:(nullable NSPersonNameComponents *)nameComponents
-                      colorName:(ConversationColorName)colorName
+                    avatarColor:(UIColor *)avatarColor
                        diameter:(NSUInteger)diameter
            localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
 {
@@ -38,11 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssertDebug(colorName.length > 0);
-
     _address = address;
     _contactNameComponents = nameComponents;
-    _colorName = colorName;
+    _avatarColor = avatarColor;
     _diameter = diameter;
     _localUserDisplayMode = localUserDisplayMode;
 
@@ -56,10 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
-                      colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
            localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
 {
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     // Components for avatar initials.
     __block NSPersonNameComponents *_Nullable nameComponents;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -67,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     return [self initWithAddress:address
                   nameComponents:nameComponents
-                       colorName:colorName
+                     avatarColor:avatarColor
                         diameter:diameter
             localUserDisplayMode:localUserDisplayMode];
 }
@@ -80,14 +78,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
-                      colorName:(ConversationColorName)colorName
                        diameter:(NSUInteger)diameter
            localUserDisplayMode:(LocalUserDisplayMode)localUserDisplayMode
                     transaction:(SDSAnyReadTransaction *)transaction
 {
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     return [self initWithAddress:address
                   nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
-                       colorName:colorName
+                     avatarColor:avatarColor
                         diameter:diameter
             localUserDisplayMode:localUserDisplayMode];
 }
@@ -96,10 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
                                       colorSeed:(NSString *)colorSeed
                                        diameter:(NSUInteger)diameter
 {
-    ConversationColorName colorName = [TSThread stableColorNameForNewConversationWithString:colorSeed];
+    UIColor *avatarColor = [ChatColors avatarColorForSeed:colorSeed];
     return [self initWithAddress:nil
                   nameComponents:nonSignalNameComponents
-                       colorName:colorName
+                     avatarColor:avatarColor
                         diameter:diameter
             localUserDisplayMode:OWSContactAvatarBuilder.defaultLocalUserDisplayMode];
 }
@@ -111,12 +109,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
     SignalServiceAddress *address = TSAccountManager.localAddress;
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     __block OWSContactAvatarBuilder *instance;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         instance = [self initWithAddress:address
                           nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address
                                                                                transaction:transaction]
-                               colorName:ConversationColorNameDefault
+                             avatarColor:avatarColor
                                 diameter:diameter
                     localUserDisplayMode:localUserDisplayMode];
     }];
@@ -131,9 +130,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(TSAccountManager.localAddress.isValid);
 
     SignalServiceAddress *address = TSAccountManager.localAddress;
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     return [self initWithAddress:address
                   nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
-                       colorName:ConversationColorNameDefault
+                     avatarColor:avatarColor
                         diameter:diameter
             localUserDisplayMode:localUserDisplayMode];
 }
@@ -142,12 +142,11 @@ NS_ASSUME_NONNULL_BEGIN
                                           diameter:(NSUInteger)diameter
                                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    ConversationColorName color = [self.contactsManager conversationColorNameForAddress:address
-                                                                            transaction:transaction];
+    UIColor *avatarColor = [ChatColors avatarColorForAddress:address];
     OWSContactAvatarBuilder *avatarBuilder =
         [[self alloc] initWithAddress:address
                        nameComponents:[OWSContactAvatarBuilder nameComponentsForAddress:address transaction:transaction]
-                            colorName:color
+                          avatarColor:avatarColor
                              diameter:diameter
                  localUserDisplayMode:OWSContactAvatarBuilder.defaultLocalUserDisplayMode];
     return [avatarBuilder buildWithTransaction:transaction];
@@ -195,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
-    UIImage *image = [self noteToSelfImageWithConversationColorName:self.colorName diameter:(CGFloat)self.diameter];
+    UIImage *image = [self noteToSelfImageWithDiameter:(CGFloat)self.diameter];
     if (!image) {
         OWSFailDebug(@"Could not generate avatar.");
         return nil;
@@ -251,9 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
-    UIColor *color = [OWSConversationColor conversationColorOrDefaultForColorName:self.colorName].themeColor;
-    OWSAssertDebug(color);
-
+    UIColor *color = self.avatarColor;
     UIImage *_Nullable image;
     if (self.contactInitials.length == 0) {
         // We don't have a name for this contact, so we can't make an "initials" image.
@@ -292,11 +289,10 @@ NS_ASSUME_NONNULL_BEGIN
     return image;
 }
 
-- (nullable UIImage *)noteToSelfImageWithConversationColorName:(ConversationColorName)conversationColorName
-                                                      diameter:(CGFloat)diameter
+- (nullable UIImage *)noteToSelfImageWithDiameter:(CGFloat)diameter
 {
     UIImage *iconImage = [[UIImage imageNamed:@"note-112"] asTintedImageWithColor:UIColor.whiteColor];
-    UIColor *backgroundColor = [OWSConversationColor conversationColorOrDefaultForColorName:conversationColorName].themeColor;
+    UIColor *backgroundColor = self.avatarColor;
 
     CGFloat circleWidth = diameter;
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(circleWidth, circleWidth), NO, 0.0);

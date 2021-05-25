@@ -38,8 +38,7 @@ public extension ConversationListViewController {
         avatarView.configure(address: address, transaction: transaction)
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
-                                                      displayName: userName,
-                                                      conversationColorName: contactThread.conversationColorName)
+                                                      displayName: userName)
 
         configureUnreadPaymentsBanner(paymentsReminderView,
                                       title: title,

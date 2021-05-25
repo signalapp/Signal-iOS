@@ -183,6 +183,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let linkifyWithNSDataDetector = false
 
+    @objc
+    public static let chatColors = build.includes(.qa)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -420,9 +423,6 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let fakeLinkedDevices = false
-
-    @objc
-    public static let shouldShowColorPicker = false
 
     @objc
     public static let paymentsOnlyInContactThreads = true

@@ -74,6 +74,10 @@ public enum ThemeIcon: UInt {
     case composeInviteLarge
     case compose32
 
+    case trash24
+    case copy24
+    case color24
+
     case checkCircle
     case message
     case audioCall
@@ -292,6 +296,13 @@ public extension Theme {
             return "invite-outline-256"
         case .compose32:
             return isDarkThemeEnabled ? "compose-solid-32" : "compose-outline-32"
+
+        case .trash24:
+            return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
+        case .copy24:
+            return isDarkThemeEnabled ? "copy-solid-24" : "ic_copy"
+        case .color24:
+            return isDarkThemeEnabled ? "color-solid-24" : "color-outline-24"
 
         case .checkCircle:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"

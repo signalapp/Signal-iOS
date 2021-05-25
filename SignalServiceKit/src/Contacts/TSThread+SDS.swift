@@ -141,7 +141,7 @@ extension TSThread {
         case .contactThread:
 
             let uniqueId: String = record.uniqueId
-            let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
+            let conversationColorNameObsolete: String = record.conversationColorName
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
@@ -163,7 +163,7 @@ extension TSThread {
 
             return TSContactThread(grdbId: recordId,
                                    uniqueId: uniqueId,
-                                   conversationColorName: conversationColorName,
+                                   conversationColorNameObsolete: conversationColorNameObsolete,
                                    creationDate: creationDate,
                                    isArchivedObsolete: isArchivedObsolete,
                                    isMarkedUnreadObsolete: isMarkedUnreadObsolete,
@@ -183,7 +183,7 @@ extension TSThread {
         case .groupThread:
 
             let uniqueId: String = record.uniqueId
-            let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
+            let conversationColorNameObsolete: String = record.conversationColorName
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
@@ -204,7 +204,7 @@ extension TSThread {
 
             return TSGroupThread(grdbId: recordId,
                                  uniqueId: uniqueId,
-                                 conversationColorName: conversationColorName,
+                                 conversationColorNameObsolete: conversationColorNameObsolete,
                                  creationDate: creationDate,
                                  isArchivedObsolete: isArchivedObsolete,
                                  isMarkedUnreadObsolete: isMarkedUnreadObsolete,
@@ -222,7 +222,7 @@ extension TSThread {
         case .thread:
 
             let uniqueId: String = record.uniqueId
-            let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
+            let conversationColorNameObsolete: String = record.conversationColorName
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchivedObsolete: Bool = record.isArchived
@@ -241,7 +241,7 @@ extension TSThread {
 
             return TSThread(grdbId: recordId,
                             uniqueId: uniqueId,
-                            conversationColorName: conversationColorName,
+                            conversationColorNameObsolete: conversationColorNameObsolete,
                             creationDate: creationDate,
                             isArchivedObsolete: isArchivedObsolete,
                             isMarkedUnreadObsolete: isMarkedUnreadObsolete,
@@ -309,7 +309,7 @@ extension TSThread: DeepCopyable {
         if let modelToCopy = self as? TSGroupThread {
             assert(type(of: modelToCopy) == TSGroupThread.self)
             let uniqueId: String = modelToCopy.uniqueId
-            let conversationColorName: ConversationColorName = modelToCopy.conversationColorName
+            let conversationColorNameObsolete: String = modelToCopy.conversationColorNameObsolete
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
@@ -340,7 +340,7 @@ extension TSThread: DeepCopyable {
 
             return TSGroupThread(grdbId: id,
                                  uniqueId: uniqueId,
-                                 conversationColorName: conversationColorName,
+                                 conversationColorNameObsolete: conversationColorNameObsolete,
                                  creationDate: creationDate,
                                  isArchivedObsolete: isArchivedObsolete,
                                  isMarkedUnreadObsolete: isMarkedUnreadObsolete,
@@ -359,7 +359,7 @@ extension TSThread: DeepCopyable {
         if let modelToCopy = self as? TSContactThread {
             assert(type(of: modelToCopy) == TSContactThread.self)
             let uniqueId: String = modelToCopy.uniqueId
-            let conversationColorName: ConversationColorName = modelToCopy.conversationColorName
+            let conversationColorNameObsolete: String = modelToCopy.conversationColorNameObsolete
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
@@ -390,7 +390,7 @@ extension TSThread: DeepCopyable {
 
             return TSContactThread(grdbId: id,
                                    uniqueId: uniqueId,
-                                   conversationColorName: conversationColorName,
+                                   conversationColorNameObsolete: conversationColorNameObsolete,
                                    creationDate: creationDate,
                                    isArchivedObsolete: isArchivedObsolete,
                                    isMarkedUnreadObsolete: isMarkedUnreadObsolete,
@@ -412,7 +412,7 @@ extension TSThread: DeepCopyable {
             let modelToCopy = self
             assert(type(of: modelToCopy) == TSThread.self)
             let uniqueId: String = modelToCopy.uniqueId
-            let conversationColorName: ConversationColorName = modelToCopy.conversationColorName
+            let conversationColorNameObsolete: String = modelToCopy.conversationColorNameObsolete
             let creationDate: Date? = modelToCopy.creationDate
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
@@ -440,7 +440,7 @@ extension TSThread: DeepCopyable {
 
             return TSThread(grdbId: id,
                             uniqueId: uniqueId,
-                            conversationColorName: conversationColorName,
+                            conversationColorNameObsolete: conversationColorNameObsolete,
                             creationDate: creationDate,
                             isArchivedObsolete: isArchivedObsolete,
                             isMarkedUnreadObsolete: isMarkedUnreadObsolete,
@@ -468,7 +468,7 @@ extension TSThreadSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
     // Properties
-    static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString)
+    static let conversationColorNameObsoleteColumn = SDSColumnMetadata(columnName: "conversationColorNameObsolete", columnType: .unicodeString)
     static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true)
     static let isArchivedObsoleteColumn = SDSColumnMetadata(columnName: "isArchivedObsolete", columnType: .int)
     static let lastInteractionRowIdColumn = SDSColumnMetadata(columnName: "lastInteractionRowId", columnType: .int64)
@@ -494,7 +494,7 @@ extension TSThreadSerializer {
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
-        conversationColorNameColumn,
+        conversationColorNameObsoleteColumn,
         creationDateColumn,
         isArchivedObsoleteColumn,
         lastInteractionRowIdColumn,
@@ -920,7 +920,7 @@ class TSThreadSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Properties
-        let conversationColorName: String = model.conversationColorName.rawValue
+        let conversationColorName: String = model.conversationColorNameObsolete
         let creationDate: Double? = archiveOptionalDate(model.creationDate)
         let isArchived: Bool = model.isArchivedObsolete
         let lastInteractionRowId: Int64 = model.lastInteractionRowId

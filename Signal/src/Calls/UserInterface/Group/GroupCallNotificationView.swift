@@ -240,13 +240,8 @@ private class BannerView: UIView {
             avatarView.autoVCenterInSuperview()
             avatarView.autoMatch(.height, to: .width, of: avatarView)
 
-            let conversationColorName = databaseStorage.uiRead { transaction in
-                return self.contactsManager.conversationColorName(for: address, transaction: transaction)
-            }
-
             let avatarBuilder = OWSContactAvatarBuilder(
                 address: address,
-                colorName: conversationColorName,
                 diameter: 40,
                 localUserDisplayMode: .asUser
             )

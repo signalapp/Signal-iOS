@@ -18,6 +18,8 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 
     func updateScrollingContent()
 
+    func chatColorDidChange()
+
     var isScrolledToBottom: Bool { get }
 
     var isScrollNearTopOfLoadWindow: Bool { get }
@@ -155,6 +157,14 @@ public class CVLoadCoordinator: NSObject {
                                                selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
                                                name: OWSContactsManager.skipGroupAvatarBlurDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(chatColorSettingDidChange),
+                                               name: ChatColors.chatColorSettingDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(chatColorsDidChange),
+                                               name: ChatColors.chatColorsDidChange,
+                                               object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
@@ -250,6 +260,23 @@ public class CVLoadCoordinator: NSObject {
             return
         }
         enqueueReloadWithoutCaches()
+    }
+
+    @objc
+    private func chatColorSettingDidChange(_ notification: NSNotification) {
+        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorSettingDidChangeThreadUniqueIdKey] as? String else {
+            owsFailDebug("Missing threadUniqueId.")
+            return
+        }
+        guard threadUniqueId == thread.uniqueId else {
+            return
+        }
+        delegate?.chatColorDidChange()
+    }
+
+    @objc
+    private func chatColorsDidChange(_ notification: NSNotification) {
+        delegate?.chatColorDidChange()
     }
 
     @objc

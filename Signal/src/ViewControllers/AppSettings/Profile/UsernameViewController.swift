@@ -137,8 +137,10 @@ class UsernameViewController: OWSTableViewController2 {
             .color(Theme.secondaryTextAndIconColor)
         )
 
-        section.add(.init(
-            customCell: nameCell(textField: self.usernameTextField),
+        section.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            return self.nameCell(textField: self.usernameTextField)
+        },
             actionBlock: { [weak self] in
                 self?.usernameTextField.becomeFirstResponder()
             }

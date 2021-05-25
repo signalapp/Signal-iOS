@@ -147,6 +147,14 @@ public extension NSObject {
     static var paymentsImpl: PaymentsImpl {
         SSKEnvironment.shared.paymentsRef as! PaymentsImpl
     }
+
+    var chatColors: ChatColors {
+        Environment.shared.chatColorsRef
+    }
+
+    static var chatColors: ChatColors {
+        Environment.shared.chatColorsRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -290,6 +298,14 @@ public extension Dependencies {
 
     static var paymentsImpl: PaymentsImpl {
         SSKEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
+
+    var chatColors: ChatColors {
+        Environment.shared.chatColorsRef
+    }
+
+    static var chatColors: ChatColors {
+        Environment.shared.chatColorsRef
     }
 }
 

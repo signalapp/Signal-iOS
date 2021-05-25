@@ -142,23 +142,25 @@ public extension OWSTableItem {
                      accessoryText: String? = nil,
                      accessoryType: UITableViewCell.AccessoryType = .none,
                      accessoryImage: UIImage? = nil,
+                     accessoryView: UIView? = nil,
                      accessibilityIdentifier: String,
                      actionBlock: (() -> Void)? = nil) -> OWSTableItem {
 
-        OWSTableItem(
-            customCell: OWSTableItem.buildCellWithAccessoryLabel(
-                icon: icon,
-                tintColor: tintColor,
-                itemName: name,
-                maxItemNameLines: maxNameLines,
-                textColor: textColor,
-                accessoryText: accessoryText,
-                accessoryType: accessoryType,
-                accessoryImage: accessoryImage,
-                accessibilityIdentifier: accessibilityIdentifier
-            ),
-            actionBlock: actionBlock
-        )
+        OWSTableItem(customCellBlock: {
+            OWSTableItem.buildCellWithAccessoryLabel(
+            icon: icon,
+            tintColor: tintColor,
+            itemName: name,
+            maxItemNameLines: maxNameLines,
+            textColor: textColor,
+            accessoryText: accessoryText,
+            accessoryType: accessoryType,
+            accessoryImage: accessoryImage,
+            accessoryView: accessoryView,
+            accessibilityIdentifier: accessibilityIdentifier
+            )
+        },
+                     actionBlock: actionBlock)
     }
 
     @available(swift, obsoleted: 1.0)
@@ -185,6 +187,7 @@ public extension OWSTableItem {
                                             accessoryText: String? = nil,
                                             accessoryType: UITableViewCell.AccessoryType = .disclosureIndicator,
                                             accessoryImage: UIImage? = nil,
+                                            accessoryView: UIView? = nil,
                                             accessibilityIdentifier: String? = nil) -> UITableViewCell {
         buildIconNameCell(icon: icon,
                           tintColor: tintColor,
@@ -194,6 +197,7 @@ public extension OWSTableItem {
                           accessoryText: accessoryText,
                           accessoryType: accessoryType,
                           accessoryImage: accessoryImage,
+                          accessoryView: accessoryView,
                           accessibilityIdentifier: accessibilityIdentifier)
     }
 
@@ -207,6 +211,7 @@ public extension OWSTableItem {
                                   accessoryTextColor: UIColor? = nil,
                                   accessoryType: UITableViewCell.AccessoryType = .none,
                                   accessoryImage: UIImage? = nil,
+                                  accessoryView: UIView? = nil,
                                   customColor: UIColor? = nil,
                                   accessibilityIdentifier: String? = nil) -> UITableViewCell {
 
@@ -261,7 +266,11 @@ public extension OWSTableItem {
             nameLabel.textColor = customColor
         }
 
-        if let accessoryText = accessoryText {
+        if let accessoryView = accessoryView {
+            owsAssertDebug(accessoryText == nil)
+
+            subviews.append(accessoryView)
+        } else if let accessoryText = accessoryText {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
             accessoryLabel.textColor = accessoryTextColor ?? (Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45)
@@ -283,6 +292,7 @@ public extension OWSTableItem {
         }
 
         let contentRow = UIStackView(arrangedSubviews: subviews)
+        contentRow.axis = .horizontal
         contentRow.alignment = .center
         contentRow.spacing = self.iconSpacing
         cell.contentView.addSubview(contentRow)
@@ -391,15 +401,5 @@ public extension OWSTableSection {
                   header: header(),
                   items: items,
                   footer: footer())
-    }
-}
-
-public extension OWSTableItem {
-    convenience init(
-        customCell: UITableViewCell,
-        rowHeight: CGFloat = UITableView.automaticDimension,
-        actionBlock: OWSTableActionBlock? = nil) {
-
-        self.init(customCell: customCell, customRowHeight: rowHeight, actionBlock: actionBlock)
     }
 }

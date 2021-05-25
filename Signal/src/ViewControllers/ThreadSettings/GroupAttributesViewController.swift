@@ -243,8 +243,7 @@ extension GroupAttributesViewController: OWSNavigationView {
                                                                          comment: "The alert title if user tries to exit update group view without saving changes."),
                                                 message: NSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                                                           comment: "The alert message if user tries to exit update group view without saving changes."))
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ALERT_SAVE",
-                                                                         comment: "The label for the 'save' button in action sheets."),
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.saveButton,
                                                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "save"),
                                                 style: .default) { _ in
                                                     saveBlock()

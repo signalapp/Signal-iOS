@@ -57,8 +57,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         let avatarSection = OWSTableSection()
         avatarSection.hasBackground = false
-        avatarSection.add(.init(
-            customCell: avatarCell(),
+        avatarSection.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            return self.avatarCell()
+        },
             actionBlock: { [weak self] in
                 self?.avatarViewHelper.showChangeAvatarUI()
             }

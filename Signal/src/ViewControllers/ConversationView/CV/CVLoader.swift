@@ -244,10 +244,12 @@ public class CVLoader: NSObject {
                                                  thread: TSThread,
                                                  containerView: UIView,
                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
+        let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
         let conversationStyle = ConversationStyle(type: .`default`,
                                                   thread: thread,
                                                   viewWidth: containerView.width,
-                                                  hasWallpaper: false)
+                                                  hasWallpaper: false,
+                                                  chatColor: chatColor)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,

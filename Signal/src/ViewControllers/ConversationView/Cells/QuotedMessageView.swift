@@ -44,6 +44,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private let quotedImageView = CVImageView()
     private let remotelySourcedContentIconView = CVImageView()
 
+    // Background
+    private let bubbleView = ManualLayoutViewWithLayer(name: "bubbleView")
+    private let chatColorView = CVColorOrGradientView()
+    private let tintView = ManualLayoutViewWithLayer(name: "tintView")
+
     static func stateForConversation(quotedReplyModel: OWSQuotedReplyModel,
                                      displayableQuotedText: DisplayableText?,
                                      conversationStyle: ConversationStyle,
@@ -95,6 +100,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var displayableQuotedText: DisplayableText? { state.displayableQuotedText }
         var conversationStyle: ConversationStyle { state.conversationStyle }
         var isOutgoing: Bool { state.isOutgoing }
+        var isIncoming: Bool { !isOutgoing }
         var isForPreview: Bool { state.isForPreview }
         var quotedAuthorName: String { state.quotedAuthorName }
 
@@ -187,10 +193,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var highlightColor: UIColor {
-            let isQuotingSelf = quotedReplyModel.authorAddress.isLocalAddress
-            return (isQuotingSelf
-                        ? conversationStyle.bubbleColor(isIncoming: false)
-                        : conversationStyle.quotingSelfHighlightColor())
+            conversationStyle.quotedReplyHighlightColor()
         }
 
         var quotedAuthorLabelConfig: CVLabelConfig {
@@ -292,12 +295,30 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     }
 
     private func createBubbleView(sharpCorners: OWSDirectionalRectCorner,
-                                  conversationStyle: ConversationStyle) -> ManualLayoutView {
+                                  conversationStyle: ConversationStyle,
+                                  configurator: Configurator,
+                                  componentDelegate: CVComponentDelegate) -> ManualLayoutView {
         let sharpCornerRadius: CGFloat = 4
         let wideCornerRadius: CGFloat = 12
 
-        let bubbleView = ManualLayoutViewWithLayer(name: "bubbleView")
-        bubbleView.backgroundColor = conversationStyle.quotedReplyBubbleColor
+        // Background
+        chatColorView.configure(value: conversationStyle.bubbleChatColorOutgoing,
+                                referenceView: componentDelegate.view)
+        bubbleView.addSubviewToFillSuperviewEdges(chatColorView)
+        tintView.backgroundColor = (conversationStyle.isDarkThemeEnabled
+                                        ? UIColor(white: 0, alpha: 0.4)
+                                        : UIColor(white: 1, alpha: 0.6))
+        bubbleView.addSubviewToFillSuperviewMargins(tintView)
+        // For incoming messages, manipulate leading margin
+        // to render stripe.
+        bubbleView.layoutMargins = UIEdgeInsets(top: 0,
+                                                leading: (configurator.isIncoming
+                                                            ? configurator.stripeThickness
+                                                            : 0),
+                                                bottom: 0,
+                                                trailing: 0)
+
+        // Mask & Rounding
         if sharpCorners.isEmpty || sharpCorners.contains(.allCorners) {
             bubbleView.layer.maskedCorners = .all
             bubbleView.layer.cornerRadius = sharpCorners.isEmpty ? wideCornerRadius : sharpCornerRadius
@@ -322,11 +343,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             }
             bubbleView.layer.mask = maskLayer
         }
+
         return bubbleView
     }
 
     public func configureForRendering(state: State,
                                       delegate: QuotedMessageViewDelegate?,
+                                      componentDelegate: CVComponentDelegate,
                                       sharpCorners: OWSDirectionalRectCorner,
                                       cellMeasurement: CVCellMeasurement) {
         self.state = state
@@ -338,10 +361,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         var hStackSubviews = [UIView]()
 
-        if configurator.isForPreview {
-            stripeView.backgroundColor = conversationStyle.quotedReplyStripeColor(isIncoming: true)
+        if configurator.isForPreview || configurator.isOutgoing {
+            stripeView.backgroundColor = .ows_white
         } else {
-            stripeView.backgroundColor = conversationStyle.quotedReplyStripeColor(isIncoming: !configurator.isOutgoing)
+            // We render the stripe by manipulating the chat color overlay.
+            stripeView.backgroundColor = .clear
         }
         hStackSubviews.append(stripeView)
 
@@ -477,7 +501,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                               subviews: outerVStackSubviews)
 
         let bubbleView = createBubbleView(sharpCorners: sharpCorners,
-                                          conversationStyle: conversationStyle)
+                                          conversationStyle: conversationStyle,
+                                          configurator: configurator,
+                                          componentDelegate: componentDelegate)
         bubbleView.addSubviewToFillSuperviewEdges(outerVStack)
         bubbleView.clipsToBounds = true
 
@@ -626,6 +652,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                     failedThumbnailDownloadAttachmentPointer: thumbnailAttachmentPointer)
     }
 
+    public func updateAppearance() {
+        chatColorView.updateAppearance()
+    }
+
     public override func reset() {
         super.reset()
 
@@ -642,5 +672,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         quoteContentSourceLabel.text = nil
         quotedImageView.image = nil
         remotelySourcedContentIconView.image = nil
+
+        bubbleView.reset()
+        bubbleView.removeFromSuperview()
+        chatColorView.reset()
+        chatColorView.removeFromSuperview()
+        tintView.reset()
+        tintView.removeFromSuperview()
     }
 }

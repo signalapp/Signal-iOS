@@ -202,7 +202,6 @@ class GroupInviteLinksActionSheet: ActionSheetController {
 
     private func loadDefaultContent() {
         avatarView.image = OWSGroupAvatarBuilder.defaultAvatar(forGroupId: groupV2ContextInfo.groupId,
-                                                               conversationColorName: ConversationColorName.default.rawValue,
                                                                diameter: Self.avatarSize)
         groupTitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
                                                  comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet.")
@@ -255,7 +254,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             memberCount: Int(groupInviteLinkPreview.memberCount)
         )
         if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay?.nilIfEmpty {
-            groupDescriptionPreview.descriptionText = groupInviteLinkPreview.descriptionText
+            groupDescriptionPreview.descriptionText = descriptionText
             groupDescriptionPreview.groupName = groupName
             groupDescriptionPreview.isHidden = false
         }

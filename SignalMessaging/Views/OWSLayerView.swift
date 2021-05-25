@@ -12,9 +12,6 @@ open class OWSLayerView: UIView {
     @objc
     public var layoutCallback: (UIView) -> Void
 
-    public typealias TapBlock = () -> Void
-    private var tapBlock: TapBlock?
-
     @objc
     public init() {
         self.layoutCallback = { (_) in
@@ -105,6 +102,11 @@ open class OWSLayerView: UIView {
         }
     }
 
+    // MARK: - Tap
+
+    public typealias TapBlock = () -> Void
+    private var tapBlock: TapBlock?
+
     public func addTapGesture(_ tapBlock: @escaping TapBlock) {
         self.tapBlock = tapBlock
         isUserInteractionEnabled = true
@@ -120,12 +122,36 @@ open class OWSLayerView: UIView {
         tapBlock()
     }
 
+    // MARK: - Long Press
+
+    public typealias LongPressBlock = () -> Void
+    private var longPressBlock: LongPressBlock?
+
+    public func addLongPressGesture(_ longPressBlock: @escaping LongPressBlock) {
+        self.longPressBlock = longPressBlock
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPress)))
+    }
+
+    @objc
+    private func didLongPress() {
+        guard let longPressBlock = longPressBlock else {
+            owsFailDebug("Missing longPressBlock.")
+            return
+        }
+        longPressBlock()
+    }
+
+    // MARK: - 
+
     public func reset() {
         removeAllSubviews()
 
         self.layoutCallback = { _ in }
 
         self.tapBlock = nil
+        self.longPressBlock = nil
+
         if let gestureRecognizers = self.gestureRecognizers {
             for gestureRecognizer in gestureRecognizers {
                 removeGestureRecognizer(gestureRecognizer)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSChunkedOutputStream.h"
@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
                     recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
                        profileKeyData:(nullable NSData *)profileKeyData
                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                conversationColorName:(NSString *)conversationColorName
     disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
                            isArchived:(nullable NSNumber *)isArchived
                         inboxPosition:(nullable NSNumber *)inboxPosition;
