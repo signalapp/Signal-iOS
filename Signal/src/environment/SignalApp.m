@@ -229,6 +229,19 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
 + (void)resetAppData
 {
+    OWSLogInfo(@"");
+
+    UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
+    [ModalActivityIndicatorViewController
+        presentFromViewController:fromVC
+                        canCancel:YES
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [SignalApp performResetAppData];
+                  }];
+}
+
++ (void)performResetAppData
+{
     // This _should_ be wiped out below.
     OWSLogInfo(@"");
     [DDLog flushLog];
