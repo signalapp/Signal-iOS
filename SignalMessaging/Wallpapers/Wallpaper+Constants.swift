@@ -101,14 +101,14 @@ extension Wallpaper {
             // Spec name: Sunset
             return .themedGradient(lightGradientColor1: UIColor(rgbHex: 0xF3DC47).asOWSColor,
                                    lightGradientColor2: UIColor(rgbHex: 0xE44040).asOWSColor,
-                                   darkGradientColor1: UIColor(rgbHex: 0xC1AA15).asOWSColor,
+                                   darkGradientColor1: UIColor(rgbHex: 0xE6CA0F).asOWSColor,
                                    darkGradientColor2: UIColor(rgbHex: 0x971111).asOWSColor,
                                    angleRadians: parseAngleDegreesFromSpec(168))
         case .woodsmokeGradient:
             // Spec name: Noir
-            return .themedGradient(lightGradientColor1: UIColor(rgbHex: 0x16161D).asOWSColor,
-                                   lightGradientColor2: UIColor(rgbHex: 0x6E6E87).asOWSColor,
-                                   darkGradientColor1: UIColor(rgbHex: 0x0B0B0E).asOWSColor,
+            return .themedGradient(lightGradientColor1: UIColor(rgbHex: 0x434356).asOWSColor,
+                                   lightGradientColor2: UIColor(rgbHex: 0xA5A5B6).asOWSColor,
+                                   darkGradientColor1: UIColor(rgbHex: 0x121217).asOWSColor,
                                    darkGradientColor2: UIColor(rgbHex: 0x535365).asOWSColor,
                                    angleRadians: parseAngleDegreesFromSpec(180))
         case .coralGradient:
@@ -122,15 +122,15 @@ extension Wallpaper {
             // Spec name: Aqua
             return .themedGradient(lightGradientColor1: UIColor(rgbHex: 0x0093E9).asOWSColor,
                                    lightGradientColor2: UIColor(rgbHex: 0x80D0C7).asOWSColor,
-                                   darkGradientColor1: UIColor(rgbHex: 0x005485).asOWSColor,
-                                   darkGradientColor2: UIColor(rgbHex: 0x3DA498).asOWSColor,
+                                   darkGradientColor1: UIColor(rgbHex: 0x006199).asOWSColor,
+                                   darkGradientColor2: UIColor(rgbHex: 0x3FAB9F).asOWSColor,
                                    angleRadians: parseAngleDegreesFromSpec(180))
         case .roseGradient:
             // Spec name: Iridescent
-            return .themedGradient(lightGradientColor1: UIColor(rgbHex: 0xF04CE6).asOWSColor,
-                                   lightGradientColor2: UIColor(rgbHex: 0x0E2FDD).asOWSColor,
+            return .themedGradient(lightGradientColor1: UIColor(rgbHex: 0xED82E6).asOWSColor,
+                                   lightGradientColor2: UIColor(rgbHex: 0x3753E6).asOWSColor,
                                    darkGradientColor1: UIColor(rgbHex: 0xAF0EA4).asOWSColor,
-                                   darkGradientColor2: UIColor(rgbHex: 0x1932B8).asOWSColor,
+                                   darkGradientColor2: UIColor(rgbHex: 0x142790).asOWSColor,
                                    angleRadians: parseAngleDegreesFromSpec(192))
         case .aquamarineGradient:
             // Spec name: Monstera
