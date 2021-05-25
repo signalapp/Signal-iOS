@@ -698,7 +698,7 @@ public extension PaymentsImpl {
     func maximumPaymentAmount() -> Promise<TSPaymentAmount> {
         return firstly(on: .global()) { () -> Promise<MobileCoinAPI> in
             self.getMobileCoinAPI()
-        }.map(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> TSPaymentAmount in
+        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<TSPaymentAmount> in
             try mobileCoinAPI.maxTransactionAmount()
         }
     }
@@ -710,7 +710,7 @@ public extension PaymentsImpl {
 
         return firstly(on: .global()) { () -> Promise<MobileCoinAPI> in
             self.getMobileCoinAPI()
-        }.map(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> TSPaymentAmount in
+        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<TSPaymentAmount> in
             try mobileCoinAPI.getEstimatedFee(forPaymentAmount: paymentAmount)
         }
     }
