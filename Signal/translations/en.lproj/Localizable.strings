@@ -3466,6 +3466,9 @@
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Enter your phone number";
 
+/* Title of the 'onboarding phone number' view when the user is re-registering. */
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Your Phone Number";
+
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
 
@@ -4419,12 +4422,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
-
-/* Message for error alert indicating that re-registration failed because the account did not match. */
-"REREGISTRATION_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To re-register with a different account, you must first reset this device.";
-
-/* Title for error alert indicating that re-registration failed because the account did not match. */
-"REREGISTRATION_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";

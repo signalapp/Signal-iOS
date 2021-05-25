@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Methods
 
 + (void)resetAppData;
++ (void)resetAppDataWithUI;
 
 - (void)showOnboardingView:(OnboardingController *)onboardingController;
 - (void)showConversationSplitView;

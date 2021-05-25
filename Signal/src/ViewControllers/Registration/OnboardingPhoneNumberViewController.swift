@@ -97,7 +97,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         if #available(iOS 14, *) {
             field.keyboardType = .numberPad
         } else if #available(iOS 13, *) {
-            field.keyboardType = .numberPad //.numbersAndPunctuation
+            field.keyboardType = .numberPad // .numbersAndPunctuation
         } else {
             field.keyboardType = .numberPad
         }
@@ -149,9 +149,13 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         primaryView.autoPinEdgesToSuperviewEdges()
 
         // Setup subviews and stack views
-        let titleString = NSLocalizedString(
-            "ONBOARDING_PHONE_NUMBER_TITLE",
-            comment: "Title of the 'onboarding phone number' view.")
+        let titleString = (Self.tsAccountManager.isReregistering
+                           ? NSLocalizedString(
+                            "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING",
+                            comment: "Title of the 'onboarding phone number' view when the user is re-registering.")
+                            : NSLocalizedString(
+                                "ONBOARDING_PHONE_NUMBER_TITLE",
+                                comment: "Title of the 'onboarding phone number' view."))
 
         let titleLabel = self.createTitleLabel(text: titleString)
 
@@ -555,6 +559,11 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                 message: NSLocalizedString(
                     "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
                     comment: "Message of alert indicating that users needs to enter a valid phone number to register."))
+            return
+        }
+
+        if Self.tsAccountManager.isReregistering {
+            self.requestVerification(with: OnboardingPhoneNumber(e164: localNumber.toE164(), userInput: phoneNumberText))
             return
         }
 

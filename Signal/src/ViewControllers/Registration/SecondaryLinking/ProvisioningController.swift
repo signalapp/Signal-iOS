@@ -177,7 +177,8 @@ public class ProvisioningController: NSObject {
 
     private static func resetDeviceState() {
         Logger.warn("")
-        SignalApp.resetAppData()
+
+        SignalApp.resetAppDataWithUI()
     }
 
     public func getProvisioningURL() -> Promise<URL> {

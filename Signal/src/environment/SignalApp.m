@@ -227,20 +227,21 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
 #pragma mark - Methods
 
-+ (void)resetAppData
++ (void)resetAppDataWithUI
 {
     OWSLogInfo(@"");
 
-    UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
-    [ModalActivityIndicatorViewController
-        presentFromViewController:fromVC
-                        canCancel:YES
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [SignalApp performResetAppData];
-                  }];
+    DispatchMainThreadSafe(^{
+        UIViewController *fromVC = UIApplication.sharedApplication.frontmostViewController;
+        [ModalActivityIndicatorViewController
+            presentFromViewController:fromVC
+                            canCancel:YES
+                      backgroundBlock:^(
+                          ModalActivityIndicatorViewController *modalActivityIndicator) { [SignalApp resetAppData]; }];
+    });
 }
 
-+ (void)performResetAppData
++ (void)resetAppData
 {
     // This _should_ be wiped out below.
     OWSLogInfo(@"");

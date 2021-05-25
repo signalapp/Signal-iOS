@@ -170,7 +170,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             proceedTitle: NSLocalizedString("PROCEED_BUTTON", comment: ""),
             proceedStyle: .destructive
         ) { _ in
-            SignalApp.resetAppData()
+            SignalApp.resetAppDataWithUI()
         }
     }
 
@@ -186,7 +186,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             proceedTitle: NSLocalizedString("PROCEED_BUTTON", comment: ""),
             proceedStyle: .destructive
         ) { _ in
-            SignalApp.resetAppData()
+            SignalApp.resetAppDataWithUI()
         }
     }
 

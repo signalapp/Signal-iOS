@@ -302,7 +302,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
             TSAccountManager.unregisterTextSecure {
                 // We don't need to stop animating here because "resetAppData" exits the app.
-                SignalApp.resetAppData()
+                SignalApp.resetAppDataWithUI()
             } failure: { error in
                 owsFailDebug("Failed to unregister \(error)")
 
