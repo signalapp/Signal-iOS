@@ -48,7 +48,7 @@ public class ConversationAvatarView: AvatarImageView {
     @objc
     public required init(diameter: UInt,
                          localUserDisplayMode: LocalUserDisplayMode,
-                         shouldLoadAsync: Bool = false) {
+                         shouldLoadAsync: Bool = true) {
         self.configuration = Configuration(diameter: diameter,
                                            localUserDisplayMode: localUserDisplayMode)
         self.shouldLoadAsync = shouldLoadAsync
@@ -63,6 +63,10 @@ public class ConversationAvatarView: AvatarImageView {
 
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
+    }
+
+    deinit {
+        AssertIsOnMainThread()
     }
 
     // MARK: -
