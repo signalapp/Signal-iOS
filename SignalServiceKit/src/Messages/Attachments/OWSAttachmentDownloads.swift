@@ -1272,7 +1272,6 @@ public extension OWSAttachmentDownloads {
         // Use serialQueue to ensure that we only load into memory
         // & decrypt a single attachment at a time.
         return firstly(on: Self.serialQueue) { () -> TSAttachmentStream in
-            let cipherText = try Data(contentsOf: encryptedFileUrl)
             return try autoreleasepool {
                 let attachmentStream = databaseStorage.read { transaction in
                     TSAttachmentStream(pointer: attachmentPointer, transaction: transaction)
