@@ -31,6 +31,11 @@ public class ContactsInputStream {
         var contactDataLength: UInt32 = 0
         try inputStream.decodeSingularUInt32Field(value: &contactDataLength)
 
+        guard contactDataLength > 0 else {
+            owsFailDebug("Empty contactDataLength.")
+            return nil
+        }
+
         var contactData: Data = Data()
         try inputStream.decodeData(value: &contactData, count: Int(contactDataLength))
 
