@@ -399,8 +399,8 @@ public class ChatColors: NSObject, Dependencies {
         )
         static let midnight = ChatColor(
             id: "Midnight",
-            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x52526B).asOWSColor,
-                               gradientColor2: UIColor(rgbHex: 0x105FD5).asOWSColor,
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x2C2C3A).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x787891).asOWSColor,
                                angleRadians: parseAngleDegreesFromSpec(180)),
             isBuiltIn: true,
             creationTimestamp: 14
@@ -415,16 +415,16 @@ public class ChatColors: NSObject, Dependencies {
         )
         static let lagoon = ChatColor(
             id: "Lagoon",
-            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x0975B3).asOWSColor,
-                               gradientColor2: UIColor(rgbHex: 0x1B8377).asOWSColor,
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0x004066).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x32867D).asOWSColor,
                                angleRadians: parseAngleDegreesFromSpec(180)),
             isBuiltIn: true,
             creationTimestamp: 16
         )
         static let fluorescent = ChatColor(
             id: "Fluorescent",
-            setting: .gradient(gradientColor1: UIColor(rgbHex: 0xB418EC).asOWSColor,
-                               gradientColor2: UIColor(rgbHex: 0xA30A99).asOWSColor,
+            setting: .gradient(gradientColor1: UIColor(rgbHex: 0xEC13DD).asOWSColor,
+                               gradientColor2: UIColor(rgbHex: 0x1B36C6).asOWSColor,
                                angleRadians: parseAngleDegreesFromSpec(192)),
             isBuiltIn: true,
             creationTimestamp: 17
