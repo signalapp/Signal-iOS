@@ -227,6 +227,9 @@ open class OWSTableViewController2: OWSViewController {
         return item
     }
 
+    @objc
+    public var shouldDeferInitialLoad = true
+
     private func applyContents(shouldReload: Bool = true) {
         AssertIsOnMainThread()
 
@@ -234,9 +237,12 @@ open class OWSTableViewController2: OWSViewController {
             self.title = title
         }
 
-        let shouldReload = (shouldReload &&
+        var shouldReload = shouldReload
+        if shouldDeferInitialLoad {
+            shouldReload = (shouldReload &&
                                 self.isViewLoaded &&
                                 tableView.width > 0)
+        }
 
         if shouldReload { tableView.reloadData() }
     }
