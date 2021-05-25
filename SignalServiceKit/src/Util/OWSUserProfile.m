@@ -423,10 +423,11 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
                                    if (profileKeyDidChange || givenNameDidChange || familyNameDidChange
                                        || avatarUrlPathDidChange) {
-                                       OWSLogInfo(@"address: %@, profileKeyDidChange: %d (%d -> %d) %@, "
+                                       OWSLogInfo(@"address: %@ (isLocal: %d), profileKeyDidChange: %d (%d -> %d) %@, "
                                                   @"givenNameDidChange: %d (%d -> %d), familyNameDidChange: %d (%d -> "
                                                   @"%d), avatarUrlPathDidChange: %d (%d -> %d)",
                                            profile.address,
+                                           profile.address.isLocalAddress,
                                            profileKeyDidChange,
                                            profileKeyBefore != nil,
                                            profile.profileKey != nil,

@@ -706,7 +706,8 @@ public struct FetchedProfile {
         var paymentAddressData: Data?
         if let profileNameEncrypted = profile.profileNameEncrypted,
            let profileNameComponents = OWSUserProfile.decrypt(profileNameData: profileNameEncrypted,
-                                                              profileKey: profileKey) {
+                                                              profileKey: profileKey,
+                                                              address: profile.address) {
             givenName = profileNameComponents.givenName?.ows_stripped()
             familyName = profileNameComponents.familyName?.ows_stripped()
         }
