@@ -14,8 +14,8 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
     @objc public required init(stickerPackInfo: StickerPackInfo,
                                success : @escaping (StickerPack) -> Void,
                                failure : @escaping (Error) -> Void) {
-        assert(stickerPackInfo.packId.count > 0)
-        assert(stickerPackInfo.packKey.count > 0)
+        owsAssertDebug(stickerPackInfo.packId.count > 0)
+        owsAssertDebug(stickerPackInfo.packKey.count > 0)
 
         self.stickerPackInfo = stickerPackInfo
         self.success = success
@@ -76,7 +76,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
 
     private func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,
                                           manifestData: Data) throws -> StickerPack {
-        assert(manifestData.count > 0)
+        owsAssertDebug(manifestData.count > 0)
 
         let manifestProto: SSKProtoPack
         do {

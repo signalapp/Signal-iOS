@@ -212,7 +212,13 @@ public extension GroupsV2Migration {
                 }
                 return ContactDiscoveryTask(phoneNumbers: phoneNumbersWithoutUuids).perform().asVoid()
             }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-                owsFailDebugUnlessNetworkFailure(error)
+                if let httpStatusCode = error.httpStatusCode,
+                   httpStatusCode == 401 {
+                    // Not registered.
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebugUnlessNetworkFailure(error)
+                }
                 return Promise.value(())
             }.map(on: .global()) { _ in
                 Logger.verbose("")

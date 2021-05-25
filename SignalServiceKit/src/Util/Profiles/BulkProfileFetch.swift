@@ -107,6 +107,9 @@ public class BulkProfileFetch: NSObject {
     @objc
     public func fetchProfiles(uuids: [UUID]) {
         serialQueue.async {
+            guard self.tsAccountManager.isRegisteredAndReady else {
+                return
+            }
             guard let localUuid = self.tsAccountManager.localUuid else {
                 owsFailDebug("missing localUuid")
                 return
