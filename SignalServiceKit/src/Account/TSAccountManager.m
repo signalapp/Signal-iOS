@@ -894,7 +894,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             [self.keyValueStore setBool:NO key:TSAccountManager_IsOnboardedKey transaction:transaction];
 
             if (wasPrimaryDevice) {
-                // TODO: We could reset payments state at this time.
+                // Don't reset payments state at this time.
             } else {
                 [self.payments clearStateWithTransaction:transaction];
             }
