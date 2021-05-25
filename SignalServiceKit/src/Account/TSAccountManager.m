@@ -860,16 +860,18 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (BOOL)resetForReregistration
 {
-    NSString *_Nullable localNumber = [self getOrLoadAccountStateWithSneakyTransaction].localNumber;
+    TSAccountState *oldAccountState = [self getOrLoadAccountStateWithSneakyTransaction];
+    NSString *_Nullable localNumber = oldAccountState.localNumber;
     if (!localNumber) {
         OWSFailDebug(@"can't re-register without valid local number.");
         return NO;
     }
-    NSUUID *_Nullable localUUID = [self getOrLoadAccountStateWithSneakyTransaction].localUuid;
+    NSUUID *_Nullable localUUID = oldAccountState.localUuid;
     if (!localUUID) {
         OWSFailDebug(@"can't re-register without valid uuid.");
         return NO;
     }
+    BOOL wasPrimaryDevice = oldAccountState.deviceId == OWSDevicePrimaryDeviceId;
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
@@ -891,7 +893,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
             [self.keyValueStore setBool:NO key:TSAccountManager_IsOnboardedKey transaction:transaction];
 
-            if (self.tsAccountManager.isPrimaryDevice) {
+            if (wasPrimaryDevice) {
                 // TODO: We could reset payments state at this time.
             } else {
                 [self.payments clearStateWithTransaction:transaction];
