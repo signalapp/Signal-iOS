@@ -556,10 +556,12 @@ public final class CallService: NSObject {
     // MARK: -
 
     private func updateGroupMembersForCurrentCallIfNecessary() {
-        guard let call = currentCall, call.isGroupCall,
-              let groupThread = call.thread as? TSGroupThread,
-              let memberInfo = groupMemberInfo(for: groupThread) else { return }
-        call.groupCall.updateGroupMembers(members: memberInfo)
+        DispatchQueue.main.async {
+            guard let call = self.currentCall, call.isGroupCall,
+                  let groupThread = call.thread as? TSGroupThread,
+                  let memberInfo = self.groupMemberInfo(for: groupThread) else { return }
+            call.groupCall.updateGroupMembers(members: memberInfo)
+        }
     }
 
     private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
@@ -701,6 +703,7 @@ extension CallService {
 
     @objc @available(swift, obsoleted: 1.0)
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
+        AssertIsOnMainThread()
         self.peekCallAndUpdateThread(thread)
     }
 
@@ -716,9 +719,14 @@ extension CallService {
             Logger.info("Ignoring peek request for the current call")
             return
         }
-        firstly(on: .global()) {
+        firstly(on: .main) { () -> [GroupMemberInfo]? in
             guard let memberInfo = self.groupMemberInfo(for: thread) else {
                 owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
+                return nil
+            }
+            return memberInfo
+        }.map(on: .global()) { (memberInfo: [GroupMemberInfo]?) in
+            guard let memberInfo = memberInfo else {
                 return
             }
 
