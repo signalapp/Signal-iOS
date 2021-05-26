@@ -143,7 +143,9 @@ class PreviewWallpaperViewController: UIViewController {
     func modeDidChange() {
         let chatColor = Self.databaseStorage.read { transaction -> ChatColor? in
             if let thread = self.thread {
-                return ChatColors.chatColorSetting(thread: thread, transaction: transaction)
+                return ChatColors.chatColorSetting(thread: thread,
+                                                   shouldHonorDefaultSetting: true,
+                                                   transaction: transaction)
             } else {
                 return ChatColors.defaultChatColorSetting(transaction: transaction)
             }

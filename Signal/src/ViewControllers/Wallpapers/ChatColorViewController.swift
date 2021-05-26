@@ -59,7 +59,9 @@ class ChatColorViewController: OWSTableViewController2 {
         let selected: ChatColor?
         let appearance: ChatColor
         if let thread = thread {
-            selected = ChatColors.chatColorSetting(thread: thread, transaction: transaction)
+            selected = ChatColors.chatColorSetting(thread: thread,
+                                                   shouldHonorDefaultSetting: false,
+                                                   transaction: transaction)
             appearance = ChatColors.autoChatColorForRendering(forThread: thread,
                                                               transaction: transaction)
         } else {
@@ -74,8 +76,7 @@ class ChatColorViewController: OWSTableViewController2 {
                                                  transaction: SDSAnyReadTransaction) -> CurrentValue {
         let appearance: ChatColor
         if let thread = thread {
-            appearance = ChatColors.autoChatColorForRendering(forThread: thread,
-                                                              transaction: transaction)
+            appearance = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
         } else {
             appearance = ChatColors.defaultChatColorForRendering(transaction: transaction)
         }
@@ -472,15 +473,15 @@ class ChatColorViewController: OWSTableViewController2 {
     }
 
     private func setNewValue(_ newValue: ChatColor?) {
-        databaseStorage.write { transaction in
+        self.currentValue = databaseStorage.write { transaction in
             if let thread = self.thread {
                 ChatColors.setChatColorSetting(newValue, thread: thread, transaction: transaction)
             } else {
                 ChatColors.setDefaultChatColorSetting(newValue, transaction: transaction)
             }
-            self.currentValue = ChatColorViewController.buildCurrentValue_Update(thread: thread,
-                                                                                 selected: newValue,
-                                                                                 transaction: transaction)
+            return ChatColorViewController.buildCurrentValue_Update(thread: thread,
+                                                                    selected: newValue,
+                                                                    transaction: transaction)
         }
         self.updateTableContents()
     }
