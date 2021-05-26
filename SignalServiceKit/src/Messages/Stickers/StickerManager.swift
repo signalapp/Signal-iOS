@@ -702,12 +702,12 @@ public class StickerManager: NSObject {
             if error.domain == NSCocoaErrorDomain,
                error.code == 516,
                OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) {
-                // Races can occur.
+                // Races can occur; ignore and proceed.
                 Logger.warn("File already exists: \(error)")
             } else {
                 owsFailDebug("File write failed: \(error)")
+                return false
             }
-            return false
         }
 
         return databaseStorage.write { (transaction) -> Bool in
