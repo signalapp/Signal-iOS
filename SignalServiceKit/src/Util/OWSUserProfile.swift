@@ -66,20 +66,17 @@ public extension OWSUserProfile {
 
     // MARK: - Encryption
 
-    @objc(encryptProfileData:profileKey:)
     class func encrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
         assert(profileKey.keyData.count == kAES256_KeyByteLength)
         return Cryptography.encryptAESGCMProfileData(plainTextData: profileData, key: profileKey)
     }
 
-    @objc(decryptProfileData:profileKey:)
     class func decrypt(profileData: Data, profileKey: OWSAES256Key) -> Data? {
         assert(profileKey.keyData.count == kAES256_KeyByteLength)
         return Cryptography.decryptAESGCMProfileData(encryptedData: profileData, key: profileKey)
     }
 
-    @objc(decryptProfileNameData:profileKey:)
-    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key) -> PersonNameComponents? {
+    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key, address: SignalServiceAddress) -> PersonNameComponents? {
         guard let decryptedData = decrypt(profileData: profileNameData, profileKey: profileKey) else { return nil }
 
         // Unpad profile name. The given and family name are stored
@@ -89,7 +86,7 @@ public extension OWSUserProfile {
         // Given name is required
         guard nameSegments.count > 0,
               let givenName = String(data: nameSegments[0], encoding: .utf8), !givenName.isEmpty else {
-            Logger.warn("unexpectedly missing first name")
+            Logger.warn("unexpectedly missing first name for \(address), isLocal: \(address.isLocalAddress).")
             return nil
         }
 
@@ -115,17 +112,14 @@ public extension OWSUserProfile {
         // Remove padding.
         let segments: [Data] = decryptedData.split(separator: 0x00)
         guard let firstSegment = segments.first else {
-            Logger.warn("Empty profile string.")
             return nil
         }
         guard let string = String(data: firstSegment, encoding: .utf8), !string.isEmpty else {
-            owsFailDebug("Empty profile string.")
             return nil
         }
         return string
     }
 
-    @objc(encryptProfileNameComponents:profileKey:)
     class func encrypt(profileNameComponents: PersonNameComponents, profileKey: OWSAES256Key) -> ProfileValue? {
         let givenName: String? = profileNameComponents.givenName?.trimToGlyphCount(maxNameLengthGlyphs)
         guard var paddedNameData = givenName?.data(using: .utf8) else { return nil }
