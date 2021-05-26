@@ -51,8 +51,19 @@ class ComposeViewController: OWSViewController {
 
     func newConversation(address: SignalServiceAddress) {
         assert(address.isValid)
-        let thread = TSContactThread.getOrCreateThread(contactAddress: address)
-        newConversation(thread: thread)
+
+        Self.databaseStorage.write { [weak self] transaction in
+            let thread = TSContactThread.getOrCreateThread(withContactAddress: address,
+                                                           transaction: transaction)
+            Self.databaseStorage.touch(thread: thread,
+                                       shouldReindex: false,
+                                       transaction: transaction)
+            Self.databaseStorage.add(uiDatabaseSnapshotFlushBlock: {
+                DispatchQueue.main.async {
+                    self?.newConversation(thread: thread)
+                }
+            })
+        }
     }
 
     func newConversation(thread: TSThread) {
