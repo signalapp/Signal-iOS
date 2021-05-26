@@ -201,16 +201,23 @@ public class ChatColors: NSObject, Dependencies {
 
     // Returns nil for default/auto.
     public static func chatColorSetting(thread: TSThread,
+                                        shouldHonorDefaultSetting: Bool,
                                         transaction: SDSAnyReadTransaction) -> ChatColor? {
         if let value = chatColorSetting(key: thread.uniqueId, transaction: transaction) {
             return value
         }
-        return ChatColors.defaultChatColorSetting(transaction: transaction)
+        if shouldHonorDefaultSetting {
+            return ChatColors.defaultChatColorSetting(transaction: transaction)
+        } else {
+            return nil
+        }
     }
 
     public static func chatColorForRendering(thread: TSThread,
                                              transaction: SDSAnyReadTransaction) -> ChatColor {
-        if let value = chatColorSetting(thread: thread, transaction: transaction) {
+        if let value = chatColorSetting(thread: thread,
+                                        shouldHonorDefaultSetting: true,
+                                        transaction: transaction) {
             return value
         } else {
             return autoChatColorForRendering(forThread: thread, transaction: transaction)
