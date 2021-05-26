@@ -556,10 +556,12 @@ public final class CallService: NSObject {
     // MARK: -
 
     private func updateGroupMembersForCurrentCallIfNecessary() {
-        guard let call = currentCall, call.isGroupCall,
-              let groupThread = call.thread as? TSGroupThread,
-              let memberInfo = groupMemberInfo(for: groupThread) else { return }
-        call.groupCall.updateGroupMembers(members: memberInfo)
+        DispatchQueue.main.async {
+            guard let call = self.currentCall, call.isGroupCall,
+                  let groupThread = call.thread as? TSGroupThread,
+                  let memberInfo = self.groupMemberInfo(for: groupThread) else { return }
+            call.groupCall.updateGroupMembers(members: memberInfo)
+        }
     }
 
     private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
@@ -701,6 +703,7 @@ extension CallService {
 
     @objc @available(swift, obsoleted: 1.0)
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
+        AssertIsOnMainThread()
         self.peekCallAndUpdateThread(thread)
     }
 
@@ -716,12 +719,11 @@ extension CallService {
             Logger.info("Ignoring peek request for the current call")
             return
         }
+        guard let memberInfo = self.groupMemberInfo(for: thread) else {
+            owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
+            return
+        }
         firstly(on: .global()) {
-            guard let memberInfo = self.groupMemberInfo(for: thread) else {
-                owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
-                return
-            }
-
             if let expectedEraId = expectedEraId {
                 // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
                 // If it's the current call, we'll update with the PeekInfo once fetched
