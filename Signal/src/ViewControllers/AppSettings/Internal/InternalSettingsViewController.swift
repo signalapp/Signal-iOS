@@ -62,27 +62,24 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let infoSection = OWSTableSection()
 
-        let localNumber = tsAccountManager.localNumber ?? "Unknown"
-        infoSection.add(.actionItem(
-            withText: "Local Phone Number: \(localNumber)",
-            actionBlock: {
-                if let number = self.tsAccountManager.localNumber {
-                    UIPasteboard.general.string = number
+        func addCopyableItem(label: String, value: String?) {
+            infoSection.add(.item(
+                name: label,
+                accessoryText: value ?? "None",
+                                accessibilityIdentifier: "internal." + label,
+                actionBlock: {
+                    if let value = value {
+                        UIPasteboard.general.string = value
+                    }
                 }
-            }
-        ))
+            ))
+        }
 
-        let localUuid = tsAccountManager.localUuid?.uuidString ?? "Unknown"
-        infoSection.add(.actionItem(
-            withText: "Local UUID: \(localUuid)",
-            actionBlock: {
-                if let uuid = self.tsAccountManager.localUuid?.uuidString {
-                    UIPasteboard.general.string = uuid
-                }
-            }
-        ))
+        addCopyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber)
 
-        infoSection.add(.label(withText: "Device ID: \(tsAccountManager.storedDeviceId())"))
+        addCopyableItem(label: "Local UUID", value: tsAccountManager.localUuid?.uuidString)
+
+        addCopyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId())")
         if let deviceName = tsAccountManager.storedDeviceName() {
             infoSection.add(.label(withText: "Device Name: \(deviceName)"))
         }
@@ -115,23 +112,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.label(withText: "hasGrdbFile: \(StorageCoordinator.hasGrdbFile)"))
         infoSection.add(.label(withText: "didEverUseYdb: \(SSKPreferences.didEverUseYdb())"))
+        infoSection.add(.label(withText: "Core count: \(LocalDevice.allCoreCount) (active: \(LocalDevice.activeCoreCount))"))
 
-        infoSection.add(.actionItem(
-            withText: "Push Token: \(preferences.getPushToken() ?? "Unknown")",
-            actionBlock: {
-                if let pushToken = self.preferences.getPushToken() {
-                    UIPasteboard.general.string = pushToken
-                }
-            }
-        ))
-        infoSection.add(.actionItem(
-            withText: "VOIP Token: \(preferences.getVoipToken() ?? "Unknown")",
-            actionBlock: {
-                if let voipToken = self.preferences.getVoipToken() {
-                    UIPasteboard.general.string = voipToken
-                }
-            }
-        ))
+        addCopyableItem(label: "Push Token", value: preferences.getPushToken())
+        addCopyableItem(label: "VOIP Token", value: preferences.getVoipToken())
 
         infoSection.add(.label(withText: "Audio Category: \(AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: ""))"))
         infoSection.add(.label(withText: "Local Profile Key: \(profileManager.localProfileKey().keyData.hexadecimalString)"))
@@ -139,21 +123,12 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "MobileCoin Environment: \(MobileCoinAPI.Environment.current)"))
         infoSection.add(.label(withText: "Payments EnabledKey: \(payments.arePaymentsEnabled ? "Yes" : "No")"))
         if let paymentsEntropy = paymentsSwift.paymentsEntropy {
-            infoSection.add(.label(withText: "Payments Entropy: \(paymentsEntropy.hexadecimalString)"))
-            #if TESTABLE_BUILD
-            Logger.verbose("Payments mnemonic: \(paymentsEntropy.hexadecimalString)")
-            #endif
+            addCopyableItem(label: "Payments Entropy", value: paymentsEntropy.hexadecimalString)
             if let passphrase = paymentsSwift.passphrase {
-                infoSection.add(.label(withText: "Payments mnemonic: \(passphrase.asPassphrase)"))
-                #if TESTABLE_BUILD
-                Logger.verbose("Payments mnemonic: \(passphrase)")
-                #endif
+                addCopyableItem(label: "Payments mnemonic", value: passphrase.asPassphrase)
             }
             if let walletAddressBase58 = paymentsSwift.walletAddressBase58() {
-                infoSection.add(.label(withText: "Payments Address b58: \(walletAddressBase58)"))
-                #if TESTABLE_BUILD
-                Logger.verbose("Payments Address b58: \(walletAddressBase58)")
-                #endif
+                addCopyableItem(label: "Payments Address b58", value: walletAddressBase58)
             }
         }
 

@@ -137,6 +137,10 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
     OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
+
+    OWSLogInfo(@"Core count: %lu (active: %lu)",
+        (unsigned long)LocalDevice.allCoreCount,
+        (unsigned long)LocalDevice.activeCoreCount);
 }
 
 - (void)appLaunchDidComplete

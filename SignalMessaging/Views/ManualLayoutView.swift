@@ -143,7 +143,7 @@ open class ManualLayoutView: UIView {
         }
     }
 
-    static func setSubviewFrame(subview: UIView, frame: CGRect) {
+    public static func setSubviewFrame(subview: UIView, frame: CGRect) {
         guard subview.frame != frame else {
             return
         }

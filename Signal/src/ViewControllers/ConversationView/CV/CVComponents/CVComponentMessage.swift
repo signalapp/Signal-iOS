@@ -1993,7 +1993,7 @@ class SwipeToReplyWrapper: ManualLayoutView {
             }
             var subviewFrame = view.bounds
             subviewFrame.origin = subviewFrame.origin + view.offset
-            subview.frame = subviewFrame
+            ManualLayoutView.setSubviewFrame(subview: subview, frame: subviewFrame)
         }
     }
 
