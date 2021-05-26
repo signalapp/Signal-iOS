@@ -184,7 +184,7 @@ public class FeatureFlags: BaseFlags {
     public static let linkifyWithNSDataDetector = false
 
     @objc
-    public static let chatColors = build.includes(.qa)
+    public static let chatColors = true
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
