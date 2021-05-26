@@ -700,7 +700,7 @@ public class StickerManager: NSObject {
             try FileManager.default.copyItem(at: stickerTemporaryUrl, to: stickerDataUrl)
         } catch let error as NSError {
             if error.domain == NSCocoaErrorDomain,
-               error.code == 516,
+               error.code == NSFileWriteFileExistsError,
                OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) {
                 // Races can occur; ignore and proceed.
                 Logger.warn("File already exists: \(error)")

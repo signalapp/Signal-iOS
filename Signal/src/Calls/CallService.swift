@@ -719,17 +719,11 @@ extension CallService {
             Logger.info("Ignoring peek request for the current call")
             return
         }
-        firstly(on: .main) { () -> [GroupMemberInfo]? in
-            guard let memberInfo = self.groupMemberInfo(for: thread) else {
-                owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
-                return nil
-            }
-            return memberInfo
-        }.map(on: .global()) { (memberInfo: [GroupMemberInfo]?) in
-            guard let memberInfo = memberInfo else {
-                return
-            }
-
+        guard let memberInfo = self.groupMemberInfo(for: thread) else {
+            owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
+            return
+        }
+        firstly(on: .global()) {
             if let expectedEraId = expectedEraId {
                 // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
                 // If it's the current call, we'll update with the PeekInfo once fetched
