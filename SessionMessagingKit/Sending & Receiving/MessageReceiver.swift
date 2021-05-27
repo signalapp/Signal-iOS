@@ -16,13 +16,13 @@ public enum MessageReceiver {
         case noThread
         case selfSend
         case decryptionFailed
-        // Shared sender keys
         case invalidGroupPublicKey
         case noGroupKeyPair
 
         public var isRetryable: Bool {
             switch self {
-            case .duplicateMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType, .invalidSignature, .noData, .senderBlocked, .selfSend: return false
+            case .duplicateMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType,
+                .invalidSignature, .noData, .senderBlocked, .noThread, .selfSend, .decryptionFailed: return false
             default: return true
             }
         }
