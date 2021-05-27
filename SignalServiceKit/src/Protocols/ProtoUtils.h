@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)addLocalProfileKeyToDataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder;
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                              address:(SignalServiceAddress *)address
+                              address:(nullable SignalServiceAddress *)address
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
                           transaction:(SDSAnyReadTransaction *)transaction;
 

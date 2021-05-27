@@ -133,12 +133,10 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
+- (nullable NSData *)buildPlainTextData:(nullable SignalServiceAddress *)address
                                  thread:(TSThread *)thread
                             transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(address.isValid);
-
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     builder.callMessage = [self buildCallMessage:address thread:thread transaction:transaction];
 
@@ -151,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
     return data;
 }
 
-- (nullable SSKProtoCallMessage *)buildCallMessage:(SignalServiceAddress *)address
+- (nullable SSKProtoCallMessage *)buildCallMessage:(nullable SignalServiceAddress *)address
                                             thread:(TSThread *)thread
                                        transaction:(SDSAnyReadTransaction *)transaction
 {

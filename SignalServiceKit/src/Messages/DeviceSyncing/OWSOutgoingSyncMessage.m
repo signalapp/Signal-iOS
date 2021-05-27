@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [SSKProtoSyncMessage builder];
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
+- (nullable NSData *)buildPlainTextData:(nullable SignalServiceAddress *)address
                                  thread:(TSThread *)thread
                             transaction:(SDSAnyReadTransaction *)transaction
 {

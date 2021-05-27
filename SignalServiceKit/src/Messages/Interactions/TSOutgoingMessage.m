@@ -1406,6 +1406,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         return nil;
     }
 
+    // SenderKey TODO: Profile key sharing for address in SenderKey?
     [ProtoUtils addLocalProfileKeyIfNecessary:thread
                                       address:address
                            dataMessageBuilder:builder
@@ -1420,7 +1421,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return dataProto;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
+- (nullable NSData *)buildPlainTextData:(nullable SignalServiceAddress *)address
                                  thread:(TSThread *)thread
                             transaction:(SDSAnyReadTransaction *)transaction
 {
