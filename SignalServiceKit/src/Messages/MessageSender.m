@@ -1,6 +1,5 @@
 //
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
-//
 
 #import <SignalServiceKit/MessageSender.h>
 #import "NSData+keyVersionByte.h"
@@ -16,6 +15,7 @@
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
+#import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSDevice.h>
@@ -610,9 +610,37 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }
     }
 
-    // 2. Build a "OWSMessageSend" for each recipient.
+    // 2. If we have any participants that support sender key, build a promise for their send.
+    NSArray<SignalServiceAddress *> *senderKeyAddresses = [self senderKeyParticipantsWithThread:thread
+                                                                             intendedRecipients:addresses
+                                                                                    udAccessMap:sendingAccessMap];
+
+    AnyPromise *_Nullable senderKeyMessagePromise = nil;
+    NSArray<SignalServiceAddress *> *fanoutSendAddresses = addresses;
+
+    if ([thread isKindOfClass:[TSGroupThread class]] && senderKeyAddresses.count >= 2) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+
+        fanoutSendAddresses = [addresses filter:^BOOL(SignalServiceAddress * _Nonnull item) {
+            return ![senderKeyAddresses containsObject:item];
+        }];
+
+        senderKeyMessagePromise = [self senderKeyMessageSendPromiseWithMessage:message
+                                                                        thread:groupThread
+                                                                    recipients:senderKeyAddresses
+                                                                   udAccessMap:sendingAccessMap
+                                                            senderCertificates:senderCertificates
+                                                                sendErrorBlock:sendErrorBlock];
+
+        OWSLogInfo(@"%lu / %lu recipients for message: %lu support sender key.", senderKeyAddresses.count, addresses.count, message.timestamp);
+    } else {
+        senderKeyAddresses = @[];
+    }
+    OWSAssertDebug((fanoutSendAddresses.count + senderKeyAddresses.count) ==  addresses.count);
+
+    // 3. Build a "OWSMessageSend" for each non-senderKey recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
-    for (SignalServiceAddress *address in addresses) {
+    for (SignalServiceAddress *address in fanoutSendAddresses) {
         OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[address];
         OWSMessageSend *messageSend =
             [[OWSMessageSend alloc] initWithMessage:message
@@ -624,15 +652,19 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         [messageSends addObject:messageSend];
     }
 
-    // 3. Before kicking of the per-recipient message sends, try
+    // 4. Before kicking of the per-recipient message sends, try
     // to ensure sessions for all recipient devices in parallel.
     return
         [MessageSender ensureSessionsforMessageSendsObjc:messageSends ignoreErrors:YES].thenInBackground(^(id value) {
-            // 4. Perform the per-recipient message sends.
+            // 5. Perform the per-recipient message sends.
             NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
             for (OWSMessageSend *messageSend in messageSends) {
                 [self sendMessageToRecipient:messageSend];
                 [sendPromises addObject:messageSend.asAnyPromise];
+            }
+            // 6. Add the sender-key promise
+            if (senderKeyMessagePromise != nil) {
+                [sendPromises addObject:senderKeyMessagePromise];
             }
 
             // We use PMKJoin(), not PMKWhen(), because we don't want the
@@ -1300,10 +1332,10 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:MessageSenderInvalidDeviceException]) {
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    [MessageSender updateDevicesWithMessageSend:messageSend
-                                                   devicesToAdd:@[]
-                                                devicesToRemove:@[ deviceId ]
-                                                    transaction:transaction];
+                    [MessageSender updateDevicesWithAddress:messageSend.address
+                                               devicesToAdd:@[]
+                                            devicesToRemove:@[ deviceId ]
+                                                transaction:transaction];
                 });
                 [deviceIds removeObject:deviceId];
             } else {
