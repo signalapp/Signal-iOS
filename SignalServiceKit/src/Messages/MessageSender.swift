@@ -1383,7 +1383,8 @@ extension MessageSender {
                 udAccessMap: udAccessMap,
                 sendErrorBlock: wrappedSendErrorBlock)
         }.then { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
-            firstly {
+            guard senderKeyRecipients.count > 0 else { return .init() }
+            return firstly {
                 // SenderKey TODO: PreKey fetch? Start sessions?
                 self.sendSenderKeyRequest(
                     message: message,
@@ -1443,6 +1444,7 @@ extension MessageSender {
         sendErrorBlock: @escaping (SignalServiceAddress, Error) -> Void
     ) -> Guarantee<[SignalServiceAddress]> {
 
+        var recipientsNotNeedingSKDM: Set<SignalServiceAddress> = Set()
         return databaseStorage.write(.promise) { writeTx -> [OWSMessageSend] in
             // Here we fetch all of the recipients that need an SKDM
             // We then construct an OWSMessageSend for each recipient that needs an SKDM.
@@ -1460,6 +1462,7 @@ extension MessageSender {
                 for: thread,
                 addresses: recipients,
                 writeTx: writeTx)
+            recipientsNotNeedingSKDM = Set(recipients).subtracting(recipientsNeedingSKDM)
 
             guard !recipientsNeedingSKDM.isEmpty else { return [] }
             guard let skdmBytes = self.senderKeyStore.skdmBytesForGroupThread(thread, writeTx: writeTx) else {
@@ -1514,8 +1517,8 @@ extension MessageSender {
                 })
             }
         }.map { resultArray -> [SignalServiceAddress] in
-            // We only want to pass along the successful addresses
-            resultArray.compactMap { result in
+            // We only want to pass along recipients capable of receiving a senderKey message
+            return Array(recipientsNotNeedingSKDM) + resultArray.compactMap { result in
                 switch result {
                 case let .fulfilled(address): return address
                 case .rejected: return nil

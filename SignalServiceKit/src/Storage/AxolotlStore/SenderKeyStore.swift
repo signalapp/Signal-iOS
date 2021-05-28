@@ -38,7 +38,8 @@ public class SenderKeyStore: NSObject {
         }
         guard allRecipients.count == addresses.count,
               allRecipients.allSatisfy({ $0.address.uuid != nil }) else {
-            throw OWSAssertionError("Invalid address")
+            owsFailDebug("All sender key recipients must have UUID")
+            return []
         }
 
         let allDevicesMap: [SignalServiceAddress: Set<UInt32>] = try allRecipients
@@ -118,7 +119,7 @@ public class SenderKeyStore: NSObject {
 
     public func expireSendingKeyIfNecessary(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
-            let distributionId = distributionIdForSendingToThread(thread, writeTx: writeTx)
+            let distributionId = distributionIdForSendingToThreadId(thread.uniqueId, writeTx: writeTx)
             guard let keyMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else { return }
 
             if !keyMetadata.isValid {
@@ -173,8 +174,15 @@ extension SenderKeyStore: SignalClient.SenderKeyStore {
     ) throws {
         storageLock.withLock {
             let writeTx = context.asTransaction
-            let metadata = KeyMetadata(record: record, sender: sender, distributionId: distributionId)
-            setMetadata(metadata, for: distributionId, writeTx: writeTx)
+
+            var updatedValue: KeyMetadata
+            if let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) {
+                updatedValue = existingMetadata
+            } else {
+                updatedValue = KeyMetadata(record: record, sender: sender, distributionId: distributionId)
+            }
+            updatedValue.record = record
+            setMetadata(updatedValue, for: distributionId, writeTx: writeTx)
         }
     }
 
@@ -249,13 +257,23 @@ private struct KeyMetadata: Codable {
     let ownerUuid: UUID
     let ownerDeviceId: UInt32
 
-    private let recordData: [UInt8]
+    private var recordData: [UInt8]
     var record: SenderKeyRecord? {
-        do {
-            return try SenderKeyRecord(bytes: recordData)
-        } catch {
-            owsFailDebug("Failed to deserialize sender key record")
-            return nil
+        get {
+            do {
+                return try SenderKeyRecord(bytes: recordData)
+            } catch {
+                owsFailDebug("Failed to deserialize sender key record")
+                return nil
+            }
+        }
+        set {
+            if let newValue = newValue {
+                recordData = newValue.serialize()
+            } else {
+                owsFailDebug("Invalid new value")
+                recordData = []
+            }
         }
     }
 
@@ -263,7 +281,7 @@ private struct KeyMetadata: Codable {
     var deliveredDevices: [UUID: Set<UInt32>]
     var isForEncrypting: Bool
 
-    init?(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: SenderKeyStore.DistributionId) {
+    init(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: SenderKeyStore.DistributionId) {
         self.recordData = record.serialize()
         self.distributionId = distributionId
         self.ownerUuid = sender.uuid
