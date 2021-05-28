@@ -116,6 +116,34 @@ public class SenderKeyStore: NSObject {
         }
     }
 
+    public func expireSendingKeyIfNecessary(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
+        storageLock.withLock {
+            let distributionId = distributionIdForSendingToThread(thread, writeTx: writeTx)
+            guard let keyMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else { return }
+
+            if !keyMetadata.isValid {
+                setMetadata(nil, for: distributionId, writeTx: writeTx)
+            }
+        }
+    }
+
+    public func resetSenderKeySession(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
+        storageLock.withLock {
+            let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
+            setMetadata(nil, for: distributionId, writeTx: writeTx)
+        }
+    }
+
+    @objc
+    public func resetSenderKeyStore(writeTx: SDSAnyWriteTransaction) {
+        storageLock.withLock {
+            sendingDistributionIdCache = [:]
+            keyCache = [:]
+            keyMetadataStore.removeAll(transaction: writeTx)
+            sendingDistributionIdStore.removeAll(transaction: writeTx)
+        }
+    }
+
     public func skdmBytesForGroupThread(_ groupThread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> Data? {
         do {
             guard let localAddress = tsAccountManager.localAddress else {
@@ -145,7 +173,7 @@ extension SenderKeyStore: SignalClient.SenderKeyStore {
     ) throws {
         storageLock.withLock {
             let writeTx = context.asTransaction
-            let metadata = KeyMetadata(record: record, sender: sender, distributionId: distributionId, readTx: writeTx)
+            let metadata = KeyMetadata(record: record, sender: sender, distributionId: distributionId)
             setMetadata(metadata, for: distributionId, writeTx: writeTx)
         }
     }
@@ -231,21 +259,28 @@ private struct KeyMetadata: Codable {
         }
     }
 
-    var deliveredDevices: [UUID: Set<UInt32>]
     let creationDate: Date
+    var deliveredDevices: [UUID: Set<UInt32>]
+    var isForEncrypting: Bool
 
-    init?(
-        record: SenderKeyRecord,
-        sender: ProtocolAddress,
-        distributionId: SenderKeyStore.DistributionId,
-        readTx: SDSAnyReadTransaction) {
-
+    init?(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: SenderKeyStore.DistributionId) {
         self.recordData = record.serialize()
         self.distributionId = distributionId
         self.ownerUuid = sender.uuid
         self.ownerDeviceId = sender.deviceId
+
+        self.isForEncrypting = sender.isCurrentDevice
         self.creationDate = Date()
         self.deliveredDevices = [:]
+    }
+
+    var isValid: Bool {
+        // Keys we've received from others are always valid
+        guard isForEncrypting else { return true }
+
+        // If we're using it for encryption, it must be less than a month old
+        let expirationDate = creationDate.addingTimeInterval(kMonthInterval)
+        return (expirationDate.isAfterNow && isForEncrypting)
     }
 }
 
@@ -266,5 +301,10 @@ fileprivate extension ProtocolAddress {
             owsFailDebug("Bad uuid string")
             return UUID()
         }()
+    }
+
+    var isCurrentDevice: Bool {
+        let tsAccountManager = SSKEnvironment.shared.tsAccountManager
+        return (uuid == tsAccountManager.localUuid) && (deviceId == tsAccountManager.storedDeviceId())
     }
 }

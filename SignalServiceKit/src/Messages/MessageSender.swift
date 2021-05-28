@@ -1372,9 +1372,19 @@ extension MessageSender {
             }
         }
 
+        // First, let's tell the SenderKeyStore to clear our sending key if it's invalid
+        // If it's still valid, great! This is the key that will be used for the rest of the send.
+        // If it went invalid, it will be cleared here. The rest of the send flow will automatically
+        // create a new key.
+        // If it's *about* to go invalid, that key will still be used for the rest of this send flow.
+        databaseStorage.write { writeTx in
+            senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: writeTx)
+        }
+
         // To ensure we don't accidentally throw an error early in our promise chain
         // Without calling the perRecipient failures, we declare this as a guarantee.
-        // All errors must be caught and handled.
+        // All errors must be caught and handled. If not, we may end up with sends that
+        // pend indefinitely.
         let senderKeyGuarantee: Guarantee<Void> = firstly {
             senderKeyDistributionPromise(
                 recipients: recipients,
@@ -1418,6 +1428,7 @@ extension MessageSender {
                 senderKeyRecipients.forEach { wrappedSendErrorBlock($0, error) }
             }
         }
+
         // Since we know the guarantee is always successful, on any per-recipient failure, this generic error is used
         // to fail the returned promise.
         return senderKeyGuarantee.done {

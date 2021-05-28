@@ -2108,8 +2108,20 @@ public class GroupManager: NSObject {
                                                          newConfiguration: oldConfiguration)
         }
 
-        // Step 3: Update group in database, if necessary.
+        // Step 3: If any member was removed, make sure we rotate our sender key session
         let oldGroupModel = groupThread.groupModel
+        if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
+           let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
+
+            let oldMembers = oldGroupModelV2.membership.allMembersOfAnyKind
+            let newMembers = newGroupModelV2.membership.allMembersOfAnyKind
+
+            if oldMembers.subtracting(newMembers).isEmpty == false {
+                senderKeyStore.resetSenderKeySession(for: groupThread, writeTx: transaction)
+            }
+        }
+
+        // Step 4: Update group in database, if necessary.
         let updateThreadResult: UpsertGroupResult = {
             if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
                let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
