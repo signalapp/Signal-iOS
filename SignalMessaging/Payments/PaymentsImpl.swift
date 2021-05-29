@@ -64,10 +64,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     private func getOrBuildCurrentApi(paymentsEntropy: Data) -> Promise<MobileCoinAPI> {
-        guard !isKillSwitchActive else {
-            return Promise(error: PaymentsError.killSwitch)
-        }
-
         func getCurrentApi() -> MobileCoinAPI? {
             return Self.unfairLock.withLock { () -> MobileCoinAPI? in
                 if let handle = self.currentApiHandle,
@@ -113,6 +109,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     public var canEnablePayments: Bool {
         guard FeatureFlags.paymentsEnabled else {
+            return false
+        }
+        guard !isKillSwitchActive else {
             return false
         }
         return hasValidPhoneNumberForPayments
@@ -246,7 +245,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
                                  transaction: SDSAnyWriteTransaction) {
         let oldPaymentsState = self.paymentsState
 
-        guard oldPaymentsState.isEnabled || canEnablePayments else {
+        guard !newPaymentsState.isEnabled || canEnablePayments else {
             owsFailDebug("Payments cannot be enabled.")
             return
         }
@@ -550,7 +549,10 @@ public extension PaymentsImpl {
                                                receipt: MobileCoin.Receipt,
                                                paymentRequestModel: TSPaymentRequestModel?,
                                                isOutgoingTransfer: Bool) -> Promise<TSPaymentModel> {
-        firstly(on: .global()) {
+        guard !isKillSwitchActive else {
+            return Promise(error: PaymentsError.killSwitch)
+        }
+        return firstly(on: .global()) {
             var addressUuidString: String?
             if let recipientAddress = recipientAddress {
                 guard recipientAddress.isValid else {
@@ -720,6 +722,9 @@ public extension PaymentsImpl {
                                 isOutgoingTransfer: Bool,
                                 canDefragment: Bool) -> Promise<PreparedPayment> {
 
+        guard !isKillSwitchActive else {
+            return Promise(error: PaymentsError.killSwitch)
+        }
         guard let recipient = recipient as? SendPaymentRecipientImpl else {
             return Promise(error: OWSAssertionError("Invalid recipient."))
         }
@@ -761,6 +766,9 @@ public extension PaymentsImpl {
                                           isOutgoingTransfer: Bool,
                                           canDefragment: Bool) -> Promise<PreparedPayment> {
 
+        guard !isKillSwitchActive else {
+            return Promise(error: PaymentsError.killSwitch)
+        }
         guard paymentAmount.currency == .mobileCoin else {
             return Promise(error: OWSAssertionError("Invalid currency."))
         }
@@ -880,7 +888,10 @@ public extension PaymentsImpl {
     }
 
     func initiateOutgoingPayment(preparedPayment: PreparedPayment) -> Promise<TSPaymentModel> {
-        firstly(on: .global()) { () -> Promise<TSPaymentModel> in
+        guard !isKillSwitchActive else {
+            return Promise(error: PaymentsError.killSwitch)
+        }
+        return firstly(on: .global()) { () -> Promise<TSPaymentModel> in
             guard let preparedPayment = preparedPayment as? PreparedPaymentImpl else {
                 throw OWSAssertionError("Invalid preparedPayment.")
             }
