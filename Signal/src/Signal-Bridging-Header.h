@@ -29,7 +29,6 @@
 #import "OWSBubbleView.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
-#import "OWSMessageTextView.h"
 #import "OWSNavigationController.h"
 #import "OWSQuotedMessageView.h"
 #import "OWSWindowManager.h"

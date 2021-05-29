@@ -796,6 +796,12 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
 
 extension MessageDetailViewController: CVComponentDelegate {
 
+    // MARK: - Body Text Items
+
+    func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}
+
+    func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}
+
     // MARK: - Long Press
 
     // TODO:
@@ -927,8 +933,6 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapGroupInviteLink(url: URL) {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
-
-    func cvc_didTapMention(_ mention: Mention) {}
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 

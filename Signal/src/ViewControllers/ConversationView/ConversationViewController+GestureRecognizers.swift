@@ -224,6 +224,7 @@ public struct CVLongPressHandler {
         case sticker
         case quotedReply
         case systemMessage
+        case bodyText(item: CVBodyTextLabel.Item)
     }
     let gestureLocation: GestureLocation
 
@@ -266,6 +267,8 @@ public struct CVLongPressHandler {
                                            shouldAllowReply: shouldAllowReply)
         case .systemMessage:
             delegate.cvc_didLongPressSystemMessage(cell, itemViewModel: itemViewModel)
+        case .bodyText(let item):
+            delegate.cvc_didLongPressBodyTextItem(.init(item: item))
         }
     }
 

@@ -1059,36 +1059,31 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return nil
         }
 
-        if let subcomponentView = componentView.subcomponentView(key: .sticker),
-           subcomponentView.rootView.containsGestureLocation(sender) {
-            return CVLongPressHandler(delegate: componentDelegate,
-                                      renderItem: renderItem,
-                                      gestureLocation: .sticker)
+        if let componentAndView = findActiveComponentAndView(key: .bodyText,
+                                                             messageView: componentView,
+                                                             ignoreMissing: true),
+           let handler = componentAndView.component.findLongPressHandler(sender: sender,
+                                                                         componentDelegate: componentDelegate,
+                                                                         componentView: componentAndView.componentView,
+                                                                         renderItem: renderItem) {
+            return handler
         }
-        if let subcomponentView = componentView.subcomponentView(key: .bodyMedia),
-           subcomponentView.rootView.containsGestureLocation(sender) {
-            return CVLongPressHandler(delegate: componentDelegate,
-                                      renderItem: renderItem,
-                                      gestureLocation: .media)
-        }
-        if let subcomponentView = componentView.subcomponentView(key: .audioAttachment),
-           subcomponentView.rootView.containsGestureLocation(sender) {
-            return CVLongPressHandler(delegate: componentDelegate,
-                                      renderItem: renderItem,
-                                      gestureLocation: .media)
-        }
-        if let subcomponentView = componentView.subcomponentView(key: .genericAttachment),
-           subcomponentView.rootView.containsGestureLocation(sender) {
-            return CVLongPressHandler(delegate: componentDelegate,
-                                      renderItem: renderItem,
-                                      gestureLocation: .media)
-        }
-        // TODO: linkPreview?
-        if let subcomponentView = componentView.subcomponentView(key: .quotedReply),
-           subcomponentView.rootView.containsGestureLocation(sender) {
-            return CVLongPressHandler(delegate: componentDelegate,
-                                      renderItem: renderItem,
-                                      gestureLocation: .quotedReply)
+
+        let longPressKeys: [CVComponentKey: CVLongPressHandler.GestureLocation] = [
+            .sticker: .sticker,
+            .bodyMedia: .media,
+            .audioAttachment: .media,
+            .genericAttachment: .media,
+            .quotedReply: .quotedReply
+            // TODO: linkPreview?
+        ]
+        for (key, gestureLocation) in longPressKeys {
+            if let subcomponentView = componentView.subcomponentView(key: key),
+               subcomponentView.rootView.containsGestureLocation(sender) {
+                return CVLongPressHandler(delegate: componentDelegate,
+                                          renderItem: renderItem,
+                                          gestureLocation: gestureLocation)
+            }
         }
 
         return CVLongPressHandler(delegate: componentDelegate,
