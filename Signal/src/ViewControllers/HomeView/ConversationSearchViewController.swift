@@ -83,7 +83,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.separatorStyle = .none
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
-        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.cellReuseIdentifier())
+        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.reuseIdentifier)
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         databaseStorage.appendUIDatabaseSnapshotDelegate(self)
@@ -239,7 +239,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             cell.configure(searchText: searchText)
             return cell
         case .contactThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -248,10 +248,13 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(withThread: searchResult.thread, isBlocked: isBlocked(thread: searchResult.thread))
+            cell.configure(.init(
+                thread: searchResult.thread,
+                isBlocked: isBlocked(thread: searchResult.thread)
+            ))
             return cell
         case .groupThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -261,12 +264,12 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 return UITableViewCell()
             }
 
-            cell.configure(
-                withThread: searchResult.thread,
+            cell.configure(.init(
+                thread: searchResult.thread,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
                 overrideDate: nil
-            )
+            ))
             return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
@@ -282,7 +285,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                                                 localUserDisplayMode: .noteToSelf)
             return cell
         case .messages:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -312,10 +315,12 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 }
             }
 
-            cell.configure(withThread: searchResult.thread,
-                           isBlocked: isBlocked(thread: searchResult.thread),
-                           overrideSnippet: overrideSnippet,
-                           overrideDate: overrideDate)
+            cell.configure(.init(
+                            thread: searchResult.thread,
+                            isBlocked: isBlocked(thread: searchResult.thread),
+                            overrideSnippet: overrideSnippet,
+                            overrideDate: overrideDate
+            ))
 
             return cell
         }

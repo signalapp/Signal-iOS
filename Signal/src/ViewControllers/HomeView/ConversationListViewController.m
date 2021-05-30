@@ -4,7 +4,6 @@
 
 #import "ConversationListViewController.h"
 #import "AppDelegate.h"
-#import "ConversationListCell.h"
 #import "OWSNavigationController.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
@@ -368,7 +367,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
     [self.tableView registerClass:[ConversationListCell class]
-           forCellReuseIdentifier:ConversationListCell.cellReuseIdentifier];
+           forCellReuseIdentifier:ConversationListCell.reuseIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kArchivedConversationsReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinEdgesToSuperviewEdges];
@@ -1296,13 +1295,16 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath
 {
     ConversationListCell *cell =
-        [self.tableView dequeueReusableCellWithIdentifier:ConversationListCell.cellReuseIdentifier];
+        [self.tableView dequeueReusableCellWithIdentifier:ConversationListCell.reuseIdentifier];
     OWSAssertDebug(cell);
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
 
     BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
-    [cell configureWithThread:thread isBlocked:isBlocked];
+    [cell configure:[[ConversationListCellConfiguration alloc] initWithThread:thread
+                                                                    isBlocked:isBlocked
+                                                              overrideSnippet:nil
+                                                                 overrideDate:nil]];
 
     NSString *cellName;
     if (thread.threadRecord.isGroupThread) {

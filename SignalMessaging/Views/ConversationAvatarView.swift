@@ -14,7 +14,10 @@ public class ConversationAvatarView: AvatarImageView {
     }
     private var configuration: Configuration
 
-    private let shouldLoadAsync: Bool
+    // TODO: We eventually may be able to eliminate this property
+    //       and always load async.
+    @objc
+    public var shouldLoadAsync: Bool
 
     @objc
     public var diameter: UInt {
