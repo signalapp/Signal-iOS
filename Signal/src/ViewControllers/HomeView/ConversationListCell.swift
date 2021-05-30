@@ -32,16 +32,19 @@ public class ConversationListCell: UITableViewCell {
     @objc(ConversationListCellConfiguration)
     public class Configuration: NSObject {
         let thread: ThreadViewModel
+        let shouldLoadAvatarAsync: Bool
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
 
         @objc
         public init(thread: ThreadViewModel,
+                    shouldLoadAvatarAsync: Bool,
                     isBlocked: Bool,
                     overrideSnippet: NSAttributedString? = nil,
                     overrideDate: Date? = nil) {
             self.thread = thread
+            self.shouldLoadAvatarAsync = shouldLoadAvatarAsync
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
@@ -215,8 +218,7 @@ public class ConversationListCell: UITableViewCell {
 
         let thread = configuration.thread
 
-        // TODO:
-        avatarView.shouldLoadAsync = true
+        avatarView.shouldLoadAsync = configuration.shouldLoadAvatarAsync
         avatarView.configureWithSneakyTransaction(thread: thread.threadRecord)
 
         NotificationCenter.default.addObserver(self,

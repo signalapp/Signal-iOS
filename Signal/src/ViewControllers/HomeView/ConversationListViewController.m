@@ -97,6 +97,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic) NSUInteger unreadPaymentNotificationsCount;
 @property (nonatomic, nullable) TSPaymentModel *firstUnreadPaymentModel;
+@property (nonatomic, nullable) NSDate *lastReloadDate;
 
 @end
 
@@ -186,6 +187,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateAvatars
 {
+    OWSAssertIsOnMainThread();
+
+    self.lastReloadDate = [NSDate new];
     [self.tableView reloadData];
 }
 
@@ -236,6 +240,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [super themeDidChange];
 
+    self.lastReloadDate = [NSDate new];
     [self.tableView reloadData];
 
     self.hasThemeChanged = YES;
@@ -282,6 +287,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // transition. We reload in the right places accordingly.
 
     if (UIDevice.currentDevice.isIPad) {
+        self.lastReloadDate = [NSDate new];
         [self.tableView reloadData];
     }
 
@@ -289,6 +295,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             [self applyTheme];
             if (!UIDevice.currentDevice.isIPad) {
+                self.lastReloadDate = [NSDate new];
                 [self.tableView reloadData];
             }
 
@@ -612,6 +619,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
     _hasVisibleReminders = hasVisibleReminders;
     // If the reminders show/hide, reload the table.
+    self.lastReloadDate = [NSDate new];
     [self.tableView reloadData];
 }
 
@@ -726,6 +734,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self applyDefaultBackButton];
 
     if (self.hasThemeChanged) {
+        self.lastReloadDate = [NSDate new];
         [self.tableView reloadData];
         self.hasThemeChanged = NO;
     }
@@ -1043,6 +1052,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateViewState];
     [self applyDefaultBackButton];
     if ([self updateHasArchivedThreadsRow]) {
+        self.lastReloadDate = [NSDate new];
         [self.tableView reloadData];
     }
 
@@ -1088,8 +1098,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)reloadTableViewData
 {
+    OWSAssertIsOnMainThread();
+
     // PERF: come up with a more nuanced cache clearing scheme
     [self.threadViewModelCache removeAllObjects];
+    self.lastReloadDate = [NSDate new];
     [self.tableView reloadData];
 }
 
@@ -1300,8 +1313,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
 
+    // We want initial loads and reloads to load avatars sync,
+    // but subsequent avatar loads (e.g. from scrolling) should
+    // be async.
+    const NSTimeInterval avatarAsyncLoadInterval = kSecondInterval * 1;
+    BOOL shouldLoadAvatarAsync = (self.hasEverAppeared
+        && (self.lastReloadDate == nil || fabs(self.lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval));
     BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
     [cell configure:[[ConversationListCellConfiguration alloc] initWithThread:thread
+                                                        shouldLoadAvatarAsync:shouldLoadAvatarAsync
                                                                     isBlocked:isBlocked
                                                               overrideSnippet:nil
                                                                  overrideDate:nil]];
@@ -2212,6 +2232,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (mappingDiff == nil) {
         // Diffing failed, reload to get back to a known good state.
+        self.lastReloadDate = [NSDate new];
         [self.tableView reloadData];
         return;
     }
@@ -2221,6 +2242,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     if ([self updateHasArchivedThreadsRow]) {
+        self.lastReloadDate = [NSDate new];
         [self.tableView reloadData];
         return;
     }
