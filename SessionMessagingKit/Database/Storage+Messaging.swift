@@ -47,7 +47,6 @@ extension Storage {
             attachment.albumMessageId = tsMessage.uniqueId!
             attachment.save(with: transaction)
         }
-        DispatchQueue.main.async { tsMessage.touch() } // FIXME: Hack for a thread updating issue
         return tsMessage.uniqueId!
     }
 
