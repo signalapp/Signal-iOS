@@ -327,8 +327,8 @@ class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
-    private func updateMockConversation() {
-        self.previewView?.updateMockConversation()
+    private func updateMockConversation(isDebounced: Bool) {
+        previewView?.updateMockConversation(isDebounced: isDebounced)
     }
 
     // MARK: - Events
@@ -482,7 +482,7 @@ extension CustomColorViewController: SpectrumSliderDelegate {
             owsFailDebug("Unknown slider.")
         }
 
-        updateMockConversation()
+        updateMockConversation(isDebounced: true)
         updateNavigation()
     }
 }
@@ -960,7 +960,21 @@ private class CustomColorPreviewView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    fileprivate func updateMockConversation() {
+    fileprivate lazy var updateMockConversationEvent = {
+        DebouncedEvent(maxFrequencySeconds: 0.25, onQueue: .main) { [weak self] in
+            self?._updateMockConversation()
+        }
+    }()
+
+    fileprivate func updateMockConversation(isDebounced: Bool) {
+        if isDebounced {
+            updateMockConversationEvent.requestNotify()
+        } else {
+            self._updateMockConversation()
+        }
+    }
+
+    private func _updateMockConversation() {
         guard let delegate = delegate else { return }
 
         mockConversationView.customChatColor = delegate.currentChatColor
@@ -1203,7 +1217,7 @@ private class CustomColorPreviewView: UIView {
             let angleRadians = atan2(touchVector.x, touchVector.y)
             delegate.angleRadians = angleRadians
             updateKnobLayout()
-            updateMockConversation()
+            updateMockConversation(isDebounced: true)
         default:
             gestureMode = .none
             break
