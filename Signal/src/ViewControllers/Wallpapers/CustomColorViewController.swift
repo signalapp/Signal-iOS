@@ -155,7 +155,22 @@ class CustomColorViewController: OWSTableViewController2 {
         set {}
     }
 
+    private enum NavigationState {
+        case unknown
+        case noUnsavedChanges
+        case hasUnsavedChanges
+    }
+    private var navigationState: NavigationState = .unknown
+
     private func updateNavigation() {
+        let navigationState: NavigationState = (hasUnsavedChanges
+                                                    ? .hasUnsavedChanges
+                                                    : .noUnsavedChanges)
+        guard self.navigationState != navigationState else {
+            return
+        }
+        self.navigationState = navigationState
+
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
@@ -961,7 +976,7 @@ private class CustomColorPreviewView: UIView {
     }
 
     fileprivate lazy var updateMockConversationEvent = {
-        DebouncedEvent(maxFrequencySeconds: 0.25, onQueue: .main) { [weak self] in
+        DebouncedEvent(maxFrequencySeconds: 0.1, onQueue: .main) { [weak self] in
             self?._updateMockConversation()
         }
     }()
