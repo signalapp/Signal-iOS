@@ -976,7 +976,7 @@ private class CustomColorPreviewView: UIView {
     }
 
     fileprivate lazy var updateMockConversationEvent = {
-        DebouncedEvent(maxFrequencySeconds: 0.1, onQueue: .main) { [weak self] in
+        DebouncedEvent(maxFrequencySeconds: 0.2, onQueue: .main) { [weak self] in
             self?._updateMockConversation()
         }
     }()
