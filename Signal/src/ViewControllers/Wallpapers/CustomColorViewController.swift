@@ -270,24 +270,27 @@ class CustomColorViewController: OWSTableViewController2 {
     private static func buildHueSpectrum() -> HSLSpectrum {
         let lightnessSpectrum = CustomColorViewController.lightnessSpectrum
         var values = [HSLValue]()
-        let precision: UInt32 = 1024
-        for index in 0..<(precision + 1) {
-            let alpha = (CGFloat(index) / CGFloat(precision)).clamp01()
+        // This lightness spectrum is non-linear.
+        // The hue spectrum is non-linear to exactly the same extent.
+        // Therefore the hue spectrum only needs as many values
+        // as the lightness spectrum.
+        for lightnessValue in lightnessSpectrum.values {
+            let alpha = lightnessValue.alpha.clamp01()
             // There's a linear hue progression.
             let hue = alpha
             // Saturation is always 1 in the hue spectrum.
             let saturation: CGFloat = 1
             // Derive lightness.
-            let lightness = lightnessSpectrum.value(forAlpha: alpha).lightness
+            let lightness = lightnessValue.lightness
             values.append(HSLValue(hue: hue, saturation: saturation, lightness: lightness, alpha: alpha))
         }
-
         return HSLSpectrum(values: values)
     }
 
     private static func buildSaturationSpectrum(referenceValue: HSLValue) -> HSLSpectrum {
         var values = [HSLValue]()
-        let precision: UInt32 = 1024
+        // This spectrum is linear, so we only need 2 endpoint values.
+        let precision: UInt32 = 1
         for index in 0..<(precision + 1) {
             let alpha = (CGFloat(index) / CGFloat(precision)).clamp01()
             let hue = referenceValue.hue

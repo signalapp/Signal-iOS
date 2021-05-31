@@ -196,6 +196,9 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Log all sticker suggestions"
                                      actionBlock:^() { [DebugUIMisc logStickerSuggestions]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Create chat colors"
+                                     actionBlock:^() { [DebugUIMisc createChatColors]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -564,7 +567,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<NSString *> *emojiSet = [NSMutableSet new];
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         for (StickerPack *stickerPack in [StickerManager installedStickerPacksWithTransaction:transaction]) {
-
+            
             for (StickerPackItem *item in stickerPack.items) {
                 if (item.emojiString.length > 0) {
                     OWSLogVerbose(@"emojiString: %@", item.emojiString);
@@ -575,6 +578,12 @@ NS_ASSUME_NONNULL_BEGIN
     }];
     OWSLogVerbose(@"emoji: %@",
         [[emojiSet.allObjects sortedArrayUsingSelector:@selector(compare:)] componentsJoinedByString:@" "]);
+}
+
++ (void)createChatColors
+{
+    DatabaseStorageWrite(SDSDatabaseStorage.shared,
+        ^(SDSAnyWriteTransaction *transaction) { [ChatColors createFakeChatColorsWithTransaction:transaction]; });
 }
 
 @end
