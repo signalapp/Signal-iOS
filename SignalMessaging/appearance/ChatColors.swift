@@ -211,12 +211,34 @@ public class ChatColors: NSObject, Dependencies {
 
     public static var defaultChatColor: ChatColor { Values.ultramarine }
 
+    // Chat Color Precedence
+    //
+    // * If Conversation X has a chat color setting A
+    //   * Use chat color A
+    // * If Conversation X has no chat color setting...
+    //   * If Conversation X has a wallpaper B
+    //     * Use default chat color for wallpaper B
+    //       * If Conversation X has no wallpaper...
+    //     * If there is a global chat color setting C
+    //       * Use chat color C
+    //       * (even if there is a global wallpaper)
+    //     * If there is no global chat color setting...
+    //       * If there is a global wallpaper D
+    //         * Use default chat color for wallpaper D
+    //       * If there is no global wallpaper...
+    //         * Use default chat color "ultramarine gradient".
     public static func autoChatColorForRendering(forThread thread: TSThread?,
+                                                 ignoreGlobalDefault: Bool = false,
                                                  transaction: SDSAnyReadTransaction) -> ChatColor {
-        if let value = defaultChatColorSetting(transaction: transaction) {
+        if let thread = thread,
+           let wallpaper = Wallpaper.wallpaperSetting(for: thread, transaction: transaction) {
+            return autoChatColorForRendering(forWallpaper: wallpaper)
+        } else if !ignoreGlobalDefault,
+                  let value = defaultChatColorSetting(transaction: transaction) {
+            // In the global settings, we want to ignore the global default
+            // when rendering the "auto" swatch.
             return value
-        } else if let wallpaper = Wallpaper.wallpaperForRendering(for: thread,
-                                                                  transaction: transaction) {
+        } else if let wallpaper = Wallpaper.wallpaperSetting(for: nil, transaction: transaction) {
             return autoChatColorForRendering(forWallpaper: wallpaper)
         } else {
             return Self.defaultChatColor

@@ -141,6 +141,14 @@ public enum Wallpaper: String, CaseIterable {
         return dimInDarkMode
     }
 
+    public static func wallpaperSetting(for thread: TSThread?, transaction: SDSAnyReadTransaction) -> Wallpaper? {
+        if let thread = thread {
+            return get(for: thread, transaction: transaction)
+        } else {
+            return get(for: nil, transaction: transaction)
+        }
+    }
+
     public static func wallpaperForRendering(for thread: TSThread?,
                                              transaction: SDSAnyReadTransaction) -> Wallpaper? {
         if let wallpaper = get(for: thread, transaction: transaction) {
