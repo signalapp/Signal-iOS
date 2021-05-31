@@ -296,6 +296,9 @@ public final class OpenGroupAPIV2 : NSObject {
         let request = Request(verb: .post, room: room, server: server, endpoint: "messages", parameters: json)
         return send(request).map(on: OpenGroupAPIV2.workQueue) { json in
             guard let rawMessage = json["message"] as? JSON, let message = OpenGroupMessageV2.fromJSON(rawMessage) else { throw Error.parsingFailed }
+            Storage.shared.write { transaction in
+                Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp, using: transaction)
+            }
             return message
         }
     }
