@@ -789,4 +789,44 @@ static NSTimeInterval launchStartedAt;
     }];
 }
 
+# pragma mark - App Link
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)incomingURL
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
+{
+    NSURLComponents *components = [[NSURLComponents alloc]  initWithURL:incomingURL resolvingAgainstBaseURL: true];
+    
+    // URL Scheme is sessionmessenger://DM?sessionID=1234
+    // We can later add more parameters like message etc.
+    NSString *intent = components.host;
+    if(intent != nil){
+        //Handle DM
+        if([intent isEqualToString: @"DM"]){
+            NSArray<NSURLQueryItem*> *params = [components queryItems];
+            NSPredicate *sessionIDPredicate = [NSPredicate predicateWithFormat:@"name == %@", @"sessionID"];
+            NSArray<NSURLQueryItem*> *matches = [params filteredArrayUsingPredicate: sessionIDPredicate];
+            if(matches.count > 0){
+                NSString *sessionID = matches.firstObject.value;
+                if(sessionID != nil){
+                    [self handleDM: sessionID];
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+- (void)handleDM:(NSString *)sessionID
+{
+    UIViewController *viewController = self.window.rootViewController;
+    if([viewController class] == [OWSNavigationController class]){
+        UIViewController *rVC = ((OWSNavigationController *)viewController).visibleViewController;
+        if([rVC class] == [HomeVC class]){
+            HomeVC *homeVC = (HomeVC *)rVC;
+            [homeVC createNewDMWithSessionID: sessionID];
+        }
+    }
+}
+
 @end

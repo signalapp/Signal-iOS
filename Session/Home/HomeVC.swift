@@ -66,7 +66,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         explanationLabel.text = NSLocalizedString("vc_home_empty_state_message", comment: "")
         let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
         createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
-        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
+        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM as () -> Void), for: UIControl.Event.touchUpInside)
         createNewPrivateChatButton.set(.width, to: 196)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
         result.axis = .vertical
@@ -419,6 +419,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     
     @objc func createNewDM() {
         let newDMVC = NewDMVC()
+        let navigationController = OWSNavigationController(rootViewController: newDMVC)
+        present(navigationController, animated: true, completion: nil)
+    }
+    
+    @objc func createNewDM(sessionID: String) {
+        let newDMVC = NewDMVC(sessionID: sessionID)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         present(navigationController, animated: true, completion: nil)
     }
