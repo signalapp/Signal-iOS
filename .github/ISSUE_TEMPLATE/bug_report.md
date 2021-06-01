@@ -1,5 +1,3 @@
-- [ ] I have read and agree to adhere to the [Code of Conduct](https://github.com/oxen-io/session-ios/blob/master/CODE_OF_CONDUCT.md).
-
 ---
 name: Bug report
 about: Create a report to help us improve
@@ -8,6 +6,10 @@ labels: bug
 assignees: ''
 
 ---
+
+**Code of conduct**
+
+- [ ] I have read and agree to adhere to the [Code of Conduct](https://github.com/oxen-io/session-ios/blob/master/CODE_OF_CONDUCT.md).
 
 **Describe the bug**
 
