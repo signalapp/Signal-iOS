@@ -750,6 +750,20 @@ import SignalMessaging
 
             call.individualCall.isRemoteVideoEnabled = false
 
+        case .remoteSharingScreenEnable:
+            guard call === callService.currentCall else {
+                callService.cleanupStaleCall(call)
+                return
+            }
+            call.individualCall.isRemoteSharingScreen = true
+
+        case .remoteSharingScreenDisable:
+            guard call === callService.currentCall else {
+                callService.cleanupStaleCall(call)
+                return
+            }
+            call.individualCall.isRemoteSharingScreen = false
+            
         case .reconnecting:
             self.handleReconnecting(call: call)
 

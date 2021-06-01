@@ -38,6 +38,7 @@ public protocol IndividualCallDelegate: class {
     func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
     func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
     func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
+    func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool)
 }
 
 /**
@@ -83,6 +84,15 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
             Logger.info("\(isRemoteVideoEnabled)")
             delegate?.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
+        }
+    }
+
+    var isRemoteSharingScreen = false {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.info("\(isRemoteSharingScreen)")
+            delegate?.individualCallRemoteSharingScreenDidChange(self, isRemoteSharingScreen: isRemoteSharingScreen)
         }
     }
 
