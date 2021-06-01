@@ -1165,6 +1165,11 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : call.individualCall.remoteVideoTrack)
     }
 
+    func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool) {
+        AssertIsOnMainThread()
+        self.updateCallUI()
+    }
+
     // MARK: - CallAudioServiceDelegate
 
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {

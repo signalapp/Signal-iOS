@@ -11,6 +11,7 @@ public protocol CallObserver: class {
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool)
     func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool)
     func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool)
+    func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool)
     func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool)
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall)
@@ -30,6 +31,7 @@ public extension CallObserver {
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
     func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
     func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
+    func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool) {}
     func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {}
 
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {}
@@ -303,6 +305,10 @@ extension SignalCall: IndividualCallDelegate {
 
     public func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         observers.elements.forEach { $0.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: isVideoMuted) }
+    }
+
+    public func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {
+        observers.elements.forEach { $0.individualCallRemoteSharingScreenDidChange(self, isRemoteSharingScreen: isRemoteSharingScreen) }
     }
 }
 
