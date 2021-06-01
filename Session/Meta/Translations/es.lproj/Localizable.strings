@@ -81,7 +81,7 @@
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ ha sido bloqueado.";
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Contacto bloqueado";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Usuario Bloqueado";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Los contactos bloqueados no podrán llamarte ni enviarte mensajes.";
 /* Label for generic done button. */
@@ -187,7 +187,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " Fue eliminado del grupo. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ fue eliminado del grupo. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "El grupo se llama ahora «%@».";
 /* No comment provided by engineer. */
@@ -287,7 +287,7 @@
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Inmediato";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Identifícate para acceder a Session.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticar para abrir Session.";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Fallo al identificarse";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -365,7 +365,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicador de tecleo";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Ninguno";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ días";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -497,7 +497,7 @@
 "vc_view_my_qr_code_explanation" = "Este es tu código QR. Otros usuarios pueden escanearlo para empezar una Session contigo.";
 // MARK: - Not Yet Translated
 "fast_mode_explanation" = "Se le notificará de los nuevos mensajes de forma fiable e inmediata usando los servidores de notificaciones de Apple.";
-"fast_mode" = "Fast Mode";
+"fast_mode" = "Modo Rápido";
 "slow_mode_explanation" = "Session comprobará ocasionalmente si hay nuevos mensajes en segundo plano.";
 "slow_mode" = "Modo lento";
 "vc_pn_mode_title" = "Notificaciones de mensaje";
@@ -532,4 +532,4 @@
 "vc_share_loading_message" = "Preparando archivos adjuntos...";
 "vc_share_sending_message" = "Enviando...";
 "view_open_group_invitation_description" = "Abrir invitación de grupo";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"vc_conversation_settings_invite_button_title" = "Añadir Miembros";

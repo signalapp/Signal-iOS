@@ -79,7 +79,7 @@
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Разблокировать";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ был(-а) заблокирован(-а).";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "Пользователь %@ был заблокирован.";
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Пользователь заблокирован";
 /* An explanation of the consequences of blocking another user. */
@@ -365,7 +365,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Индикаторы ввода";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Нет";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ дней";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -497,9 +497,9 @@
 "vc_view_my_qr_code_explanation" = "Это ваш QR-код. Другие пользователи могут сканировать его, чтобы начать диалог с вами.";
 // MARK: - Not Yet Translated
 "fast_mode_explanation" = "Вы будете получать уведомления о новых сообщениях надежно и сразу же с помощью серверов уведомлений Apple.";
-"fast_mode" = "Fast Mode";
+"fast_mode" = "Ускоренный режим";
 "slow_mode_explanation" = "Время от времени в фоновом режиме будут проверяться новые сообщения.";
-"slow_mode" = "Slow Mode";
+"slow_mode" = "Медленный режим";
 "vc_pn_mode_title" = "Уведомления о Сообщениях";
 "vc_notification_settings_notification_mode_title" = "Использовать быстрый режим";
 "vc_link_device_recovery_phrase_tab_title" = "Секретная фраза";
@@ -528,8 +528,8 @@
 "modal_link_previews_title" = "Включить предварительный просмотр ссылок?";
 "modal_link_previews_explanation" = "Включение предпросмотра ссылок покажет превью для отправляемых и получаемых ссылок. Это может быть полезно, но Session нужно будет соединиться с сайтами, связанными с ссылками, чтобы сгенерировать предпросмотр. Вы всегда можете отключить предпросмотр ссылок в настройках Session.";
 "modal_link_previews_button_title" = "Включить";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
-"view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"vc_share_title" = "Поделиться в Session";
+"vc_share_loading_message" = "Подготовка вложений...";
+"vc_share_sending_message" = "Отправка...";
+"view_open_group_invitation_description" = "Открыть приглашение в группу";
+"vc_conversation_settings_invite_button_title" = "Добавить участников";

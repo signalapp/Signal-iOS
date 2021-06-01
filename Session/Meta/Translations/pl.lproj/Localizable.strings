@@ -287,7 +287,7 @@
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Brak";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Uwierzytelnij, by używać Session";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Uwierzytelnij, by używać Session.";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Uwierzytelnianie nie powiodło się.";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -413,7 +413,7 @@
 "copy" = "Kopiuj";
 "invalid_url" = "nieprawidłowy URL";
 "next" = "Kolejny";
-"share" = "Dzielić";
+"share" = "Udostępnij";
 "invalid_session_id" = "Nieprawidłowy identyfikator Session";
 "cancel" = "Anuluj";
 "your_session_id" = "Twój identyfikator Session";
@@ -432,7 +432,7 @@
 "vc_restore_explanation" = "Wprowadź frazę odzyskiwania, która została Ci przekazana podczas rejestracji w celu przywrócenia konta.";
 "vc_restore_seed_text_field_hint" = "Wpisz swoją frazę odzyskiwania";
 "vc_link_device_title" = "Połącz urządzenie";
-"vc_link_device_scan_qr_code_tab_title" = "Skanowania QR code";
+"vc_link_device_scan_qr_code_tab_title" = "Skanuj kod QR";
 "vc_display_name_title_2" = "Wybierz swoją nazwę wyświetlaną";
 "vc_display_name_explanation" = "To będzie twoje imię, kiedy będziesz używać Sesji. Może to być twoje prawdziwe imię, alias lub cokolwiek innego, co lubisz.";
 "vc_display_name_text_field_hint" = "Wprowadź wyświetlaną nazwe";
@@ -455,7 +455,7 @@
 "vc_path_guard_node_row_title" = "Węzeł wejścia";
 "vc_path_service_node_row_title" = "Węzeł serwisowy";
 "vc_path_destination_row_title" = "Miejsce docelowe";
-"vc_path_learn_more_button_title" = "Ucz się więcej";
+"vc_path_learn_more_button_title" = "Dowiedz się więcej";
 "vc_create_private_chat_title" = "Nowa Session";
 "vc_create_private_chat_enter_session_id_tab_title" = "Wpisz identyfikator Session";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skanowania QR code";
@@ -470,7 +470,7 @@
 "vc_create_closed_group_group_name_missing_error" = "Wpisz nazwę grupy";
 "vc_create_closed_group_group_name_too_long_error" = "Wprowadź krótszą nazwę grupy";
 "vc_create_closed_group_too_many_group_members_error" = "Grupa zamknięta nie może mieć więcej niż 100 członków";
-"vc_join_public_chat_title" = "Dołącz do Open Group";
+"vc_join_public_chat_title" = "Dołącz do otwartej grupy";
 "vc_join_public_chat_enter_group_url_tab_title" = "Otwórz adres URL grupy";
 "vc_join_public_chat_scan_qr_code_tab_title" = "Skanowania QR code";
 "vc_join_public_chat_scan_qr_code_explanation" = "Zeskanuj kod QR otwartej grupy, do której chcesz dołączyć";
@@ -481,13 +481,13 @@
 "vc_settings_display_name_too_long_error" = "Wybierz krótszą nazwę wyświetlaną";
 "vc_settings_privacy_button_title" = "Prywatność";
 "vc_settings_notifications_button_title" = "Powiadomienia";
-"vc_settings_recovery_phrase_button_title" = "Zwrot odzyskiwania";
+"vc_settings_recovery_phrase_button_title" = "Fraza odzyskiwania";
 "vc_settings_clear_all_data_button_title" = "Wyczyść dane";
 "vc_notification_settings_title" = "Powiadomienia";
 "vc_privacy_settings_title" = "Prywatność";
 "preferences_notifications_strategy_category_title" = "Strategia powiadomień";
 "modal_seed_title" = "Twoja fraza odzyskiwania";
-"modal_seed_explanation" = "To jest twoja fraza odzyskiwania. Dzięki niemu możesz przywrócić lub przenieść identyfikator Session na nowe urządzenie.";
+"modal_seed_explanation" = "To jest twoja fraza odzyskiwania. Dzięki niej możesz przywrócić lub przenieść identyfikator Session na nowe urządzenie.";
 "modal_clear_all_data_title" = "Wyczyść wszystkie dane";
 "modal_clear_all_data_explanation" = "Spowoduje to trwałe usunięcie wiadomości, Session i kontaktów.";
 "vc_qr_code_title" = "Kod QR";
@@ -507,11 +507,11 @@
 "vc_enter_recovery_phrase_title" = "Recovery Phrase";
 "vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
 "vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages";
+"vc_home_title" = "Wiadomości";
 "admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
 "vc_join_open_group_suggestions_title" = "Or join one of these...";
-"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
-"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
+"vc_settings_invite_a_friend_button_title" = "Zaproś znajomego";
+"vc_settings_help_us_translate_button_title" = "Pomóż nam w tłumaczeniu Session";
 "copied" = "Copied";
 "vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
 "vc_conversation_input_prompt" = "Message";
