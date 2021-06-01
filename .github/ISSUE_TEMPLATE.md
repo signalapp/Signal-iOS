@@ -7,6 +7,7 @@ If you are looking for support, please email team@oxen.io.
 
 Let's begin with a checklist: Replace the empty checkboxes [ ] below with checked ones [x] accordingly. -->
 
+- [ ] I have read and agree to adhere to the [Code of Conduct](https://github.com/oxen-io/session-ios/blob/master/CODE_OF_CONDUCT.md).
 - [ ] I have searched open and closed issues for duplicates
 - [ ] I am submitting a bug report for existing functionality that does not work as intended
 - [ ] This isn't a feature request or a discussion topic
