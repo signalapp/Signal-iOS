@@ -1666,7 +1666,7 @@
 		C3A721992558C1660043A11F /* AnyPromise+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPromise+Conversion.swift"; sourceTree = "<group>"; };
 		C3A7225D2558C38D0043A11F /* Promise+Retaining.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promise+Retaining.swift"; sourceTree = "<group>"; };
 		C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionMissingModal.swift; sourceTree = "<group>"; };
-		C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = "Migrating Translations from Android.md"; path = "Meta/Translations/Migrating Translations from Android.md"; sourceTree = "<group>"; };
+		C3A8AF752665B03900A467FE /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		C3AAFFF125AE99710089E6DD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3ADC66026426688005F1414 /* ShareVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareVC.swift; sourceTree = "<group>"; };
@@ -2067,7 +2067,6 @@
 			isa = PBXGroup;
 			children = (
 				B6F509951AA53F760068F56A /* Localizable.strings */,
-				C3AA6BB824CE8F1B002358B6 /* Migrating Translations from Android.md */,
 			);
 			name = Translations;
 			path = ..;
@@ -3979,6 +3978,7 @@
 				sk,
 				nl,
 				"zh-Hant",
+				hi,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -5029,6 +5029,7 @@
 				B8EB20E6263F7E4B00773E52 /* sk */,
 				B87588582644CA9D000E60D0 /* nl */,
 				B834C6DD26533AE5001091B2 /* zh-Hant */,
+				C3A8AF752665B03900A467FE /* hi */,
 			);
 			name = Localizable.strings;
 			path = Meta/Translations;
