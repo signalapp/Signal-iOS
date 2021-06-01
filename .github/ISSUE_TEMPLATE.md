@@ -3,15 +3,11 @@ You can also preview your report before submitting it. You may remove sections t
 
 Before we begin, please note that this tracker is only for issues. It is not for questions, comments, or feature requests.
 
-If you would like to discuss a new feature or submit suggestions, please visit the community forum:
-https://community.signalusers.org
-
-If you are looking for support, please visit our support center:
-https://support.signal.org/
-or email support@signal.org
+If you are looking for support, please email team@oxen.io.
 
 Let's begin with a checklist: Replace the empty checkboxes [ ] below with checked ones [x] accordingly. -->
 
+- [ ] I have read and agree to adhere to the [Code of Conduct](https://github.com/oxen-io/session-ios/blob/master/CODE_OF_CONDUCT.md).
 - [ ] I have searched open and closed issues for duplicates
 - [ ] I am submitting a bug report for existing functionality that does not work as intended
 - [ ] This isn't a feature request or a discussion topic
