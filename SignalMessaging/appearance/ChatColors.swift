@@ -231,14 +231,16 @@ public class ChatColors: NSObject, Dependencies {
                                                  ignoreGlobalDefault: Bool = false,
                                                  transaction: SDSAnyReadTransaction) -> ChatColor {
         if let thread = thread,
-           let wallpaper = Wallpaper.wallpaperSetting(for: thread, transaction: transaction) {
+           let wallpaper = Wallpaper.wallpaperSetting(for: thread, transaction: transaction),
+           wallpaper != .photo {
             return autoChatColorForRendering(forWallpaper: wallpaper)
         } else if !ignoreGlobalDefault,
                   let value = defaultChatColorSetting(transaction: transaction) {
             // In the global settings, we want to ignore the global default
             // when rendering the "auto" swatch.
             return value
-        } else if let wallpaper = Wallpaper.wallpaperSetting(for: nil, transaction: transaction) {
+        } else if let wallpaper = Wallpaper.wallpaperSetting(for: nil, transaction: transaction),
+                  wallpaper != .photo {
             return autoChatColorForRendering(forWallpaper: wallpaper)
         } else {
             return Self.defaultChatColor
