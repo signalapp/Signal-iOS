@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,6 +20,13 @@ class GroupCallVideoOverflow: UICollectionView {
     }
 
     private var hasInitialized = false
+
+    private var isAnyRemoteDeviceScreenSharing = false {
+        didSet {
+            guard oldValue != isAnyRemoteDeviceScreenSharing else { return }
+            updateOrientationOverride()
+        }
+    }
 
     init(call: SignalCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
@@ -51,6 +58,13 @@ class GroupCallVideoOverflow: UICollectionView {
 
         call.addObserverAndSyncState(observer: self)
         hasInitialized = true
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateOrientationOverride),
+            name: UIDevice.orientationDidChangeNotification,
+            object: nil
+        )
     }
 
     required init?(coder: NSCoder) {
@@ -58,6 +72,43 @@ class GroupCallVideoOverflow: UICollectionView {
     }
 
     deinit { call.removeObserver(self) }
+
+    private enum OrientationOverride {
+        case landscapeLeft
+        case landscapeRight
+    }
+    private var orientationOverride: OrientationOverride? {
+        didSet {
+            guard orientationOverride != oldValue else { return }
+            reloadData()
+        }
+    }
+
+    @objc
+    func updateOrientationOverride() {
+        // If we're on iPhone and screen sharing, we want to allow
+        // the user to change the orientation. We fake this by
+        // manually transforming the cells.
+        guard !UIDevice.current.isIPad && isAnyRemoteDeviceScreenSharing else {
+            orientationOverride = nil
+            return
+        }
+
+        switch UIDevice.current.orientation {
+        case .faceDown, .faceUp, .unknown:
+            // Do nothing, assume the last orientation was already applied.
+            break
+        case .portrait, .portraitUpsideDown:
+            // Clear any override
+            orientationOverride = nil
+        case .landscapeLeft:
+            orientationOverride = .landscapeLeft
+        case .landscapeRight:
+            orientationOverride = .landscapeRight
+        @unknown default:
+            break
+        }
+    }
 
     private var isAnimating = false
     private var hadVisibleCells = false
@@ -99,6 +150,17 @@ extension GroupCallVideoOverflow: UICollectionViewDelegate {
             return owsFailDebug("missing member address")
         }
         cell.configureRemoteVideo(device: remoteDevice)
+
+        if let orientationOverride = orientationOverride {
+            switch orientationOverride {
+            case .landscapeRight:
+                cell.transform = .init(rotationAngle: -.halfPi)
+            case .landscapeLeft:
+                cell.transform = .init(rotationAngle: .halfPi)
+            }
+        } else {
+            cell.transform = .identity
+        }
     }
 }
 
@@ -139,6 +201,8 @@ extension GroupCallVideoOverflow: CallObserver {
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
+
+        isAnyRemoteDeviceScreenSharing = call.groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
         reloadData()
     }

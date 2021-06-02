@@ -59,6 +59,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         let comparableName: String
         let isAudioMuted: Bool?
         let isVideoMuted: Bool?
+        let isPresenting: Bool?
     }
 
     private var sortedMembers = [JoinedMember]()
@@ -86,7 +87,8 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                         displayName: displayName,
                         comparableName: comparableName,
                         isAudioMuted: member.audioMuted,
-                        isVideoMuted: member.videoMuted
+                        isVideoMuted: member.videoMuted,
+                        isPresenting: member.presenting
                     )
                 }
 
@@ -103,7 +105,8 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     displayName: displayName,
                     comparableName: comparableName,
                     isAudioMuted: self.call.groupCall.isOutgoingAudioMuted,
-                    isVideoMuted: self.call.groupCall.isOutgoingVideoMuted
+                    isVideoMuted: self.call.groupCall.isOutgoingVideoMuted,
+                    isPresenting: false
                 ))
             } else {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.
@@ -118,7 +121,8 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                         displayName: displayName,
                         comparableName: comparableName,
                         isAudioMuted: nil,
-                        isVideoMuted: nil
+                        isVideoMuted: nil,
+                        isPresenting: nil
                     )
                 } ?? []
             }
@@ -235,6 +239,7 @@ private class GroupCallMemberCell: UITableViewCell {
     let nameLabel = UILabel()
     let videoMutedIndicator = UIImageView()
     let audioMutedIndicator = UIImageView()
+    let presentingIndicator = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -248,14 +253,6 @@ private class GroupCallMemberCell: UITableViewCell {
 
         nameLabel.font = .ows_dynamicTypeBody
 
-        videoMutedIndicator.contentMode = .scaleAspectFit
-        videoMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
-        videoMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
-        videoMutedIndicator.setContentHuggingHorizontalHigh()
-        let videoMutedWrapper = UIView()
-        videoMutedWrapper.addSubview(videoMutedIndicator)
-        videoMutedIndicator.autoPinEdgesToSuperviewEdges()
-
         audioMutedIndicator.contentMode = .scaleAspectFit
         audioMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
         audioMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
@@ -264,12 +261,31 @@ private class GroupCallMemberCell: UITableViewCell {
         audioMutedWrapper.addSubview(audioMutedIndicator)
         audioMutedIndicator.autoPinEdgesToSuperviewEdges()
 
+        videoMutedIndicator.contentMode = .scaleAspectFit
+        videoMutedIndicator.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
+        videoMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
+        videoMutedIndicator.setContentHuggingHorizontalHigh()
+
+        presentingIndicator.contentMode = .scaleAspectFit
+        presentingIndicator.setTemplateImage(#imageLiteral(resourceName: "share-screen-solid-28"), tintColor: .ows_white)
+        presentingIndicator.autoSetDimensions(to: CGSize(square: 16))
+        presentingIndicator.setContentHuggingHorizontalHigh()
+
+        // We share a wrapper for video muted and presenting states
+        // as they render in the same column.
+        let videoMutedAndPresentingWrapper = UIView()
+        videoMutedAndPresentingWrapper.addSubview(videoMutedIndicator)
+        videoMutedIndicator.autoPinEdgesToSuperviewEdges()
+
+        videoMutedAndPresentingWrapper.addSubview(presentingIndicator)
+        presentingIndicator.autoPinEdgesToSuperviewEdges()
+
         let stackView = UIStackView(arrangedSubviews: [
             avatarView,
             UIView.spacer(withWidth: 8),
             nameLabel,
             UIView.spacer(withWidth: 16),
-            videoMutedWrapper,
+            videoMutedAndPresentingWrapper,
             UIView.spacer(withWidth: 16),
             audioMutedWrapper
         ])
@@ -286,8 +302,9 @@ private class GroupCallMemberCell: UITableViewCell {
     func configure(item: GroupCallMemberSheet.JoinedMember) {
         nameLabel.textColor = Theme.darkThemePrimaryColor
 
-        videoMutedIndicator.isHidden = item.isVideoMuted != true
+        videoMutedIndicator.isHidden = item.isVideoMuted != true || item.isPresenting == true
         audioMutedIndicator.isHidden = item.isAudioMuted != true
+        presentingIndicator.isHidden = item.isPresenting != true
 
         nameLabel.text = item.displayName
 

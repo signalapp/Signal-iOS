@@ -400,8 +400,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         let newVideoView = callService.groupCallRemoteVideoManager.remoteVideoView(for: device, mode: mode)
         insertSubview(newVideoView, belowSubview: muteIndicatorImage)
         newVideoView.frame = bounds
+        newVideoView.isScreenShare = device.sharingScreen == true
         videoView = newVideoView
-
         owsAssertDebug(videoView != nil, "Missing remote video view")
     }
 

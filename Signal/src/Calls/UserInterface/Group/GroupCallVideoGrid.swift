@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -158,9 +158,12 @@ class GroupCallVideoGridCell: UICollectionViewCell {
 
 extension Sequence where Element: RemoteDeviceState {
     /// The first person to join the call is the first item in the list.
+    /// Members that are presenting are always put at the top of the list.
     var sortedByAddedTime: [RemoteDeviceState] {
         return sorted { lhs, rhs in
-            if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
+            if lhs.presenting != rhs.presenting {
+                return lhs.presenting ?? false
+            } else if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
                 return lhs.mediaKeysReceived
             } else if lhs.addedTime != rhs.addedTime {
                 return lhs.addedTime < rhs.addedTime
@@ -171,9 +174,12 @@ extension Sequence where Element: RemoteDeviceState {
     }
 
     /// The most recent speaker is the first item in the list.
+    /// Members that are presenting are always put at the top of the list.
     var sortedBySpeakerTime: [RemoteDeviceState] {
         return sorted { lhs, rhs in
-            if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
+            if lhs.presenting != rhs.presenting {
+                return lhs.presenting ?? false
+            } else if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
                 return lhs.mediaKeysReceived
             } else if lhs.speakerTime != rhs.speakerTime {
                 return lhs.speakerTime > rhs.speakerTime

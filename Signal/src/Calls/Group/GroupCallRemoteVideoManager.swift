@@ -25,6 +25,8 @@ class GroupCallRemoteVideoManager: Dependencies {
         videoView.sizeDelegate = self
         videoView.isGroupCall = true
 
+        if mode == .speaker { videoView.isFullScreen = true }
+
         currentVideoViewsDevice[mode] = videoView
         videoViews[device.demuxId] = currentVideoViewsDevice
 
@@ -150,6 +152,16 @@ class GroupCallRemoteVideoView: UIView {
     var isGroupCall: Bool {
         get { remoteVideoView.isGroupCall }
         set { remoteVideoView.isGroupCall = newValue }
+    }
+
+    var isFullScreen: Bool {
+        get { remoteVideoView.isFullScreen }
+        set { remoteVideoView.isFullScreen = newValue }
+    }
+
+    var isScreenShare: Bool {
+        get { remoteVideoView.isScreenShare }
+        set { remoteVideoView.isScreenShare = newValue }
     }
 
     var isRenderingVideo: Bool { videoTrack != nil }

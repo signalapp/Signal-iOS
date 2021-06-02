@@ -842,6 +842,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteVideoView.isHidden
+        remoteVideoView.isFullScreen = true
+        remoteVideoView.isScreenShare = call.individualCall.isRemoteSharingScreen
         contactAvatarView.isHidden = hasRemoteVideo || isRenderingLocalVanityVideo
 
         // Layout controls immediately to avoid spurious animation.

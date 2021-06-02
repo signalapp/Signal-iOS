@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -167,10 +167,12 @@ class CallHeader: UIView {
                 comment: "Text indicating that the user has lost their connection to the call and we are reconnecting."
             )
         } else {
+            var isFirstMemberPresenting = false
             let memberNames: [String] = databaseStorage.uiRead { transaction in
                 if self.call.groupCall.localDeviceState.joinState == .joined {
-                    return self.call.groupCall.remoteDeviceStates.sortedByAddedTime
-                        .map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
+                    let sortedDeviceStates = self.call.groupCall.remoteDeviceStates.sortedByAddedTime
+                    isFirstMemberPresenting = sortedDeviceStates.first?.presenting == true
+                    return sortedDeviceStates.map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
                 } else {
                     return self.call.groupCall.peekInfo?.joinedMembers
                         .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) } ?? []
@@ -186,9 +188,25 @@ class CallHeader: UIView {
                         comment: "Text explaining that you are the only person currently in the group call"
                     )
                 case 1:
-                    callTitleText = memberNames[0]
+                    if isFirstMemberPresenting {
+                        let formatString = NSLocalizedString(
+                            "GROUP_CALL_PRESENTING_FORMAT",
+                            comment: "Text explaining that a member is presenting. Embeds {member name}"
+                        )
+                        callTitleText = String(format: formatString, memberNames[0])
+                    } else {
+                        callTitleText = memberNames[0]
+                    }
                 default:
-                    callTitleText = ""
+                    if isFirstMemberPresenting {
+                        let formatString = NSLocalizedString(
+                            "GROUP_CALL_PRESENTING_FORMAT",
+                            comment: "Text explaining that a member is presenting. Embeds {member name}"
+                        )
+                        callTitleText = String(format: formatString, memberNames[0])
+                    } else {
+                        callTitleText = ""
+                    }
                 }
             default:
                 switch memberNames.count {

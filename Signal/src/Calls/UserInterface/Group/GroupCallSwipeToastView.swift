@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-class GroupCallSpeakerToastView: UIView {
+class GroupCallSwipeToastView: UIView {
 
     private let imageView: UIImageView = {
         let view = UIImageView()
@@ -16,11 +16,15 @@ class GroupCallSpeakerToastView: UIView {
         let label = UILabel()
         label.font = UIFont.ows_dynamicTypeBody2
         label.textColor = .ows_gray05
-        label.text = NSLocalizedString(
-            "GROUP_CALL_SPEAKER_VIEW_TOAST",
-            comment: "Toast view text informing user about swiping to speaker view")
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         return label
     }()
+
+    var text: String? {
+        get { label.text }
+        set { label.text = newValue }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
