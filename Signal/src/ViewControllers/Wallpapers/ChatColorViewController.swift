@@ -167,13 +167,15 @@ class ChatColorViewController: OWSTableViewController2 {
         } actionBlock: {})
         contents.addSection(previewSection)
 
-        let chatColorPicker = ChatColorPicker(chatColorViewController: self)
-        self.chatColorPicker = chatColorPicker
         let colorsSection = OWSTableSection()
         colorsSection.customHeaderHeight = 14
-        colorsSection.add(OWSTableItem {
+        colorsSection.add(OWSTableItem { [weak self] in
             let cell = OWSTableItem.newCell()
+            guard let self = self else { return cell }
+
             cell.selectionStyle = .none
+            let chatColorPicker = ChatColorPicker(chatColorViewController: self)
+            self.chatColorPicker = chatColorPicker
             cell.contentView.addSubview(chatColorPicker)
             chatColorPicker.autoPinEdgesToSuperviewMargins()
             return cell
