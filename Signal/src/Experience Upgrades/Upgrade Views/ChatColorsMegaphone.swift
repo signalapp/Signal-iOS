@@ -17,8 +17,12 @@ class ChatColorsMegaphone: MegaphoneView {
             primary: Button(title: NSLocalizedString(
                 "CHAT_COLORS_MEGAPHONE_ACTION",
                 comment: "Action text for char colors megaphone"
-            )) {
-                Self.signalApp.showAppSettings(mode: .appearance)
+            )) { [weak self] in
+                guard let self = self else { return }
+                self.dismiss {
+                    self.markAsComplete()
+                    Self.signalApp.showAppSettings(mode: .appearance)
+                }
             },
             secondary: Button(title: CommonStrings.notNowButton) { [weak self] in
                 self?.markAsComplete()
