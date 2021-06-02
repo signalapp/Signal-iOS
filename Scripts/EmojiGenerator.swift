@@ -1,7 +1,3 @@
-//
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
-//
-
 #!/usr/bin/env xcrun --sdk macosx swift
 
 import Foundation
@@ -46,6 +42,7 @@ class EmojiGenerator {
         case symbols = "Symbols"
         case flags = "Flags"
         case skinTones = "Skin Tones"
+        case components = "Component"
     }
 
     enum SkinTone: String, CaseIterable, Equatable {
@@ -68,7 +65,7 @@ class EmojiGenerator {
         .travel,
         .objects,
         .symbols,
-        .flags
+        .flags,
     ]
 
     struct SkinVariation: Codable {
@@ -100,12 +97,6 @@ class EmojiGenerator {
             case "couplekiss": return "personKissPerson"
             case "couple": return "womanAndManHoldingHands"
             case "couple_with_heart": return "personHeartPerson"
-            case "beetle":
-                if name == "LADY BEETLE" { return "ladyBeetle" }
-                return "beetle"
-            case "man_in_tuxedo":
-                if name == nil { return "manInTuxedo" }
-                return "personInTuxedo"
             default:
                 let uppperCamelCase = shortName.replacingOccurrences(of: "-", with: "_").components(separatedBy: "_").map(titlecase).joined(separator: "")
                 return String(uppperCamelCase.unicodeScalars.first!).lowercased() + String(uppperCamelCase.unicodeScalars.dropFirst())
@@ -191,59 +182,66 @@ class EmojiGenerator {
         let sortedEmojiData = try! jsonDecoder.decode([EmojiData].self, from: jsonData)
             .sorted { $0.sortOrder < $1.sortOrder }
             .filter { $0.category != .skinTones } // for now, we don't care about skin tones
-
+        
         // Main enum
         writeBlock(fileName: "Emoji.swift") { fileHandle in
             fileHandle.writeLine("/// A sorted representation of all available emoji")
             fileHandle.writeLine("enum Emoji: String, CaseIterable, Equatable {")
-
+            
             for emojiData in sortedEmojiData {
                 fileHandle.writeLine("    case \(emojiData.enumName) = \"\(emojiData.emoji)\"")
             }
-
+            
             fileHandle.writeLine("}")
         }
-
+        
         // Conversion from String
         writeBlock(fileName: "EmojiWithSkinTones+String.swift") { fileHandle in
             fileHandle.writeLine("extension EmojiWithSkinTones {")
-
+            
             fileHandle.writeLine("    init?(rawValue: String) {")
             fileHandle.writeLine("        guard rawValue.isSingleEmoji else { return nil }")
-            fileHandle.writeLine("        switch rawValue {")
+            
+            for (index, emojiData) in sortedEmojiData.enumerated() {
+                if index == 0 {
+                    fileHandle.writeLine("        if rawValue == \"\(emojiData.emoji)\" {")
+                } else {
+                    fileHandle.writeLine("        } else if rawValue == \"\(emojiData.emoji)\" {")
+                }
 
-            for emojiData in sortedEmojiData {
-                fileHandle.writeLine("        case \"\(emojiData.emoji)\": self.init(baseEmoji: .\(emojiData.enumName), skinTones: nil)")
-
+                fileHandle.writeLine("            self.init(baseEmoji: Emoji.\(emojiData.enumName), skinTones: nil)")
+                
                 if let sortedEmojiPerSkinTone = emojiData.sortedEmojiPerSkinTone {
                     for (skinTones, emoji) in sortedEmojiPerSkinTone {
-                        fileHandle.writeLine("        case \"\(emoji)\": self.init(baseEmoji: .\(emojiData.enumName), skinTones: [\(skinTones.map { ".\($0)" }.joined(separator: ", "))])")
+                        fileHandle.writeLine("        } else if rawValue == \"\(emoji)\" {")
+                        fileHandle.writeLine("            self.init(baseEmoji: Emoji.\(emojiData.enumName), skinTones: [\(skinTones.map { "Emoji.SkinTone.\($0)" }.joined(separator: ", "))])")
                     }
                 }
             }
-
-            fileHandle.writeLine("        default: return nil")
-
+            
+            
+            fileHandle.writeLine("        } else {")
+            fileHandle.writeLine("            return nil ")
             fileHandle.writeLine("        }")
 
             fileHandle.writeLine("    }")
-
+            
             fileHandle.writeLine("}")
         }
-
+        
         // Skin tones lookup
         writeBlock(fileName: "Emoji+SkinTones.swift") { fileHandle in
             fileHandle.writeLine("extension Emoji {")
-
+            
             // Start SkinTone enum
             fileHandle.writeLine("    enum SkinTone: String, CaseIterable, Equatable {")
             for skinTone in SkinTone.allCases {
                 fileHandle.writeLine("        case \(skinTone) = \"\(skinTone.unicodeScalar)\"")
             }
-
+            
             // End SkinTone Enum
             fileHandle.writeLine("    }")
-
+            
             fileHandle.writeLine("")
 
             // skin tone helpers
@@ -368,7 +366,9 @@ class EmojiGenerator {
 
             for emojiData in sortedEmojiData {
                 let category = [.smileys, .people].contains(emojiData.category) ? .smileysAndPeople : emojiData.category
-                fileHandle.writeLine("        case .\(emojiData.enumName): return .\(category)")
+                if category != .components {
+                    fileHandle.writeLine("        case .\(emojiData.enumName): return .\(category)")
+                }
             }
 
             // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
