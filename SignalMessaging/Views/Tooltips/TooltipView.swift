@@ -150,7 +150,7 @@ open class TooltipView: UIView {
         }
     }
 
-    public func horizontalStack(forSubviews subviews: [UIView]) -> UIView {
+    public func horizontalStack(forSubviews subviews: [UIView]) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: subviews)
         stackView.axis = .horizontal
         stackView.alignment = .center

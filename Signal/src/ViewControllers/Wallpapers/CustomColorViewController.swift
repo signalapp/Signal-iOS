@@ -1163,6 +1163,10 @@ private class CustomColorPreviewView: UIView {
 
         addGestureRecognizer(CustomColorGestureRecognizer(target: self, action: #selector(handleGesture(_:))))
         self.isUserInteractionEnabled = true
+
+        DispatchQueue.main.async { [weak self] in
+            self?.ensureTooltip()
+        }
     }
 
     private enum GestureMode {
@@ -1233,6 +1237,7 @@ private class CustomColorPreviewView: UIView {
             delegate.angleRadians = angleRadians
             updateKnobLayout()
             updateMockConversation(isDebounced: true)
+            dismissTooltip()
         default:
             gestureMode = .none
             break
@@ -1345,6 +1350,52 @@ private class CustomColorPreviewView: UIView {
             ))
         ])
     }
+
+    // MARK: - Tooltip
+
+    private static let keyValueStore = SDSKeyValueStore(collection: "CustomColorPreviewView")
+    private static let tooltipWasDismissedKey = "tooltipWasDismissed"
+
+    private var customColorTooltip: CustomColorTooltip?
+
+    fileprivate func dismissTooltip() {
+        databaseStorage.write { transaction in
+            Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction)
+        }
+        hideTooltip()
+    }
+
+    private func hideTooltip() {
+        customColorTooltip?.removeFromSuperview()
+        customColorTooltip = nil
+    }
+
+    private func ensureTooltip() {
+        let shouldShowTooltip = databaseStorage.read { transaction in
+            !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction)
+        }
+        let isShowingTooltip = customColorTooltip != nil
+        guard shouldShowTooltip != isShowingTooltip else {
+            return
+        }
+        if nil != self.customColorTooltip {
+            hideTooltip()
+        } else {
+            guard let knobView1 = knobView1,
+                  let knobView2 = knobView2 else {
+                hideTooltip()
+                return
+            }
+            let knobView = (knobView1.frame.y < knobView2.frame.y
+                                ? knobView1
+                                : knobView2)
+            self.customColorTooltip = CustomColorTooltip.present(fromView: self,
+                                                                 widthReferenceView: self,
+                                                                 tailReferenceView: knobView) { [weak self] in
+                self?.dismissTooltip()
+            }
+        }
+    }
 }
 
 // MARK: -
@@ -1417,4 +1468,61 @@ class CustomColorGestureRecognizer: UIGestureRecognizer {
 
 extension CustomColorPreviewView: MockConversationDelegate {
     var mockConversationViewWidth: CGFloat { delegate?.previewWidth ?? 0 }
+}
+
+// MARK: -
+
+private class CustomColorTooltip: TooltipView {
+
+    private override init(fromView: UIView,
+                          widthReferenceView: UIView,
+                          tailReferenceView: UIView,
+                          wasTappedBlock: (() -> Void)?) {
+        super.init(fromView: fromView,
+                   widthReferenceView: widthReferenceView,
+                   tailReferenceView: tailReferenceView,
+                   wasTappedBlock: wasTappedBlock)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    public class func present(fromView: UIView,
+                              widthReferenceView: UIView,
+                              tailReferenceView: UIView,
+                              wasTappedBlock: (() -> Void)?) -> CustomColorTooltip {
+        return CustomColorTooltip(fromView: fromView,
+                                  widthReferenceView: widthReferenceView,
+                                  tailReferenceView: tailReferenceView,
+                                  wasTappedBlock: wasTappedBlock)
+    }
+
+    public override func bubbleContentView() -> UIView {
+        let label = UILabel()
+        label.text = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP",
+                                       comment: "Tooltip highlighting the custom chat color controls.")
+        label.font = .ows_dynamicTypeSubheadline
+        label.textColor = .ows_white
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }
+
+    public override var bubbleColor: UIColor {
+        .ows_accentBlue
+    }
+
+    public override var tailDirection: TooltipView.TailDirection {
+        .up
+    }
+
+    public override var bubbleInsets: UIEdgeInsets {
+        UIEdgeInsets(hMargin: 12, vMargin: 7)
+    }
+
+    public override var bubbleHSpacing: CGFloat {
+        10
+    }
 }

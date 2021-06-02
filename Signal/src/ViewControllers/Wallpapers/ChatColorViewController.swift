@@ -688,7 +688,10 @@ private class ChatColorTooltip: TooltipView {
                           widthReferenceView: UIView,
                           tailReferenceView: UIView,
                           wasTappedBlock: (() -> Void)?) {
-        super.init(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
+        super.init(fromView: fromView,
+                   widthReferenceView: widthReferenceView,
+                   tailReferenceView: tailReferenceView,
+                   wasTappedBlock: wasTappedBlock)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -700,7 +703,10 @@ private class ChatColorTooltip: TooltipView {
                               widthReferenceView: UIView,
                               tailReferenceView: UIView,
                               wasTappedBlock: (() -> Void)?) -> ChatColorTooltip {
-        return ChatColorTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
+        ChatColorTooltip(fromView: fromView,
+                         widthReferenceView: widthReferenceView,
+                         tailReferenceView: tailReferenceView,
+                         wasTappedBlock: wasTappedBlock)
     }
 
     public override func bubbleContentView() -> UIView {
