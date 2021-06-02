@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoCallMessageOffer;
 @class SSKProtoCallMessageOpaque;
 @class SSKProtoDataMessageGroupCallUpdate;
+@class SSKProtoEnvelope;
 @class SignalServiceAddress;
 @class TSGroupThread;
 
@@ -51,6 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
                              forThread:(TSGroupThread *)groupThread
                serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
         NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:));
+
+- (BOOL)willExternallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
+                                      plaintextData:(NSData *)plaintextData
+                                    wasReceivedByUD:(BOOL)wasReceivedByUD
+                            serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+    NS_SWIFT_NAME(willExternallyHandleCallMessage(envelope:plaintextData:wasReceivedByUD:serverDeliveryTimestamp:));
 
 @end
 

@@ -97,7 +97,10 @@ public enum PushRegistrationError: Error {
         assert(type == .voIP)
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
-            if let preauthChallengeResolver = self.preauthChallengeResolver,
+            if CallMessageRelay.handleVoipPayload(payload.dictionaryPayload) {
+                // Do nothing. This was a call message relayed from the NSE
+                Logger.info("Handled call message from NSE.")
+            } else if let preauthChallengeResolver = self.preauthChallengeResolver,
                 let challenge = payload.dictionaryPayload["challenge"] as? String {
                 Logger.info("received preauth challenge")
                 preauthChallengeResolver.fulfill(challenge)
@@ -217,6 +220,14 @@ public enum PushRegistrationError: Error {
         }
     }
 
+    private func createVoipRegistryIfNecessary() {
+        guard voipRegistry == nil else { return }
+        let voipRegistry = PKPushRegistry(queue: nil)
+        self.voipRegistry  = voipRegistry
+        voipRegistry.desiredPushTypes = [.voIP]
+        voipRegistry.delegate = self
+    }
+
     private func registerForVoipPushToken() -> Promise<String?> {
         AssertIsOnMainThread()
         Logger.info("")
@@ -225,6 +236,9 @@ public enum PushRegistrationError: Error {
         // using the notification service extension.
         guard !FeatureFlags.notificationServiceExtension else {
             Logger.info("Not using VOIP token because NSE is enabled.")
+            // We still must create the voip registry to handle voip
+            // pushes relayed from the NSE.
+            createVoipRegistryIfNecessary()
             return Promise.value(nil)
         }
 
@@ -239,14 +253,9 @@ public enum PushRegistrationError: Error {
         self.voipTokenPromise = promise
         self.voipTokenResolver = resolver
 
-        if self.voipRegistry == nil {
-            // We don't create the voip registry in init, because it immediately requests the voip token,
-            // potentially before we're ready to handle it.
-            let voipRegistry = PKPushRegistry(queue: nil)
-            self.voipRegistry  = voipRegistry
-            voipRegistry.desiredPushTypes = [.voIP]
-            voipRegistry.delegate = self
-        }
+        // We don't create the voip registry in init, because it immediately requests the voip token,
+        // potentially before we're ready to handle it.
+        createVoipRegistryIfNecessary()
 
         guard let voipRegistry = self.voipRegistry else {
             owsFailDebug("failed to initialize voipRegistry")

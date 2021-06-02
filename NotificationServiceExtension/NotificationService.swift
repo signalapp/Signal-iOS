@@ -99,7 +99,7 @@ class NotificationService: UNNotificationServiceExtension {
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
                 // TODO: calls..
-                SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
+                SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
             },
             migrationCompletion: { [weak self] error in
