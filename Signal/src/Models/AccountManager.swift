@@ -61,7 +61,7 @@ public class AccountManager: NSObject {
     func getPreauthChallenge(recipientId: String) -> Promise<String?> {
         return firstly {
             return self.pushRegistrationManager.requestPushTokens()
-        }.then { (_: String, voipToken: String) -> Promise<String?> in
+        }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
             let (pushPromise, pushResolver) = Promise<String>.pending()
             self.pushRegistrationManager.preauthChallengeResolver = pushResolver
 
@@ -425,7 +425,7 @@ public class AccountManager: NSObject {
 
     // MARK: Message Delivery
 
-    func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
+    func updatePushTokens(pushToken: String, voipToken: String?) -> Promise<Void> {
         return Promise { resolver in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                           voipToken: voipToken,

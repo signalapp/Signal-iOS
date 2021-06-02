@@ -100,7 +100,7 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setPushToken:(NSString *)value;
 - (nullable NSString *)getPushToken;
 
-- (void)setVoipToken:(NSString *)value;
+- (void)setVoipToken:(nullable NSString *)value;
 - (nullable NSString *)getVoipToken;
 
 - (void)unsetRecordedAPNSTokens;

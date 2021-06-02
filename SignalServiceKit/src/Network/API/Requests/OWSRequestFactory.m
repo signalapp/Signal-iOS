@@ -223,19 +223,21 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId
++ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier
+                                         voipIdentifier:(nullable NSString *)voipId
 {
     OWSAssertDebug(identifier.length > 0);
-    OWSAssertDebug(voipId.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
-    OWSAssertDebug(voipId);
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                              method:@"PUT"
-                          parameters:@{
-                              @"apnRegistrationId" : identifier,
-                              @"voipRegistrationId" : voipId ?: @"",
-                          }];
+
+    NSMutableDictionary *parameters = [@{ @"apnRegistrationId" : identifier } mutableCopy];
+    if (voipId.length > 0) {
+        parameters[@"voipRegistrationId"] = voipId;
+    } else {
+        OWSAssertDebug(SSKFeatureFlags.notificationServiceExtension);
+    }
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
 + (TSRequest *)updatePrimaryDeviceAttributesRequest

@@ -160,7 +160,7 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
     return result;
 }
 
-- (void)setString:(NSString *)value forKey:(NSString *)key
+- (void)setString:(nullable NSString *)value forKey:(NSString *)key
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setString:value key:key transaction:transaction];
@@ -447,7 +447,7 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
     return [self stringForKey:OWSPreferencesKeyLastRecordedPushToken];
 }
 
-- (void)setVoipToken:(NSString *)value
+- (void)setVoipToken:(nullable NSString *)value
 {
     [self setString:value forKey:OWSPreferencesKeyLastRecordedVoipToken];
 }

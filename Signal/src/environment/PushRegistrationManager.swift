@@ -29,24 +29,24 @@ public enum PushRegistrationError: Error {
     private var vanillaTokenResolver: Resolver<Data>?
 
     private var voipRegistry: PKPushRegistry?
-    private var voipTokenPromise: Promise<Data>?
-    private var voipTokenResolver: Resolver<Data>?
+    private var voipTokenPromise: Promise<Data?>?
+    private var voipTokenResolver: Resolver<Data?>?
 
     public var preauthChallengeResolver: Resolver<String>?
 
     // MARK: Public interface
 
-    public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
+    public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String?)> {
         Logger.info("")
 
         return firstly { () -> Promise<Void> in
             return self.registerUserNotificationSettings()
-        }.then { (_) -> Promise<(pushToken: String, voipToken: String)> in
+        }.then { (_) -> Promise<(pushToken: String, voipToken: String?)> in
             guard !Platform.isSimulator else {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
 
-            return self.registerForVanillaPushToken().then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String)> in
+            return self.registerForVanillaPushToken().then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String?)> in
                 self.registerForVoipPushToken().map { voipPushToken in
                     (pushToken: vanillaPushToken, voipToken: voipPushToken)
                 }
@@ -205,18 +205,25 @@ public enum PushRegistrationError: Error {
         }
     }
 
-    private func registerForVoipPushToken() -> Promise<String> {
+    private func registerForVoipPushToken() -> Promise<String?> {
         AssertIsOnMainThread()
         Logger.info("")
+
+        // We never populate voip tokens with the service when
+        // using the notification service extension.
+        guard !FeatureFlags.notificationServiceExtension else {
+            Logger.info("Not using VOIP token because NSE is enabled.")
+            return Promise.value(nil)
+        }
 
         guard self.voipTokenPromise == nil else {
             let promise = self.voipTokenPromise!
             assert(promise.isPending)
-            return promise.map { $0.hexEncodedString }
+            return promise.map { $0?.hexEncodedString }
         }
 
         // No pending voip token yet. Create a new promise
-        let (promise, resolver) = Promise<Data>.pending()
+        let (promise, resolver) = Promise<Data?>.pending()
         self.voipTokenPromise = promise
         self.voipTokenResolver = resolver
 
@@ -246,9 +253,9 @@ public enum PushRegistrationError: Error {
             resolver.fulfill(voipTokenData)
         }
 
-        return promise.map { (voipTokenData: Data) -> String in
+        return promise.map { (voipTokenData: Data?) -> String? in
             Logger.info("successfully registered for voip push notifications")
-            return voipTokenData.hexEncodedString
+            return voipTokenData?.hexEncodedString
         }.ensure {
             self.voipTokenPromise = nil
         }

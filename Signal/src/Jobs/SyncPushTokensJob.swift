@@ -23,7 +23,7 @@ class SyncPushTokensJob: NSObject {
 
         return firstly {
             return self.pushRegistrationManager.requestPushTokens()
-        }.then { (pushToken: String, voipToken: String) -> Promise<Void> in
+        }.then { (pushToken: String, voipToken: String?) -> Promise<Void> in
             Logger.info("finished: requesting push tokens")
             var shouldUploadTokens = false
 
@@ -41,11 +41,11 @@ class SyncPushTokensJob: NSObject {
             }
 
             guard shouldUploadTokens else {
-                Logger.info("No reason to upload pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+                Logger.info("No reason to upload pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken ?? ""))")
                 return Promise.value(())
             }
 
-            Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+            Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken ?? ""))")
             return firstly {
                 self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
             }.done(on: .global()) { _ in
@@ -77,9 +77,9 @@ class SyncPushTokensJob: NSObject {
 
     // MARK: 
 
-    private func recordPushTokensLocally(pushToken: String, voipToken: String) {
+    private func recordPushTokensLocally(pushToken: String, voipToken: String?) {
         assert(!Thread.isMainThread)
-        Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+        Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken ?? ""))")
 
         var didTokensChange = false
 
