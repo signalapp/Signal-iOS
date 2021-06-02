@@ -18,7 +18,9 @@ class ChatColorViewController: OWSTableViewController2 {
         let appearance: ChatColor
     }
     fileprivate var currentValue: CurrentValue
+
     private var chatColorPicker: ChatColorPicker?
+    private var mockConversationView: MockConversationView?
 
     public init(thread: TSThread? = nil) {
         self.thread = thread
@@ -31,28 +33,50 @@ class ChatColorViewController: OWSTableViewController2 {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(updateTableContents),
+            selector: #selector(wallpaperDidChange),
             name: Wallpaper.wallpaperDidChangeNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(updateTableContents),
-            name: ChatColors.chatColorsDidChange,
+            selector: #selector(customChatColorsDidChange),
+            name: ChatColors.customChatColorsDidChange,
             object: nil
         )
+        if thread != nil {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(autoChatColorsDidChange),
+                name: ChatColors.autoChatColorsDidChange,
+                object: nil
+            )
+        }
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(chatColorSettingDidChange),
-            name: ChatColors.chatColorSettingDidChange,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateTableContents),
+            selector: #selector(themeDidChangeNotification),
             name: .ThemeDidChange,
             object: nil
         )
+    }
+
+    @objc
+    private func wallpaperDidChange() {
+        updateTableContents()
+    }
+
+    @objc
+    private func customChatColorsDidChange() {
+        updateTableContents()
+    }
+
+    @objc
+    private func autoChatColorsDidChange() {
+        updateTableContents()
+    }
+
+    @objc
+    private func themeDidChangeNotification() {
+        updateTableContents()
     }
 
     private static func buildCurrentValue_Initial(thread: TSThread?,
@@ -84,21 +108,6 @@ class ChatColorViewController: OWSTableViewController2 {
         return CurrentValue(selected: selected, appearance: appearance)
     }
 
-    @objc
-    private func chatColorSettingDidChange(_ notification: NSNotification) {
-        guard let thread = self.thread else {
-            return
-        }
-        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorSettingDidChangeThreadUniqueIdKey] as? String else {
-            owsFailDebug("Missing threadUniqueId.")
-            return
-        }
-        guard threadUniqueId == thread.uniqueId else {
-            return
-        }
-        updateTableContents()
-    }
-
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -107,7 +116,6 @@ class ChatColorViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    @objc
     func updateTableContents() {
         let contents = OWSTableContents()
 
@@ -132,6 +140,7 @@ class ChatColorViewController: OWSTableViewController2 {
             customChatColor: currentValue.appearance
         )
         mockConversationView.delegate = self
+        self.mockConversationView = mockConversationView
         let previewSection = OWSTableSection()
         previewSection.hasBackground = false
         previewSection.add(OWSTableItem { [weak self] in
@@ -377,7 +386,7 @@ class ChatColorViewController: OWSTableViewController2 {
                                                                     selected: newValue,
                                                                     transaction: transaction)
         }
-        self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
+        mockConversationView?.customChatColor = currentValue.appearance
     }
 }
 

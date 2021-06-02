@@ -19,23 +19,29 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: ChatColors.chatColorsDidChange,
+            name: ChatColors.customChatColorsDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(chatColorSettingDidChange),
-            name: ChatColors.chatColorSettingDidChange,
+            selector: #selector(updateTableContents),
+            name: ChatColors.autoChatColorsDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(conversationChatColorSettingDidChange),
+            name: ChatColors.conversationChatColorSettingDidChange,
             object: nil
         )
     }
 
     @objc
-    private func chatColorSettingDidChange(_ notification: NSNotification) {
+    private func conversationChatColorSettingDidChange(_ notification: NSNotification) {
         guard let thread = self.thread else {
             return
         }
-        guard let threadUniqueId = notification.userInfo?[ChatColors.chatColorSettingDidChangeThreadUniqueIdKey] as? String else {
+        guard let threadUniqueId = notification.userInfo?[ChatColors.conversationChatColorSettingDidChangeThreadUniqueIdKey] as? String else {
             owsFailDebug("Missing threadUniqueId.")
             return
         }

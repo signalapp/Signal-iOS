@@ -245,10 +245,7 @@ open class OWSTableViewController2: OWSViewController {
         }
 
         if shouldReload {
-            let contentOffset = tableView.contentOffset
             tableView.reloadData()
-            tableView.layoutIfNeeded()
-            tableView.setContentOffset(contentOffset, animated: false)
         }
     }
 
