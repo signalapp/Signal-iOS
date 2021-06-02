@@ -586,6 +586,12 @@
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
 
+/* Body for char colors megaphone */
+"CHAT_COLORS_MEGAPHONE_BODY" = "We switched up chat colors to give you more options and make chats easier to read.";
+
+/* Title for char colors megaphone */
+"CHAT_COLORS_MEGAPHONE_TITLE" = "New Chat Colors";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
 
