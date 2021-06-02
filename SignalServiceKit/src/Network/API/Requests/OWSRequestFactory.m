@@ -271,12 +271,17 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId pushToken:(NSString *)pushToken
++ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
+                                                   pushToken:(NSString *)pushToken
+                                                 isVoipToken:(BOOL)isVoipToken
 {
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(pushToken.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@", pushToken, recipientId];
+    NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@?voip=%@",
+                               pushToken,
+                               recipientId,
+                               isVoipToken ? @"true" : @"false"];
     NSURL *url = [NSURL URLWithString:path];
 
     TSRequest *request = [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];

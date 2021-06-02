@@ -14,7 +14,7 @@ public enum SignalServiceError: Int, Error {
 // MARK: -
 
 public protocol SignalServiceClient {
-    func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void>
+    func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void>
     func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<UInt32>
     func getAvailablePreKeys() -> Promise<Int>
@@ -48,9 +48,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     // MARK: - Public
 
-    public func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void> {
+    public func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
         let request = OWSRequestFactory.requestPreauthChallengeRequest(recipientId: recipientId,
-                                                                       pushToken: pushToken)
+                                                                       pushToken: pushToken,
+                                                                       isVoipToken: isVoipToken)
         return networkManager.makePromise(request: request).asVoid()
     }
 

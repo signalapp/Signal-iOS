@@ -12,7 +12,7 @@ public class FakeAccountServiceClient: AccountServiceClient {
 
     // MARK: - Public
 
-    public override func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void> {
+    public override func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
         return Promise { $0.fulfill(()) }
     }
 

@@ -18,8 +18,8 @@ public class AccountServiceClient: NSObject {
 
     // MARK: - Public
 
-    public func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void> {
-        return serviceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: pushToken)
+    public func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
+        return serviceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: pushToken, isVoipToken: isVoipToken)
     }
 
     public func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {

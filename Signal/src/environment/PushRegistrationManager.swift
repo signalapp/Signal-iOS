@@ -56,6 +56,18 @@ public enum PushRegistrationError: Error {
 
     // MARK: Vanilla push token
 
+    @objc
+    public func didReceiveVanillaPreAuthChallengeToken(_ challenge: String) {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AssertIsOnMainThread()
+            if let preauthChallengeResolver = self.preauthChallengeResolver {
+                Logger.info("received vanilla preauth challenge")
+                preauthChallengeResolver.fulfill(challenge)
+                self.preauthChallengeResolver = nil
+            }
+        }
+    }
+
     // Vanilla push token is obtained from the system via AppDelegate
     @objc
     public func didReceiveVanillaPushToken(_ tokenData: Data) {
