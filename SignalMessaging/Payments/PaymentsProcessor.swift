@@ -674,6 +674,19 @@ private class PaymentProcessingOperation: OWSOperation {
 
         Logger.verbose("")
 
+        guard !payments.isKillSwitchActive else {
+            do {
+                try Self.databaseStorage.write { transaction in
+                    try paymentModel.updatePaymentModelState(fromState: .outgoingUnsubmitted,
+                                                             toState: .outgoingUnverified,
+                                                             transaction: transaction)
+                }
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
+            return Promise(error: PaymentsError.killSwitch)
+        }
+
         if DebugFlags.paymentsSkipSubmissionAndOutgoingVerification.get() {
             return Self.updatePaymentStatePromise(paymentModel: paymentModel,
                                                   fromState: .outgoingUnsubmitted,
