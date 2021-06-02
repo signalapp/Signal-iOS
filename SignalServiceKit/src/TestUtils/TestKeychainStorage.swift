@@ -9,6 +9,7 @@ import Foundation
 @objc
 public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
 
+    private let lock = UnfairLock()
     private var dataMap = [String: Data]()
 
     @objc
@@ -36,21 +37,27 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
     }
 
     @objc public func data(forService service: String, key: String) throws -> Data {
-        let key = self.key(forService: service, key: key)
-        guard let data = dataMap[key] else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not retrieve data")
+        try lock.withLock {
+            let key = self.key(forService: service, key: key)
+            guard let data = dataMap[key] else {
+                throw KeychainStorageError.failure(description: "\(logTag) could not retrieve data")
+            }
+            return data
         }
-        return data
     }
 
     @objc public func set(data: Data, service: String, key: String) throws {
-        let key = self.key(forService: service, key: key)
-        dataMap[key] = data
+        lock.withLock {
+            let key = self.key(forService: service, key: key)
+            dataMap[key] = data
+        }
     }
 
     @objc public func remove(service: String, key: String) throws {
-        let key = self.key(forService: service, key: key)
-        dataMap.removeValue(forKey: key)
+        lock.withLock {
+            let key = self.key(forService: service, key: key)
+            dataMap.removeValue(forKey: key)
+        }
     }
 }
 
