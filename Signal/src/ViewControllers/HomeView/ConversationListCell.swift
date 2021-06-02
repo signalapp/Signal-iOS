@@ -301,7 +301,8 @@ public class ConversationListCell: UITableViewCell {
                     unreadBadge.autoMatch(.width, to: .width, of: unreadLabel, withOffset: minMargin, relation: .greaterThanOrEqual),
                     unreadBadge.autoSetDimension(.width, toSize: unreadBadgeHeight, relation: .greaterThanOrEqual),
                     unreadBadge.autoSetDimension(.height, toSize: unreadBadgeHeight),
-                    unreadBadge.autoPinEdge(.trailing, to: .trailing, of: avatarView, withOffset: 6)
+                    unreadBadge.autoPinEdge(.trailing, to: .trailing, of: avatarView, withOffset: 6),
+                    unreadBadge.autoPinEdge(.top, to: .top, of: avatarView)
                 ])
             }
         } else {
