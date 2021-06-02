@@ -1639,6 +1639,9 @@
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Get started";
 
+/* 'Get Started' button directing users to appearance */
+"GET_STARTED_CARD_APPEARANCE" = "Appearance";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Invite friends";
 

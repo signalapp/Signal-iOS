@@ -5,8 +5,9 @@
 import Foundation
 
 enum GetStartedBannerEntry: String, CaseIterable {
-    case NewGroup
-    case InviteFriends
+    case newGroup
+    case inviteFriends
+    case appearance
 
     var identifier: String { rawValue }
 }
@@ -130,19 +131,23 @@ class GetStartedBannerCell: UICollectionViewCell {
 private extension GetStartedBannerEntry {
     var image: UIImage {
         switch self {
-        case .NewGroup:
+        case .newGroup:
             return UIImage(named: "new-group-card")!
-        case .InviteFriends:
+        case .inviteFriends:
             return UIImage(named: "invite-friends-card")!
+        case .appearance:
+            return UIImage(named: "appearance-card")!
         }
     }
 
     var buttonText: String {
         switch self {
-        case .NewGroup:
+        case .newGroup:
             return NSLocalizedString("GET_STARTED_CARD_NEW_GROUP", comment: "'Get Started' button directing users to create a group")
-        case .InviteFriends:
+        case .inviteFriends:
             return NSLocalizedString("GET_STARTED_CARD_INVITE_FRIENDS", comment: "'Get Started' button directing users to invite friends")
+        case .appearance:
+            return NSLocalizedString("GET_STARTED_CARD_APPEARANCE", comment: "'Get Started' button directing users to appearance")
         }
     }
 }
