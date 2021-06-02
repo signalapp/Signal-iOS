@@ -299,6 +299,8 @@ class ChatColorViewController: OWSTableViewController2 {
     }
 
     fileprivate func didTapOption(option: Option) {
+        chatColorPicker?.dismissTooltip()
+
         switch option {
         case .auto:
             setNewValue(nil)
@@ -533,7 +535,11 @@ private class ChatColorPicker: UIView {
         vStack.apply(config: vStackConfig)
         addSubview(vStack)
         vStack.autoPinEdgesToSuperviewEdges()
+
+        ensureTooltip()
     }
+
+    // MARK: -
 
     private class OptionView: OWSLayerView {
 
@@ -594,9 +600,8 @@ private class ChatColorPicker: UIView {
         }
 
         private func ensureSelectionView() {
-
             let hasSelectionView = self.selectionView != nil
-            if isSelected == hasSelectionView {
+            guard isSelected != hasSelectionView else {
                 return
             }
             if let selectionView = self.selectionView {
@@ -611,5 +616,106 @@ private class ChatColorPicker: UIView {
                 self.selectionView = selectionView
             }
         }
+    }
+
+    // MARK: - Tooltip
+
+    private static let keyValueStore = SDSKeyValueStore(collection: "ChatColorPicker")
+    private static let tooltipWasDismissedKey = "tooltipWasDismissed"
+
+    private var chatColorTooltip: ChatColorTooltip?
+
+    fileprivate func dismissTooltip() {
+        databaseStorage.write { transaction in
+            Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction)
+        }
+        hideTooltip()
+    }
+
+    private func hideTooltip() {
+        chatColorTooltip?.removeFromSuperview()
+        chatColorTooltip = nil
+    }
+
+    private func ensureTooltip() {
+        let shouldShowTooltip = databaseStorage.read { transaction in
+            !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction)
+        }
+        let isShowingTooltip = chatColorTooltip != nil
+        guard shouldShowTooltip != isShowingTooltip else {
+            return
+        }
+        if nil != self.chatColorTooltip {
+            hideTooltip()
+        } else {
+            guard let autoOptionView = autoOptionView else {
+                owsFailDebug("Missing autoOptionView.")
+                hideTooltip()
+                return
+            }
+            self.chatColorTooltip = ChatColorTooltip.present(fromView: self,
+                                                             widthReferenceView: self,
+                                                             tailReferenceView: autoOptionView) { [weak self] in
+                self?.dismissTooltip()
+            }
+        }
+    }
+
+    private var autoOptionView: OptionView? {
+        for optionView in optionViews {
+            if case .auto = optionView.option {
+                return optionView
+            }
+        }
+        return nil
+    }
+}
+
+// MARK: -
+
+private class ChatColorTooltip: TooltipView {
+
+    private override init(fromView: UIView,
+                          widthReferenceView: UIView,
+                          tailReferenceView: UIView,
+                          wasTappedBlock: (() -> Void)?) {
+        super.init(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc
+    public class func present(fromView: UIView,
+                              widthReferenceView: UIView,
+                              tailReferenceView: UIView,
+                              wasTappedBlock: (() -> Void)?) -> ChatColorTooltip {
+        return ChatColorTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
+    }
+
+    public override func bubbleContentView() -> UIView {
+        let label = UILabel()
+        label.text = NSLocalizedString("CHAT_COLORS_AUTO_TOOLTIP",
+                                       comment: "Tooltip highlighting the auto chat color option.")
+        label.font = .ows_dynamicTypeSubheadline
+        label.textColor = .ows_white
+        return horizontalStack(forSubviews: [label])
+    }
+
+    public override var bubbleColor: UIColor {
+        .ows_accentBlue
+    }
+
+    public override var tailDirection: TooltipView.TailDirection {
+        .up
+    }
+
+    public override var bubbleInsets: UIEdgeInsets {
+        UIEdgeInsets(hMargin: 12, vMargin: 7)
+    }
+
+    public override var bubbleHSpacing: CGFloat {
+        10
     }
 }
