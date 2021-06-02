@@ -6,9 +6,9 @@ import Foundation
 
 class ChatColorViewController: OWSTableViewController2 {
 
-    private let thread: TSThread?
+    fileprivate let thread: TSThread?
 
-    private struct CurrentValue {
+    fileprivate struct CurrentValue {
         // When we enter the view, "auto" should reflect the current resolved "auto" value,
         // not auto itself.
         //
@@ -17,7 +17,8 @@ class ChatColorViewController: OWSTableViewController2 {
         // Always render the current resolved value in the preview.
         let appearance: ChatColor
     }
-    private var currentValue: CurrentValue
+    fileprivate var currentValue: CurrentValue
+    private var chatColorPicker: ChatColorPicker?
 
     public init(thread: TSThread? = nil) {
         self.thread = thread
@@ -157,14 +158,15 @@ class ChatColorViewController: OWSTableViewController2 {
         } actionBlock: {})
         contents.addSection(previewSection)
 
-        let charColorPicker = buildChatColorPicker()
+        let chatColorPicker = ChatColorPicker(chatColorViewController: self)
+        self.chatColorPicker = chatColorPicker
         let colorsSection = OWSTableSection()
         colorsSection.customHeaderHeight = 14
         colorsSection.add(OWSTableItem {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
-            cell.contentView.addSubview(charColorPicker)
-            charColorPicker.autoPinEdgesToSuperviewMargins()
+            cell.contentView.addSubview(chatColorPicker)
+            chatColorPicker.autoPinEdgesToSuperviewMargins()
             return cell
         } actionBlock: {})
         contents.addSection(colorsSection)
@@ -186,11 +188,33 @@ class ChatColorViewController: OWSTableViewController2 {
         ])
     }
 
-    private enum Option {
+    fileprivate enum Option {
         case auto
         case builtInValue(value: ChatColor)
         case customValue(value: ChatColor)
         case addNewOption
+
+        var value: ChatColor? {
+            switch self {
+            case .auto:
+                return nil
+            case .builtInValue(let value):
+                return value
+            case .customValue(let value):
+                return value
+            case .addNewOption:
+                return nil
+            }
+        }
+
+        var canBeSelected: Bool {
+            switch self {
+            case .auto, .builtInValue, .customValue:
+                return true
+            case .addNewOption:
+                return false
+            }
+        }
 
         static func allOptions(transaction: SDSAnyReadTransaction) -> [Option] {
 
@@ -252,8 +276,9 @@ class ChatColorViewController: OWSTableViewController2 {
 
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.deleteButton
-        ) { _ in
+        ) { [weak self] _ in
             deleteValue()
+            self?.updatePickerSelection()
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -269,7 +294,11 @@ class ChatColorViewController: OWSTableViewController2 {
         }
     }
 
-    private func didTapOption(option: Option) {
+    private func updatePickerSelection() {
+        chatColorPicker?.selectionDidChange(chatColorViewController: self)
+    }
+
+    fileprivate func didTapOption(option: Option) {
         switch option {
         case .auto:
             setNewValue(nil)
@@ -284,13 +313,15 @@ class ChatColorViewController: OWSTableViewController2 {
         case .addNewOption:
             showCustomColorView(valueMode: .createNew)
         }
+
+        updatePickerSelection()
     }
 
     // TODO: Use new context menus when they are available.
     //       Until we do, hide the trailing icons.
     private let showTrailingIcons = false
 
-    private func didLongPressOption(option: Option) {
+    fileprivate func didLongPressOption(option: Option) {
         switch option {
         case .auto, .builtInValue, .addNewOption:
             return
@@ -333,8 +364,55 @@ class ChatColorViewController: OWSTableViewController2 {
         }
     }
 
-    private func buildChatColorPicker() -> UIView {
+    private func setNewValue(_ newValue: ChatColor?) {
+        self.currentValue = databaseStorage.write { transaction in
+            if let thread = self.thread {
+                ChatColors.setChatColorSetting(newValue, thread: thread, transaction: transaction)
+            } else {
+                ChatColors.setDefaultChatColorSetting(newValue, transaction: transaction)
+            }
+            return ChatColorViewController.buildCurrentValue_Update(thread: thread,
+                                                                    selected: newValue,
+                                                                    transaction: transaction)
+        }
+        self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
+    }
+}
 
+// MARK: -
+
+extension ChatColorViewController: MockConversationDelegate {
+    var mockConversationViewWidth: CGFloat {
+        self.view.width - cellOuterInsets.totalWidth
+    }
+}
+
+// MARK: -
+
+private class ChatColorPicker: UIView {
+
+    typealias Option = ChatColorViewController.Option
+
+    private var optionViews = [OptionView]()
+
+    init(chatColorViewController: ChatColorViewController) {
+        super.init(frame: .zero)
+
+        configure(chatColorViewController: chatColorViewController)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    fileprivate func selectionDidChange(chatColorViewController: ChatColorViewController) {
+        for optionView in optionViews {
+            optionView.isSelected = (optionView.option.canBeSelected &&
+                                        optionView.option.value == chatColorViewController.currentValue.selected)
+        }
+    }
+
+    private func configure(chatColorViewController: ChatColorViewController) {
         let hStackConfig = CVStackViewConfig(axis: .horizontal,
                                              alignment: .fill,
                                              spacing: 0,
@@ -344,11 +422,12 @@ class ChatColorViewController: OWSTableViewController2 {
                                              spacing: 28,
                                              layoutMargins: .zero)
 
-        let rowWidth: CGFloat = max(0, view.width - CGFloat(
-            cellOuterInsets.totalWidth +
-                OWSTableViewController2.cellHInnerMargin * 2 +
-                hStackConfig.layoutMargins.totalWidth +
-                vStackConfig.layoutMargins.totalWidth
+        let rowWidth: CGFloat = max(0,
+                                    chatColorViewController.view.width - CGFloat(
+                                        chatColorViewController.cellOuterInsets.totalWidth +
+                                            OWSTableViewController2.cellHInnerMargin * 2 +
+                                            hStackConfig.layoutMargins.totalWidth +
+                                            vStackConfig.layoutMargins.totalWidth
         ))
         let optionViewInnerSize: CGFloat = 56
         let optionViewSelectionThickness: CGFloat = 4
@@ -357,51 +436,32 @@ class ChatColorViewController: OWSTableViewController2 {
         let optionViewMinHSpacing: CGFloat = 10
         let optionsPerRow = max(1, Int(floor(rowWidth + optionViewMinHSpacing) / (optionViewOuterSize + optionViewMinHSpacing)))
 
-        var optionViews = [UIView]()
+        var optionViews = [OptionView]()
         databaseStorage.read { transaction in
             let options = Option.allOptions(transaction: transaction)
             for option in options {
                 func addOptionView(innerView: UIView, isSelected: Bool) {
-
-                    let outerView = OWSLayerView()
-                    outerView.addTapGesture { [weak self] in
-                        self?.didTapOption(option: option)
-                    }
-                    outerView.addLongPressGesture { [weak self] in
-                        self?.didLongPressOption(option: option)
-                    }
-                    outerView.autoSetDimensions(to: .square(optionViewOuterSize))
-                    outerView.setCompressionResistanceHigh()
-                    outerView.setContentHuggingHigh()
-
-                    outerView.addSubview(innerView)
-                    innerView.autoSetDimensions(to: .square(optionViewInnerSize))
-                    innerView.autoCenterInSuperview()
-
-                    if isSelected {
-                        let selectionView = OWSLayerView.circleView()
-                        selectionView.layer.borderColor = Theme.primaryIconColor.cgColor
-                        selectionView.layer.borderWidth = optionViewSelectionThickness
-                        outerView.addSubview(selectionView)
-                        selectionView.autoPinEdgesToSuperviewEdges()
-                    }
-
-                    optionViews.append(outerView)
+                    let optionView = OptionView(chatColorViewController: chatColorViewController,
+                                                option: option,
+                                                innerView: innerView,
+                                                isSelected: isSelected,
+                                                optionViewInnerSize: optionViewInnerSize,
+                                                optionViewOuterSize: optionViewOuterSize,
+                                                optionViewSelectionThickness: optionViewSelectionThickness)
+                    optionViews.append(optionView)
                 }
+
+                let currentValue = chatColorViewController.currentValue
+
                 switch option {
                 case .auto:
-                    let value: ChatColor
-                    if let thread = self.thread {
-                        value = ChatColors.autoChatColorForRendering(forThread: thread,
+                    // We want the "auto" swatch in the global settings to ignore
+                    // the global defaults, so that it is WYSIWYG.  If the user
+                    // selects auto, the current global setting will no longer apply.
+                    let thread = chatColorViewController.thread
+                    let value = ChatColors.autoChatColorForRendering(forThread: thread,
+                                                                     ignoreGlobalDefault: thread == nil,
                                                                      transaction: transaction)
-                    } else {
-                        if let wallpaper = Wallpaper.wallpaperForRendering(for: thread,
-                                                                           transaction: transaction) {
-                            value = ChatColors.autoChatColorForRendering(forWallpaper: wallpaper)
-                        } else {
-                            value = ChatColors.defaultChatColor
-                        }
-                    }
                     let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
 
                     let label = UILabel()
@@ -446,6 +506,8 @@ class ChatColorViewController: OWSTableViewController2 {
             }
         }
 
+        self.optionViews = optionViews
+
         var hStacks = [UIView]()
         while !optionViews.isEmpty {
             var hStackViews = [UIView]()
@@ -469,28 +531,85 @@ class ChatColorViewController: OWSTableViewController2 {
 
         let vStack = UIStackView(arrangedSubviews: hStacks)
         vStack.apply(config: vStackConfig)
-        return vStack
+        addSubview(vStack)
+        vStack.autoPinEdgesToSuperviewEdges()
     }
 
-    private func setNewValue(_ newValue: ChatColor?) {
-        self.currentValue = databaseStorage.write { transaction in
-            if let thread = self.thread {
-                ChatColors.setChatColorSetting(newValue, thread: thread, transaction: transaction)
-            } else {
-                ChatColors.setDefaultChatColorSetting(newValue, transaction: transaction)
+    private class OptionView: OWSLayerView {
+
+        let option: Option
+        var isSelected: Bool {
+            didSet {
+                ensureSelectionView()
             }
-            return ChatColorViewController.buildCurrentValue_Update(thread: thread,
-                                                                    selected: newValue,
-                                                                    transaction: transaction)
         }
-        self.updateTableContents()
-    }
-}
+        let optionViewInnerSize: CGFloat
+        let optionViewOuterSize: CGFloat
+        let optionViewSelectionThickness: CGFloat
+        var selectionView: UIView?
 
-// MARK: -
+        init(chatColorViewController: ChatColorViewController,
+             option: Option,
+             innerView: UIView,
+             isSelected: Bool,
+             optionViewInnerSize: CGFloat,
+             optionViewOuterSize: CGFloat,
+             optionViewSelectionThickness: CGFloat) {
 
-extension ChatColorViewController: MockConversationDelegate {
-    var mockConversationViewWidth: CGFloat {
-        self.view.width - cellOuterInsets.totalWidth
+            self.option = option
+            self.isSelected = isSelected
+            self.optionViewInnerSize = optionViewInnerSize
+            self.optionViewOuterSize = optionViewOuterSize
+            self.optionViewSelectionThickness = optionViewSelectionThickness
+
+            super.init()
+
+            configure(chatColorViewController: chatColorViewController, innerView: innerView)
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        private func configure(chatColorViewController: ChatColorViewController,
+                               innerView: UIView) {
+
+            let option = self.option
+
+            self.addTapGesture { [weak chatColorViewController] in
+                chatColorViewController?.didTapOption(option: option)
+            }
+            self.addLongPressGesture { [weak chatColorViewController] in
+                chatColorViewController?.didLongPressOption(option: option)
+            }
+            self.autoSetDimensions(to: .square(optionViewOuterSize))
+            self.setCompressionResistanceHigh()
+            self.setContentHuggingHigh()
+
+            self.addSubview(innerView)
+            innerView.autoSetDimensions(to: .square(optionViewInnerSize))
+            innerView.autoCenterInSuperview()
+
+            ensureSelectionView()
+        }
+
+        private func ensureSelectionView() {
+
+            let hasSelectionView = self.selectionView != nil
+            if isSelected == hasSelectionView {
+                return
+            }
+            if let selectionView = self.selectionView {
+                selectionView.removeFromSuperview()
+                self.selectionView = nil
+            } else {
+                let selectionView = OWSLayerView.circleView()
+                selectionView.layer.borderColor = Theme.primaryIconColor.cgColor
+                selectionView.layer.borderWidth = optionViewSelectionThickness
+                self.addSubview(selectionView)
+                selectionView.autoPinEdgesToSuperviewEdges()
+                self.selectionView = selectionView
+            }
+        }
     }
 }
