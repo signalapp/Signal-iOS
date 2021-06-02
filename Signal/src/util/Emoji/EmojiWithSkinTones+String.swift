@@ -8,6605 +8,6605 @@ extension EmojiWithSkinTones {
     init?(rawValue: String) {
         guard rawValue.isSingleEmoji else { return nil }
         if rawValue == "😀" {
-            self.init(baseEmoji: Emoji.grinning, skinTones: nil)
+            self.init(baseEmoji: .grinning, skinTones: nil)
         } else if rawValue == "😃" {
-            self.init(baseEmoji: Emoji.smiley, skinTones: nil)
+            self.init(baseEmoji: .smiley, skinTones: nil)
         } else if rawValue == "😄" {
-            self.init(baseEmoji: Emoji.smile, skinTones: nil)
+            self.init(baseEmoji: .smile, skinTones: nil)
         } else if rawValue == "😁" {
-            self.init(baseEmoji: Emoji.grin, skinTones: nil)
+            self.init(baseEmoji: .grin, skinTones: nil)
         } else if rawValue == "😆" {
-            self.init(baseEmoji: Emoji.laughing, skinTones: nil)
+            self.init(baseEmoji: .laughing, skinTones: nil)
         } else if rawValue == "😅" {
-            self.init(baseEmoji: Emoji.sweatSmile, skinTones: nil)
+            self.init(baseEmoji: .sweatSmile, skinTones: nil)
         } else if rawValue == "🤣" {
-            self.init(baseEmoji: Emoji.rollingOnTheFloorLaughing, skinTones: nil)
+            self.init(baseEmoji: .rollingOnTheFloorLaughing, skinTones: nil)
         } else if rawValue == "😂" {
-            self.init(baseEmoji: Emoji.joy, skinTones: nil)
+            self.init(baseEmoji: .joy, skinTones: nil)
         } else if rawValue == "🙂" {
-            self.init(baseEmoji: Emoji.slightlySmilingFace, skinTones: nil)
+            self.init(baseEmoji: .slightlySmilingFace, skinTones: nil)
         } else if rawValue == "🙃" {
-            self.init(baseEmoji: Emoji.upsideDownFace, skinTones: nil)
+            self.init(baseEmoji: .upsideDownFace, skinTones: nil)
         } else if rawValue == "😉" {
-            self.init(baseEmoji: Emoji.wink, skinTones: nil)
+            self.init(baseEmoji: .wink, skinTones: nil)
         } else if rawValue == "😊" {
-            self.init(baseEmoji: Emoji.blush, skinTones: nil)
+            self.init(baseEmoji: .blush, skinTones: nil)
         } else if rawValue == "😇" {
-            self.init(baseEmoji: Emoji.innocent, skinTones: nil)
+            self.init(baseEmoji: .innocent, skinTones: nil)
         } else if rawValue == "🥰" {
-            self.init(baseEmoji: Emoji.smilingFaceWith3Hearts, skinTones: nil)
+            self.init(baseEmoji: .smilingFaceWith3Hearts, skinTones: nil)
         } else if rawValue == "😍" {
-            self.init(baseEmoji: Emoji.heartEyes, skinTones: nil)
+            self.init(baseEmoji: .heartEyes, skinTones: nil)
         } else if rawValue == "🤩" {
-            self.init(baseEmoji: Emoji.starStruck, skinTones: nil)
+            self.init(baseEmoji: .starStruck, skinTones: nil)
         } else if rawValue == "😘" {
-            self.init(baseEmoji: Emoji.kissingHeart, skinTones: nil)
+            self.init(baseEmoji: .kissingHeart, skinTones: nil)
         } else if rawValue == "😗" {
-            self.init(baseEmoji: Emoji.kissing, skinTones: nil)
+            self.init(baseEmoji: .kissing, skinTones: nil)
         } else if rawValue == "☺️" {
-            self.init(baseEmoji: Emoji.relaxed, skinTones: nil)
+            self.init(baseEmoji: .relaxed, skinTones: nil)
         } else if rawValue == "😚" {
-            self.init(baseEmoji: Emoji.kissingClosedEyes, skinTones: nil)
+            self.init(baseEmoji: .kissingClosedEyes, skinTones: nil)
         } else if rawValue == "😙" {
-            self.init(baseEmoji: Emoji.kissingSmilingEyes, skinTones: nil)
+            self.init(baseEmoji: .kissingSmilingEyes, skinTones: nil)
         } else if rawValue == "🥲" {
-            self.init(baseEmoji: Emoji.smilingFaceWithTear, skinTones: nil)
+            self.init(baseEmoji: .smilingFaceWithTear, skinTones: nil)
         } else if rawValue == "😋" {
-            self.init(baseEmoji: Emoji.yum, skinTones: nil)
+            self.init(baseEmoji: .yum, skinTones: nil)
         } else if rawValue == "😛" {
-            self.init(baseEmoji: Emoji.stuckOutTongue, skinTones: nil)
+            self.init(baseEmoji: .stuckOutTongue, skinTones: nil)
         } else if rawValue == "😜" {
-            self.init(baseEmoji: Emoji.stuckOutTongueWinkingEye, skinTones: nil)
+            self.init(baseEmoji: .stuckOutTongueWinkingEye, skinTones: nil)
         } else if rawValue == "🤪" {
-            self.init(baseEmoji: Emoji.zanyFace, skinTones: nil)
+            self.init(baseEmoji: .zanyFace, skinTones: nil)
         } else if rawValue == "😝" {
-            self.init(baseEmoji: Emoji.stuckOutTongueClosedEyes, skinTones: nil)
+            self.init(baseEmoji: .stuckOutTongueClosedEyes, skinTones: nil)
         } else if rawValue == "🤑" {
-            self.init(baseEmoji: Emoji.moneyMouthFace, skinTones: nil)
+            self.init(baseEmoji: .moneyMouthFace, skinTones: nil)
         } else if rawValue == "🤗" {
-            self.init(baseEmoji: Emoji.huggingFace, skinTones: nil)
+            self.init(baseEmoji: .huggingFace, skinTones: nil)
         } else if rawValue == "🤭" {
-            self.init(baseEmoji: Emoji.faceWithHandOverMouth, skinTones: nil)
+            self.init(baseEmoji: .faceWithHandOverMouth, skinTones: nil)
         } else if rawValue == "🤫" {
-            self.init(baseEmoji: Emoji.shushingFace, skinTones: nil)
+            self.init(baseEmoji: .shushingFace, skinTones: nil)
         } else if rawValue == "🤔" {
-            self.init(baseEmoji: Emoji.thinkingFace, skinTones: nil)
+            self.init(baseEmoji: .thinkingFace, skinTones: nil)
         } else if rawValue == "🤐" {
-            self.init(baseEmoji: Emoji.zipperMouthFace, skinTones: nil)
+            self.init(baseEmoji: .zipperMouthFace, skinTones: nil)
         } else if rawValue == "🤨" {
-            self.init(baseEmoji: Emoji.faceWithRaisedEyebrow, skinTones: nil)
+            self.init(baseEmoji: .faceWithRaisedEyebrow, skinTones: nil)
         } else if rawValue == "😐" {
-            self.init(baseEmoji: Emoji.neutralFace, skinTones: nil)
+            self.init(baseEmoji: .neutralFace, skinTones: nil)
         } else if rawValue == "😑" {
-            self.init(baseEmoji: Emoji.expressionless, skinTones: nil)
+            self.init(baseEmoji: .expressionless, skinTones: nil)
         } else if rawValue == "😶" {
-            self.init(baseEmoji: Emoji.noMouth, skinTones: nil)
+            self.init(baseEmoji: .noMouth, skinTones: nil)
         } else if rawValue == "😏" {
-            self.init(baseEmoji: Emoji.smirk, skinTones: nil)
+            self.init(baseEmoji: .smirk, skinTones: nil)
         } else if rawValue == "😒" {
-            self.init(baseEmoji: Emoji.unamused, skinTones: nil)
+            self.init(baseEmoji: .unamused, skinTones: nil)
         } else if rawValue == "🙄" {
-            self.init(baseEmoji: Emoji.faceWithRollingEyes, skinTones: nil)
+            self.init(baseEmoji: .faceWithRollingEyes, skinTones: nil)
         } else if rawValue == "😬" {
-            self.init(baseEmoji: Emoji.grimacing, skinTones: nil)
+            self.init(baseEmoji: .grimacing, skinTones: nil)
         } else if rawValue == "🤥" {
-            self.init(baseEmoji: Emoji.lyingFace, skinTones: nil)
+            self.init(baseEmoji: .lyingFace, skinTones: nil)
         } else if rawValue == "😌" {
-            self.init(baseEmoji: Emoji.relieved, skinTones: nil)
+            self.init(baseEmoji: .relieved, skinTones: nil)
         } else if rawValue == "😔" {
-            self.init(baseEmoji: Emoji.pensive, skinTones: nil)
+            self.init(baseEmoji: .pensive, skinTones: nil)
         } else if rawValue == "😪" {
-            self.init(baseEmoji: Emoji.sleepy, skinTones: nil)
+            self.init(baseEmoji: .sleepy, skinTones: nil)
         } else if rawValue == "🤤" {
-            self.init(baseEmoji: Emoji.droolingFace, skinTones: nil)
+            self.init(baseEmoji: .droolingFace, skinTones: nil)
         } else if rawValue == "😴" {
-            self.init(baseEmoji: Emoji.sleeping, skinTones: nil)
+            self.init(baseEmoji: .sleeping, skinTones: nil)
         } else if rawValue == "😷" {
-            self.init(baseEmoji: Emoji.mask, skinTones: nil)
+            self.init(baseEmoji: .mask, skinTones: nil)
         } else if rawValue == "🤒" {
-            self.init(baseEmoji: Emoji.faceWithThermometer, skinTones: nil)
+            self.init(baseEmoji: .faceWithThermometer, skinTones: nil)
         } else if rawValue == "🤕" {
-            self.init(baseEmoji: Emoji.faceWithHeadBandage, skinTones: nil)
+            self.init(baseEmoji: .faceWithHeadBandage, skinTones: nil)
         } else if rawValue == "🤢" {
-            self.init(baseEmoji: Emoji.nauseatedFace, skinTones: nil)
+            self.init(baseEmoji: .nauseatedFace, skinTones: nil)
         } else if rawValue == "🤮" {
-            self.init(baseEmoji: Emoji.faceVomiting, skinTones: nil)
+            self.init(baseEmoji: .faceVomiting, skinTones: nil)
         } else if rawValue == "🤧" {
-            self.init(baseEmoji: Emoji.sneezingFace, skinTones: nil)
+            self.init(baseEmoji: .sneezingFace, skinTones: nil)
         } else if rawValue == "🥵" {
-            self.init(baseEmoji: Emoji.hotFace, skinTones: nil)
+            self.init(baseEmoji: .hotFace, skinTones: nil)
         } else if rawValue == "🥶" {
-            self.init(baseEmoji: Emoji.coldFace, skinTones: nil)
+            self.init(baseEmoji: .coldFace, skinTones: nil)
         } else if rawValue == "🥴" {
-            self.init(baseEmoji: Emoji.woozyFace, skinTones: nil)
+            self.init(baseEmoji: .woozyFace, skinTones: nil)
         } else if rawValue == "😵" {
-            self.init(baseEmoji: Emoji.dizzyFace, skinTones: nil)
+            self.init(baseEmoji: .dizzyFace, skinTones: nil)
         } else if rawValue == "🤯" {
-            self.init(baseEmoji: Emoji.explodingHead, skinTones: nil)
+            self.init(baseEmoji: .explodingHead, skinTones: nil)
         } else if rawValue == "🤠" {
-            self.init(baseEmoji: Emoji.faceWithCowboyHat, skinTones: nil)
+            self.init(baseEmoji: .faceWithCowboyHat, skinTones: nil)
         } else if rawValue == "🥳" {
-            self.init(baseEmoji: Emoji.partyingFace, skinTones: nil)
+            self.init(baseEmoji: .partyingFace, skinTones: nil)
         } else if rawValue == "🥸" {
-            self.init(baseEmoji: Emoji.disguisedFace, skinTones: nil)
+            self.init(baseEmoji: .disguisedFace, skinTones: nil)
         } else if rawValue == "😎" {
-            self.init(baseEmoji: Emoji.sunglasses, skinTones: nil)
+            self.init(baseEmoji: .sunglasses, skinTones: nil)
         } else if rawValue == "🤓" {
-            self.init(baseEmoji: Emoji.nerdFace, skinTones: nil)
+            self.init(baseEmoji: .nerdFace, skinTones: nil)
         } else if rawValue == "🧐" {
-            self.init(baseEmoji: Emoji.faceWithMonocle, skinTones: nil)
+            self.init(baseEmoji: .faceWithMonocle, skinTones: nil)
         } else if rawValue == "😕" {
-            self.init(baseEmoji: Emoji.confused, skinTones: nil)
+            self.init(baseEmoji: .confused, skinTones: nil)
         } else if rawValue == "😟" {
-            self.init(baseEmoji: Emoji.worried, skinTones: nil)
+            self.init(baseEmoji: .worried, skinTones: nil)
         } else if rawValue == "🙁" {
-            self.init(baseEmoji: Emoji.slightlyFrowningFace, skinTones: nil)
+            self.init(baseEmoji: .slightlyFrowningFace, skinTones: nil)
         } else if rawValue == "☹️" {
-            self.init(baseEmoji: Emoji.whiteFrowningFace, skinTones: nil)
+            self.init(baseEmoji: .whiteFrowningFace, skinTones: nil)
         } else if rawValue == "😮" {
-            self.init(baseEmoji: Emoji.openMouth, skinTones: nil)
+            self.init(baseEmoji: .openMouth, skinTones: nil)
         } else if rawValue == "😯" {
-            self.init(baseEmoji: Emoji.hushed, skinTones: nil)
+            self.init(baseEmoji: .hushed, skinTones: nil)
         } else if rawValue == "😲" {
-            self.init(baseEmoji: Emoji.astonished, skinTones: nil)
+            self.init(baseEmoji: .astonished, skinTones: nil)
         } else if rawValue == "😳" {
-            self.init(baseEmoji: Emoji.flushed, skinTones: nil)
+            self.init(baseEmoji: .flushed, skinTones: nil)
         } else if rawValue == "🥺" {
-            self.init(baseEmoji: Emoji.pleadingFace, skinTones: nil)
+            self.init(baseEmoji: .pleadingFace, skinTones: nil)
         } else if rawValue == "😦" {
-            self.init(baseEmoji: Emoji.frowning, skinTones: nil)
+            self.init(baseEmoji: .frowning, skinTones: nil)
         } else if rawValue == "😧" {
-            self.init(baseEmoji: Emoji.anguished, skinTones: nil)
+            self.init(baseEmoji: .anguished, skinTones: nil)
         } else if rawValue == "😨" {
-            self.init(baseEmoji: Emoji.fearful, skinTones: nil)
+            self.init(baseEmoji: .fearful, skinTones: nil)
         } else if rawValue == "😰" {
-            self.init(baseEmoji: Emoji.coldSweat, skinTones: nil)
+            self.init(baseEmoji: .coldSweat, skinTones: nil)
         } else if rawValue == "😥" {
-            self.init(baseEmoji: Emoji.disappointedRelieved, skinTones: nil)
+            self.init(baseEmoji: .disappointedRelieved, skinTones: nil)
         } else if rawValue == "😢" {
-            self.init(baseEmoji: Emoji.cry, skinTones: nil)
+            self.init(baseEmoji: .cry, skinTones: nil)
         } else if rawValue == "😭" {
-            self.init(baseEmoji: Emoji.sob, skinTones: nil)
+            self.init(baseEmoji: .sob, skinTones: nil)
         } else if rawValue == "😱" {
-            self.init(baseEmoji: Emoji.scream, skinTones: nil)
+            self.init(baseEmoji: .scream, skinTones: nil)
         } else if rawValue == "😖" {
-            self.init(baseEmoji: Emoji.confounded, skinTones: nil)
+            self.init(baseEmoji: .confounded, skinTones: nil)
         } else if rawValue == "😣" {
-            self.init(baseEmoji: Emoji.persevere, skinTones: nil)
+            self.init(baseEmoji: .persevere, skinTones: nil)
         } else if rawValue == "😞" {
-            self.init(baseEmoji: Emoji.disappointed, skinTones: nil)
+            self.init(baseEmoji: .disappointed, skinTones: nil)
         } else if rawValue == "😓" {
-            self.init(baseEmoji: Emoji.sweat, skinTones: nil)
+            self.init(baseEmoji: .sweat, skinTones: nil)
         } else if rawValue == "😩" {
-            self.init(baseEmoji: Emoji.weary, skinTones: nil)
+            self.init(baseEmoji: .weary, skinTones: nil)
         } else if rawValue == "😫" {
-            self.init(baseEmoji: Emoji.tiredFace, skinTones: nil)
+            self.init(baseEmoji: .tiredFace, skinTones: nil)
         } else if rawValue == "🥱" {
-            self.init(baseEmoji: Emoji.yawningFace, skinTones: nil)
+            self.init(baseEmoji: .yawningFace, skinTones: nil)
         } else if rawValue == "😤" {
-            self.init(baseEmoji: Emoji.triumph, skinTones: nil)
+            self.init(baseEmoji: .triumph, skinTones: nil)
         } else if rawValue == "😡" {
-            self.init(baseEmoji: Emoji.rage, skinTones: nil)
+            self.init(baseEmoji: .rage, skinTones: nil)
         } else if rawValue == "😠" {
-            self.init(baseEmoji: Emoji.angry, skinTones: nil)
+            self.init(baseEmoji: .angry, skinTones: nil)
         } else if rawValue == "🤬" {
-            self.init(baseEmoji: Emoji.faceWithSymbolsOnMouth, skinTones: nil)
+            self.init(baseEmoji: .faceWithSymbolsOnMouth, skinTones: nil)
         } else if rawValue == "😈" {
-            self.init(baseEmoji: Emoji.smilingImp, skinTones: nil)
+            self.init(baseEmoji: .smilingImp, skinTones: nil)
         } else if rawValue == "👿" {
-            self.init(baseEmoji: Emoji.imp, skinTones: nil)
+            self.init(baseEmoji: .imp, skinTones: nil)
         } else if rawValue == "💀" {
-            self.init(baseEmoji: Emoji.skull, skinTones: nil)
+            self.init(baseEmoji: .skull, skinTones: nil)
         } else if rawValue == "☠️" {
-            self.init(baseEmoji: Emoji.skullAndCrossbones, skinTones: nil)
+            self.init(baseEmoji: .skullAndCrossbones, skinTones: nil)
         } else if rawValue == "💩" {
-            self.init(baseEmoji: Emoji.hankey, skinTones: nil)
+            self.init(baseEmoji: .hankey, skinTones: nil)
         } else if rawValue == "🤡" {
-            self.init(baseEmoji: Emoji.clownFace, skinTones: nil)
+            self.init(baseEmoji: .clownFace, skinTones: nil)
         } else if rawValue == "👹" {
-            self.init(baseEmoji: Emoji.japaneseOgre, skinTones: nil)
+            self.init(baseEmoji: .japaneseOgre, skinTones: nil)
         } else if rawValue == "👺" {
-            self.init(baseEmoji: Emoji.japaneseGoblin, skinTones: nil)
+            self.init(baseEmoji: .japaneseGoblin, skinTones: nil)
         } else if rawValue == "👻" {
-            self.init(baseEmoji: Emoji.ghost, skinTones: nil)
+            self.init(baseEmoji: .ghost, skinTones: nil)
         } else if rawValue == "👽" {
-            self.init(baseEmoji: Emoji.alien, skinTones: nil)
+            self.init(baseEmoji: .alien, skinTones: nil)
         } else if rawValue == "👾" {
-            self.init(baseEmoji: Emoji.spaceInvader, skinTones: nil)
+            self.init(baseEmoji: .spaceInvader, skinTones: nil)
         } else if rawValue == "🤖" {
-            self.init(baseEmoji: Emoji.robotFace, skinTones: nil)
+            self.init(baseEmoji: .robotFace, skinTones: nil)
         } else if rawValue == "😺" {
-            self.init(baseEmoji: Emoji.smileyCat, skinTones: nil)
+            self.init(baseEmoji: .smileyCat, skinTones: nil)
         } else if rawValue == "😸" {
-            self.init(baseEmoji: Emoji.smileCat, skinTones: nil)
+            self.init(baseEmoji: .smileCat, skinTones: nil)
         } else if rawValue == "😹" {
-            self.init(baseEmoji: Emoji.joyCat, skinTones: nil)
+            self.init(baseEmoji: .joyCat, skinTones: nil)
         } else if rawValue == "😻" {
-            self.init(baseEmoji: Emoji.heartEyesCat, skinTones: nil)
+            self.init(baseEmoji: .heartEyesCat, skinTones: nil)
         } else if rawValue == "😼" {
-            self.init(baseEmoji: Emoji.smirkCat, skinTones: nil)
+            self.init(baseEmoji: .smirkCat, skinTones: nil)
         } else if rawValue == "😽" {
-            self.init(baseEmoji: Emoji.kissingCat, skinTones: nil)
+            self.init(baseEmoji: .kissingCat, skinTones: nil)
         } else if rawValue == "🙀" {
-            self.init(baseEmoji: Emoji.screamCat, skinTones: nil)
+            self.init(baseEmoji: .screamCat, skinTones: nil)
         } else if rawValue == "😿" {
-            self.init(baseEmoji: Emoji.cryingCatFace, skinTones: nil)
+            self.init(baseEmoji: .cryingCatFace, skinTones: nil)
         } else if rawValue == "😾" {
-            self.init(baseEmoji: Emoji.poutingCat, skinTones: nil)
+            self.init(baseEmoji: .poutingCat, skinTones: nil)
         } else if rawValue == "🙈" {
-            self.init(baseEmoji: Emoji.seeNoEvil, skinTones: nil)
+            self.init(baseEmoji: .seeNoEvil, skinTones: nil)
         } else if rawValue == "🙉" {
-            self.init(baseEmoji: Emoji.hearNoEvil, skinTones: nil)
+            self.init(baseEmoji: .hearNoEvil, skinTones: nil)
         } else if rawValue == "🙊" {
-            self.init(baseEmoji: Emoji.speakNoEvil, skinTones: nil)
+            self.init(baseEmoji: .speakNoEvil, skinTones: nil)
         } else if rawValue == "💋" {
-            self.init(baseEmoji: Emoji.kiss, skinTones: nil)
+            self.init(baseEmoji: .kiss, skinTones: nil)
         } else if rawValue == "💌" {
-            self.init(baseEmoji: Emoji.loveLetter, skinTones: nil)
+            self.init(baseEmoji: .loveLetter, skinTones: nil)
         } else if rawValue == "💘" {
-            self.init(baseEmoji: Emoji.cupid, skinTones: nil)
+            self.init(baseEmoji: .cupid, skinTones: nil)
         } else if rawValue == "💝" {
-            self.init(baseEmoji: Emoji.giftHeart, skinTones: nil)
+            self.init(baseEmoji: .giftHeart, skinTones: nil)
         } else if rawValue == "💖" {
-            self.init(baseEmoji: Emoji.sparklingHeart, skinTones: nil)
+            self.init(baseEmoji: .sparklingHeart, skinTones: nil)
         } else if rawValue == "💗" {
-            self.init(baseEmoji: Emoji.heartpulse, skinTones: nil)
+            self.init(baseEmoji: .heartpulse, skinTones: nil)
         } else if rawValue == "💓" {
-            self.init(baseEmoji: Emoji.heartbeat, skinTones: nil)
+            self.init(baseEmoji: .heartbeat, skinTones: nil)
         } else if rawValue == "💞" {
-            self.init(baseEmoji: Emoji.revolvingHearts, skinTones: nil)
+            self.init(baseEmoji: .revolvingHearts, skinTones: nil)
         } else if rawValue == "💕" {
-            self.init(baseEmoji: Emoji.twoHearts, skinTones: nil)
+            self.init(baseEmoji: .twoHearts, skinTones: nil)
         } else if rawValue == "💟" {
-            self.init(baseEmoji: Emoji.heartDecoration, skinTones: nil)
+            self.init(baseEmoji: .heartDecoration, skinTones: nil)
         } else if rawValue == "❣️" {
-            self.init(baseEmoji: Emoji.heavyHeartExclamationMarkOrnament, skinTones: nil)
+            self.init(baseEmoji: .heavyHeartExclamationMarkOrnament, skinTones: nil)
         } else if rawValue == "💔" {
-            self.init(baseEmoji: Emoji.brokenHeart, skinTones: nil)
+            self.init(baseEmoji: .brokenHeart, skinTones: nil)
         } else if rawValue == "❤️" {
-            self.init(baseEmoji: Emoji.heart, skinTones: nil)
+            self.init(baseEmoji: .heart, skinTones: nil)
         } else if rawValue == "🧡" {
-            self.init(baseEmoji: Emoji.orangeHeart, skinTones: nil)
+            self.init(baseEmoji: .orangeHeart, skinTones: nil)
         } else if rawValue == "💛" {
-            self.init(baseEmoji: Emoji.yellowHeart, skinTones: nil)
+            self.init(baseEmoji: .yellowHeart, skinTones: nil)
         } else if rawValue == "💚" {
-            self.init(baseEmoji: Emoji.greenHeart, skinTones: nil)
+            self.init(baseEmoji: .greenHeart, skinTones: nil)
         } else if rawValue == "💙" {
-            self.init(baseEmoji: Emoji.blueHeart, skinTones: nil)
+            self.init(baseEmoji: .blueHeart, skinTones: nil)
         } else if rawValue == "💜" {
-            self.init(baseEmoji: Emoji.purpleHeart, skinTones: nil)
+            self.init(baseEmoji: .purpleHeart, skinTones: nil)
         } else if rawValue == "🤎" {
-            self.init(baseEmoji: Emoji.brownHeart, skinTones: nil)
+            self.init(baseEmoji: .brownHeart, skinTones: nil)
         } else if rawValue == "🖤" {
-            self.init(baseEmoji: Emoji.blackHeart, skinTones: nil)
+            self.init(baseEmoji: .blackHeart, skinTones: nil)
         } else if rawValue == "🤍" {
-            self.init(baseEmoji: Emoji.whiteHeart, skinTones: nil)
+            self.init(baseEmoji: .whiteHeart, skinTones: nil)
         } else if rawValue == "💯" {
-            self.init(baseEmoji: Emoji.oneHundred, skinTones: nil)
+            self.init(baseEmoji: .oneHundred, skinTones: nil)
         } else if rawValue == "💢" {
-            self.init(baseEmoji: Emoji.anger, skinTones: nil)
+            self.init(baseEmoji: .anger, skinTones: nil)
         } else if rawValue == "💥" {
-            self.init(baseEmoji: Emoji.boom, skinTones: nil)
+            self.init(baseEmoji: .boom, skinTones: nil)
         } else if rawValue == "💫" {
-            self.init(baseEmoji: Emoji.dizzy, skinTones: nil)
+            self.init(baseEmoji: .dizzy, skinTones: nil)
         } else if rawValue == "💦" {
-            self.init(baseEmoji: Emoji.sweatDrops, skinTones: nil)
+            self.init(baseEmoji: .sweatDrops, skinTones: nil)
         } else if rawValue == "💨" {
-            self.init(baseEmoji: Emoji.dash, skinTones: nil)
+            self.init(baseEmoji: .dash, skinTones: nil)
         } else if rawValue == "🕳️" {
-            self.init(baseEmoji: Emoji.hole, skinTones: nil)
+            self.init(baseEmoji: .hole, skinTones: nil)
         } else if rawValue == "💣" {
-            self.init(baseEmoji: Emoji.bomb, skinTones: nil)
+            self.init(baseEmoji: .bomb, skinTones: nil)
         } else if rawValue == "💬" {
-            self.init(baseEmoji: Emoji.speechBalloon, skinTones: nil)
+            self.init(baseEmoji: .speechBalloon, skinTones: nil)
         } else if rawValue == "👁️‍🗨️" {
-            self.init(baseEmoji: Emoji.eyeInSpeechBubble, skinTones: nil)
+            self.init(baseEmoji: .eyeInSpeechBubble, skinTones: nil)
         } else if rawValue == "🗨️" {
-            self.init(baseEmoji: Emoji.leftSpeechBubble, skinTones: nil)
+            self.init(baseEmoji: .leftSpeechBubble, skinTones: nil)
         } else if rawValue == "🗯️" {
-            self.init(baseEmoji: Emoji.rightAngerBubble, skinTones: nil)
+            self.init(baseEmoji: .rightAngerBubble, skinTones: nil)
         } else if rawValue == "💭" {
-            self.init(baseEmoji: Emoji.thoughtBalloon, skinTones: nil)
+            self.init(baseEmoji: .thoughtBalloon, skinTones: nil)
         } else if rawValue == "💤" {
-            self.init(baseEmoji: Emoji.zzz, skinTones: nil)
+            self.init(baseEmoji: .zzz, skinTones: nil)
         } else if rawValue == "👋" {
-            self.init(baseEmoji: Emoji.wave, skinTones: nil)
+            self.init(baseEmoji: .wave, skinTones: nil)
         } else if rawValue == "👋🏻" {
-            self.init(baseEmoji: Emoji.wave, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .wave, skinTones: [.light])
         } else if rawValue == "👋🏼" {
-            self.init(baseEmoji: Emoji.wave, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .wave, skinTones: [.mediumLight])
         } else if rawValue == "👋🏽" {
-            self.init(baseEmoji: Emoji.wave, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .wave, skinTones: [.medium])
         } else if rawValue == "👋🏾" {
-            self.init(baseEmoji: Emoji.wave, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .wave, skinTones: [.mediumDark])
         } else if rawValue == "👋🏿" {
-            self.init(baseEmoji: Emoji.wave, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .wave, skinTones: [.dark])
         } else if rawValue == "🤚" {
-            self.init(baseEmoji: Emoji.raisedBackOfHand, skinTones: nil)
+            self.init(baseEmoji: .raisedBackOfHand, skinTones: nil)
         } else if rawValue == "🤚🏻" {
-            self.init(baseEmoji: Emoji.raisedBackOfHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .raisedBackOfHand, skinTones: [.light])
         } else if rawValue == "🤚🏼" {
-            self.init(baseEmoji: Emoji.raisedBackOfHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .raisedBackOfHand, skinTones: [.mediumLight])
         } else if rawValue == "🤚🏽" {
-            self.init(baseEmoji: Emoji.raisedBackOfHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .raisedBackOfHand, skinTones: [.medium])
         } else if rawValue == "🤚🏾" {
-            self.init(baseEmoji: Emoji.raisedBackOfHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .raisedBackOfHand, skinTones: [.mediumDark])
         } else if rawValue == "🤚🏿" {
-            self.init(baseEmoji: Emoji.raisedBackOfHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .raisedBackOfHand, skinTones: [.dark])
         } else if rawValue == "🖐️" {
-            self.init(baseEmoji: Emoji.raisedHandWithFingersSplayed, skinTones: nil)
+            self.init(baseEmoji: .raisedHandWithFingersSplayed, skinTones: nil)
         } else if rawValue == "🖐🏻" {
-            self.init(baseEmoji: Emoji.raisedHandWithFingersSplayed, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .raisedHandWithFingersSplayed, skinTones: [.light])
         } else if rawValue == "🖐🏼" {
-            self.init(baseEmoji: Emoji.raisedHandWithFingersSplayed, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .raisedHandWithFingersSplayed, skinTones: [.mediumLight])
         } else if rawValue == "🖐🏽" {
-            self.init(baseEmoji: Emoji.raisedHandWithFingersSplayed, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .raisedHandWithFingersSplayed, skinTones: [.medium])
         } else if rawValue == "🖐🏾" {
-            self.init(baseEmoji: Emoji.raisedHandWithFingersSplayed, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .raisedHandWithFingersSplayed, skinTones: [.mediumDark])
         } else if rawValue == "🖐🏿" {
-            self.init(baseEmoji: Emoji.raisedHandWithFingersSplayed, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .raisedHandWithFingersSplayed, skinTones: [.dark])
         } else if rawValue == "✋" {
-            self.init(baseEmoji: Emoji.hand, skinTones: nil)
+            self.init(baseEmoji: .hand, skinTones: nil)
         } else if rawValue == "✋🏻" {
-            self.init(baseEmoji: Emoji.hand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .hand, skinTones: [.light])
         } else if rawValue == "✋🏼" {
-            self.init(baseEmoji: Emoji.hand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .hand, skinTones: [.mediumLight])
         } else if rawValue == "✋🏽" {
-            self.init(baseEmoji: Emoji.hand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .hand, skinTones: [.medium])
         } else if rawValue == "✋🏾" {
-            self.init(baseEmoji: Emoji.hand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .hand, skinTones: [.mediumDark])
         } else if rawValue == "✋🏿" {
-            self.init(baseEmoji: Emoji.hand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .hand, skinTones: [.dark])
         } else if rawValue == "🖖" {
-            self.init(baseEmoji: Emoji.spockHand, skinTones: nil)
+            self.init(baseEmoji: .spockHand, skinTones: nil)
         } else if rawValue == "🖖🏻" {
-            self.init(baseEmoji: Emoji.spockHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .spockHand, skinTones: [.light])
         } else if rawValue == "🖖🏼" {
-            self.init(baseEmoji: Emoji.spockHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .spockHand, skinTones: [.mediumLight])
         } else if rawValue == "🖖🏽" {
-            self.init(baseEmoji: Emoji.spockHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .spockHand, skinTones: [.medium])
         } else if rawValue == "🖖🏾" {
-            self.init(baseEmoji: Emoji.spockHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .spockHand, skinTones: [.mediumDark])
         } else if rawValue == "🖖🏿" {
-            self.init(baseEmoji: Emoji.spockHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .spockHand, skinTones: [.dark])
         } else if rawValue == "👌" {
-            self.init(baseEmoji: Emoji.okHand, skinTones: nil)
+            self.init(baseEmoji: .okHand, skinTones: nil)
         } else if rawValue == "👌🏻" {
-            self.init(baseEmoji: Emoji.okHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .okHand, skinTones: [.light])
         } else if rawValue == "👌🏼" {
-            self.init(baseEmoji: Emoji.okHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .okHand, skinTones: [.mediumLight])
         } else if rawValue == "👌🏽" {
-            self.init(baseEmoji: Emoji.okHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .okHand, skinTones: [.medium])
         } else if rawValue == "👌🏾" {
-            self.init(baseEmoji: Emoji.okHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .okHand, skinTones: [.mediumDark])
         } else if rawValue == "👌🏿" {
-            self.init(baseEmoji: Emoji.okHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .okHand, skinTones: [.dark])
         } else if rawValue == "🤌" {
-            self.init(baseEmoji: Emoji.pinchedFingers, skinTones: nil)
+            self.init(baseEmoji: .pinchedFingers, skinTones: nil)
         } else if rawValue == "🤌🏻" {
-            self.init(baseEmoji: Emoji.pinchedFingers, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pinchedFingers, skinTones: [.light])
         } else if rawValue == "🤌🏼" {
-            self.init(baseEmoji: Emoji.pinchedFingers, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pinchedFingers, skinTones: [.mediumLight])
         } else if rawValue == "🤌🏽" {
-            self.init(baseEmoji: Emoji.pinchedFingers, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pinchedFingers, skinTones: [.medium])
         } else if rawValue == "🤌🏾" {
-            self.init(baseEmoji: Emoji.pinchedFingers, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pinchedFingers, skinTones: [.mediumDark])
         } else if rawValue == "🤌🏿" {
-            self.init(baseEmoji: Emoji.pinchedFingers, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pinchedFingers, skinTones: [.dark])
         } else if rawValue == "🤏" {
-            self.init(baseEmoji: Emoji.pinchingHand, skinTones: nil)
+            self.init(baseEmoji: .pinchingHand, skinTones: nil)
         } else if rawValue == "🤏🏻" {
-            self.init(baseEmoji: Emoji.pinchingHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pinchingHand, skinTones: [.light])
         } else if rawValue == "🤏🏼" {
-            self.init(baseEmoji: Emoji.pinchingHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pinchingHand, skinTones: [.mediumLight])
         } else if rawValue == "🤏🏽" {
-            self.init(baseEmoji: Emoji.pinchingHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pinchingHand, skinTones: [.medium])
         } else if rawValue == "🤏🏾" {
-            self.init(baseEmoji: Emoji.pinchingHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pinchingHand, skinTones: [.mediumDark])
         } else if rawValue == "🤏🏿" {
-            self.init(baseEmoji: Emoji.pinchingHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pinchingHand, skinTones: [.dark])
         } else if rawValue == "✌️" {
-            self.init(baseEmoji: Emoji.v, skinTones: nil)
+            self.init(baseEmoji: .v, skinTones: nil)
         } else if rawValue == "✌🏻" {
-            self.init(baseEmoji: Emoji.v, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .v, skinTones: [.light])
         } else if rawValue == "✌🏼" {
-            self.init(baseEmoji: Emoji.v, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .v, skinTones: [.mediumLight])
         } else if rawValue == "✌🏽" {
-            self.init(baseEmoji: Emoji.v, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .v, skinTones: [.medium])
         } else if rawValue == "✌🏾" {
-            self.init(baseEmoji: Emoji.v, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .v, skinTones: [.mediumDark])
         } else if rawValue == "✌🏿" {
-            self.init(baseEmoji: Emoji.v, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .v, skinTones: [.dark])
         } else if rawValue == "🤞" {
-            self.init(baseEmoji: Emoji.crossedFingers, skinTones: nil)
+            self.init(baseEmoji: .crossedFingers, skinTones: nil)
         } else if rawValue == "🤞🏻" {
-            self.init(baseEmoji: Emoji.crossedFingers, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .crossedFingers, skinTones: [.light])
         } else if rawValue == "🤞🏼" {
-            self.init(baseEmoji: Emoji.crossedFingers, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .crossedFingers, skinTones: [.mediumLight])
         } else if rawValue == "🤞🏽" {
-            self.init(baseEmoji: Emoji.crossedFingers, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .crossedFingers, skinTones: [.medium])
         } else if rawValue == "🤞🏾" {
-            self.init(baseEmoji: Emoji.crossedFingers, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .crossedFingers, skinTones: [.mediumDark])
         } else if rawValue == "🤞🏿" {
-            self.init(baseEmoji: Emoji.crossedFingers, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .crossedFingers, skinTones: [.dark])
         } else if rawValue == "🤟" {
-            self.init(baseEmoji: Emoji.iLoveYouHandSign, skinTones: nil)
+            self.init(baseEmoji: .iLoveYouHandSign, skinTones: nil)
         } else if rawValue == "🤟🏻" {
-            self.init(baseEmoji: Emoji.iLoveYouHandSign, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .iLoveYouHandSign, skinTones: [.light])
         } else if rawValue == "🤟🏼" {
-            self.init(baseEmoji: Emoji.iLoveYouHandSign, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .iLoveYouHandSign, skinTones: [.mediumLight])
         } else if rawValue == "🤟🏽" {
-            self.init(baseEmoji: Emoji.iLoveYouHandSign, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .iLoveYouHandSign, skinTones: [.medium])
         } else if rawValue == "🤟🏾" {
-            self.init(baseEmoji: Emoji.iLoveYouHandSign, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .iLoveYouHandSign, skinTones: [.mediumDark])
         } else if rawValue == "🤟🏿" {
-            self.init(baseEmoji: Emoji.iLoveYouHandSign, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .iLoveYouHandSign, skinTones: [.dark])
         } else if rawValue == "🤘" {
-            self.init(baseEmoji: Emoji.theHorns, skinTones: nil)
+            self.init(baseEmoji: .theHorns, skinTones: nil)
         } else if rawValue == "🤘🏻" {
-            self.init(baseEmoji: Emoji.theHorns, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .theHorns, skinTones: [.light])
         } else if rawValue == "🤘🏼" {
-            self.init(baseEmoji: Emoji.theHorns, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .theHorns, skinTones: [.mediumLight])
         } else if rawValue == "🤘🏽" {
-            self.init(baseEmoji: Emoji.theHorns, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .theHorns, skinTones: [.medium])
         } else if rawValue == "🤘🏾" {
-            self.init(baseEmoji: Emoji.theHorns, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .theHorns, skinTones: [.mediumDark])
         } else if rawValue == "🤘🏿" {
-            self.init(baseEmoji: Emoji.theHorns, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .theHorns, skinTones: [.dark])
         } else if rawValue == "🤙" {
-            self.init(baseEmoji: Emoji.callMeHand, skinTones: nil)
+            self.init(baseEmoji: .callMeHand, skinTones: nil)
         } else if rawValue == "🤙🏻" {
-            self.init(baseEmoji: Emoji.callMeHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .callMeHand, skinTones: [.light])
         } else if rawValue == "🤙🏼" {
-            self.init(baseEmoji: Emoji.callMeHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .callMeHand, skinTones: [.mediumLight])
         } else if rawValue == "🤙🏽" {
-            self.init(baseEmoji: Emoji.callMeHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .callMeHand, skinTones: [.medium])
         } else if rawValue == "🤙🏾" {
-            self.init(baseEmoji: Emoji.callMeHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .callMeHand, skinTones: [.mediumDark])
         } else if rawValue == "🤙🏿" {
-            self.init(baseEmoji: Emoji.callMeHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .callMeHand, skinTones: [.dark])
         } else if rawValue == "👈" {
-            self.init(baseEmoji: Emoji.pointLeft, skinTones: nil)
+            self.init(baseEmoji: .pointLeft, skinTones: nil)
         } else if rawValue == "👈🏻" {
-            self.init(baseEmoji: Emoji.pointLeft, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pointLeft, skinTones: [.light])
         } else if rawValue == "👈🏼" {
-            self.init(baseEmoji: Emoji.pointLeft, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pointLeft, skinTones: [.mediumLight])
         } else if rawValue == "👈🏽" {
-            self.init(baseEmoji: Emoji.pointLeft, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pointLeft, skinTones: [.medium])
         } else if rawValue == "👈🏾" {
-            self.init(baseEmoji: Emoji.pointLeft, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pointLeft, skinTones: [.mediumDark])
         } else if rawValue == "👈🏿" {
-            self.init(baseEmoji: Emoji.pointLeft, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pointLeft, skinTones: [.dark])
         } else if rawValue == "👉" {
-            self.init(baseEmoji: Emoji.pointRight, skinTones: nil)
+            self.init(baseEmoji: .pointRight, skinTones: nil)
         } else if rawValue == "👉🏻" {
-            self.init(baseEmoji: Emoji.pointRight, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pointRight, skinTones: [.light])
         } else if rawValue == "👉🏼" {
-            self.init(baseEmoji: Emoji.pointRight, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pointRight, skinTones: [.mediumLight])
         } else if rawValue == "👉🏽" {
-            self.init(baseEmoji: Emoji.pointRight, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pointRight, skinTones: [.medium])
         } else if rawValue == "👉🏾" {
-            self.init(baseEmoji: Emoji.pointRight, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pointRight, skinTones: [.mediumDark])
         } else if rawValue == "👉🏿" {
-            self.init(baseEmoji: Emoji.pointRight, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pointRight, skinTones: [.dark])
         } else if rawValue == "👆" {
-            self.init(baseEmoji: Emoji.pointUp2, skinTones: nil)
+            self.init(baseEmoji: .pointUp2, skinTones: nil)
         } else if rawValue == "👆🏻" {
-            self.init(baseEmoji: Emoji.pointUp2, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pointUp2, skinTones: [.light])
         } else if rawValue == "👆🏼" {
-            self.init(baseEmoji: Emoji.pointUp2, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pointUp2, skinTones: [.mediumLight])
         } else if rawValue == "👆🏽" {
-            self.init(baseEmoji: Emoji.pointUp2, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pointUp2, skinTones: [.medium])
         } else if rawValue == "👆🏾" {
-            self.init(baseEmoji: Emoji.pointUp2, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pointUp2, skinTones: [.mediumDark])
         } else if rawValue == "👆🏿" {
-            self.init(baseEmoji: Emoji.pointUp2, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pointUp2, skinTones: [.dark])
         } else if rawValue == "🖕" {
-            self.init(baseEmoji: Emoji.middleFinger, skinTones: nil)
+            self.init(baseEmoji: .middleFinger, skinTones: nil)
         } else if rawValue == "🖕🏻" {
-            self.init(baseEmoji: Emoji.middleFinger, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .middleFinger, skinTones: [.light])
         } else if rawValue == "🖕🏼" {
-            self.init(baseEmoji: Emoji.middleFinger, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .middleFinger, skinTones: [.mediumLight])
         } else if rawValue == "🖕🏽" {
-            self.init(baseEmoji: Emoji.middleFinger, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .middleFinger, skinTones: [.medium])
         } else if rawValue == "🖕🏾" {
-            self.init(baseEmoji: Emoji.middleFinger, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .middleFinger, skinTones: [.mediumDark])
         } else if rawValue == "🖕🏿" {
-            self.init(baseEmoji: Emoji.middleFinger, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .middleFinger, skinTones: [.dark])
         } else if rawValue == "👇" {
-            self.init(baseEmoji: Emoji.pointDown, skinTones: nil)
+            self.init(baseEmoji: .pointDown, skinTones: nil)
         } else if rawValue == "👇🏻" {
-            self.init(baseEmoji: Emoji.pointDown, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pointDown, skinTones: [.light])
         } else if rawValue == "👇🏼" {
-            self.init(baseEmoji: Emoji.pointDown, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pointDown, skinTones: [.mediumLight])
         } else if rawValue == "👇🏽" {
-            self.init(baseEmoji: Emoji.pointDown, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pointDown, skinTones: [.medium])
         } else if rawValue == "👇🏾" {
-            self.init(baseEmoji: Emoji.pointDown, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pointDown, skinTones: [.mediumDark])
         } else if rawValue == "👇🏿" {
-            self.init(baseEmoji: Emoji.pointDown, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pointDown, skinTones: [.dark])
         } else if rawValue == "☝️" {
-            self.init(baseEmoji: Emoji.pointUp, skinTones: nil)
+            self.init(baseEmoji: .pointUp, skinTones: nil)
         } else if rawValue == "☝🏻" {
-            self.init(baseEmoji: Emoji.pointUp, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pointUp, skinTones: [.light])
         } else if rawValue == "☝🏼" {
-            self.init(baseEmoji: Emoji.pointUp, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pointUp, skinTones: [.mediumLight])
         } else if rawValue == "☝🏽" {
-            self.init(baseEmoji: Emoji.pointUp, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pointUp, skinTones: [.medium])
         } else if rawValue == "☝🏾" {
-            self.init(baseEmoji: Emoji.pointUp, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pointUp, skinTones: [.mediumDark])
         } else if rawValue == "☝🏿" {
-            self.init(baseEmoji: Emoji.pointUp, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pointUp, skinTones: [.dark])
         } else if rawValue == "👍" {
-            self.init(baseEmoji: Emoji.plusOne, skinTones: nil)
+            self.init(baseEmoji: .plusOne, skinTones: nil)
         } else if rawValue == "👍🏻" {
-            self.init(baseEmoji: Emoji.plusOne, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .plusOne, skinTones: [.light])
         } else if rawValue == "👍🏼" {
-            self.init(baseEmoji: Emoji.plusOne, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .plusOne, skinTones: [.mediumLight])
         } else if rawValue == "👍🏽" {
-            self.init(baseEmoji: Emoji.plusOne, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .plusOne, skinTones: [.medium])
         } else if rawValue == "👍🏾" {
-            self.init(baseEmoji: Emoji.plusOne, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .plusOne, skinTones: [.mediumDark])
         } else if rawValue == "👍🏿" {
-            self.init(baseEmoji: Emoji.plusOne, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .plusOne, skinTones: [.dark])
         } else if rawValue == "👎" {
-            self.init(baseEmoji: Emoji.negativeOne, skinTones: nil)
+            self.init(baseEmoji: .negativeOne, skinTones: nil)
         } else if rawValue == "👎🏻" {
-            self.init(baseEmoji: Emoji.negativeOne, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .negativeOne, skinTones: [.light])
         } else if rawValue == "👎🏼" {
-            self.init(baseEmoji: Emoji.negativeOne, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .negativeOne, skinTones: [.mediumLight])
         } else if rawValue == "👎🏽" {
-            self.init(baseEmoji: Emoji.negativeOne, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .negativeOne, skinTones: [.medium])
         } else if rawValue == "👎🏾" {
-            self.init(baseEmoji: Emoji.negativeOne, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .negativeOne, skinTones: [.mediumDark])
         } else if rawValue == "👎🏿" {
-            self.init(baseEmoji: Emoji.negativeOne, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .negativeOne, skinTones: [.dark])
         } else if rawValue == "✊" {
-            self.init(baseEmoji: Emoji.fist, skinTones: nil)
+            self.init(baseEmoji: .fist, skinTones: nil)
         } else if rawValue == "✊🏻" {
-            self.init(baseEmoji: Emoji.fist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .fist, skinTones: [.light])
         } else if rawValue == "✊🏼" {
-            self.init(baseEmoji: Emoji.fist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .fist, skinTones: [.mediumLight])
         } else if rawValue == "✊🏽" {
-            self.init(baseEmoji: Emoji.fist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .fist, skinTones: [.medium])
         } else if rawValue == "✊🏾" {
-            self.init(baseEmoji: Emoji.fist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .fist, skinTones: [.mediumDark])
         } else if rawValue == "✊🏿" {
-            self.init(baseEmoji: Emoji.fist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .fist, skinTones: [.dark])
         } else if rawValue == "👊" {
-            self.init(baseEmoji: Emoji.facepunch, skinTones: nil)
+            self.init(baseEmoji: .facepunch, skinTones: nil)
         } else if rawValue == "👊🏻" {
-            self.init(baseEmoji: Emoji.facepunch, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .facepunch, skinTones: [.light])
         } else if rawValue == "👊🏼" {
-            self.init(baseEmoji: Emoji.facepunch, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .facepunch, skinTones: [.mediumLight])
         } else if rawValue == "👊🏽" {
-            self.init(baseEmoji: Emoji.facepunch, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .facepunch, skinTones: [.medium])
         } else if rawValue == "👊🏾" {
-            self.init(baseEmoji: Emoji.facepunch, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .facepunch, skinTones: [.mediumDark])
         } else if rawValue == "👊🏿" {
-            self.init(baseEmoji: Emoji.facepunch, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .facepunch, skinTones: [.dark])
         } else if rawValue == "🤛" {
-            self.init(baseEmoji: Emoji.leftFacingFist, skinTones: nil)
+            self.init(baseEmoji: .leftFacingFist, skinTones: nil)
         } else if rawValue == "🤛🏻" {
-            self.init(baseEmoji: Emoji.leftFacingFist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .leftFacingFist, skinTones: [.light])
         } else if rawValue == "🤛🏼" {
-            self.init(baseEmoji: Emoji.leftFacingFist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .leftFacingFist, skinTones: [.mediumLight])
         } else if rawValue == "🤛🏽" {
-            self.init(baseEmoji: Emoji.leftFacingFist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .leftFacingFist, skinTones: [.medium])
         } else if rawValue == "🤛🏾" {
-            self.init(baseEmoji: Emoji.leftFacingFist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .leftFacingFist, skinTones: [.mediumDark])
         } else if rawValue == "🤛🏿" {
-            self.init(baseEmoji: Emoji.leftFacingFist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .leftFacingFist, skinTones: [.dark])
         } else if rawValue == "🤜" {
-            self.init(baseEmoji: Emoji.rightFacingFist, skinTones: nil)
+            self.init(baseEmoji: .rightFacingFist, skinTones: nil)
         } else if rawValue == "🤜🏻" {
-            self.init(baseEmoji: Emoji.rightFacingFist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .rightFacingFist, skinTones: [.light])
         } else if rawValue == "🤜🏼" {
-            self.init(baseEmoji: Emoji.rightFacingFist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .rightFacingFist, skinTones: [.mediumLight])
         } else if rawValue == "🤜🏽" {
-            self.init(baseEmoji: Emoji.rightFacingFist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .rightFacingFist, skinTones: [.medium])
         } else if rawValue == "🤜🏾" {
-            self.init(baseEmoji: Emoji.rightFacingFist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .rightFacingFist, skinTones: [.mediumDark])
         } else if rawValue == "🤜🏿" {
-            self.init(baseEmoji: Emoji.rightFacingFist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .rightFacingFist, skinTones: [.dark])
         } else if rawValue == "👏" {
-            self.init(baseEmoji: Emoji.clap, skinTones: nil)
+            self.init(baseEmoji: .clap, skinTones: nil)
         } else if rawValue == "👏🏻" {
-            self.init(baseEmoji: Emoji.clap, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .clap, skinTones: [.light])
         } else if rawValue == "👏🏼" {
-            self.init(baseEmoji: Emoji.clap, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .clap, skinTones: [.mediumLight])
         } else if rawValue == "👏🏽" {
-            self.init(baseEmoji: Emoji.clap, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .clap, skinTones: [.medium])
         } else if rawValue == "👏🏾" {
-            self.init(baseEmoji: Emoji.clap, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .clap, skinTones: [.mediumDark])
         } else if rawValue == "👏🏿" {
-            self.init(baseEmoji: Emoji.clap, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .clap, skinTones: [.dark])
         } else if rawValue == "🙌" {
-            self.init(baseEmoji: Emoji.raisedHands, skinTones: nil)
+            self.init(baseEmoji: .raisedHands, skinTones: nil)
         } else if rawValue == "🙌🏻" {
-            self.init(baseEmoji: Emoji.raisedHands, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .raisedHands, skinTones: [.light])
         } else if rawValue == "🙌🏼" {
-            self.init(baseEmoji: Emoji.raisedHands, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .raisedHands, skinTones: [.mediumLight])
         } else if rawValue == "🙌🏽" {
-            self.init(baseEmoji: Emoji.raisedHands, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .raisedHands, skinTones: [.medium])
         } else if rawValue == "🙌🏾" {
-            self.init(baseEmoji: Emoji.raisedHands, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .raisedHands, skinTones: [.mediumDark])
         } else if rawValue == "🙌🏿" {
-            self.init(baseEmoji: Emoji.raisedHands, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .raisedHands, skinTones: [.dark])
         } else if rawValue == "👐" {
-            self.init(baseEmoji: Emoji.openHands, skinTones: nil)
+            self.init(baseEmoji: .openHands, skinTones: nil)
         } else if rawValue == "👐🏻" {
-            self.init(baseEmoji: Emoji.openHands, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .openHands, skinTones: [.light])
         } else if rawValue == "👐🏼" {
-            self.init(baseEmoji: Emoji.openHands, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .openHands, skinTones: [.mediumLight])
         } else if rawValue == "👐🏽" {
-            self.init(baseEmoji: Emoji.openHands, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .openHands, skinTones: [.medium])
         } else if rawValue == "👐🏾" {
-            self.init(baseEmoji: Emoji.openHands, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .openHands, skinTones: [.mediumDark])
         } else if rawValue == "👐🏿" {
-            self.init(baseEmoji: Emoji.openHands, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .openHands, skinTones: [.dark])
         } else if rawValue == "🤲" {
-            self.init(baseEmoji: Emoji.palmsUpTogether, skinTones: nil)
+            self.init(baseEmoji: .palmsUpTogether, skinTones: nil)
         } else if rawValue == "🤲🏻" {
-            self.init(baseEmoji: Emoji.palmsUpTogether, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .palmsUpTogether, skinTones: [.light])
         } else if rawValue == "🤲🏼" {
-            self.init(baseEmoji: Emoji.palmsUpTogether, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .palmsUpTogether, skinTones: [.mediumLight])
         } else if rawValue == "🤲🏽" {
-            self.init(baseEmoji: Emoji.palmsUpTogether, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .palmsUpTogether, skinTones: [.medium])
         } else if rawValue == "🤲🏾" {
-            self.init(baseEmoji: Emoji.palmsUpTogether, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .palmsUpTogether, skinTones: [.mediumDark])
         } else if rawValue == "🤲🏿" {
-            self.init(baseEmoji: Emoji.palmsUpTogether, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .palmsUpTogether, skinTones: [.dark])
         } else if rawValue == "🤝" {
-            self.init(baseEmoji: Emoji.handshake, skinTones: nil)
+            self.init(baseEmoji: .handshake, skinTones: nil)
         } else if rawValue == "🙏" {
-            self.init(baseEmoji: Emoji.pray, skinTones: nil)
+            self.init(baseEmoji: .pray, skinTones: nil)
         } else if rawValue == "🙏🏻" {
-            self.init(baseEmoji: Emoji.pray, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pray, skinTones: [.light])
         } else if rawValue == "🙏🏼" {
-            self.init(baseEmoji: Emoji.pray, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pray, skinTones: [.mediumLight])
         } else if rawValue == "🙏🏽" {
-            self.init(baseEmoji: Emoji.pray, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pray, skinTones: [.medium])
         } else if rawValue == "🙏🏾" {
-            self.init(baseEmoji: Emoji.pray, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pray, skinTones: [.mediumDark])
         } else if rawValue == "🙏🏿" {
-            self.init(baseEmoji: Emoji.pray, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pray, skinTones: [.dark])
         } else if rawValue == "✍️" {
-            self.init(baseEmoji: Emoji.writingHand, skinTones: nil)
+            self.init(baseEmoji: .writingHand, skinTones: nil)
         } else if rawValue == "✍🏻" {
-            self.init(baseEmoji: Emoji.writingHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .writingHand, skinTones: [.light])
         } else if rawValue == "✍🏼" {
-            self.init(baseEmoji: Emoji.writingHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .writingHand, skinTones: [.mediumLight])
         } else if rawValue == "✍🏽" {
-            self.init(baseEmoji: Emoji.writingHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .writingHand, skinTones: [.medium])
         } else if rawValue == "✍🏾" {
-            self.init(baseEmoji: Emoji.writingHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .writingHand, skinTones: [.mediumDark])
         } else if rawValue == "✍🏿" {
-            self.init(baseEmoji: Emoji.writingHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .writingHand, skinTones: [.dark])
         } else if rawValue == "💅" {
-            self.init(baseEmoji: Emoji.nailCare, skinTones: nil)
+            self.init(baseEmoji: .nailCare, skinTones: nil)
         } else if rawValue == "💅🏻" {
-            self.init(baseEmoji: Emoji.nailCare, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .nailCare, skinTones: [.light])
         } else if rawValue == "💅🏼" {
-            self.init(baseEmoji: Emoji.nailCare, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .nailCare, skinTones: [.mediumLight])
         } else if rawValue == "💅🏽" {
-            self.init(baseEmoji: Emoji.nailCare, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .nailCare, skinTones: [.medium])
         } else if rawValue == "💅🏾" {
-            self.init(baseEmoji: Emoji.nailCare, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .nailCare, skinTones: [.mediumDark])
         } else if rawValue == "💅🏿" {
-            self.init(baseEmoji: Emoji.nailCare, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .nailCare, skinTones: [.dark])
         } else if rawValue == "🤳" {
-            self.init(baseEmoji: Emoji.selfie, skinTones: nil)
+            self.init(baseEmoji: .selfie, skinTones: nil)
         } else if rawValue == "🤳🏻" {
-            self.init(baseEmoji: Emoji.selfie, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .selfie, skinTones: [.light])
         } else if rawValue == "🤳🏼" {
-            self.init(baseEmoji: Emoji.selfie, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .selfie, skinTones: [.mediumLight])
         } else if rawValue == "🤳🏽" {
-            self.init(baseEmoji: Emoji.selfie, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .selfie, skinTones: [.medium])
         } else if rawValue == "🤳🏾" {
-            self.init(baseEmoji: Emoji.selfie, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .selfie, skinTones: [.mediumDark])
         } else if rawValue == "🤳🏿" {
-            self.init(baseEmoji: Emoji.selfie, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .selfie, skinTones: [.dark])
         } else if rawValue == "💪" {
-            self.init(baseEmoji: Emoji.muscle, skinTones: nil)
+            self.init(baseEmoji: .muscle, skinTones: nil)
         } else if rawValue == "💪🏻" {
-            self.init(baseEmoji: Emoji.muscle, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .muscle, skinTones: [.light])
         } else if rawValue == "💪🏼" {
-            self.init(baseEmoji: Emoji.muscle, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .muscle, skinTones: [.mediumLight])
         } else if rawValue == "💪🏽" {
-            self.init(baseEmoji: Emoji.muscle, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .muscle, skinTones: [.medium])
         } else if rawValue == "💪🏾" {
-            self.init(baseEmoji: Emoji.muscle, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .muscle, skinTones: [.mediumDark])
         } else if rawValue == "💪🏿" {
-            self.init(baseEmoji: Emoji.muscle, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .muscle, skinTones: [.dark])
         } else if rawValue == "🦾" {
-            self.init(baseEmoji: Emoji.mechanicalArm, skinTones: nil)
+            self.init(baseEmoji: .mechanicalArm, skinTones: nil)
         } else if rawValue == "🦿" {
-            self.init(baseEmoji: Emoji.mechanicalLeg, skinTones: nil)
+            self.init(baseEmoji: .mechanicalLeg, skinTones: nil)
         } else if rawValue == "🦵" {
-            self.init(baseEmoji: Emoji.leg, skinTones: nil)
+            self.init(baseEmoji: .leg, skinTones: nil)
         } else if rawValue == "🦵🏻" {
-            self.init(baseEmoji: Emoji.leg, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .leg, skinTones: [.light])
         } else if rawValue == "🦵🏼" {
-            self.init(baseEmoji: Emoji.leg, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .leg, skinTones: [.mediumLight])
         } else if rawValue == "🦵🏽" {
-            self.init(baseEmoji: Emoji.leg, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .leg, skinTones: [.medium])
         } else if rawValue == "🦵🏾" {
-            self.init(baseEmoji: Emoji.leg, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .leg, skinTones: [.mediumDark])
         } else if rawValue == "🦵🏿" {
-            self.init(baseEmoji: Emoji.leg, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .leg, skinTones: [.dark])
         } else if rawValue == "🦶" {
-            self.init(baseEmoji: Emoji.foot, skinTones: nil)
+            self.init(baseEmoji: .foot, skinTones: nil)
         } else if rawValue == "🦶🏻" {
-            self.init(baseEmoji: Emoji.foot, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .foot, skinTones: [.light])
         } else if rawValue == "🦶🏼" {
-            self.init(baseEmoji: Emoji.foot, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .foot, skinTones: [.mediumLight])
         } else if rawValue == "🦶🏽" {
-            self.init(baseEmoji: Emoji.foot, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .foot, skinTones: [.medium])
         } else if rawValue == "🦶🏾" {
-            self.init(baseEmoji: Emoji.foot, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .foot, skinTones: [.mediumDark])
         } else if rawValue == "🦶🏿" {
-            self.init(baseEmoji: Emoji.foot, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .foot, skinTones: [.dark])
         } else if rawValue == "👂" {
-            self.init(baseEmoji: Emoji.ear, skinTones: nil)
+            self.init(baseEmoji: .ear, skinTones: nil)
         } else if rawValue == "👂🏻" {
-            self.init(baseEmoji: Emoji.ear, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .ear, skinTones: [.light])
         } else if rawValue == "👂🏼" {
-            self.init(baseEmoji: Emoji.ear, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .ear, skinTones: [.mediumLight])
         } else if rawValue == "👂🏽" {
-            self.init(baseEmoji: Emoji.ear, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .ear, skinTones: [.medium])
         } else if rawValue == "👂🏾" {
-            self.init(baseEmoji: Emoji.ear, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .ear, skinTones: [.mediumDark])
         } else if rawValue == "👂🏿" {
-            self.init(baseEmoji: Emoji.ear, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .ear, skinTones: [.dark])
         } else if rawValue == "🦻" {
-            self.init(baseEmoji: Emoji.earWithHearingAid, skinTones: nil)
+            self.init(baseEmoji: .earWithHearingAid, skinTones: nil)
         } else if rawValue == "🦻🏻" {
-            self.init(baseEmoji: Emoji.earWithHearingAid, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .earWithHearingAid, skinTones: [.light])
         } else if rawValue == "🦻🏼" {
-            self.init(baseEmoji: Emoji.earWithHearingAid, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .earWithHearingAid, skinTones: [.mediumLight])
         } else if rawValue == "🦻🏽" {
-            self.init(baseEmoji: Emoji.earWithHearingAid, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .earWithHearingAid, skinTones: [.medium])
         } else if rawValue == "🦻🏾" {
-            self.init(baseEmoji: Emoji.earWithHearingAid, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .earWithHearingAid, skinTones: [.mediumDark])
         } else if rawValue == "🦻🏿" {
-            self.init(baseEmoji: Emoji.earWithHearingAid, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .earWithHearingAid, skinTones: [.dark])
         } else if rawValue == "👃" {
-            self.init(baseEmoji: Emoji.nose, skinTones: nil)
+            self.init(baseEmoji: .nose, skinTones: nil)
         } else if rawValue == "👃🏻" {
-            self.init(baseEmoji: Emoji.nose, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .nose, skinTones: [.light])
         } else if rawValue == "👃🏼" {
-            self.init(baseEmoji: Emoji.nose, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .nose, skinTones: [.mediumLight])
         } else if rawValue == "👃🏽" {
-            self.init(baseEmoji: Emoji.nose, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .nose, skinTones: [.medium])
         } else if rawValue == "👃🏾" {
-            self.init(baseEmoji: Emoji.nose, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .nose, skinTones: [.mediumDark])
         } else if rawValue == "👃🏿" {
-            self.init(baseEmoji: Emoji.nose, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .nose, skinTones: [.dark])
         } else if rawValue == "🧠" {
-            self.init(baseEmoji: Emoji.brain, skinTones: nil)
+            self.init(baseEmoji: .brain, skinTones: nil)
         } else if rawValue == "🫀" {
-            self.init(baseEmoji: Emoji.anatomicalHeart, skinTones: nil)
+            self.init(baseEmoji: .anatomicalHeart, skinTones: nil)
         } else if rawValue == "🫁" {
-            self.init(baseEmoji: Emoji.lungs, skinTones: nil)
+            self.init(baseEmoji: .lungs, skinTones: nil)
         } else if rawValue == "🦷" {
-            self.init(baseEmoji: Emoji.tooth, skinTones: nil)
+            self.init(baseEmoji: .tooth, skinTones: nil)
         } else if rawValue == "🦴" {
-            self.init(baseEmoji: Emoji.bone, skinTones: nil)
+            self.init(baseEmoji: .bone, skinTones: nil)
         } else if rawValue == "👀" {
-            self.init(baseEmoji: Emoji.eyes, skinTones: nil)
+            self.init(baseEmoji: .eyes, skinTones: nil)
         } else if rawValue == "👁️" {
-            self.init(baseEmoji: Emoji.eye, skinTones: nil)
+            self.init(baseEmoji: .eye, skinTones: nil)
         } else if rawValue == "👅" {
-            self.init(baseEmoji: Emoji.tongue, skinTones: nil)
+            self.init(baseEmoji: .tongue, skinTones: nil)
         } else if rawValue == "👄" {
-            self.init(baseEmoji: Emoji.lips, skinTones: nil)
+            self.init(baseEmoji: .lips, skinTones: nil)
         } else if rawValue == "👶" {
-            self.init(baseEmoji: Emoji.baby, skinTones: nil)
+            self.init(baseEmoji: .baby, skinTones: nil)
         } else if rawValue == "👶🏻" {
-            self.init(baseEmoji: Emoji.baby, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .baby, skinTones: [.light])
         } else if rawValue == "👶🏼" {
-            self.init(baseEmoji: Emoji.baby, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .baby, skinTones: [.mediumLight])
         } else if rawValue == "👶🏽" {
-            self.init(baseEmoji: Emoji.baby, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .baby, skinTones: [.medium])
         } else if rawValue == "👶🏾" {
-            self.init(baseEmoji: Emoji.baby, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .baby, skinTones: [.mediumDark])
         } else if rawValue == "👶🏿" {
-            self.init(baseEmoji: Emoji.baby, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .baby, skinTones: [.dark])
         } else if rawValue == "🧒" {
-            self.init(baseEmoji: Emoji.child, skinTones: nil)
+            self.init(baseEmoji: .child, skinTones: nil)
         } else if rawValue == "🧒🏻" {
-            self.init(baseEmoji: Emoji.child, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .child, skinTones: [.light])
         } else if rawValue == "🧒🏼" {
-            self.init(baseEmoji: Emoji.child, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .child, skinTones: [.mediumLight])
         } else if rawValue == "🧒🏽" {
-            self.init(baseEmoji: Emoji.child, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .child, skinTones: [.medium])
         } else if rawValue == "🧒🏾" {
-            self.init(baseEmoji: Emoji.child, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .child, skinTones: [.mediumDark])
         } else if rawValue == "🧒🏿" {
-            self.init(baseEmoji: Emoji.child, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .child, skinTones: [.dark])
         } else if rawValue == "👦" {
-            self.init(baseEmoji: Emoji.boy, skinTones: nil)
+            self.init(baseEmoji: .boy, skinTones: nil)
         } else if rawValue == "👦🏻" {
-            self.init(baseEmoji: Emoji.boy, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .boy, skinTones: [.light])
         } else if rawValue == "👦🏼" {
-            self.init(baseEmoji: Emoji.boy, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .boy, skinTones: [.mediumLight])
         } else if rawValue == "👦🏽" {
-            self.init(baseEmoji: Emoji.boy, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .boy, skinTones: [.medium])
         } else if rawValue == "👦🏾" {
-            self.init(baseEmoji: Emoji.boy, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .boy, skinTones: [.mediumDark])
         } else if rawValue == "👦🏿" {
-            self.init(baseEmoji: Emoji.boy, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .boy, skinTones: [.dark])
         } else if rawValue == "👧" {
-            self.init(baseEmoji: Emoji.girl, skinTones: nil)
+            self.init(baseEmoji: .girl, skinTones: nil)
         } else if rawValue == "👧🏻" {
-            self.init(baseEmoji: Emoji.girl, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .girl, skinTones: [.light])
         } else if rawValue == "👧🏼" {
-            self.init(baseEmoji: Emoji.girl, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .girl, skinTones: [.mediumLight])
         } else if rawValue == "👧🏽" {
-            self.init(baseEmoji: Emoji.girl, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .girl, skinTones: [.medium])
         } else if rawValue == "👧🏾" {
-            self.init(baseEmoji: Emoji.girl, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .girl, skinTones: [.mediumDark])
         } else if rawValue == "👧🏿" {
-            self.init(baseEmoji: Emoji.girl, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .girl, skinTones: [.dark])
         } else if rawValue == "🧑" {
-            self.init(baseEmoji: Emoji.adult, skinTones: nil)
+            self.init(baseEmoji: .adult, skinTones: nil)
         } else if rawValue == "🧑🏻" {
-            self.init(baseEmoji: Emoji.adult, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .adult, skinTones: [.light])
         } else if rawValue == "🧑🏼" {
-            self.init(baseEmoji: Emoji.adult, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .adult, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽" {
-            self.init(baseEmoji: Emoji.adult, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .adult, skinTones: [.medium])
         } else if rawValue == "🧑🏾" {
-            self.init(baseEmoji: Emoji.adult, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .adult, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿" {
-            self.init(baseEmoji: Emoji.adult, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .adult, skinTones: [.dark])
         } else if rawValue == "👱" {
-            self.init(baseEmoji: Emoji.personWithBlondHair, skinTones: nil)
+            self.init(baseEmoji: .personWithBlondHair, skinTones: nil)
         } else if rawValue == "👱🏻" {
-            self.init(baseEmoji: Emoji.personWithBlondHair, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personWithBlondHair, skinTones: [.light])
         } else if rawValue == "👱🏼" {
-            self.init(baseEmoji: Emoji.personWithBlondHair, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personWithBlondHair, skinTones: [.mediumLight])
         } else if rawValue == "👱🏽" {
-            self.init(baseEmoji: Emoji.personWithBlondHair, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personWithBlondHair, skinTones: [.medium])
         } else if rawValue == "👱🏾" {
-            self.init(baseEmoji: Emoji.personWithBlondHair, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personWithBlondHair, skinTones: [.mediumDark])
         } else if rawValue == "👱🏿" {
-            self.init(baseEmoji: Emoji.personWithBlondHair, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personWithBlondHair, skinTones: [.dark])
         } else if rawValue == "👨" {
-            self.init(baseEmoji: Emoji.man, skinTones: nil)
+            self.init(baseEmoji: .man, skinTones: nil)
         } else if rawValue == "👨🏻" {
-            self.init(baseEmoji: Emoji.man, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .man, skinTones: [.light])
         } else if rawValue == "👨🏼" {
-            self.init(baseEmoji: Emoji.man, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .man, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽" {
-            self.init(baseEmoji: Emoji.man, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .man, skinTones: [.medium])
         } else if rawValue == "👨🏾" {
-            self.init(baseEmoji: Emoji.man, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .man, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿" {
-            self.init(baseEmoji: Emoji.man, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .man, skinTones: [.dark])
         } else if rawValue == "🧔" {
-            self.init(baseEmoji: Emoji.beardedPerson, skinTones: nil)
+            self.init(baseEmoji: .beardedPerson, skinTones: nil)
         } else if rawValue == "🧔🏻" {
-            self.init(baseEmoji: Emoji.beardedPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .beardedPerson, skinTones: [.light])
         } else if rawValue == "🧔🏼" {
-            self.init(baseEmoji: Emoji.beardedPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .beardedPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧔🏽" {
-            self.init(baseEmoji: Emoji.beardedPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .beardedPerson, skinTones: [.medium])
         } else if rawValue == "🧔🏾" {
-            self.init(baseEmoji: Emoji.beardedPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .beardedPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧔🏿" {
-            self.init(baseEmoji: Emoji.beardedPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .beardedPerson, skinTones: [.dark])
         } else if rawValue == "👨‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedMan, skinTones: nil)
+            self.init(baseEmoji: .redHairedMan, skinTones: nil)
         } else if rawValue == "👨🏻‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedMan, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .redHairedMan, skinTones: [.light])
         } else if rawValue == "👨🏼‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedMan, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .redHairedMan, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedMan, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .redHairedMan, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedMan, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .redHairedMan, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedMan, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .redHairedMan, skinTones: [.dark])
         } else if rawValue == "👨‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedMan, skinTones: nil)
+            self.init(baseEmoji: .curlyHairedMan, skinTones: nil)
         } else if rawValue == "👨🏻‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedMan, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .curlyHairedMan, skinTones: [.light])
         } else if rawValue == "👨🏼‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedMan, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .curlyHairedMan, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedMan, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .curlyHairedMan, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedMan, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .curlyHairedMan, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedMan, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .curlyHairedMan, skinTones: [.dark])
         } else if rawValue == "👨‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedMan, skinTones: nil)
+            self.init(baseEmoji: .whiteHairedMan, skinTones: nil)
         } else if rawValue == "👨🏻‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedMan, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .whiteHairedMan, skinTones: [.light])
         } else if rawValue == "👨🏼‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedMan, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .whiteHairedMan, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedMan, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .whiteHairedMan, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedMan, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .whiteHairedMan, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedMan, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .whiteHairedMan, skinTones: [.dark])
         } else if rawValue == "👨‍🦲" {
-            self.init(baseEmoji: Emoji.baldMan, skinTones: nil)
+            self.init(baseEmoji: .baldMan, skinTones: nil)
         } else if rawValue == "👨🏻‍🦲" {
-            self.init(baseEmoji: Emoji.baldMan, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .baldMan, skinTones: [.light])
         } else if rawValue == "👨🏼‍🦲" {
-            self.init(baseEmoji: Emoji.baldMan, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .baldMan, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🦲" {
-            self.init(baseEmoji: Emoji.baldMan, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .baldMan, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🦲" {
-            self.init(baseEmoji: Emoji.baldMan, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .baldMan, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🦲" {
-            self.init(baseEmoji: Emoji.baldMan, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .baldMan, skinTones: [.dark])
         } else if rawValue == "👩" {
-            self.init(baseEmoji: Emoji.woman, skinTones: nil)
+            self.init(baseEmoji: .woman, skinTones: nil)
         } else if rawValue == "👩🏻" {
-            self.init(baseEmoji: Emoji.woman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .woman, skinTones: [.light])
         } else if rawValue == "👩🏼" {
-            self.init(baseEmoji: Emoji.woman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .woman, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽" {
-            self.init(baseEmoji: Emoji.woman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .woman, skinTones: [.medium])
         } else if rawValue == "👩🏾" {
-            self.init(baseEmoji: Emoji.woman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .woman, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿" {
-            self.init(baseEmoji: Emoji.woman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .woman, skinTones: [.dark])
         } else if rawValue == "👩‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedWoman, skinTones: nil)
+            self.init(baseEmoji: .redHairedWoman, skinTones: nil)
         } else if rawValue == "👩🏻‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .redHairedWoman, skinTones: [.light])
         } else if rawValue == "👩🏼‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .redHairedWoman, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .redHairedWoman, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .redHairedWoman, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .redHairedWoman, skinTones: [.dark])
         } else if rawValue == "🧑‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedPerson, skinTones: nil)
+            self.init(baseEmoji: .redHairedPerson, skinTones: nil)
         } else if rawValue == "🧑🏻‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .redHairedPerson, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .redHairedPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .redHairedPerson, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .redHairedPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🦰" {
-            self.init(baseEmoji: Emoji.redHairedPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .redHairedPerson, skinTones: [.dark])
         } else if rawValue == "👩‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedWoman, skinTones: nil)
+            self.init(baseEmoji: .curlyHairedWoman, skinTones: nil)
         } else if rawValue == "👩🏻‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .curlyHairedWoman, skinTones: [.light])
         } else if rawValue == "👩🏼‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .curlyHairedWoman, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .curlyHairedWoman, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .curlyHairedWoman, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .curlyHairedWoman, skinTones: [.dark])
         } else if rawValue == "🧑‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedPerson, skinTones: nil)
+            self.init(baseEmoji: .curlyHairedPerson, skinTones: nil)
         } else if rawValue == "🧑🏻‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .curlyHairedPerson, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .curlyHairedPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .curlyHairedPerson, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .curlyHairedPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🦱" {
-            self.init(baseEmoji: Emoji.curlyHairedPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .curlyHairedPerson, skinTones: [.dark])
         } else if rawValue == "👩‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedWoman, skinTones: nil)
+            self.init(baseEmoji: .whiteHairedWoman, skinTones: nil)
         } else if rawValue == "👩🏻‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .whiteHairedWoman, skinTones: [.light])
         } else if rawValue == "👩🏼‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .whiteHairedWoman, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .whiteHairedWoman, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .whiteHairedWoman, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .whiteHairedWoman, skinTones: [.dark])
         } else if rawValue == "🧑‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedPerson, skinTones: nil)
+            self.init(baseEmoji: .whiteHairedPerson, skinTones: nil)
         } else if rawValue == "🧑🏻‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .whiteHairedPerson, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .whiteHairedPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .whiteHairedPerson, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .whiteHairedPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🦳" {
-            self.init(baseEmoji: Emoji.whiteHairedPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .whiteHairedPerson, skinTones: [.dark])
         } else if rawValue == "👩‍🦲" {
-            self.init(baseEmoji: Emoji.baldWoman, skinTones: nil)
+            self.init(baseEmoji: .baldWoman, skinTones: nil)
         } else if rawValue == "👩🏻‍🦲" {
-            self.init(baseEmoji: Emoji.baldWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .baldWoman, skinTones: [.light])
         } else if rawValue == "👩🏼‍🦲" {
-            self.init(baseEmoji: Emoji.baldWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .baldWoman, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🦲" {
-            self.init(baseEmoji: Emoji.baldWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .baldWoman, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🦲" {
-            self.init(baseEmoji: Emoji.baldWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .baldWoman, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🦲" {
-            self.init(baseEmoji: Emoji.baldWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .baldWoman, skinTones: [.dark])
         } else if rawValue == "🧑‍🦲" {
-            self.init(baseEmoji: Emoji.baldPerson, skinTones: nil)
+            self.init(baseEmoji: .baldPerson, skinTones: nil)
         } else if rawValue == "🧑🏻‍🦲" {
-            self.init(baseEmoji: Emoji.baldPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .baldPerson, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🦲" {
-            self.init(baseEmoji: Emoji.baldPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .baldPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🦲" {
-            self.init(baseEmoji: Emoji.baldPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .baldPerson, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🦲" {
-            self.init(baseEmoji: Emoji.baldPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .baldPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🦲" {
-            self.init(baseEmoji: Emoji.baldPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .baldPerson, skinTones: [.dark])
         } else if rawValue == "👱‍♀️" {
-            self.init(baseEmoji: Emoji.blondHairedWoman, skinTones: nil)
+            self.init(baseEmoji: .blondHairedWoman, skinTones: nil)
         } else if rawValue == "👱🏻‍♀️" {
-            self.init(baseEmoji: Emoji.blondHairedWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .blondHairedWoman, skinTones: [.light])
         } else if rawValue == "👱🏼‍♀️" {
-            self.init(baseEmoji: Emoji.blondHairedWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .blondHairedWoman, skinTones: [.mediumLight])
         } else if rawValue == "👱🏽‍♀️" {
-            self.init(baseEmoji: Emoji.blondHairedWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .blondHairedWoman, skinTones: [.medium])
         } else if rawValue == "👱🏾‍♀️" {
-            self.init(baseEmoji: Emoji.blondHairedWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .blondHairedWoman, skinTones: [.mediumDark])
         } else if rawValue == "👱🏿‍♀️" {
-            self.init(baseEmoji: Emoji.blondHairedWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .blondHairedWoman, skinTones: [.dark])
         } else if rawValue == "👱‍♂️" {
-            self.init(baseEmoji: Emoji.blondHairedMan, skinTones: nil)
+            self.init(baseEmoji: .blondHairedMan, skinTones: nil)
         } else if rawValue == "👱🏻‍♂️" {
-            self.init(baseEmoji: Emoji.blondHairedMan, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .blondHairedMan, skinTones: [.light])
         } else if rawValue == "👱🏼‍♂️" {
-            self.init(baseEmoji: Emoji.blondHairedMan, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .blondHairedMan, skinTones: [.mediumLight])
         } else if rawValue == "👱🏽‍♂️" {
-            self.init(baseEmoji: Emoji.blondHairedMan, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .blondHairedMan, skinTones: [.medium])
         } else if rawValue == "👱🏾‍♂️" {
-            self.init(baseEmoji: Emoji.blondHairedMan, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .blondHairedMan, skinTones: [.mediumDark])
         } else if rawValue == "👱🏿‍♂️" {
-            self.init(baseEmoji: Emoji.blondHairedMan, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .blondHairedMan, skinTones: [.dark])
         } else if rawValue == "🧓" {
-            self.init(baseEmoji: Emoji.olderAdult, skinTones: nil)
+            self.init(baseEmoji: .olderAdult, skinTones: nil)
         } else if rawValue == "🧓🏻" {
-            self.init(baseEmoji: Emoji.olderAdult, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .olderAdult, skinTones: [.light])
         } else if rawValue == "🧓🏼" {
-            self.init(baseEmoji: Emoji.olderAdult, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .olderAdult, skinTones: [.mediumLight])
         } else if rawValue == "🧓🏽" {
-            self.init(baseEmoji: Emoji.olderAdult, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .olderAdult, skinTones: [.medium])
         } else if rawValue == "🧓🏾" {
-            self.init(baseEmoji: Emoji.olderAdult, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .olderAdult, skinTones: [.mediumDark])
         } else if rawValue == "🧓🏿" {
-            self.init(baseEmoji: Emoji.olderAdult, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .olderAdult, skinTones: [.dark])
         } else if rawValue == "👴" {
-            self.init(baseEmoji: Emoji.olderMan, skinTones: nil)
+            self.init(baseEmoji: .olderMan, skinTones: nil)
         } else if rawValue == "👴🏻" {
-            self.init(baseEmoji: Emoji.olderMan, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .olderMan, skinTones: [.light])
         } else if rawValue == "👴🏼" {
-            self.init(baseEmoji: Emoji.olderMan, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .olderMan, skinTones: [.mediumLight])
         } else if rawValue == "👴🏽" {
-            self.init(baseEmoji: Emoji.olderMan, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .olderMan, skinTones: [.medium])
         } else if rawValue == "👴🏾" {
-            self.init(baseEmoji: Emoji.olderMan, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .olderMan, skinTones: [.mediumDark])
         } else if rawValue == "👴🏿" {
-            self.init(baseEmoji: Emoji.olderMan, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .olderMan, skinTones: [.dark])
         } else if rawValue == "👵" {
-            self.init(baseEmoji: Emoji.olderWoman, skinTones: nil)
+            self.init(baseEmoji: .olderWoman, skinTones: nil)
         } else if rawValue == "👵🏻" {
-            self.init(baseEmoji: Emoji.olderWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .olderWoman, skinTones: [.light])
         } else if rawValue == "👵🏼" {
-            self.init(baseEmoji: Emoji.olderWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .olderWoman, skinTones: [.mediumLight])
         } else if rawValue == "👵🏽" {
-            self.init(baseEmoji: Emoji.olderWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .olderWoman, skinTones: [.medium])
         } else if rawValue == "👵🏾" {
-            self.init(baseEmoji: Emoji.olderWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .olderWoman, skinTones: [.mediumDark])
         } else if rawValue == "👵🏿" {
-            self.init(baseEmoji: Emoji.olderWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .olderWoman, skinTones: [.dark])
         } else if rawValue == "🙍" {
-            self.init(baseEmoji: Emoji.personFrowning, skinTones: nil)
+            self.init(baseEmoji: .personFrowning, skinTones: nil)
         } else if rawValue == "🙍🏻" {
-            self.init(baseEmoji: Emoji.personFrowning, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personFrowning, skinTones: [.light])
         } else if rawValue == "🙍🏼" {
-            self.init(baseEmoji: Emoji.personFrowning, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personFrowning, skinTones: [.mediumLight])
         } else if rawValue == "🙍🏽" {
-            self.init(baseEmoji: Emoji.personFrowning, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personFrowning, skinTones: [.medium])
         } else if rawValue == "🙍🏾" {
-            self.init(baseEmoji: Emoji.personFrowning, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personFrowning, skinTones: [.mediumDark])
         } else if rawValue == "🙍🏿" {
-            self.init(baseEmoji: Emoji.personFrowning, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personFrowning, skinTones: [.dark])
         } else if rawValue == "🙍‍♂️" {
-            self.init(baseEmoji: Emoji.manFrowning, skinTones: nil)
+            self.init(baseEmoji: .manFrowning, skinTones: nil)
         } else if rawValue == "🙍🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manFrowning, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manFrowning, skinTones: [.light])
         } else if rawValue == "🙍🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manFrowning, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manFrowning, skinTones: [.mediumLight])
         } else if rawValue == "🙍🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manFrowning, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manFrowning, skinTones: [.medium])
         } else if rawValue == "🙍🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manFrowning, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manFrowning, skinTones: [.mediumDark])
         } else if rawValue == "🙍🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manFrowning, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manFrowning, skinTones: [.dark])
         } else if rawValue == "🙍‍♀️" {
-            self.init(baseEmoji: Emoji.womanFrowning, skinTones: nil)
+            self.init(baseEmoji: .womanFrowning, skinTones: nil)
         } else if rawValue == "🙍🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanFrowning, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanFrowning, skinTones: [.light])
         } else if rawValue == "🙍🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanFrowning, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanFrowning, skinTones: [.mediumLight])
         } else if rawValue == "🙍🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanFrowning, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanFrowning, skinTones: [.medium])
         } else if rawValue == "🙍🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanFrowning, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanFrowning, skinTones: [.mediumDark])
         } else if rawValue == "🙍🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanFrowning, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanFrowning, skinTones: [.dark])
         } else if rawValue == "🙎" {
-            self.init(baseEmoji: Emoji.personWithPoutingFace, skinTones: nil)
+            self.init(baseEmoji: .personWithPoutingFace, skinTones: nil)
         } else if rawValue == "🙎🏻" {
-            self.init(baseEmoji: Emoji.personWithPoutingFace, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personWithPoutingFace, skinTones: [.light])
         } else if rawValue == "🙎🏼" {
-            self.init(baseEmoji: Emoji.personWithPoutingFace, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personWithPoutingFace, skinTones: [.mediumLight])
         } else if rawValue == "🙎🏽" {
-            self.init(baseEmoji: Emoji.personWithPoutingFace, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personWithPoutingFace, skinTones: [.medium])
         } else if rawValue == "🙎🏾" {
-            self.init(baseEmoji: Emoji.personWithPoutingFace, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personWithPoutingFace, skinTones: [.mediumDark])
         } else if rawValue == "🙎🏿" {
-            self.init(baseEmoji: Emoji.personWithPoutingFace, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personWithPoutingFace, skinTones: [.dark])
         } else if rawValue == "🙎‍♂️" {
-            self.init(baseEmoji: Emoji.manPouting, skinTones: nil)
+            self.init(baseEmoji: .manPouting, skinTones: nil)
         } else if rawValue == "🙎🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manPouting, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manPouting, skinTones: [.light])
         } else if rawValue == "🙎🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manPouting, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manPouting, skinTones: [.mediumLight])
         } else if rawValue == "🙎🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manPouting, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manPouting, skinTones: [.medium])
         } else if rawValue == "🙎🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manPouting, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manPouting, skinTones: [.mediumDark])
         } else if rawValue == "🙎🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manPouting, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manPouting, skinTones: [.dark])
         } else if rawValue == "🙎‍♀️" {
-            self.init(baseEmoji: Emoji.womanPouting, skinTones: nil)
+            self.init(baseEmoji: .womanPouting, skinTones: nil)
         } else if rawValue == "🙎🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanPouting, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanPouting, skinTones: [.light])
         } else if rawValue == "🙎🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanPouting, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanPouting, skinTones: [.mediumLight])
         } else if rawValue == "🙎🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanPouting, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanPouting, skinTones: [.medium])
         } else if rawValue == "🙎🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanPouting, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanPouting, skinTones: [.mediumDark])
         } else if rawValue == "🙎🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanPouting, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanPouting, skinTones: [.dark])
         } else if rawValue == "🙅" {
-            self.init(baseEmoji: Emoji.noGood, skinTones: nil)
+            self.init(baseEmoji: .noGood, skinTones: nil)
         } else if rawValue == "🙅🏻" {
-            self.init(baseEmoji: Emoji.noGood, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .noGood, skinTones: [.light])
         } else if rawValue == "🙅🏼" {
-            self.init(baseEmoji: Emoji.noGood, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .noGood, skinTones: [.mediumLight])
         } else if rawValue == "🙅🏽" {
-            self.init(baseEmoji: Emoji.noGood, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .noGood, skinTones: [.medium])
         } else if rawValue == "🙅🏾" {
-            self.init(baseEmoji: Emoji.noGood, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .noGood, skinTones: [.mediumDark])
         } else if rawValue == "🙅🏿" {
-            self.init(baseEmoji: Emoji.noGood, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .noGood, skinTones: [.dark])
         } else if rawValue == "🙅‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingNo, skinTones: nil)
+            self.init(baseEmoji: .manGesturingNo, skinTones: nil)
         } else if rawValue == "🙅🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingNo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manGesturingNo, skinTones: [.light])
         } else if rawValue == "🙅🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingNo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manGesturingNo, skinTones: [.mediumLight])
         } else if rawValue == "🙅🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingNo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manGesturingNo, skinTones: [.medium])
         } else if rawValue == "🙅🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingNo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manGesturingNo, skinTones: [.mediumDark])
         } else if rawValue == "🙅🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingNo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manGesturingNo, skinTones: [.dark])
         } else if rawValue == "🙅‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingNo, skinTones: nil)
+            self.init(baseEmoji: .womanGesturingNo, skinTones: nil)
         } else if rawValue == "🙅🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingNo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanGesturingNo, skinTones: [.light])
         } else if rawValue == "🙅🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingNo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanGesturingNo, skinTones: [.mediumLight])
         } else if rawValue == "🙅🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingNo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanGesturingNo, skinTones: [.medium])
         } else if rawValue == "🙅🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingNo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanGesturingNo, skinTones: [.mediumDark])
         } else if rawValue == "🙅🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingNo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanGesturingNo, skinTones: [.dark])
         } else if rawValue == "🙆" {
-            self.init(baseEmoji: Emoji.okWoman, skinTones: nil)
+            self.init(baseEmoji: .okWoman, skinTones: nil)
         } else if rawValue == "🙆🏻" {
-            self.init(baseEmoji: Emoji.okWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .okWoman, skinTones: [.light])
         } else if rawValue == "🙆🏼" {
-            self.init(baseEmoji: Emoji.okWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .okWoman, skinTones: [.mediumLight])
         } else if rawValue == "🙆🏽" {
-            self.init(baseEmoji: Emoji.okWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .okWoman, skinTones: [.medium])
         } else if rawValue == "🙆🏾" {
-            self.init(baseEmoji: Emoji.okWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .okWoman, skinTones: [.mediumDark])
         } else if rawValue == "🙆🏿" {
-            self.init(baseEmoji: Emoji.okWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .okWoman, skinTones: [.dark])
         } else if rawValue == "🙆‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingOk, skinTones: nil)
+            self.init(baseEmoji: .manGesturingOk, skinTones: nil)
         } else if rawValue == "🙆🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingOk, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manGesturingOk, skinTones: [.light])
         } else if rawValue == "🙆🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingOk, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manGesturingOk, skinTones: [.mediumLight])
         } else if rawValue == "🙆🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingOk, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manGesturingOk, skinTones: [.medium])
         } else if rawValue == "🙆🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingOk, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manGesturingOk, skinTones: [.mediumDark])
         } else if rawValue == "🙆🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manGesturingOk, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manGesturingOk, skinTones: [.dark])
         } else if rawValue == "🙆‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingOk, skinTones: nil)
+            self.init(baseEmoji: .womanGesturingOk, skinTones: nil)
         } else if rawValue == "🙆🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingOk, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanGesturingOk, skinTones: [.light])
         } else if rawValue == "🙆🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingOk, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanGesturingOk, skinTones: [.mediumLight])
         } else if rawValue == "🙆🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingOk, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanGesturingOk, skinTones: [.medium])
         } else if rawValue == "🙆🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingOk, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanGesturingOk, skinTones: [.mediumDark])
         } else if rawValue == "🙆🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanGesturingOk, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanGesturingOk, skinTones: [.dark])
         } else if rawValue == "💁" {
-            self.init(baseEmoji: Emoji.informationDeskPerson, skinTones: nil)
+            self.init(baseEmoji: .informationDeskPerson, skinTones: nil)
         } else if rawValue == "💁🏻" {
-            self.init(baseEmoji: Emoji.informationDeskPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .informationDeskPerson, skinTones: [.light])
         } else if rawValue == "💁🏼" {
-            self.init(baseEmoji: Emoji.informationDeskPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .informationDeskPerson, skinTones: [.mediumLight])
         } else if rawValue == "💁🏽" {
-            self.init(baseEmoji: Emoji.informationDeskPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .informationDeskPerson, skinTones: [.medium])
         } else if rawValue == "💁🏾" {
-            self.init(baseEmoji: Emoji.informationDeskPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .informationDeskPerson, skinTones: [.mediumDark])
         } else if rawValue == "💁🏿" {
-            self.init(baseEmoji: Emoji.informationDeskPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .informationDeskPerson, skinTones: [.dark])
         } else if rawValue == "💁‍♂️" {
-            self.init(baseEmoji: Emoji.manTippingHand, skinTones: nil)
+            self.init(baseEmoji: .manTippingHand, skinTones: nil)
         } else if rawValue == "💁🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manTippingHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manTippingHand, skinTones: [.light])
         } else if rawValue == "💁🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manTippingHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manTippingHand, skinTones: [.mediumLight])
         } else if rawValue == "💁🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manTippingHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manTippingHand, skinTones: [.medium])
         } else if rawValue == "💁🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manTippingHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manTippingHand, skinTones: [.mediumDark])
         } else if rawValue == "💁🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manTippingHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manTippingHand, skinTones: [.dark])
         } else if rawValue == "💁‍♀️" {
-            self.init(baseEmoji: Emoji.womanTippingHand, skinTones: nil)
+            self.init(baseEmoji: .womanTippingHand, skinTones: nil)
         } else if rawValue == "💁🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanTippingHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanTippingHand, skinTones: [.light])
         } else if rawValue == "💁🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanTippingHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanTippingHand, skinTones: [.mediumLight])
         } else if rawValue == "💁🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanTippingHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanTippingHand, skinTones: [.medium])
         } else if rawValue == "💁🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanTippingHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanTippingHand, skinTones: [.mediumDark])
         } else if rawValue == "💁🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanTippingHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanTippingHand, skinTones: [.dark])
         } else if rawValue == "🙋" {
-            self.init(baseEmoji: Emoji.raisingHand, skinTones: nil)
+            self.init(baseEmoji: .raisingHand, skinTones: nil)
         } else if rawValue == "🙋🏻" {
-            self.init(baseEmoji: Emoji.raisingHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .raisingHand, skinTones: [.light])
         } else if rawValue == "🙋🏼" {
-            self.init(baseEmoji: Emoji.raisingHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .raisingHand, skinTones: [.mediumLight])
         } else if rawValue == "🙋🏽" {
-            self.init(baseEmoji: Emoji.raisingHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .raisingHand, skinTones: [.medium])
         } else if rawValue == "🙋🏾" {
-            self.init(baseEmoji: Emoji.raisingHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .raisingHand, skinTones: [.mediumDark])
         } else if rawValue == "🙋🏿" {
-            self.init(baseEmoji: Emoji.raisingHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .raisingHand, skinTones: [.dark])
         } else if rawValue == "🙋‍♂️" {
-            self.init(baseEmoji: Emoji.manRaisingHand, skinTones: nil)
+            self.init(baseEmoji: .manRaisingHand, skinTones: nil)
         } else if rawValue == "🙋🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manRaisingHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manRaisingHand, skinTones: [.light])
         } else if rawValue == "🙋🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manRaisingHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manRaisingHand, skinTones: [.mediumLight])
         } else if rawValue == "🙋🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manRaisingHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manRaisingHand, skinTones: [.medium])
         } else if rawValue == "🙋🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manRaisingHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manRaisingHand, skinTones: [.mediumDark])
         } else if rawValue == "🙋🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manRaisingHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manRaisingHand, skinTones: [.dark])
         } else if rawValue == "🙋‍♀️" {
-            self.init(baseEmoji: Emoji.womanRaisingHand, skinTones: nil)
+            self.init(baseEmoji: .womanRaisingHand, skinTones: nil)
         } else if rawValue == "🙋🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanRaisingHand, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanRaisingHand, skinTones: [.light])
         } else if rawValue == "🙋🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanRaisingHand, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanRaisingHand, skinTones: [.mediumLight])
         } else if rawValue == "🙋🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanRaisingHand, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanRaisingHand, skinTones: [.medium])
         } else if rawValue == "🙋🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanRaisingHand, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanRaisingHand, skinTones: [.mediumDark])
         } else if rawValue == "🙋🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanRaisingHand, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanRaisingHand, skinTones: [.dark])
         } else if rawValue == "🧏" {
-            self.init(baseEmoji: Emoji.deafPerson, skinTones: nil)
+            self.init(baseEmoji: .deafPerson, skinTones: nil)
         } else if rawValue == "🧏🏻" {
-            self.init(baseEmoji: Emoji.deafPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .deafPerson, skinTones: [.light])
         } else if rawValue == "🧏🏼" {
-            self.init(baseEmoji: Emoji.deafPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .deafPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧏🏽" {
-            self.init(baseEmoji: Emoji.deafPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .deafPerson, skinTones: [.medium])
         } else if rawValue == "🧏🏾" {
-            self.init(baseEmoji: Emoji.deafPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .deafPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧏🏿" {
-            self.init(baseEmoji: Emoji.deafPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .deafPerson, skinTones: [.dark])
         } else if rawValue == "🧏‍♂️" {
-            self.init(baseEmoji: Emoji.deafMan, skinTones: nil)
+            self.init(baseEmoji: .deafMan, skinTones: nil)
         } else if rawValue == "🧏🏻‍♂️" {
-            self.init(baseEmoji: Emoji.deafMan, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .deafMan, skinTones: [.light])
         } else if rawValue == "🧏🏼‍♂️" {
-            self.init(baseEmoji: Emoji.deafMan, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .deafMan, skinTones: [.mediumLight])
         } else if rawValue == "🧏🏽‍♂️" {
-            self.init(baseEmoji: Emoji.deafMan, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .deafMan, skinTones: [.medium])
         } else if rawValue == "🧏🏾‍♂️" {
-            self.init(baseEmoji: Emoji.deafMan, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .deafMan, skinTones: [.mediumDark])
         } else if rawValue == "🧏🏿‍♂️" {
-            self.init(baseEmoji: Emoji.deafMan, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .deafMan, skinTones: [.dark])
         } else if rawValue == "🧏‍♀️" {
-            self.init(baseEmoji: Emoji.deafWoman, skinTones: nil)
+            self.init(baseEmoji: .deafWoman, skinTones: nil)
         } else if rawValue == "🧏🏻‍♀️" {
-            self.init(baseEmoji: Emoji.deafWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .deafWoman, skinTones: [.light])
         } else if rawValue == "🧏🏼‍♀️" {
-            self.init(baseEmoji: Emoji.deafWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .deafWoman, skinTones: [.mediumLight])
         } else if rawValue == "🧏🏽‍♀️" {
-            self.init(baseEmoji: Emoji.deafWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .deafWoman, skinTones: [.medium])
         } else if rawValue == "🧏🏾‍♀️" {
-            self.init(baseEmoji: Emoji.deafWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .deafWoman, skinTones: [.mediumDark])
         } else if rawValue == "🧏🏿‍♀️" {
-            self.init(baseEmoji: Emoji.deafWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .deafWoman, skinTones: [.dark])
         } else if rawValue == "🙇" {
-            self.init(baseEmoji: Emoji.bow, skinTones: nil)
+            self.init(baseEmoji: .bow, skinTones: nil)
         } else if rawValue == "🙇🏻" {
-            self.init(baseEmoji: Emoji.bow, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .bow, skinTones: [.light])
         } else if rawValue == "🙇🏼" {
-            self.init(baseEmoji: Emoji.bow, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .bow, skinTones: [.mediumLight])
         } else if rawValue == "🙇🏽" {
-            self.init(baseEmoji: Emoji.bow, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .bow, skinTones: [.medium])
         } else if rawValue == "🙇🏾" {
-            self.init(baseEmoji: Emoji.bow, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .bow, skinTones: [.mediumDark])
         } else if rawValue == "🙇🏿" {
-            self.init(baseEmoji: Emoji.bow, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .bow, skinTones: [.dark])
         } else if rawValue == "🙇‍♂️" {
-            self.init(baseEmoji: Emoji.manBowing, skinTones: nil)
+            self.init(baseEmoji: .manBowing, skinTones: nil)
         } else if rawValue == "🙇🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manBowing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manBowing, skinTones: [.light])
         } else if rawValue == "🙇🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manBowing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manBowing, skinTones: [.mediumLight])
         } else if rawValue == "🙇🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manBowing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manBowing, skinTones: [.medium])
         } else if rawValue == "🙇🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manBowing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manBowing, skinTones: [.mediumDark])
         } else if rawValue == "🙇🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manBowing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manBowing, skinTones: [.dark])
         } else if rawValue == "🙇‍♀️" {
-            self.init(baseEmoji: Emoji.womanBowing, skinTones: nil)
+            self.init(baseEmoji: .womanBowing, skinTones: nil)
         } else if rawValue == "🙇🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanBowing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanBowing, skinTones: [.light])
         } else if rawValue == "🙇🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanBowing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanBowing, skinTones: [.mediumLight])
         } else if rawValue == "🙇🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanBowing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanBowing, skinTones: [.medium])
         } else if rawValue == "🙇🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanBowing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanBowing, skinTones: [.mediumDark])
         } else if rawValue == "🙇🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanBowing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanBowing, skinTones: [.dark])
         } else if rawValue == "🤦" {
-            self.init(baseEmoji: Emoji.facePalm, skinTones: nil)
+            self.init(baseEmoji: .facePalm, skinTones: nil)
         } else if rawValue == "🤦🏻" {
-            self.init(baseEmoji: Emoji.facePalm, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .facePalm, skinTones: [.light])
         } else if rawValue == "🤦🏼" {
-            self.init(baseEmoji: Emoji.facePalm, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .facePalm, skinTones: [.mediumLight])
         } else if rawValue == "🤦🏽" {
-            self.init(baseEmoji: Emoji.facePalm, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .facePalm, skinTones: [.medium])
         } else if rawValue == "🤦🏾" {
-            self.init(baseEmoji: Emoji.facePalm, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .facePalm, skinTones: [.mediumDark])
         } else if rawValue == "🤦🏿" {
-            self.init(baseEmoji: Emoji.facePalm, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .facePalm, skinTones: [.dark])
         } else if rawValue == "🤦‍♂️" {
-            self.init(baseEmoji: Emoji.manFacepalming, skinTones: nil)
+            self.init(baseEmoji: .manFacepalming, skinTones: nil)
         } else if rawValue == "🤦🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manFacepalming, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manFacepalming, skinTones: [.light])
         } else if rawValue == "🤦🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manFacepalming, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manFacepalming, skinTones: [.mediumLight])
         } else if rawValue == "🤦🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manFacepalming, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manFacepalming, skinTones: [.medium])
         } else if rawValue == "🤦🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manFacepalming, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manFacepalming, skinTones: [.mediumDark])
         } else if rawValue == "🤦🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manFacepalming, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manFacepalming, skinTones: [.dark])
         } else if rawValue == "🤦‍♀️" {
-            self.init(baseEmoji: Emoji.womanFacepalming, skinTones: nil)
+            self.init(baseEmoji: .womanFacepalming, skinTones: nil)
         } else if rawValue == "🤦🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanFacepalming, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanFacepalming, skinTones: [.light])
         } else if rawValue == "🤦🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanFacepalming, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanFacepalming, skinTones: [.mediumLight])
         } else if rawValue == "🤦🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanFacepalming, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanFacepalming, skinTones: [.medium])
         } else if rawValue == "🤦🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanFacepalming, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanFacepalming, skinTones: [.mediumDark])
         } else if rawValue == "🤦🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanFacepalming, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanFacepalming, skinTones: [.dark])
         } else if rawValue == "🤷" {
-            self.init(baseEmoji: Emoji.shrug, skinTones: nil)
+            self.init(baseEmoji: .shrug, skinTones: nil)
         } else if rawValue == "🤷🏻" {
-            self.init(baseEmoji: Emoji.shrug, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .shrug, skinTones: [.light])
         } else if rawValue == "🤷🏼" {
-            self.init(baseEmoji: Emoji.shrug, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .shrug, skinTones: [.mediumLight])
         } else if rawValue == "🤷🏽" {
-            self.init(baseEmoji: Emoji.shrug, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .shrug, skinTones: [.medium])
         } else if rawValue == "🤷🏾" {
-            self.init(baseEmoji: Emoji.shrug, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .shrug, skinTones: [.mediumDark])
         } else if rawValue == "🤷🏿" {
-            self.init(baseEmoji: Emoji.shrug, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .shrug, skinTones: [.dark])
         } else if rawValue == "🤷‍♂️" {
-            self.init(baseEmoji: Emoji.manShrugging, skinTones: nil)
+            self.init(baseEmoji: .manShrugging, skinTones: nil)
         } else if rawValue == "🤷🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manShrugging, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manShrugging, skinTones: [.light])
         } else if rawValue == "🤷🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manShrugging, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manShrugging, skinTones: [.mediumLight])
         } else if rawValue == "🤷🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manShrugging, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manShrugging, skinTones: [.medium])
         } else if rawValue == "🤷🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manShrugging, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manShrugging, skinTones: [.mediumDark])
         } else if rawValue == "🤷🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manShrugging, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manShrugging, skinTones: [.dark])
         } else if rawValue == "🤷‍♀️" {
-            self.init(baseEmoji: Emoji.womanShrugging, skinTones: nil)
+            self.init(baseEmoji: .womanShrugging, skinTones: nil)
         } else if rawValue == "🤷🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanShrugging, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanShrugging, skinTones: [.light])
         } else if rawValue == "🤷🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanShrugging, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanShrugging, skinTones: [.mediumLight])
         } else if rawValue == "🤷🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanShrugging, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanShrugging, skinTones: [.medium])
         } else if rawValue == "🤷🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanShrugging, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanShrugging, skinTones: [.mediumDark])
         } else if rawValue == "🤷🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanShrugging, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanShrugging, skinTones: [.dark])
         } else if rawValue == "🧑‍⚕️" {
-            self.init(baseEmoji: Emoji.healthWorker, skinTones: nil)
+            self.init(baseEmoji: .healthWorker, skinTones: nil)
         } else if rawValue == "🧑🏻‍⚕️" {
-            self.init(baseEmoji: Emoji.healthWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .healthWorker, skinTones: [.light])
         } else if rawValue == "🧑🏼‍⚕️" {
-            self.init(baseEmoji: Emoji.healthWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .healthWorker, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍⚕️" {
-            self.init(baseEmoji: Emoji.healthWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .healthWorker, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍⚕️" {
-            self.init(baseEmoji: Emoji.healthWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .healthWorker, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍⚕️" {
-            self.init(baseEmoji: Emoji.healthWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .healthWorker, skinTones: [.dark])
         } else if rawValue == "👨‍⚕️" {
-            self.init(baseEmoji: Emoji.maleDoctor, skinTones: nil)
+            self.init(baseEmoji: .maleDoctor, skinTones: nil)
         } else if rawValue == "👨🏻‍⚕️" {
-            self.init(baseEmoji: Emoji.maleDoctor, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleDoctor, skinTones: [.light])
         } else if rawValue == "👨🏼‍⚕️" {
-            self.init(baseEmoji: Emoji.maleDoctor, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleDoctor, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍⚕️" {
-            self.init(baseEmoji: Emoji.maleDoctor, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleDoctor, skinTones: [.medium])
         } else if rawValue == "👨🏾‍⚕️" {
-            self.init(baseEmoji: Emoji.maleDoctor, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleDoctor, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍⚕️" {
-            self.init(baseEmoji: Emoji.maleDoctor, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleDoctor, skinTones: [.dark])
         } else if rawValue == "👩‍⚕️" {
-            self.init(baseEmoji: Emoji.femaleDoctor, skinTones: nil)
+            self.init(baseEmoji: .femaleDoctor, skinTones: nil)
         } else if rawValue == "👩🏻‍⚕️" {
-            self.init(baseEmoji: Emoji.femaleDoctor, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleDoctor, skinTones: [.light])
         } else if rawValue == "👩🏼‍⚕️" {
-            self.init(baseEmoji: Emoji.femaleDoctor, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleDoctor, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍⚕️" {
-            self.init(baseEmoji: Emoji.femaleDoctor, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleDoctor, skinTones: [.medium])
         } else if rawValue == "👩🏾‍⚕️" {
-            self.init(baseEmoji: Emoji.femaleDoctor, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleDoctor, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍⚕️" {
-            self.init(baseEmoji: Emoji.femaleDoctor, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleDoctor, skinTones: [.dark])
         } else if rawValue == "🧑‍🎓" {
-            self.init(baseEmoji: Emoji.student, skinTones: nil)
+            self.init(baseEmoji: .student, skinTones: nil)
         } else if rawValue == "🧑🏻‍🎓" {
-            self.init(baseEmoji: Emoji.student, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .student, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🎓" {
-            self.init(baseEmoji: Emoji.student, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .student, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🎓" {
-            self.init(baseEmoji: Emoji.student, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .student, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🎓" {
-            self.init(baseEmoji: Emoji.student, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .student, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🎓" {
-            self.init(baseEmoji: Emoji.student, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .student, skinTones: [.dark])
         } else if rawValue == "👨‍🎓" {
-            self.init(baseEmoji: Emoji.maleStudent, skinTones: nil)
+            self.init(baseEmoji: .maleStudent, skinTones: nil)
         } else if rawValue == "👨🏻‍🎓" {
-            self.init(baseEmoji: Emoji.maleStudent, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleStudent, skinTones: [.light])
         } else if rawValue == "👨🏼‍🎓" {
-            self.init(baseEmoji: Emoji.maleStudent, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleStudent, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🎓" {
-            self.init(baseEmoji: Emoji.maleStudent, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleStudent, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🎓" {
-            self.init(baseEmoji: Emoji.maleStudent, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleStudent, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🎓" {
-            self.init(baseEmoji: Emoji.maleStudent, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleStudent, skinTones: [.dark])
         } else if rawValue == "👩‍🎓" {
-            self.init(baseEmoji: Emoji.femaleStudent, skinTones: nil)
+            self.init(baseEmoji: .femaleStudent, skinTones: nil)
         } else if rawValue == "👩🏻‍🎓" {
-            self.init(baseEmoji: Emoji.femaleStudent, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleStudent, skinTones: [.light])
         } else if rawValue == "👩🏼‍🎓" {
-            self.init(baseEmoji: Emoji.femaleStudent, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleStudent, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🎓" {
-            self.init(baseEmoji: Emoji.femaleStudent, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleStudent, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🎓" {
-            self.init(baseEmoji: Emoji.femaleStudent, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleStudent, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🎓" {
-            self.init(baseEmoji: Emoji.femaleStudent, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleStudent, skinTones: [.dark])
         } else if rawValue == "🧑‍🏫" {
-            self.init(baseEmoji: Emoji.teacher, skinTones: nil)
+            self.init(baseEmoji: .teacher, skinTones: nil)
         } else if rawValue == "🧑🏻‍🏫" {
-            self.init(baseEmoji: Emoji.teacher, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .teacher, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🏫" {
-            self.init(baseEmoji: Emoji.teacher, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .teacher, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🏫" {
-            self.init(baseEmoji: Emoji.teacher, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .teacher, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🏫" {
-            self.init(baseEmoji: Emoji.teacher, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .teacher, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🏫" {
-            self.init(baseEmoji: Emoji.teacher, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .teacher, skinTones: [.dark])
         } else if rawValue == "👨‍🏫" {
-            self.init(baseEmoji: Emoji.maleTeacher, skinTones: nil)
+            self.init(baseEmoji: .maleTeacher, skinTones: nil)
         } else if rawValue == "👨🏻‍🏫" {
-            self.init(baseEmoji: Emoji.maleTeacher, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleTeacher, skinTones: [.light])
         } else if rawValue == "👨🏼‍🏫" {
-            self.init(baseEmoji: Emoji.maleTeacher, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleTeacher, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🏫" {
-            self.init(baseEmoji: Emoji.maleTeacher, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleTeacher, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🏫" {
-            self.init(baseEmoji: Emoji.maleTeacher, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleTeacher, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🏫" {
-            self.init(baseEmoji: Emoji.maleTeacher, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleTeacher, skinTones: [.dark])
         } else if rawValue == "👩‍🏫" {
-            self.init(baseEmoji: Emoji.femaleTeacher, skinTones: nil)
+            self.init(baseEmoji: .femaleTeacher, skinTones: nil)
         } else if rawValue == "👩🏻‍🏫" {
-            self.init(baseEmoji: Emoji.femaleTeacher, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleTeacher, skinTones: [.light])
         } else if rawValue == "👩🏼‍🏫" {
-            self.init(baseEmoji: Emoji.femaleTeacher, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleTeacher, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🏫" {
-            self.init(baseEmoji: Emoji.femaleTeacher, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleTeacher, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🏫" {
-            self.init(baseEmoji: Emoji.femaleTeacher, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleTeacher, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🏫" {
-            self.init(baseEmoji: Emoji.femaleTeacher, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleTeacher, skinTones: [.dark])
         } else if rawValue == "🧑‍⚖️" {
-            self.init(baseEmoji: Emoji.judge, skinTones: nil)
+            self.init(baseEmoji: .judge, skinTones: nil)
         } else if rawValue == "🧑🏻‍⚖️" {
-            self.init(baseEmoji: Emoji.judge, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .judge, skinTones: [.light])
         } else if rawValue == "🧑🏼‍⚖️" {
-            self.init(baseEmoji: Emoji.judge, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .judge, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍⚖️" {
-            self.init(baseEmoji: Emoji.judge, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .judge, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍⚖️" {
-            self.init(baseEmoji: Emoji.judge, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .judge, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍⚖️" {
-            self.init(baseEmoji: Emoji.judge, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .judge, skinTones: [.dark])
         } else if rawValue == "👨‍⚖️" {
-            self.init(baseEmoji: Emoji.maleJudge, skinTones: nil)
+            self.init(baseEmoji: .maleJudge, skinTones: nil)
         } else if rawValue == "👨🏻‍⚖️" {
-            self.init(baseEmoji: Emoji.maleJudge, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleJudge, skinTones: [.light])
         } else if rawValue == "👨🏼‍⚖️" {
-            self.init(baseEmoji: Emoji.maleJudge, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleJudge, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍⚖️" {
-            self.init(baseEmoji: Emoji.maleJudge, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleJudge, skinTones: [.medium])
         } else if rawValue == "👨🏾‍⚖️" {
-            self.init(baseEmoji: Emoji.maleJudge, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleJudge, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍⚖️" {
-            self.init(baseEmoji: Emoji.maleJudge, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleJudge, skinTones: [.dark])
         } else if rawValue == "👩‍⚖️" {
-            self.init(baseEmoji: Emoji.femaleJudge, skinTones: nil)
+            self.init(baseEmoji: .femaleJudge, skinTones: nil)
         } else if rawValue == "👩🏻‍⚖️" {
-            self.init(baseEmoji: Emoji.femaleJudge, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleJudge, skinTones: [.light])
         } else if rawValue == "👩🏼‍⚖️" {
-            self.init(baseEmoji: Emoji.femaleJudge, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleJudge, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍⚖️" {
-            self.init(baseEmoji: Emoji.femaleJudge, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleJudge, skinTones: [.medium])
         } else if rawValue == "👩🏾‍⚖️" {
-            self.init(baseEmoji: Emoji.femaleJudge, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleJudge, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍⚖️" {
-            self.init(baseEmoji: Emoji.femaleJudge, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleJudge, skinTones: [.dark])
         } else if rawValue == "🧑‍🌾" {
-            self.init(baseEmoji: Emoji.farmer, skinTones: nil)
+            self.init(baseEmoji: .farmer, skinTones: nil)
         } else if rawValue == "🧑🏻‍🌾" {
-            self.init(baseEmoji: Emoji.farmer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .farmer, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🌾" {
-            self.init(baseEmoji: Emoji.farmer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .farmer, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🌾" {
-            self.init(baseEmoji: Emoji.farmer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .farmer, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🌾" {
-            self.init(baseEmoji: Emoji.farmer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .farmer, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🌾" {
-            self.init(baseEmoji: Emoji.farmer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .farmer, skinTones: [.dark])
         } else if rawValue == "👨‍🌾" {
-            self.init(baseEmoji: Emoji.maleFarmer, skinTones: nil)
+            self.init(baseEmoji: .maleFarmer, skinTones: nil)
         } else if rawValue == "👨🏻‍🌾" {
-            self.init(baseEmoji: Emoji.maleFarmer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleFarmer, skinTones: [.light])
         } else if rawValue == "👨🏼‍🌾" {
-            self.init(baseEmoji: Emoji.maleFarmer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleFarmer, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🌾" {
-            self.init(baseEmoji: Emoji.maleFarmer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleFarmer, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🌾" {
-            self.init(baseEmoji: Emoji.maleFarmer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleFarmer, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🌾" {
-            self.init(baseEmoji: Emoji.maleFarmer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleFarmer, skinTones: [.dark])
         } else if rawValue == "👩‍🌾" {
-            self.init(baseEmoji: Emoji.femaleFarmer, skinTones: nil)
+            self.init(baseEmoji: .femaleFarmer, skinTones: nil)
         } else if rawValue == "👩🏻‍🌾" {
-            self.init(baseEmoji: Emoji.femaleFarmer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleFarmer, skinTones: [.light])
         } else if rawValue == "👩🏼‍🌾" {
-            self.init(baseEmoji: Emoji.femaleFarmer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleFarmer, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🌾" {
-            self.init(baseEmoji: Emoji.femaleFarmer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleFarmer, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🌾" {
-            self.init(baseEmoji: Emoji.femaleFarmer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleFarmer, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🌾" {
-            self.init(baseEmoji: Emoji.femaleFarmer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleFarmer, skinTones: [.dark])
         } else if rawValue == "🧑‍🍳" {
-            self.init(baseEmoji: Emoji.cook, skinTones: nil)
+            self.init(baseEmoji: .cook, skinTones: nil)
         } else if rawValue == "🧑🏻‍🍳" {
-            self.init(baseEmoji: Emoji.cook, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .cook, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🍳" {
-            self.init(baseEmoji: Emoji.cook, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .cook, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🍳" {
-            self.init(baseEmoji: Emoji.cook, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .cook, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🍳" {
-            self.init(baseEmoji: Emoji.cook, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .cook, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🍳" {
-            self.init(baseEmoji: Emoji.cook, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .cook, skinTones: [.dark])
         } else if rawValue == "👨‍🍳" {
-            self.init(baseEmoji: Emoji.maleCook, skinTones: nil)
+            self.init(baseEmoji: .maleCook, skinTones: nil)
         } else if rawValue == "👨🏻‍🍳" {
-            self.init(baseEmoji: Emoji.maleCook, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleCook, skinTones: [.light])
         } else if rawValue == "👨🏼‍🍳" {
-            self.init(baseEmoji: Emoji.maleCook, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleCook, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🍳" {
-            self.init(baseEmoji: Emoji.maleCook, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleCook, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🍳" {
-            self.init(baseEmoji: Emoji.maleCook, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleCook, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🍳" {
-            self.init(baseEmoji: Emoji.maleCook, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleCook, skinTones: [.dark])
         } else if rawValue == "👩‍🍳" {
-            self.init(baseEmoji: Emoji.femaleCook, skinTones: nil)
+            self.init(baseEmoji: .femaleCook, skinTones: nil)
         } else if rawValue == "👩🏻‍🍳" {
-            self.init(baseEmoji: Emoji.femaleCook, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleCook, skinTones: [.light])
         } else if rawValue == "👩🏼‍🍳" {
-            self.init(baseEmoji: Emoji.femaleCook, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleCook, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🍳" {
-            self.init(baseEmoji: Emoji.femaleCook, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleCook, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🍳" {
-            self.init(baseEmoji: Emoji.femaleCook, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleCook, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🍳" {
-            self.init(baseEmoji: Emoji.femaleCook, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleCook, skinTones: [.dark])
         } else if rawValue == "🧑‍🔧" {
-            self.init(baseEmoji: Emoji.mechanic, skinTones: nil)
+            self.init(baseEmoji: .mechanic, skinTones: nil)
         } else if rawValue == "🧑🏻‍🔧" {
-            self.init(baseEmoji: Emoji.mechanic, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .mechanic, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🔧" {
-            self.init(baseEmoji: Emoji.mechanic, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .mechanic, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🔧" {
-            self.init(baseEmoji: Emoji.mechanic, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .mechanic, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🔧" {
-            self.init(baseEmoji: Emoji.mechanic, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .mechanic, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🔧" {
-            self.init(baseEmoji: Emoji.mechanic, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .mechanic, skinTones: [.dark])
         } else if rawValue == "👨‍🔧" {
-            self.init(baseEmoji: Emoji.maleMechanic, skinTones: nil)
+            self.init(baseEmoji: .maleMechanic, skinTones: nil)
         } else if rawValue == "👨🏻‍🔧" {
-            self.init(baseEmoji: Emoji.maleMechanic, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleMechanic, skinTones: [.light])
         } else if rawValue == "👨🏼‍🔧" {
-            self.init(baseEmoji: Emoji.maleMechanic, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleMechanic, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🔧" {
-            self.init(baseEmoji: Emoji.maleMechanic, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleMechanic, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🔧" {
-            self.init(baseEmoji: Emoji.maleMechanic, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleMechanic, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🔧" {
-            self.init(baseEmoji: Emoji.maleMechanic, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleMechanic, skinTones: [.dark])
         } else if rawValue == "👩‍🔧" {
-            self.init(baseEmoji: Emoji.femaleMechanic, skinTones: nil)
+            self.init(baseEmoji: .femaleMechanic, skinTones: nil)
         } else if rawValue == "👩🏻‍🔧" {
-            self.init(baseEmoji: Emoji.femaleMechanic, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleMechanic, skinTones: [.light])
         } else if rawValue == "👩🏼‍🔧" {
-            self.init(baseEmoji: Emoji.femaleMechanic, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleMechanic, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🔧" {
-            self.init(baseEmoji: Emoji.femaleMechanic, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleMechanic, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🔧" {
-            self.init(baseEmoji: Emoji.femaleMechanic, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleMechanic, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🔧" {
-            self.init(baseEmoji: Emoji.femaleMechanic, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleMechanic, skinTones: [.dark])
         } else if rawValue == "🧑‍🏭" {
-            self.init(baseEmoji: Emoji.factoryWorker, skinTones: nil)
+            self.init(baseEmoji: .factoryWorker, skinTones: nil)
         } else if rawValue == "🧑🏻‍🏭" {
-            self.init(baseEmoji: Emoji.factoryWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .factoryWorker, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🏭" {
-            self.init(baseEmoji: Emoji.factoryWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .factoryWorker, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🏭" {
-            self.init(baseEmoji: Emoji.factoryWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .factoryWorker, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🏭" {
-            self.init(baseEmoji: Emoji.factoryWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .factoryWorker, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🏭" {
-            self.init(baseEmoji: Emoji.factoryWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .factoryWorker, skinTones: [.dark])
         } else if rawValue == "👨‍🏭" {
-            self.init(baseEmoji: Emoji.maleFactoryWorker, skinTones: nil)
+            self.init(baseEmoji: .maleFactoryWorker, skinTones: nil)
         } else if rawValue == "👨🏻‍🏭" {
-            self.init(baseEmoji: Emoji.maleFactoryWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleFactoryWorker, skinTones: [.light])
         } else if rawValue == "👨🏼‍🏭" {
-            self.init(baseEmoji: Emoji.maleFactoryWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleFactoryWorker, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🏭" {
-            self.init(baseEmoji: Emoji.maleFactoryWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleFactoryWorker, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🏭" {
-            self.init(baseEmoji: Emoji.maleFactoryWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleFactoryWorker, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🏭" {
-            self.init(baseEmoji: Emoji.maleFactoryWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleFactoryWorker, skinTones: [.dark])
         } else if rawValue == "👩‍🏭" {
-            self.init(baseEmoji: Emoji.femaleFactoryWorker, skinTones: nil)
+            self.init(baseEmoji: .femaleFactoryWorker, skinTones: nil)
         } else if rawValue == "👩🏻‍🏭" {
-            self.init(baseEmoji: Emoji.femaleFactoryWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleFactoryWorker, skinTones: [.light])
         } else if rawValue == "👩🏼‍🏭" {
-            self.init(baseEmoji: Emoji.femaleFactoryWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleFactoryWorker, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🏭" {
-            self.init(baseEmoji: Emoji.femaleFactoryWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleFactoryWorker, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🏭" {
-            self.init(baseEmoji: Emoji.femaleFactoryWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleFactoryWorker, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🏭" {
-            self.init(baseEmoji: Emoji.femaleFactoryWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleFactoryWorker, skinTones: [.dark])
         } else if rawValue == "🧑‍💼" {
-            self.init(baseEmoji: Emoji.officeWorker, skinTones: nil)
+            self.init(baseEmoji: .officeWorker, skinTones: nil)
         } else if rawValue == "🧑🏻‍💼" {
-            self.init(baseEmoji: Emoji.officeWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .officeWorker, skinTones: [.light])
         } else if rawValue == "🧑🏼‍💼" {
-            self.init(baseEmoji: Emoji.officeWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .officeWorker, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍💼" {
-            self.init(baseEmoji: Emoji.officeWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .officeWorker, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍💼" {
-            self.init(baseEmoji: Emoji.officeWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .officeWorker, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍💼" {
-            self.init(baseEmoji: Emoji.officeWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .officeWorker, skinTones: [.dark])
         } else if rawValue == "👨‍💼" {
-            self.init(baseEmoji: Emoji.maleOfficeWorker, skinTones: nil)
+            self.init(baseEmoji: .maleOfficeWorker, skinTones: nil)
         } else if rawValue == "👨🏻‍💼" {
-            self.init(baseEmoji: Emoji.maleOfficeWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleOfficeWorker, skinTones: [.light])
         } else if rawValue == "👨🏼‍💼" {
-            self.init(baseEmoji: Emoji.maleOfficeWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleOfficeWorker, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍💼" {
-            self.init(baseEmoji: Emoji.maleOfficeWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleOfficeWorker, skinTones: [.medium])
         } else if rawValue == "👨🏾‍💼" {
-            self.init(baseEmoji: Emoji.maleOfficeWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleOfficeWorker, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍💼" {
-            self.init(baseEmoji: Emoji.maleOfficeWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleOfficeWorker, skinTones: [.dark])
         } else if rawValue == "👩‍💼" {
-            self.init(baseEmoji: Emoji.femaleOfficeWorker, skinTones: nil)
+            self.init(baseEmoji: .femaleOfficeWorker, skinTones: nil)
         } else if rawValue == "👩🏻‍💼" {
-            self.init(baseEmoji: Emoji.femaleOfficeWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleOfficeWorker, skinTones: [.light])
         } else if rawValue == "👩🏼‍💼" {
-            self.init(baseEmoji: Emoji.femaleOfficeWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleOfficeWorker, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍💼" {
-            self.init(baseEmoji: Emoji.femaleOfficeWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleOfficeWorker, skinTones: [.medium])
         } else if rawValue == "👩🏾‍💼" {
-            self.init(baseEmoji: Emoji.femaleOfficeWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleOfficeWorker, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍💼" {
-            self.init(baseEmoji: Emoji.femaleOfficeWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleOfficeWorker, skinTones: [.dark])
         } else if rawValue == "🧑‍🔬" {
-            self.init(baseEmoji: Emoji.scientist, skinTones: nil)
+            self.init(baseEmoji: .scientist, skinTones: nil)
         } else if rawValue == "🧑🏻‍🔬" {
-            self.init(baseEmoji: Emoji.scientist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .scientist, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🔬" {
-            self.init(baseEmoji: Emoji.scientist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .scientist, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🔬" {
-            self.init(baseEmoji: Emoji.scientist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .scientist, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🔬" {
-            self.init(baseEmoji: Emoji.scientist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .scientist, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🔬" {
-            self.init(baseEmoji: Emoji.scientist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .scientist, skinTones: [.dark])
         } else if rawValue == "👨‍🔬" {
-            self.init(baseEmoji: Emoji.maleScientist, skinTones: nil)
+            self.init(baseEmoji: .maleScientist, skinTones: nil)
         } else if rawValue == "👨🏻‍🔬" {
-            self.init(baseEmoji: Emoji.maleScientist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleScientist, skinTones: [.light])
         } else if rawValue == "👨🏼‍🔬" {
-            self.init(baseEmoji: Emoji.maleScientist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleScientist, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🔬" {
-            self.init(baseEmoji: Emoji.maleScientist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleScientist, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🔬" {
-            self.init(baseEmoji: Emoji.maleScientist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleScientist, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🔬" {
-            self.init(baseEmoji: Emoji.maleScientist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleScientist, skinTones: [.dark])
         } else if rawValue == "👩‍🔬" {
-            self.init(baseEmoji: Emoji.femaleScientist, skinTones: nil)
+            self.init(baseEmoji: .femaleScientist, skinTones: nil)
         } else if rawValue == "👩🏻‍🔬" {
-            self.init(baseEmoji: Emoji.femaleScientist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleScientist, skinTones: [.light])
         } else if rawValue == "👩🏼‍🔬" {
-            self.init(baseEmoji: Emoji.femaleScientist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleScientist, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🔬" {
-            self.init(baseEmoji: Emoji.femaleScientist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleScientist, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🔬" {
-            self.init(baseEmoji: Emoji.femaleScientist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleScientist, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🔬" {
-            self.init(baseEmoji: Emoji.femaleScientist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleScientist, skinTones: [.dark])
         } else if rawValue == "🧑‍💻" {
-            self.init(baseEmoji: Emoji.technologist, skinTones: nil)
+            self.init(baseEmoji: .technologist, skinTones: nil)
         } else if rawValue == "🧑🏻‍💻" {
-            self.init(baseEmoji: Emoji.technologist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .technologist, skinTones: [.light])
         } else if rawValue == "🧑🏼‍💻" {
-            self.init(baseEmoji: Emoji.technologist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .technologist, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍💻" {
-            self.init(baseEmoji: Emoji.technologist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .technologist, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍💻" {
-            self.init(baseEmoji: Emoji.technologist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .technologist, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍💻" {
-            self.init(baseEmoji: Emoji.technologist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .technologist, skinTones: [.dark])
         } else if rawValue == "👨‍💻" {
-            self.init(baseEmoji: Emoji.maleTechnologist, skinTones: nil)
+            self.init(baseEmoji: .maleTechnologist, skinTones: nil)
         } else if rawValue == "👨🏻‍💻" {
-            self.init(baseEmoji: Emoji.maleTechnologist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleTechnologist, skinTones: [.light])
         } else if rawValue == "👨🏼‍💻" {
-            self.init(baseEmoji: Emoji.maleTechnologist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleTechnologist, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍💻" {
-            self.init(baseEmoji: Emoji.maleTechnologist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleTechnologist, skinTones: [.medium])
         } else if rawValue == "👨🏾‍💻" {
-            self.init(baseEmoji: Emoji.maleTechnologist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleTechnologist, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍💻" {
-            self.init(baseEmoji: Emoji.maleTechnologist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleTechnologist, skinTones: [.dark])
         } else if rawValue == "👩‍💻" {
-            self.init(baseEmoji: Emoji.femaleTechnologist, skinTones: nil)
+            self.init(baseEmoji: .femaleTechnologist, skinTones: nil)
         } else if rawValue == "👩🏻‍💻" {
-            self.init(baseEmoji: Emoji.femaleTechnologist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleTechnologist, skinTones: [.light])
         } else if rawValue == "👩🏼‍💻" {
-            self.init(baseEmoji: Emoji.femaleTechnologist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleTechnologist, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍💻" {
-            self.init(baseEmoji: Emoji.femaleTechnologist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleTechnologist, skinTones: [.medium])
         } else if rawValue == "👩🏾‍💻" {
-            self.init(baseEmoji: Emoji.femaleTechnologist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleTechnologist, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍💻" {
-            self.init(baseEmoji: Emoji.femaleTechnologist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleTechnologist, skinTones: [.dark])
         } else if rawValue == "🧑‍🎤" {
-            self.init(baseEmoji: Emoji.singer, skinTones: nil)
+            self.init(baseEmoji: .singer, skinTones: nil)
         } else if rawValue == "🧑🏻‍🎤" {
-            self.init(baseEmoji: Emoji.singer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .singer, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🎤" {
-            self.init(baseEmoji: Emoji.singer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .singer, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🎤" {
-            self.init(baseEmoji: Emoji.singer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .singer, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🎤" {
-            self.init(baseEmoji: Emoji.singer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .singer, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🎤" {
-            self.init(baseEmoji: Emoji.singer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .singer, skinTones: [.dark])
         } else if rawValue == "👨‍🎤" {
-            self.init(baseEmoji: Emoji.maleSinger, skinTones: nil)
+            self.init(baseEmoji: .maleSinger, skinTones: nil)
         } else if rawValue == "👨🏻‍🎤" {
-            self.init(baseEmoji: Emoji.maleSinger, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleSinger, skinTones: [.light])
         } else if rawValue == "👨🏼‍🎤" {
-            self.init(baseEmoji: Emoji.maleSinger, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleSinger, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🎤" {
-            self.init(baseEmoji: Emoji.maleSinger, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleSinger, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🎤" {
-            self.init(baseEmoji: Emoji.maleSinger, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleSinger, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🎤" {
-            self.init(baseEmoji: Emoji.maleSinger, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleSinger, skinTones: [.dark])
         } else if rawValue == "👩‍🎤" {
-            self.init(baseEmoji: Emoji.femaleSinger, skinTones: nil)
+            self.init(baseEmoji: .femaleSinger, skinTones: nil)
         } else if rawValue == "👩🏻‍🎤" {
-            self.init(baseEmoji: Emoji.femaleSinger, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleSinger, skinTones: [.light])
         } else if rawValue == "👩🏼‍🎤" {
-            self.init(baseEmoji: Emoji.femaleSinger, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleSinger, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🎤" {
-            self.init(baseEmoji: Emoji.femaleSinger, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleSinger, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🎤" {
-            self.init(baseEmoji: Emoji.femaleSinger, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleSinger, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🎤" {
-            self.init(baseEmoji: Emoji.femaleSinger, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleSinger, skinTones: [.dark])
         } else if rawValue == "🧑‍🎨" {
-            self.init(baseEmoji: Emoji.artist, skinTones: nil)
+            self.init(baseEmoji: .artist, skinTones: nil)
         } else if rawValue == "🧑🏻‍🎨" {
-            self.init(baseEmoji: Emoji.artist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .artist, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🎨" {
-            self.init(baseEmoji: Emoji.artist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .artist, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🎨" {
-            self.init(baseEmoji: Emoji.artist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .artist, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🎨" {
-            self.init(baseEmoji: Emoji.artist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .artist, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🎨" {
-            self.init(baseEmoji: Emoji.artist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .artist, skinTones: [.dark])
         } else if rawValue == "👨‍🎨" {
-            self.init(baseEmoji: Emoji.maleArtist, skinTones: nil)
+            self.init(baseEmoji: .maleArtist, skinTones: nil)
         } else if rawValue == "👨🏻‍🎨" {
-            self.init(baseEmoji: Emoji.maleArtist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleArtist, skinTones: [.light])
         } else if rawValue == "👨🏼‍🎨" {
-            self.init(baseEmoji: Emoji.maleArtist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleArtist, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🎨" {
-            self.init(baseEmoji: Emoji.maleArtist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleArtist, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🎨" {
-            self.init(baseEmoji: Emoji.maleArtist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleArtist, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🎨" {
-            self.init(baseEmoji: Emoji.maleArtist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleArtist, skinTones: [.dark])
         } else if rawValue == "👩‍🎨" {
-            self.init(baseEmoji: Emoji.femaleArtist, skinTones: nil)
+            self.init(baseEmoji: .femaleArtist, skinTones: nil)
         } else if rawValue == "👩🏻‍🎨" {
-            self.init(baseEmoji: Emoji.femaleArtist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleArtist, skinTones: [.light])
         } else if rawValue == "👩🏼‍🎨" {
-            self.init(baseEmoji: Emoji.femaleArtist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleArtist, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🎨" {
-            self.init(baseEmoji: Emoji.femaleArtist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleArtist, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🎨" {
-            self.init(baseEmoji: Emoji.femaleArtist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleArtist, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🎨" {
-            self.init(baseEmoji: Emoji.femaleArtist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleArtist, skinTones: [.dark])
         } else if rawValue == "🧑‍✈️" {
-            self.init(baseEmoji: Emoji.pilot, skinTones: nil)
+            self.init(baseEmoji: .pilot, skinTones: nil)
         } else if rawValue == "🧑🏻‍✈️" {
-            self.init(baseEmoji: Emoji.pilot, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pilot, skinTones: [.light])
         } else if rawValue == "🧑🏼‍✈️" {
-            self.init(baseEmoji: Emoji.pilot, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pilot, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍✈️" {
-            self.init(baseEmoji: Emoji.pilot, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pilot, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍✈️" {
-            self.init(baseEmoji: Emoji.pilot, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pilot, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍✈️" {
-            self.init(baseEmoji: Emoji.pilot, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pilot, skinTones: [.dark])
         } else if rawValue == "👨‍✈️" {
-            self.init(baseEmoji: Emoji.malePilot, skinTones: nil)
+            self.init(baseEmoji: .malePilot, skinTones: nil)
         } else if rawValue == "👨🏻‍✈️" {
-            self.init(baseEmoji: Emoji.malePilot, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .malePilot, skinTones: [.light])
         } else if rawValue == "👨🏼‍✈️" {
-            self.init(baseEmoji: Emoji.malePilot, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .malePilot, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍✈️" {
-            self.init(baseEmoji: Emoji.malePilot, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .malePilot, skinTones: [.medium])
         } else if rawValue == "👨🏾‍✈️" {
-            self.init(baseEmoji: Emoji.malePilot, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .malePilot, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍✈️" {
-            self.init(baseEmoji: Emoji.malePilot, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .malePilot, skinTones: [.dark])
         } else if rawValue == "👩‍✈️" {
-            self.init(baseEmoji: Emoji.femalePilot, skinTones: nil)
+            self.init(baseEmoji: .femalePilot, skinTones: nil)
         } else if rawValue == "👩🏻‍✈️" {
-            self.init(baseEmoji: Emoji.femalePilot, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femalePilot, skinTones: [.light])
         } else if rawValue == "👩🏼‍✈️" {
-            self.init(baseEmoji: Emoji.femalePilot, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femalePilot, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍✈️" {
-            self.init(baseEmoji: Emoji.femalePilot, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femalePilot, skinTones: [.medium])
         } else if rawValue == "👩🏾‍✈️" {
-            self.init(baseEmoji: Emoji.femalePilot, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femalePilot, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍✈️" {
-            self.init(baseEmoji: Emoji.femalePilot, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femalePilot, skinTones: [.dark])
         } else if rawValue == "🧑‍🚀" {
-            self.init(baseEmoji: Emoji.astronaut, skinTones: nil)
+            self.init(baseEmoji: .astronaut, skinTones: nil)
         } else if rawValue == "🧑🏻‍🚀" {
-            self.init(baseEmoji: Emoji.astronaut, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .astronaut, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🚀" {
-            self.init(baseEmoji: Emoji.astronaut, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .astronaut, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🚀" {
-            self.init(baseEmoji: Emoji.astronaut, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .astronaut, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🚀" {
-            self.init(baseEmoji: Emoji.astronaut, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .astronaut, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🚀" {
-            self.init(baseEmoji: Emoji.astronaut, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .astronaut, skinTones: [.dark])
         } else if rawValue == "👨‍🚀" {
-            self.init(baseEmoji: Emoji.maleAstronaut, skinTones: nil)
+            self.init(baseEmoji: .maleAstronaut, skinTones: nil)
         } else if rawValue == "👨🏻‍🚀" {
-            self.init(baseEmoji: Emoji.maleAstronaut, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleAstronaut, skinTones: [.light])
         } else if rawValue == "👨🏼‍🚀" {
-            self.init(baseEmoji: Emoji.maleAstronaut, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleAstronaut, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🚀" {
-            self.init(baseEmoji: Emoji.maleAstronaut, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleAstronaut, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🚀" {
-            self.init(baseEmoji: Emoji.maleAstronaut, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleAstronaut, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🚀" {
-            self.init(baseEmoji: Emoji.maleAstronaut, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleAstronaut, skinTones: [.dark])
         } else if rawValue == "👩‍🚀" {
-            self.init(baseEmoji: Emoji.femaleAstronaut, skinTones: nil)
+            self.init(baseEmoji: .femaleAstronaut, skinTones: nil)
         } else if rawValue == "👩🏻‍🚀" {
-            self.init(baseEmoji: Emoji.femaleAstronaut, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleAstronaut, skinTones: [.light])
         } else if rawValue == "👩🏼‍🚀" {
-            self.init(baseEmoji: Emoji.femaleAstronaut, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleAstronaut, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🚀" {
-            self.init(baseEmoji: Emoji.femaleAstronaut, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleAstronaut, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🚀" {
-            self.init(baseEmoji: Emoji.femaleAstronaut, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleAstronaut, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🚀" {
-            self.init(baseEmoji: Emoji.femaleAstronaut, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleAstronaut, skinTones: [.dark])
         } else if rawValue == "🧑‍🚒" {
-            self.init(baseEmoji: Emoji.firefighter, skinTones: nil)
+            self.init(baseEmoji: .firefighter, skinTones: nil)
         } else if rawValue == "🧑🏻‍🚒" {
-            self.init(baseEmoji: Emoji.firefighter, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .firefighter, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🚒" {
-            self.init(baseEmoji: Emoji.firefighter, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .firefighter, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🚒" {
-            self.init(baseEmoji: Emoji.firefighter, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .firefighter, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🚒" {
-            self.init(baseEmoji: Emoji.firefighter, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .firefighter, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🚒" {
-            self.init(baseEmoji: Emoji.firefighter, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .firefighter, skinTones: [.dark])
         } else if rawValue == "👨‍🚒" {
-            self.init(baseEmoji: Emoji.maleFirefighter, skinTones: nil)
+            self.init(baseEmoji: .maleFirefighter, skinTones: nil)
         } else if rawValue == "👨🏻‍🚒" {
-            self.init(baseEmoji: Emoji.maleFirefighter, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleFirefighter, skinTones: [.light])
         } else if rawValue == "👨🏼‍🚒" {
-            self.init(baseEmoji: Emoji.maleFirefighter, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleFirefighter, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🚒" {
-            self.init(baseEmoji: Emoji.maleFirefighter, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleFirefighter, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🚒" {
-            self.init(baseEmoji: Emoji.maleFirefighter, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleFirefighter, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🚒" {
-            self.init(baseEmoji: Emoji.maleFirefighter, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleFirefighter, skinTones: [.dark])
         } else if rawValue == "👩‍🚒" {
-            self.init(baseEmoji: Emoji.femaleFirefighter, skinTones: nil)
+            self.init(baseEmoji: .femaleFirefighter, skinTones: nil)
         } else if rawValue == "👩🏻‍🚒" {
-            self.init(baseEmoji: Emoji.femaleFirefighter, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleFirefighter, skinTones: [.light])
         } else if rawValue == "👩🏼‍🚒" {
-            self.init(baseEmoji: Emoji.femaleFirefighter, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleFirefighter, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🚒" {
-            self.init(baseEmoji: Emoji.femaleFirefighter, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleFirefighter, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🚒" {
-            self.init(baseEmoji: Emoji.femaleFirefighter, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleFirefighter, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🚒" {
-            self.init(baseEmoji: Emoji.femaleFirefighter, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleFirefighter, skinTones: [.dark])
         } else if rawValue == "👮" {
-            self.init(baseEmoji: Emoji.cop, skinTones: nil)
+            self.init(baseEmoji: .cop, skinTones: nil)
         } else if rawValue == "👮🏻" {
-            self.init(baseEmoji: Emoji.cop, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .cop, skinTones: [.light])
         } else if rawValue == "👮🏼" {
-            self.init(baseEmoji: Emoji.cop, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .cop, skinTones: [.mediumLight])
         } else if rawValue == "👮🏽" {
-            self.init(baseEmoji: Emoji.cop, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .cop, skinTones: [.medium])
         } else if rawValue == "👮🏾" {
-            self.init(baseEmoji: Emoji.cop, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .cop, skinTones: [.mediumDark])
         } else if rawValue == "👮🏿" {
-            self.init(baseEmoji: Emoji.cop, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .cop, skinTones: [.dark])
         } else if rawValue == "👮‍♂️" {
-            self.init(baseEmoji: Emoji.malePoliceOfficer, skinTones: nil)
+            self.init(baseEmoji: .malePoliceOfficer, skinTones: nil)
         } else if rawValue == "👮🏻‍♂️" {
-            self.init(baseEmoji: Emoji.malePoliceOfficer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .malePoliceOfficer, skinTones: [.light])
         } else if rawValue == "👮🏼‍♂️" {
-            self.init(baseEmoji: Emoji.malePoliceOfficer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .malePoliceOfficer, skinTones: [.mediumLight])
         } else if rawValue == "👮🏽‍♂️" {
-            self.init(baseEmoji: Emoji.malePoliceOfficer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .malePoliceOfficer, skinTones: [.medium])
         } else if rawValue == "👮🏾‍♂️" {
-            self.init(baseEmoji: Emoji.malePoliceOfficer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .malePoliceOfficer, skinTones: [.mediumDark])
         } else if rawValue == "👮🏿‍♂️" {
-            self.init(baseEmoji: Emoji.malePoliceOfficer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .malePoliceOfficer, skinTones: [.dark])
         } else if rawValue == "👮‍♀️" {
-            self.init(baseEmoji: Emoji.femalePoliceOfficer, skinTones: nil)
+            self.init(baseEmoji: .femalePoliceOfficer, skinTones: nil)
         } else if rawValue == "👮🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femalePoliceOfficer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femalePoliceOfficer, skinTones: [.light])
         } else if rawValue == "👮🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femalePoliceOfficer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femalePoliceOfficer, skinTones: [.mediumLight])
         } else if rawValue == "👮🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femalePoliceOfficer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femalePoliceOfficer, skinTones: [.medium])
         } else if rawValue == "👮🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femalePoliceOfficer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femalePoliceOfficer, skinTones: [.mediumDark])
         } else if rawValue == "👮🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femalePoliceOfficer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femalePoliceOfficer, skinTones: [.dark])
         } else if rawValue == "🕵️" {
-            self.init(baseEmoji: Emoji.sleuthOrSpy, skinTones: nil)
+            self.init(baseEmoji: .sleuthOrSpy, skinTones: nil)
         } else if rawValue == "🕵🏻" {
-            self.init(baseEmoji: Emoji.sleuthOrSpy, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .sleuthOrSpy, skinTones: [.light])
         } else if rawValue == "🕵🏼" {
-            self.init(baseEmoji: Emoji.sleuthOrSpy, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .sleuthOrSpy, skinTones: [.mediumLight])
         } else if rawValue == "🕵🏽" {
-            self.init(baseEmoji: Emoji.sleuthOrSpy, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .sleuthOrSpy, skinTones: [.medium])
         } else if rawValue == "🕵🏾" {
-            self.init(baseEmoji: Emoji.sleuthOrSpy, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .sleuthOrSpy, skinTones: [.mediumDark])
         } else if rawValue == "🕵🏿" {
-            self.init(baseEmoji: Emoji.sleuthOrSpy, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .sleuthOrSpy, skinTones: [.dark])
         } else if rawValue == "🕵️‍♂️" {
-            self.init(baseEmoji: Emoji.maleDetective, skinTones: nil)
+            self.init(baseEmoji: .maleDetective, skinTones: nil)
         } else if rawValue == "🕵🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleDetective, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleDetective, skinTones: [.light])
         } else if rawValue == "🕵🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleDetective, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleDetective, skinTones: [.mediumLight])
         } else if rawValue == "🕵🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleDetective, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleDetective, skinTones: [.medium])
         } else if rawValue == "🕵🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleDetective, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleDetective, skinTones: [.mediumDark])
         } else if rawValue == "🕵🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleDetective, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleDetective, skinTones: [.dark])
         } else if rawValue == "🕵️‍♀️" {
-            self.init(baseEmoji: Emoji.femaleDetective, skinTones: nil)
+            self.init(baseEmoji: .femaleDetective, skinTones: nil)
         } else if rawValue == "🕵🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleDetective, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleDetective, skinTones: [.light])
         } else if rawValue == "🕵🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleDetective, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleDetective, skinTones: [.mediumLight])
         } else if rawValue == "🕵🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleDetective, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleDetective, skinTones: [.medium])
         } else if rawValue == "🕵🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleDetective, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleDetective, skinTones: [.mediumDark])
         } else if rawValue == "🕵🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleDetective, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleDetective, skinTones: [.dark])
         } else if rawValue == "💂" {
-            self.init(baseEmoji: Emoji.guardsman, skinTones: nil)
+            self.init(baseEmoji: .guardsman, skinTones: nil)
         } else if rawValue == "💂🏻" {
-            self.init(baseEmoji: Emoji.guardsman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .guardsman, skinTones: [.light])
         } else if rawValue == "💂🏼" {
-            self.init(baseEmoji: Emoji.guardsman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .guardsman, skinTones: [.mediumLight])
         } else if rawValue == "💂🏽" {
-            self.init(baseEmoji: Emoji.guardsman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .guardsman, skinTones: [.medium])
         } else if rawValue == "💂🏾" {
-            self.init(baseEmoji: Emoji.guardsman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .guardsman, skinTones: [.mediumDark])
         } else if rawValue == "💂🏿" {
-            self.init(baseEmoji: Emoji.guardsman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .guardsman, skinTones: [.dark])
         } else if rawValue == "💂‍♂️" {
-            self.init(baseEmoji: Emoji.maleGuard, skinTones: nil)
+            self.init(baseEmoji: .maleGuard, skinTones: nil)
         } else if rawValue == "💂🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleGuard, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleGuard, skinTones: [.light])
         } else if rawValue == "💂🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleGuard, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleGuard, skinTones: [.mediumLight])
         } else if rawValue == "💂🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleGuard, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleGuard, skinTones: [.medium])
         } else if rawValue == "💂🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleGuard, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleGuard, skinTones: [.mediumDark])
         } else if rawValue == "💂🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleGuard, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleGuard, skinTones: [.dark])
         } else if rawValue == "💂‍♀️" {
-            self.init(baseEmoji: Emoji.femaleGuard, skinTones: nil)
+            self.init(baseEmoji: .femaleGuard, skinTones: nil)
         } else if rawValue == "💂🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleGuard, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleGuard, skinTones: [.light])
         } else if rawValue == "💂🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleGuard, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleGuard, skinTones: [.mediumLight])
         } else if rawValue == "💂🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleGuard, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleGuard, skinTones: [.medium])
         } else if rawValue == "💂🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleGuard, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleGuard, skinTones: [.mediumDark])
         } else if rawValue == "💂🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleGuard, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleGuard, skinTones: [.dark])
         } else if rawValue == "🥷" {
-            self.init(baseEmoji: Emoji.ninja, skinTones: nil)
+            self.init(baseEmoji: .ninja, skinTones: nil)
         } else if rawValue == "🥷🏻" {
-            self.init(baseEmoji: Emoji.ninja, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .ninja, skinTones: [.light])
         } else if rawValue == "🥷🏼" {
-            self.init(baseEmoji: Emoji.ninja, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .ninja, skinTones: [.mediumLight])
         } else if rawValue == "🥷🏽" {
-            self.init(baseEmoji: Emoji.ninja, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .ninja, skinTones: [.medium])
         } else if rawValue == "🥷🏾" {
-            self.init(baseEmoji: Emoji.ninja, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .ninja, skinTones: [.mediumDark])
         } else if rawValue == "🥷🏿" {
-            self.init(baseEmoji: Emoji.ninja, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .ninja, skinTones: [.dark])
         } else if rawValue == "👷" {
-            self.init(baseEmoji: Emoji.constructionWorker, skinTones: nil)
+            self.init(baseEmoji: .constructionWorker, skinTones: nil)
         } else if rawValue == "👷🏻" {
-            self.init(baseEmoji: Emoji.constructionWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .constructionWorker, skinTones: [.light])
         } else if rawValue == "👷🏼" {
-            self.init(baseEmoji: Emoji.constructionWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .constructionWorker, skinTones: [.mediumLight])
         } else if rawValue == "👷🏽" {
-            self.init(baseEmoji: Emoji.constructionWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .constructionWorker, skinTones: [.medium])
         } else if rawValue == "👷🏾" {
-            self.init(baseEmoji: Emoji.constructionWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .constructionWorker, skinTones: [.mediumDark])
         } else if rawValue == "👷🏿" {
-            self.init(baseEmoji: Emoji.constructionWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .constructionWorker, skinTones: [.dark])
         } else if rawValue == "👷‍♂️" {
-            self.init(baseEmoji: Emoji.maleConstructionWorker, skinTones: nil)
+            self.init(baseEmoji: .maleConstructionWorker, skinTones: nil)
         } else if rawValue == "👷🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleConstructionWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleConstructionWorker, skinTones: [.light])
         } else if rawValue == "👷🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleConstructionWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleConstructionWorker, skinTones: [.mediumLight])
         } else if rawValue == "👷🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleConstructionWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleConstructionWorker, skinTones: [.medium])
         } else if rawValue == "👷🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleConstructionWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleConstructionWorker, skinTones: [.mediumDark])
         } else if rawValue == "👷🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleConstructionWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleConstructionWorker, skinTones: [.dark])
         } else if rawValue == "👷‍♀️" {
-            self.init(baseEmoji: Emoji.femaleConstructionWorker, skinTones: nil)
+            self.init(baseEmoji: .femaleConstructionWorker, skinTones: nil)
         } else if rawValue == "👷🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleConstructionWorker, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleConstructionWorker, skinTones: [.light])
         } else if rawValue == "👷🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleConstructionWorker, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleConstructionWorker, skinTones: [.mediumLight])
         } else if rawValue == "👷🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleConstructionWorker, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleConstructionWorker, skinTones: [.medium])
         } else if rawValue == "👷🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleConstructionWorker, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleConstructionWorker, skinTones: [.mediumDark])
         } else if rawValue == "👷🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleConstructionWorker, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleConstructionWorker, skinTones: [.dark])
         } else if rawValue == "🤴" {
-            self.init(baseEmoji: Emoji.prince, skinTones: nil)
+            self.init(baseEmoji: .prince, skinTones: nil)
         } else if rawValue == "🤴🏻" {
-            self.init(baseEmoji: Emoji.prince, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .prince, skinTones: [.light])
         } else if rawValue == "🤴🏼" {
-            self.init(baseEmoji: Emoji.prince, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .prince, skinTones: [.mediumLight])
         } else if rawValue == "🤴🏽" {
-            self.init(baseEmoji: Emoji.prince, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .prince, skinTones: [.medium])
         } else if rawValue == "🤴🏾" {
-            self.init(baseEmoji: Emoji.prince, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .prince, skinTones: [.mediumDark])
         } else if rawValue == "🤴🏿" {
-            self.init(baseEmoji: Emoji.prince, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .prince, skinTones: [.dark])
         } else if rawValue == "👸" {
-            self.init(baseEmoji: Emoji.princess, skinTones: nil)
+            self.init(baseEmoji: .princess, skinTones: nil)
         } else if rawValue == "👸🏻" {
-            self.init(baseEmoji: Emoji.princess, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .princess, skinTones: [.light])
         } else if rawValue == "👸🏼" {
-            self.init(baseEmoji: Emoji.princess, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .princess, skinTones: [.mediumLight])
         } else if rawValue == "👸🏽" {
-            self.init(baseEmoji: Emoji.princess, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .princess, skinTones: [.medium])
         } else if rawValue == "👸🏾" {
-            self.init(baseEmoji: Emoji.princess, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .princess, skinTones: [.mediumDark])
         } else if rawValue == "👸🏿" {
-            self.init(baseEmoji: Emoji.princess, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .princess, skinTones: [.dark])
         } else if rawValue == "👳" {
-            self.init(baseEmoji: Emoji.manWithTurban, skinTones: nil)
+            self.init(baseEmoji: .manWithTurban, skinTones: nil)
         } else if rawValue == "👳🏻" {
-            self.init(baseEmoji: Emoji.manWithTurban, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manWithTurban, skinTones: [.light])
         } else if rawValue == "👳🏼" {
-            self.init(baseEmoji: Emoji.manWithTurban, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manWithTurban, skinTones: [.mediumLight])
         } else if rawValue == "👳🏽" {
-            self.init(baseEmoji: Emoji.manWithTurban, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manWithTurban, skinTones: [.medium])
         } else if rawValue == "👳🏾" {
-            self.init(baseEmoji: Emoji.manWithTurban, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manWithTurban, skinTones: [.mediumDark])
         } else if rawValue == "👳🏿" {
-            self.init(baseEmoji: Emoji.manWithTurban, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manWithTurban, skinTones: [.dark])
         } else if rawValue == "👳‍♂️" {
-            self.init(baseEmoji: Emoji.manWearingTurban, skinTones: nil)
+            self.init(baseEmoji: .manWearingTurban, skinTones: nil)
         } else if rawValue == "👳🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manWearingTurban, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manWearingTurban, skinTones: [.light])
         } else if rawValue == "👳🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manWearingTurban, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manWearingTurban, skinTones: [.mediumLight])
         } else if rawValue == "👳🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manWearingTurban, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manWearingTurban, skinTones: [.medium])
         } else if rawValue == "👳🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manWearingTurban, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manWearingTurban, skinTones: [.mediumDark])
         } else if rawValue == "👳🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manWearingTurban, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manWearingTurban, skinTones: [.dark])
         } else if rawValue == "👳‍♀️" {
-            self.init(baseEmoji: Emoji.womanWearingTurban, skinTones: nil)
+            self.init(baseEmoji: .womanWearingTurban, skinTones: nil)
         } else if rawValue == "👳🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanWearingTurban, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanWearingTurban, skinTones: [.light])
         } else if rawValue == "👳🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanWearingTurban, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanWearingTurban, skinTones: [.mediumLight])
         } else if rawValue == "👳🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanWearingTurban, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanWearingTurban, skinTones: [.medium])
         } else if rawValue == "👳🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanWearingTurban, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanWearingTurban, skinTones: [.mediumDark])
         } else if rawValue == "👳🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanWearingTurban, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanWearingTurban, skinTones: [.dark])
         } else if rawValue == "👲" {
-            self.init(baseEmoji: Emoji.manWithGuaPiMao, skinTones: nil)
+            self.init(baseEmoji: .manWithGuaPiMao, skinTones: nil)
         } else if rawValue == "👲🏻" {
-            self.init(baseEmoji: Emoji.manWithGuaPiMao, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manWithGuaPiMao, skinTones: [.light])
         } else if rawValue == "👲🏼" {
-            self.init(baseEmoji: Emoji.manWithGuaPiMao, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manWithGuaPiMao, skinTones: [.mediumLight])
         } else if rawValue == "👲🏽" {
-            self.init(baseEmoji: Emoji.manWithGuaPiMao, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manWithGuaPiMao, skinTones: [.medium])
         } else if rawValue == "👲🏾" {
-            self.init(baseEmoji: Emoji.manWithGuaPiMao, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manWithGuaPiMao, skinTones: [.mediumDark])
         } else if rawValue == "👲🏿" {
-            self.init(baseEmoji: Emoji.manWithGuaPiMao, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manWithGuaPiMao, skinTones: [.dark])
         } else if rawValue == "🧕" {
-            self.init(baseEmoji: Emoji.personWithHeadscarf, skinTones: nil)
+            self.init(baseEmoji: .personWithHeadscarf, skinTones: nil)
         } else if rawValue == "🧕🏻" {
-            self.init(baseEmoji: Emoji.personWithHeadscarf, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personWithHeadscarf, skinTones: [.light])
         } else if rawValue == "🧕🏼" {
-            self.init(baseEmoji: Emoji.personWithHeadscarf, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personWithHeadscarf, skinTones: [.mediumLight])
         } else if rawValue == "🧕🏽" {
-            self.init(baseEmoji: Emoji.personWithHeadscarf, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personWithHeadscarf, skinTones: [.medium])
         } else if rawValue == "🧕🏾" {
-            self.init(baseEmoji: Emoji.personWithHeadscarf, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personWithHeadscarf, skinTones: [.mediumDark])
         } else if rawValue == "🧕🏿" {
-            self.init(baseEmoji: Emoji.personWithHeadscarf, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personWithHeadscarf, skinTones: [.dark])
         } else if rawValue == "🤵" {
-            self.init(baseEmoji: Emoji.personInTuxedo, skinTones: nil)
+            self.init(baseEmoji: .personInTuxedo, skinTones: nil)
         } else if rawValue == "🤵🏻" {
-            self.init(baseEmoji: Emoji.personInTuxedo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personInTuxedo, skinTones: [.light])
         } else if rawValue == "🤵🏼" {
-            self.init(baseEmoji: Emoji.personInTuxedo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personInTuxedo, skinTones: [.mediumLight])
         } else if rawValue == "🤵🏽" {
-            self.init(baseEmoji: Emoji.personInTuxedo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personInTuxedo, skinTones: [.medium])
         } else if rawValue == "🤵🏾" {
-            self.init(baseEmoji: Emoji.personInTuxedo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personInTuxedo, skinTones: [.mediumDark])
         } else if rawValue == "🤵🏿" {
-            self.init(baseEmoji: Emoji.personInTuxedo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personInTuxedo, skinTones: [.dark])
         } else if rawValue == "🤵‍♂️" {
-            self.init(baseEmoji: Emoji.manInTuxedo, skinTones: nil)
+            self.init(baseEmoji: .manInTuxedo, skinTones: nil)
         } else if rawValue == "🤵🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manInTuxedo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manInTuxedo, skinTones: [.light])
         } else if rawValue == "🤵🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manInTuxedo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manInTuxedo, skinTones: [.mediumLight])
         } else if rawValue == "🤵🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manInTuxedo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manInTuxedo, skinTones: [.medium])
         } else if rawValue == "🤵🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manInTuxedo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manInTuxedo, skinTones: [.mediumDark])
         } else if rawValue == "🤵🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manInTuxedo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manInTuxedo, skinTones: [.dark])
         } else if rawValue == "🤵‍♀️" {
-            self.init(baseEmoji: Emoji.womanInTuxedo, skinTones: nil)
+            self.init(baseEmoji: .womanInTuxedo, skinTones: nil)
         } else if rawValue == "🤵🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanInTuxedo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanInTuxedo, skinTones: [.light])
         } else if rawValue == "🤵🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanInTuxedo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanInTuxedo, skinTones: [.mediumLight])
         } else if rawValue == "🤵🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanInTuxedo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanInTuxedo, skinTones: [.medium])
         } else if rawValue == "🤵🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanInTuxedo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanInTuxedo, skinTones: [.mediumDark])
         } else if rawValue == "🤵🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanInTuxedo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanInTuxedo, skinTones: [.dark])
         } else if rawValue == "👰" {
-            self.init(baseEmoji: Emoji.brideWithVeil, skinTones: nil)
+            self.init(baseEmoji: .brideWithVeil, skinTones: nil)
         } else if rawValue == "👰🏻" {
-            self.init(baseEmoji: Emoji.brideWithVeil, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .brideWithVeil, skinTones: [.light])
         } else if rawValue == "👰🏼" {
-            self.init(baseEmoji: Emoji.brideWithVeil, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .brideWithVeil, skinTones: [.mediumLight])
         } else if rawValue == "👰🏽" {
-            self.init(baseEmoji: Emoji.brideWithVeil, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .brideWithVeil, skinTones: [.medium])
         } else if rawValue == "👰🏾" {
-            self.init(baseEmoji: Emoji.brideWithVeil, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .brideWithVeil, skinTones: [.mediumDark])
         } else if rawValue == "👰🏿" {
-            self.init(baseEmoji: Emoji.brideWithVeil, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .brideWithVeil, skinTones: [.dark])
         } else if rawValue == "👰‍♂️" {
-            self.init(baseEmoji: Emoji.manWithVeil, skinTones: nil)
+            self.init(baseEmoji: .manWithVeil, skinTones: nil)
         } else if rawValue == "👰🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manWithVeil, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manWithVeil, skinTones: [.light])
         } else if rawValue == "👰🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manWithVeil, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manWithVeil, skinTones: [.mediumLight])
         } else if rawValue == "👰🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manWithVeil, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manWithVeil, skinTones: [.medium])
         } else if rawValue == "👰🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manWithVeil, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manWithVeil, skinTones: [.mediumDark])
         } else if rawValue == "👰🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manWithVeil, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manWithVeil, skinTones: [.dark])
         } else if rawValue == "👰‍♀️" {
-            self.init(baseEmoji: Emoji.womanWithVeil, skinTones: nil)
+            self.init(baseEmoji: .womanWithVeil, skinTones: nil)
         } else if rawValue == "👰🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanWithVeil, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanWithVeil, skinTones: [.light])
         } else if rawValue == "👰🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanWithVeil, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanWithVeil, skinTones: [.mediumLight])
         } else if rawValue == "👰🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanWithVeil, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanWithVeil, skinTones: [.medium])
         } else if rawValue == "👰🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanWithVeil, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanWithVeil, skinTones: [.mediumDark])
         } else if rawValue == "👰🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanWithVeil, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanWithVeil, skinTones: [.dark])
         } else if rawValue == "🤰" {
-            self.init(baseEmoji: Emoji.pregnantWoman, skinTones: nil)
+            self.init(baseEmoji: .pregnantWoman, skinTones: nil)
         } else if rawValue == "🤰🏻" {
-            self.init(baseEmoji: Emoji.pregnantWoman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .pregnantWoman, skinTones: [.light])
         } else if rawValue == "🤰🏼" {
-            self.init(baseEmoji: Emoji.pregnantWoman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .pregnantWoman, skinTones: [.mediumLight])
         } else if rawValue == "🤰🏽" {
-            self.init(baseEmoji: Emoji.pregnantWoman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .pregnantWoman, skinTones: [.medium])
         } else if rawValue == "🤰🏾" {
-            self.init(baseEmoji: Emoji.pregnantWoman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .pregnantWoman, skinTones: [.mediumDark])
         } else if rawValue == "🤰🏿" {
-            self.init(baseEmoji: Emoji.pregnantWoman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .pregnantWoman, skinTones: [.dark])
         } else if rawValue == "🤱" {
-            self.init(baseEmoji: Emoji.breastFeeding, skinTones: nil)
+            self.init(baseEmoji: .breastFeeding, skinTones: nil)
         } else if rawValue == "🤱🏻" {
-            self.init(baseEmoji: Emoji.breastFeeding, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .breastFeeding, skinTones: [.light])
         } else if rawValue == "🤱🏼" {
-            self.init(baseEmoji: Emoji.breastFeeding, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .breastFeeding, skinTones: [.mediumLight])
         } else if rawValue == "🤱🏽" {
-            self.init(baseEmoji: Emoji.breastFeeding, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .breastFeeding, skinTones: [.medium])
         } else if rawValue == "🤱🏾" {
-            self.init(baseEmoji: Emoji.breastFeeding, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .breastFeeding, skinTones: [.mediumDark])
         } else if rawValue == "🤱🏿" {
-            self.init(baseEmoji: Emoji.breastFeeding, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .breastFeeding, skinTones: [.dark])
         } else if rawValue == "👩‍🍼" {
-            self.init(baseEmoji: Emoji.womanFeedingBaby, skinTones: nil)
+            self.init(baseEmoji: .womanFeedingBaby, skinTones: nil)
         } else if rawValue == "👩🏻‍🍼" {
-            self.init(baseEmoji: Emoji.womanFeedingBaby, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanFeedingBaby, skinTones: [.light])
         } else if rawValue == "👩🏼‍🍼" {
-            self.init(baseEmoji: Emoji.womanFeedingBaby, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanFeedingBaby, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🍼" {
-            self.init(baseEmoji: Emoji.womanFeedingBaby, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanFeedingBaby, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🍼" {
-            self.init(baseEmoji: Emoji.womanFeedingBaby, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanFeedingBaby, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🍼" {
-            self.init(baseEmoji: Emoji.womanFeedingBaby, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanFeedingBaby, skinTones: [.dark])
         } else if rawValue == "👨‍🍼" {
-            self.init(baseEmoji: Emoji.manFeedingBaby, skinTones: nil)
+            self.init(baseEmoji: .manFeedingBaby, skinTones: nil)
         } else if rawValue == "👨🏻‍🍼" {
-            self.init(baseEmoji: Emoji.manFeedingBaby, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manFeedingBaby, skinTones: [.light])
         } else if rawValue == "👨🏼‍🍼" {
-            self.init(baseEmoji: Emoji.manFeedingBaby, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manFeedingBaby, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🍼" {
-            self.init(baseEmoji: Emoji.manFeedingBaby, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manFeedingBaby, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🍼" {
-            self.init(baseEmoji: Emoji.manFeedingBaby, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manFeedingBaby, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🍼" {
-            self.init(baseEmoji: Emoji.manFeedingBaby, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manFeedingBaby, skinTones: [.dark])
         } else if rawValue == "🧑‍🍼" {
-            self.init(baseEmoji: Emoji.personFeedingBaby, skinTones: nil)
+            self.init(baseEmoji: .personFeedingBaby, skinTones: nil)
         } else if rawValue == "🧑🏻‍🍼" {
-            self.init(baseEmoji: Emoji.personFeedingBaby, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personFeedingBaby, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🍼" {
-            self.init(baseEmoji: Emoji.personFeedingBaby, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personFeedingBaby, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🍼" {
-            self.init(baseEmoji: Emoji.personFeedingBaby, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personFeedingBaby, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🍼" {
-            self.init(baseEmoji: Emoji.personFeedingBaby, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personFeedingBaby, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🍼" {
-            self.init(baseEmoji: Emoji.personFeedingBaby, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personFeedingBaby, skinTones: [.dark])
         } else if rawValue == "👼" {
-            self.init(baseEmoji: Emoji.angel, skinTones: nil)
+            self.init(baseEmoji: .angel, skinTones: nil)
         } else if rawValue == "👼🏻" {
-            self.init(baseEmoji: Emoji.angel, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .angel, skinTones: [.light])
         } else if rawValue == "👼🏼" {
-            self.init(baseEmoji: Emoji.angel, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .angel, skinTones: [.mediumLight])
         } else if rawValue == "👼🏽" {
-            self.init(baseEmoji: Emoji.angel, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .angel, skinTones: [.medium])
         } else if rawValue == "👼🏾" {
-            self.init(baseEmoji: Emoji.angel, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .angel, skinTones: [.mediumDark])
         } else if rawValue == "👼🏿" {
-            self.init(baseEmoji: Emoji.angel, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .angel, skinTones: [.dark])
         } else if rawValue == "🎅" {
-            self.init(baseEmoji: Emoji.santa, skinTones: nil)
+            self.init(baseEmoji: .santa, skinTones: nil)
         } else if rawValue == "🎅🏻" {
-            self.init(baseEmoji: Emoji.santa, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .santa, skinTones: [.light])
         } else if rawValue == "🎅🏼" {
-            self.init(baseEmoji: Emoji.santa, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .santa, skinTones: [.mediumLight])
         } else if rawValue == "🎅🏽" {
-            self.init(baseEmoji: Emoji.santa, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .santa, skinTones: [.medium])
         } else if rawValue == "🎅🏾" {
-            self.init(baseEmoji: Emoji.santa, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .santa, skinTones: [.mediumDark])
         } else if rawValue == "🎅🏿" {
-            self.init(baseEmoji: Emoji.santa, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .santa, skinTones: [.dark])
         } else if rawValue == "🤶" {
-            self.init(baseEmoji: Emoji.mrsClaus, skinTones: nil)
+            self.init(baseEmoji: .mrsClaus, skinTones: nil)
         } else if rawValue == "🤶🏻" {
-            self.init(baseEmoji: Emoji.mrsClaus, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .mrsClaus, skinTones: [.light])
         } else if rawValue == "🤶🏼" {
-            self.init(baseEmoji: Emoji.mrsClaus, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .mrsClaus, skinTones: [.mediumLight])
         } else if rawValue == "🤶🏽" {
-            self.init(baseEmoji: Emoji.mrsClaus, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .mrsClaus, skinTones: [.medium])
         } else if rawValue == "🤶🏾" {
-            self.init(baseEmoji: Emoji.mrsClaus, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .mrsClaus, skinTones: [.mediumDark])
         } else if rawValue == "🤶🏿" {
-            self.init(baseEmoji: Emoji.mrsClaus, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .mrsClaus, skinTones: [.dark])
         } else if rawValue == "🧑‍🎄" {
-            self.init(baseEmoji: Emoji.mxClaus, skinTones: nil)
+            self.init(baseEmoji: .mxClaus, skinTones: nil)
         } else if rawValue == "🧑🏻‍🎄" {
-            self.init(baseEmoji: Emoji.mxClaus, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .mxClaus, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🎄" {
-            self.init(baseEmoji: Emoji.mxClaus, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .mxClaus, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🎄" {
-            self.init(baseEmoji: Emoji.mxClaus, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .mxClaus, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🎄" {
-            self.init(baseEmoji: Emoji.mxClaus, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .mxClaus, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🎄" {
-            self.init(baseEmoji: Emoji.mxClaus, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .mxClaus, skinTones: [.dark])
         } else if rawValue == "🦸" {
-            self.init(baseEmoji: Emoji.superhero, skinTones: nil)
+            self.init(baseEmoji: .superhero, skinTones: nil)
         } else if rawValue == "🦸🏻" {
-            self.init(baseEmoji: Emoji.superhero, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .superhero, skinTones: [.light])
         } else if rawValue == "🦸🏼" {
-            self.init(baseEmoji: Emoji.superhero, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .superhero, skinTones: [.mediumLight])
         } else if rawValue == "🦸🏽" {
-            self.init(baseEmoji: Emoji.superhero, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .superhero, skinTones: [.medium])
         } else if rawValue == "🦸🏾" {
-            self.init(baseEmoji: Emoji.superhero, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .superhero, skinTones: [.mediumDark])
         } else if rawValue == "🦸🏿" {
-            self.init(baseEmoji: Emoji.superhero, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .superhero, skinTones: [.dark])
         } else if rawValue == "🦸‍♂️" {
-            self.init(baseEmoji: Emoji.maleSuperhero, skinTones: nil)
+            self.init(baseEmoji: .maleSuperhero, skinTones: nil)
         } else if rawValue == "🦸🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleSuperhero, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleSuperhero, skinTones: [.light])
         } else if rawValue == "🦸🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleSuperhero, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleSuperhero, skinTones: [.mediumLight])
         } else if rawValue == "🦸🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleSuperhero, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleSuperhero, skinTones: [.medium])
         } else if rawValue == "🦸🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleSuperhero, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleSuperhero, skinTones: [.mediumDark])
         } else if rawValue == "🦸🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleSuperhero, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleSuperhero, skinTones: [.dark])
         } else if rawValue == "🦸‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSuperhero, skinTones: nil)
+            self.init(baseEmoji: .femaleSuperhero, skinTones: nil)
         } else if rawValue == "🦸🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSuperhero, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleSuperhero, skinTones: [.light])
         } else if rawValue == "🦸🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSuperhero, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleSuperhero, skinTones: [.mediumLight])
         } else if rawValue == "🦸🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSuperhero, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleSuperhero, skinTones: [.medium])
         } else if rawValue == "🦸🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSuperhero, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleSuperhero, skinTones: [.mediumDark])
         } else if rawValue == "🦸🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSuperhero, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleSuperhero, skinTones: [.dark])
         } else if rawValue == "🦹" {
-            self.init(baseEmoji: Emoji.supervillain, skinTones: nil)
+            self.init(baseEmoji: .supervillain, skinTones: nil)
         } else if rawValue == "🦹🏻" {
-            self.init(baseEmoji: Emoji.supervillain, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .supervillain, skinTones: [.light])
         } else if rawValue == "🦹🏼" {
-            self.init(baseEmoji: Emoji.supervillain, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .supervillain, skinTones: [.mediumLight])
         } else if rawValue == "🦹🏽" {
-            self.init(baseEmoji: Emoji.supervillain, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .supervillain, skinTones: [.medium])
         } else if rawValue == "🦹🏾" {
-            self.init(baseEmoji: Emoji.supervillain, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .supervillain, skinTones: [.mediumDark])
         } else if rawValue == "🦹🏿" {
-            self.init(baseEmoji: Emoji.supervillain, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .supervillain, skinTones: [.dark])
         } else if rawValue == "🦹‍♂️" {
-            self.init(baseEmoji: Emoji.maleSupervillain, skinTones: nil)
+            self.init(baseEmoji: .maleSupervillain, skinTones: nil)
         } else if rawValue == "🦹🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleSupervillain, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleSupervillain, skinTones: [.light])
         } else if rawValue == "🦹🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleSupervillain, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleSupervillain, skinTones: [.mediumLight])
         } else if rawValue == "🦹🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleSupervillain, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleSupervillain, skinTones: [.medium])
         } else if rawValue == "🦹🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleSupervillain, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleSupervillain, skinTones: [.mediumDark])
         } else if rawValue == "🦹🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleSupervillain, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleSupervillain, skinTones: [.dark])
         } else if rawValue == "🦹‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSupervillain, skinTones: nil)
+            self.init(baseEmoji: .femaleSupervillain, skinTones: nil)
         } else if rawValue == "🦹🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSupervillain, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleSupervillain, skinTones: [.light])
         } else if rawValue == "🦹🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSupervillain, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleSupervillain, skinTones: [.mediumLight])
         } else if rawValue == "🦹🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSupervillain, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleSupervillain, skinTones: [.medium])
         } else if rawValue == "🦹🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSupervillain, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleSupervillain, skinTones: [.mediumDark])
         } else if rawValue == "🦹🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleSupervillain, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleSupervillain, skinTones: [.dark])
         } else if rawValue == "🧙" {
-            self.init(baseEmoji: Emoji.mage, skinTones: nil)
+            self.init(baseEmoji: .mage, skinTones: nil)
         } else if rawValue == "🧙🏻" {
-            self.init(baseEmoji: Emoji.mage, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .mage, skinTones: [.light])
         } else if rawValue == "🧙🏼" {
-            self.init(baseEmoji: Emoji.mage, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .mage, skinTones: [.mediumLight])
         } else if rawValue == "🧙🏽" {
-            self.init(baseEmoji: Emoji.mage, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .mage, skinTones: [.medium])
         } else if rawValue == "🧙🏾" {
-            self.init(baseEmoji: Emoji.mage, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .mage, skinTones: [.mediumDark])
         } else if rawValue == "🧙🏿" {
-            self.init(baseEmoji: Emoji.mage, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .mage, skinTones: [.dark])
         } else if rawValue == "🧙‍♂️" {
-            self.init(baseEmoji: Emoji.maleMage, skinTones: nil)
+            self.init(baseEmoji: .maleMage, skinTones: nil)
         } else if rawValue == "🧙🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleMage, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleMage, skinTones: [.light])
         } else if rawValue == "🧙🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleMage, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleMage, skinTones: [.mediumLight])
         } else if rawValue == "🧙🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleMage, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleMage, skinTones: [.medium])
         } else if rawValue == "🧙🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleMage, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleMage, skinTones: [.mediumDark])
         } else if rawValue == "🧙🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleMage, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleMage, skinTones: [.dark])
         } else if rawValue == "🧙‍♀️" {
-            self.init(baseEmoji: Emoji.femaleMage, skinTones: nil)
+            self.init(baseEmoji: .femaleMage, skinTones: nil)
         } else if rawValue == "🧙🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleMage, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleMage, skinTones: [.light])
         } else if rawValue == "🧙🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleMage, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleMage, skinTones: [.mediumLight])
         } else if rawValue == "🧙🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleMage, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleMage, skinTones: [.medium])
         } else if rawValue == "🧙🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleMage, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleMage, skinTones: [.mediumDark])
         } else if rawValue == "🧙🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleMage, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleMage, skinTones: [.dark])
         } else if rawValue == "🧚" {
-            self.init(baseEmoji: Emoji.fairy, skinTones: nil)
+            self.init(baseEmoji: .fairy, skinTones: nil)
         } else if rawValue == "🧚🏻" {
-            self.init(baseEmoji: Emoji.fairy, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .fairy, skinTones: [.light])
         } else if rawValue == "🧚🏼" {
-            self.init(baseEmoji: Emoji.fairy, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .fairy, skinTones: [.mediumLight])
         } else if rawValue == "🧚🏽" {
-            self.init(baseEmoji: Emoji.fairy, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .fairy, skinTones: [.medium])
         } else if rawValue == "🧚🏾" {
-            self.init(baseEmoji: Emoji.fairy, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .fairy, skinTones: [.mediumDark])
         } else if rawValue == "🧚🏿" {
-            self.init(baseEmoji: Emoji.fairy, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .fairy, skinTones: [.dark])
         } else if rawValue == "🧚‍♂️" {
-            self.init(baseEmoji: Emoji.maleFairy, skinTones: nil)
+            self.init(baseEmoji: .maleFairy, skinTones: nil)
         } else if rawValue == "🧚🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleFairy, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleFairy, skinTones: [.light])
         } else if rawValue == "🧚🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleFairy, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleFairy, skinTones: [.mediumLight])
         } else if rawValue == "🧚🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleFairy, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleFairy, skinTones: [.medium])
         } else if rawValue == "🧚🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleFairy, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleFairy, skinTones: [.mediumDark])
         } else if rawValue == "🧚🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleFairy, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleFairy, skinTones: [.dark])
         } else if rawValue == "🧚‍♀️" {
-            self.init(baseEmoji: Emoji.femaleFairy, skinTones: nil)
+            self.init(baseEmoji: .femaleFairy, skinTones: nil)
         } else if rawValue == "🧚🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleFairy, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleFairy, skinTones: [.light])
         } else if rawValue == "🧚🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleFairy, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleFairy, skinTones: [.mediumLight])
         } else if rawValue == "🧚🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleFairy, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleFairy, skinTones: [.medium])
         } else if rawValue == "🧚🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleFairy, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleFairy, skinTones: [.mediumDark])
         } else if rawValue == "🧚🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleFairy, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleFairy, skinTones: [.dark])
         } else if rawValue == "🧛" {
-            self.init(baseEmoji: Emoji.vampire, skinTones: nil)
+            self.init(baseEmoji: .vampire, skinTones: nil)
         } else if rawValue == "🧛🏻" {
-            self.init(baseEmoji: Emoji.vampire, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .vampire, skinTones: [.light])
         } else if rawValue == "🧛🏼" {
-            self.init(baseEmoji: Emoji.vampire, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .vampire, skinTones: [.mediumLight])
         } else if rawValue == "🧛🏽" {
-            self.init(baseEmoji: Emoji.vampire, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .vampire, skinTones: [.medium])
         } else if rawValue == "🧛🏾" {
-            self.init(baseEmoji: Emoji.vampire, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .vampire, skinTones: [.mediumDark])
         } else if rawValue == "🧛🏿" {
-            self.init(baseEmoji: Emoji.vampire, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .vampire, skinTones: [.dark])
         } else if rawValue == "🧛‍♂️" {
-            self.init(baseEmoji: Emoji.maleVampire, skinTones: nil)
+            self.init(baseEmoji: .maleVampire, skinTones: nil)
         } else if rawValue == "🧛🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleVampire, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleVampire, skinTones: [.light])
         } else if rawValue == "🧛🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleVampire, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleVampire, skinTones: [.mediumLight])
         } else if rawValue == "🧛🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleVampire, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleVampire, skinTones: [.medium])
         } else if rawValue == "🧛🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleVampire, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleVampire, skinTones: [.mediumDark])
         } else if rawValue == "🧛🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleVampire, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleVampire, skinTones: [.dark])
         } else if rawValue == "🧛‍♀️" {
-            self.init(baseEmoji: Emoji.femaleVampire, skinTones: nil)
+            self.init(baseEmoji: .femaleVampire, skinTones: nil)
         } else if rawValue == "🧛🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleVampire, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleVampire, skinTones: [.light])
         } else if rawValue == "🧛🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleVampire, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleVampire, skinTones: [.mediumLight])
         } else if rawValue == "🧛🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleVampire, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleVampire, skinTones: [.medium])
         } else if rawValue == "🧛🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleVampire, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleVampire, skinTones: [.mediumDark])
         } else if rawValue == "🧛🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleVampire, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleVampire, skinTones: [.dark])
         } else if rawValue == "🧜" {
-            self.init(baseEmoji: Emoji.merperson, skinTones: nil)
+            self.init(baseEmoji: .merperson, skinTones: nil)
         } else if rawValue == "🧜🏻" {
-            self.init(baseEmoji: Emoji.merperson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .merperson, skinTones: [.light])
         } else if rawValue == "🧜🏼" {
-            self.init(baseEmoji: Emoji.merperson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .merperson, skinTones: [.mediumLight])
         } else if rawValue == "🧜🏽" {
-            self.init(baseEmoji: Emoji.merperson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .merperson, skinTones: [.medium])
         } else if rawValue == "🧜🏾" {
-            self.init(baseEmoji: Emoji.merperson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .merperson, skinTones: [.mediumDark])
         } else if rawValue == "🧜🏿" {
-            self.init(baseEmoji: Emoji.merperson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .merperson, skinTones: [.dark])
         } else if rawValue == "🧜‍♂️" {
-            self.init(baseEmoji: Emoji.merman, skinTones: nil)
+            self.init(baseEmoji: .merman, skinTones: nil)
         } else if rawValue == "🧜🏻‍♂️" {
-            self.init(baseEmoji: Emoji.merman, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .merman, skinTones: [.light])
         } else if rawValue == "🧜🏼‍♂️" {
-            self.init(baseEmoji: Emoji.merman, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .merman, skinTones: [.mediumLight])
         } else if rawValue == "🧜🏽‍♂️" {
-            self.init(baseEmoji: Emoji.merman, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .merman, skinTones: [.medium])
         } else if rawValue == "🧜🏾‍♂️" {
-            self.init(baseEmoji: Emoji.merman, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .merman, skinTones: [.mediumDark])
         } else if rawValue == "🧜🏿‍♂️" {
-            self.init(baseEmoji: Emoji.merman, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .merman, skinTones: [.dark])
         } else if rawValue == "🧜‍♀️" {
-            self.init(baseEmoji: Emoji.mermaid, skinTones: nil)
+            self.init(baseEmoji: .mermaid, skinTones: nil)
         } else if rawValue == "🧜🏻‍♀️" {
-            self.init(baseEmoji: Emoji.mermaid, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .mermaid, skinTones: [.light])
         } else if rawValue == "🧜🏼‍♀️" {
-            self.init(baseEmoji: Emoji.mermaid, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .mermaid, skinTones: [.mediumLight])
         } else if rawValue == "🧜🏽‍♀️" {
-            self.init(baseEmoji: Emoji.mermaid, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .mermaid, skinTones: [.medium])
         } else if rawValue == "🧜🏾‍♀️" {
-            self.init(baseEmoji: Emoji.mermaid, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .mermaid, skinTones: [.mediumDark])
         } else if rawValue == "🧜🏿‍♀️" {
-            self.init(baseEmoji: Emoji.mermaid, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .mermaid, skinTones: [.dark])
         } else if rawValue == "🧝" {
-            self.init(baseEmoji: Emoji.elf, skinTones: nil)
+            self.init(baseEmoji: .elf, skinTones: nil)
         } else if rawValue == "🧝🏻" {
-            self.init(baseEmoji: Emoji.elf, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .elf, skinTones: [.light])
         } else if rawValue == "🧝🏼" {
-            self.init(baseEmoji: Emoji.elf, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .elf, skinTones: [.mediumLight])
         } else if rawValue == "🧝🏽" {
-            self.init(baseEmoji: Emoji.elf, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .elf, skinTones: [.medium])
         } else if rawValue == "🧝🏾" {
-            self.init(baseEmoji: Emoji.elf, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .elf, skinTones: [.mediumDark])
         } else if rawValue == "🧝🏿" {
-            self.init(baseEmoji: Emoji.elf, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .elf, skinTones: [.dark])
         } else if rawValue == "🧝‍♂️" {
-            self.init(baseEmoji: Emoji.maleElf, skinTones: nil)
+            self.init(baseEmoji: .maleElf, skinTones: nil)
         } else if rawValue == "🧝🏻‍♂️" {
-            self.init(baseEmoji: Emoji.maleElf, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .maleElf, skinTones: [.light])
         } else if rawValue == "🧝🏼‍♂️" {
-            self.init(baseEmoji: Emoji.maleElf, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .maleElf, skinTones: [.mediumLight])
         } else if rawValue == "🧝🏽‍♂️" {
-            self.init(baseEmoji: Emoji.maleElf, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .maleElf, skinTones: [.medium])
         } else if rawValue == "🧝🏾‍♂️" {
-            self.init(baseEmoji: Emoji.maleElf, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .maleElf, skinTones: [.mediumDark])
         } else if rawValue == "🧝🏿‍♂️" {
-            self.init(baseEmoji: Emoji.maleElf, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .maleElf, skinTones: [.dark])
         } else if rawValue == "🧝‍♀️" {
-            self.init(baseEmoji: Emoji.femaleElf, skinTones: nil)
+            self.init(baseEmoji: .femaleElf, skinTones: nil)
         } else if rawValue == "🧝🏻‍♀️" {
-            self.init(baseEmoji: Emoji.femaleElf, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .femaleElf, skinTones: [.light])
         } else if rawValue == "🧝🏼‍♀️" {
-            self.init(baseEmoji: Emoji.femaleElf, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .femaleElf, skinTones: [.mediumLight])
         } else if rawValue == "🧝🏽‍♀️" {
-            self.init(baseEmoji: Emoji.femaleElf, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .femaleElf, skinTones: [.medium])
         } else if rawValue == "🧝🏾‍♀️" {
-            self.init(baseEmoji: Emoji.femaleElf, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .femaleElf, skinTones: [.mediumDark])
         } else if rawValue == "🧝🏿‍♀️" {
-            self.init(baseEmoji: Emoji.femaleElf, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .femaleElf, skinTones: [.dark])
         } else if rawValue == "🧞" {
-            self.init(baseEmoji: Emoji.genie, skinTones: nil)
+            self.init(baseEmoji: .genie, skinTones: nil)
         } else if rawValue == "🧞‍♂️" {
-            self.init(baseEmoji: Emoji.maleGenie, skinTones: nil)
+            self.init(baseEmoji: .maleGenie, skinTones: nil)
         } else if rawValue == "🧞‍♀️" {
-            self.init(baseEmoji: Emoji.femaleGenie, skinTones: nil)
+            self.init(baseEmoji: .femaleGenie, skinTones: nil)
         } else if rawValue == "🧟" {
-            self.init(baseEmoji: Emoji.zombie, skinTones: nil)
+            self.init(baseEmoji: .zombie, skinTones: nil)
         } else if rawValue == "🧟‍♂️" {
-            self.init(baseEmoji: Emoji.maleZombie, skinTones: nil)
+            self.init(baseEmoji: .maleZombie, skinTones: nil)
         } else if rawValue == "🧟‍♀️" {
-            self.init(baseEmoji: Emoji.femaleZombie, skinTones: nil)
+            self.init(baseEmoji: .femaleZombie, skinTones: nil)
         } else if rawValue == "💆" {
-            self.init(baseEmoji: Emoji.massage, skinTones: nil)
+            self.init(baseEmoji: .massage, skinTones: nil)
         } else if rawValue == "💆🏻" {
-            self.init(baseEmoji: Emoji.massage, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .massage, skinTones: [.light])
         } else if rawValue == "💆🏼" {
-            self.init(baseEmoji: Emoji.massage, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .massage, skinTones: [.mediumLight])
         } else if rawValue == "💆🏽" {
-            self.init(baseEmoji: Emoji.massage, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .massage, skinTones: [.medium])
         } else if rawValue == "💆🏾" {
-            self.init(baseEmoji: Emoji.massage, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .massage, skinTones: [.mediumDark])
         } else if rawValue == "💆🏿" {
-            self.init(baseEmoji: Emoji.massage, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .massage, skinTones: [.dark])
         } else if rawValue == "💆‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingMassage, skinTones: nil)
+            self.init(baseEmoji: .manGettingMassage, skinTones: nil)
         } else if rawValue == "💆🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingMassage, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manGettingMassage, skinTones: [.light])
         } else if rawValue == "💆🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingMassage, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manGettingMassage, skinTones: [.mediumLight])
         } else if rawValue == "💆🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingMassage, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manGettingMassage, skinTones: [.medium])
         } else if rawValue == "💆🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingMassage, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manGettingMassage, skinTones: [.mediumDark])
         } else if rawValue == "💆🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingMassage, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manGettingMassage, skinTones: [.dark])
         } else if rawValue == "💆‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingMassage, skinTones: nil)
+            self.init(baseEmoji: .womanGettingMassage, skinTones: nil)
         } else if rawValue == "💆🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingMassage, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanGettingMassage, skinTones: [.light])
         } else if rawValue == "💆🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingMassage, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanGettingMassage, skinTones: [.mediumLight])
         } else if rawValue == "💆🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingMassage, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanGettingMassage, skinTones: [.medium])
         } else if rawValue == "💆🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingMassage, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanGettingMassage, skinTones: [.mediumDark])
         } else if rawValue == "💆🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingMassage, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanGettingMassage, skinTones: [.dark])
         } else if rawValue == "💇" {
-            self.init(baseEmoji: Emoji.haircut, skinTones: nil)
+            self.init(baseEmoji: .haircut, skinTones: nil)
         } else if rawValue == "💇🏻" {
-            self.init(baseEmoji: Emoji.haircut, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .haircut, skinTones: [.light])
         } else if rawValue == "💇🏼" {
-            self.init(baseEmoji: Emoji.haircut, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .haircut, skinTones: [.mediumLight])
         } else if rawValue == "💇🏽" {
-            self.init(baseEmoji: Emoji.haircut, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .haircut, skinTones: [.medium])
         } else if rawValue == "💇🏾" {
-            self.init(baseEmoji: Emoji.haircut, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .haircut, skinTones: [.mediumDark])
         } else if rawValue == "💇🏿" {
-            self.init(baseEmoji: Emoji.haircut, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .haircut, skinTones: [.dark])
         } else if rawValue == "💇‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingHaircut, skinTones: nil)
+            self.init(baseEmoji: .manGettingHaircut, skinTones: nil)
         } else if rawValue == "💇🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingHaircut, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manGettingHaircut, skinTones: [.light])
         } else if rawValue == "💇🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingHaircut, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manGettingHaircut, skinTones: [.mediumLight])
         } else if rawValue == "💇🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingHaircut, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manGettingHaircut, skinTones: [.medium])
         } else if rawValue == "💇🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingHaircut, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manGettingHaircut, skinTones: [.mediumDark])
         } else if rawValue == "💇🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manGettingHaircut, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manGettingHaircut, skinTones: [.dark])
         } else if rawValue == "💇‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingHaircut, skinTones: nil)
+            self.init(baseEmoji: .womanGettingHaircut, skinTones: nil)
         } else if rawValue == "💇🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingHaircut, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanGettingHaircut, skinTones: [.light])
         } else if rawValue == "💇🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingHaircut, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanGettingHaircut, skinTones: [.mediumLight])
         } else if rawValue == "💇🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingHaircut, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanGettingHaircut, skinTones: [.medium])
         } else if rawValue == "💇🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingHaircut, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanGettingHaircut, skinTones: [.mediumDark])
         } else if rawValue == "💇🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanGettingHaircut, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanGettingHaircut, skinTones: [.dark])
         } else if rawValue == "🚶" {
-            self.init(baseEmoji: Emoji.walking, skinTones: nil)
+            self.init(baseEmoji: .walking, skinTones: nil)
         } else if rawValue == "🚶🏻" {
-            self.init(baseEmoji: Emoji.walking, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .walking, skinTones: [.light])
         } else if rawValue == "🚶🏼" {
-            self.init(baseEmoji: Emoji.walking, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .walking, skinTones: [.mediumLight])
         } else if rawValue == "🚶🏽" {
-            self.init(baseEmoji: Emoji.walking, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .walking, skinTones: [.medium])
         } else if rawValue == "🚶🏾" {
-            self.init(baseEmoji: Emoji.walking, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .walking, skinTones: [.mediumDark])
         } else if rawValue == "🚶🏿" {
-            self.init(baseEmoji: Emoji.walking, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .walking, skinTones: [.dark])
         } else if rawValue == "🚶‍♂️" {
-            self.init(baseEmoji: Emoji.manWalking, skinTones: nil)
+            self.init(baseEmoji: .manWalking, skinTones: nil)
         } else if rawValue == "🚶🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manWalking, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manWalking, skinTones: [.light])
         } else if rawValue == "🚶🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manWalking, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manWalking, skinTones: [.mediumLight])
         } else if rawValue == "🚶🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manWalking, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manWalking, skinTones: [.medium])
         } else if rawValue == "🚶🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manWalking, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manWalking, skinTones: [.mediumDark])
         } else if rawValue == "🚶🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manWalking, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manWalking, skinTones: [.dark])
         } else if rawValue == "🚶‍♀️" {
-            self.init(baseEmoji: Emoji.womanWalking, skinTones: nil)
+            self.init(baseEmoji: .womanWalking, skinTones: nil)
         } else if rawValue == "🚶🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanWalking, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanWalking, skinTones: [.light])
         } else if rawValue == "🚶🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanWalking, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanWalking, skinTones: [.mediumLight])
         } else if rawValue == "🚶🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanWalking, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanWalking, skinTones: [.medium])
         } else if rawValue == "🚶🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanWalking, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanWalking, skinTones: [.mediumDark])
         } else if rawValue == "🚶🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanWalking, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanWalking, skinTones: [.dark])
         } else if rawValue == "🧍" {
-            self.init(baseEmoji: Emoji.standingPerson, skinTones: nil)
+            self.init(baseEmoji: .standingPerson, skinTones: nil)
         } else if rawValue == "🧍🏻" {
-            self.init(baseEmoji: Emoji.standingPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .standingPerson, skinTones: [.light])
         } else if rawValue == "🧍🏼" {
-            self.init(baseEmoji: Emoji.standingPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .standingPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧍🏽" {
-            self.init(baseEmoji: Emoji.standingPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .standingPerson, skinTones: [.medium])
         } else if rawValue == "🧍🏾" {
-            self.init(baseEmoji: Emoji.standingPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .standingPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧍🏿" {
-            self.init(baseEmoji: Emoji.standingPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .standingPerson, skinTones: [.dark])
         } else if rawValue == "🧍‍♂️" {
-            self.init(baseEmoji: Emoji.manStanding, skinTones: nil)
+            self.init(baseEmoji: .manStanding, skinTones: nil)
         } else if rawValue == "🧍🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manStanding, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manStanding, skinTones: [.light])
         } else if rawValue == "🧍🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manStanding, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manStanding, skinTones: [.mediumLight])
         } else if rawValue == "🧍🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manStanding, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manStanding, skinTones: [.medium])
         } else if rawValue == "🧍🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manStanding, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manStanding, skinTones: [.mediumDark])
         } else if rawValue == "🧍🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manStanding, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manStanding, skinTones: [.dark])
         } else if rawValue == "🧍‍♀️" {
-            self.init(baseEmoji: Emoji.womanStanding, skinTones: nil)
+            self.init(baseEmoji: .womanStanding, skinTones: nil)
         } else if rawValue == "🧍🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanStanding, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanStanding, skinTones: [.light])
         } else if rawValue == "🧍🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanStanding, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanStanding, skinTones: [.mediumLight])
         } else if rawValue == "🧍🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanStanding, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanStanding, skinTones: [.medium])
         } else if rawValue == "🧍🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanStanding, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanStanding, skinTones: [.mediumDark])
         } else if rawValue == "🧍🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanStanding, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanStanding, skinTones: [.dark])
         } else if rawValue == "🧎" {
-            self.init(baseEmoji: Emoji.kneelingPerson, skinTones: nil)
+            self.init(baseEmoji: .kneelingPerson, skinTones: nil)
         } else if rawValue == "🧎🏻" {
-            self.init(baseEmoji: Emoji.kneelingPerson, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .kneelingPerson, skinTones: [.light])
         } else if rawValue == "🧎🏼" {
-            self.init(baseEmoji: Emoji.kneelingPerson, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .kneelingPerson, skinTones: [.mediumLight])
         } else if rawValue == "🧎🏽" {
-            self.init(baseEmoji: Emoji.kneelingPerson, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .kneelingPerson, skinTones: [.medium])
         } else if rawValue == "🧎🏾" {
-            self.init(baseEmoji: Emoji.kneelingPerson, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .kneelingPerson, skinTones: [.mediumDark])
         } else if rawValue == "🧎🏿" {
-            self.init(baseEmoji: Emoji.kneelingPerson, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .kneelingPerson, skinTones: [.dark])
         } else if rawValue == "🧎‍♂️" {
-            self.init(baseEmoji: Emoji.manKneeling, skinTones: nil)
+            self.init(baseEmoji: .manKneeling, skinTones: nil)
         } else if rawValue == "🧎🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manKneeling, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manKneeling, skinTones: [.light])
         } else if rawValue == "🧎🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manKneeling, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manKneeling, skinTones: [.mediumLight])
         } else if rawValue == "🧎🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manKneeling, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manKneeling, skinTones: [.medium])
         } else if rawValue == "🧎🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manKneeling, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manKneeling, skinTones: [.mediumDark])
         } else if rawValue == "🧎🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manKneeling, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manKneeling, skinTones: [.dark])
         } else if rawValue == "🧎‍♀️" {
-            self.init(baseEmoji: Emoji.womanKneeling, skinTones: nil)
+            self.init(baseEmoji: .womanKneeling, skinTones: nil)
         } else if rawValue == "🧎🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanKneeling, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanKneeling, skinTones: [.light])
         } else if rawValue == "🧎🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanKneeling, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanKneeling, skinTones: [.mediumLight])
         } else if rawValue == "🧎🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanKneeling, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanKneeling, skinTones: [.medium])
         } else if rawValue == "🧎🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanKneeling, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanKneeling, skinTones: [.mediumDark])
         } else if rawValue == "🧎🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanKneeling, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanKneeling, skinTones: [.dark])
         } else if rawValue == "🧑‍🦯" {
-            self.init(baseEmoji: Emoji.personWithProbingCane, skinTones: nil)
+            self.init(baseEmoji: .personWithProbingCane, skinTones: nil)
         } else if rawValue == "🧑🏻‍🦯" {
-            self.init(baseEmoji: Emoji.personWithProbingCane, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personWithProbingCane, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🦯" {
-            self.init(baseEmoji: Emoji.personWithProbingCane, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personWithProbingCane, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🦯" {
-            self.init(baseEmoji: Emoji.personWithProbingCane, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personWithProbingCane, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🦯" {
-            self.init(baseEmoji: Emoji.personWithProbingCane, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personWithProbingCane, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🦯" {
-            self.init(baseEmoji: Emoji.personWithProbingCane, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personWithProbingCane, skinTones: [.dark])
         } else if rawValue == "👨‍🦯" {
-            self.init(baseEmoji: Emoji.manWithProbingCane, skinTones: nil)
+            self.init(baseEmoji: .manWithProbingCane, skinTones: nil)
         } else if rawValue == "👨🏻‍🦯" {
-            self.init(baseEmoji: Emoji.manWithProbingCane, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manWithProbingCane, skinTones: [.light])
         } else if rawValue == "👨🏼‍🦯" {
-            self.init(baseEmoji: Emoji.manWithProbingCane, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manWithProbingCane, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🦯" {
-            self.init(baseEmoji: Emoji.manWithProbingCane, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manWithProbingCane, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🦯" {
-            self.init(baseEmoji: Emoji.manWithProbingCane, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manWithProbingCane, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🦯" {
-            self.init(baseEmoji: Emoji.manWithProbingCane, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manWithProbingCane, skinTones: [.dark])
         } else if rawValue == "👩‍🦯" {
-            self.init(baseEmoji: Emoji.womanWithProbingCane, skinTones: nil)
+            self.init(baseEmoji: .womanWithProbingCane, skinTones: nil)
         } else if rawValue == "👩🏻‍🦯" {
-            self.init(baseEmoji: Emoji.womanWithProbingCane, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanWithProbingCane, skinTones: [.light])
         } else if rawValue == "👩🏼‍🦯" {
-            self.init(baseEmoji: Emoji.womanWithProbingCane, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanWithProbingCane, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🦯" {
-            self.init(baseEmoji: Emoji.womanWithProbingCane, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanWithProbingCane, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🦯" {
-            self.init(baseEmoji: Emoji.womanWithProbingCane, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanWithProbingCane, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🦯" {
-            self.init(baseEmoji: Emoji.womanWithProbingCane, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanWithProbingCane, skinTones: [.dark])
         } else if rawValue == "🧑‍🦼" {
-            self.init(baseEmoji: Emoji.personInMotorizedWheelchair, skinTones: nil)
+            self.init(baseEmoji: .personInMotorizedWheelchair, skinTones: nil)
         } else if rawValue == "🧑🏻‍🦼" {
-            self.init(baseEmoji: Emoji.personInMotorizedWheelchair, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personInMotorizedWheelchair, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🦼" {
-            self.init(baseEmoji: Emoji.personInMotorizedWheelchair, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personInMotorizedWheelchair, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🦼" {
-            self.init(baseEmoji: Emoji.personInMotorizedWheelchair, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personInMotorizedWheelchair, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🦼" {
-            self.init(baseEmoji: Emoji.personInMotorizedWheelchair, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personInMotorizedWheelchair, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🦼" {
-            self.init(baseEmoji: Emoji.personInMotorizedWheelchair, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personInMotorizedWheelchair, skinTones: [.dark])
         } else if rawValue == "👨‍🦼" {
-            self.init(baseEmoji: Emoji.manInMotorizedWheelchair, skinTones: nil)
+            self.init(baseEmoji: .manInMotorizedWheelchair, skinTones: nil)
         } else if rawValue == "👨🏻‍🦼" {
-            self.init(baseEmoji: Emoji.manInMotorizedWheelchair, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manInMotorizedWheelchair, skinTones: [.light])
         } else if rawValue == "👨🏼‍🦼" {
-            self.init(baseEmoji: Emoji.manInMotorizedWheelchair, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manInMotorizedWheelchair, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🦼" {
-            self.init(baseEmoji: Emoji.manInMotorizedWheelchair, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manInMotorizedWheelchair, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🦼" {
-            self.init(baseEmoji: Emoji.manInMotorizedWheelchair, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manInMotorizedWheelchair, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🦼" {
-            self.init(baseEmoji: Emoji.manInMotorizedWheelchair, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manInMotorizedWheelchair, skinTones: [.dark])
         } else if rawValue == "👩‍🦼" {
-            self.init(baseEmoji: Emoji.womanInMotorizedWheelchair, skinTones: nil)
+            self.init(baseEmoji: .womanInMotorizedWheelchair, skinTones: nil)
         } else if rawValue == "👩🏻‍🦼" {
-            self.init(baseEmoji: Emoji.womanInMotorizedWheelchair, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanInMotorizedWheelchair, skinTones: [.light])
         } else if rawValue == "👩🏼‍🦼" {
-            self.init(baseEmoji: Emoji.womanInMotorizedWheelchair, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanInMotorizedWheelchair, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🦼" {
-            self.init(baseEmoji: Emoji.womanInMotorizedWheelchair, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanInMotorizedWheelchair, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🦼" {
-            self.init(baseEmoji: Emoji.womanInMotorizedWheelchair, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanInMotorizedWheelchair, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🦼" {
-            self.init(baseEmoji: Emoji.womanInMotorizedWheelchair, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanInMotorizedWheelchair, skinTones: [.dark])
         } else if rawValue == "🧑‍🦽" {
-            self.init(baseEmoji: Emoji.personInManualWheelchair, skinTones: nil)
+            self.init(baseEmoji: .personInManualWheelchair, skinTones: nil)
         } else if rawValue == "🧑🏻‍🦽" {
-            self.init(baseEmoji: Emoji.personInManualWheelchair, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personInManualWheelchair, skinTones: [.light])
         } else if rawValue == "🧑🏼‍🦽" {
-            self.init(baseEmoji: Emoji.personInManualWheelchair, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personInManualWheelchair, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏽‍🦽" {
-            self.init(baseEmoji: Emoji.personInManualWheelchair, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personInManualWheelchair, skinTones: [.medium])
         } else if rawValue == "🧑🏾‍🦽" {
-            self.init(baseEmoji: Emoji.personInManualWheelchair, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personInManualWheelchair, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏿‍🦽" {
-            self.init(baseEmoji: Emoji.personInManualWheelchair, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personInManualWheelchair, skinTones: [.dark])
         } else if rawValue == "👨‍🦽" {
-            self.init(baseEmoji: Emoji.manInManualWheelchair, skinTones: nil)
+            self.init(baseEmoji: .manInManualWheelchair, skinTones: nil)
         } else if rawValue == "👨🏻‍🦽" {
-            self.init(baseEmoji: Emoji.manInManualWheelchair, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manInManualWheelchair, skinTones: [.light])
         } else if rawValue == "👨🏼‍🦽" {
-            self.init(baseEmoji: Emoji.manInManualWheelchair, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manInManualWheelchair, skinTones: [.mediumLight])
         } else if rawValue == "👨🏽‍🦽" {
-            self.init(baseEmoji: Emoji.manInManualWheelchair, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manInManualWheelchair, skinTones: [.medium])
         } else if rawValue == "👨🏾‍🦽" {
-            self.init(baseEmoji: Emoji.manInManualWheelchair, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manInManualWheelchair, skinTones: [.mediumDark])
         } else if rawValue == "👨🏿‍🦽" {
-            self.init(baseEmoji: Emoji.manInManualWheelchair, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manInManualWheelchair, skinTones: [.dark])
         } else if rawValue == "👩‍🦽" {
-            self.init(baseEmoji: Emoji.womanInManualWheelchair, skinTones: nil)
+            self.init(baseEmoji: .womanInManualWheelchair, skinTones: nil)
         } else if rawValue == "👩🏻‍🦽" {
-            self.init(baseEmoji: Emoji.womanInManualWheelchair, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanInManualWheelchair, skinTones: [.light])
         } else if rawValue == "👩🏼‍🦽" {
-            self.init(baseEmoji: Emoji.womanInManualWheelchair, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanInManualWheelchair, skinTones: [.mediumLight])
         } else if rawValue == "👩🏽‍🦽" {
-            self.init(baseEmoji: Emoji.womanInManualWheelchair, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanInManualWheelchair, skinTones: [.medium])
         } else if rawValue == "👩🏾‍🦽" {
-            self.init(baseEmoji: Emoji.womanInManualWheelchair, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanInManualWheelchair, skinTones: [.mediumDark])
         } else if rawValue == "👩🏿‍🦽" {
-            self.init(baseEmoji: Emoji.womanInManualWheelchair, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanInManualWheelchair, skinTones: [.dark])
         } else if rawValue == "🏃" {
-            self.init(baseEmoji: Emoji.runner, skinTones: nil)
+            self.init(baseEmoji: .runner, skinTones: nil)
         } else if rawValue == "🏃🏻" {
-            self.init(baseEmoji: Emoji.runner, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .runner, skinTones: [.light])
         } else if rawValue == "🏃🏼" {
-            self.init(baseEmoji: Emoji.runner, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .runner, skinTones: [.mediumLight])
         } else if rawValue == "🏃🏽" {
-            self.init(baseEmoji: Emoji.runner, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .runner, skinTones: [.medium])
         } else if rawValue == "🏃🏾" {
-            self.init(baseEmoji: Emoji.runner, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .runner, skinTones: [.mediumDark])
         } else if rawValue == "🏃🏿" {
-            self.init(baseEmoji: Emoji.runner, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .runner, skinTones: [.dark])
         } else if rawValue == "🏃‍♂️" {
-            self.init(baseEmoji: Emoji.manRunning, skinTones: nil)
+            self.init(baseEmoji: .manRunning, skinTones: nil)
         } else if rawValue == "🏃🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manRunning, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manRunning, skinTones: [.light])
         } else if rawValue == "🏃🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manRunning, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manRunning, skinTones: [.mediumLight])
         } else if rawValue == "🏃🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manRunning, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manRunning, skinTones: [.medium])
         } else if rawValue == "🏃🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manRunning, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manRunning, skinTones: [.mediumDark])
         } else if rawValue == "🏃🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manRunning, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manRunning, skinTones: [.dark])
         } else if rawValue == "🏃‍♀️" {
-            self.init(baseEmoji: Emoji.womanRunning, skinTones: nil)
+            self.init(baseEmoji: .womanRunning, skinTones: nil)
         } else if rawValue == "🏃🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanRunning, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanRunning, skinTones: [.light])
         } else if rawValue == "🏃🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanRunning, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanRunning, skinTones: [.mediumLight])
         } else if rawValue == "🏃🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanRunning, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanRunning, skinTones: [.medium])
         } else if rawValue == "🏃🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanRunning, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanRunning, skinTones: [.mediumDark])
         } else if rawValue == "🏃🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanRunning, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanRunning, skinTones: [.dark])
         } else if rawValue == "💃" {
-            self.init(baseEmoji: Emoji.dancer, skinTones: nil)
+            self.init(baseEmoji: .dancer, skinTones: nil)
         } else if rawValue == "💃🏻" {
-            self.init(baseEmoji: Emoji.dancer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .dancer, skinTones: [.light])
         } else if rawValue == "💃🏼" {
-            self.init(baseEmoji: Emoji.dancer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .dancer, skinTones: [.mediumLight])
         } else if rawValue == "💃🏽" {
-            self.init(baseEmoji: Emoji.dancer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .dancer, skinTones: [.medium])
         } else if rawValue == "💃🏾" {
-            self.init(baseEmoji: Emoji.dancer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .dancer, skinTones: [.mediumDark])
         } else if rawValue == "💃🏿" {
-            self.init(baseEmoji: Emoji.dancer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .dancer, skinTones: [.dark])
         } else if rawValue == "🕺" {
-            self.init(baseEmoji: Emoji.manDancing, skinTones: nil)
+            self.init(baseEmoji: .manDancing, skinTones: nil)
         } else if rawValue == "🕺🏻" {
-            self.init(baseEmoji: Emoji.manDancing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manDancing, skinTones: [.light])
         } else if rawValue == "🕺🏼" {
-            self.init(baseEmoji: Emoji.manDancing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manDancing, skinTones: [.mediumLight])
         } else if rawValue == "🕺🏽" {
-            self.init(baseEmoji: Emoji.manDancing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manDancing, skinTones: [.medium])
         } else if rawValue == "🕺🏾" {
-            self.init(baseEmoji: Emoji.manDancing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manDancing, skinTones: [.mediumDark])
         } else if rawValue == "🕺🏿" {
-            self.init(baseEmoji: Emoji.manDancing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manDancing, skinTones: [.dark])
         } else if rawValue == "🕴️" {
-            self.init(baseEmoji: Emoji.manInBusinessSuitLevitating, skinTones: nil)
+            self.init(baseEmoji: .manInBusinessSuitLevitating, skinTones: nil)
         } else if rawValue == "🕴🏻" {
-            self.init(baseEmoji: Emoji.manInBusinessSuitLevitating, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manInBusinessSuitLevitating, skinTones: [.light])
         } else if rawValue == "🕴🏼" {
-            self.init(baseEmoji: Emoji.manInBusinessSuitLevitating, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manInBusinessSuitLevitating, skinTones: [.mediumLight])
         } else if rawValue == "🕴🏽" {
-            self.init(baseEmoji: Emoji.manInBusinessSuitLevitating, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manInBusinessSuitLevitating, skinTones: [.medium])
         } else if rawValue == "🕴🏾" {
-            self.init(baseEmoji: Emoji.manInBusinessSuitLevitating, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manInBusinessSuitLevitating, skinTones: [.mediumDark])
         } else if rawValue == "🕴🏿" {
-            self.init(baseEmoji: Emoji.manInBusinessSuitLevitating, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manInBusinessSuitLevitating, skinTones: [.dark])
         } else if rawValue == "👯" {
-            self.init(baseEmoji: Emoji.dancers, skinTones: nil)
+            self.init(baseEmoji: .dancers, skinTones: nil)
         } else if rawValue == "👯‍♂️" {
-            self.init(baseEmoji: Emoji.manWithBunnyEarsPartying, skinTones: nil)
+            self.init(baseEmoji: .manWithBunnyEarsPartying, skinTones: nil)
         } else if rawValue == "👯‍♀️" {
-            self.init(baseEmoji: Emoji.womanWithBunnyEarsPartying, skinTones: nil)
+            self.init(baseEmoji: .womanWithBunnyEarsPartying, skinTones: nil)
         } else if rawValue == "🧖" {
-            self.init(baseEmoji: Emoji.personInSteamyRoom, skinTones: nil)
+            self.init(baseEmoji: .personInSteamyRoom, skinTones: nil)
         } else if rawValue == "🧖🏻" {
-            self.init(baseEmoji: Emoji.personInSteamyRoom, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personInSteamyRoom, skinTones: [.light])
         } else if rawValue == "🧖🏼" {
-            self.init(baseEmoji: Emoji.personInSteamyRoom, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personInSteamyRoom, skinTones: [.mediumLight])
         } else if rawValue == "🧖🏽" {
-            self.init(baseEmoji: Emoji.personInSteamyRoom, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personInSteamyRoom, skinTones: [.medium])
         } else if rawValue == "🧖🏾" {
-            self.init(baseEmoji: Emoji.personInSteamyRoom, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personInSteamyRoom, skinTones: [.mediumDark])
         } else if rawValue == "🧖🏿" {
-            self.init(baseEmoji: Emoji.personInSteamyRoom, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personInSteamyRoom, skinTones: [.dark])
         } else if rawValue == "🧖‍♂️" {
-            self.init(baseEmoji: Emoji.manInSteamyRoom, skinTones: nil)
+            self.init(baseEmoji: .manInSteamyRoom, skinTones: nil)
         } else if rawValue == "🧖🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manInSteamyRoom, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manInSteamyRoom, skinTones: [.light])
         } else if rawValue == "🧖🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manInSteamyRoom, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manInSteamyRoom, skinTones: [.mediumLight])
         } else if rawValue == "🧖🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manInSteamyRoom, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manInSteamyRoom, skinTones: [.medium])
         } else if rawValue == "🧖🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manInSteamyRoom, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manInSteamyRoom, skinTones: [.mediumDark])
         } else if rawValue == "🧖🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manInSteamyRoom, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manInSteamyRoom, skinTones: [.dark])
         } else if rawValue == "🧖‍♀️" {
-            self.init(baseEmoji: Emoji.womanInSteamyRoom, skinTones: nil)
+            self.init(baseEmoji: .womanInSteamyRoom, skinTones: nil)
         } else if rawValue == "🧖🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanInSteamyRoom, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanInSteamyRoom, skinTones: [.light])
         } else if rawValue == "🧖🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanInSteamyRoom, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanInSteamyRoom, skinTones: [.mediumLight])
         } else if rawValue == "🧖🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanInSteamyRoom, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanInSteamyRoom, skinTones: [.medium])
         } else if rawValue == "🧖🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanInSteamyRoom, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanInSteamyRoom, skinTones: [.mediumDark])
         } else if rawValue == "🧖🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanInSteamyRoom, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanInSteamyRoom, skinTones: [.dark])
         } else if rawValue == "🧗" {
-            self.init(baseEmoji: Emoji.personClimbing, skinTones: nil)
+            self.init(baseEmoji: .personClimbing, skinTones: nil)
         } else if rawValue == "🧗🏻" {
-            self.init(baseEmoji: Emoji.personClimbing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personClimbing, skinTones: [.light])
         } else if rawValue == "🧗🏼" {
-            self.init(baseEmoji: Emoji.personClimbing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personClimbing, skinTones: [.mediumLight])
         } else if rawValue == "🧗🏽" {
-            self.init(baseEmoji: Emoji.personClimbing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personClimbing, skinTones: [.medium])
         } else if rawValue == "🧗🏾" {
-            self.init(baseEmoji: Emoji.personClimbing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personClimbing, skinTones: [.mediumDark])
         } else if rawValue == "🧗🏿" {
-            self.init(baseEmoji: Emoji.personClimbing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personClimbing, skinTones: [.dark])
         } else if rawValue == "🧗‍♂️" {
-            self.init(baseEmoji: Emoji.manClimbing, skinTones: nil)
+            self.init(baseEmoji: .manClimbing, skinTones: nil)
         } else if rawValue == "🧗🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manClimbing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manClimbing, skinTones: [.light])
         } else if rawValue == "🧗🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manClimbing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manClimbing, skinTones: [.mediumLight])
         } else if rawValue == "🧗🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manClimbing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manClimbing, skinTones: [.medium])
         } else if rawValue == "🧗🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manClimbing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manClimbing, skinTones: [.mediumDark])
         } else if rawValue == "🧗🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manClimbing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manClimbing, skinTones: [.dark])
         } else if rawValue == "🧗‍♀️" {
-            self.init(baseEmoji: Emoji.womanClimbing, skinTones: nil)
+            self.init(baseEmoji: .womanClimbing, skinTones: nil)
         } else if rawValue == "🧗🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanClimbing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanClimbing, skinTones: [.light])
         } else if rawValue == "🧗🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanClimbing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanClimbing, skinTones: [.mediumLight])
         } else if rawValue == "🧗🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanClimbing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanClimbing, skinTones: [.medium])
         } else if rawValue == "🧗🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanClimbing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanClimbing, skinTones: [.mediumDark])
         } else if rawValue == "🧗🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanClimbing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanClimbing, skinTones: [.dark])
         } else if rawValue == "🤺" {
-            self.init(baseEmoji: Emoji.fencer, skinTones: nil)
+            self.init(baseEmoji: .fencer, skinTones: nil)
         } else if rawValue == "🏇" {
-            self.init(baseEmoji: Emoji.horseRacing, skinTones: nil)
+            self.init(baseEmoji: .horseRacing, skinTones: nil)
         } else if rawValue == "🏇🏻" {
-            self.init(baseEmoji: Emoji.horseRacing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .horseRacing, skinTones: [.light])
         } else if rawValue == "🏇🏼" {
-            self.init(baseEmoji: Emoji.horseRacing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .horseRacing, skinTones: [.mediumLight])
         } else if rawValue == "🏇🏽" {
-            self.init(baseEmoji: Emoji.horseRacing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .horseRacing, skinTones: [.medium])
         } else if rawValue == "🏇🏾" {
-            self.init(baseEmoji: Emoji.horseRacing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .horseRacing, skinTones: [.mediumDark])
         } else if rawValue == "🏇🏿" {
-            self.init(baseEmoji: Emoji.horseRacing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .horseRacing, skinTones: [.dark])
         } else if rawValue == "⛷️" {
-            self.init(baseEmoji: Emoji.skier, skinTones: nil)
+            self.init(baseEmoji: .skier, skinTones: nil)
         } else if rawValue == "🏂" {
-            self.init(baseEmoji: Emoji.snowboarder, skinTones: nil)
+            self.init(baseEmoji: .snowboarder, skinTones: nil)
         } else if rawValue == "🏂🏻" {
-            self.init(baseEmoji: Emoji.snowboarder, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .snowboarder, skinTones: [.light])
         } else if rawValue == "🏂🏼" {
-            self.init(baseEmoji: Emoji.snowboarder, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .snowboarder, skinTones: [.mediumLight])
         } else if rawValue == "🏂🏽" {
-            self.init(baseEmoji: Emoji.snowboarder, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .snowboarder, skinTones: [.medium])
         } else if rawValue == "🏂🏾" {
-            self.init(baseEmoji: Emoji.snowboarder, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .snowboarder, skinTones: [.mediumDark])
         } else if rawValue == "🏂🏿" {
-            self.init(baseEmoji: Emoji.snowboarder, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .snowboarder, skinTones: [.dark])
         } else if rawValue == "🏌️" {
-            self.init(baseEmoji: Emoji.golfer, skinTones: nil)
+            self.init(baseEmoji: .golfer, skinTones: nil)
         } else if rawValue == "🏌🏻" {
-            self.init(baseEmoji: Emoji.golfer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .golfer, skinTones: [.light])
         } else if rawValue == "🏌🏼" {
-            self.init(baseEmoji: Emoji.golfer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .golfer, skinTones: [.mediumLight])
         } else if rawValue == "🏌🏽" {
-            self.init(baseEmoji: Emoji.golfer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .golfer, skinTones: [.medium])
         } else if rawValue == "🏌🏾" {
-            self.init(baseEmoji: Emoji.golfer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .golfer, skinTones: [.mediumDark])
         } else if rawValue == "🏌🏿" {
-            self.init(baseEmoji: Emoji.golfer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .golfer, skinTones: [.dark])
         } else if rawValue == "🏌️‍♂️" {
-            self.init(baseEmoji: Emoji.manGolfing, skinTones: nil)
+            self.init(baseEmoji: .manGolfing, skinTones: nil)
         } else if rawValue == "🏌🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manGolfing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manGolfing, skinTones: [.light])
         } else if rawValue == "🏌🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manGolfing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manGolfing, skinTones: [.mediumLight])
         } else if rawValue == "🏌🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manGolfing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manGolfing, skinTones: [.medium])
         } else if rawValue == "🏌🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manGolfing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manGolfing, skinTones: [.mediumDark])
         } else if rawValue == "🏌🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manGolfing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manGolfing, skinTones: [.dark])
         } else if rawValue == "🏌️‍♀️" {
-            self.init(baseEmoji: Emoji.womanGolfing, skinTones: nil)
+            self.init(baseEmoji: .womanGolfing, skinTones: nil)
         } else if rawValue == "🏌🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanGolfing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanGolfing, skinTones: [.light])
         } else if rawValue == "🏌🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanGolfing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanGolfing, skinTones: [.mediumLight])
         } else if rawValue == "🏌🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanGolfing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanGolfing, skinTones: [.medium])
         } else if rawValue == "🏌🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanGolfing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanGolfing, skinTones: [.mediumDark])
         } else if rawValue == "🏌🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanGolfing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanGolfing, skinTones: [.dark])
         } else if rawValue == "🏄" {
-            self.init(baseEmoji: Emoji.surfer, skinTones: nil)
+            self.init(baseEmoji: .surfer, skinTones: nil)
         } else if rawValue == "🏄🏻" {
-            self.init(baseEmoji: Emoji.surfer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .surfer, skinTones: [.light])
         } else if rawValue == "🏄🏼" {
-            self.init(baseEmoji: Emoji.surfer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .surfer, skinTones: [.mediumLight])
         } else if rawValue == "🏄🏽" {
-            self.init(baseEmoji: Emoji.surfer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .surfer, skinTones: [.medium])
         } else if rawValue == "🏄🏾" {
-            self.init(baseEmoji: Emoji.surfer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .surfer, skinTones: [.mediumDark])
         } else if rawValue == "🏄🏿" {
-            self.init(baseEmoji: Emoji.surfer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .surfer, skinTones: [.dark])
         } else if rawValue == "🏄‍♂️" {
-            self.init(baseEmoji: Emoji.manSurfing, skinTones: nil)
+            self.init(baseEmoji: .manSurfing, skinTones: nil)
         } else if rawValue == "🏄🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manSurfing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manSurfing, skinTones: [.light])
         } else if rawValue == "🏄🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manSurfing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manSurfing, skinTones: [.mediumLight])
         } else if rawValue == "🏄🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manSurfing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manSurfing, skinTones: [.medium])
         } else if rawValue == "🏄🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manSurfing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manSurfing, skinTones: [.mediumDark])
         } else if rawValue == "🏄🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manSurfing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manSurfing, skinTones: [.dark])
         } else if rawValue == "🏄‍♀️" {
-            self.init(baseEmoji: Emoji.womanSurfing, skinTones: nil)
+            self.init(baseEmoji: .womanSurfing, skinTones: nil)
         } else if rawValue == "🏄🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanSurfing, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanSurfing, skinTones: [.light])
         } else if rawValue == "🏄🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanSurfing, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanSurfing, skinTones: [.mediumLight])
         } else if rawValue == "🏄🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanSurfing, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanSurfing, skinTones: [.medium])
         } else if rawValue == "🏄🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanSurfing, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanSurfing, skinTones: [.mediumDark])
         } else if rawValue == "🏄🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanSurfing, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanSurfing, skinTones: [.dark])
         } else if rawValue == "🚣" {
-            self.init(baseEmoji: Emoji.rowboat, skinTones: nil)
+            self.init(baseEmoji: .rowboat, skinTones: nil)
         } else if rawValue == "🚣🏻" {
-            self.init(baseEmoji: Emoji.rowboat, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .rowboat, skinTones: [.light])
         } else if rawValue == "🚣🏼" {
-            self.init(baseEmoji: Emoji.rowboat, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .rowboat, skinTones: [.mediumLight])
         } else if rawValue == "🚣🏽" {
-            self.init(baseEmoji: Emoji.rowboat, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .rowboat, skinTones: [.medium])
         } else if rawValue == "🚣🏾" {
-            self.init(baseEmoji: Emoji.rowboat, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .rowboat, skinTones: [.mediumDark])
         } else if rawValue == "🚣🏿" {
-            self.init(baseEmoji: Emoji.rowboat, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .rowboat, skinTones: [.dark])
         } else if rawValue == "🚣‍♂️" {
-            self.init(baseEmoji: Emoji.manRowingBoat, skinTones: nil)
+            self.init(baseEmoji: .manRowingBoat, skinTones: nil)
         } else if rawValue == "🚣🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manRowingBoat, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manRowingBoat, skinTones: [.light])
         } else if rawValue == "🚣🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manRowingBoat, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manRowingBoat, skinTones: [.mediumLight])
         } else if rawValue == "🚣🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manRowingBoat, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manRowingBoat, skinTones: [.medium])
         } else if rawValue == "🚣🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manRowingBoat, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manRowingBoat, skinTones: [.mediumDark])
         } else if rawValue == "🚣🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manRowingBoat, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manRowingBoat, skinTones: [.dark])
         } else if rawValue == "🚣‍♀️" {
-            self.init(baseEmoji: Emoji.womanRowingBoat, skinTones: nil)
+            self.init(baseEmoji: .womanRowingBoat, skinTones: nil)
         } else if rawValue == "🚣🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanRowingBoat, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanRowingBoat, skinTones: [.light])
         } else if rawValue == "🚣🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanRowingBoat, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanRowingBoat, skinTones: [.mediumLight])
         } else if rawValue == "🚣🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanRowingBoat, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanRowingBoat, skinTones: [.medium])
         } else if rawValue == "🚣🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanRowingBoat, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanRowingBoat, skinTones: [.mediumDark])
         } else if rawValue == "🚣🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanRowingBoat, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanRowingBoat, skinTones: [.dark])
         } else if rawValue == "🏊" {
-            self.init(baseEmoji: Emoji.swimmer, skinTones: nil)
+            self.init(baseEmoji: .swimmer, skinTones: nil)
         } else if rawValue == "🏊🏻" {
-            self.init(baseEmoji: Emoji.swimmer, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .swimmer, skinTones: [.light])
         } else if rawValue == "🏊🏼" {
-            self.init(baseEmoji: Emoji.swimmer, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .swimmer, skinTones: [.mediumLight])
         } else if rawValue == "🏊🏽" {
-            self.init(baseEmoji: Emoji.swimmer, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .swimmer, skinTones: [.medium])
         } else if rawValue == "🏊🏾" {
-            self.init(baseEmoji: Emoji.swimmer, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .swimmer, skinTones: [.mediumDark])
         } else if rawValue == "🏊🏿" {
-            self.init(baseEmoji: Emoji.swimmer, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .swimmer, skinTones: [.dark])
         } else if rawValue == "🏊‍♂️" {
-            self.init(baseEmoji: Emoji.manSwimming, skinTones: nil)
+            self.init(baseEmoji: .manSwimming, skinTones: nil)
         } else if rawValue == "🏊🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manSwimming, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manSwimming, skinTones: [.light])
         } else if rawValue == "🏊🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manSwimming, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manSwimming, skinTones: [.mediumLight])
         } else if rawValue == "🏊🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manSwimming, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manSwimming, skinTones: [.medium])
         } else if rawValue == "🏊🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manSwimming, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manSwimming, skinTones: [.mediumDark])
         } else if rawValue == "🏊🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manSwimming, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manSwimming, skinTones: [.dark])
         } else if rawValue == "🏊‍♀️" {
-            self.init(baseEmoji: Emoji.womanSwimming, skinTones: nil)
+            self.init(baseEmoji: .womanSwimming, skinTones: nil)
         } else if rawValue == "🏊🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanSwimming, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanSwimming, skinTones: [.light])
         } else if rawValue == "🏊🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanSwimming, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanSwimming, skinTones: [.mediumLight])
         } else if rawValue == "🏊🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanSwimming, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanSwimming, skinTones: [.medium])
         } else if rawValue == "🏊🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanSwimming, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanSwimming, skinTones: [.mediumDark])
         } else if rawValue == "🏊🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanSwimming, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanSwimming, skinTones: [.dark])
         } else if rawValue == "⛹️" {
-            self.init(baseEmoji: Emoji.personWithBall, skinTones: nil)
+            self.init(baseEmoji: .personWithBall, skinTones: nil)
         } else if rawValue == "⛹🏻" {
-            self.init(baseEmoji: Emoji.personWithBall, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personWithBall, skinTones: [.light])
         } else if rawValue == "⛹🏼" {
-            self.init(baseEmoji: Emoji.personWithBall, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personWithBall, skinTones: [.mediumLight])
         } else if rawValue == "⛹🏽" {
-            self.init(baseEmoji: Emoji.personWithBall, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personWithBall, skinTones: [.medium])
         } else if rawValue == "⛹🏾" {
-            self.init(baseEmoji: Emoji.personWithBall, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personWithBall, skinTones: [.mediumDark])
         } else if rawValue == "⛹🏿" {
-            self.init(baseEmoji: Emoji.personWithBall, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personWithBall, skinTones: [.dark])
         } else if rawValue == "⛹️‍♂️" {
-            self.init(baseEmoji: Emoji.manBouncingBall, skinTones: nil)
+            self.init(baseEmoji: .manBouncingBall, skinTones: nil)
         } else if rawValue == "⛹🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manBouncingBall, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manBouncingBall, skinTones: [.light])
         } else if rawValue == "⛹🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manBouncingBall, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manBouncingBall, skinTones: [.mediumLight])
         } else if rawValue == "⛹🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manBouncingBall, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manBouncingBall, skinTones: [.medium])
         } else if rawValue == "⛹🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manBouncingBall, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manBouncingBall, skinTones: [.mediumDark])
         } else if rawValue == "⛹🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manBouncingBall, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manBouncingBall, skinTones: [.dark])
         } else if rawValue == "⛹️‍♀️" {
-            self.init(baseEmoji: Emoji.womanBouncingBall, skinTones: nil)
+            self.init(baseEmoji: .womanBouncingBall, skinTones: nil)
         } else if rawValue == "⛹🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanBouncingBall, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanBouncingBall, skinTones: [.light])
         } else if rawValue == "⛹🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanBouncingBall, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanBouncingBall, skinTones: [.mediumLight])
         } else if rawValue == "⛹🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanBouncingBall, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanBouncingBall, skinTones: [.medium])
         } else if rawValue == "⛹🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanBouncingBall, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanBouncingBall, skinTones: [.mediumDark])
         } else if rawValue == "⛹🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanBouncingBall, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanBouncingBall, skinTones: [.dark])
         } else if rawValue == "🏋️" {
-            self.init(baseEmoji: Emoji.weightLifter, skinTones: nil)
+            self.init(baseEmoji: .weightLifter, skinTones: nil)
         } else if rawValue == "🏋🏻" {
-            self.init(baseEmoji: Emoji.weightLifter, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .weightLifter, skinTones: [.light])
         } else if rawValue == "🏋🏼" {
-            self.init(baseEmoji: Emoji.weightLifter, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .weightLifter, skinTones: [.mediumLight])
         } else if rawValue == "🏋🏽" {
-            self.init(baseEmoji: Emoji.weightLifter, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .weightLifter, skinTones: [.medium])
         } else if rawValue == "🏋🏾" {
-            self.init(baseEmoji: Emoji.weightLifter, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .weightLifter, skinTones: [.mediumDark])
         } else if rawValue == "🏋🏿" {
-            self.init(baseEmoji: Emoji.weightLifter, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .weightLifter, skinTones: [.dark])
         } else if rawValue == "🏋️‍♂️" {
-            self.init(baseEmoji: Emoji.manLiftingWeights, skinTones: nil)
+            self.init(baseEmoji: .manLiftingWeights, skinTones: nil)
         } else if rawValue == "🏋🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manLiftingWeights, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manLiftingWeights, skinTones: [.light])
         } else if rawValue == "🏋🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manLiftingWeights, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manLiftingWeights, skinTones: [.mediumLight])
         } else if rawValue == "🏋🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manLiftingWeights, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manLiftingWeights, skinTones: [.medium])
         } else if rawValue == "🏋🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manLiftingWeights, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manLiftingWeights, skinTones: [.mediumDark])
         } else if rawValue == "🏋🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manLiftingWeights, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manLiftingWeights, skinTones: [.dark])
         } else if rawValue == "🏋️‍♀️" {
-            self.init(baseEmoji: Emoji.womanLiftingWeights, skinTones: nil)
+            self.init(baseEmoji: .womanLiftingWeights, skinTones: nil)
         } else if rawValue == "🏋🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanLiftingWeights, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanLiftingWeights, skinTones: [.light])
         } else if rawValue == "🏋🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanLiftingWeights, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanLiftingWeights, skinTones: [.mediumLight])
         } else if rawValue == "🏋🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanLiftingWeights, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanLiftingWeights, skinTones: [.medium])
         } else if rawValue == "🏋🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanLiftingWeights, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanLiftingWeights, skinTones: [.mediumDark])
         } else if rawValue == "🏋🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanLiftingWeights, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanLiftingWeights, skinTones: [.dark])
         } else if rawValue == "🚴" {
-            self.init(baseEmoji: Emoji.bicyclist, skinTones: nil)
+            self.init(baseEmoji: .bicyclist, skinTones: nil)
         } else if rawValue == "🚴🏻" {
-            self.init(baseEmoji: Emoji.bicyclist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .bicyclist, skinTones: [.light])
         } else if rawValue == "🚴🏼" {
-            self.init(baseEmoji: Emoji.bicyclist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .bicyclist, skinTones: [.mediumLight])
         } else if rawValue == "🚴🏽" {
-            self.init(baseEmoji: Emoji.bicyclist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .bicyclist, skinTones: [.medium])
         } else if rawValue == "🚴🏾" {
-            self.init(baseEmoji: Emoji.bicyclist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .bicyclist, skinTones: [.mediumDark])
         } else if rawValue == "🚴🏿" {
-            self.init(baseEmoji: Emoji.bicyclist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .bicyclist, skinTones: [.dark])
         } else if rawValue == "🚴‍♂️" {
-            self.init(baseEmoji: Emoji.manBiking, skinTones: nil)
+            self.init(baseEmoji: .manBiking, skinTones: nil)
         } else if rawValue == "🚴🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manBiking, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manBiking, skinTones: [.light])
         } else if rawValue == "🚴🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manBiking, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manBiking, skinTones: [.mediumLight])
         } else if rawValue == "🚴🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manBiking, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manBiking, skinTones: [.medium])
         } else if rawValue == "🚴🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manBiking, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manBiking, skinTones: [.mediumDark])
         } else if rawValue == "🚴🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manBiking, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manBiking, skinTones: [.dark])
         } else if rawValue == "🚴‍♀️" {
-            self.init(baseEmoji: Emoji.womanBiking, skinTones: nil)
+            self.init(baseEmoji: .womanBiking, skinTones: nil)
         } else if rawValue == "🚴🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanBiking, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanBiking, skinTones: [.light])
         } else if rawValue == "🚴🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanBiking, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanBiking, skinTones: [.mediumLight])
         } else if rawValue == "🚴🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanBiking, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanBiking, skinTones: [.medium])
         } else if rawValue == "🚴🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanBiking, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanBiking, skinTones: [.mediumDark])
         } else if rawValue == "🚴🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanBiking, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanBiking, skinTones: [.dark])
         } else if rawValue == "🚵" {
-            self.init(baseEmoji: Emoji.mountainBicyclist, skinTones: nil)
+            self.init(baseEmoji: .mountainBicyclist, skinTones: nil)
         } else if rawValue == "🚵🏻" {
-            self.init(baseEmoji: Emoji.mountainBicyclist, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .mountainBicyclist, skinTones: [.light])
         } else if rawValue == "🚵🏼" {
-            self.init(baseEmoji: Emoji.mountainBicyclist, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .mountainBicyclist, skinTones: [.mediumLight])
         } else if rawValue == "🚵🏽" {
-            self.init(baseEmoji: Emoji.mountainBicyclist, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .mountainBicyclist, skinTones: [.medium])
         } else if rawValue == "🚵🏾" {
-            self.init(baseEmoji: Emoji.mountainBicyclist, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .mountainBicyclist, skinTones: [.mediumDark])
         } else if rawValue == "🚵🏿" {
-            self.init(baseEmoji: Emoji.mountainBicyclist, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .mountainBicyclist, skinTones: [.dark])
         } else if rawValue == "🚵‍♂️" {
-            self.init(baseEmoji: Emoji.manMountainBiking, skinTones: nil)
+            self.init(baseEmoji: .manMountainBiking, skinTones: nil)
         } else if rawValue == "🚵🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manMountainBiking, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manMountainBiking, skinTones: [.light])
         } else if rawValue == "🚵🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manMountainBiking, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manMountainBiking, skinTones: [.mediumLight])
         } else if rawValue == "🚵🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manMountainBiking, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manMountainBiking, skinTones: [.medium])
         } else if rawValue == "🚵🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manMountainBiking, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manMountainBiking, skinTones: [.mediumDark])
         } else if rawValue == "🚵🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manMountainBiking, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manMountainBiking, skinTones: [.dark])
         } else if rawValue == "🚵‍♀️" {
-            self.init(baseEmoji: Emoji.womanMountainBiking, skinTones: nil)
+            self.init(baseEmoji: .womanMountainBiking, skinTones: nil)
         } else if rawValue == "🚵🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanMountainBiking, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanMountainBiking, skinTones: [.light])
         } else if rawValue == "🚵🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanMountainBiking, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanMountainBiking, skinTones: [.mediumLight])
         } else if rawValue == "🚵🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanMountainBiking, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanMountainBiking, skinTones: [.medium])
         } else if rawValue == "🚵🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanMountainBiking, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanMountainBiking, skinTones: [.mediumDark])
         } else if rawValue == "🚵🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanMountainBiking, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanMountainBiking, skinTones: [.dark])
         } else if rawValue == "🤸" {
-            self.init(baseEmoji: Emoji.personDoingCartwheel, skinTones: nil)
+            self.init(baseEmoji: .personDoingCartwheel, skinTones: nil)
         } else if rawValue == "🤸🏻" {
-            self.init(baseEmoji: Emoji.personDoingCartwheel, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personDoingCartwheel, skinTones: [.light])
         } else if rawValue == "🤸🏼" {
-            self.init(baseEmoji: Emoji.personDoingCartwheel, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personDoingCartwheel, skinTones: [.mediumLight])
         } else if rawValue == "🤸🏽" {
-            self.init(baseEmoji: Emoji.personDoingCartwheel, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personDoingCartwheel, skinTones: [.medium])
         } else if rawValue == "🤸🏾" {
-            self.init(baseEmoji: Emoji.personDoingCartwheel, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personDoingCartwheel, skinTones: [.mediumDark])
         } else if rawValue == "🤸🏿" {
-            self.init(baseEmoji: Emoji.personDoingCartwheel, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personDoingCartwheel, skinTones: [.dark])
         } else if rawValue == "🤸‍♂️" {
-            self.init(baseEmoji: Emoji.manCartwheeling, skinTones: nil)
+            self.init(baseEmoji: .manCartwheeling, skinTones: nil)
         } else if rawValue == "🤸🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manCartwheeling, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manCartwheeling, skinTones: [.light])
         } else if rawValue == "🤸🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manCartwheeling, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manCartwheeling, skinTones: [.mediumLight])
         } else if rawValue == "🤸🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manCartwheeling, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manCartwheeling, skinTones: [.medium])
         } else if rawValue == "🤸🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manCartwheeling, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manCartwheeling, skinTones: [.mediumDark])
         } else if rawValue == "🤸🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manCartwheeling, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manCartwheeling, skinTones: [.dark])
         } else if rawValue == "🤸‍♀️" {
-            self.init(baseEmoji: Emoji.womanCartwheeling, skinTones: nil)
+            self.init(baseEmoji: .womanCartwheeling, skinTones: nil)
         } else if rawValue == "🤸🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanCartwheeling, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanCartwheeling, skinTones: [.light])
         } else if rawValue == "🤸🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanCartwheeling, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanCartwheeling, skinTones: [.mediumLight])
         } else if rawValue == "🤸🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanCartwheeling, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanCartwheeling, skinTones: [.medium])
         } else if rawValue == "🤸🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanCartwheeling, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanCartwheeling, skinTones: [.mediumDark])
         } else if rawValue == "🤸🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanCartwheeling, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanCartwheeling, skinTones: [.dark])
         } else if rawValue == "🤼" {
-            self.init(baseEmoji: Emoji.wrestlers, skinTones: nil)
+            self.init(baseEmoji: .wrestlers, skinTones: nil)
         } else if rawValue == "🤼‍♂️" {
-            self.init(baseEmoji: Emoji.manWrestling, skinTones: nil)
+            self.init(baseEmoji: .manWrestling, skinTones: nil)
         } else if rawValue == "🤼‍♀️" {
-            self.init(baseEmoji: Emoji.womanWrestling, skinTones: nil)
+            self.init(baseEmoji: .womanWrestling, skinTones: nil)
         } else if rawValue == "🤽" {
-            self.init(baseEmoji: Emoji.waterPolo, skinTones: nil)
+            self.init(baseEmoji: .waterPolo, skinTones: nil)
         } else if rawValue == "🤽🏻" {
-            self.init(baseEmoji: Emoji.waterPolo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .waterPolo, skinTones: [.light])
         } else if rawValue == "🤽🏼" {
-            self.init(baseEmoji: Emoji.waterPolo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .waterPolo, skinTones: [.mediumLight])
         } else if rawValue == "🤽🏽" {
-            self.init(baseEmoji: Emoji.waterPolo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .waterPolo, skinTones: [.medium])
         } else if rawValue == "🤽🏾" {
-            self.init(baseEmoji: Emoji.waterPolo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .waterPolo, skinTones: [.mediumDark])
         } else if rawValue == "🤽🏿" {
-            self.init(baseEmoji: Emoji.waterPolo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .waterPolo, skinTones: [.dark])
         } else if rawValue == "🤽‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingWaterPolo, skinTones: nil)
+            self.init(baseEmoji: .manPlayingWaterPolo, skinTones: nil)
         } else if rawValue == "🤽🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingWaterPolo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manPlayingWaterPolo, skinTones: [.light])
         } else if rawValue == "🤽🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingWaterPolo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manPlayingWaterPolo, skinTones: [.mediumLight])
         } else if rawValue == "🤽🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingWaterPolo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manPlayingWaterPolo, skinTones: [.medium])
         } else if rawValue == "🤽🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingWaterPolo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manPlayingWaterPolo, skinTones: [.mediumDark])
         } else if rawValue == "🤽🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingWaterPolo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manPlayingWaterPolo, skinTones: [.dark])
         } else if rawValue == "🤽‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingWaterPolo, skinTones: nil)
+            self.init(baseEmoji: .womanPlayingWaterPolo, skinTones: nil)
         } else if rawValue == "🤽🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingWaterPolo, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanPlayingWaterPolo, skinTones: [.light])
         } else if rawValue == "🤽🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingWaterPolo, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanPlayingWaterPolo, skinTones: [.mediumLight])
         } else if rawValue == "🤽🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingWaterPolo, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanPlayingWaterPolo, skinTones: [.medium])
         } else if rawValue == "🤽🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingWaterPolo, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanPlayingWaterPolo, skinTones: [.mediumDark])
         } else if rawValue == "🤽🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingWaterPolo, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanPlayingWaterPolo, skinTones: [.dark])
         } else if rawValue == "🤾" {
-            self.init(baseEmoji: Emoji.handball, skinTones: nil)
+            self.init(baseEmoji: .handball, skinTones: nil)
         } else if rawValue == "🤾🏻" {
-            self.init(baseEmoji: Emoji.handball, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .handball, skinTones: [.light])
         } else if rawValue == "🤾🏼" {
-            self.init(baseEmoji: Emoji.handball, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .handball, skinTones: [.mediumLight])
         } else if rawValue == "🤾🏽" {
-            self.init(baseEmoji: Emoji.handball, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .handball, skinTones: [.medium])
         } else if rawValue == "🤾🏾" {
-            self.init(baseEmoji: Emoji.handball, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .handball, skinTones: [.mediumDark])
         } else if rawValue == "🤾🏿" {
-            self.init(baseEmoji: Emoji.handball, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .handball, skinTones: [.dark])
         } else if rawValue == "🤾‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingHandball, skinTones: nil)
+            self.init(baseEmoji: .manPlayingHandball, skinTones: nil)
         } else if rawValue == "🤾🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingHandball, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manPlayingHandball, skinTones: [.light])
         } else if rawValue == "🤾🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingHandball, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manPlayingHandball, skinTones: [.mediumLight])
         } else if rawValue == "🤾🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingHandball, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manPlayingHandball, skinTones: [.medium])
         } else if rawValue == "🤾🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingHandball, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manPlayingHandball, skinTones: [.mediumDark])
         } else if rawValue == "🤾🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manPlayingHandball, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manPlayingHandball, skinTones: [.dark])
         } else if rawValue == "🤾‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingHandball, skinTones: nil)
+            self.init(baseEmoji: .womanPlayingHandball, skinTones: nil)
         } else if rawValue == "🤾🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingHandball, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanPlayingHandball, skinTones: [.light])
         } else if rawValue == "🤾🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingHandball, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanPlayingHandball, skinTones: [.mediumLight])
         } else if rawValue == "🤾🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingHandball, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanPlayingHandball, skinTones: [.medium])
         } else if rawValue == "🤾🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingHandball, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanPlayingHandball, skinTones: [.mediumDark])
         } else if rawValue == "🤾🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanPlayingHandball, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanPlayingHandball, skinTones: [.dark])
         } else if rawValue == "🤹" {
-            self.init(baseEmoji: Emoji.juggling, skinTones: nil)
+            self.init(baseEmoji: .juggling, skinTones: nil)
         } else if rawValue == "🤹🏻" {
-            self.init(baseEmoji: Emoji.juggling, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .juggling, skinTones: [.light])
         } else if rawValue == "🤹🏼" {
-            self.init(baseEmoji: Emoji.juggling, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .juggling, skinTones: [.mediumLight])
         } else if rawValue == "🤹🏽" {
-            self.init(baseEmoji: Emoji.juggling, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .juggling, skinTones: [.medium])
         } else if rawValue == "🤹🏾" {
-            self.init(baseEmoji: Emoji.juggling, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .juggling, skinTones: [.mediumDark])
         } else if rawValue == "🤹🏿" {
-            self.init(baseEmoji: Emoji.juggling, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .juggling, skinTones: [.dark])
         } else if rawValue == "🤹‍♂️" {
-            self.init(baseEmoji: Emoji.manJuggling, skinTones: nil)
+            self.init(baseEmoji: .manJuggling, skinTones: nil)
         } else if rawValue == "🤹🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manJuggling, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manJuggling, skinTones: [.light])
         } else if rawValue == "🤹🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manJuggling, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manJuggling, skinTones: [.mediumLight])
         } else if rawValue == "🤹🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manJuggling, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manJuggling, skinTones: [.medium])
         } else if rawValue == "🤹🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manJuggling, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manJuggling, skinTones: [.mediumDark])
         } else if rawValue == "🤹🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manJuggling, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manJuggling, skinTones: [.dark])
         } else if rawValue == "🤹‍♀️" {
-            self.init(baseEmoji: Emoji.womanJuggling, skinTones: nil)
+            self.init(baseEmoji: .womanJuggling, skinTones: nil)
         } else if rawValue == "🤹🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanJuggling, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanJuggling, skinTones: [.light])
         } else if rawValue == "🤹🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanJuggling, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanJuggling, skinTones: [.mediumLight])
         } else if rawValue == "🤹🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanJuggling, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanJuggling, skinTones: [.medium])
         } else if rawValue == "🤹🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanJuggling, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanJuggling, skinTones: [.mediumDark])
         } else if rawValue == "🤹🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanJuggling, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanJuggling, skinTones: [.dark])
         } else if rawValue == "🧘" {
-            self.init(baseEmoji: Emoji.personInLotusPosition, skinTones: nil)
+            self.init(baseEmoji: .personInLotusPosition, skinTones: nil)
         } else if rawValue == "🧘🏻" {
-            self.init(baseEmoji: Emoji.personInLotusPosition, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .personInLotusPosition, skinTones: [.light])
         } else if rawValue == "🧘🏼" {
-            self.init(baseEmoji: Emoji.personInLotusPosition, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .personInLotusPosition, skinTones: [.mediumLight])
         } else if rawValue == "🧘🏽" {
-            self.init(baseEmoji: Emoji.personInLotusPosition, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .personInLotusPosition, skinTones: [.medium])
         } else if rawValue == "🧘🏾" {
-            self.init(baseEmoji: Emoji.personInLotusPosition, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .personInLotusPosition, skinTones: [.mediumDark])
         } else if rawValue == "🧘🏿" {
-            self.init(baseEmoji: Emoji.personInLotusPosition, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .personInLotusPosition, skinTones: [.dark])
         } else if rawValue == "🧘‍♂️" {
-            self.init(baseEmoji: Emoji.manInLotusPosition, skinTones: nil)
+            self.init(baseEmoji: .manInLotusPosition, skinTones: nil)
         } else if rawValue == "🧘🏻‍♂️" {
-            self.init(baseEmoji: Emoji.manInLotusPosition, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manInLotusPosition, skinTones: [.light])
         } else if rawValue == "🧘🏼‍♂️" {
-            self.init(baseEmoji: Emoji.manInLotusPosition, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manInLotusPosition, skinTones: [.mediumLight])
         } else if rawValue == "🧘🏽‍♂️" {
-            self.init(baseEmoji: Emoji.manInLotusPosition, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manInLotusPosition, skinTones: [.medium])
         } else if rawValue == "🧘🏾‍♂️" {
-            self.init(baseEmoji: Emoji.manInLotusPosition, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manInLotusPosition, skinTones: [.mediumDark])
         } else if rawValue == "🧘🏿‍♂️" {
-            self.init(baseEmoji: Emoji.manInLotusPosition, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manInLotusPosition, skinTones: [.dark])
         } else if rawValue == "🧘‍♀️" {
-            self.init(baseEmoji: Emoji.womanInLotusPosition, skinTones: nil)
+            self.init(baseEmoji: .womanInLotusPosition, skinTones: nil)
         } else if rawValue == "🧘🏻‍♀️" {
-            self.init(baseEmoji: Emoji.womanInLotusPosition, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .womanInLotusPosition, skinTones: [.light])
         } else if rawValue == "🧘🏼‍♀️" {
-            self.init(baseEmoji: Emoji.womanInLotusPosition, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .womanInLotusPosition, skinTones: [.mediumLight])
         } else if rawValue == "🧘🏽‍♀️" {
-            self.init(baseEmoji: Emoji.womanInLotusPosition, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .womanInLotusPosition, skinTones: [.medium])
         } else if rawValue == "🧘🏾‍♀️" {
-            self.init(baseEmoji: Emoji.womanInLotusPosition, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .womanInLotusPosition, skinTones: [.mediumDark])
         } else if rawValue == "🧘🏿‍♀️" {
-            self.init(baseEmoji: Emoji.womanInLotusPosition, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .womanInLotusPosition, skinTones: [.dark])
         } else if rawValue == "🛀" {
-            self.init(baseEmoji: Emoji.bath, skinTones: nil)
+            self.init(baseEmoji: .bath, skinTones: nil)
         } else if rawValue == "🛀🏻" {
-            self.init(baseEmoji: Emoji.bath, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .bath, skinTones: [.light])
         } else if rawValue == "🛀🏼" {
-            self.init(baseEmoji: Emoji.bath, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .bath, skinTones: [.mediumLight])
         } else if rawValue == "🛀🏽" {
-            self.init(baseEmoji: Emoji.bath, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .bath, skinTones: [.medium])
         } else if rawValue == "🛀🏾" {
-            self.init(baseEmoji: Emoji.bath, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .bath, skinTones: [.mediumDark])
         } else if rawValue == "🛀🏿" {
-            self.init(baseEmoji: Emoji.bath, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .bath, skinTones: [.dark])
         } else if rawValue == "🛌" {
-            self.init(baseEmoji: Emoji.sleepingAccommodation, skinTones: nil)
+            self.init(baseEmoji: .sleepingAccommodation, skinTones: nil)
         } else if rawValue == "🛌🏻" {
-            self.init(baseEmoji: Emoji.sleepingAccommodation, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .sleepingAccommodation, skinTones: [.light])
         } else if rawValue == "🛌🏼" {
-            self.init(baseEmoji: Emoji.sleepingAccommodation, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .sleepingAccommodation, skinTones: [.mediumLight])
         } else if rawValue == "🛌🏽" {
-            self.init(baseEmoji: Emoji.sleepingAccommodation, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .sleepingAccommodation, skinTones: [.medium])
         } else if rawValue == "🛌🏾" {
-            self.init(baseEmoji: Emoji.sleepingAccommodation, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .sleepingAccommodation, skinTones: [.mediumDark])
         } else if rawValue == "🛌🏿" {
-            self.init(baseEmoji: Emoji.sleepingAccommodation, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .sleepingAccommodation, skinTones: [.dark])
         } else if rawValue == "🧑‍🤝‍🧑" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: nil)
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: nil)
         } else if rawValue == "🧑🏻‍🤝‍🧑🏻" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.light])
         } else if rawValue == "🧑🏻‍🤝‍🧑🏼" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.light, .mediumLight])
         } else if rawValue == "🧑🏻‍🤝‍🧑🏽" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.light, .medium])
         } else if rawValue == "🧑🏻‍🤝‍🧑🏾" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.light, .mediumDark])
         } else if rawValue == "🧑🏻‍🤝‍🧑🏿" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.light, .dark])
         } else if rawValue == "🧑🏼‍🤝‍🧑🏼" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumLight])
         } else if rawValue == "🧑🏼‍🤝‍🧑🏻" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.light])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumLight, .light])
         } else if rawValue == "🧑🏼‍🤝‍🧑🏽" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumLight, .medium])
         } else if rawValue == "🧑🏼‍🤝‍🧑🏾" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumLight, .mediumDark])
         } else if rawValue == "🧑🏼‍🤝‍🧑🏿" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumLight, .dark])
         } else if rawValue == "🧑🏽‍🤝‍🧑🏽" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.medium])
         } else if rawValue == "🧑🏽‍🤝‍🧑🏻" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.light])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.medium, .light])
         } else if rawValue == "🧑🏽‍🤝‍🧑🏼" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.medium, .mediumLight])
         } else if rawValue == "🧑🏽‍🤝‍🧑🏾" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.medium, .mediumDark])
         } else if rawValue == "🧑🏽‍🤝‍🧑🏿" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.medium, .dark])
         } else if rawValue == "🧑🏾‍🤝‍🧑🏾" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumDark])
         } else if rawValue == "🧑🏾‍🤝‍🧑🏻" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumDark, .light])
         } else if rawValue == "🧑🏾‍🤝‍🧑🏼" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumDark, .mediumLight])
         } else if rawValue == "🧑🏾‍🤝‍🧑🏽" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumDark, .medium])
         } else if rawValue == "🧑🏾‍🤝‍🧑🏿" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.mediumDark, .dark])
         } else if rawValue == "🧑🏿‍🤝‍🧑🏿" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.dark])
         } else if rawValue == "🧑🏿‍🤝‍🧑🏻" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.dark, .light])
         } else if rawValue == "🧑🏿‍🤝‍🧑🏼" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.dark, .mediumLight])
         } else if rawValue == "🧑🏿‍🤝‍🧑🏽" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.dark, .medium])
         } else if rawValue == "🧑🏿‍🤝‍🧑🏾" {
-            self.init(baseEmoji: Emoji.peopleHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .peopleHoldingHands, skinTones: [.dark, .mediumDark])
         } else if rawValue == "👭" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: nil)
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: nil)
         } else if rawValue == "👭🏻" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.light])
         } else if rawValue == "👩🏻‍🤝‍👩🏼" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.light, .mediumLight])
         } else if rawValue == "👩🏻‍🤝‍👩🏽" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.light, .medium])
         } else if rawValue == "👩🏻‍🤝‍👩🏾" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.light, .mediumDark])
         } else if rawValue == "👩🏻‍🤝‍👩🏿" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.light, .dark])
         } else if rawValue == "👭🏼" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumLight])
         } else if rawValue == "👩🏼‍🤝‍👩🏻" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumLight, .light])
         } else if rawValue == "👩🏼‍🤝‍👩🏽" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumLight, .medium])
         } else if rawValue == "👩🏼‍🤝‍👩🏾" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumLight, .mediumDark])
         } else if rawValue == "👩🏼‍🤝‍👩🏿" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumLight, .dark])
         } else if rawValue == "👭🏽" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.medium])
         } else if rawValue == "👩🏽‍🤝‍👩🏻" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.medium, .light])
         } else if rawValue == "👩🏽‍🤝‍👩🏼" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.medium, .mediumLight])
         } else if rawValue == "👩🏽‍🤝‍👩🏾" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.medium, .mediumDark])
         } else if rawValue == "👩🏽‍🤝‍👩🏿" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.medium, .dark])
         } else if rawValue == "👭🏾" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumDark])
         } else if rawValue == "👩🏾‍🤝‍👩🏻" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumDark, .light])
         } else if rawValue == "👩🏾‍🤝‍👩🏼" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumDark, .mediumLight])
         } else if rawValue == "👩🏾‍🤝‍👩🏽" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumDark, .medium])
         } else if rawValue == "👩🏾‍🤝‍👩🏿" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.mediumDark, .dark])
         } else if rawValue == "👭🏿" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.dark])
         } else if rawValue == "👩🏿‍🤝‍👩🏻" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.dark, .light])
         } else if rawValue == "👩🏿‍🤝‍👩🏼" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.dark, .mediumLight])
         } else if rawValue == "👩🏿‍🤝‍👩🏽" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.dark, .medium])
         } else if rawValue == "👩🏿‍🤝‍👩🏾" {
-            self.init(baseEmoji: Emoji.twoWomenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoWomenHoldingHands, skinTones: [.dark, .mediumDark])
         } else if rawValue == "👫" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: nil)
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: nil)
         } else if rawValue == "👫🏻" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.light])
         } else if rawValue == "👩🏻‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.light, .mediumLight])
         } else if rawValue == "👩🏻‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.light, .medium])
         } else if rawValue == "👩🏻‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.light, .mediumDark])
         } else if rawValue == "👩🏻‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.light, .dark])
         } else if rawValue == "👫🏼" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumLight])
         } else if rawValue == "👩🏼‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.light])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumLight, .light])
         } else if rawValue == "👩🏼‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumLight, .medium])
         } else if rawValue == "👩🏼‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumLight, .mediumDark])
         } else if rawValue == "👩🏼‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumLight, .dark])
         } else if rawValue == "👫🏽" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.medium])
         } else if rawValue == "👩🏽‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.light])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.medium, .light])
         } else if rawValue == "👩🏽‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.medium, .mediumLight])
         } else if rawValue == "👩🏽‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.medium, .mediumDark])
         } else if rawValue == "👩🏽‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.medium, .dark])
         } else if rawValue == "👫🏾" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumDark])
         } else if rawValue == "👩🏾‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumDark, .light])
         } else if rawValue == "👩🏾‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumDark, .mediumLight])
         } else if rawValue == "👩🏾‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumDark, .medium])
         } else if rawValue == "👩🏾‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.mediumDark, .dark])
         } else if rawValue == "👫🏿" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.dark])
         } else if rawValue == "👩🏿‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.dark, .light])
         } else if rawValue == "👩🏿‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.dark, .mediumLight])
         } else if rawValue == "👩🏿‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.dark, .medium])
         } else if rawValue == "👩🏿‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.manAndWomanHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .manAndWomanHoldingHands, skinTones: [.dark, .mediumDark])
         } else if rawValue == "👬" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: nil)
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: nil)
         } else if rawValue == "👬🏻" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.light])
         } else if rawValue == "👨🏻‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.light, .mediumLight])
         } else if rawValue == "👨🏻‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.light, .medium])
         } else if rawValue == "👨🏻‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.light, .mediumDark])
         } else if rawValue == "👨🏻‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.light, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.light, .dark])
         } else if rawValue == "👬🏼" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumLight])
         } else if rawValue == "👨🏼‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumLight, .light])
         } else if rawValue == "👨🏼‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumLight, .medium])
         } else if rawValue == "👨🏼‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumLight, .mediumDark])
         } else if rawValue == "👨🏼‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumLight, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumLight, .dark])
         } else if rawValue == "👬🏽" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.medium])
         } else if rawValue == "👨🏽‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.medium, .light])
         } else if rawValue == "👨🏽‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.medium, .mediumLight])
         } else if rawValue == "👨🏽‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.medium, .mediumDark])
         } else if rawValue == "👨🏽‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.medium, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.medium, .dark])
         } else if rawValue == "👬🏾" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumDark])
         } else if rawValue == "👨🏾‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumDark, .light])
         } else if rawValue == "👨🏾‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumDark, .mediumLight])
         } else if rawValue == "👨🏾‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumDark, .medium])
         } else if rawValue == "👨🏾‍🤝‍👨🏿" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.mediumDark, Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.mediumDark, .dark])
         } else if rawValue == "👬🏿" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.dark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.dark])
         } else if rawValue == "👨🏿‍🤝‍👨🏻" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.light])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.dark, .light])
         } else if rawValue == "👨🏿‍🤝‍👨🏼" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumLight])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.dark, .mediumLight])
         } else if rawValue == "👨🏿‍🤝‍👨🏽" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.medium])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.dark, .medium])
         } else if rawValue == "👨🏿‍🤝‍👨🏾" {
-            self.init(baseEmoji: Emoji.twoMenHoldingHands, skinTones: [Emoji.SkinTone.dark, Emoji.SkinTone.mediumDark])
+            self.init(baseEmoji: .twoMenHoldingHands, skinTones: [.dark, .mediumDark])
         } else if rawValue == "💏" {
-            self.init(baseEmoji: Emoji.personKissPerson, skinTones: nil)
+            self.init(baseEmoji: .personKissPerson, skinTones: nil)
         } else if rawValue == "👩‍❤️‍💋‍👨" {
-            self.init(baseEmoji: Emoji.womanKissMan, skinTones: nil)
+            self.init(baseEmoji: .womanKissMan, skinTones: nil)
         } else if rawValue == "👨‍❤️‍💋‍👨" {
-            self.init(baseEmoji: Emoji.manKissMan, skinTones: nil)
+            self.init(baseEmoji: .manKissMan, skinTones: nil)
         } else if rawValue == "👩‍❤️‍💋‍👩" {
-            self.init(baseEmoji: Emoji.womanKissWoman, skinTones: nil)
+            self.init(baseEmoji: .womanKissWoman, skinTones: nil)
         } else if rawValue == "💑" {
-            self.init(baseEmoji: Emoji.personHeartPerson, skinTones: nil)
+            self.init(baseEmoji: .personHeartPerson, skinTones: nil)
         } else if rawValue == "👩‍❤️‍👨" {
-            self.init(baseEmoji: Emoji.womanHeartMan, skinTones: nil)
+            self.init(baseEmoji: .womanHeartMan, skinTones: nil)
         } else if rawValue == "👨‍❤️‍👨" {
-            self.init(baseEmoji: Emoji.manHeartMan, skinTones: nil)
+            self.init(baseEmoji: .manHeartMan, skinTones: nil)
         } else if rawValue == "👩‍❤️‍👩" {
-            self.init(baseEmoji: Emoji.womanHeartWoman, skinTones: nil)
+            self.init(baseEmoji: .womanHeartWoman, skinTones: nil)
         } else if rawValue == "👪" {
-            self.init(baseEmoji: Emoji.family, skinTones: nil)
+            self.init(baseEmoji: .family, skinTones: nil)
         } else if rawValue == "👨‍👩‍👦" {
-            self.init(baseEmoji: Emoji.manWomanBoy, skinTones: nil)
+            self.init(baseEmoji: .manWomanBoy, skinTones: nil)
         } else if rawValue == "👨‍👩‍👧" {
-            self.init(baseEmoji: Emoji.manWomanGirl, skinTones: nil)
+            self.init(baseEmoji: .manWomanGirl, skinTones: nil)
         } else if rawValue == "👨‍👩‍👧‍👦" {
-            self.init(baseEmoji: Emoji.manWomanGirlBoy, skinTones: nil)
+            self.init(baseEmoji: .manWomanGirlBoy, skinTones: nil)
         } else if rawValue == "👨‍👩‍👦‍👦" {
-            self.init(baseEmoji: Emoji.manWomanBoyBoy, skinTones: nil)
+            self.init(baseEmoji: .manWomanBoyBoy, skinTones: nil)
         } else if rawValue == "👨‍👩‍👧‍👧" {
-            self.init(baseEmoji: Emoji.manWomanGirlGirl, skinTones: nil)
+            self.init(baseEmoji: .manWomanGirlGirl, skinTones: nil)
         } else if rawValue == "👨‍👨‍👦" {
-            self.init(baseEmoji: Emoji.manManBoy, skinTones: nil)
+            self.init(baseEmoji: .manManBoy, skinTones: nil)
         } else if rawValue == "👨‍👨‍👧" {
-            self.init(baseEmoji: Emoji.manManGirl, skinTones: nil)
+            self.init(baseEmoji: .manManGirl, skinTones: nil)
         } else if rawValue == "👨‍👨‍👧‍👦" {
-            self.init(baseEmoji: Emoji.manManGirlBoy, skinTones: nil)
+            self.init(baseEmoji: .manManGirlBoy, skinTones: nil)
         } else if rawValue == "👨‍👨‍👦‍👦" {
-            self.init(baseEmoji: Emoji.manManBoyBoy, skinTones: nil)
+            self.init(baseEmoji: .manManBoyBoy, skinTones: nil)
         } else if rawValue == "👨‍👨‍👧‍👧" {
-            self.init(baseEmoji: Emoji.manManGirlGirl, skinTones: nil)
+            self.init(baseEmoji: .manManGirlGirl, skinTones: nil)
         } else if rawValue == "👩‍👩‍👦" {
-            self.init(baseEmoji: Emoji.womanWomanBoy, skinTones: nil)
+            self.init(baseEmoji: .womanWomanBoy, skinTones: nil)
         } else if rawValue == "👩‍👩‍👧" {
-            self.init(baseEmoji: Emoji.womanWomanGirl, skinTones: nil)
+            self.init(baseEmoji: .womanWomanGirl, skinTones: nil)
         } else if rawValue == "👩‍👩‍👧‍👦" {
-            self.init(baseEmoji: Emoji.womanWomanGirlBoy, skinTones: nil)
+            self.init(baseEmoji: .womanWomanGirlBoy, skinTones: nil)
         } else if rawValue == "👩‍👩‍👦‍👦" {
-            self.init(baseEmoji: Emoji.womanWomanBoyBoy, skinTones: nil)
+            self.init(baseEmoji: .womanWomanBoyBoy, skinTones: nil)
         } else if rawValue == "👩‍👩‍👧‍👧" {
-            self.init(baseEmoji: Emoji.womanWomanGirlGirl, skinTones: nil)
+            self.init(baseEmoji: .womanWomanGirlGirl, skinTones: nil)
         } else if rawValue == "👨‍👦" {
-            self.init(baseEmoji: Emoji.manBoy, skinTones: nil)
+            self.init(baseEmoji: .manBoy, skinTones: nil)
         } else if rawValue == "👨‍👦‍👦" {
-            self.init(baseEmoji: Emoji.manBoyBoy, skinTones: nil)
+            self.init(baseEmoji: .manBoyBoy, skinTones: nil)
         } else if rawValue == "👨‍👧" {
-            self.init(baseEmoji: Emoji.manGirl, skinTones: nil)
+            self.init(baseEmoji: .manGirl, skinTones: nil)
         } else if rawValue == "👨‍👧‍👦" {
-            self.init(baseEmoji: Emoji.manGirlBoy, skinTones: nil)
+            self.init(baseEmoji: .manGirlBoy, skinTones: nil)
         } else if rawValue == "👨‍👧‍👧" {
-            self.init(baseEmoji: Emoji.manGirlGirl, skinTones: nil)
+            self.init(baseEmoji: .manGirlGirl, skinTones: nil)
         } else if rawValue == "👩‍👦" {
-            self.init(baseEmoji: Emoji.womanBoy, skinTones: nil)
+            self.init(baseEmoji: .womanBoy, skinTones: nil)
         } else if rawValue == "👩‍👦‍👦" {
-            self.init(baseEmoji: Emoji.womanBoyBoy, skinTones: nil)
+            self.init(baseEmoji: .womanBoyBoy, skinTones: nil)
         } else if rawValue == "👩‍👧" {
-            self.init(baseEmoji: Emoji.womanGirl, skinTones: nil)
+            self.init(baseEmoji: .womanGirl, skinTones: nil)
         } else if rawValue == "👩‍👧‍👦" {
-            self.init(baseEmoji: Emoji.womanGirlBoy, skinTones: nil)
+            self.init(baseEmoji: .womanGirlBoy, skinTones: nil)
         } else if rawValue == "👩‍👧‍👧" {
-            self.init(baseEmoji: Emoji.womanGirlGirl, skinTones: nil)
+            self.init(baseEmoji: .womanGirlGirl, skinTones: nil)
         } else if rawValue == "🗣️" {
-            self.init(baseEmoji: Emoji.speakingHeadInSilhouette, skinTones: nil)
+            self.init(baseEmoji: .speakingHeadInSilhouette, skinTones: nil)
         } else if rawValue == "👤" {
-            self.init(baseEmoji: Emoji.bustInSilhouette, skinTones: nil)
+            self.init(baseEmoji: .bustInSilhouette, skinTones: nil)
         } else if rawValue == "👥" {
-            self.init(baseEmoji: Emoji.bustsInSilhouette, skinTones: nil)
+            self.init(baseEmoji: .bustsInSilhouette, skinTones: nil)
         } else if rawValue == "🫂" {
-            self.init(baseEmoji: Emoji.peopleHugging, skinTones: nil)
+            self.init(baseEmoji: .peopleHugging, skinTones: nil)
         } else if rawValue == "👣" {
-            self.init(baseEmoji: Emoji.footprints, skinTones: nil)
+            self.init(baseEmoji: .footprints, skinTones: nil)
         } else if rawValue == "🏻" {
-            self.init(baseEmoji: Emoji.skinTone2, skinTones: nil)
+            self.init(baseEmoji: .skinTone2, skinTones: nil)
         } else if rawValue == "🏼" {
-            self.init(baseEmoji: Emoji.skinTone3, skinTones: nil)
+            self.init(baseEmoji: .skinTone3, skinTones: nil)
         } else if rawValue == "🏽" {
-            self.init(baseEmoji: Emoji.skinTone4, skinTones: nil)
+            self.init(baseEmoji: .skinTone4, skinTones: nil)
         } else if rawValue == "🏾" {
-            self.init(baseEmoji: Emoji.skinTone5, skinTones: nil)
+            self.init(baseEmoji: .skinTone5, skinTones: nil)
         } else if rawValue == "🏿" {
-            self.init(baseEmoji: Emoji.skinTone6, skinTones: nil)
+            self.init(baseEmoji: .skinTone6, skinTones: nil)
         } else if rawValue == "🐵" {
-            self.init(baseEmoji: Emoji.monkeyFace, skinTones: nil)
+            self.init(baseEmoji: .monkeyFace, skinTones: nil)
         } else if rawValue == "🐒" {
-            self.init(baseEmoji: Emoji.monkey, skinTones: nil)
+            self.init(baseEmoji: .monkey, skinTones: nil)
         } else if rawValue == "🦍" {
-            self.init(baseEmoji: Emoji.gorilla, skinTones: nil)
+            self.init(baseEmoji: .gorilla, skinTones: nil)
         } else if rawValue == "🦧" {
-            self.init(baseEmoji: Emoji.orangutan, skinTones: nil)
+            self.init(baseEmoji: .orangutan, skinTones: nil)
         } else if rawValue == "🐶" {
-            self.init(baseEmoji: Emoji.dog, skinTones: nil)
+            self.init(baseEmoji: .dog, skinTones: nil)
         } else if rawValue == "🐕" {
-            self.init(baseEmoji: Emoji.dog2, skinTones: nil)
+            self.init(baseEmoji: .dog2, skinTones: nil)
         } else if rawValue == "🦮" {
-            self.init(baseEmoji: Emoji.guideDog, skinTones: nil)
+            self.init(baseEmoji: .guideDog, skinTones: nil)
         } else if rawValue == "🐕‍🦺" {
-            self.init(baseEmoji: Emoji.serviceDog, skinTones: nil)
+            self.init(baseEmoji: .serviceDog, skinTones: nil)
         } else if rawValue == "🐩" {
-            self.init(baseEmoji: Emoji.poodle, skinTones: nil)
+            self.init(baseEmoji: .poodle, skinTones: nil)
         } else if rawValue == "🐺" {
-            self.init(baseEmoji: Emoji.wolf, skinTones: nil)
+            self.init(baseEmoji: .wolf, skinTones: nil)
         } else if rawValue == "🦊" {
-            self.init(baseEmoji: Emoji.foxFace, skinTones: nil)
+            self.init(baseEmoji: .foxFace, skinTones: nil)
         } else if rawValue == "🦝" {
-            self.init(baseEmoji: Emoji.raccoon, skinTones: nil)
+            self.init(baseEmoji: .raccoon, skinTones: nil)
         } else if rawValue == "🐱" {
-            self.init(baseEmoji: Emoji.cat, skinTones: nil)
+            self.init(baseEmoji: .cat, skinTones: nil)
         } else if rawValue == "🐈" {
-            self.init(baseEmoji: Emoji.cat2, skinTones: nil)
+            self.init(baseEmoji: .cat2, skinTones: nil)
         } else if rawValue == "🐈‍⬛" {
-            self.init(baseEmoji: Emoji.blackCat, skinTones: nil)
+            self.init(baseEmoji: .blackCat, skinTones: nil)
         } else if rawValue == "🦁" {
-            self.init(baseEmoji: Emoji.lionFace, skinTones: nil)
+            self.init(baseEmoji: .lionFace, skinTones: nil)
         } else if rawValue == "🐯" {
-            self.init(baseEmoji: Emoji.tiger, skinTones: nil)
+            self.init(baseEmoji: .tiger, skinTones: nil)
         } else if rawValue == "🐅" {
-            self.init(baseEmoji: Emoji.tiger2, skinTones: nil)
+            self.init(baseEmoji: .tiger2, skinTones: nil)
         } else if rawValue == "🐆" {
-            self.init(baseEmoji: Emoji.leopard, skinTones: nil)
+            self.init(baseEmoji: .leopard, skinTones: nil)
         } else if rawValue == "🐴" {
-            self.init(baseEmoji: Emoji.horse, skinTones: nil)
+            self.init(baseEmoji: .horse, skinTones: nil)
         } else if rawValue == "🐎" {
-            self.init(baseEmoji: Emoji.racehorse, skinTones: nil)
+            self.init(baseEmoji: .racehorse, skinTones: nil)
         } else if rawValue == "🦄" {
-            self.init(baseEmoji: Emoji.unicornFace, skinTones: nil)
+            self.init(baseEmoji: .unicornFace, skinTones: nil)
         } else if rawValue == "🦓" {
-            self.init(baseEmoji: Emoji.zebraFace, skinTones: nil)
+            self.init(baseEmoji: .zebraFace, skinTones: nil)
         } else if rawValue == "🦌" {
-            self.init(baseEmoji: Emoji.deer, skinTones: nil)
+            self.init(baseEmoji: .deer, skinTones: nil)
         } else if rawValue == "🦬" {
-            self.init(baseEmoji: Emoji.bison, skinTones: nil)
+            self.init(baseEmoji: .bison, skinTones: nil)
         } else if rawValue == "🐮" {
-            self.init(baseEmoji: Emoji.cow, skinTones: nil)
+            self.init(baseEmoji: .cow, skinTones: nil)
         } else if rawValue == "🐂" {
-            self.init(baseEmoji: Emoji.ox, skinTones: nil)
+            self.init(baseEmoji: .ox, skinTones: nil)
         } else if rawValue == "🐃" {
-            self.init(baseEmoji: Emoji.waterBuffalo, skinTones: nil)
+            self.init(baseEmoji: .waterBuffalo, skinTones: nil)
         } else if rawValue == "🐄" {
-            self.init(baseEmoji: Emoji.cow2, skinTones: nil)
+            self.init(baseEmoji: .cow2, skinTones: nil)
         } else if rawValue == "🐷" {
-            self.init(baseEmoji: Emoji.pig, skinTones: nil)
+            self.init(baseEmoji: .pig, skinTones: nil)
         } else if rawValue == "🐖" {
-            self.init(baseEmoji: Emoji.pig2, skinTones: nil)
+            self.init(baseEmoji: .pig2, skinTones: nil)
         } else if rawValue == "🐗" {
-            self.init(baseEmoji: Emoji.boar, skinTones: nil)
+            self.init(baseEmoji: .boar, skinTones: nil)
         } else if rawValue == "🐽" {
-            self.init(baseEmoji: Emoji.pigNose, skinTones: nil)
+            self.init(baseEmoji: .pigNose, skinTones: nil)
         } else if rawValue == "🐏" {
-            self.init(baseEmoji: Emoji.ram, skinTones: nil)
+            self.init(baseEmoji: .ram, skinTones: nil)
         } else if rawValue == "🐑" {
-            self.init(baseEmoji: Emoji.sheep, skinTones: nil)
+            self.init(baseEmoji: .sheep, skinTones: nil)
         } else if rawValue == "🐐" {
-            self.init(baseEmoji: Emoji.goat, skinTones: nil)
+            self.init(baseEmoji: .goat, skinTones: nil)
         } else if rawValue == "🐪" {
-            self.init(baseEmoji: Emoji.dromedaryCamel, skinTones: nil)
+            self.init(baseEmoji: .dromedaryCamel, skinTones: nil)
         } else if rawValue == "🐫" {
-            self.init(baseEmoji: Emoji.camel, skinTones: nil)
+            self.init(baseEmoji: .camel, skinTones: nil)
         } else if rawValue == "🦙" {
-            self.init(baseEmoji: Emoji.llama, skinTones: nil)
+            self.init(baseEmoji: .llama, skinTones: nil)
         } else if rawValue == "🦒" {
-            self.init(baseEmoji: Emoji.giraffeFace, skinTones: nil)
+            self.init(baseEmoji: .giraffeFace, skinTones: nil)
         } else if rawValue == "🐘" {
-            self.init(baseEmoji: Emoji.elephant, skinTones: nil)
+            self.init(baseEmoji: .elephant, skinTones: nil)
         } else if rawValue == "🦣" {
-            self.init(baseEmoji: Emoji.mammoth, skinTones: nil)
+            self.init(baseEmoji: .mammoth, skinTones: nil)
         } else if rawValue == "🦏" {
-            self.init(baseEmoji: Emoji.rhinoceros, skinTones: nil)
+            self.init(baseEmoji: .rhinoceros, skinTones: nil)
         } else if rawValue == "🦛" {
-            self.init(baseEmoji: Emoji.hippopotamus, skinTones: nil)
+            self.init(baseEmoji: .hippopotamus, skinTones: nil)
         } else if rawValue == "🐭" {
-            self.init(baseEmoji: Emoji.mouse, skinTones: nil)
+            self.init(baseEmoji: .mouse, skinTones: nil)
         } else if rawValue == "🐁" {
-            self.init(baseEmoji: Emoji.mouse2, skinTones: nil)
+            self.init(baseEmoji: .mouse2, skinTones: nil)
         } else if rawValue == "🐀" {
-            self.init(baseEmoji: Emoji.rat, skinTones: nil)
+            self.init(baseEmoji: .rat, skinTones: nil)
         } else if rawValue == "🐹" {
-            self.init(baseEmoji: Emoji.hamster, skinTones: nil)
+            self.init(baseEmoji: .hamster, skinTones: nil)
         } else if rawValue == "🐰" {
-            self.init(baseEmoji: Emoji.rabbit, skinTones: nil)
+            self.init(baseEmoji: .rabbit, skinTones: nil)
         } else if rawValue == "🐇" {
-            self.init(baseEmoji: Emoji.rabbit2, skinTones: nil)
+            self.init(baseEmoji: .rabbit2, skinTones: nil)
         } else if rawValue == "🐿️" {
-            self.init(baseEmoji: Emoji.chipmunk, skinTones: nil)
+            self.init(baseEmoji: .chipmunk, skinTones: nil)
         } else if rawValue == "🦫" {
-            self.init(baseEmoji: Emoji.beaver, skinTones: nil)
+            self.init(baseEmoji: .beaver, skinTones: nil)
         } else if rawValue == "🦔" {
-            self.init(baseEmoji: Emoji.hedgehog, skinTones: nil)
+            self.init(baseEmoji: .hedgehog, skinTones: nil)
         } else if rawValue == "🦇" {
-            self.init(baseEmoji: Emoji.bat, skinTones: nil)
+            self.init(baseEmoji: .bat, skinTones: nil)
         } else if rawValue == "🐻" {
-            self.init(baseEmoji: Emoji.bear, skinTones: nil)
+            self.init(baseEmoji: .bear, skinTones: nil)
         } else if rawValue == "🐻‍❄️" {
-            self.init(baseEmoji: Emoji.polarBear, skinTones: nil)
+            self.init(baseEmoji: .polarBear, skinTones: nil)
         } else if rawValue == "🐨" {
-            self.init(baseEmoji: Emoji.koala, skinTones: nil)
+            self.init(baseEmoji: .koala, skinTones: nil)
         } else if rawValue == "🐼" {
-            self.init(baseEmoji: Emoji.pandaFace, skinTones: nil)
+            self.init(baseEmoji: .pandaFace, skinTones: nil)
         } else if rawValue == "🦥" {
-            self.init(baseEmoji: Emoji.sloth, skinTones: nil)
+            self.init(baseEmoji: .sloth, skinTones: nil)
         } else if rawValue == "🦦" {
-            self.init(baseEmoji: Emoji.otter, skinTones: nil)
+            self.init(baseEmoji: .otter, skinTones: nil)
         } else if rawValue == "🦨" {
-            self.init(baseEmoji: Emoji.skunk, skinTones: nil)
+            self.init(baseEmoji: .skunk, skinTones: nil)
         } else if rawValue == "🦘" {
-            self.init(baseEmoji: Emoji.kangaroo, skinTones: nil)
+            self.init(baseEmoji: .kangaroo, skinTones: nil)
         } else if rawValue == "🦡" {
-            self.init(baseEmoji: Emoji.badger, skinTones: nil)
+            self.init(baseEmoji: .badger, skinTones: nil)
         } else if rawValue == "🐾" {
-            self.init(baseEmoji: Emoji.feet, skinTones: nil)
+            self.init(baseEmoji: .feet, skinTones: nil)
         } else if rawValue == "🦃" {
-            self.init(baseEmoji: Emoji.turkey, skinTones: nil)
+            self.init(baseEmoji: .turkey, skinTones: nil)
         } else if rawValue == "🐔" {
-            self.init(baseEmoji: Emoji.chicken, skinTones: nil)
+            self.init(baseEmoji: .chicken, skinTones: nil)
         } else if rawValue == "🐓" {
-            self.init(baseEmoji: Emoji.rooster, skinTones: nil)
+            self.init(baseEmoji: .rooster, skinTones: nil)
         } else if rawValue == "🐣" {
-            self.init(baseEmoji: Emoji.hatchingChick, skinTones: nil)
+            self.init(baseEmoji: .hatchingChick, skinTones: nil)
         } else if rawValue == "🐤" {
-            self.init(baseEmoji: Emoji.babyChick, skinTones: nil)
+            self.init(baseEmoji: .babyChick, skinTones: nil)
         } else if rawValue == "🐥" {
-            self.init(baseEmoji: Emoji.hatchedChick, skinTones: nil)
+            self.init(baseEmoji: .hatchedChick, skinTones: nil)
         } else if rawValue == "🐦" {
-            self.init(baseEmoji: Emoji.bird, skinTones: nil)
+            self.init(baseEmoji: .bird, skinTones: nil)
         } else if rawValue == "🐧" {
-            self.init(baseEmoji: Emoji.penguin, skinTones: nil)
+            self.init(baseEmoji: .penguin, skinTones: nil)
         } else if rawValue == "🕊️" {
-            self.init(baseEmoji: Emoji.doveOfPeace, skinTones: nil)
+            self.init(baseEmoji: .doveOfPeace, skinTones: nil)
         } else if rawValue == "🦅" {
-            self.init(baseEmoji: Emoji.eagle, skinTones: nil)
+            self.init(baseEmoji: .eagle, skinTones: nil)
         } else if rawValue == "🦆" {
-            self.init(baseEmoji: Emoji.duck, skinTones: nil)
+            self.init(baseEmoji: .duck, skinTones: nil)
         } else if rawValue == "🦢" {
-            self.init(baseEmoji: Emoji.swan, skinTones: nil)
+            self.init(baseEmoji: .swan, skinTones: nil)
         } else if rawValue == "🦉" {
-            self.init(baseEmoji: Emoji.owl, skinTones: nil)
+            self.init(baseEmoji: .owl, skinTones: nil)
         } else if rawValue == "🦤" {
-            self.init(baseEmoji: Emoji.dodo, skinTones: nil)
+            self.init(baseEmoji: .dodo, skinTones: nil)
         } else if rawValue == "🪶" {
-            self.init(baseEmoji: Emoji.feather, skinTones: nil)
+            self.init(baseEmoji: .feather, skinTones: nil)
         } else if rawValue == "🦩" {
-            self.init(baseEmoji: Emoji.flamingo, skinTones: nil)
+            self.init(baseEmoji: .flamingo, skinTones: nil)
         } else if rawValue == "🦚" {
-            self.init(baseEmoji: Emoji.peacock, skinTones: nil)
+            self.init(baseEmoji: .peacock, skinTones: nil)
         } else if rawValue == "🦜" {
-            self.init(baseEmoji: Emoji.parrot, skinTones: nil)
+            self.init(baseEmoji: .parrot, skinTones: nil)
         } else if rawValue == "🐸" {
-            self.init(baseEmoji: Emoji.frog, skinTones: nil)
+            self.init(baseEmoji: .frog, skinTones: nil)
         } else if rawValue == "🐊" {
-            self.init(baseEmoji: Emoji.crocodile, skinTones: nil)
+            self.init(baseEmoji: .crocodile, skinTones: nil)
         } else if rawValue == "🐢" {
-            self.init(baseEmoji: Emoji.turtle, skinTones: nil)
+            self.init(baseEmoji: .turtle, skinTones: nil)
         } else if rawValue == "🦎" {
-            self.init(baseEmoji: Emoji.lizard, skinTones: nil)
+            self.init(baseEmoji: .lizard, skinTones: nil)
         } else if rawValue == "🐍" {
-            self.init(baseEmoji: Emoji.snake, skinTones: nil)
+            self.init(baseEmoji: .snake, skinTones: nil)
         } else if rawValue == "🐲" {
-            self.init(baseEmoji: Emoji.dragonFace, skinTones: nil)
+            self.init(baseEmoji: .dragonFace, skinTones: nil)
         } else if rawValue == "🐉" {
-            self.init(baseEmoji: Emoji.dragon, skinTones: nil)
+            self.init(baseEmoji: .dragon, skinTones: nil)
         } else if rawValue == "🦕" {
-            self.init(baseEmoji: Emoji.sauropod, skinTones: nil)
+            self.init(baseEmoji: .sauropod, skinTones: nil)
         } else if rawValue == "🦖" {
-            self.init(baseEmoji: Emoji.tRex, skinTones: nil)
+            self.init(baseEmoji: .tRex, skinTones: nil)
         } else if rawValue == "🐳" {
-            self.init(baseEmoji: Emoji.whale, skinTones: nil)
+            self.init(baseEmoji: .whale, skinTones: nil)
         } else if rawValue == "🐋" {
-            self.init(baseEmoji: Emoji.whale2, skinTones: nil)
+            self.init(baseEmoji: .whale2, skinTones: nil)
         } else if rawValue == "🐬" {
-            self.init(baseEmoji: Emoji.dolphin, skinTones: nil)
+            self.init(baseEmoji: .dolphin, skinTones: nil)
         } else if rawValue == "🦭" {
-            self.init(baseEmoji: Emoji.seal, skinTones: nil)
+            self.init(baseEmoji: .seal, skinTones: nil)
         } else if rawValue == "🐟" {
-            self.init(baseEmoji: Emoji.fish, skinTones: nil)
+            self.init(baseEmoji: .fish, skinTones: nil)
         } else if rawValue == "🐠" {
-            self.init(baseEmoji: Emoji.tropicalFish, skinTones: nil)
+            self.init(baseEmoji: .tropicalFish, skinTones: nil)
         } else if rawValue == "🐡" {
-            self.init(baseEmoji: Emoji.blowfish, skinTones: nil)
+            self.init(baseEmoji: .blowfish, skinTones: nil)
         } else if rawValue == "🦈" {
-            self.init(baseEmoji: Emoji.shark, skinTones: nil)
+            self.init(baseEmoji: .shark, skinTones: nil)
         } else if rawValue == "🐙" {
-            self.init(baseEmoji: Emoji.octopus, skinTones: nil)
+            self.init(baseEmoji: .octopus, skinTones: nil)
         } else if rawValue == "🐚" {
-            self.init(baseEmoji: Emoji.shell, skinTones: nil)
+            self.init(baseEmoji: .shell, skinTones: nil)
         } else if rawValue == "🐌" {
-            self.init(baseEmoji: Emoji.snail, skinTones: nil)
+            self.init(baseEmoji: .snail, skinTones: nil)
         } else if rawValue == "🦋" {
-            self.init(baseEmoji: Emoji.butterfly, skinTones: nil)
+            self.init(baseEmoji: .butterfly, skinTones: nil)
         } else if rawValue == "🐛" {
-            self.init(baseEmoji: Emoji.bug, skinTones: nil)
+            self.init(baseEmoji: .bug, skinTones: nil)
         } else if rawValue == "🐜" {
-            self.init(baseEmoji: Emoji.ant, skinTones: nil)
+            self.init(baseEmoji: .ant, skinTones: nil)
         } else if rawValue == "🐝" {
-            self.init(baseEmoji: Emoji.bee, skinTones: nil)
+            self.init(baseEmoji: .bee, skinTones: nil)
         } else if rawValue == "🪲" {
-            self.init(baseEmoji: Emoji.beetle, skinTones: nil)
+            self.init(baseEmoji: .beetle, skinTones: nil)
         } else if rawValue == "🐞" {
-            self.init(baseEmoji: Emoji.ladybug, skinTones: nil)
+            self.init(baseEmoji: .ladybug, skinTones: nil)
         } else if rawValue == "🦗" {
-            self.init(baseEmoji: Emoji.cricket, skinTones: nil)
+            self.init(baseEmoji: .cricket, skinTones: nil)
         } else if rawValue == "🪳" {
-            self.init(baseEmoji: Emoji.cockroach, skinTones: nil)
+            self.init(baseEmoji: .cockroach, skinTones: nil)
         } else if rawValue == "🕷️" {
-            self.init(baseEmoji: Emoji.spider, skinTones: nil)
+            self.init(baseEmoji: .spider, skinTones: nil)
         } else if rawValue == "🕸️" {
-            self.init(baseEmoji: Emoji.spiderWeb, skinTones: nil)
+            self.init(baseEmoji: .spiderWeb, skinTones: nil)
         } else if rawValue == "🦂" {
-            self.init(baseEmoji: Emoji.scorpion, skinTones: nil)
+            self.init(baseEmoji: .scorpion, skinTones: nil)
         } else if rawValue == "🦟" {
-            self.init(baseEmoji: Emoji.mosquito, skinTones: nil)
+            self.init(baseEmoji: .mosquito, skinTones: nil)
         } else if rawValue == "🪰" {
-            self.init(baseEmoji: Emoji.fly, skinTones: nil)
+            self.init(baseEmoji: .fly, skinTones: nil)
         } else if rawValue == "🪱" {
-            self.init(baseEmoji: Emoji.worm, skinTones: nil)
+            self.init(baseEmoji: .worm, skinTones: nil)
         } else if rawValue == "🦠" {
-            self.init(baseEmoji: Emoji.microbe, skinTones: nil)
+            self.init(baseEmoji: .microbe, skinTones: nil)
         } else if rawValue == "💐" {
-            self.init(baseEmoji: Emoji.bouquet, skinTones: nil)
+            self.init(baseEmoji: .bouquet, skinTones: nil)
         } else if rawValue == "🌸" {
-            self.init(baseEmoji: Emoji.cherryBlossom, skinTones: nil)
+            self.init(baseEmoji: .cherryBlossom, skinTones: nil)
         } else if rawValue == "💮" {
-            self.init(baseEmoji: Emoji.whiteFlower, skinTones: nil)
+            self.init(baseEmoji: .whiteFlower, skinTones: nil)
         } else if rawValue == "🏵️" {
-            self.init(baseEmoji: Emoji.rosette, skinTones: nil)
+            self.init(baseEmoji: .rosette, skinTones: nil)
         } else if rawValue == "🌹" {
-            self.init(baseEmoji: Emoji.rose, skinTones: nil)
+            self.init(baseEmoji: .rose, skinTones: nil)
         } else if rawValue == "🥀" {
-            self.init(baseEmoji: Emoji.wiltedFlower, skinTones: nil)
+            self.init(baseEmoji: .wiltedFlower, skinTones: nil)
         } else if rawValue == "🌺" {
-            self.init(baseEmoji: Emoji.hibiscus, skinTones: nil)
+            self.init(baseEmoji: .hibiscus, skinTones: nil)
         } else if rawValue == "🌻" {
-            self.init(baseEmoji: Emoji.sunflower, skinTones: nil)
+            self.init(baseEmoji: .sunflower, skinTones: nil)
         } else if rawValue == "🌼" {
-            self.init(baseEmoji: Emoji.blossom, skinTones: nil)
+            self.init(baseEmoji: .blossom, skinTones: nil)
         } else if rawValue == "🌷" {
-            self.init(baseEmoji: Emoji.tulip, skinTones: nil)
+            self.init(baseEmoji: .tulip, skinTones: nil)
         } else if rawValue == "🌱" {
-            self.init(baseEmoji: Emoji.seedling, skinTones: nil)
+            self.init(baseEmoji: .seedling, skinTones: nil)
         } else if rawValue == "🪴" {
-            self.init(baseEmoji: Emoji.pottedPlant, skinTones: nil)
+            self.init(baseEmoji: .pottedPlant, skinTones: nil)
         } else if rawValue == "🌲" {
-            self.init(baseEmoji: Emoji.evergreenTree, skinTones: nil)
+            self.init(baseEmoji: .evergreenTree, skinTones: nil)
         } else if rawValue == "🌳" {
-            self.init(baseEmoji: Emoji.deciduousTree, skinTones: nil)
+            self.init(baseEmoji: .deciduousTree, skinTones: nil)
         } else if rawValue == "🌴" {
-            self.init(baseEmoji: Emoji.palmTree, skinTones: nil)
+            self.init(baseEmoji: .palmTree, skinTones: nil)
         } else if rawValue == "🌵" {
-            self.init(baseEmoji: Emoji.cactus, skinTones: nil)
+            self.init(baseEmoji: .cactus, skinTones: nil)
         } else if rawValue == "🌾" {
-            self.init(baseEmoji: Emoji.earOfRice, skinTones: nil)
+            self.init(baseEmoji: .earOfRice, skinTones: nil)
         } else if rawValue == "🌿" {
-            self.init(baseEmoji: Emoji.herb, skinTones: nil)
+            self.init(baseEmoji: .herb, skinTones: nil)
         } else if rawValue == "☘️" {
-            self.init(baseEmoji: Emoji.shamrock, skinTones: nil)
+            self.init(baseEmoji: .shamrock, skinTones: nil)
         } else if rawValue == "🍀" {
-            self.init(baseEmoji: Emoji.fourLeafClover, skinTones: nil)
+            self.init(baseEmoji: .fourLeafClover, skinTones: nil)
         } else if rawValue == "🍁" {
-            self.init(baseEmoji: Emoji.mapleLeaf, skinTones: nil)
+            self.init(baseEmoji: .mapleLeaf, skinTones: nil)
         } else if rawValue == "🍂" {
-            self.init(baseEmoji: Emoji.fallenLeaf, skinTones: nil)
+            self.init(baseEmoji: .fallenLeaf, skinTones: nil)
         } else if rawValue == "🍃" {
-            self.init(baseEmoji: Emoji.leaves, skinTones: nil)
+            self.init(baseEmoji: .leaves, skinTones: nil)
         } else if rawValue == "🍇" {
-            self.init(baseEmoji: Emoji.grapes, skinTones: nil)
+            self.init(baseEmoji: .grapes, skinTones: nil)
         } else if rawValue == "🍈" {
-            self.init(baseEmoji: Emoji.melon, skinTones: nil)
+            self.init(baseEmoji: .melon, skinTones: nil)
         } else if rawValue == "🍉" {
-            self.init(baseEmoji: Emoji.watermelon, skinTones: nil)
+            self.init(baseEmoji: .watermelon, skinTones: nil)
         } else if rawValue == "🍊" {
-            self.init(baseEmoji: Emoji.tangerine, skinTones: nil)
+            self.init(baseEmoji: .tangerine, skinTones: nil)
         } else if rawValue == "🍋" {
-            self.init(baseEmoji: Emoji.lemon, skinTones: nil)
+            self.init(baseEmoji: .lemon, skinTones: nil)
         } else if rawValue == "🍌" {
-            self.init(baseEmoji: Emoji.banana, skinTones: nil)
+            self.init(baseEmoji: .banana, skinTones: nil)
         } else if rawValue == "🍍" {
-            self.init(baseEmoji: Emoji.pineapple, skinTones: nil)
+            self.init(baseEmoji: .pineapple, skinTones: nil)
         } else if rawValue == "🥭" {
-            self.init(baseEmoji: Emoji.mango, skinTones: nil)
+            self.init(baseEmoji: .mango, skinTones: nil)
         } else if rawValue == "🍎" {
-            self.init(baseEmoji: Emoji.apple, skinTones: nil)
+            self.init(baseEmoji: .apple, skinTones: nil)
         } else if rawValue == "🍏" {
-            self.init(baseEmoji: Emoji.greenApple, skinTones: nil)
+            self.init(baseEmoji: .greenApple, skinTones: nil)
         } else if rawValue == "🍐" {
-            self.init(baseEmoji: Emoji.pear, skinTones: nil)
+            self.init(baseEmoji: .pear, skinTones: nil)
         } else if rawValue == "🍑" {
-            self.init(baseEmoji: Emoji.peach, skinTones: nil)
+            self.init(baseEmoji: .peach, skinTones: nil)
         } else if rawValue == "🍒" {
-            self.init(baseEmoji: Emoji.cherries, skinTones: nil)
+            self.init(baseEmoji: .cherries, skinTones: nil)
         } else if rawValue == "🍓" {
-            self.init(baseEmoji: Emoji.strawberry, skinTones: nil)
+            self.init(baseEmoji: .strawberry, skinTones: nil)
         } else if rawValue == "🫐" {
-            self.init(baseEmoji: Emoji.blueberries, skinTones: nil)
+            self.init(baseEmoji: .blueberries, skinTones: nil)
         } else if rawValue == "🥝" {
-            self.init(baseEmoji: Emoji.kiwifruit, skinTones: nil)
+            self.init(baseEmoji: .kiwifruit, skinTones: nil)
         } else if rawValue == "🍅" {
-            self.init(baseEmoji: Emoji.tomato, skinTones: nil)
+            self.init(baseEmoji: .tomato, skinTones: nil)
         } else if rawValue == "🫒" {
-            self.init(baseEmoji: Emoji.olive, skinTones: nil)
+            self.init(baseEmoji: .olive, skinTones: nil)
         } else if rawValue == "🥥" {
-            self.init(baseEmoji: Emoji.coconut, skinTones: nil)
+            self.init(baseEmoji: .coconut, skinTones: nil)
         } else if rawValue == "🥑" {
-            self.init(baseEmoji: Emoji.avocado, skinTones: nil)
+            self.init(baseEmoji: .avocado, skinTones: nil)
         } else if rawValue == "🍆" {
-            self.init(baseEmoji: Emoji.eggplant, skinTones: nil)
+            self.init(baseEmoji: .eggplant, skinTones: nil)
         } else if rawValue == "🥔" {
-            self.init(baseEmoji: Emoji.potato, skinTones: nil)
+            self.init(baseEmoji: .potato, skinTones: nil)
         } else if rawValue == "🥕" {
-            self.init(baseEmoji: Emoji.carrot, skinTones: nil)
+            self.init(baseEmoji: .carrot, skinTones: nil)
         } else if rawValue == "🌽" {
-            self.init(baseEmoji: Emoji.corn, skinTones: nil)
+            self.init(baseEmoji: .corn, skinTones: nil)
         } else if rawValue == "🌶️" {
-            self.init(baseEmoji: Emoji.hotPepper, skinTones: nil)
+            self.init(baseEmoji: .hotPepper, skinTones: nil)
         } else if rawValue == "🫑" {
-            self.init(baseEmoji: Emoji.bellPepper, skinTones: nil)
+            self.init(baseEmoji: .bellPepper, skinTones: nil)
         } else if rawValue == "🥒" {
-            self.init(baseEmoji: Emoji.cucumber, skinTones: nil)
+            self.init(baseEmoji: .cucumber, skinTones: nil)
         } else if rawValue == "🥬" {
-            self.init(baseEmoji: Emoji.leafyGreen, skinTones: nil)
+            self.init(baseEmoji: .leafyGreen, skinTones: nil)
         } else if rawValue == "🥦" {
-            self.init(baseEmoji: Emoji.broccoli, skinTones: nil)
+            self.init(baseEmoji: .broccoli, skinTones: nil)
         } else if rawValue == "🧄" {
-            self.init(baseEmoji: Emoji.garlic, skinTones: nil)
+            self.init(baseEmoji: .garlic, skinTones: nil)
         } else if rawValue == "🧅" {
-            self.init(baseEmoji: Emoji.onion, skinTones: nil)
+            self.init(baseEmoji: .onion, skinTones: nil)
         } else if rawValue == "🍄" {
-            self.init(baseEmoji: Emoji.mushroom, skinTones: nil)
+            self.init(baseEmoji: .mushroom, skinTones: nil)
         } else if rawValue == "🥜" {
-            self.init(baseEmoji: Emoji.peanuts, skinTones: nil)
+            self.init(baseEmoji: .peanuts, skinTones: nil)
         } else if rawValue == "🌰" {
-            self.init(baseEmoji: Emoji.chestnut, skinTones: nil)
+            self.init(baseEmoji: .chestnut, skinTones: nil)
         } else if rawValue == "🍞" {
-            self.init(baseEmoji: Emoji.bread, skinTones: nil)
+            self.init(baseEmoji: .bread, skinTones: nil)
         } else if rawValue == "🥐" {
-            self.init(baseEmoji: Emoji.croissant, skinTones: nil)
+            self.init(baseEmoji: .croissant, skinTones: nil)
         } else if rawValue == "🥖" {
-            self.init(baseEmoji: Emoji.baguetteBread, skinTones: nil)
+            self.init(baseEmoji: .baguetteBread, skinTones: nil)
         } else if rawValue == "🫓" {
-            self.init(baseEmoji: Emoji.flatbread, skinTones: nil)
+            self.init(baseEmoji: .flatbread, skinTones: nil)
         } else if rawValue == "🥨" {
-            self.init(baseEmoji: Emoji.pretzel, skinTones: nil)
+            self.init(baseEmoji: .pretzel, skinTones: nil)
         } else if rawValue == "🥯" {
-            self.init(baseEmoji: Emoji.bagel, skinTones: nil)
+            self.init(baseEmoji: .bagel, skinTones: nil)
         } else if rawValue == "🥞" {
-            self.init(baseEmoji: Emoji.pancakes, skinTones: nil)
+            self.init(baseEmoji: .pancakes, skinTones: nil)
         } else if rawValue == "🧇" {
-            self.init(baseEmoji: Emoji.waffle, skinTones: nil)
+            self.init(baseEmoji: .waffle, skinTones: nil)
         } else if rawValue == "🧀" {
-            self.init(baseEmoji: Emoji.cheeseWedge, skinTones: nil)
+            self.init(baseEmoji: .cheeseWedge, skinTones: nil)
         } else if rawValue == "🍖" {
-            self.init(baseEmoji: Emoji.meatOnBone, skinTones: nil)
+            self.init(baseEmoji: .meatOnBone, skinTones: nil)
         } else if rawValue == "🍗" {
-            self.init(baseEmoji: Emoji.poultryLeg, skinTones: nil)
+            self.init(baseEmoji: .poultryLeg, skinTones: nil)
         } else if rawValue == "🥩" {
-            self.init(baseEmoji: Emoji.cutOfMeat, skinTones: nil)
+            self.init(baseEmoji: .cutOfMeat, skinTones: nil)
         } else if rawValue == "🥓" {
-            self.init(baseEmoji: Emoji.bacon, skinTones: nil)
+            self.init(baseEmoji: .bacon, skinTones: nil)
         } else if rawValue == "🍔" {
-            self.init(baseEmoji: Emoji.hamburger, skinTones: nil)
+            self.init(baseEmoji: .hamburger, skinTones: nil)
         } else if rawValue == "🍟" {
-            self.init(baseEmoji: Emoji.fries, skinTones: nil)
+            self.init(baseEmoji: .fries, skinTones: nil)
         } else if rawValue == "🍕" {
-            self.init(baseEmoji: Emoji.pizza, skinTones: nil)
+            self.init(baseEmoji: .pizza, skinTones: nil)
         } else if rawValue == "🌭" {
-            self.init(baseEmoji: Emoji.hotdog, skinTones: nil)
+            self.init(baseEmoji: .hotdog, skinTones: nil)
         } else if rawValue == "🥪" {
-            self.init(baseEmoji: Emoji.sandwich, skinTones: nil)
+            self.init(baseEmoji: .sandwich, skinTones: nil)
         } else if rawValue == "🌮" {
-            self.init(baseEmoji: Emoji.taco, skinTones: nil)
+            self.init(baseEmoji: .taco, skinTones: nil)
         } else if rawValue == "🌯" {
-            self.init(baseEmoji: Emoji.burrito, skinTones: nil)
+            self.init(baseEmoji: .burrito, skinTones: nil)
         } else if rawValue == "🫔" {
-            self.init(baseEmoji: Emoji.tamale, skinTones: nil)
+            self.init(baseEmoji: .tamale, skinTones: nil)
         } else if rawValue == "🥙" {
-            self.init(baseEmoji: Emoji.stuffedFlatbread, skinTones: nil)
+            self.init(baseEmoji: .stuffedFlatbread, skinTones: nil)
         } else if rawValue == "🧆" {
-            self.init(baseEmoji: Emoji.falafel, skinTones: nil)
+            self.init(baseEmoji: .falafel, skinTones: nil)
         } else if rawValue == "🥚" {
-            self.init(baseEmoji: Emoji.egg, skinTones: nil)
+            self.init(baseEmoji: .egg, skinTones: nil)
         } else if rawValue == "🍳" {
-            self.init(baseEmoji: Emoji.friedEgg, skinTones: nil)
+            self.init(baseEmoji: .friedEgg, skinTones: nil)
         } else if rawValue == "🥘" {
-            self.init(baseEmoji: Emoji.shallowPanOfFood, skinTones: nil)
+            self.init(baseEmoji: .shallowPanOfFood, skinTones: nil)
         } else if rawValue == "🍲" {
-            self.init(baseEmoji: Emoji.stew, skinTones: nil)
+            self.init(baseEmoji: .stew, skinTones: nil)
         } else if rawValue == "🫕" {
-            self.init(baseEmoji: Emoji.fondue, skinTones: nil)
+            self.init(baseEmoji: .fondue, skinTones: nil)
         } else if rawValue == "🥣" {
-            self.init(baseEmoji: Emoji.bowlWithSpoon, skinTones: nil)
+            self.init(baseEmoji: .bowlWithSpoon, skinTones: nil)
         } else if rawValue == "🥗" {
-            self.init(baseEmoji: Emoji.greenSalad, skinTones: nil)
+            self.init(baseEmoji: .greenSalad, skinTones: nil)
         } else if rawValue == "🍿" {
-            self.init(baseEmoji: Emoji.popcorn, skinTones: nil)
+            self.init(baseEmoji: .popcorn, skinTones: nil)
         } else if rawValue == "🧈" {
-            self.init(baseEmoji: Emoji.butter, skinTones: nil)
+            self.init(baseEmoji: .butter, skinTones: nil)
         } else if rawValue == "🧂" {
-            self.init(baseEmoji: Emoji.salt, skinTones: nil)
+            self.init(baseEmoji: .salt, skinTones: nil)
         } else if rawValue == "🥫" {
-            self.init(baseEmoji: Emoji.cannedFood, skinTones: nil)
+            self.init(baseEmoji: .cannedFood, skinTones: nil)
         } else if rawValue == "🍱" {
-            self.init(baseEmoji: Emoji.bento, skinTones: nil)
+            self.init(baseEmoji: .bento, skinTones: nil)
         } else if rawValue == "🍘" {
-            self.init(baseEmoji: Emoji.riceCracker, skinTones: nil)
+            self.init(baseEmoji: .riceCracker, skinTones: nil)
         } else if rawValue == "🍙" {
-            self.init(baseEmoji: Emoji.riceBall, skinTones: nil)
+            self.init(baseEmoji: .riceBall, skinTones: nil)
         } else if rawValue == "🍚" {
-            self.init(baseEmoji: Emoji.rice, skinTones: nil)
+            self.init(baseEmoji: .rice, skinTones: nil)
         } else if rawValue == "🍛" {
-            self.init(baseEmoji: Emoji.curry, skinTones: nil)
+            self.init(baseEmoji: .curry, skinTones: nil)
         } else if rawValue == "🍜" {
-            self.init(baseEmoji: Emoji.ramen, skinTones: nil)
+            self.init(baseEmoji: .ramen, skinTones: nil)
         } else if rawValue == "🍝" {
-            self.init(baseEmoji: Emoji.spaghetti, skinTones: nil)
+            self.init(baseEmoji: .spaghetti, skinTones: nil)
         } else if rawValue == "🍠" {
-            self.init(baseEmoji: Emoji.sweetPotato, skinTones: nil)
+            self.init(baseEmoji: .sweetPotato, skinTones: nil)
         } else if rawValue == "🍢" {
-            self.init(baseEmoji: Emoji.oden, skinTones: nil)
+            self.init(baseEmoji: .oden, skinTones: nil)
         } else if rawValue == "🍣" {
-            self.init(baseEmoji: Emoji.sushi, skinTones: nil)
+            self.init(baseEmoji: .sushi, skinTones: nil)
         } else if rawValue == "🍤" {
-            self.init(baseEmoji: Emoji.friedShrimp, skinTones: nil)
+            self.init(baseEmoji: .friedShrimp, skinTones: nil)
         } else if rawValue == "🍥" {
-            self.init(baseEmoji: Emoji.fishCake, skinTones: nil)
+            self.init(baseEmoji: .fishCake, skinTones: nil)
         } else if rawValue == "🥮" {
-            self.init(baseEmoji: Emoji.moonCake, skinTones: nil)
+            self.init(baseEmoji: .moonCake, skinTones: nil)
         } else if rawValue == "🍡" {
-            self.init(baseEmoji: Emoji.dango, skinTones: nil)
+            self.init(baseEmoji: .dango, skinTones: nil)
         } else if rawValue == "🥟" {
-            self.init(baseEmoji: Emoji.dumpling, skinTones: nil)
+            self.init(baseEmoji: .dumpling, skinTones: nil)
         } else if rawValue == "🥠" {
-            self.init(baseEmoji: Emoji.fortuneCookie, skinTones: nil)
+            self.init(baseEmoji: .fortuneCookie, skinTones: nil)
         } else if rawValue == "🥡" {
-            self.init(baseEmoji: Emoji.takeoutBox, skinTones: nil)
+            self.init(baseEmoji: .takeoutBox, skinTones: nil)
         } else if rawValue == "🦀" {
-            self.init(baseEmoji: Emoji.crab, skinTones: nil)
+            self.init(baseEmoji: .crab, skinTones: nil)
         } else if rawValue == "🦞" {
-            self.init(baseEmoji: Emoji.lobster, skinTones: nil)
+            self.init(baseEmoji: .lobster, skinTones: nil)
         } else if rawValue == "🦐" {
-            self.init(baseEmoji: Emoji.shrimp, skinTones: nil)
+            self.init(baseEmoji: .shrimp, skinTones: nil)
         } else if rawValue == "🦑" {
-            self.init(baseEmoji: Emoji.squid, skinTones: nil)
+            self.init(baseEmoji: .squid, skinTones: nil)
         } else if rawValue == "🦪" {
-            self.init(baseEmoji: Emoji.oyster, skinTones: nil)
+            self.init(baseEmoji: .oyster, skinTones: nil)
         } else if rawValue == "🍦" {
-            self.init(baseEmoji: Emoji.icecream, skinTones: nil)
+            self.init(baseEmoji: .icecream, skinTones: nil)
         } else if rawValue == "🍧" {
-            self.init(baseEmoji: Emoji.shavedIce, skinTones: nil)
+            self.init(baseEmoji: .shavedIce, skinTones: nil)
         } else if rawValue == "🍨" {
-            self.init(baseEmoji: Emoji.iceCream, skinTones: nil)
+            self.init(baseEmoji: .iceCream, skinTones: nil)
         } else if rawValue == "🍩" {
-            self.init(baseEmoji: Emoji.doughnut, skinTones: nil)
+            self.init(baseEmoji: .doughnut, skinTones: nil)
         } else if rawValue == "🍪" {
-            self.init(baseEmoji: Emoji.cookie, skinTones: nil)
+            self.init(baseEmoji: .cookie, skinTones: nil)
         } else if rawValue == "🎂" {
-            self.init(baseEmoji: Emoji.birthday, skinTones: nil)
+            self.init(baseEmoji: .birthday, skinTones: nil)
         } else if rawValue == "🍰" {
-            self.init(baseEmoji: Emoji.cake, skinTones: nil)
+            self.init(baseEmoji: .cake, skinTones: nil)
         } else if rawValue == "🧁" {
-            self.init(baseEmoji: Emoji.cupcake, skinTones: nil)
+            self.init(baseEmoji: .cupcake, skinTones: nil)
         } else if rawValue == "🥧" {
-            self.init(baseEmoji: Emoji.pie, skinTones: nil)
+            self.init(baseEmoji: .pie, skinTones: nil)
         } else if rawValue == "🍫" {
-            self.init(baseEmoji: Emoji.chocolateBar, skinTones: nil)
+            self.init(baseEmoji: .chocolateBar, skinTones: nil)
         } else if rawValue == "🍬" {
-            self.init(baseEmoji: Emoji.candy, skinTones: nil)
+            self.init(baseEmoji: .candy, skinTones: nil)
         } else if rawValue == "🍭" {
-            self.init(baseEmoji: Emoji.lollipop, skinTones: nil)
+            self.init(baseEmoji: .lollipop, skinTones: nil)
         } else if rawValue == "🍮" {
-            self.init(baseEmoji: Emoji.custard, skinTones: nil)
+            self.init(baseEmoji: .custard, skinTones: nil)
         } else if rawValue == "🍯" {
-            self.init(baseEmoji: Emoji.honeyPot, skinTones: nil)
+            self.init(baseEmoji: .honeyPot, skinTones: nil)
         } else if rawValue == "🍼" {
-            self.init(baseEmoji: Emoji.babyBottle, skinTones: nil)
+            self.init(baseEmoji: .babyBottle, skinTones: nil)
         } else if rawValue == "🥛" {
-            self.init(baseEmoji: Emoji.glassOfMilk, skinTones: nil)
+            self.init(baseEmoji: .glassOfMilk, skinTones: nil)
         } else if rawValue == "☕" {
-            self.init(baseEmoji: Emoji.coffee, skinTones: nil)
+            self.init(baseEmoji: .coffee, skinTones: nil)
         } else if rawValue == "🫖" {
-            self.init(baseEmoji: Emoji.teapot, skinTones: nil)
+            self.init(baseEmoji: .teapot, skinTones: nil)
         } else if rawValue == "🍵" {
-            self.init(baseEmoji: Emoji.tea, skinTones: nil)
+            self.init(baseEmoji: .tea, skinTones: nil)
         } else if rawValue == "🍶" {
-            self.init(baseEmoji: Emoji.sake, skinTones: nil)
+            self.init(baseEmoji: .sake, skinTones: nil)
         } else if rawValue == "🍾" {
-            self.init(baseEmoji: Emoji.champagne, skinTones: nil)
+            self.init(baseEmoji: .champagne, skinTones: nil)
         } else if rawValue == "🍷" {
-            self.init(baseEmoji: Emoji.wineGlass, skinTones: nil)
+            self.init(baseEmoji: .wineGlass, skinTones: nil)
         } else if rawValue == "🍸" {
-            self.init(baseEmoji: Emoji.cocktail, skinTones: nil)
+            self.init(baseEmoji: .cocktail, skinTones: nil)
         } else if rawValue == "🍹" {
-            self.init(baseEmoji: Emoji.tropicalDrink, skinTones: nil)
+            self.init(baseEmoji: .tropicalDrink, skinTones: nil)
         } else if rawValue == "🍺" {
-            self.init(baseEmoji: Emoji.beer, skinTones: nil)
+            self.init(baseEmoji: .beer, skinTones: nil)
         } else if rawValue == "🍻" {
-            self.init(baseEmoji: Emoji.beers, skinTones: nil)
+            self.init(baseEmoji: .beers, skinTones: nil)
         } else if rawValue == "🥂" {
-            self.init(baseEmoji: Emoji.clinkingGlasses, skinTones: nil)
+            self.init(baseEmoji: .clinkingGlasses, skinTones: nil)
         } else if rawValue == "🥃" {
-            self.init(baseEmoji: Emoji.tumblerGlass, skinTones: nil)
+            self.init(baseEmoji: .tumblerGlass, skinTones: nil)
         } else if rawValue == "🥤" {
-            self.init(baseEmoji: Emoji.cupWithStraw, skinTones: nil)
+            self.init(baseEmoji: .cupWithStraw, skinTones: nil)
         } else if rawValue == "🧋" {
-            self.init(baseEmoji: Emoji.bubbleTea, skinTones: nil)
+            self.init(baseEmoji: .bubbleTea, skinTones: nil)
         } else if rawValue == "🧃" {
-            self.init(baseEmoji: Emoji.beverageBox, skinTones: nil)
+            self.init(baseEmoji: .beverageBox, skinTones: nil)
         } else if rawValue == "🧉" {
-            self.init(baseEmoji: Emoji.mateDrink, skinTones: nil)
+            self.init(baseEmoji: .mateDrink, skinTones: nil)
         } else if rawValue == "🧊" {
-            self.init(baseEmoji: Emoji.iceCube, skinTones: nil)
+            self.init(baseEmoji: .iceCube, skinTones: nil)
         } else if rawValue == "🥢" {
-            self.init(baseEmoji: Emoji.chopsticks, skinTones: nil)
+            self.init(baseEmoji: .chopsticks, skinTones: nil)
         } else if rawValue == "🍽️" {
-            self.init(baseEmoji: Emoji.knifeForkPlate, skinTones: nil)
+            self.init(baseEmoji: .knifeForkPlate, skinTones: nil)
         } else if rawValue == "🍴" {
-            self.init(baseEmoji: Emoji.forkAndKnife, skinTones: nil)
+            self.init(baseEmoji: .forkAndKnife, skinTones: nil)
         } else if rawValue == "🥄" {
-            self.init(baseEmoji: Emoji.spoon, skinTones: nil)
+            self.init(baseEmoji: .spoon, skinTones: nil)
         } else if rawValue == "🔪" {
-            self.init(baseEmoji: Emoji.hocho, skinTones: nil)
+            self.init(baseEmoji: .hocho, skinTones: nil)
         } else if rawValue == "🏺" {
-            self.init(baseEmoji: Emoji.amphora, skinTones: nil)
+            self.init(baseEmoji: .amphora, skinTones: nil)
         } else if rawValue == "🌍" {
-            self.init(baseEmoji: Emoji.earthAfrica, skinTones: nil)
+            self.init(baseEmoji: .earthAfrica, skinTones: nil)
         } else if rawValue == "🌎" {
-            self.init(baseEmoji: Emoji.earthAmericas, skinTones: nil)
+            self.init(baseEmoji: .earthAmericas, skinTones: nil)
         } else if rawValue == "🌏" {
-            self.init(baseEmoji: Emoji.earthAsia, skinTones: nil)
+            self.init(baseEmoji: .earthAsia, skinTones: nil)
         } else if rawValue == "🌐" {
-            self.init(baseEmoji: Emoji.globeWithMeridians, skinTones: nil)
+            self.init(baseEmoji: .globeWithMeridians, skinTones: nil)
         } else if rawValue == "🗺️" {
-            self.init(baseEmoji: Emoji.worldMap, skinTones: nil)
+            self.init(baseEmoji: .worldMap, skinTones: nil)
         } else if rawValue == "🗾" {
-            self.init(baseEmoji: Emoji.japan, skinTones: nil)
+            self.init(baseEmoji: .japan, skinTones: nil)
         } else if rawValue == "🧭" {
-            self.init(baseEmoji: Emoji.compass, skinTones: nil)
+            self.init(baseEmoji: .compass, skinTones: nil)
         } else if rawValue == "🏔️" {
-            self.init(baseEmoji: Emoji.snowCappedMountain, skinTones: nil)
+            self.init(baseEmoji: .snowCappedMountain, skinTones: nil)
         } else if rawValue == "⛰️" {
-            self.init(baseEmoji: Emoji.mountain, skinTones: nil)
+            self.init(baseEmoji: .mountain, skinTones: nil)
         } else if rawValue == "🌋" {
-            self.init(baseEmoji: Emoji.volcano, skinTones: nil)
+            self.init(baseEmoji: .volcano, skinTones: nil)
         } else if rawValue == "🗻" {
-            self.init(baseEmoji: Emoji.mountFuji, skinTones: nil)
+            self.init(baseEmoji: .mountFuji, skinTones: nil)
         } else if rawValue == "🏕️" {
-            self.init(baseEmoji: Emoji.camping, skinTones: nil)
+            self.init(baseEmoji: .camping, skinTones: nil)
         } else if rawValue == "🏖️" {
-            self.init(baseEmoji: Emoji.beachWithUmbrella, skinTones: nil)
+            self.init(baseEmoji: .beachWithUmbrella, skinTones: nil)
         } else if rawValue == "🏜️" {
-            self.init(baseEmoji: Emoji.desert, skinTones: nil)
+            self.init(baseEmoji: .desert, skinTones: nil)
         } else if rawValue == "🏝️" {
-            self.init(baseEmoji: Emoji.desertIsland, skinTones: nil)
+            self.init(baseEmoji: .desertIsland, skinTones: nil)
         } else if rawValue == "🏞️" {
-            self.init(baseEmoji: Emoji.nationalPark, skinTones: nil)
+            self.init(baseEmoji: .nationalPark, skinTones: nil)
         } else if rawValue == "🏟️" {
-            self.init(baseEmoji: Emoji.stadium, skinTones: nil)
+            self.init(baseEmoji: .stadium, skinTones: nil)
         } else if rawValue == "🏛️" {
-            self.init(baseEmoji: Emoji.classicalBuilding, skinTones: nil)
+            self.init(baseEmoji: .classicalBuilding, skinTones: nil)
         } else if rawValue == "🏗️" {
-            self.init(baseEmoji: Emoji.buildingConstruction, skinTones: nil)
+            self.init(baseEmoji: .buildingConstruction, skinTones: nil)
         } else if rawValue == "🧱" {
-            self.init(baseEmoji: Emoji.bricks, skinTones: nil)
+            self.init(baseEmoji: .bricks, skinTones: nil)
         } else if rawValue == "🪨" {
-            self.init(baseEmoji: Emoji.rock, skinTones: nil)
+            self.init(baseEmoji: .rock, skinTones: nil)
         } else if rawValue == "🪵" {
-            self.init(baseEmoji: Emoji.wood, skinTones: nil)
+            self.init(baseEmoji: .wood, skinTones: nil)
         } else if rawValue == "🛖" {
-            self.init(baseEmoji: Emoji.hut, skinTones: nil)
+            self.init(baseEmoji: .hut, skinTones: nil)
         } else if rawValue == "🏘️" {
-            self.init(baseEmoji: Emoji.houseBuildings, skinTones: nil)
+            self.init(baseEmoji: .houseBuildings, skinTones: nil)
         } else if rawValue == "🏚️" {
-            self.init(baseEmoji: Emoji.derelictHouseBuilding, skinTones: nil)
+            self.init(baseEmoji: .derelictHouseBuilding, skinTones: nil)
         } else if rawValue == "🏠" {
-            self.init(baseEmoji: Emoji.house, skinTones: nil)
+            self.init(baseEmoji: .house, skinTones: nil)
         } else if rawValue == "🏡" {
-            self.init(baseEmoji: Emoji.houseWithGarden, skinTones: nil)
+            self.init(baseEmoji: .houseWithGarden, skinTones: nil)
         } else if rawValue == "🏢" {
-            self.init(baseEmoji: Emoji.office, skinTones: nil)
+            self.init(baseEmoji: .office, skinTones: nil)
         } else if rawValue == "🏣" {
-            self.init(baseEmoji: Emoji.postOffice, skinTones: nil)
+            self.init(baseEmoji: .postOffice, skinTones: nil)
         } else if rawValue == "🏤" {
-            self.init(baseEmoji: Emoji.europeanPostOffice, skinTones: nil)
+            self.init(baseEmoji: .europeanPostOffice, skinTones: nil)
         } else if rawValue == "🏥" {
-            self.init(baseEmoji: Emoji.hospital, skinTones: nil)
+            self.init(baseEmoji: .hospital, skinTones: nil)
         } else if rawValue == "🏦" {
-            self.init(baseEmoji: Emoji.bank, skinTones: nil)
+            self.init(baseEmoji: .bank, skinTones: nil)
         } else if rawValue == "🏨" {
-            self.init(baseEmoji: Emoji.hotel, skinTones: nil)
+            self.init(baseEmoji: .hotel, skinTones: nil)
         } else if rawValue == "🏩" {
-            self.init(baseEmoji: Emoji.loveHotel, skinTones: nil)
+            self.init(baseEmoji: .loveHotel, skinTones: nil)
         } else if rawValue == "🏪" {
-            self.init(baseEmoji: Emoji.convenienceStore, skinTones: nil)
+            self.init(baseEmoji: .convenienceStore, skinTones: nil)
         } else if rawValue == "🏫" {
-            self.init(baseEmoji: Emoji.school, skinTones: nil)
+            self.init(baseEmoji: .school, skinTones: nil)
         } else if rawValue == "🏬" {
-            self.init(baseEmoji: Emoji.departmentStore, skinTones: nil)
+            self.init(baseEmoji: .departmentStore, skinTones: nil)
         } else if rawValue == "🏭" {
-            self.init(baseEmoji: Emoji.factory, skinTones: nil)
+            self.init(baseEmoji: .factory, skinTones: nil)
         } else if rawValue == "🏯" {
-            self.init(baseEmoji: Emoji.japaneseCastle, skinTones: nil)
+            self.init(baseEmoji: .japaneseCastle, skinTones: nil)
         } else if rawValue == "🏰" {
-            self.init(baseEmoji: Emoji.europeanCastle, skinTones: nil)
+            self.init(baseEmoji: .europeanCastle, skinTones: nil)
         } else if rawValue == "💒" {
-            self.init(baseEmoji: Emoji.wedding, skinTones: nil)
+            self.init(baseEmoji: .wedding, skinTones: nil)
         } else if rawValue == "🗼" {
-            self.init(baseEmoji: Emoji.tokyoTower, skinTones: nil)
+            self.init(baseEmoji: .tokyoTower, skinTones: nil)
         } else if rawValue == "🗽" {
-            self.init(baseEmoji: Emoji.statueOfLiberty, skinTones: nil)
+            self.init(baseEmoji: .statueOfLiberty, skinTones: nil)
         } else if rawValue == "⛪" {
-            self.init(baseEmoji: Emoji.church, skinTones: nil)
+            self.init(baseEmoji: .church, skinTones: nil)
         } else if rawValue == "🕌" {
-            self.init(baseEmoji: Emoji.mosque, skinTones: nil)
+            self.init(baseEmoji: .mosque, skinTones: nil)
         } else if rawValue == "🛕" {
-            self.init(baseEmoji: Emoji.hinduTemple, skinTones: nil)
+            self.init(baseEmoji: .hinduTemple, skinTones: nil)
         } else if rawValue == "🕍" {
-            self.init(baseEmoji: Emoji.synagogue, skinTones: nil)
+            self.init(baseEmoji: .synagogue, skinTones: nil)
         } else if rawValue == "⛩️" {
-            self.init(baseEmoji: Emoji.shintoShrine, skinTones: nil)
+            self.init(baseEmoji: .shintoShrine, skinTones: nil)
         } else if rawValue == "🕋" {
-            self.init(baseEmoji: Emoji.kaaba, skinTones: nil)
+            self.init(baseEmoji: .kaaba, skinTones: nil)
         } else if rawValue == "⛲" {
-            self.init(baseEmoji: Emoji.fountain, skinTones: nil)
+            self.init(baseEmoji: .fountain, skinTones: nil)
         } else if rawValue == "⛺" {
-            self.init(baseEmoji: Emoji.tent, skinTones: nil)
+            self.init(baseEmoji: .tent, skinTones: nil)
         } else if rawValue == "🌁" {
-            self.init(baseEmoji: Emoji.foggy, skinTones: nil)
+            self.init(baseEmoji: .foggy, skinTones: nil)
         } else if rawValue == "🌃" {
-            self.init(baseEmoji: Emoji.nightWithStars, skinTones: nil)
+            self.init(baseEmoji: .nightWithStars, skinTones: nil)
         } else if rawValue == "🏙️" {
-            self.init(baseEmoji: Emoji.cityscape, skinTones: nil)
+            self.init(baseEmoji: .cityscape, skinTones: nil)
         } else if rawValue == "🌄" {
-            self.init(baseEmoji: Emoji.sunriseOverMountains, skinTones: nil)
+            self.init(baseEmoji: .sunriseOverMountains, skinTones: nil)
         } else if rawValue == "🌅" {
-            self.init(baseEmoji: Emoji.sunrise, skinTones: nil)
+            self.init(baseEmoji: .sunrise, skinTones: nil)
         } else if rawValue == "🌆" {
-            self.init(baseEmoji: Emoji.citySunset, skinTones: nil)
+            self.init(baseEmoji: .citySunset, skinTones: nil)
         } else if rawValue == "🌇" {
-            self.init(baseEmoji: Emoji.citySunrise, skinTones: nil)
+            self.init(baseEmoji: .citySunrise, skinTones: nil)
         } else if rawValue == "🌉" {
-            self.init(baseEmoji: Emoji.bridgeAtNight, skinTones: nil)
+            self.init(baseEmoji: .bridgeAtNight, skinTones: nil)
         } else if rawValue == "♨️" {
-            self.init(baseEmoji: Emoji.hotsprings, skinTones: nil)
+            self.init(baseEmoji: .hotsprings, skinTones: nil)
         } else if rawValue == "🎠" {
-            self.init(baseEmoji: Emoji.carouselHorse, skinTones: nil)
+            self.init(baseEmoji: .carouselHorse, skinTones: nil)
         } else if rawValue == "🎡" {
-            self.init(baseEmoji: Emoji.ferrisWheel, skinTones: nil)
+            self.init(baseEmoji: .ferrisWheel, skinTones: nil)
         } else if rawValue == "🎢" {
-            self.init(baseEmoji: Emoji.rollerCoaster, skinTones: nil)
+            self.init(baseEmoji: .rollerCoaster, skinTones: nil)
         } else if rawValue == "💈" {
-            self.init(baseEmoji: Emoji.barber, skinTones: nil)
+            self.init(baseEmoji: .barber, skinTones: nil)
         } else if rawValue == "🎪" {
-            self.init(baseEmoji: Emoji.circusTent, skinTones: nil)
+            self.init(baseEmoji: .circusTent, skinTones: nil)
         } else if rawValue == "🚂" {
-            self.init(baseEmoji: Emoji.steamLocomotive, skinTones: nil)
+            self.init(baseEmoji: .steamLocomotive, skinTones: nil)
         } else if rawValue == "🚃" {
-            self.init(baseEmoji: Emoji.railwayCar, skinTones: nil)
+            self.init(baseEmoji: .railwayCar, skinTones: nil)
         } else if rawValue == "🚄" {
-            self.init(baseEmoji: Emoji.bullettrainSide, skinTones: nil)
+            self.init(baseEmoji: .bullettrainSide, skinTones: nil)
         } else if rawValue == "🚅" {
-            self.init(baseEmoji: Emoji.bullettrainFront, skinTones: nil)
+            self.init(baseEmoji: .bullettrainFront, skinTones: nil)
         } else if rawValue == "🚆" {
-            self.init(baseEmoji: Emoji.train2, skinTones: nil)
+            self.init(baseEmoji: .train2, skinTones: nil)
         } else if rawValue == "🚇" {
-            self.init(baseEmoji: Emoji.metro, skinTones: nil)
+            self.init(baseEmoji: .metro, skinTones: nil)
         } else if rawValue == "🚈" {
-            self.init(baseEmoji: Emoji.lightRail, skinTones: nil)
+            self.init(baseEmoji: .lightRail, skinTones: nil)
         } else if rawValue == "🚉" {
-            self.init(baseEmoji: Emoji.station, skinTones: nil)
+            self.init(baseEmoji: .station, skinTones: nil)
         } else if rawValue == "🚊" {
-            self.init(baseEmoji: Emoji.tram, skinTones: nil)
+            self.init(baseEmoji: .tram, skinTones: nil)
         } else if rawValue == "🚝" {
-            self.init(baseEmoji: Emoji.monorail, skinTones: nil)
+            self.init(baseEmoji: .monorail, skinTones: nil)
         } else if rawValue == "🚞" {
-            self.init(baseEmoji: Emoji.mountainRailway, skinTones: nil)
+            self.init(baseEmoji: .mountainRailway, skinTones: nil)
         } else if rawValue == "🚋" {
-            self.init(baseEmoji: Emoji.train, skinTones: nil)
+            self.init(baseEmoji: .train, skinTones: nil)
         } else if rawValue == "🚌" {
-            self.init(baseEmoji: Emoji.bus, skinTones: nil)
+            self.init(baseEmoji: .bus, skinTones: nil)
         } else if rawValue == "🚍" {
-            self.init(baseEmoji: Emoji.oncomingBus, skinTones: nil)
+            self.init(baseEmoji: .oncomingBus, skinTones: nil)
         } else if rawValue == "🚎" {
-            self.init(baseEmoji: Emoji.trolleybus, skinTones: nil)
+            self.init(baseEmoji: .trolleybus, skinTones: nil)
         } else if rawValue == "🚐" {
-            self.init(baseEmoji: Emoji.minibus, skinTones: nil)
+            self.init(baseEmoji: .minibus, skinTones: nil)
         } else if rawValue == "🚑" {
-            self.init(baseEmoji: Emoji.ambulance, skinTones: nil)
+            self.init(baseEmoji: .ambulance, skinTones: nil)
         } else if rawValue == "🚒" {
-            self.init(baseEmoji: Emoji.fireEngine, skinTones: nil)
+            self.init(baseEmoji: .fireEngine, skinTones: nil)
         } else if rawValue == "🚓" {
-            self.init(baseEmoji: Emoji.policeCar, skinTones: nil)
+            self.init(baseEmoji: .policeCar, skinTones: nil)
         } else if rawValue == "🚔" {
-            self.init(baseEmoji: Emoji.oncomingPoliceCar, skinTones: nil)
+            self.init(baseEmoji: .oncomingPoliceCar, skinTones: nil)
         } else if rawValue == "🚕" {
-            self.init(baseEmoji: Emoji.taxi, skinTones: nil)
+            self.init(baseEmoji: .taxi, skinTones: nil)
         } else if rawValue == "🚖" {
-            self.init(baseEmoji: Emoji.oncomingTaxi, skinTones: nil)
+            self.init(baseEmoji: .oncomingTaxi, skinTones: nil)
         } else if rawValue == "🚗" {
-            self.init(baseEmoji: Emoji.car, skinTones: nil)
+            self.init(baseEmoji: .car, skinTones: nil)
         } else if rawValue == "🚘" {
-            self.init(baseEmoji: Emoji.oncomingAutomobile, skinTones: nil)
+            self.init(baseEmoji: .oncomingAutomobile, skinTones: nil)
         } else if rawValue == "🚙" {
-            self.init(baseEmoji: Emoji.blueCar, skinTones: nil)
+            self.init(baseEmoji: .blueCar, skinTones: nil)
         } else if rawValue == "🛻" {
-            self.init(baseEmoji: Emoji.pickupTruck, skinTones: nil)
+            self.init(baseEmoji: .pickupTruck, skinTones: nil)
         } else if rawValue == "🚚" {
-            self.init(baseEmoji: Emoji.truck, skinTones: nil)
+            self.init(baseEmoji: .truck, skinTones: nil)
         } else if rawValue == "🚛" {
-            self.init(baseEmoji: Emoji.articulatedLorry, skinTones: nil)
+            self.init(baseEmoji: .articulatedLorry, skinTones: nil)
         } else if rawValue == "🚜" {
-            self.init(baseEmoji: Emoji.tractor, skinTones: nil)
+            self.init(baseEmoji: .tractor, skinTones: nil)
         } else if rawValue == "🏎️" {
-            self.init(baseEmoji: Emoji.racingCar, skinTones: nil)
+            self.init(baseEmoji: .racingCar, skinTones: nil)
         } else if rawValue == "🏍️" {
-            self.init(baseEmoji: Emoji.racingMotorcycle, skinTones: nil)
+            self.init(baseEmoji: .racingMotorcycle, skinTones: nil)
         } else if rawValue == "🛵" {
-            self.init(baseEmoji: Emoji.motorScooter, skinTones: nil)
+            self.init(baseEmoji: .motorScooter, skinTones: nil)
         } else if rawValue == "🦽" {
-            self.init(baseEmoji: Emoji.manualWheelchair, skinTones: nil)
+            self.init(baseEmoji: .manualWheelchair, skinTones: nil)
         } else if rawValue == "🦼" {
-            self.init(baseEmoji: Emoji.motorizedWheelchair, skinTones: nil)
+            self.init(baseEmoji: .motorizedWheelchair, skinTones: nil)
         } else if rawValue == "🛺" {
-            self.init(baseEmoji: Emoji.autoRickshaw, skinTones: nil)
+            self.init(baseEmoji: .autoRickshaw, skinTones: nil)
         } else if rawValue == "🚲" {
-            self.init(baseEmoji: Emoji.bike, skinTones: nil)
+            self.init(baseEmoji: .bike, skinTones: nil)
         } else if rawValue == "🛴" {
-            self.init(baseEmoji: Emoji.scooter, skinTones: nil)
+            self.init(baseEmoji: .scooter, skinTones: nil)
         } else if rawValue == "🛹" {
-            self.init(baseEmoji: Emoji.skateboard, skinTones: nil)
+            self.init(baseEmoji: .skateboard, skinTones: nil)
         } else if rawValue == "🛼" {
-            self.init(baseEmoji: Emoji.rollerSkate, skinTones: nil)
+            self.init(baseEmoji: .rollerSkate, skinTones: nil)
         } else if rawValue == "🚏" {
-            self.init(baseEmoji: Emoji.busstop, skinTones: nil)
+            self.init(baseEmoji: .busstop, skinTones: nil)
         } else if rawValue == "🛣️" {
-            self.init(baseEmoji: Emoji.motorway, skinTones: nil)
+            self.init(baseEmoji: .motorway, skinTones: nil)
         } else if rawValue == "🛤️" {
-            self.init(baseEmoji: Emoji.railwayTrack, skinTones: nil)
+            self.init(baseEmoji: .railwayTrack, skinTones: nil)
         } else if rawValue == "🛢️" {
-            self.init(baseEmoji: Emoji.oilDrum, skinTones: nil)
+            self.init(baseEmoji: .oilDrum, skinTones: nil)
         } else if rawValue == "⛽" {
-            self.init(baseEmoji: Emoji.fuelpump, skinTones: nil)
+            self.init(baseEmoji: .fuelpump, skinTones: nil)
         } else if rawValue == "🚨" {
-            self.init(baseEmoji: Emoji.rotatingLight, skinTones: nil)
+            self.init(baseEmoji: .rotatingLight, skinTones: nil)
         } else if rawValue == "🚥" {
-            self.init(baseEmoji: Emoji.trafficLight, skinTones: nil)
+            self.init(baseEmoji: .trafficLight, skinTones: nil)
         } else if rawValue == "🚦" {
-            self.init(baseEmoji: Emoji.verticalTrafficLight, skinTones: nil)
+            self.init(baseEmoji: .verticalTrafficLight, skinTones: nil)
         } else if rawValue == "🛑" {
-            self.init(baseEmoji: Emoji.octagonalSign, skinTones: nil)
+            self.init(baseEmoji: .octagonalSign, skinTones: nil)
         } else if rawValue == "🚧" {
-            self.init(baseEmoji: Emoji.construction, skinTones: nil)
+            self.init(baseEmoji: .construction, skinTones: nil)
         } else if rawValue == "⚓" {
-            self.init(baseEmoji: Emoji.anchor, skinTones: nil)
+            self.init(baseEmoji: .anchor, skinTones: nil)
         } else if rawValue == "⛵" {
-            self.init(baseEmoji: Emoji.boat, skinTones: nil)
+            self.init(baseEmoji: .boat, skinTones: nil)
         } else if rawValue == "🛶" {
-            self.init(baseEmoji: Emoji.canoe, skinTones: nil)
+            self.init(baseEmoji: .canoe, skinTones: nil)
         } else if rawValue == "🚤" {
-            self.init(baseEmoji: Emoji.speedboat, skinTones: nil)
+            self.init(baseEmoji: .speedboat, skinTones: nil)
         } else if rawValue == "🛳️" {
-            self.init(baseEmoji: Emoji.passengerShip, skinTones: nil)
+            self.init(baseEmoji: .passengerShip, skinTones: nil)
         } else if rawValue == "⛴️" {
-            self.init(baseEmoji: Emoji.ferry, skinTones: nil)
+            self.init(baseEmoji: .ferry, skinTones: nil)
         } else if rawValue == "🛥️" {
-            self.init(baseEmoji: Emoji.motorBoat, skinTones: nil)
+            self.init(baseEmoji: .motorBoat, skinTones: nil)
         } else if rawValue == "🚢" {
-            self.init(baseEmoji: Emoji.ship, skinTones: nil)
+            self.init(baseEmoji: .ship, skinTones: nil)
         } else if rawValue == "✈️" {
-            self.init(baseEmoji: Emoji.airplane, skinTones: nil)
+            self.init(baseEmoji: .airplane, skinTones: nil)
         } else if rawValue == "🛩️" {
-            self.init(baseEmoji: Emoji.smallAirplane, skinTones: nil)
+            self.init(baseEmoji: .smallAirplane, skinTones: nil)
         } else if rawValue == "🛫" {
-            self.init(baseEmoji: Emoji.airplaneDeparture, skinTones: nil)
+            self.init(baseEmoji: .airplaneDeparture, skinTones: nil)
         } else if rawValue == "🛬" {
-            self.init(baseEmoji: Emoji.airplaneArriving, skinTones: nil)
+            self.init(baseEmoji: .airplaneArriving, skinTones: nil)
         } else if rawValue == "🪂" {
-            self.init(baseEmoji: Emoji.parachute, skinTones: nil)
+            self.init(baseEmoji: .parachute, skinTones: nil)
         } else if rawValue == "💺" {
-            self.init(baseEmoji: Emoji.seat, skinTones: nil)
+            self.init(baseEmoji: .seat, skinTones: nil)
         } else if rawValue == "🚁" {
-            self.init(baseEmoji: Emoji.helicopter, skinTones: nil)
+            self.init(baseEmoji: .helicopter, skinTones: nil)
         } else if rawValue == "🚟" {
-            self.init(baseEmoji: Emoji.suspensionRailway, skinTones: nil)
+            self.init(baseEmoji: .suspensionRailway, skinTones: nil)
         } else if rawValue == "🚠" {
-            self.init(baseEmoji: Emoji.mountainCableway, skinTones: nil)
+            self.init(baseEmoji: .mountainCableway, skinTones: nil)
         } else if rawValue == "🚡" {
-            self.init(baseEmoji: Emoji.aerialTramway, skinTones: nil)
+            self.init(baseEmoji: .aerialTramway, skinTones: nil)
         } else if rawValue == "🛰️" {
-            self.init(baseEmoji: Emoji.satellite, skinTones: nil)
+            self.init(baseEmoji: .satellite, skinTones: nil)
         } else if rawValue == "🚀" {
-            self.init(baseEmoji: Emoji.rocket, skinTones: nil)
+            self.init(baseEmoji: .rocket, skinTones: nil)
         } else if rawValue == "🛸" {
-            self.init(baseEmoji: Emoji.flyingSaucer, skinTones: nil)
+            self.init(baseEmoji: .flyingSaucer, skinTones: nil)
         } else if rawValue == "🛎️" {
-            self.init(baseEmoji: Emoji.bellhopBell, skinTones: nil)
+            self.init(baseEmoji: .bellhopBell, skinTones: nil)
         } else if rawValue == "🧳" {
-            self.init(baseEmoji: Emoji.luggage, skinTones: nil)
+            self.init(baseEmoji: .luggage, skinTones: nil)
         } else if rawValue == "⌛" {
-            self.init(baseEmoji: Emoji.hourglass, skinTones: nil)
+            self.init(baseEmoji: .hourglass, skinTones: nil)
         } else if rawValue == "⏳" {
-            self.init(baseEmoji: Emoji.hourglassFlowingSand, skinTones: nil)
+            self.init(baseEmoji: .hourglassFlowingSand, skinTones: nil)
         } else if rawValue == "⌚" {
-            self.init(baseEmoji: Emoji.watch, skinTones: nil)
+            self.init(baseEmoji: .watch, skinTones: nil)
         } else if rawValue == "⏰" {
-            self.init(baseEmoji: Emoji.alarmClock, skinTones: nil)
+            self.init(baseEmoji: .alarmClock, skinTones: nil)
         } else if rawValue == "⏱️" {
-            self.init(baseEmoji: Emoji.stopwatch, skinTones: nil)
+            self.init(baseEmoji: .stopwatch, skinTones: nil)
         } else if rawValue == "⏲️" {
-            self.init(baseEmoji: Emoji.timerClock, skinTones: nil)
+            self.init(baseEmoji: .timerClock, skinTones: nil)
         } else if rawValue == "🕰️" {
-            self.init(baseEmoji: Emoji.mantelpieceClock, skinTones: nil)
+            self.init(baseEmoji: .mantelpieceClock, skinTones: nil)
         } else if rawValue == "🕛" {
-            self.init(baseEmoji: Emoji.clock12, skinTones: nil)
+            self.init(baseEmoji: .clock12, skinTones: nil)
         } else if rawValue == "🕧" {
-            self.init(baseEmoji: Emoji.clock1230, skinTones: nil)
+            self.init(baseEmoji: .clock1230, skinTones: nil)
         } else if rawValue == "🕐" {
-            self.init(baseEmoji: Emoji.clock1, skinTones: nil)
+            self.init(baseEmoji: .clock1, skinTones: nil)
         } else if rawValue == "🕜" {
-            self.init(baseEmoji: Emoji.clock130, skinTones: nil)
+            self.init(baseEmoji: .clock130, skinTones: nil)
         } else if rawValue == "🕑" {
-            self.init(baseEmoji: Emoji.clock2, skinTones: nil)
+            self.init(baseEmoji: .clock2, skinTones: nil)
         } else if rawValue == "🕝" {
-            self.init(baseEmoji: Emoji.clock230, skinTones: nil)
+            self.init(baseEmoji: .clock230, skinTones: nil)
         } else if rawValue == "🕒" {
-            self.init(baseEmoji: Emoji.clock3, skinTones: nil)
+            self.init(baseEmoji: .clock3, skinTones: nil)
         } else if rawValue == "🕞" {
-            self.init(baseEmoji: Emoji.clock330, skinTones: nil)
+            self.init(baseEmoji: .clock330, skinTones: nil)
         } else if rawValue == "🕓" {
-            self.init(baseEmoji: Emoji.clock4, skinTones: nil)
+            self.init(baseEmoji: .clock4, skinTones: nil)
         } else if rawValue == "🕟" {
-            self.init(baseEmoji: Emoji.clock430, skinTones: nil)
+            self.init(baseEmoji: .clock430, skinTones: nil)
         } else if rawValue == "🕔" {
-            self.init(baseEmoji: Emoji.clock5, skinTones: nil)
+            self.init(baseEmoji: .clock5, skinTones: nil)
         } else if rawValue == "🕠" {
-            self.init(baseEmoji: Emoji.clock530, skinTones: nil)
+            self.init(baseEmoji: .clock530, skinTones: nil)
         } else if rawValue == "🕕" {
-            self.init(baseEmoji: Emoji.clock6, skinTones: nil)
+            self.init(baseEmoji: .clock6, skinTones: nil)
         } else if rawValue == "🕡" {
-            self.init(baseEmoji: Emoji.clock630, skinTones: nil)
+            self.init(baseEmoji: .clock630, skinTones: nil)
         } else if rawValue == "🕖" {
-            self.init(baseEmoji: Emoji.clock7, skinTones: nil)
+            self.init(baseEmoji: .clock7, skinTones: nil)
         } else if rawValue == "🕢" {
-            self.init(baseEmoji: Emoji.clock730, skinTones: nil)
+            self.init(baseEmoji: .clock730, skinTones: nil)
         } else if rawValue == "🕗" {
-            self.init(baseEmoji: Emoji.clock8, skinTones: nil)
+            self.init(baseEmoji: .clock8, skinTones: nil)
         } else if rawValue == "🕣" {
-            self.init(baseEmoji: Emoji.clock830, skinTones: nil)
+            self.init(baseEmoji: .clock830, skinTones: nil)
         } else if rawValue == "🕘" {
-            self.init(baseEmoji: Emoji.clock9, skinTones: nil)
+            self.init(baseEmoji: .clock9, skinTones: nil)
         } else if rawValue == "🕤" {
-            self.init(baseEmoji: Emoji.clock930, skinTones: nil)
+            self.init(baseEmoji: .clock930, skinTones: nil)
         } else if rawValue == "🕙" {
-            self.init(baseEmoji: Emoji.clock10, skinTones: nil)
+            self.init(baseEmoji: .clock10, skinTones: nil)
         } else if rawValue == "🕥" {
-            self.init(baseEmoji: Emoji.clock1030, skinTones: nil)
+            self.init(baseEmoji: .clock1030, skinTones: nil)
         } else if rawValue == "🕚" {
-            self.init(baseEmoji: Emoji.clock11, skinTones: nil)
+            self.init(baseEmoji: .clock11, skinTones: nil)
         } else if rawValue == "🕦" {
-            self.init(baseEmoji: Emoji.clock1130, skinTones: nil)
+            self.init(baseEmoji: .clock1130, skinTones: nil)
         } else if rawValue == "🌑" {
-            self.init(baseEmoji: Emoji.newMoon, skinTones: nil)
+            self.init(baseEmoji: .newMoon, skinTones: nil)
         } else if rawValue == "🌒" {
-            self.init(baseEmoji: Emoji.waxingCrescentMoon, skinTones: nil)
+            self.init(baseEmoji: .waxingCrescentMoon, skinTones: nil)
         } else if rawValue == "🌓" {
-            self.init(baseEmoji: Emoji.firstQuarterMoon, skinTones: nil)
+            self.init(baseEmoji: .firstQuarterMoon, skinTones: nil)
         } else if rawValue == "🌔" {
-            self.init(baseEmoji: Emoji.moon, skinTones: nil)
+            self.init(baseEmoji: .moon, skinTones: nil)
         } else if rawValue == "🌕" {
-            self.init(baseEmoji: Emoji.fullMoon, skinTones: nil)
+            self.init(baseEmoji: .fullMoon, skinTones: nil)
         } else if rawValue == "🌖" {
-            self.init(baseEmoji: Emoji.waningGibbousMoon, skinTones: nil)
+            self.init(baseEmoji: .waningGibbousMoon, skinTones: nil)
         } else if rawValue == "🌗" {
-            self.init(baseEmoji: Emoji.lastQuarterMoon, skinTones: nil)
+            self.init(baseEmoji: .lastQuarterMoon, skinTones: nil)
         } else if rawValue == "🌘" {
-            self.init(baseEmoji: Emoji.waningCrescentMoon, skinTones: nil)
+            self.init(baseEmoji: .waningCrescentMoon, skinTones: nil)
         } else if rawValue == "🌙" {
-            self.init(baseEmoji: Emoji.crescentMoon, skinTones: nil)
+            self.init(baseEmoji: .crescentMoon, skinTones: nil)
         } else if rawValue == "🌚" {
-            self.init(baseEmoji: Emoji.newMoonWithFace, skinTones: nil)
+            self.init(baseEmoji: .newMoonWithFace, skinTones: nil)
         } else if rawValue == "🌛" {
-            self.init(baseEmoji: Emoji.firstQuarterMoonWithFace, skinTones: nil)
+            self.init(baseEmoji: .firstQuarterMoonWithFace, skinTones: nil)
         } else if rawValue == "🌜" {
-            self.init(baseEmoji: Emoji.lastQuarterMoonWithFace, skinTones: nil)
+            self.init(baseEmoji: .lastQuarterMoonWithFace, skinTones: nil)
         } else if rawValue == "🌡️" {
-            self.init(baseEmoji: Emoji.thermometer, skinTones: nil)
+            self.init(baseEmoji: .thermometer, skinTones: nil)
         } else if rawValue == "☀️" {
-            self.init(baseEmoji: Emoji.sunny, skinTones: nil)
+            self.init(baseEmoji: .sunny, skinTones: nil)
         } else if rawValue == "🌝" {
-            self.init(baseEmoji: Emoji.fullMoonWithFace, skinTones: nil)
+            self.init(baseEmoji: .fullMoonWithFace, skinTones: nil)
         } else if rawValue == "🌞" {
-            self.init(baseEmoji: Emoji.sunWithFace, skinTones: nil)
+            self.init(baseEmoji: .sunWithFace, skinTones: nil)
         } else if rawValue == "🪐" {
-            self.init(baseEmoji: Emoji.ringedPlanet, skinTones: nil)
+            self.init(baseEmoji: .ringedPlanet, skinTones: nil)
         } else if rawValue == "⭐" {
-            self.init(baseEmoji: Emoji.star, skinTones: nil)
+            self.init(baseEmoji: .star, skinTones: nil)
         } else if rawValue == "🌟" {
-            self.init(baseEmoji: Emoji.star2, skinTones: nil)
+            self.init(baseEmoji: .star2, skinTones: nil)
         } else if rawValue == "🌠" {
-            self.init(baseEmoji: Emoji.stars, skinTones: nil)
+            self.init(baseEmoji: .stars, skinTones: nil)
         } else if rawValue == "🌌" {
-            self.init(baseEmoji: Emoji.milkyWay, skinTones: nil)
+            self.init(baseEmoji: .milkyWay, skinTones: nil)
         } else if rawValue == "☁️" {
-            self.init(baseEmoji: Emoji.cloud, skinTones: nil)
+            self.init(baseEmoji: .cloud, skinTones: nil)
         } else if rawValue == "⛅" {
-            self.init(baseEmoji: Emoji.partlySunny, skinTones: nil)
+            self.init(baseEmoji: .partlySunny, skinTones: nil)
         } else if rawValue == "⛈️" {
-            self.init(baseEmoji: Emoji.thunderCloudAndRain, skinTones: nil)
+            self.init(baseEmoji: .thunderCloudAndRain, skinTones: nil)
         } else if rawValue == "🌤️" {
-            self.init(baseEmoji: Emoji.mostlySunny, skinTones: nil)
+            self.init(baseEmoji: .mostlySunny, skinTones: nil)
         } else if rawValue == "🌥️" {
-            self.init(baseEmoji: Emoji.barelySunny, skinTones: nil)
+            self.init(baseEmoji: .barelySunny, skinTones: nil)
         } else if rawValue == "🌦️" {
-            self.init(baseEmoji: Emoji.partlySunnyRain, skinTones: nil)
+            self.init(baseEmoji: .partlySunnyRain, skinTones: nil)
         } else if rawValue == "🌧️" {
-            self.init(baseEmoji: Emoji.rainCloud, skinTones: nil)
+            self.init(baseEmoji: .rainCloud, skinTones: nil)
         } else if rawValue == "🌨️" {
-            self.init(baseEmoji: Emoji.snowCloud, skinTones: nil)
+            self.init(baseEmoji: .snowCloud, skinTones: nil)
         } else if rawValue == "🌩️" {
-            self.init(baseEmoji: Emoji.lightning, skinTones: nil)
+            self.init(baseEmoji: .lightning, skinTones: nil)
         } else if rawValue == "🌪️" {
-            self.init(baseEmoji: Emoji.tornado, skinTones: nil)
+            self.init(baseEmoji: .tornado, skinTones: nil)
         } else if rawValue == "🌫️" {
-            self.init(baseEmoji: Emoji.fog, skinTones: nil)
+            self.init(baseEmoji: .fog, skinTones: nil)
         } else if rawValue == "🌬️" {
-            self.init(baseEmoji: Emoji.windBlowingFace, skinTones: nil)
+            self.init(baseEmoji: .windBlowingFace, skinTones: nil)
         } else if rawValue == "🌀" {
-            self.init(baseEmoji: Emoji.cyclone, skinTones: nil)
+            self.init(baseEmoji: .cyclone, skinTones: nil)
         } else if rawValue == "🌈" {
-            self.init(baseEmoji: Emoji.rainbow, skinTones: nil)
+            self.init(baseEmoji: .rainbow, skinTones: nil)
         } else if rawValue == "🌂" {
-            self.init(baseEmoji: Emoji.closedUmbrella, skinTones: nil)
+            self.init(baseEmoji: .closedUmbrella, skinTones: nil)
         } else if rawValue == "☂️" {
-            self.init(baseEmoji: Emoji.umbrella, skinTones: nil)
+            self.init(baseEmoji: .umbrella, skinTones: nil)
         } else if rawValue == "☔" {
-            self.init(baseEmoji: Emoji.umbrellaWithRainDrops, skinTones: nil)
+            self.init(baseEmoji: .umbrellaWithRainDrops, skinTones: nil)
         } else if rawValue == "⛱️" {
-            self.init(baseEmoji: Emoji.umbrellaOnGround, skinTones: nil)
+            self.init(baseEmoji: .umbrellaOnGround, skinTones: nil)
         } else if rawValue == "⚡" {
-            self.init(baseEmoji: Emoji.zap, skinTones: nil)
+            self.init(baseEmoji: .zap, skinTones: nil)
         } else if rawValue == "❄️" {
-            self.init(baseEmoji: Emoji.snowflake, skinTones: nil)
+            self.init(baseEmoji: .snowflake, skinTones: nil)
         } else if rawValue == "☃️" {
-            self.init(baseEmoji: Emoji.snowman, skinTones: nil)
+            self.init(baseEmoji: .snowman, skinTones: nil)
         } else if rawValue == "⛄" {
-            self.init(baseEmoji: Emoji.snowmanWithoutSnow, skinTones: nil)
+            self.init(baseEmoji: .snowmanWithoutSnow, skinTones: nil)
         } else if rawValue == "☄️" {
-            self.init(baseEmoji: Emoji.comet, skinTones: nil)
+            self.init(baseEmoji: .comet, skinTones: nil)
         } else if rawValue == "🔥" {
-            self.init(baseEmoji: Emoji.fire, skinTones: nil)
+            self.init(baseEmoji: .fire, skinTones: nil)
         } else if rawValue == "💧" {
-            self.init(baseEmoji: Emoji.droplet, skinTones: nil)
+            self.init(baseEmoji: .droplet, skinTones: nil)
         } else if rawValue == "🌊" {
-            self.init(baseEmoji: Emoji.ocean, skinTones: nil)
+            self.init(baseEmoji: .ocean, skinTones: nil)
         } else if rawValue == "🎃" {
-            self.init(baseEmoji: Emoji.jackOLantern, skinTones: nil)
+            self.init(baseEmoji: .jackOLantern, skinTones: nil)
         } else if rawValue == "🎄" {
-            self.init(baseEmoji: Emoji.christmasTree, skinTones: nil)
+            self.init(baseEmoji: .christmasTree, skinTones: nil)
         } else if rawValue == "🎆" {
-            self.init(baseEmoji: Emoji.fireworks, skinTones: nil)
+            self.init(baseEmoji: .fireworks, skinTones: nil)
         } else if rawValue == "🎇" {
-            self.init(baseEmoji: Emoji.sparkler, skinTones: nil)
+            self.init(baseEmoji: .sparkler, skinTones: nil)
         } else if rawValue == "🧨" {
-            self.init(baseEmoji: Emoji.firecracker, skinTones: nil)
+            self.init(baseEmoji: .firecracker, skinTones: nil)
         } else if rawValue == "✨" {
-            self.init(baseEmoji: Emoji.sparkles, skinTones: nil)
+            self.init(baseEmoji: .sparkles, skinTones: nil)
         } else if rawValue == "🎈" {
-            self.init(baseEmoji: Emoji.balloon, skinTones: nil)
+            self.init(baseEmoji: .balloon, skinTones: nil)
         } else if rawValue == "🎉" {
-            self.init(baseEmoji: Emoji.tada, skinTones: nil)
+            self.init(baseEmoji: .tada, skinTones: nil)
         } else if rawValue == "🎊" {
-            self.init(baseEmoji: Emoji.confettiBall, skinTones: nil)
+            self.init(baseEmoji: .confettiBall, skinTones: nil)
         } else if rawValue == "🎋" {
-            self.init(baseEmoji: Emoji.tanabataTree, skinTones: nil)
+            self.init(baseEmoji: .tanabataTree, skinTones: nil)
         } else if rawValue == "🎍" {
-            self.init(baseEmoji: Emoji.bamboo, skinTones: nil)
+            self.init(baseEmoji: .bamboo, skinTones: nil)
         } else if rawValue == "🎎" {
-            self.init(baseEmoji: Emoji.dolls, skinTones: nil)
+            self.init(baseEmoji: .dolls, skinTones: nil)
         } else if rawValue == "🎏" {
-            self.init(baseEmoji: Emoji.flags, skinTones: nil)
+            self.init(baseEmoji: .flags, skinTones: nil)
         } else if rawValue == "🎐" {
-            self.init(baseEmoji: Emoji.windChime, skinTones: nil)
+            self.init(baseEmoji: .windChime, skinTones: nil)
         } else if rawValue == "🎑" {
-            self.init(baseEmoji: Emoji.riceScene, skinTones: nil)
+            self.init(baseEmoji: .riceScene, skinTones: nil)
         } else if rawValue == "🧧" {
-            self.init(baseEmoji: Emoji.redEnvelope, skinTones: nil)
+            self.init(baseEmoji: .redEnvelope, skinTones: nil)
         } else if rawValue == "🎀" {
-            self.init(baseEmoji: Emoji.ribbon, skinTones: nil)
+            self.init(baseEmoji: .ribbon, skinTones: nil)
         } else if rawValue == "🎁" {
-            self.init(baseEmoji: Emoji.gift, skinTones: nil)
+            self.init(baseEmoji: .gift, skinTones: nil)
         } else if rawValue == "🎗️" {
-            self.init(baseEmoji: Emoji.reminderRibbon, skinTones: nil)
+            self.init(baseEmoji: .reminderRibbon, skinTones: nil)
         } else if rawValue == "🎟️" {
-            self.init(baseEmoji: Emoji.admissionTickets, skinTones: nil)
+            self.init(baseEmoji: .admissionTickets, skinTones: nil)
         } else if rawValue == "🎫" {
-            self.init(baseEmoji: Emoji.ticket, skinTones: nil)
+            self.init(baseEmoji: .ticket, skinTones: nil)
         } else if rawValue == "🎖️" {
-            self.init(baseEmoji: Emoji.medal, skinTones: nil)
+            self.init(baseEmoji: .medal, skinTones: nil)
         } else if rawValue == "🏆" {
-            self.init(baseEmoji: Emoji.trophy, skinTones: nil)
+            self.init(baseEmoji: .trophy, skinTones: nil)
         } else if rawValue == "🏅" {
-            self.init(baseEmoji: Emoji.sportsMedal, skinTones: nil)
+            self.init(baseEmoji: .sportsMedal, skinTones: nil)
         } else if rawValue == "🥇" {
-            self.init(baseEmoji: Emoji.firstPlaceMedal, skinTones: nil)
+            self.init(baseEmoji: .firstPlaceMedal, skinTones: nil)
         } else if rawValue == "🥈" {
-            self.init(baseEmoji: Emoji.secondPlaceMedal, skinTones: nil)
+            self.init(baseEmoji: .secondPlaceMedal, skinTones: nil)
         } else if rawValue == "🥉" {
-            self.init(baseEmoji: Emoji.thirdPlaceMedal, skinTones: nil)
+            self.init(baseEmoji: .thirdPlaceMedal, skinTones: nil)
         } else if rawValue == "⚽" {
-            self.init(baseEmoji: Emoji.soccer, skinTones: nil)
+            self.init(baseEmoji: .soccer, skinTones: nil)
         } else if rawValue == "⚾" {
-            self.init(baseEmoji: Emoji.baseball, skinTones: nil)
+            self.init(baseEmoji: .baseball, skinTones: nil)
         } else if rawValue == "🥎" {
-            self.init(baseEmoji: Emoji.softball, skinTones: nil)
+            self.init(baseEmoji: .softball, skinTones: nil)
         } else if rawValue == "🏀" {
-            self.init(baseEmoji: Emoji.basketball, skinTones: nil)
+            self.init(baseEmoji: .basketball, skinTones: nil)
         } else if rawValue == "🏐" {
-            self.init(baseEmoji: Emoji.volleyball, skinTones: nil)
+            self.init(baseEmoji: .volleyball, skinTones: nil)
         } else if rawValue == "🏈" {
-            self.init(baseEmoji: Emoji.football, skinTones: nil)
+            self.init(baseEmoji: .football, skinTones: nil)
         } else if rawValue == "🏉" {
-            self.init(baseEmoji: Emoji.rugbyFootball, skinTones: nil)
+            self.init(baseEmoji: .rugbyFootball, skinTones: nil)
         } else if rawValue == "🎾" {
-            self.init(baseEmoji: Emoji.tennis, skinTones: nil)
+            self.init(baseEmoji: .tennis, skinTones: nil)
         } else if rawValue == "🥏" {
-            self.init(baseEmoji: Emoji.flyingDisc, skinTones: nil)
+            self.init(baseEmoji: .flyingDisc, skinTones: nil)
         } else if rawValue == "🎳" {
-            self.init(baseEmoji: Emoji.bowling, skinTones: nil)
+            self.init(baseEmoji: .bowling, skinTones: nil)
         } else if rawValue == "🏏" {
-            self.init(baseEmoji: Emoji.cricketBatAndBall, skinTones: nil)
+            self.init(baseEmoji: .cricketBatAndBall, skinTones: nil)
         } else if rawValue == "🏑" {
-            self.init(baseEmoji: Emoji.fieldHockeyStickAndBall, skinTones: nil)
+            self.init(baseEmoji: .fieldHockeyStickAndBall, skinTones: nil)
         } else if rawValue == "🏒" {
-            self.init(baseEmoji: Emoji.iceHockeyStickAndPuck, skinTones: nil)
+            self.init(baseEmoji: .iceHockeyStickAndPuck, skinTones: nil)
         } else if rawValue == "🥍" {
-            self.init(baseEmoji: Emoji.lacrosse, skinTones: nil)
+            self.init(baseEmoji: .lacrosse, skinTones: nil)
         } else if rawValue == "🏓" {
-            self.init(baseEmoji: Emoji.tableTennisPaddleAndBall, skinTones: nil)
+            self.init(baseEmoji: .tableTennisPaddleAndBall, skinTones: nil)
         } else if rawValue == "🏸" {
-            self.init(baseEmoji: Emoji.badmintonRacquetAndShuttlecock, skinTones: nil)
+            self.init(baseEmoji: .badmintonRacquetAndShuttlecock, skinTones: nil)
         } else if rawValue == "🥊" {
-            self.init(baseEmoji: Emoji.boxingGlove, skinTones: nil)
+            self.init(baseEmoji: .boxingGlove, skinTones: nil)
         } else if rawValue == "🥋" {
-            self.init(baseEmoji: Emoji.martialArtsUniform, skinTones: nil)
+            self.init(baseEmoji: .martialArtsUniform, skinTones: nil)
         } else if rawValue == "🥅" {
-            self.init(baseEmoji: Emoji.goalNet, skinTones: nil)
+            self.init(baseEmoji: .goalNet, skinTones: nil)
         } else if rawValue == "⛳" {
-            self.init(baseEmoji: Emoji.golf, skinTones: nil)
+            self.init(baseEmoji: .golf, skinTones: nil)
         } else if rawValue == "⛸️" {
-            self.init(baseEmoji: Emoji.iceSkate, skinTones: nil)
+            self.init(baseEmoji: .iceSkate, skinTones: nil)
         } else if rawValue == "🎣" {
-            self.init(baseEmoji: Emoji.fishingPoleAndFish, skinTones: nil)
+            self.init(baseEmoji: .fishingPoleAndFish, skinTones: nil)
         } else if rawValue == "🤿" {
-            self.init(baseEmoji: Emoji.divingMask, skinTones: nil)
+            self.init(baseEmoji: .divingMask, skinTones: nil)
         } else if rawValue == "🎽" {
-            self.init(baseEmoji: Emoji.runningShirtWithSash, skinTones: nil)
+            self.init(baseEmoji: .runningShirtWithSash, skinTones: nil)
         } else if rawValue == "🎿" {
-            self.init(baseEmoji: Emoji.ski, skinTones: nil)
+            self.init(baseEmoji: .ski, skinTones: nil)
         } else if rawValue == "🛷" {
-            self.init(baseEmoji: Emoji.sled, skinTones: nil)
+            self.init(baseEmoji: .sled, skinTones: nil)
         } else if rawValue == "🥌" {
-            self.init(baseEmoji: Emoji.curlingStone, skinTones: nil)
+            self.init(baseEmoji: .curlingStone, skinTones: nil)
         } else if rawValue == "🎯" {
-            self.init(baseEmoji: Emoji.dart, skinTones: nil)
+            self.init(baseEmoji: .dart, skinTones: nil)
         } else if rawValue == "🪀" {
-            self.init(baseEmoji: Emoji.yoYo, skinTones: nil)
+            self.init(baseEmoji: .yoYo, skinTones: nil)
         } else if rawValue == "🪁" {
-            self.init(baseEmoji: Emoji.kite, skinTones: nil)
+            self.init(baseEmoji: .kite, skinTones: nil)
         } else if rawValue == "🎱" {
-            self.init(baseEmoji: Emoji.eightBall, skinTones: nil)
+            self.init(baseEmoji: .eightBall, skinTones: nil)
         } else if rawValue == "🔮" {
-            self.init(baseEmoji: Emoji.crystalBall, skinTones: nil)
+            self.init(baseEmoji: .crystalBall, skinTones: nil)
         } else if rawValue == "🪄" {
-            self.init(baseEmoji: Emoji.magicWand, skinTones: nil)
+            self.init(baseEmoji: .magicWand, skinTones: nil)
         } else if rawValue == "🧿" {
-            self.init(baseEmoji: Emoji.nazarAmulet, skinTones: nil)
+            self.init(baseEmoji: .nazarAmulet, skinTones: nil)
         } else if rawValue == "🎮" {
-            self.init(baseEmoji: Emoji.videoGame, skinTones: nil)
+            self.init(baseEmoji: .videoGame, skinTones: nil)
         } else if rawValue == "🕹️" {
-            self.init(baseEmoji: Emoji.joystick, skinTones: nil)
+            self.init(baseEmoji: .joystick, skinTones: nil)
         } else if rawValue == "🎰" {
-            self.init(baseEmoji: Emoji.slotMachine, skinTones: nil)
+            self.init(baseEmoji: .slotMachine, skinTones: nil)
         } else if rawValue == "🎲" {
-            self.init(baseEmoji: Emoji.gameDie, skinTones: nil)
+            self.init(baseEmoji: .gameDie, skinTones: nil)
         } else if rawValue == "🧩" {
-            self.init(baseEmoji: Emoji.jigsaw, skinTones: nil)
+            self.init(baseEmoji: .jigsaw, skinTones: nil)
         } else if rawValue == "🧸" {
-            self.init(baseEmoji: Emoji.teddyBear, skinTones: nil)
+            self.init(baseEmoji: .teddyBear, skinTones: nil)
         } else if rawValue == "🪅" {
-            self.init(baseEmoji: Emoji.pinata, skinTones: nil)
+            self.init(baseEmoji: .pinata, skinTones: nil)
         } else if rawValue == "🪆" {
-            self.init(baseEmoji: Emoji.nestingDolls, skinTones: nil)
+            self.init(baseEmoji: .nestingDolls, skinTones: nil)
         } else if rawValue == "♠️" {
-            self.init(baseEmoji: Emoji.spades, skinTones: nil)
+            self.init(baseEmoji: .spades, skinTones: nil)
         } else if rawValue == "♥️" {
-            self.init(baseEmoji: Emoji.hearts, skinTones: nil)
+            self.init(baseEmoji: .hearts, skinTones: nil)
         } else if rawValue == "♦️" {
-            self.init(baseEmoji: Emoji.diamonds, skinTones: nil)
+            self.init(baseEmoji: .diamonds, skinTones: nil)
         } else if rawValue == "♣️" {
-            self.init(baseEmoji: Emoji.clubs, skinTones: nil)
+            self.init(baseEmoji: .clubs, skinTones: nil)
         } else if rawValue == "♟️" {
-            self.init(baseEmoji: Emoji.chessPawn, skinTones: nil)
+            self.init(baseEmoji: .chessPawn, skinTones: nil)
         } else if rawValue == "🃏" {
-            self.init(baseEmoji: Emoji.blackJoker, skinTones: nil)
+            self.init(baseEmoji: .blackJoker, skinTones: nil)
         } else if rawValue == "🀄" {
-            self.init(baseEmoji: Emoji.mahjong, skinTones: nil)
+            self.init(baseEmoji: .mahjong, skinTones: nil)
         } else if rawValue == "🎴" {
-            self.init(baseEmoji: Emoji.flowerPlayingCards, skinTones: nil)
+            self.init(baseEmoji: .flowerPlayingCards, skinTones: nil)
         } else if rawValue == "🎭" {
-            self.init(baseEmoji: Emoji.performingArts, skinTones: nil)
+            self.init(baseEmoji: .performingArts, skinTones: nil)
         } else if rawValue == "🖼️" {
-            self.init(baseEmoji: Emoji.frameWithPicture, skinTones: nil)
+            self.init(baseEmoji: .frameWithPicture, skinTones: nil)
         } else if rawValue == "🎨" {
-            self.init(baseEmoji: Emoji.art, skinTones: nil)
+            self.init(baseEmoji: .art, skinTones: nil)
         } else if rawValue == "🧵" {
-            self.init(baseEmoji: Emoji.thread, skinTones: nil)
+            self.init(baseEmoji: .thread, skinTones: nil)
         } else if rawValue == "🪡" {
-            self.init(baseEmoji: Emoji.sewingNeedle, skinTones: nil)
+            self.init(baseEmoji: .sewingNeedle, skinTones: nil)
         } else if rawValue == "🧶" {
-            self.init(baseEmoji: Emoji.yarn, skinTones: nil)
+            self.init(baseEmoji: .yarn, skinTones: nil)
         } else if rawValue == "🪢" {
-            self.init(baseEmoji: Emoji.knot, skinTones: nil)
+            self.init(baseEmoji: .knot, skinTones: nil)
         } else if rawValue == "👓" {
-            self.init(baseEmoji: Emoji.eyeglasses, skinTones: nil)
+            self.init(baseEmoji: .eyeglasses, skinTones: nil)
         } else if rawValue == "🕶️" {
-            self.init(baseEmoji: Emoji.darkSunglasses, skinTones: nil)
+            self.init(baseEmoji: .darkSunglasses, skinTones: nil)
         } else if rawValue == "🥽" {
-            self.init(baseEmoji: Emoji.goggles, skinTones: nil)
+            self.init(baseEmoji: .goggles, skinTones: nil)
         } else if rawValue == "🥼" {
-            self.init(baseEmoji: Emoji.labCoat, skinTones: nil)
+            self.init(baseEmoji: .labCoat, skinTones: nil)
         } else if rawValue == "🦺" {
-            self.init(baseEmoji: Emoji.safetyVest, skinTones: nil)
+            self.init(baseEmoji: .safetyVest, skinTones: nil)
         } else if rawValue == "👔" {
-            self.init(baseEmoji: Emoji.necktie, skinTones: nil)
+            self.init(baseEmoji: .necktie, skinTones: nil)
         } else if rawValue == "👕" {
-            self.init(baseEmoji: Emoji.shirt, skinTones: nil)
+            self.init(baseEmoji: .shirt, skinTones: nil)
         } else if rawValue == "👖" {
-            self.init(baseEmoji: Emoji.jeans, skinTones: nil)
+            self.init(baseEmoji: .jeans, skinTones: nil)
         } else if rawValue == "🧣" {
-            self.init(baseEmoji: Emoji.scarf, skinTones: nil)
+            self.init(baseEmoji: .scarf, skinTones: nil)
         } else if rawValue == "🧤" {
-            self.init(baseEmoji: Emoji.gloves, skinTones: nil)
+            self.init(baseEmoji: .gloves, skinTones: nil)
         } else if rawValue == "🧥" {
-            self.init(baseEmoji: Emoji.coat, skinTones: nil)
+            self.init(baseEmoji: .coat, skinTones: nil)
         } else if rawValue == "🧦" {
-            self.init(baseEmoji: Emoji.socks, skinTones: nil)
+            self.init(baseEmoji: .socks, skinTones: nil)
         } else if rawValue == "👗" {
-            self.init(baseEmoji: Emoji.dress, skinTones: nil)
+            self.init(baseEmoji: .dress, skinTones: nil)
         } else if rawValue == "👘" {
-            self.init(baseEmoji: Emoji.kimono, skinTones: nil)
+            self.init(baseEmoji: .kimono, skinTones: nil)
         } else if rawValue == "🥻" {
-            self.init(baseEmoji: Emoji.sari, skinTones: nil)
+            self.init(baseEmoji: .sari, skinTones: nil)
         } else if rawValue == "🩱" {
-            self.init(baseEmoji: Emoji.onePieceSwimsuit, skinTones: nil)
+            self.init(baseEmoji: .onePieceSwimsuit, skinTones: nil)
         } else if rawValue == "🩲" {
-            self.init(baseEmoji: Emoji.briefs, skinTones: nil)
+            self.init(baseEmoji: .briefs, skinTones: nil)
         } else if rawValue == "🩳" {
-            self.init(baseEmoji: Emoji.shorts, skinTones: nil)
+            self.init(baseEmoji: .shorts, skinTones: nil)
         } else if rawValue == "👙" {
-            self.init(baseEmoji: Emoji.bikini, skinTones: nil)
+            self.init(baseEmoji: .bikini, skinTones: nil)
         } else if rawValue == "👚" {
-            self.init(baseEmoji: Emoji.womansClothes, skinTones: nil)
+            self.init(baseEmoji: .womansClothes, skinTones: nil)
         } else if rawValue == "👛" {
-            self.init(baseEmoji: Emoji.purse, skinTones: nil)
+            self.init(baseEmoji: .purse, skinTones: nil)
         } else if rawValue == "👜" {
-            self.init(baseEmoji: Emoji.handbag, skinTones: nil)
+            self.init(baseEmoji: .handbag, skinTones: nil)
         } else if rawValue == "👝" {
-            self.init(baseEmoji: Emoji.pouch, skinTones: nil)
+            self.init(baseEmoji: .pouch, skinTones: nil)
         } else if rawValue == "🛍️" {
-            self.init(baseEmoji: Emoji.shoppingBags, skinTones: nil)
+            self.init(baseEmoji: .shoppingBags, skinTones: nil)
         } else if rawValue == "🎒" {
-            self.init(baseEmoji: Emoji.schoolSatchel, skinTones: nil)
+            self.init(baseEmoji: .schoolSatchel, skinTones: nil)
         } else if rawValue == "🩴" {
-            self.init(baseEmoji: Emoji.thongSandal, skinTones: nil)
+            self.init(baseEmoji: .thongSandal, skinTones: nil)
         } else if rawValue == "👞" {
-            self.init(baseEmoji: Emoji.mansShoe, skinTones: nil)
+            self.init(baseEmoji: .mansShoe, skinTones: nil)
         } else if rawValue == "👟" {
-            self.init(baseEmoji: Emoji.athleticShoe, skinTones: nil)
+            self.init(baseEmoji: .athleticShoe, skinTones: nil)
         } else if rawValue == "🥾" {
-            self.init(baseEmoji: Emoji.hikingBoot, skinTones: nil)
+            self.init(baseEmoji: .hikingBoot, skinTones: nil)
         } else if rawValue == "🥿" {
-            self.init(baseEmoji: Emoji.womansFlatShoe, skinTones: nil)
+            self.init(baseEmoji: .womansFlatShoe, skinTones: nil)
         } else if rawValue == "👠" {
-            self.init(baseEmoji: Emoji.highHeel, skinTones: nil)
+            self.init(baseEmoji: .highHeel, skinTones: nil)
         } else if rawValue == "👡" {
-            self.init(baseEmoji: Emoji.sandal, skinTones: nil)
+            self.init(baseEmoji: .sandal, skinTones: nil)
         } else if rawValue == "🩰" {
-            self.init(baseEmoji: Emoji.balletShoes, skinTones: nil)
+            self.init(baseEmoji: .balletShoes, skinTones: nil)
         } else if rawValue == "👢" {
-            self.init(baseEmoji: Emoji.boot, skinTones: nil)
+            self.init(baseEmoji: .boot, skinTones: nil)
         } else if rawValue == "👑" {
-            self.init(baseEmoji: Emoji.crown, skinTones: nil)
+            self.init(baseEmoji: .crown, skinTones: nil)
         } else if rawValue == "👒" {
-            self.init(baseEmoji: Emoji.womansHat, skinTones: nil)
+            self.init(baseEmoji: .womansHat, skinTones: nil)
         } else if rawValue == "🎩" {
-            self.init(baseEmoji: Emoji.tophat, skinTones: nil)
+            self.init(baseEmoji: .tophat, skinTones: nil)
         } else if rawValue == "🎓" {
-            self.init(baseEmoji: Emoji.mortarBoard, skinTones: nil)
+            self.init(baseEmoji: .mortarBoard, skinTones: nil)
         } else if rawValue == "🧢" {
-            self.init(baseEmoji: Emoji.billedCap, skinTones: nil)
+            self.init(baseEmoji: .billedCap, skinTones: nil)
         } else if rawValue == "🪖" {
-            self.init(baseEmoji: Emoji.militaryHelmet, skinTones: nil)
+            self.init(baseEmoji: .militaryHelmet, skinTones: nil)
         } else if rawValue == "⛑️" {
-            self.init(baseEmoji: Emoji.helmetWithWhiteCross, skinTones: nil)
+            self.init(baseEmoji: .helmetWithWhiteCross, skinTones: nil)
         } else if rawValue == "📿" {
-            self.init(baseEmoji: Emoji.prayerBeads, skinTones: nil)
+            self.init(baseEmoji: .prayerBeads, skinTones: nil)
         } else if rawValue == "💄" {
-            self.init(baseEmoji: Emoji.lipstick, skinTones: nil)
+            self.init(baseEmoji: .lipstick, skinTones: nil)
         } else if rawValue == "💍" {
-            self.init(baseEmoji: Emoji.ring, skinTones: nil)
+            self.init(baseEmoji: .ring, skinTones: nil)
         } else if rawValue == "💎" {
-            self.init(baseEmoji: Emoji.gem, skinTones: nil)
+            self.init(baseEmoji: .gem, skinTones: nil)
         } else if rawValue == "🔇" {
-            self.init(baseEmoji: Emoji.mute, skinTones: nil)
+            self.init(baseEmoji: .mute, skinTones: nil)
         } else if rawValue == "🔈" {
-            self.init(baseEmoji: Emoji.speaker, skinTones: nil)
+            self.init(baseEmoji: .speaker, skinTones: nil)
         } else if rawValue == "🔉" {
-            self.init(baseEmoji: Emoji.sound, skinTones: nil)
+            self.init(baseEmoji: .sound, skinTones: nil)
         } else if rawValue == "🔊" {
-            self.init(baseEmoji: Emoji.loudSound, skinTones: nil)
+            self.init(baseEmoji: .loudSound, skinTones: nil)
         } else if rawValue == "📢" {
-            self.init(baseEmoji: Emoji.loudspeaker, skinTones: nil)
+            self.init(baseEmoji: .loudspeaker, skinTones: nil)
         } else if rawValue == "📣" {
-            self.init(baseEmoji: Emoji.mega, skinTones: nil)
+            self.init(baseEmoji: .mega, skinTones: nil)
         } else if rawValue == "📯" {
-            self.init(baseEmoji: Emoji.postalHorn, skinTones: nil)
+            self.init(baseEmoji: .postalHorn, skinTones: nil)
         } else if rawValue == "🔔" {
-            self.init(baseEmoji: Emoji.bell, skinTones: nil)
+            self.init(baseEmoji: .bell, skinTones: nil)
         } else if rawValue == "🔕" {
-            self.init(baseEmoji: Emoji.noBell, skinTones: nil)
+            self.init(baseEmoji: .noBell, skinTones: nil)
         } else if rawValue == "🎼" {
-            self.init(baseEmoji: Emoji.musicalScore, skinTones: nil)
+            self.init(baseEmoji: .musicalScore, skinTones: nil)
         } else if rawValue == "🎵" {
-            self.init(baseEmoji: Emoji.musicalNote, skinTones: nil)
+            self.init(baseEmoji: .musicalNote, skinTones: nil)
         } else if rawValue == "🎶" {
-            self.init(baseEmoji: Emoji.notes, skinTones: nil)
+            self.init(baseEmoji: .notes, skinTones: nil)
         } else if rawValue == "🎙️" {
-            self.init(baseEmoji: Emoji.studioMicrophone, skinTones: nil)
+            self.init(baseEmoji: .studioMicrophone, skinTones: nil)
         } else if rawValue == "🎚️" {
-            self.init(baseEmoji: Emoji.levelSlider, skinTones: nil)
+            self.init(baseEmoji: .levelSlider, skinTones: nil)
         } else if rawValue == "🎛️" {
-            self.init(baseEmoji: Emoji.controlKnobs, skinTones: nil)
+            self.init(baseEmoji: .controlKnobs, skinTones: nil)
         } else if rawValue == "🎤" {
-            self.init(baseEmoji: Emoji.microphone, skinTones: nil)
+            self.init(baseEmoji: .microphone, skinTones: nil)
         } else if rawValue == "🎧" {
-            self.init(baseEmoji: Emoji.headphones, skinTones: nil)
+            self.init(baseEmoji: .headphones, skinTones: nil)
         } else if rawValue == "📻" {
-            self.init(baseEmoji: Emoji.radio, skinTones: nil)
+            self.init(baseEmoji: .radio, skinTones: nil)
         } else if rawValue == "🎷" {
-            self.init(baseEmoji: Emoji.saxophone, skinTones: nil)
+            self.init(baseEmoji: .saxophone, skinTones: nil)
         } else if rawValue == "🪗" {
-            self.init(baseEmoji: Emoji.accordion, skinTones: nil)
+            self.init(baseEmoji: .accordion, skinTones: nil)
         } else if rawValue == "🎸" {
-            self.init(baseEmoji: Emoji.guitar, skinTones: nil)
+            self.init(baseEmoji: .guitar, skinTones: nil)
         } else if rawValue == "🎹" {
-            self.init(baseEmoji: Emoji.musicalKeyboard, skinTones: nil)
+            self.init(baseEmoji: .musicalKeyboard, skinTones: nil)
         } else if rawValue == "🎺" {
-            self.init(baseEmoji: Emoji.trumpet, skinTones: nil)
+            self.init(baseEmoji: .trumpet, skinTones: nil)
         } else if rawValue == "🎻" {
-            self.init(baseEmoji: Emoji.violin, skinTones: nil)
+            self.init(baseEmoji: .violin, skinTones: nil)
         } else if rawValue == "🪕" {
-            self.init(baseEmoji: Emoji.banjo, skinTones: nil)
+            self.init(baseEmoji: .banjo, skinTones: nil)
         } else if rawValue == "🥁" {
-            self.init(baseEmoji: Emoji.drumWithDrumsticks, skinTones: nil)
+            self.init(baseEmoji: .drumWithDrumsticks, skinTones: nil)
         } else if rawValue == "🪘" {
-            self.init(baseEmoji: Emoji.longDrum, skinTones: nil)
+            self.init(baseEmoji: .longDrum, skinTones: nil)
         } else if rawValue == "📱" {
-            self.init(baseEmoji: Emoji.iphone, skinTones: nil)
+            self.init(baseEmoji: .iphone, skinTones: nil)
         } else if rawValue == "📲" {
-            self.init(baseEmoji: Emoji.calling, skinTones: nil)
+            self.init(baseEmoji: .calling, skinTones: nil)
         } else if rawValue == "☎️" {
-            self.init(baseEmoji: Emoji.phone, skinTones: nil)
+            self.init(baseEmoji: .phone, skinTones: nil)
         } else if rawValue == "📞" {
-            self.init(baseEmoji: Emoji.telephoneReceiver, skinTones: nil)
+            self.init(baseEmoji: .telephoneReceiver, skinTones: nil)
         } else if rawValue == "📟" {
-            self.init(baseEmoji: Emoji.pager, skinTones: nil)
+            self.init(baseEmoji: .pager, skinTones: nil)
         } else if rawValue == "📠" {
-            self.init(baseEmoji: Emoji.fax, skinTones: nil)
+            self.init(baseEmoji: .fax, skinTones: nil)
         } else if rawValue == "🔋" {
-            self.init(baseEmoji: Emoji.battery, skinTones: nil)
+            self.init(baseEmoji: .battery, skinTones: nil)
         } else if rawValue == "🔌" {
-            self.init(baseEmoji: Emoji.electricPlug, skinTones: nil)
+            self.init(baseEmoji: .electricPlug, skinTones: nil)
         } else if rawValue == "💻" {
-            self.init(baseEmoji: Emoji.computer, skinTones: nil)
+            self.init(baseEmoji: .computer, skinTones: nil)
         } else if rawValue == "🖥️" {
-            self.init(baseEmoji: Emoji.desktopComputer, skinTones: nil)
+            self.init(baseEmoji: .desktopComputer, skinTones: nil)
         } else if rawValue == "🖨️" {
-            self.init(baseEmoji: Emoji.printer, skinTones: nil)
+            self.init(baseEmoji: .printer, skinTones: nil)
         } else if rawValue == "⌨️" {
-            self.init(baseEmoji: Emoji.keyboard, skinTones: nil)
+            self.init(baseEmoji: .keyboard, skinTones: nil)
         } else if rawValue == "🖱️" {
-            self.init(baseEmoji: Emoji.threeButtonMouse, skinTones: nil)
+            self.init(baseEmoji: .threeButtonMouse, skinTones: nil)
         } else if rawValue == "🖲️" {
-            self.init(baseEmoji: Emoji.trackball, skinTones: nil)
+            self.init(baseEmoji: .trackball, skinTones: nil)
         } else if rawValue == "💽" {
-            self.init(baseEmoji: Emoji.minidisc, skinTones: nil)
+            self.init(baseEmoji: .minidisc, skinTones: nil)
         } else if rawValue == "💾" {
-            self.init(baseEmoji: Emoji.floppyDisk, skinTones: nil)
+            self.init(baseEmoji: .floppyDisk, skinTones: nil)
         } else if rawValue == "💿" {
-            self.init(baseEmoji: Emoji.cd, skinTones: nil)
+            self.init(baseEmoji: .cd, skinTones: nil)
         } else if rawValue == "📀" {
-            self.init(baseEmoji: Emoji.dvd, skinTones: nil)
+            self.init(baseEmoji: .dvd, skinTones: nil)
         } else if rawValue == "🧮" {
-            self.init(baseEmoji: Emoji.abacus, skinTones: nil)
+            self.init(baseEmoji: .abacus, skinTones: nil)
         } else if rawValue == "🎥" {
-            self.init(baseEmoji: Emoji.movieCamera, skinTones: nil)
+            self.init(baseEmoji: .movieCamera, skinTones: nil)
         } else if rawValue == "🎞️" {
-            self.init(baseEmoji: Emoji.filmFrames, skinTones: nil)
+            self.init(baseEmoji: .filmFrames, skinTones: nil)
         } else if rawValue == "📽️" {
-            self.init(baseEmoji: Emoji.filmProjector, skinTones: nil)
+            self.init(baseEmoji: .filmProjector, skinTones: nil)
         } else if rawValue == "🎬" {
-            self.init(baseEmoji: Emoji.clapper, skinTones: nil)
+            self.init(baseEmoji: .clapper, skinTones: nil)
         } else if rawValue == "📺" {
-            self.init(baseEmoji: Emoji.tv, skinTones: nil)
+            self.init(baseEmoji: .tv, skinTones: nil)
         } else if rawValue == "📷" {
-            self.init(baseEmoji: Emoji.camera, skinTones: nil)
+            self.init(baseEmoji: .camera, skinTones: nil)
         } else if rawValue == "📸" {
-            self.init(baseEmoji: Emoji.cameraWithFlash, skinTones: nil)
+            self.init(baseEmoji: .cameraWithFlash, skinTones: nil)
         } else if rawValue == "📹" {
-            self.init(baseEmoji: Emoji.videoCamera, skinTones: nil)
+            self.init(baseEmoji: .videoCamera, skinTones: nil)
         } else if rawValue == "📼" {
-            self.init(baseEmoji: Emoji.vhs, skinTones: nil)
+            self.init(baseEmoji: .vhs, skinTones: nil)
         } else if rawValue == "🔍" {
-            self.init(baseEmoji: Emoji.mag, skinTones: nil)
+            self.init(baseEmoji: .mag, skinTones: nil)
         } else if rawValue == "🔎" {
-            self.init(baseEmoji: Emoji.magRight, skinTones: nil)
+            self.init(baseEmoji: .magRight, skinTones: nil)
         } else if rawValue == "🕯️" {
-            self.init(baseEmoji: Emoji.candle, skinTones: nil)
+            self.init(baseEmoji: .candle, skinTones: nil)
         } else if rawValue == "💡" {
-            self.init(baseEmoji: Emoji.bulb, skinTones: nil)
+            self.init(baseEmoji: .bulb, skinTones: nil)
         } else if rawValue == "🔦" {
-            self.init(baseEmoji: Emoji.flashlight, skinTones: nil)
+            self.init(baseEmoji: .flashlight, skinTones: nil)
         } else if rawValue == "🏮" {
-            self.init(baseEmoji: Emoji.izakayaLantern, skinTones: nil)
+            self.init(baseEmoji: .izakayaLantern, skinTones: nil)
         } else if rawValue == "🪔" {
-            self.init(baseEmoji: Emoji.diyaLamp, skinTones: nil)
+            self.init(baseEmoji: .diyaLamp, skinTones: nil)
         } else if rawValue == "📔" {
-            self.init(baseEmoji: Emoji.notebookWithDecorativeCover, skinTones: nil)
+            self.init(baseEmoji: .notebookWithDecorativeCover, skinTones: nil)
         } else if rawValue == "📕" {
-            self.init(baseEmoji: Emoji.closedBook, skinTones: nil)
+            self.init(baseEmoji: .closedBook, skinTones: nil)
         } else if rawValue == "📖" {
-            self.init(baseEmoji: Emoji.book, skinTones: nil)
+            self.init(baseEmoji: .book, skinTones: nil)
         } else if rawValue == "📗" {
-            self.init(baseEmoji: Emoji.greenBook, skinTones: nil)
+            self.init(baseEmoji: .greenBook, skinTones: nil)
         } else if rawValue == "📘" {
-            self.init(baseEmoji: Emoji.blueBook, skinTones: nil)
+            self.init(baseEmoji: .blueBook, skinTones: nil)
         } else if rawValue == "📙" {
-            self.init(baseEmoji: Emoji.orangeBook, skinTones: nil)
+            self.init(baseEmoji: .orangeBook, skinTones: nil)
         } else if rawValue == "📚" {
-            self.init(baseEmoji: Emoji.books, skinTones: nil)
+            self.init(baseEmoji: .books, skinTones: nil)
         } else if rawValue == "📓" {
-            self.init(baseEmoji: Emoji.notebook, skinTones: nil)
+            self.init(baseEmoji: .notebook, skinTones: nil)
         } else if rawValue == "📒" {
-            self.init(baseEmoji: Emoji.ledger, skinTones: nil)
+            self.init(baseEmoji: .ledger, skinTones: nil)
         } else if rawValue == "📃" {
-            self.init(baseEmoji: Emoji.pageWithCurl, skinTones: nil)
+            self.init(baseEmoji: .pageWithCurl, skinTones: nil)
         } else if rawValue == "📜" {
-            self.init(baseEmoji: Emoji.scroll, skinTones: nil)
+            self.init(baseEmoji: .scroll, skinTones: nil)
         } else if rawValue == "📄" {
-            self.init(baseEmoji: Emoji.pageFacingUp, skinTones: nil)
+            self.init(baseEmoji: .pageFacingUp, skinTones: nil)
         } else if rawValue == "📰" {
-            self.init(baseEmoji: Emoji.newspaper, skinTones: nil)
+            self.init(baseEmoji: .newspaper, skinTones: nil)
         } else if rawValue == "🗞️" {
-            self.init(baseEmoji: Emoji.rolledUpNewspaper, skinTones: nil)
+            self.init(baseEmoji: .rolledUpNewspaper, skinTones: nil)
         } else if rawValue == "📑" {
-            self.init(baseEmoji: Emoji.bookmarkTabs, skinTones: nil)
+            self.init(baseEmoji: .bookmarkTabs, skinTones: nil)
         } else if rawValue == "🔖" {
-            self.init(baseEmoji: Emoji.bookmark, skinTones: nil)
+            self.init(baseEmoji: .bookmark, skinTones: nil)
         } else if rawValue == "🏷️" {
-            self.init(baseEmoji: Emoji.label, skinTones: nil)
+            self.init(baseEmoji: .label, skinTones: nil)
         } else if rawValue == "💰" {
-            self.init(baseEmoji: Emoji.moneybag, skinTones: nil)
+            self.init(baseEmoji: .moneybag, skinTones: nil)
         } else if rawValue == "🪙" {
-            self.init(baseEmoji: Emoji.coin, skinTones: nil)
+            self.init(baseEmoji: .coin, skinTones: nil)
         } else if rawValue == "💴" {
-            self.init(baseEmoji: Emoji.yen, skinTones: nil)
+            self.init(baseEmoji: .yen, skinTones: nil)
         } else if rawValue == "💵" {
-            self.init(baseEmoji: Emoji.dollar, skinTones: nil)
+            self.init(baseEmoji: .dollar, skinTones: nil)
         } else if rawValue == "💶" {
-            self.init(baseEmoji: Emoji.euro, skinTones: nil)
+            self.init(baseEmoji: .euro, skinTones: nil)
         } else if rawValue == "💷" {
-            self.init(baseEmoji: Emoji.pound, skinTones: nil)
+            self.init(baseEmoji: .pound, skinTones: nil)
         } else if rawValue == "💸" {
-            self.init(baseEmoji: Emoji.moneyWithWings, skinTones: nil)
+            self.init(baseEmoji: .moneyWithWings, skinTones: nil)
         } else if rawValue == "💳" {
-            self.init(baseEmoji: Emoji.creditCard, skinTones: nil)
+            self.init(baseEmoji: .creditCard, skinTones: nil)
         } else if rawValue == "🧾" {
-            self.init(baseEmoji: Emoji.receipt, skinTones: nil)
+            self.init(baseEmoji: .receipt, skinTones: nil)
         } else if rawValue == "💹" {
-            self.init(baseEmoji: Emoji.chart, skinTones: nil)
+            self.init(baseEmoji: .chart, skinTones: nil)
         } else if rawValue == "✉️" {
-            self.init(baseEmoji: Emoji.email, skinTones: nil)
+            self.init(baseEmoji: .email, skinTones: nil)
         } else if rawValue == "📧" {
-            self.init(baseEmoji: Emoji.eMail, skinTones: nil)
+            self.init(baseEmoji: .eMail, skinTones: nil)
         } else if rawValue == "📨" {
-            self.init(baseEmoji: Emoji.incomingEnvelope, skinTones: nil)
+            self.init(baseEmoji: .incomingEnvelope, skinTones: nil)
         } else if rawValue == "📩" {
-            self.init(baseEmoji: Emoji.envelopeWithArrow, skinTones: nil)
+            self.init(baseEmoji: .envelopeWithArrow, skinTones: nil)
         } else if rawValue == "📤" {
-            self.init(baseEmoji: Emoji.outboxTray, skinTones: nil)
+            self.init(baseEmoji: .outboxTray, skinTones: nil)
         } else if rawValue == "📥" {
-            self.init(baseEmoji: Emoji.inboxTray, skinTones: nil)
+            self.init(baseEmoji: .inboxTray, skinTones: nil)
         } else if rawValue == "📦" {
-            self.init(baseEmoji: Emoji.package, skinTones: nil)
+            self.init(baseEmoji: .package, skinTones: nil)
         } else if rawValue == "📫" {
-            self.init(baseEmoji: Emoji.mailbox, skinTones: nil)
+            self.init(baseEmoji: .mailbox, skinTones: nil)
         } else if rawValue == "📪" {
-            self.init(baseEmoji: Emoji.mailboxClosed, skinTones: nil)
+            self.init(baseEmoji: .mailboxClosed, skinTones: nil)
         } else if rawValue == "📬" {
-            self.init(baseEmoji: Emoji.mailboxWithMail, skinTones: nil)
+            self.init(baseEmoji: .mailboxWithMail, skinTones: nil)
         } else if rawValue == "📭" {
-            self.init(baseEmoji: Emoji.mailboxWithNoMail, skinTones: nil)
+            self.init(baseEmoji: .mailboxWithNoMail, skinTones: nil)
         } else if rawValue == "📮" {
-            self.init(baseEmoji: Emoji.postbox, skinTones: nil)
+            self.init(baseEmoji: .postbox, skinTones: nil)
         } else if rawValue == "🗳️" {
-            self.init(baseEmoji: Emoji.ballotBoxWithBallot, skinTones: nil)
+            self.init(baseEmoji: .ballotBoxWithBallot, skinTones: nil)
         } else if rawValue == "✏️" {
-            self.init(baseEmoji: Emoji.pencil2, skinTones: nil)
+            self.init(baseEmoji: .pencil2, skinTones: nil)
         } else if rawValue == "✒️" {
-            self.init(baseEmoji: Emoji.blackNib, skinTones: nil)
+            self.init(baseEmoji: .blackNib, skinTones: nil)
         } else if rawValue == "🖋️" {
-            self.init(baseEmoji: Emoji.lowerLeftFountainPen, skinTones: nil)
+            self.init(baseEmoji: .lowerLeftFountainPen, skinTones: nil)
         } else if rawValue == "🖊️" {
-            self.init(baseEmoji: Emoji.lowerLeftBallpointPen, skinTones: nil)
+            self.init(baseEmoji: .lowerLeftBallpointPen, skinTones: nil)
         } else if rawValue == "🖌️" {
-            self.init(baseEmoji: Emoji.lowerLeftPaintbrush, skinTones: nil)
+            self.init(baseEmoji: .lowerLeftPaintbrush, skinTones: nil)
         } else if rawValue == "🖍️" {
-            self.init(baseEmoji: Emoji.lowerLeftCrayon, skinTones: nil)
+            self.init(baseEmoji: .lowerLeftCrayon, skinTones: nil)
         } else if rawValue == "📝" {
-            self.init(baseEmoji: Emoji.memo, skinTones: nil)
+            self.init(baseEmoji: .memo, skinTones: nil)
         } else if rawValue == "💼" {
-            self.init(baseEmoji: Emoji.briefcase, skinTones: nil)
+            self.init(baseEmoji: .briefcase, skinTones: nil)
         } else if rawValue == "📁" {
-            self.init(baseEmoji: Emoji.fileFolder, skinTones: nil)
+            self.init(baseEmoji: .fileFolder, skinTones: nil)
         } else if rawValue == "📂" {
-            self.init(baseEmoji: Emoji.openFileFolder, skinTones: nil)
+            self.init(baseEmoji: .openFileFolder, skinTones: nil)
         } else if rawValue == "🗂️" {
-            self.init(baseEmoji: Emoji.cardIndexDividers, skinTones: nil)
+            self.init(baseEmoji: .cardIndexDividers, skinTones: nil)
         } else if rawValue == "📅" {
-            self.init(baseEmoji: Emoji.date, skinTones: nil)
+            self.init(baseEmoji: .date, skinTones: nil)
         } else if rawValue == "📆" {
-            self.init(baseEmoji: Emoji.calendar, skinTones: nil)
+            self.init(baseEmoji: .calendar, skinTones: nil)
         } else if rawValue == "🗒️" {
-            self.init(baseEmoji: Emoji.spiralNotePad, skinTones: nil)
+            self.init(baseEmoji: .spiralNotePad, skinTones: nil)
         } else if rawValue == "🗓️" {
-            self.init(baseEmoji: Emoji.spiralCalendarPad, skinTones: nil)
+            self.init(baseEmoji: .spiralCalendarPad, skinTones: nil)
         } else if rawValue == "📇" {
-            self.init(baseEmoji: Emoji.cardIndex, skinTones: nil)
+            self.init(baseEmoji: .cardIndex, skinTones: nil)
         } else if rawValue == "📈" {
-            self.init(baseEmoji: Emoji.chartWithUpwardsTrend, skinTones: nil)
+            self.init(baseEmoji: .chartWithUpwardsTrend, skinTones: nil)
         } else if rawValue == "📉" {
-            self.init(baseEmoji: Emoji.chartWithDownwardsTrend, skinTones: nil)
+            self.init(baseEmoji: .chartWithDownwardsTrend, skinTones: nil)
         } else if rawValue == "📊" {
-            self.init(baseEmoji: Emoji.barChart, skinTones: nil)
+            self.init(baseEmoji: .barChart, skinTones: nil)
         } else if rawValue == "📋" {
-            self.init(baseEmoji: Emoji.clipboard, skinTones: nil)
+            self.init(baseEmoji: .clipboard, skinTones: nil)
         } else if rawValue == "📌" {
-            self.init(baseEmoji: Emoji.pushpin, skinTones: nil)
+            self.init(baseEmoji: .pushpin, skinTones: nil)
         } else if rawValue == "📍" {
-            self.init(baseEmoji: Emoji.roundPushpin, skinTones: nil)
+            self.init(baseEmoji: .roundPushpin, skinTones: nil)
         } else if rawValue == "📎" {
-            self.init(baseEmoji: Emoji.paperclip, skinTones: nil)
+            self.init(baseEmoji: .paperclip, skinTones: nil)
         } else if rawValue == "🖇️" {
-            self.init(baseEmoji: Emoji.linkedPaperclips, skinTones: nil)
+            self.init(baseEmoji: .linkedPaperclips, skinTones: nil)
         } else if rawValue == "📏" {
-            self.init(baseEmoji: Emoji.straightRuler, skinTones: nil)
+            self.init(baseEmoji: .straightRuler, skinTones: nil)
         } else if rawValue == "📐" {
-            self.init(baseEmoji: Emoji.triangularRuler, skinTones: nil)
+            self.init(baseEmoji: .triangularRuler, skinTones: nil)
         } else if rawValue == "✂️" {
-            self.init(baseEmoji: Emoji.scissors, skinTones: nil)
+            self.init(baseEmoji: .scissors, skinTones: nil)
         } else if rawValue == "🗃️" {
-            self.init(baseEmoji: Emoji.cardFileBox, skinTones: nil)
+            self.init(baseEmoji: .cardFileBox, skinTones: nil)
         } else if rawValue == "🗄️" {
-            self.init(baseEmoji: Emoji.fileCabinet, skinTones: nil)
+            self.init(baseEmoji: .fileCabinet, skinTones: nil)
         } else if rawValue == "🗑️" {
-            self.init(baseEmoji: Emoji.wastebasket, skinTones: nil)
+            self.init(baseEmoji: .wastebasket, skinTones: nil)
         } else if rawValue == "🔒" {
-            self.init(baseEmoji: Emoji.lock, skinTones: nil)
+            self.init(baseEmoji: .lock, skinTones: nil)
         } else if rawValue == "🔓" {
-            self.init(baseEmoji: Emoji.unlock, skinTones: nil)
+            self.init(baseEmoji: .unlock, skinTones: nil)
         } else if rawValue == "🔏" {
-            self.init(baseEmoji: Emoji.lockWithInkPen, skinTones: nil)
+            self.init(baseEmoji: .lockWithInkPen, skinTones: nil)
         } else if rawValue == "🔐" {
-            self.init(baseEmoji: Emoji.closedLockWithKey, skinTones: nil)
+            self.init(baseEmoji: .closedLockWithKey, skinTones: nil)
         } else if rawValue == "🔑" {
-            self.init(baseEmoji: Emoji.key, skinTones: nil)
+            self.init(baseEmoji: .key, skinTones: nil)
         } else if rawValue == "🗝️" {
-            self.init(baseEmoji: Emoji.oldKey, skinTones: nil)
+            self.init(baseEmoji: .oldKey, skinTones: nil)
         } else if rawValue == "🔨" {
-            self.init(baseEmoji: Emoji.hammer, skinTones: nil)
+            self.init(baseEmoji: .hammer, skinTones: nil)
         } else if rawValue == "🪓" {
-            self.init(baseEmoji: Emoji.axe, skinTones: nil)
+            self.init(baseEmoji: .axe, skinTones: nil)
         } else if rawValue == "⛏️" {
-            self.init(baseEmoji: Emoji.pick, skinTones: nil)
+            self.init(baseEmoji: .pick, skinTones: nil)
         } else if rawValue == "⚒️" {
-            self.init(baseEmoji: Emoji.hammerAndPick, skinTones: nil)
+            self.init(baseEmoji: .hammerAndPick, skinTones: nil)
         } else if rawValue == "🛠️" {
-            self.init(baseEmoji: Emoji.hammerAndWrench, skinTones: nil)
+            self.init(baseEmoji: .hammerAndWrench, skinTones: nil)
         } else if rawValue == "🗡️" {
-            self.init(baseEmoji: Emoji.daggerKnife, skinTones: nil)
+            self.init(baseEmoji: .daggerKnife, skinTones: nil)
         } else if rawValue == "⚔️" {
-            self.init(baseEmoji: Emoji.crossedSwords, skinTones: nil)
+            self.init(baseEmoji: .crossedSwords, skinTones: nil)
         } else if rawValue == "🔫" {
-            self.init(baseEmoji: Emoji.gun, skinTones: nil)
+            self.init(baseEmoji: .gun, skinTones: nil)
         } else if rawValue == "🪃" {
-            self.init(baseEmoji: Emoji.boomerang, skinTones: nil)
+            self.init(baseEmoji: .boomerang, skinTones: nil)
         } else if rawValue == "🏹" {
-            self.init(baseEmoji: Emoji.bowAndArrow, skinTones: nil)
+            self.init(baseEmoji: .bowAndArrow, skinTones: nil)
         } else if rawValue == "🛡️" {
-            self.init(baseEmoji: Emoji.shield, skinTones: nil)
+            self.init(baseEmoji: .shield, skinTones: nil)
         } else if rawValue == "🪚" {
-            self.init(baseEmoji: Emoji.carpentrySaw, skinTones: nil)
+            self.init(baseEmoji: .carpentrySaw, skinTones: nil)
         } else if rawValue == "🔧" {
-            self.init(baseEmoji: Emoji.wrench, skinTones: nil)
+            self.init(baseEmoji: .wrench, skinTones: nil)
         } else if rawValue == "🪛" {
-            self.init(baseEmoji: Emoji.screwdriver, skinTones: nil)
+            self.init(baseEmoji: .screwdriver, skinTones: nil)
         } else if rawValue == "🔩" {
-            self.init(baseEmoji: Emoji.nutAndBolt, skinTones: nil)
+            self.init(baseEmoji: .nutAndBolt, skinTones: nil)
         } else if rawValue == "⚙️" {
-            self.init(baseEmoji: Emoji.gear, skinTones: nil)
+            self.init(baseEmoji: .gear, skinTones: nil)
         } else if rawValue == "🗜️" {
-            self.init(baseEmoji: Emoji.compression, skinTones: nil)
+            self.init(baseEmoji: .compression, skinTones: nil)
         } else if rawValue == "⚖️" {
-            self.init(baseEmoji: Emoji.scales, skinTones: nil)
+            self.init(baseEmoji: .scales, skinTones: nil)
         } else if rawValue == "🦯" {
-            self.init(baseEmoji: Emoji.probingCane, skinTones: nil)
+            self.init(baseEmoji: .probingCane, skinTones: nil)
         } else if rawValue == "🔗" {
-            self.init(baseEmoji: Emoji.link, skinTones: nil)
+            self.init(baseEmoji: .link, skinTones: nil)
         } else if rawValue == "⛓️" {
-            self.init(baseEmoji: Emoji.chains, skinTones: nil)
+            self.init(baseEmoji: .chains, skinTones: nil)
         } else if rawValue == "🪝" {
-            self.init(baseEmoji: Emoji.hook, skinTones: nil)
+            self.init(baseEmoji: .hook, skinTones: nil)
         } else if rawValue == "🧰" {
-            self.init(baseEmoji: Emoji.toolbox, skinTones: nil)
+            self.init(baseEmoji: .toolbox, skinTones: nil)
         } else if rawValue == "🧲" {
-            self.init(baseEmoji: Emoji.magnet, skinTones: nil)
+            self.init(baseEmoji: .magnet, skinTones: nil)
         } else if rawValue == "🪜" {
-            self.init(baseEmoji: Emoji.ladder, skinTones: nil)
+            self.init(baseEmoji: .ladder, skinTones: nil)
         } else if rawValue == "⚗️" {
-            self.init(baseEmoji: Emoji.alembic, skinTones: nil)
+            self.init(baseEmoji: .alembic, skinTones: nil)
         } else if rawValue == "🧪" {
-            self.init(baseEmoji: Emoji.testTube, skinTones: nil)
+            self.init(baseEmoji: .testTube, skinTones: nil)
         } else if rawValue == "🧫" {
-            self.init(baseEmoji: Emoji.petriDish, skinTones: nil)
+            self.init(baseEmoji: .petriDish, skinTones: nil)
         } else if rawValue == "🧬" {
-            self.init(baseEmoji: Emoji.dna, skinTones: nil)
+            self.init(baseEmoji: .dna, skinTones: nil)
         } else if rawValue == "🔬" {
-            self.init(baseEmoji: Emoji.microscope, skinTones: nil)
+            self.init(baseEmoji: .microscope, skinTones: nil)
         } else if rawValue == "🔭" {
-            self.init(baseEmoji: Emoji.telescope, skinTones: nil)
+            self.init(baseEmoji: .telescope, skinTones: nil)
         } else if rawValue == "📡" {
-            self.init(baseEmoji: Emoji.satelliteAntenna, skinTones: nil)
+            self.init(baseEmoji: .satelliteAntenna, skinTones: nil)
         } else if rawValue == "💉" {
-            self.init(baseEmoji: Emoji.syringe, skinTones: nil)
+            self.init(baseEmoji: .syringe, skinTones: nil)
         } else if rawValue == "🩸" {
-            self.init(baseEmoji: Emoji.dropOfBlood, skinTones: nil)
+            self.init(baseEmoji: .dropOfBlood, skinTones: nil)
         } else if rawValue == "💊" {
-            self.init(baseEmoji: Emoji.pill, skinTones: nil)
+            self.init(baseEmoji: .pill, skinTones: nil)
         } else if rawValue == "🩹" {
-            self.init(baseEmoji: Emoji.adhesiveBandage, skinTones: nil)
+            self.init(baseEmoji: .adhesiveBandage, skinTones: nil)
         } else if rawValue == "🩺" {
-            self.init(baseEmoji: Emoji.stethoscope, skinTones: nil)
+            self.init(baseEmoji: .stethoscope, skinTones: nil)
         } else if rawValue == "🚪" {
-            self.init(baseEmoji: Emoji.door, skinTones: nil)
+            self.init(baseEmoji: .door, skinTones: nil)
         } else if rawValue == "🛗" {
-            self.init(baseEmoji: Emoji.elevator, skinTones: nil)
+            self.init(baseEmoji: .elevator, skinTones: nil)
         } else if rawValue == "🪞" {
-            self.init(baseEmoji: Emoji.mirror, skinTones: nil)
+            self.init(baseEmoji: .mirror, skinTones: nil)
         } else if rawValue == "🪟" {
-            self.init(baseEmoji: Emoji.window, skinTones: nil)
+            self.init(baseEmoji: .window, skinTones: nil)
         } else if rawValue == "🛏️" {
-            self.init(baseEmoji: Emoji.bed, skinTones: nil)
+            self.init(baseEmoji: .bed, skinTones: nil)
         } else if rawValue == "🛋️" {
-            self.init(baseEmoji: Emoji.couchAndLamp, skinTones: nil)
+            self.init(baseEmoji: .couchAndLamp, skinTones: nil)
         } else if rawValue == "🪑" {
-            self.init(baseEmoji: Emoji.chair, skinTones: nil)
+            self.init(baseEmoji: .chair, skinTones: nil)
         } else if rawValue == "🚽" {
-            self.init(baseEmoji: Emoji.toilet, skinTones: nil)
+            self.init(baseEmoji: .toilet, skinTones: nil)
         } else if rawValue == "🪠" {
-            self.init(baseEmoji: Emoji.plunger, skinTones: nil)
+            self.init(baseEmoji: .plunger, skinTones: nil)
         } else if rawValue == "🚿" {
-            self.init(baseEmoji: Emoji.shower, skinTones: nil)
+            self.init(baseEmoji: .shower, skinTones: nil)
         } else if rawValue == "🛁" {
-            self.init(baseEmoji: Emoji.bathtub, skinTones: nil)
+            self.init(baseEmoji: .bathtub, skinTones: nil)
         } else if rawValue == "🪤" {
-            self.init(baseEmoji: Emoji.mouseTrap, skinTones: nil)
+            self.init(baseEmoji: .mouseTrap, skinTones: nil)
         } else if rawValue == "🪒" {
-            self.init(baseEmoji: Emoji.razor, skinTones: nil)
+            self.init(baseEmoji: .razor, skinTones: nil)
         } else if rawValue == "🧴" {
-            self.init(baseEmoji: Emoji.lotionBottle, skinTones: nil)
+            self.init(baseEmoji: .lotionBottle, skinTones: nil)
         } else if rawValue == "🧷" {
-            self.init(baseEmoji: Emoji.safetyPin, skinTones: nil)
+            self.init(baseEmoji: .safetyPin, skinTones: nil)
         } else if rawValue == "🧹" {
-            self.init(baseEmoji: Emoji.broom, skinTones: nil)
+            self.init(baseEmoji: .broom, skinTones: nil)
         } else if rawValue == "🧺" {
-            self.init(baseEmoji: Emoji.basket, skinTones: nil)
+            self.init(baseEmoji: .basket, skinTones: nil)
         } else if rawValue == "🧻" {
-            self.init(baseEmoji: Emoji.rollOfPaper, skinTones: nil)
+            self.init(baseEmoji: .rollOfPaper, skinTones: nil)
         } else if rawValue == "🪣" {
-            self.init(baseEmoji: Emoji.bucket, skinTones: nil)
+            self.init(baseEmoji: .bucket, skinTones: nil)
         } else if rawValue == "🧼" {
-            self.init(baseEmoji: Emoji.soap, skinTones: nil)
+            self.init(baseEmoji: .soap, skinTones: nil)
         } else if rawValue == "🪥" {
-            self.init(baseEmoji: Emoji.toothbrush, skinTones: nil)
+            self.init(baseEmoji: .toothbrush, skinTones: nil)
         } else if rawValue == "🧽" {
-            self.init(baseEmoji: Emoji.sponge, skinTones: nil)
+            self.init(baseEmoji: .sponge, skinTones: nil)
         } else if rawValue == "🧯" {
-            self.init(baseEmoji: Emoji.fireExtinguisher, skinTones: nil)
+            self.init(baseEmoji: .fireExtinguisher, skinTones: nil)
         } else if rawValue == "🛒" {
-            self.init(baseEmoji: Emoji.shoppingTrolley, skinTones: nil)
+            self.init(baseEmoji: .shoppingTrolley, skinTones: nil)
         } else if rawValue == "🚬" {
-            self.init(baseEmoji: Emoji.smoking, skinTones: nil)
+            self.init(baseEmoji: .smoking, skinTones: nil)
         } else if rawValue == "⚰️" {
-            self.init(baseEmoji: Emoji.coffin, skinTones: nil)
+            self.init(baseEmoji: .coffin, skinTones: nil)
         } else if rawValue == "🪦" {
-            self.init(baseEmoji: Emoji.headstone, skinTones: nil)
+            self.init(baseEmoji: .headstone, skinTones: nil)
         } else if rawValue == "⚱️" {
-            self.init(baseEmoji: Emoji.funeralUrn, skinTones: nil)
+            self.init(baseEmoji: .funeralUrn, skinTones: nil)
         } else if rawValue == "🗿" {
-            self.init(baseEmoji: Emoji.moyai, skinTones: nil)
+            self.init(baseEmoji: .moyai, skinTones: nil)
         } else if rawValue == "🪧" {
-            self.init(baseEmoji: Emoji.placard, skinTones: nil)
+            self.init(baseEmoji: .placard, skinTones: nil)
         } else if rawValue == "🏧" {
-            self.init(baseEmoji: Emoji.atm, skinTones: nil)
+            self.init(baseEmoji: .atm, skinTones: nil)
         } else if rawValue == "🚮" {
-            self.init(baseEmoji: Emoji.putLitterInItsPlace, skinTones: nil)
+            self.init(baseEmoji: .putLitterInItsPlace, skinTones: nil)
         } else if rawValue == "🚰" {
-            self.init(baseEmoji: Emoji.potableWater, skinTones: nil)
+            self.init(baseEmoji: .potableWater, skinTones: nil)
         } else if rawValue == "♿" {
-            self.init(baseEmoji: Emoji.wheelchair, skinTones: nil)
+            self.init(baseEmoji: .wheelchair, skinTones: nil)
         } else if rawValue == "🚹" {
-            self.init(baseEmoji: Emoji.mens, skinTones: nil)
+            self.init(baseEmoji: .mens, skinTones: nil)
         } else if rawValue == "🚺" {
-            self.init(baseEmoji: Emoji.womens, skinTones: nil)
+            self.init(baseEmoji: .womens, skinTones: nil)
         } else if rawValue == "🚻" {
-            self.init(baseEmoji: Emoji.restroom, skinTones: nil)
+            self.init(baseEmoji: .restroom, skinTones: nil)
         } else if rawValue == "🚼" {
-            self.init(baseEmoji: Emoji.babySymbol, skinTones: nil)
+            self.init(baseEmoji: .babySymbol, skinTones: nil)
         } else if rawValue == "🚾" {
-            self.init(baseEmoji: Emoji.wc, skinTones: nil)
+            self.init(baseEmoji: .wc, skinTones: nil)
         } else if rawValue == "🛂" {
-            self.init(baseEmoji: Emoji.passportControl, skinTones: nil)
+            self.init(baseEmoji: .passportControl, skinTones: nil)
         } else if rawValue == "🛃" {
-            self.init(baseEmoji: Emoji.customs, skinTones: nil)
+            self.init(baseEmoji: .customs, skinTones: nil)
         } else if rawValue == "🛄" {
-            self.init(baseEmoji: Emoji.baggageClaim, skinTones: nil)
+            self.init(baseEmoji: .baggageClaim, skinTones: nil)
         } else if rawValue == "🛅" {
-            self.init(baseEmoji: Emoji.leftLuggage, skinTones: nil)
+            self.init(baseEmoji: .leftLuggage, skinTones: nil)
         } else if rawValue == "⚠️" {
-            self.init(baseEmoji: Emoji.warning, skinTones: nil)
+            self.init(baseEmoji: .warning, skinTones: nil)
         } else if rawValue == "🚸" {
-            self.init(baseEmoji: Emoji.childrenCrossing, skinTones: nil)
+            self.init(baseEmoji: .childrenCrossing, skinTones: nil)
         } else if rawValue == "⛔" {
-            self.init(baseEmoji: Emoji.noEntry, skinTones: nil)
+            self.init(baseEmoji: .noEntry, skinTones: nil)
         } else if rawValue == "🚫" {
-            self.init(baseEmoji: Emoji.noEntrySign, skinTones: nil)
+            self.init(baseEmoji: .noEntrySign, skinTones: nil)
         } else if rawValue == "🚳" {
-            self.init(baseEmoji: Emoji.noBicycles, skinTones: nil)
+            self.init(baseEmoji: .noBicycles, skinTones: nil)
         } else if rawValue == "🚭" {
-            self.init(baseEmoji: Emoji.noSmoking, skinTones: nil)
+            self.init(baseEmoji: .noSmoking, skinTones: nil)
         } else if rawValue == "🚯" {
-            self.init(baseEmoji: Emoji.doNotLitter, skinTones: nil)
+            self.init(baseEmoji: .doNotLitter, skinTones: nil)
         } else if rawValue == "🚱" {
-            self.init(baseEmoji: Emoji.nonPotableWater, skinTones: nil)
+            self.init(baseEmoji: .nonPotableWater, skinTones: nil)
         } else if rawValue == "🚷" {
-            self.init(baseEmoji: Emoji.noPedestrians, skinTones: nil)
+            self.init(baseEmoji: .noPedestrians, skinTones: nil)
         } else if rawValue == "📵" {
-            self.init(baseEmoji: Emoji.noMobilePhones, skinTones: nil)
+            self.init(baseEmoji: .noMobilePhones, skinTones: nil)
         } else if rawValue == "🔞" {
-            self.init(baseEmoji: Emoji.underage, skinTones: nil)
+            self.init(baseEmoji: .underage, skinTones: nil)
         } else if rawValue == "☢️" {
-            self.init(baseEmoji: Emoji.radioactiveSign, skinTones: nil)
+            self.init(baseEmoji: .radioactiveSign, skinTones: nil)
         } else if rawValue == "☣️" {
-            self.init(baseEmoji: Emoji.biohazardSign, skinTones: nil)
+            self.init(baseEmoji: .biohazardSign, skinTones: nil)
         } else if rawValue == "⬆️" {
-            self.init(baseEmoji: Emoji.arrowUp, skinTones: nil)
+            self.init(baseEmoji: .arrowUp, skinTones: nil)
         } else if rawValue == "↗️" {
-            self.init(baseEmoji: Emoji.arrowUpperRight, skinTones: nil)
+            self.init(baseEmoji: .arrowUpperRight, skinTones: nil)
         } else if rawValue == "➡️" {
-            self.init(baseEmoji: Emoji.arrowRight, skinTones: nil)
+            self.init(baseEmoji: .arrowRight, skinTones: nil)
         } else if rawValue == "↘️" {
-            self.init(baseEmoji: Emoji.arrowLowerRight, skinTones: nil)
+            self.init(baseEmoji: .arrowLowerRight, skinTones: nil)
         } else if rawValue == "⬇️" {
-            self.init(baseEmoji: Emoji.arrowDown, skinTones: nil)
+            self.init(baseEmoji: .arrowDown, skinTones: nil)
         } else if rawValue == "↙️" {
-            self.init(baseEmoji: Emoji.arrowLowerLeft, skinTones: nil)
+            self.init(baseEmoji: .arrowLowerLeft, skinTones: nil)
         } else if rawValue == "⬅️" {
-            self.init(baseEmoji: Emoji.arrowLeft, skinTones: nil)
+            self.init(baseEmoji: .arrowLeft, skinTones: nil)
         } else if rawValue == "↖️" {
-            self.init(baseEmoji: Emoji.arrowUpperLeft, skinTones: nil)
+            self.init(baseEmoji: .arrowUpperLeft, skinTones: nil)
         } else if rawValue == "↕️" {
-            self.init(baseEmoji: Emoji.arrowUpDown, skinTones: nil)
+            self.init(baseEmoji: .arrowUpDown, skinTones: nil)
         } else if rawValue == "↔️" {
-            self.init(baseEmoji: Emoji.leftRightArrow, skinTones: nil)
+            self.init(baseEmoji: .leftRightArrow, skinTones: nil)
         } else if rawValue == "↩️" {
-            self.init(baseEmoji: Emoji.leftwardsArrowWithHook, skinTones: nil)
+            self.init(baseEmoji: .leftwardsArrowWithHook, skinTones: nil)
         } else if rawValue == "↪️" {
-            self.init(baseEmoji: Emoji.arrowRightHook, skinTones: nil)
+            self.init(baseEmoji: .arrowRightHook, skinTones: nil)
         } else if rawValue == "⤴️" {
-            self.init(baseEmoji: Emoji.arrowHeadingUp, skinTones: nil)
+            self.init(baseEmoji: .arrowHeadingUp, skinTones: nil)
         } else if rawValue == "⤵️" {
-            self.init(baseEmoji: Emoji.arrowHeadingDown, skinTones: nil)
+            self.init(baseEmoji: .arrowHeadingDown, skinTones: nil)
         } else if rawValue == "🔃" {
-            self.init(baseEmoji: Emoji.arrowsClockwise, skinTones: nil)
+            self.init(baseEmoji: .arrowsClockwise, skinTones: nil)
         } else if rawValue == "🔄" {
-            self.init(baseEmoji: Emoji.arrowsCounterclockwise, skinTones: nil)
+            self.init(baseEmoji: .arrowsCounterclockwise, skinTones: nil)
         } else if rawValue == "🔙" {
-            self.init(baseEmoji: Emoji.back, skinTones: nil)
+            self.init(baseEmoji: .back, skinTones: nil)
         } else if rawValue == "🔚" {
-            self.init(baseEmoji: Emoji.end, skinTones: nil)
+            self.init(baseEmoji: .end, skinTones: nil)
         } else if rawValue == "🔛" {
-            self.init(baseEmoji: Emoji.on, skinTones: nil)
+            self.init(baseEmoji: .on, skinTones: nil)
         } else if rawValue == "🔜" {
-            self.init(baseEmoji: Emoji.soon, skinTones: nil)
+            self.init(baseEmoji: .soon, skinTones: nil)
         } else if rawValue == "🔝" {
-            self.init(baseEmoji: Emoji.top, skinTones: nil)
+            self.init(baseEmoji: .top, skinTones: nil)
         } else if rawValue == "🛐" {
-            self.init(baseEmoji: Emoji.placeOfWorship, skinTones: nil)
+            self.init(baseEmoji: .placeOfWorship, skinTones: nil)
         } else if rawValue == "⚛️" {
-            self.init(baseEmoji: Emoji.atomSymbol, skinTones: nil)
+            self.init(baseEmoji: .atomSymbol, skinTones: nil)
         } else if rawValue == "🕉️" {
-            self.init(baseEmoji: Emoji.omSymbol, skinTones: nil)
+            self.init(baseEmoji: .omSymbol, skinTones: nil)
         } else if rawValue == "✡️" {
-            self.init(baseEmoji: Emoji.starOfDavid, skinTones: nil)
+            self.init(baseEmoji: .starOfDavid, skinTones: nil)
         } else if rawValue == "☸️" {
-            self.init(baseEmoji: Emoji.wheelOfDharma, skinTones: nil)
+            self.init(baseEmoji: .wheelOfDharma, skinTones: nil)
         } else if rawValue == "☯️" {
-            self.init(baseEmoji: Emoji.yinYang, skinTones: nil)
+            self.init(baseEmoji: .yinYang, skinTones: nil)
         } else if rawValue == "✝️" {
-            self.init(baseEmoji: Emoji.latinCross, skinTones: nil)
+            self.init(baseEmoji: .latinCross, skinTones: nil)
         } else if rawValue == "☦️" {
-            self.init(baseEmoji: Emoji.orthodoxCross, skinTones: nil)
+            self.init(baseEmoji: .orthodoxCross, skinTones: nil)
         } else if rawValue == "☪️" {
-            self.init(baseEmoji: Emoji.starAndCrescent, skinTones: nil)
+            self.init(baseEmoji: .starAndCrescent, skinTones: nil)
         } else if rawValue == "☮️" {
-            self.init(baseEmoji: Emoji.peaceSymbol, skinTones: nil)
+            self.init(baseEmoji: .peaceSymbol, skinTones: nil)
         } else if rawValue == "🕎" {
-            self.init(baseEmoji: Emoji.menorahWithNineBranches, skinTones: nil)
+            self.init(baseEmoji: .menorahWithNineBranches, skinTones: nil)
         } else if rawValue == "🔯" {
-            self.init(baseEmoji: Emoji.sixPointedStar, skinTones: nil)
+            self.init(baseEmoji: .sixPointedStar, skinTones: nil)
         } else if rawValue == "♈" {
-            self.init(baseEmoji: Emoji.aries, skinTones: nil)
+            self.init(baseEmoji: .aries, skinTones: nil)
         } else if rawValue == "♉" {
-            self.init(baseEmoji: Emoji.taurus, skinTones: nil)
+            self.init(baseEmoji: .taurus, skinTones: nil)
         } else if rawValue == "♊" {
-            self.init(baseEmoji: Emoji.gemini, skinTones: nil)
+            self.init(baseEmoji: .gemini, skinTones: nil)
         } else if rawValue == "♋" {
-            self.init(baseEmoji: Emoji.cancer, skinTones: nil)
+            self.init(baseEmoji: .cancer, skinTones: nil)
         } else if rawValue == "♌" {
-            self.init(baseEmoji: Emoji.leo, skinTones: nil)
+            self.init(baseEmoji: .leo, skinTones: nil)
         } else if rawValue == "♍" {
-            self.init(baseEmoji: Emoji.virgo, skinTones: nil)
+            self.init(baseEmoji: .virgo, skinTones: nil)
         } else if rawValue == "♎" {
-            self.init(baseEmoji: Emoji.libra, skinTones: nil)
+            self.init(baseEmoji: .libra, skinTones: nil)
         } else if rawValue == "♏" {
-            self.init(baseEmoji: Emoji.scorpius, skinTones: nil)
+            self.init(baseEmoji: .scorpius, skinTones: nil)
         } else if rawValue == "♐" {
-            self.init(baseEmoji: Emoji.sagittarius, skinTones: nil)
+            self.init(baseEmoji: .sagittarius, skinTones: nil)
         } else if rawValue == "♑" {
-            self.init(baseEmoji: Emoji.capricorn, skinTones: nil)
+            self.init(baseEmoji: .capricorn, skinTones: nil)
         } else if rawValue == "♒" {
-            self.init(baseEmoji: Emoji.aquarius, skinTones: nil)
+            self.init(baseEmoji: .aquarius, skinTones: nil)
         } else if rawValue == "♓" {
-            self.init(baseEmoji: Emoji.pisces, skinTones: nil)
+            self.init(baseEmoji: .pisces, skinTones: nil)
         } else if rawValue == "⛎" {
-            self.init(baseEmoji: Emoji.ophiuchus, skinTones: nil)
+            self.init(baseEmoji: .ophiuchus, skinTones: nil)
         } else if rawValue == "🔀" {
-            self.init(baseEmoji: Emoji.twistedRightwardsArrows, skinTones: nil)
+            self.init(baseEmoji: .twistedRightwardsArrows, skinTones: nil)
         } else if rawValue == "🔁" {
-            self.init(baseEmoji: Emoji.`repeat`, skinTones: nil)
+            self.init(baseEmoji: .`repeat`, skinTones: nil)
         } else if rawValue == "🔂" {
-            self.init(baseEmoji: Emoji.repeatOne, skinTones: nil)
+            self.init(baseEmoji: .repeatOne, skinTones: nil)
         } else if rawValue == "▶️" {
-            self.init(baseEmoji: Emoji.arrowForward, skinTones: nil)
+            self.init(baseEmoji: .arrowForward, skinTones: nil)
         } else if rawValue == "⏩" {
-            self.init(baseEmoji: Emoji.fastForward, skinTones: nil)
+            self.init(baseEmoji: .fastForward, skinTones: nil)
         } else if rawValue == "⏭️" {
-            self.init(baseEmoji: Emoji.blackRightPointingDoubleTriangleWithVerticalBar, skinTones: nil)
+            self.init(baseEmoji: .blackRightPointingDoubleTriangleWithVerticalBar, skinTones: nil)
         } else if rawValue == "⏯️" {
-            self.init(baseEmoji: Emoji.blackRightPointingTriangleWithDoubleVerticalBar, skinTones: nil)
+            self.init(baseEmoji: .blackRightPointingTriangleWithDoubleVerticalBar, skinTones: nil)
         } else if rawValue == "◀️" {
-            self.init(baseEmoji: Emoji.arrowBackward, skinTones: nil)
+            self.init(baseEmoji: .arrowBackward, skinTones: nil)
         } else if rawValue == "⏪" {
-            self.init(baseEmoji: Emoji.rewind, skinTones: nil)
+            self.init(baseEmoji: .rewind, skinTones: nil)
         } else if rawValue == "⏮️" {
-            self.init(baseEmoji: Emoji.blackLeftPointingDoubleTriangleWithVerticalBar, skinTones: nil)
+            self.init(baseEmoji: .blackLeftPointingDoubleTriangleWithVerticalBar, skinTones: nil)
         } else if rawValue == "🔼" {
-            self.init(baseEmoji: Emoji.arrowUpSmall, skinTones: nil)
+            self.init(baseEmoji: .arrowUpSmall, skinTones: nil)
         } else if rawValue == "⏫" {
-            self.init(baseEmoji: Emoji.arrowDoubleUp, skinTones: nil)
+            self.init(baseEmoji: .arrowDoubleUp, skinTones: nil)
         } else if rawValue == "🔽" {
-            self.init(baseEmoji: Emoji.arrowDownSmall, skinTones: nil)
+            self.init(baseEmoji: .arrowDownSmall, skinTones: nil)
         } else if rawValue == "⏬" {
-            self.init(baseEmoji: Emoji.arrowDoubleDown, skinTones: nil)
+            self.init(baseEmoji: .arrowDoubleDown, skinTones: nil)
         } else if rawValue == "⏸️" {
-            self.init(baseEmoji: Emoji.doubleVerticalBar, skinTones: nil)
+            self.init(baseEmoji: .doubleVerticalBar, skinTones: nil)
         } else if rawValue == "⏹️" {
-            self.init(baseEmoji: Emoji.blackSquareForStop, skinTones: nil)
+            self.init(baseEmoji: .blackSquareForStop, skinTones: nil)
         } else if rawValue == "⏺️" {
-            self.init(baseEmoji: Emoji.blackCircleForRecord, skinTones: nil)
+            self.init(baseEmoji: .blackCircleForRecord, skinTones: nil)
         } else if rawValue == "⏏️" {
-            self.init(baseEmoji: Emoji.eject, skinTones: nil)
+            self.init(baseEmoji: .eject, skinTones: nil)
         } else if rawValue == "🎦" {
-            self.init(baseEmoji: Emoji.cinema, skinTones: nil)
+            self.init(baseEmoji: .cinema, skinTones: nil)
         } else if rawValue == "🔅" {
-            self.init(baseEmoji: Emoji.lowBrightness, skinTones: nil)
+            self.init(baseEmoji: .lowBrightness, skinTones: nil)
         } else if rawValue == "🔆" {
-            self.init(baseEmoji: Emoji.highBrightness, skinTones: nil)
+            self.init(baseEmoji: .highBrightness, skinTones: nil)
         } else if rawValue == "📶" {
-            self.init(baseEmoji: Emoji.signalStrength, skinTones: nil)
+            self.init(baseEmoji: .signalStrength, skinTones: nil)
         } else if rawValue == "📳" {
-            self.init(baseEmoji: Emoji.vibrationMode, skinTones: nil)
+            self.init(baseEmoji: .vibrationMode, skinTones: nil)
         } else if rawValue == "📴" {
-            self.init(baseEmoji: Emoji.mobilePhoneOff, skinTones: nil)
+            self.init(baseEmoji: .mobilePhoneOff, skinTones: nil)
         } else if rawValue == "♀️" {
-            self.init(baseEmoji: Emoji.femaleSign, skinTones: nil)
+            self.init(baseEmoji: .femaleSign, skinTones: nil)
         } else if rawValue == "♂️" {
-            self.init(baseEmoji: Emoji.maleSign, skinTones: nil)
+            self.init(baseEmoji: .maleSign, skinTones: nil)
         } else if rawValue == "⚧️" {
-            self.init(baseEmoji: Emoji.transgenderSymbol, skinTones: nil)
+            self.init(baseEmoji: .transgenderSymbol, skinTones: nil)
         } else if rawValue == "✖️" {
-            self.init(baseEmoji: Emoji.heavyMultiplicationX, skinTones: nil)
+            self.init(baseEmoji: .heavyMultiplicationX, skinTones: nil)
         } else if rawValue == "➕" {
-            self.init(baseEmoji: Emoji.heavyPlusSign, skinTones: nil)
+            self.init(baseEmoji: .heavyPlusSign, skinTones: nil)
         } else if rawValue == "➖" {
-            self.init(baseEmoji: Emoji.heavyMinusSign, skinTones: nil)
+            self.init(baseEmoji: .heavyMinusSign, skinTones: nil)
         } else if rawValue == "➗" {
-            self.init(baseEmoji: Emoji.heavyDivisionSign, skinTones: nil)
+            self.init(baseEmoji: .heavyDivisionSign, skinTones: nil)
         } else if rawValue == "♾️" {
-            self.init(baseEmoji: Emoji.infinity, skinTones: nil)
+            self.init(baseEmoji: .infinity, skinTones: nil)
         } else if rawValue == "‼️" {
-            self.init(baseEmoji: Emoji.bangbang, skinTones: nil)
+            self.init(baseEmoji: .bangbang, skinTones: nil)
         } else if rawValue == "⁉️" {
-            self.init(baseEmoji: Emoji.interrobang, skinTones: nil)
+            self.init(baseEmoji: .interrobang, skinTones: nil)
         } else if rawValue == "❓" {
-            self.init(baseEmoji: Emoji.question, skinTones: nil)
+            self.init(baseEmoji: .question, skinTones: nil)
         } else if rawValue == "❔" {
-            self.init(baseEmoji: Emoji.greyQuestion, skinTones: nil)
+            self.init(baseEmoji: .greyQuestion, skinTones: nil)
         } else if rawValue == "❕" {
-            self.init(baseEmoji: Emoji.greyExclamation, skinTones: nil)
+            self.init(baseEmoji: .greyExclamation, skinTones: nil)
         } else if rawValue == "❗" {
-            self.init(baseEmoji: Emoji.exclamation, skinTones: nil)
+            self.init(baseEmoji: .exclamation, skinTones: nil)
         } else if rawValue == "〰️" {
-            self.init(baseEmoji: Emoji.wavyDash, skinTones: nil)
+            self.init(baseEmoji: .wavyDash, skinTones: nil)
         } else if rawValue == "💱" {
-            self.init(baseEmoji: Emoji.currencyExchange, skinTones: nil)
+            self.init(baseEmoji: .currencyExchange, skinTones: nil)
         } else if rawValue == "💲" {
-            self.init(baseEmoji: Emoji.heavyDollarSign, skinTones: nil)
+            self.init(baseEmoji: .heavyDollarSign, skinTones: nil)
         } else if rawValue == "⚕️" {
-            self.init(baseEmoji: Emoji.medicalSymbol, skinTones: nil)
+            self.init(baseEmoji: .medicalSymbol, skinTones: nil)
         } else if rawValue == "♻️" {
-            self.init(baseEmoji: Emoji.recycle, skinTones: nil)
+            self.init(baseEmoji: .recycle, skinTones: nil)
         } else if rawValue == "⚜️" {
-            self.init(baseEmoji: Emoji.fleurDeLis, skinTones: nil)
+            self.init(baseEmoji: .fleurDeLis, skinTones: nil)
         } else if rawValue == "🔱" {
-            self.init(baseEmoji: Emoji.trident, skinTones: nil)
+            self.init(baseEmoji: .trident, skinTones: nil)
         } else if rawValue == "📛" {
-            self.init(baseEmoji: Emoji.nameBadge, skinTones: nil)
+            self.init(baseEmoji: .nameBadge, skinTones: nil)
         } else if rawValue == "🔰" {
-            self.init(baseEmoji: Emoji.beginner, skinTones: nil)
+            self.init(baseEmoji: .beginner, skinTones: nil)
         } else if rawValue == "⭕" {
-            self.init(baseEmoji: Emoji.o, skinTones: nil)
+            self.init(baseEmoji: .o, skinTones: nil)
         } else if rawValue == "✅" {
-            self.init(baseEmoji: Emoji.whiteCheckMark, skinTones: nil)
+            self.init(baseEmoji: .whiteCheckMark, skinTones: nil)
         } else if rawValue == "☑️" {
-            self.init(baseEmoji: Emoji.ballotBoxWithCheck, skinTones: nil)
+            self.init(baseEmoji: .ballotBoxWithCheck, skinTones: nil)
         } else if rawValue == "✔️" {
-            self.init(baseEmoji: Emoji.heavyCheckMark, skinTones: nil)
+            self.init(baseEmoji: .heavyCheckMark, skinTones: nil)
         } else if rawValue == "❌" {
-            self.init(baseEmoji: Emoji.x, skinTones: nil)
+            self.init(baseEmoji: .x, skinTones: nil)
         } else if rawValue == "❎" {
-            self.init(baseEmoji: Emoji.negativeSquaredCrossMark, skinTones: nil)
+            self.init(baseEmoji: .negativeSquaredCrossMark, skinTones: nil)
         } else if rawValue == "➰" {
-            self.init(baseEmoji: Emoji.curlyLoop, skinTones: nil)
+            self.init(baseEmoji: .curlyLoop, skinTones: nil)
         } else if rawValue == "➿" {
-            self.init(baseEmoji: Emoji.loop, skinTones: nil)
+            self.init(baseEmoji: .loop, skinTones: nil)
         } else if rawValue == "〽️" {
-            self.init(baseEmoji: Emoji.partAlternationMark, skinTones: nil)
+            self.init(baseEmoji: .partAlternationMark, skinTones: nil)
         } else if rawValue == "✳️" {
-            self.init(baseEmoji: Emoji.eightSpokedAsterisk, skinTones: nil)
+            self.init(baseEmoji: .eightSpokedAsterisk, skinTones: nil)
         } else if rawValue == "✴️" {
-            self.init(baseEmoji: Emoji.eightPointedBlackStar, skinTones: nil)
+            self.init(baseEmoji: .eightPointedBlackStar, skinTones: nil)
         } else if rawValue == "❇️" {
-            self.init(baseEmoji: Emoji.sparkle, skinTones: nil)
+            self.init(baseEmoji: .sparkle, skinTones: nil)
         } else if rawValue == "©️" {
-            self.init(baseEmoji: Emoji.copyright, skinTones: nil)
+            self.init(baseEmoji: .copyright, skinTones: nil)
         } else if rawValue == "®️" {
-            self.init(baseEmoji: Emoji.registered, skinTones: nil)
+            self.init(baseEmoji: .registered, skinTones: nil)
         } else if rawValue == "™️" {
-            self.init(baseEmoji: Emoji.tm, skinTones: nil)
+            self.init(baseEmoji: .tm, skinTones: nil)
         } else if rawValue == "#️⃣" {
-            self.init(baseEmoji: Emoji.hash, skinTones: nil)
+            self.init(baseEmoji: .hash, skinTones: nil)
         } else if rawValue == "*️⃣" {
-            self.init(baseEmoji: Emoji.keycapStar, skinTones: nil)
+            self.init(baseEmoji: .keycapStar, skinTones: nil)
         } else if rawValue == "0️⃣" {
-            self.init(baseEmoji: Emoji.zero, skinTones: nil)
+            self.init(baseEmoji: .zero, skinTones: nil)
         } else if rawValue == "1️⃣" {
-            self.init(baseEmoji: Emoji.one, skinTones: nil)
+            self.init(baseEmoji: .one, skinTones: nil)
         } else if rawValue == "2️⃣" {
-            self.init(baseEmoji: Emoji.two, skinTones: nil)
+            self.init(baseEmoji: .two, skinTones: nil)
         } else if rawValue == "3️⃣" {
-            self.init(baseEmoji: Emoji.three, skinTones: nil)
+            self.init(baseEmoji: .three, skinTones: nil)
         } else if rawValue == "4️⃣" {
-            self.init(baseEmoji: Emoji.four, skinTones: nil)
+            self.init(baseEmoji: .four, skinTones: nil)
         } else if rawValue == "5️⃣" {
-            self.init(baseEmoji: Emoji.five, skinTones: nil)
+            self.init(baseEmoji: .five, skinTones: nil)
         } else if rawValue == "6️⃣" {
-            self.init(baseEmoji: Emoji.six, skinTones: nil)
+            self.init(baseEmoji: .six, skinTones: nil)
         } else if rawValue == "7️⃣" {
-            self.init(baseEmoji: Emoji.seven, skinTones: nil)
+            self.init(baseEmoji: .seven, skinTones: nil)
         } else if rawValue == "8️⃣" {
-            self.init(baseEmoji: Emoji.eight, skinTones: nil)
+            self.init(baseEmoji: .eight, skinTones: nil)
         } else if rawValue == "9️⃣" {
-            self.init(baseEmoji: Emoji.nine, skinTones: nil)
+            self.init(baseEmoji: .nine, skinTones: nil)
         } else if rawValue == "🔟" {
-            self.init(baseEmoji: Emoji.keycapTen, skinTones: nil)
+            self.init(baseEmoji: .keycapTen, skinTones: nil)
         } else if rawValue == "🔠" {
-            self.init(baseEmoji: Emoji.capitalAbcd, skinTones: nil)
+            self.init(baseEmoji: .capitalAbcd, skinTones: nil)
         } else if rawValue == "🔡" {
-            self.init(baseEmoji: Emoji.abcd, skinTones: nil)
+            self.init(baseEmoji: .abcd, skinTones: nil)
         } else if rawValue == "🔢" {
-            self.init(baseEmoji: Emoji.oneTwoThreeFour, skinTones: nil)
+            self.init(baseEmoji: .oneTwoThreeFour, skinTones: nil)
         } else if rawValue == "🔣" {
-            self.init(baseEmoji: Emoji.symbols, skinTones: nil)
+            self.init(baseEmoji: .symbols, skinTones: nil)
         } else if rawValue == "🔤" {
-            self.init(baseEmoji: Emoji.abc, skinTones: nil)
+            self.init(baseEmoji: .abc, skinTones: nil)
         } else if rawValue == "🅰️" {
-            self.init(baseEmoji: Emoji.a, skinTones: nil)
+            self.init(baseEmoji: .a, skinTones: nil)
         } else if rawValue == "🆎" {
-            self.init(baseEmoji: Emoji.ab, skinTones: nil)
+            self.init(baseEmoji: .ab, skinTones: nil)
         } else if rawValue == "🅱️" {
-            self.init(baseEmoji: Emoji.b, skinTones: nil)
+            self.init(baseEmoji: .b, skinTones: nil)
         } else if rawValue == "🆑" {
-            self.init(baseEmoji: Emoji.cl, skinTones: nil)
+            self.init(baseEmoji: .cl, skinTones: nil)
         } else if rawValue == "🆒" {
-            self.init(baseEmoji: Emoji.cool, skinTones: nil)
+            self.init(baseEmoji: .cool, skinTones: nil)
         } else if rawValue == "🆓" {
-            self.init(baseEmoji: Emoji.free, skinTones: nil)
+            self.init(baseEmoji: .free, skinTones: nil)
         } else if rawValue == "ℹ️" {
-            self.init(baseEmoji: Emoji.informationSource, skinTones: nil)
+            self.init(baseEmoji: .informationSource, skinTones: nil)
         } else if rawValue == "🆔" {
-            self.init(baseEmoji: Emoji.id, skinTones: nil)
+            self.init(baseEmoji: .id, skinTones: nil)
         } else if rawValue == "Ⓜ️" {
-            self.init(baseEmoji: Emoji.m, skinTones: nil)
+            self.init(baseEmoji: .m, skinTones: nil)
         } else if rawValue == "🆕" {
-            self.init(baseEmoji: Emoji.new, skinTones: nil)
+            self.init(baseEmoji: .new, skinTones: nil)
         } else if rawValue == "🆖" {
-            self.init(baseEmoji: Emoji.ng, skinTones: nil)
+            self.init(baseEmoji: .ng, skinTones: nil)
         } else if rawValue == "🅾️" {
-            self.init(baseEmoji: Emoji.o2, skinTones: nil)
+            self.init(baseEmoji: .o2, skinTones: nil)
         } else if rawValue == "🆗" {
-            self.init(baseEmoji: Emoji.ok, skinTones: nil)
+            self.init(baseEmoji: .ok, skinTones: nil)
         } else if rawValue == "🅿️" {
-            self.init(baseEmoji: Emoji.parking, skinTones: nil)
+            self.init(baseEmoji: .parking, skinTones: nil)
         } else if rawValue == "🆘" {
-            self.init(baseEmoji: Emoji.sos, skinTones: nil)
+            self.init(baseEmoji: .sos, skinTones: nil)
         } else if rawValue == "🆙" {
-            self.init(baseEmoji: Emoji.up, skinTones: nil)
+            self.init(baseEmoji: .up, skinTones: nil)
         } else if rawValue == "🆚" {
-            self.init(baseEmoji: Emoji.vs, skinTones: nil)
+            self.init(baseEmoji: .vs, skinTones: nil)
         } else if rawValue == "🈁" {
-            self.init(baseEmoji: Emoji.koko, skinTones: nil)
+            self.init(baseEmoji: .koko, skinTones: nil)
         } else if rawValue == "🈂️" {
-            self.init(baseEmoji: Emoji.sa, skinTones: nil)
+            self.init(baseEmoji: .sa, skinTones: nil)
         } else if rawValue == "🈷️" {
-            self.init(baseEmoji: Emoji.u6708, skinTones: nil)
+            self.init(baseEmoji: .u6708, skinTones: nil)
         } else if rawValue == "🈶" {
-            self.init(baseEmoji: Emoji.u6709, skinTones: nil)
+            self.init(baseEmoji: .u6709, skinTones: nil)
         } else if rawValue == "🈯" {
-            self.init(baseEmoji: Emoji.u6307, skinTones: nil)
+            self.init(baseEmoji: .u6307, skinTones: nil)
         } else if rawValue == "🉐" {
-            self.init(baseEmoji: Emoji.ideographAdvantage, skinTones: nil)
+            self.init(baseEmoji: .ideographAdvantage, skinTones: nil)
         } else if rawValue == "🈹" {
-            self.init(baseEmoji: Emoji.u5272, skinTones: nil)
+            self.init(baseEmoji: .u5272, skinTones: nil)
         } else if rawValue == "🈚" {
-            self.init(baseEmoji: Emoji.u7121, skinTones: nil)
+            self.init(baseEmoji: .u7121, skinTones: nil)
         } else if rawValue == "🈲" {
-            self.init(baseEmoji: Emoji.u7981, skinTones: nil)
+            self.init(baseEmoji: .u7981, skinTones: nil)
         } else if rawValue == "🉑" {
-            self.init(baseEmoji: Emoji.accept, skinTones: nil)
+            self.init(baseEmoji: .accept, skinTones: nil)
         } else if rawValue == "🈸" {
-            self.init(baseEmoji: Emoji.u7533, skinTones: nil)
+            self.init(baseEmoji: .u7533, skinTones: nil)
         } else if rawValue == "🈴" {
-            self.init(baseEmoji: Emoji.u5408, skinTones: nil)
+            self.init(baseEmoji: .u5408, skinTones: nil)
         } else if rawValue == "🈳" {
-            self.init(baseEmoji: Emoji.u7a7a, skinTones: nil)
+            self.init(baseEmoji: .u7a7a, skinTones: nil)
         } else if rawValue == "㊗️" {
-            self.init(baseEmoji: Emoji.congratulations, skinTones: nil)
+            self.init(baseEmoji: .congratulations, skinTones: nil)
         } else if rawValue == "㊙️" {
-            self.init(baseEmoji: Emoji.secret, skinTones: nil)
+            self.init(baseEmoji: .secret, skinTones: nil)
         } else if rawValue == "🈺" {
-            self.init(baseEmoji: Emoji.u55b6, skinTones: nil)
+            self.init(baseEmoji: .u55b6, skinTones: nil)
         } else if rawValue == "🈵" {
-            self.init(baseEmoji: Emoji.u6e80, skinTones: nil)
+            self.init(baseEmoji: .u6e80, skinTones: nil)
         } else if rawValue == "🔴" {
-            self.init(baseEmoji: Emoji.redCircle, skinTones: nil)
+            self.init(baseEmoji: .redCircle, skinTones: nil)
         } else if rawValue == "🟠" {
-            self.init(baseEmoji: Emoji.largeOrangeCircle, skinTones: nil)
+            self.init(baseEmoji: .largeOrangeCircle, skinTones: nil)
         } else if rawValue == "🟡" {
-            self.init(baseEmoji: Emoji.largeYellowCircle, skinTones: nil)
+            self.init(baseEmoji: .largeYellowCircle, skinTones: nil)
         } else if rawValue == "🟢" {
-            self.init(baseEmoji: Emoji.largeGreenCircle, skinTones: nil)
+            self.init(baseEmoji: .largeGreenCircle, skinTones: nil)
         } else if rawValue == "🔵" {
-            self.init(baseEmoji: Emoji.largeBlueCircle, skinTones: nil)
+            self.init(baseEmoji: .largeBlueCircle, skinTones: nil)
         } else if rawValue == "🟣" {
-            self.init(baseEmoji: Emoji.largePurpleCircle, skinTones: nil)
+            self.init(baseEmoji: .largePurpleCircle, skinTones: nil)
         } else if rawValue == "🟤" {
-            self.init(baseEmoji: Emoji.largeBrownCircle, skinTones: nil)
+            self.init(baseEmoji: .largeBrownCircle, skinTones: nil)
         } else if rawValue == "⚫" {
-            self.init(baseEmoji: Emoji.blackCircle, skinTones: nil)
+            self.init(baseEmoji: .blackCircle, skinTones: nil)
         } else if rawValue == "⚪" {
-            self.init(baseEmoji: Emoji.whiteCircle, skinTones: nil)
+            self.init(baseEmoji: .whiteCircle, skinTones: nil)
         } else if rawValue == "🟥" {
-            self.init(baseEmoji: Emoji.largeRedSquare, skinTones: nil)
+            self.init(baseEmoji: .largeRedSquare, skinTones: nil)
         } else if rawValue == "🟧" {
-            self.init(baseEmoji: Emoji.largeOrangeSquare, skinTones: nil)
+            self.init(baseEmoji: .largeOrangeSquare, skinTones: nil)
         } else if rawValue == "🟨" {
-            self.init(baseEmoji: Emoji.largeYellowSquare, skinTones: nil)
+            self.init(baseEmoji: .largeYellowSquare, skinTones: nil)
         } else if rawValue == "🟩" {
-            self.init(baseEmoji: Emoji.largeGreenSquare, skinTones: nil)
+            self.init(baseEmoji: .largeGreenSquare, skinTones: nil)
         } else if rawValue == "🟦" {
-            self.init(baseEmoji: Emoji.largeBlueSquare, skinTones: nil)
+            self.init(baseEmoji: .largeBlueSquare, skinTones: nil)
         } else if rawValue == "🟪" {
-            self.init(baseEmoji: Emoji.largePurpleSquare, skinTones: nil)
+            self.init(baseEmoji: .largePurpleSquare, skinTones: nil)
         } else if rawValue == "🟫" {
-            self.init(baseEmoji: Emoji.largeBrownSquare, skinTones: nil)
+            self.init(baseEmoji: .largeBrownSquare, skinTones: nil)
         } else if rawValue == "⬛" {
-            self.init(baseEmoji: Emoji.blackLargeSquare, skinTones: nil)
+            self.init(baseEmoji: .blackLargeSquare, skinTones: nil)
         } else if rawValue == "⬜" {
-            self.init(baseEmoji: Emoji.whiteLargeSquare, skinTones: nil)
+            self.init(baseEmoji: .whiteLargeSquare, skinTones: nil)
         } else if rawValue == "◼️" {
-            self.init(baseEmoji: Emoji.blackMediumSquare, skinTones: nil)
+            self.init(baseEmoji: .blackMediumSquare, skinTones: nil)
         } else if rawValue == "◻️" {
-            self.init(baseEmoji: Emoji.whiteMediumSquare, skinTones: nil)
+            self.init(baseEmoji: .whiteMediumSquare, skinTones: nil)
         } else if rawValue == "◾" {
-            self.init(baseEmoji: Emoji.blackMediumSmallSquare, skinTones: nil)
+            self.init(baseEmoji: .blackMediumSmallSquare, skinTones: nil)
         } else if rawValue == "◽" {
-            self.init(baseEmoji: Emoji.whiteMediumSmallSquare, skinTones: nil)
+            self.init(baseEmoji: .whiteMediumSmallSquare, skinTones: nil)
         } else if rawValue == "▪️" {
-            self.init(baseEmoji: Emoji.blackSmallSquare, skinTones: nil)
+            self.init(baseEmoji: .blackSmallSquare, skinTones: nil)
         } else if rawValue == "▫️" {
-            self.init(baseEmoji: Emoji.whiteSmallSquare, skinTones: nil)
+            self.init(baseEmoji: .whiteSmallSquare, skinTones: nil)
         } else if rawValue == "🔶" {
-            self.init(baseEmoji: Emoji.largeOrangeDiamond, skinTones: nil)
+            self.init(baseEmoji: .largeOrangeDiamond, skinTones: nil)
         } else if rawValue == "🔷" {
-            self.init(baseEmoji: Emoji.largeBlueDiamond, skinTones: nil)
+            self.init(baseEmoji: .largeBlueDiamond, skinTones: nil)
         } else if rawValue == "🔸" {
-            self.init(baseEmoji: Emoji.smallOrangeDiamond, skinTones: nil)
+            self.init(baseEmoji: .smallOrangeDiamond, skinTones: nil)
         } else if rawValue == "🔹" {
-            self.init(baseEmoji: Emoji.smallBlueDiamond, skinTones: nil)
+            self.init(baseEmoji: .smallBlueDiamond, skinTones: nil)
         } else if rawValue == "🔺" {
-            self.init(baseEmoji: Emoji.smallRedTriangle, skinTones: nil)
+            self.init(baseEmoji: .smallRedTriangle, skinTones: nil)
         } else if rawValue == "🔻" {
-            self.init(baseEmoji: Emoji.smallRedTriangleDown, skinTones: nil)
+            self.init(baseEmoji: .smallRedTriangleDown, skinTones: nil)
         } else if rawValue == "💠" {
-            self.init(baseEmoji: Emoji.diamondShapeWithADotInside, skinTones: nil)
+            self.init(baseEmoji: .diamondShapeWithADotInside, skinTones: nil)
         } else if rawValue == "🔘" {
-            self.init(baseEmoji: Emoji.radioButton, skinTones: nil)
+            self.init(baseEmoji: .radioButton, skinTones: nil)
         } else if rawValue == "🔳" {
-            self.init(baseEmoji: Emoji.whiteSquareButton, skinTones: nil)
+            self.init(baseEmoji: .whiteSquareButton, skinTones: nil)
         } else if rawValue == "🔲" {
-            self.init(baseEmoji: Emoji.blackSquareButton, skinTones: nil)
+            self.init(baseEmoji: .blackSquareButton, skinTones: nil)
         } else if rawValue == "🏁" {
-            self.init(baseEmoji: Emoji.checkeredFlag, skinTones: nil)
+            self.init(baseEmoji: .checkeredFlag, skinTones: nil)
         } else if rawValue == "🚩" {
-            self.init(baseEmoji: Emoji.triangularFlagOnPost, skinTones: nil)
+            self.init(baseEmoji: .triangularFlagOnPost, skinTones: nil)
         } else if rawValue == "🎌" {
-            self.init(baseEmoji: Emoji.crossedFlags, skinTones: nil)
+            self.init(baseEmoji: .crossedFlags, skinTones: nil)
         } else if rawValue == "🏴" {
-            self.init(baseEmoji: Emoji.wavingBlackFlag, skinTones: nil)
+            self.init(baseEmoji: .wavingBlackFlag, skinTones: nil)
         } else if rawValue == "🏳️" {
-            self.init(baseEmoji: Emoji.wavingWhiteFlag, skinTones: nil)
+            self.init(baseEmoji: .wavingWhiteFlag, skinTones: nil)
         } else if rawValue == "🏳️‍🌈" {
-            self.init(baseEmoji: Emoji.rainbowFlag, skinTones: nil)
+            self.init(baseEmoji: .rainbowFlag, skinTones: nil)
         } else if rawValue == "🏳️‍⚧️" {
-            self.init(baseEmoji: Emoji.transgenderFlag, skinTones: nil)
+            self.init(baseEmoji: .transgenderFlag, skinTones: nil)
         } else if rawValue == "🏴‍☠️" {
-            self.init(baseEmoji: Emoji.pirateFlag, skinTones: nil)
+            self.init(baseEmoji: .pirateFlag, skinTones: nil)
         } else if rawValue == "🇦🇨" {
-            self.init(baseEmoji: Emoji.flagAc, skinTones: nil)
+            self.init(baseEmoji: .flagAc, skinTones: nil)
         } else if rawValue == "🇦🇩" {
-            self.init(baseEmoji: Emoji.flagAd, skinTones: nil)
+            self.init(baseEmoji: .flagAd, skinTones: nil)
         } else if rawValue == "🇦🇪" {
-            self.init(baseEmoji: Emoji.flagAe, skinTones: nil)
+            self.init(baseEmoji: .flagAe, skinTones: nil)
         } else if rawValue == "🇦🇫" {
-            self.init(baseEmoji: Emoji.flagAf, skinTones: nil)
+            self.init(baseEmoji: .flagAf, skinTones: nil)
         } else if rawValue == "🇦🇬" {
-            self.init(baseEmoji: Emoji.flagAg, skinTones: nil)
+            self.init(baseEmoji: .flagAg, skinTones: nil)
         } else if rawValue == "🇦🇮" {
-            self.init(baseEmoji: Emoji.flagAi, skinTones: nil)
+            self.init(baseEmoji: .flagAi, skinTones: nil)
         } else if rawValue == "🇦🇱" {
-            self.init(baseEmoji: Emoji.flagAl, skinTones: nil)
+            self.init(baseEmoji: .flagAl, skinTones: nil)
         } else if rawValue == "🇦🇲" {
-            self.init(baseEmoji: Emoji.flagAm, skinTones: nil)
+            self.init(baseEmoji: .flagAm, skinTones: nil)
         } else if rawValue == "🇦🇴" {
-            self.init(baseEmoji: Emoji.flagAo, skinTones: nil)
+            self.init(baseEmoji: .flagAo, skinTones: nil)
         } else if rawValue == "🇦🇶" {
-            self.init(baseEmoji: Emoji.flagAq, skinTones: nil)
+            self.init(baseEmoji: .flagAq, skinTones: nil)
         } else if rawValue == "🇦🇷" {
-            self.init(baseEmoji: Emoji.flagAr, skinTones: nil)
+            self.init(baseEmoji: .flagAr, skinTones: nil)
         } else if rawValue == "🇦🇸" {
-            self.init(baseEmoji: Emoji.flagAs, skinTones: nil)
+            self.init(baseEmoji: .flagAs, skinTones: nil)
         } else if rawValue == "🇦🇹" {
-            self.init(baseEmoji: Emoji.flagAt, skinTones: nil)
+            self.init(baseEmoji: .flagAt, skinTones: nil)
         } else if rawValue == "🇦🇺" {
-            self.init(baseEmoji: Emoji.flagAu, skinTones: nil)
+            self.init(baseEmoji: .flagAu, skinTones: nil)
         } else if rawValue == "🇦🇼" {
-            self.init(baseEmoji: Emoji.flagAw, skinTones: nil)
+            self.init(baseEmoji: .flagAw, skinTones: nil)
         } else if rawValue == "🇦🇽" {
-            self.init(baseEmoji: Emoji.flagAx, skinTones: nil)
+            self.init(baseEmoji: .flagAx, skinTones: nil)
         } else if rawValue == "🇦🇿" {
-            self.init(baseEmoji: Emoji.flagAz, skinTones: nil)
+            self.init(baseEmoji: .flagAz, skinTones: nil)
         } else if rawValue == "🇧🇦" {
-            self.init(baseEmoji: Emoji.flagBa, skinTones: nil)
+            self.init(baseEmoji: .flagBa, skinTones: nil)
         } else if rawValue == "🇧🇧" {
-            self.init(baseEmoji: Emoji.flagBb, skinTones: nil)
+            self.init(baseEmoji: .flagBb, skinTones: nil)
         } else if rawValue == "🇧🇩" {
-            self.init(baseEmoji: Emoji.flagBd, skinTones: nil)
+            self.init(baseEmoji: .flagBd, skinTones: nil)
         } else if rawValue == "🇧🇪" {
-            self.init(baseEmoji: Emoji.flagBe, skinTones: nil)
+            self.init(baseEmoji: .flagBe, skinTones: nil)
         } else if rawValue == "🇧🇫" {
-            self.init(baseEmoji: Emoji.flagBf, skinTones: nil)
+            self.init(baseEmoji: .flagBf, skinTones: nil)
         } else if rawValue == "🇧🇬" {
-            self.init(baseEmoji: Emoji.flagBg, skinTones: nil)
+            self.init(baseEmoji: .flagBg, skinTones: nil)
         } else if rawValue == "🇧🇭" {
-            self.init(baseEmoji: Emoji.flagBh, skinTones: nil)
+            self.init(baseEmoji: .flagBh, skinTones: nil)
         } else if rawValue == "🇧🇮" {
-            self.init(baseEmoji: Emoji.flagBi, skinTones: nil)
+            self.init(baseEmoji: .flagBi, skinTones: nil)
         } else if rawValue == "🇧🇯" {
-            self.init(baseEmoji: Emoji.flagBj, skinTones: nil)
+            self.init(baseEmoji: .flagBj, skinTones: nil)
         } else if rawValue == "🇧🇱" {
-            self.init(baseEmoji: Emoji.flagBl, skinTones: nil)
+            self.init(baseEmoji: .flagBl, skinTones: nil)
         } else if rawValue == "🇧🇲" {
-            self.init(baseEmoji: Emoji.flagBm, skinTones: nil)
+            self.init(baseEmoji: .flagBm, skinTones: nil)
         } else if rawValue == "🇧🇳" {
-            self.init(baseEmoji: Emoji.flagBn, skinTones: nil)
+            self.init(baseEmoji: .flagBn, skinTones: nil)
         } else if rawValue == "🇧🇴" {
-            self.init(baseEmoji: Emoji.flagBo, skinTones: nil)
+            self.init(baseEmoji: .flagBo, skinTones: nil)
         } else if rawValue == "🇧🇶" {
-            self.init(baseEmoji: Emoji.flagBq, skinTones: nil)
+            self.init(baseEmoji: .flagBq, skinTones: nil)
         } else if rawValue == "🇧🇷" {
-            self.init(baseEmoji: Emoji.flagBr, skinTones: nil)
+            self.init(baseEmoji: .flagBr, skinTones: nil)
         } else if rawValue == "🇧🇸" {
-            self.init(baseEmoji: Emoji.flagBs, skinTones: nil)
+            self.init(baseEmoji: .flagBs, skinTones: nil)
         } else if rawValue == "🇧🇹" {
-            self.init(baseEmoji: Emoji.flagBt, skinTones: nil)
+            self.init(baseEmoji: .flagBt, skinTones: nil)
         } else if rawValue == "🇧🇻" {
-            self.init(baseEmoji: Emoji.flagBv, skinTones: nil)
+            self.init(baseEmoji: .flagBv, skinTones: nil)
         } else if rawValue == "🇧🇼" {
-            self.init(baseEmoji: Emoji.flagBw, skinTones: nil)
+            self.init(baseEmoji: .flagBw, skinTones: nil)
         } else if rawValue == "🇧🇾" {
-            self.init(baseEmoji: Emoji.flagBy, skinTones: nil)
+            self.init(baseEmoji: .flagBy, skinTones: nil)
         } else if rawValue == "🇧🇿" {
-            self.init(baseEmoji: Emoji.flagBz, skinTones: nil)
+            self.init(baseEmoji: .flagBz, skinTones: nil)
         } else if rawValue == "🇨🇦" {
-            self.init(baseEmoji: Emoji.flagCa, skinTones: nil)
+            self.init(baseEmoji: .flagCa, skinTones: nil)
         } else if rawValue == "🇨🇨" {
-            self.init(baseEmoji: Emoji.flagCc, skinTones: nil)
+            self.init(baseEmoji: .flagCc, skinTones: nil)
         } else if rawValue == "🇨🇩" {
-            self.init(baseEmoji: Emoji.flagCd, skinTones: nil)
+            self.init(baseEmoji: .flagCd, skinTones: nil)
         } else if rawValue == "🇨🇫" {
-            self.init(baseEmoji: Emoji.flagCf, skinTones: nil)
+            self.init(baseEmoji: .flagCf, skinTones: nil)
         } else if rawValue == "🇨🇬" {
-            self.init(baseEmoji: Emoji.flagCg, skinTones: nil)
+            self.init(baseEmoji: .flagCg, skinTones: nil)
         } else if rawValue == "🇨🇭" {
-            self.init(baseEmoji: Emoji.flagCh, skinTones: nil)
+            self.init(baseEmoji: .flagCh, skinTones: nil)
         } else if rawValue == "🇨🇮" {
-            self.init(baseEmoji: Emoji.flagCi, skinTones: nil)
+            self.init(baseEmoji: .flagCi, skinTones: nil)
         } else if rawValue == "🇨🇰" {
-            self.init(baseEmoji: Emoji.flagCk, skinTones: nil)
+            self.init(baseEmoji: .flagCk, skinTones: nil)
         } else if rawValue == "🇨🇱" {
-            self.init(baseEmoji: Emoji.flagCl, skinTones: nil)
+            self.init(baseEmoji: .flagCl, skinTones: nil)
         } else if rawValue == "🇨🇲" {
-            self.init(baseEmoji: Emoji.flagCm, skinTones: nil)
+            self.init(baseEmoji: .flagCm, skinTones: nil)
         } else if rawValue == "🇨🇳" {
-            self.init(baseEmoji: Emoji.cn, skinTones: nil)
+            self.init(baseEmoji: .cn, skinTones: nil)
         } else if rawValue == "🇨🇴" {
-            self.init(baseEmoji: Emoji.flagCo, skinTones: nil)
+            self.init(baseEmoji: .flagCo, skinTones: nil)
         } else if rawValue == "🇨🇵" {
-            self.init(baseEmoji: Emoji.flagCp, skinTones: nil)
+            self.init(baseEmoji: .flagCp, skinTones: nil)
         } else if rawValue == "🇨🇷" {
-            self.init(baseEmoji: Emoji.flagCr, skinTones: nil)
+            self.init(baseEmoji: .flagCr, skinTones: nil)
         } else if rawValue == "🇨🇺" {
-            self.init(baseEmoji: Emoji.flagCu, skinTones: nil)
+            self.init(baseEmoji: .flagCu, skinTones: nil)
         } else if rawValue == "🇨🇻" {
-            self.init(baseEmoji: Emoji.flagCv, skinTones: nil)
+            self.init(baseEmoji: .flagCv, skinTones: nil)
         } else if rawValue == "🇨🇼" {
-            self.init(baseEmoji: Emoji.flagCw, skinTones: nil)
+            self.init(baseEmoji: .flagCw, skinTones: nil)
         } else if rawValue == "🇨🇽" {
-            self.init(baseEmoji: Emoji.flagCx, skinTones: nil)
+            self.init(baseEmoji: .flagCx, skinTones: nil)
         } else if rawValue == "🇨🇾" {
-            self.init(baseEmoji: Emoji.flagCy, skinTones: nil)
+            self.init(baseEmoji: .flagCy, skinTones: nil)
         } else if rawValue == "🇨🇿" {
-            self.init(baseEmoji: Emoji.flagCz, skinTones: nil)
+            self.init(baseEmoji: .flagCz, skinTones: nil)
         } else if rawValue == "🇩🇪" {
-            self.init(baseEmoji: Emoji.de, skinTones: nil)
+            self.init(baseEmoji: .de, skinTones: nil)
         } else if rawValue == "🇩🇬" {
-            self.init(baseEmoji: Emoji.flagDg, skinTones: nil)
+            self.init(baseEmoji: .flagDg, skinTones: nil)
         } else if rawValue == "🇩🇯" {
-            self.init(baseEmoji: Emoji.flagDj, skinTones: nil)
+            self.init(baseEmoji: .flagDj, skinTones: nil)
         } else if rawValue == "🇩🇰" {
-            self.init(baseEmoji: Emoji.flagDk, skinTones: nil)
+            self.init(baseEmoji: .flagDk, skinTones: nil)
         } else if rawValue == "🇩🇲" {
-            self.init(baseEmoji: Emoji.flagDm, skinTones: nil)
+            self.init(baseEmoji: .flagDm, skinTones: nil)
         } else if rawValue == "🇩🇴" {
-            self.init(baseEmoji: Emoji.flagDo, skinTones: nil)
+            self.init(baseEmoji: .flagDo, skinTones: nil)
         } else if rawValue == "🇩🇿" {
-            self.init(baseEmoji: Emoji.flagDz, skinTones: nil)
+            self.init(baseEmoji: .flagDz, skinTones: nil)
         } else if rawValue == "🇪🇦" {
-            self.init(baseEmoji: Emoji.flagEa, skinTones: nil)
+            self.init(baseEmoji: .flagEa, skinTones: nil)
         } else if rawValue == "🇪🇨" {
-            self.init(baseEmoji: Emoji.flagEc, skinTones: nil)
+            self.init(baseEmoji: .flagEc, skinTones: nil)
         } else if rawValue == "🇪🇪" {
-            self.init(baseEmoji: Emoji.flagEe, skinTones: nil)
+            self.init(baseEmoji: .flagEe, skinTones: nil)
         } else if rawValue == "🇪🇬" {
-            self.init(baseEmoji: Emoji.flagEg, skinTones: nil)
+            self.init(baseEmoji: .flagEg, skinTones: nil)
         } else if rawValue == "🇪🇭" {
-            self.init(baseEmoji: Emoji.flagEh, skinTones: nil)
+            self.init(baseEmoji: .flagEh, skinTones: nil)
         } else if rawValue == "🇪🇷" {
-            self.init(baseEmoji: Emoji.flagEr, skinTones: nil)
+            self.init(baseEmoji: .flagEr, skinTones: nil)
         } else if rawValue == "🇪🇸" {
-            self.init(baseEmoji: Emoji.es, skinTones: nil)
+            self.init(baseEmoji: .es, skinTones: nil)
         } else if rawValue == "🇪🇹" {
-            self.init(baseEmoji: Emoji.flagEt, skinTones: nil)
+            self.init(baseEmoji: .flagEt, skinTones: nil)
         } else if rawValue == "🇪🇺" {
-            self.init(baseEmoji: Emoji.flagEu, skinTones: nil)
+            self.init(baseEmoji: .flagEu, skinTones: nil)
         } else if rawValue == "🇫🇮" {
-            self.init(baseEmoji: Emoji.flagFi, skinTones: nil)
+            self.init(baseEmoji: .flagFi, skinTones: nil)
         } else if rawValue == "🇫🇯" {
-            self.init(baseEmoji: Emoji.flagFj, skinTones: nil)
+            self.init(baseEmoji: .flagFj, skinTones: nil)
         } else if rawValue == "🇫🇰" {
-            self.init(baseEmoji: Emoji.flagFk, skinTones: nil)
+            self.init(baseEmoji: .flagFk, skinTones: nil)
         } else if rawValue == "🇫🇲" {
-            self.init(baseEmoji: Emoji.flagFm, skinTones: nil)
+            self.init(baseEmoji: .flagFm, skinTones: nil)
         } else if rawValue == "🇫🇴" {
-            self.init(baseEmoji: Emoji.flagFo, skinTones: nil)
+            self.init(baseEmoji: .flagFo, skinTones: nil)
         } else if rawValue == "🇫🇷" {
-            self.init(baseEmoji: Emoji.fr, skinTones: nil)
+            self.init(baseEmoji: .fr, skinTones: nil)
         } else if rawValue == "🇬🇦" {
-            self.init(baseEmoji: Emoji.flagGa, skinTones: nil)
+            self.init(baseEmoji: .flagGa, skinTones: nil)
         } else if rawValue == "🇬🇧" {
-            self.init(baseEmoji: Emoji.gb, skinTones: nil)
+            self.init(baseEmoji: .gb, skinTones: nil)
         } else if rawValue == "🇬🇩" {
-            self.init(baseEmoji: Emoji.flagGd, skinTones: nil)
+            self.init(baseEmoji: .flagGd, skinTones: nil)
         } else if rawValue == "🇬🇪" {
-            self.init(baseEmoji: Emoji.flagGe, skinTones: nil)
+            self.init(baseEmoji: .flagGe, skinTones: nil)
         } else if rawValue == "🇬🇫" {
-            self.init(baseEmoji: Emoji.flagGf, skinTones: nil)
+            self.init(baseEmoji: .flagGf, skinTones: nil)
         } else if rawValue == "🇬🇬" {
-            self.init(baseEmoji: Emoji.flagGg, skinTones: nil)
+            self.init(baseEmoji: .flagGg, skinTones: nil)
         } else if rawValue == "🇬🇭" {
-            self.init(baseEmoji: Emoji.flagGh, skinTones: nil)
+            self.init(baseEmoji: .flagGh, skinTones: nil)
         } else if rawValue == "🇬🇮" {
-            self.init(baseEmoji: Emoji.flagGi, skinTones: nil)
+            self.init(baseEmoji: .flagGi, skinTones: nil)
         } else if rawValue == "🇬🇱" {
-            self.init(baseEmoji: Emoji.flagGl, skinTones: nil)
+            self.init(baseEmoji: .flagGl, skinTones: nil)
         } else if rawValue == "🇬🇲" {
-            self.init(baseEmoji: Emoji.flagGm, skinTones: nil)
+            self.init(baseEmoji: .flagGm, skinTones: nil)
         } else if rawValue == "🇬🇳" {
-            self.init(baseEmoji: Emoji.flagGn, skinTones: nil)
+            self.init(baseEmoji: .flagGn, skinTones: nil)
         } else if rawValue == "🇬🇵" {
-            self.init(baseEmoji: Emoji.flagGp, skinTones: nil)
+            self.init(baseEmoji: .flagGp, skinTones: nil)
         } else if rawValue == "🇬🇶" {
-            self.init(baseEmoji: Emoji.flagGq, skinTones: nil)
+            self.init(baseEmoji: .flagGq, skinTones: nil)
         } else if rawValue == "🇬🇷" {
-            self.init(baseEmoji: Emoji.flagGr, skinTones: nil)
+            self.init(baseEmoji: .flagGr, skinTones: nil)
         } else if rawValue == "🇬🇸" {
-            self.init(baseEmoji: Emoji.flagGs, skinTones: nil)
+            self.init(baseEmoji: .flagGs, skinTones: nil)
         } else if rawValue == "🇬🇹" {
-            self.init(baseEmoji: Emoji.flagGt, skinTones: nil)
+            self.init(baseEmoji: .flagGt, skinTones: nil)
         } else if rawValue == "🇬🇺" {
-            self.init(baseEmoji: Emoji.flagGu, skinTones: nil)
+            self.init(baseEmoji: .flagGu, skinTones: nil)
         } else if rawValue == "🇬🇼" {
-            self.init(baseEmoji: Emoji.flagGw, skinTones: nil)
+            self.init(baseEmoji: .flagGw, skinTones: nil)
         } else if rawValue == "🇬🇾" {
-            self.init(baseEmoji: Emoji.flagGy, skinTones: nil)
+            self.init(baseEmoji: .flagGy, skinTones: nil)
         } else if rawValue == "🇭🇰" {
-            self.init(baseEmoji: Emoji.flagHk, skinTones: nil)
+            self.init(baseEmoji: .flagHk, skinTones: nil)
         } else if rawValue == "🇭🇲" {
-            self.init(baseEmoji: Emoji.flagHm, skinTones: nil)
+            self.init(baseEmoji: .flagHm, skinTones: nil)
         } else if rawValue == "🇭🇳" {
-            self.init(baseEmoji: Emoji.flagHn, skinTones: nil)
+            self.init(baseEmoji: .flagHn, skinTones: nil)
         } else if rawValue == "🇭🇷" {
-            self.init(baseEmoji: Emoji.flagHr, skinTones: nil)
+            self.init(baseEmoji: .flagHr, skinTones: nil)
         } else if rawValue == "🇭🇹" {
-            self.init(baseEmoji: Emoji.flagHt, skinTones: nil)
+            self.init(baseEmoji: .flagHt, skinTones: nil)
         } else if rawValue == "🇭🇺" {
-            self.init(baseEmoji: Emoji.flagHu, skinTones: nil)
+            self.init(baseEmoji: .flagHu, skinTones: nil)
         } else if rawValue == "🇮🇨" {
-            self.init(baseEmoji: Emoji.flagIc, skinTones: nil)
+            self.init(baseEmoji: .flagIc, skinTones: nil)
         } else if rawValue == "🇮🇩" {
-            self.init(baseEmoji: Emoji.flagId, skinTones: nil)
+            self.init(baseEmoji: .flagId, skinTones: nil)
         } else if rawValue == "🇮🇪" {
-            self.init(baseEmoji: Emoji.flagIe, skinTones: nil)
+            self.init(baseEmoji: .flagIe, skinTones: nil)
         } else if rawValue == "🇮🇱" {
-            self.init(baseEmoji: Emoji.flagIl, skinTones: nil)
+            self.init(baseEmoji: .flagIl, skinTones: nil)
         } else if rawValue == "🇮🇲" {
-            self.init(baseEmoji: Emoji.flagIm, skinTones: nil)
+            self.init(baseEmoji: .flagIm, skinTones: nil)
         } else if rawValue == "🇮🇳" {
-            self.init(baseEmoji: Emoji.flagIn, skinTones: nil)
+            self.init(baseEmoji: .flagIn, skinTones: nil)
         } else if rawValue == "🇮🇴" {
-            self.init(baseEmoji: Emoji.flagIo, skinTones: nil)
+            self.init(baseEmoji: .flagIo, skinTones: nil)
         } else if rawValue == "🇮🇶" {
-            self.init(baseEmoji: Emoji.flagIq, skinTones: nil)
+            self.init(baseEmoji: .flagIq, skinTones: nil)
         } else if rawValue == "🇮🇷" {
-            self.init(baseEmoji: Emoji.flagIr, skinTones: nil)
+            self.init(baseEmoji: .flagIr, skinTones: nil)
         } else if rawValue == "🇮🇸" {
-            self.init(baseEmoji: Emoji.flagIs, skinTones: nil)
+            self.init(baseEmoji: .flagIs, skinTones: nil)
         } else if rawValue == "🇮🇹" {
-            self.init(baseEmoji: Emoji.it, skinTones: nil)
+            self.init(baseEmoji: .it, skinTones: nil)
         } else if rawValue == "🇯🇪" {
-            self.init(baseEmoji: Emoji.flagJe, skinTones: nil)
+            self.init(baseEmoji: .flagJe, skinTones: nil)
         } else if rawValue == "🇯🇲" {
-            self.init(baseEmoji: Emoji.flagJm, skinTones: nil)
+            self.init(baseEmoji: .flagJm, skinTones: nil)
         } else if rawValue == "🇯🇴" {
-            self.init(baseEmoji: Emoji.flagJo, skinTones: nil)
+            self.init(baseEmoji: .flagJo, skinTones: nil)
         } else if rawValue == "🇯🇵" {
-            self.init(baseEmoji: Emoji.jp, skinTones: nil)
+            self.init(baseEmoji: .jp, skinTones: nil)
         } else if rawValue == "🇰🇪" {
-            self.init(baseEmoji: Emoji.flagKe, skinTones: nil)
+            self.init(baseEmoji: .flagKe, skinTones: nil)
         } else if rawValue == "🇰🇬" {
-            self.init(baseEmoji: Emoji.flagKg, skinTones: nil)
+            self.init(baseEmoji: .flagKg, skinTones: nil)
         } else if rawValue == "🇰🇭" {
-            self.init(baseEmoji: Emoji.flagKh, skinTones: nil)
+            self.init(baseEmoji: .flagKh, skinTones: nil)
         } else if rawValue == "🇰🇮" {
-            self.init(baseEmoji: Emoji.flagKi, skinTones: nil)
+            self.init(baseEmoji: .flagKi, skinTones: nil)
         } else if rawValue == "🇰🇲" {
-            self.init(baseEmoji: Emoji.flagKm, skinTones: nil)
+            self.init(baseEmoji: .flagKm, skinTones: nil)
         } else if rawValue == "🇰🇳" {
-            self.init(baseEmoji: Emoji.flagKn, skinTones: nil)
+            self.init(baseEmoji: .flagKn, skinTones: nil)
         } else if rawValue == "🇰🇵" {
-            self.init(baseEmoji: Emoji.flagKp, skinTones: nil)
+            self.init(baseEmoji: .flagKp, skinTones: nil)
         } else if rawValue == "🇰🇷" {
-            self.init(baseEmoji: Emoji.kr, skinTones: nil)
+            self.init(baseEmoji: .kr, skinTones: nil)
         } else if rawValue == "🇰🇼" {
-            self.init(baseEmoji: Emoji.flagKw, skinTones: nil)
+            self.init(baseEmoji: .flagKw, skinTones: nil)
         } else if rawValue == "🇰🇾" {
-            self.init(baseEmoji: Emoji.flagKy, skinTones: nil)
+            self.init(baseEmoji: .flagKy, skinTones: nil)
         } else if rawValue == "🇰🇿" {
-            self.init(baseEmoji: Emoji.flagKz, skinTones: nil)
+            self.init(baseEmoji: .flagKz, skinTones: nil)
         } else if rawValue == "🇱🇦" {
-            self.init(baseEmoji: Emoji.flagLa, skinTones: nil)
+            self.init(baseEmoji: .flagLa, skinTones: nil)
         } else if rawValue == "🇱🇧" {
-            self.init(baseEmoji: Emoji.flagLb, skinTones: nil)
+            self.init(baseEmoji: .flagLb, skinTones: nil)
         } else if rawValue == "🇱🇨" {
-            self.init(baseEmoji: Emoji.flagLc, skinTones: nil)
+            self.init(baseEmoji: .flagLc, skinTones: nil)
         } else if rawValue == "🇱🇮" {
-            self.init(baseEmoji: Emoji.flagLi, skinTones: nil)
+            self.init(baseEmoji: .flagLi, skinTones: nil)
         } else if rawValue == "🇱🇰" {
-            self.init(baseEmoji: Emoji.flagLk, skinTones: nil)
+            self.init(baseEmoji: .flagLk, skinTones: nil)
         } else if rawValue == "🇱🇷" {
-            self.init(baseEmoji: Emoji.flagLr, skinTones: nil)
+            self.init(baseEmoji: .flagLr, skinTones: nil)
         } else if rawValue == "🇱🇸" {
-            self.init(baseEmoji: Emoji.flagLs, skinTones: nil)
+            self.init(baseEmoji: .flagLs, skinTones: nil)
         } else if rawValue == "🇱🇹" {
-            self.init(baseEmoji: Emoji.flagLt, skinTones: nil)
+            self.init(baseEmoji: .flagLt, skinTones: nil)
         } else if rawValue == "🇱🇺" {
-            self.init(baseEmoji: Emoji.flagLu, skinTones: nil)
+            self.init(baseEmoji: .flagLu, skinTones: nil)
         } else if rawValue == "🇱🇻" {
-            self.init(baseEmoji: Emoji.flagLv, skinTones: nil)
+            self.init(baseEmoji: .flagLv, skinTones: nil)
         } else if rawValue == "🇱🇾" {
-            self.init(baseEmoji: Emoji.flagLy, skinTones: nil)
+            self.init(baseEmoji: .flagLy, skinTones: nil)
         } else if rawValue == "🇲🇦" {
-            self.init(baseEmoji: Emoji.flagMa, skinTones: nil)
+            self.init(baseEmoji: .flagMa, skinTones: nil)
         } else if rawValue == "🇲🇨" {
-            self.init(baseEmoji: Emoji.flagMc, skinTones: nil)
+            self.init(baseEmoji: .flagMc, skinTones: nil)
         } else if rawValue == "🇲🇩" {
-            self.init(baseEmoji: Emoji.flagMd, skinTones: nil)
+            self.init(baseEmoji: .flagMd, skinTones: nil)
         } else if rawValue == "🇲🇪" {
-            self.init(baseEmoji: Emoji.flagMe, skinTones: nil)
+            self.init(baseEmoji: .flagMe, skinTones: nil)
         } else if rawValue == "🇲🇫" {
-            self.init(baseEmoji: Emoji.flagMf, skinTones: nil)
+            self.init(baseEmoji: .flagMf, skinTones: nil)
         } else if rawValue == "🇲🇬" {
-            self.init(baseEmoji: Emoji.flagMg, skinTones: nil)
+            self.init(baseEmoji: .flagMg, skinTones: nil)
         } else if rawValue == "🇲🇭" {
-            self.init(baseEmoji: Emoji.flagMh, skinTones: nil)
+            self.init(baseEmoji: .flagMh, skinTones: nil)
         } else if rawValue == "🇲🇰" {
-            self.init(baseEmoji: Emoji.flagMk, skinTones: nil)
+            self.init(baseEmoji: .flagMk, skinTones: nil)
         } else if rawValue == "🇲🇱" {
-            self.init(baseEmoji: Emoji.flagMl, skinTones: nil)
+            self.init(baseEmoji: .flagMl, skinTones: nil)
         } else if rawValue == "🇲🇲" {
-            self.init(baseEmoji: Emoji.flagMm, skinTones: nil)
+            self.init(baseEmoji: .flagMm, skinTones: nil)
         } else if rawValue == "🇲🇳" {
-            self.init(baseEmoji: Emoji.flagMn, skinTones: nil)
+            self.init(baseEmoji: .flagMn, skinTones: nil)
         } else if rawValue == "🇲🇴" {
-            self.init(baseEmoji: Emoji.flagMo, skinTones: nil)
+            self.init(baseEmoji: .flagMo, skinTones: nil)
         } else if rawValue == "🇲🇵" {
-            self.init(baseEmoji: Emoji.flagMp, skinTones: nil)
+            self.init(baseEmoji: .flagMp, skinTones: nil)
         } else if rawValue == "🇲🇶" {
-            self.init(baseEmoji: Emoji.flagMq, skinTones: nil)
+            self.init(baseEmoji: .flagMq, skinTones: nil)
         } else if rawValue == "🇲🇷" {
-            self.init(baseEmoji: Emoji.flagMr, skinTones: nil)
+            self.init(baseEmoji: .flagMr, skinTones: nil)
         } else if rawValue == "🇲🇸" {
-            self.init(baseEmoji: Emoji.flagMs, skinTones: nil)
+            self.init(baseEmoji: .flagMs, skinTones: nil)
         } else if rawValue == "🇲🇹" {
-            self.init(baseEmoji: Emoji.flagMt, skinTones: nil)
+            self.init(baseEmoji: .flagMt, skinTones: nil)
         } else if rawValue == "🇲🇺" {
-            self.init(baseEmoji: Emoji.flagMu, skinTones: nil)
+            self.init(baseEmoji: .flagMu, skinTones: nil)
         } else if rawValue == "🇲🇻" {
-            self.init(baseEmoji: Emoji.flagMv, skinTones: nil)
+            self.init(baseEmoji: .flagMv, skinTones: nil)
         } else if rawValue == "🇲🇼" {
-            self.init(baseEmoji: Emoji.flagMw, skinTones: nil)
+            self.init(baseEmoji: .flagMw, skinTones: nil)
         } else if rawValue == "🇲🇽" {
-            self.init(baseEmoji: Emoji.flagMx, skinTones: nil)
+            self.init(baseEmoji: .flagMx, skinTones: nil)
         } else if rawValue == "🇲🇾" {
-            self.init(baseEmoji: Emoji.flagMy, skinTones: nil)
+            self.init(baseEmoji: .flagMy, skinTones: nil)
         } else if rawValue == "🇲🇿" {
-            self.init(baseEmoji: Emoji.flagMz, skinTones: nil)
+            self.init(baseEmoji: .flagMz, skinTones: nil)
         } else if rawValue == "🇳🇦" {
-            self.init(baseEmoji: Emoji.flagNa, skinTones: nil)
+            self.init(baseEmoji: .flagNa, skinTones: nil)
         } else if rawValue == "🇳🇨" {
-            self.init(baseEmoji: Emoji.flagNc, skinTones: nil)
+            self.init(baseEmoji: .flagNc, skinTones: nil)
         } else if rawValue == "🇳🇪" {
-            self.init(baseEmoji: Emoji.flagNe, skinTones: nil)
+            self.init(baseEmoji: .flagNe, skinTones: nil)
         } else if rawValue == "🇳🇫" {
-            self.init(baseEmoji: Emoji.flagNf, skinTones: nil)
+            self.init(baseEmoji: .flagNf, skinTones: nil)
         } else if rawValue == "🇳🇬" {
-            self.init(baseEmoji: Emoji.flagNg, skinTones: nil)
+            self.init(baseEmoji: .flagNg, skinTones: nil)
         } else if rawValue == "🇳🇮" {
-            self.init(baseEmoji: Emoji.flagNi, skinTones: nil)
+            self.init(baseEmoji: .flagNi, skinTones: nil)
         } else if rawValue == "🇳🇱" {
-            self.init(baseEmoji: Emoji.flagNl, skinTones: nil)
+            self.init(baseEmoji: .flagNl, skinTones: nil)
         } else if rawValue == "🇳🇴" {
-            self.init(baseEmoji: Emoji.flagNo, skinTones: nil)
+            self.init(baseEmoji: .flagNo, skinTones: nil)
         } else if rawValue == "🇳🇵" {
-            self.init(baseEmoji: Emoji.flagNp, skinTones: nil)
+            self.init(baseEmoji: .flagNp, skinTones: nil)
         } else if rawValue == "🇳🇷" {
-            self.init(baseEmoji: Emoji.flagNr, skinTones: nil)
+            self.init(baseEmoji: .flagNr, skinTones: nil)
         } else if rawValue == "🇳🇺" {
-            self.init(baseEmoji: Emoji.flagNu, skinTones: nil)
+            self.init(baseEmoji: .flagNu, skinTones: nil)
         } else if rawValue == "🇳🇿" {
-            self.init(baseEmoji: Emoji.flagNz, skinTones: nil)
+            self.init(baseEmoji: .flagNz, skinTones: nil)
         } else if rawValue == "🇴🇲" {
-            self.init(baseEmoji: Emoji.flagOm, skinTones: nil)
+            self.init(baseEmoji: .flagOm, skinTones: nil)
         } else if rawValue == "🇵🇦" {
-            self.init(baseEmoji: Emoji.flagPa, skinTones: nil)
+            self.init(baseEmoji: .flagPa, skinTones: nil)
         } else if rawValue == "🇵🇪" {
-            self.init(baseEmoji: Emoji.flagPe, skinTones: nil)
+            self.init(baseEmoji: .flagPe, skinTones: nil)
         } else if rawValue == "🇵🇫" {
-            self.init(baseEmoji: Emoji.flagPf, skinTones: nil)
+            self.init(baseEmoji: .flagPf, skinTones: nil)
         } else if rawValue == "🇵🇬" {
-            self.init(baseEmoji: Emoji.flagPg, skinTones: nil)
+            self.init(baseEmoji: .flagPg, skinTones: nil)
         } else if rawValue == "🇵🇭" {
-            self.init(baseEmoji: Emoji.flagPh, skinTones: nil)
+            self.init(baseEmoji: .flagPh, skinTones: nil)
         } else if rawValue == "🇵🇰" {
-            self.init(baseEmoji: Emoji.flagPk, skinTones: nil)
+            self.init(baseEmoji: .flagPk, skinTones: nil)
         } else if rawValue == "🇵🇱" {
-            self.init(baseEmoji: Emoji.flagPl, skinTones: nil)
+            self.init(baseEmoji: .flagPl, skinTones: nil)
         } else if rawValue == "🇵🇲" {
-            self.init(baseEmoji: Emoji.flagPm, skinTones: nil)
+            self.init(baseEmoji: .flagPm, skinTones: nil)
         } else if rawValue == "🇵🇳" {
-            self.init(baseEmoji: Emoji.flagPn, skinTones: nil)
+            self.init(baseEmoji: .flagPn, skinTones: nil)
         } else if rawValue == "🇵🇷" {
-            self.init(baseEmoji: Emoji.flagPr, skinTones: nil)
+            self.init(baseEmoji: .flagPr, skinTones: nil)
         } else if rawValue == "🇵🇸" {
-            self.init(baseEmoji: Emoji.flagPs, skinTones: nil)
+            self.init(baseEmoji: .flagPs, skinTones: nil)
         } else if rawValue == "🇵🇹" {
-            self.init(baseEmoji: Emoji.flagPt, skinTones: nil)
+            self.init(baseEmoji: .flagPt, skinTones: nil)
         } else if rawValue == "🇵🇼" {
-            self.init(baseEmoji: Emoji.flagPw, skinTones: nil)
+            self.init(baseEmoji: .flagPw, skinTones: nil)
         } else if rawValue == "🇵🇾" {
-            self.init(baseEmoji: Emoji.flagPy, skinTones: nil)
+            self.init(baseEmoji: .flagPy, skinTones: nil)
         } else if rawValue == "🇶🇦" {
-            self.init(baseEmoji: Emoji.flagQa, skinTones: nil)
+            self.init(baseEmoji: .flagQa, skinTones: nil)
         } else if rawValue == "🇷🇪" {
-            self.init(baseEmoji: Emoji.flagRe, skinTones: nil)
+            self.init(baseEmoji: .flagRe, skinTones: nil)
         } else if rawValue == "🇷🇴" {
-            self.init(baseEmoji: Emoji.flagRo, skinTones: nil)
+            self.init(baseEmoji: .flagRo, skinTones: nil)
         } else if rawValue == "🇷🇸" {
-            self.init(baseEmoji: Emoji.flagRs, skinTones: nil)
+            self.init(baseEmoji: .flagRs, skinTones: nil)
         } else if rawValue == "🇷🇺" {
-            self.init(baseEmoji: Emoji.ru, skinTones: nil)
+            self.init(baseEmoji: .ru, skinTones: nil)
         } else if rawValue == "🇷🇼" {
-            self.init(baseEmoji: Emoji.flagRw, skinTones: nil)
+            self.init(baseEmoji: .flagRw, skinTones: nil)
         } else if rawValue == "🇸🇦" {
-            self.init(baseEmoji: Emoji.flagSa, skinTones: nil)
+            self.init(baseEmoji: .flagSa, skinTones: nil)
         } else if rawValue == "🇸🇧" {
-            self.init(baseEmoji: Emoji.flagSb, skinTones: nil)
+            self.init(baseEmoji: .flagSb, skinTones: nil)
         } else if rawValue == "🇸🇨" {
-            self.init(baseEmoji: Emoji.flagSc, skinTones: nil)
+            self.init(baseEmoji: .flagSc, skinTones: nil)
         } else if rawValue == "🇸🇩" {
-            self.init(baseEmoji: Emoji.flagSd, skinTones: nil)
+            self.init(baseEmoji: .flagSd, skinTones: nil)
         } else if rawValue == "🇸🇪" {
-            self.init(baseEmoji: Emoji.flagSe, skinTones: nil)
+            self.init(baseEmoji: .flagSe, skinTones: nil)
         } else if rawValue == "🇸🇬" {
-            self.init(baseEmoji: Emoji.flagSg, skinTones: nil)
+            self.init(baseEmoji: .flagSg, skinTones: nil)
         } else if rawValue == "🇸🇭" {
-            self.init(baseEmoji: Emoji.flagSh, skinTones: nil)
+            self.init(baseEmoji: .flagSh, skinTones: nil)
         } else if rawValue == "🇸🇮" {
-            self.init(baseEmoji: Emoji.flagSi, skinTones: nil)
+            self.init(baseEmoji: .flagSi, skinTones: nil)
         } else if rawValue == "🇸🇯" {
-            self.init(baseEmoji: Emoji.flagSj, skinTones: nil)
+            self.init(baseEmoji: .flagSj, skinTones: nil)
         } else if rawValue == "🇸🇰" {
-            self.init(baseEmoji: Emoji.flagSk, skinTones: nil)
+            self.init(baseEmoji: .flagSk, skinTones: nil)
         } else if rawValue == "🇸🇱" {
-            self.init(baseEmoji: Emoji.flagSl, skinTones: nil)
+            self.init(baseEmoji: .flagSl, skinTones: nil)
         } else if rawValue == "🇸🇲" {
-            self.init(baseEmoji: Emoji.flagSm, skinTones: nil)
+            self.init(baseEmoji: .flagSm, skinTones: nil)
         } else if rawValue == "🇸🇳" {
-            self.init(baseEmoji: Emoji.flagSn, skinTones: nil)
+            self.init(baseEmoji: .flagSn, skinTones: nil)
         } else if rawValue == "🇸🇴" {
-            self.init(baseEmoji: Emoji.flagSo, skinTones: nil)
+            self.init(baseEmoji: .flagSo, skinTones: nil)
         } else if rawValue == "🇸🇷" {
-            self.init(baseEmoji: Emoji.flagSr, skinTones: nil)
+            self.init(baseEmoji: .flagSr, skinTones: nil)
         } else if rawValue == "🇸🇸" {
-            self.init(baseEmoji: Emoji.flagSs, skinTones: nil)
+            self.init(baseEmoji: .flagSs, skinTones: nil)
         } else if rawValue == "🇸🇹" {
-            self.init(baseEmoji: Emoji.flagSt, skinTones: nil)
+            self.init(baseEmoji: .flagSt, skinTones: nil)
         } else if rawValue == "🇸🇻" {
-            self.init(baseEmoji: Emoji.flagSv, skinTones: nil)
+            self.init(baseEmoji: .flagSv, skinTones: nil)
         } else if rawValue == "🇸🇽" {
-            self.init(baseEmoji: Emoji.flagSx, skinTones: nil)
+            self.init(baseEmoji: .flagSx, skinTones: nil)
         } else if rawValue == "🇸🇾" {
-            self.init(baseEmoji: Emoji.flagSy, skinTones: nil)
+            self.init(baseEmoji: .flagSy, skinTones: nil)
         } else if rawValue == "🇸🇿" {
-            self.init(baseEmoji: Emoji.flagSz, skinTones: nil)
+            self.init(baseEmoji: .flagSz, skinTones: nil)
         } else if rawValue == "🇹🇦" {
-            self.init(baseEmoji: Emoji.flagTa, skinTones: nil)
+            self.init(baseEmoji: .flagTa, skinTones: nil)
         } else if rawValue == "🇹🇨" {
-            self.init(baseEmoji: Emoji.flagTc, skinTones: nil)
+            self.init(baseEmoji: .flagTc, skinTones: nil)
         } else if rawValue == "🇹🇩" {
-            self.init(baseEmoji: Emoji.flagTd, skinTones: nil)
+            self.init(baseEmoji: .flagTd, skinTones: nil)
         } else if rawValue == "🇹🇫" {
-            self.init(baseEmoji: Emoji.flagTf, skinTones: nil)
+            self.init(baseEmoji: .flagTf, skinTones: nil)
         } else if rawValue == "🇹🇬" {
-            self.init(baseEmoji: Emoji.flagTg, skinTones: nil)
+            self.init(baseEmoji: .flagTg, skinTones: nil)
         } else if rawValue == "🇹🇭" {
-            self.init(baseEmoji: Emoji.flagTh, skinTones: nil)
+            self.init(baseEmoji: .flagTh, skinTones: nil)
         } else if rawValue == "🇹🇯" {
-            self.init(baseEmoji: Emoji.flagTj, skinTones: nil)
+            self.init(baseEmoji: .flagTj, skinTones: nil)
         } else if rawValue == "🇹🇰" {
-            self.init(baseEmoji: Emoji.flagTk, skinTones: nil)
+            self.init(baseEmoji: .flagTk, skinTones: nil)
         } else if rawValue == "🇹🇱" {
-            self.init(baseEmoji: Emoji.flagTl, skinTones: nil)
+            self.init(baseEmoji: .flagTl, skinTones: nil)
         } else if rawValue == "🇹🇲" {
-            self.init(baseEmoji: Emoji.flagTm, skinTones: nil)
+            self.init(baseEmoji: .flagTm, skinTones: nil)
         } else if rawValue == "🇹🇳" {
-            self.init(baseEmoji: Emoji.flagTn, skinTones: nil)
+            self.init(baseEmoji: .flagTn, skinTones: nil)
         } else if rawValue == "🇹🇴" {
-            self.init(baseEmoji: Emoji.flagTo, skinTones: nil)
+            self.init(baseEmoji: .flagTo, skinTones: nil)
         } else if rawValue == "🇹🇷" {
-            self.init(baseEmoji: Emoji.flagTr, skinTones: nil)
+            self.init(baseEmoji: .flagTr, skinTones: nil)
         } else if rawValue == "🇹🇹" {
-            self.init(baseEmoji: Emoji.flagTt, skinTones: nil)
+            self.init(baseEmoji: .flagTt, skinTones: nil)
         } else if rawValue == "🇹🇻" {
-            self.init(baseEmoji: Emoji.flagTv, skinTones: nil)
+            self.init(baseEmoji: .flagTv, skinTones: nil)
         } else if rawValue == "🇹🇼" {
-            self.init(baseEmoji: Emoji.flagTw, skinTones: nil)
+            self.init(baseEmoji: .flagTw, skinTones: nil)
         } else if rawValue == "🇹🇿" {
-            self.init(baseEmoji: Emoji.flagTz, skinTones: nil)
+            self.init(baseEmoji: .flagTz, skinTones: nil)
         } else if rawValue == "🇺🇦" {
-            self.init(baseEmoji: Emoji.flagUa, skinTones: nil)
+            self.init(baseEmoji: .flagUa, skinTones: nil)
         } else if rawValue == "🇺🇬" {
-            self.init(baseEmoji: Emoji.flagUg, skinTones: nil)
+            self.init(baseEmoji: .flagUg, skinTones: nil)
         } else if rawValue == "🇺🇲" {
-            self.init(baseEmoji: Emoji.flagUm, skinTones: nil)
+            self.init(baseEmoji: .flagUm, skinTones: nil)
         } else if rawValue == "🇺🇳" {
-            self.init(baseEmoji: Emoji.flagUn, skinTones: nil)
+            self.init(baseEmoji: .flagUn, skinTones: nil)
         } else if rawValue == "🇺🇸" {
-            self.init(baseEmoji: Emoji.us, skinTones: nil)
+            self.init(baseEmoji: .us, skinTones: nil)
         } else if rawValue == "🇺🇾" {
-            self.init(baseEmoji: Emoji.flagUy, skinTones: nil)
+            self.init(baseEmoji: .flagUy, skinTones: nil)
         } else if rawValue == "🇺🇿" {
-            self.init(baseEmoji: Emoji.flagUz, skinTones: nil)
+            self.init(baseEmoji: .flagUz, skinTones: nil)
         } else if rawValue == "🇻🇦" {
-            self.init(baseEmoji: Emoji.flagVa, skinTones: nil)
+            self.init(baseEmoji: .flagVa, skinTones: nil)
         } else if rawValue == "🇻🇨" {
-            self.init(baseEmoji: Emoji.flagVc, skinTones: nil)
+            self.init(baseEmoji: .flagVc, skinTones: nil)
         } else if rawValue == "🇻🇪" {
-            self.init(baseEmoji: Emoji.flagVe, skinTones: nil)
+            self.init(baseEmoji: .flagVe, skinTones: nil)
         } else if rawValue == "🇻🇬" {
-            self.init(baseEmoji: Emoji.flagVg, skinTones: nil)
+            self.init(baseEmoji: .flagVg, skinTones: nil)
         } else if rawValue == "🇻🇮" {
-            self.init(baseEmoji: Emoji.flagVi, skinTones: nil)
+            self.init(baseEmoji: .flagVi, skinTones: nil)
         } else if rawValue == "🇻🇳" {
-            self.init(baseEmoji: Emoji.flagVn, skinTones: nil)
+            self.init(baseEmoji: .flagVn, skinTones: nil)
         } else if rawValue == "🇻🇺" {
-            self.init(baseEmoji: Emoji.flagVu, skinTones: nil)
+            self.init(baseEmoji: .flagVu, skinTones: nil)
         } else if rawValue == "🇼🇫" {
-            self.init(baseEmoji: Emoji.flagWf, skinTones: nil)
+            self.init(baseEmoji: .flagWf, skinTones: nil)
         } else if rawValue == "🇼🇸" {
-            self.init(baseEmoji: Emoji.flagWs, skinTones: nil)
+            self.init(baseEmoji: .flagWs, skinTones: nil)
         } else if rawValue == "🇽🇰" {
-            self.init(baseEmoji: Emoji.flagXk, skinTones: nil)
+            self.init(baseEmoji: .flagXk, skinTones: nil)
         } else if rawValue == "🇾🇪" {
-            self.init(baseEmoji: Emoji.flagYe, skinTones: nil)
+            self.init(baseEmoji: .flagYe, skinTones: nil)
         } else if rawValue == "🇾🇹" {
-            self.init(baseEmoji: Emoji.flagYt, skinTones: nil)
+            self.init(baseEmoji: .flagYt, skinTones: nil)
         } else if rawValue == "🇿🇦" {
-            self.init(baseEmoji: Emoji.flagZa, skinTones: nil)
+            self.init(baseEmoji: .flagZa, skinTones: nil)
         } else if rawValue == "🇿🇲" {
-            self.init(baseEmoji: Emoji.flagZm, skinTones: nil)
+            self.init(baseEmoji: .flagZm, skinTones: nil)
         } else if rawValue == "🇿🇼" {
-            self.init(baseEmoji: Emoji.flagZw, skinTones: nil)
+            self.init(baseEmoji: .flagZw, skinTones: nil)
         } else if rawValue == "🏴󠁧󠁢󠁥󠁮󠁧󠁿" {
-            self.init(baseEmoji: Emoji.flagEngland, skinTones: nil)
+            self.init(baseEmoji: .flagEngland, skinTones: nil)
         } else if rawValue == "🏴󠁧󠁢󠁳󠁣󠁴󠁿" {
-            self.init(baseEmoji: Emoji.flagScotland, skinTones: nil)
+            self.init(baseEmoji: .flagScotland, skinTones: nil)
         } else if rawValue == "🏴󠁧󠁢󠁷󠁬󠁳󠁿" {
-            self.init(baseEmoji: Emoji.flagWales, skinTones: nil)
+            self.init(baseEmoji: .flagWales, skinTones: nil)
         } else {
             return nil 
         }
