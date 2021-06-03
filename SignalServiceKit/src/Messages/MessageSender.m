@@ -618,12 +618,11 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     AnyPromise *_Nullable senderKeyMessagePromise = nil;
     NSArray<SignalServiceAddress *> *fanoutSendAddresses = addresses;
 
-    if ([thread isKindOfClass:[TSGroupThread class]] && senderKeyAddresses.count >= 2) {
+    if ([thread isKindOfClass:[TSGroupThread class]] && senderKeyAddresses.count >= 2 && message.canSendWithSenderKey) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
 
-        fanoutSendAddresses = [addresses filter:^BOOL(SignalServiceAddress * _Nonnull item) {
-            return ![senderKeyAddresses containsObject:item];
-        }];
+        fanoutSendAddresses = [addresses
+            filter:^BOOL(SignalServiceAddress *_Nonnull item) { return ![senderKeyAddresses containsObject:item]; }];
 
         senderKeyMessagePromise = [self senderKeyMessageSendPromiseWithMessage:message
                                                                         thread:groupThread
@@ -632,11 +631,20 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                                             senderCertificates:senderCertificates
                                                                 sendErrorBlock:sendErrorBlock];
 
-        OWSLogInfo(@"%lu / %lu recipients for message: %llu support sender key.", senderKeyAddresses.count, addresses.count, message.timestamp);
+        OWSLogDebug(@"%lu / %lu recipients for message: %llu support sender key.",
+            senderKeyAddresses.count,
+            addresses.count,
+            message.timestamp);
     } else {
         senderKeyAddresses = @[];
+        if (!message.canSendWithSenderKey) {
+            OWSLogInfo(
+                "Last sender key send attempt failed for message %llu. Falling back to fanout.", message.timestamp);
+        } else {
+            OWSLogDebug("Sender key not supported for message %llu", message.timestamp);
+        }
     }
-    OWSAssertDebug((fanoutSendAddresses.count + senderKeyAddresses.count) ==  addresses.count);
+    OWSAssertDebug((fanoutSendAddresses.count + senderKeyAddresses.count) == addresses.count);
 
     // 3. Build a "OWSMessageSend" for each non-senderKey recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];

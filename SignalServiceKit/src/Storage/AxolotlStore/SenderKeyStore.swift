@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
@@ -251,7 +251,7 @@ fileprivate struct KeyMetadata: Codable {
 
 // MARK: - Helper extensions
 
-fileprivate typealias ThreadUniqueId = String
+private typealias ThreadUniqueId = String
 fileprivate extension TSGroupThread {
     var threadUniqueId: ThreadUniqueId { uniqueId }
 }

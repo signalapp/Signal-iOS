@@ -1277,11 +1277,36 @@ extension MessageSender {
 
 extension MessageSender {
 
-    private enum SenderKeyError: Error {
-        // SenderKey TODO: More detailed errors
-        // FallbackToFanout should flag the message as unable to be sent with SenderKey
-        case retryable
-        case fallbackToFanout
+    private enum SenderKeyError: OperationError {
+        case InvalidAuthHeader
+        case InvalidRecipient
+        case DeviceUpdate
+        case StaleDevices
+        case RecipientSKDMFailed(Error)
+
+        var isRetryable: Bool { true }
+
+        var isRetryableWithSenderKey: Bool {
+            switch self {
+            case .InvalidAuthHeader, .InvalidRecipient:
+                return false
+            case .DeviceUpdate, .StaleDevices, .RecipientSKDMFailed:
+                return true
+            }
+        }
+
+        var asSSKError: NSError {
+            let code: OWSErrorCode
+            if isRetryableWithSenderKey {
+                code = .senderKeyEphemeralFailure
+            } else {
+                code = .senderKeyUnavailable
+            }
+            let error = (OWSErrorWithCodeDescription(code, localizedDescription) as NSError)
+            error.isRetryable = isRetryable
+            error.isFatal = false
+            return error
+        }
     }
 
     /// Filters the list of participants for a thread that support SenderKey
@@ -1337,9 +1362,14 @@ extension MessageSender {
         // *any* send fails, the entire Promise rejcts. The error it rejects with doesn't really matter
         // and isn't consulted.
         let didHitAnyFailure = AtomicBool(false)
-        let wrappedSendErrorBlock = { (address: SignalServiceAddress, error: NSError) -> Void in
+        let wrappedSendErrorBlock = { (address: SignalServiceAddress, error: Error) -> Void in
             _ = didHitAnyFailure.tryToSetFlag()
-            return sendErrorBlock(address, error)
+
+            if let senderKeyError = error as? SenderKeyError {
+                sendErrorBlock(address, senderKeyError.asSSKError)
+            } else {
+                sendErrorBlock(address, (error as NSError))
+            }
         }
 
         // To ensure we don't accidentally throw an error early in our promise chain
@@ -1350,7 +1380,7 @@ extension MessageSender {
                 recipients: recipients,
                 thread: thread,
                 udAccessMap: udAccessMap,
-                sendErrorBlock: sendErrorBlock)
+                sendErrorBlock: wrappedSendErrorBlock)
         }.then { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
             firstly {
                 // SenderKey TODO: PreKey fetch? Start sessions?
@@ -1385,7 +1415,7 @@ extension MessageSender {
                 }
             }.recover { error in
                 // If the sender key message failed to send, fail each recipient that we hoped to send it to.
-                senderKeyRecipients.forEach { wrappedSendErrorBlock($0, (error as NSError)) }
+                senderKeyRecipients.forEach { wrappedSendErrorBlock($0, error) }
             }
         }
         // Since we know the guarantee is always successful, on any per-recipient failure, this generic error is used
@@ -1408,7 +1438,7 @@ extension MessageSender {
         recipients: [SignalServiceAddress],
         thread: TSGroupThread,
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
-        sendErrorBlock: @escaping (SignalServiceAddress, NSError) -> Void
+        sendErrorBlock: @escaping (SignalServiceAddress, Error) -> Void
     ) -> Guarantee<[SignalServiceAddress]> {
 
         return databaseStorage.write(.promise) { writeTx -> [OWSMessageSend] in
@@ -1468,9 +1498,9 @@ extension MessageSender {
                     }.recover { error -> Promise<SignalServiceAddress> in
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
-                        // SenderKey TODO: Wrap this in an outer error?
-                        sendErrorBlock(messageSend.address, (error as NSError))
-                        throw error
+                        let wrappedError = SenderKeyError.RecipientSKDMFailed(error)
+                        sendErrorBlock(messageSend.address, wrappedError)
+                        throw wrappedError
                     }
                 })
             }
@@ -1485,8 +1515,8 @@ extension MessageSender {
         }.recover { error in
             // If we hit *any* error that we haven't handled, we should fail the send
             // for everyone.
-            // SenderKey TODO: A better error?
-            recipients.forEach { sendErrorBlock($0, (error as NSError)) }
+            let wrappedError = SenderKeyError.RecipientSKDMFailed(error)
+            recipients.forEach { sendErrorBlock($0, wrappedError) }
             return .value([])
         }
     }
@@ -1582,10 +1612,10 @@ extension MessageSender {
                 switch statusCode {
                 case 401:
                     owsFailDebug("Invalid composite authorization header for sender key send request. Falling back to fanout")
-                    throw SenderKeyError.fallbackToFanout
+                    throw SenderKeyError.InvalidAuthHeader
                 case 404:
                     Logger.warn("One of the recipients could not match an account. We don't know which. Falling back to fanout.")
-                    throw SenderKeyError.fallbackToFanout
+                    throw SenderKeyError.InvalidRecipient
                 case 409:
                     // Update the device set for added/removed devices.
                     // This is retryable
@@ -1616,7 +1646,7 @@ extension MessageSender {
                                 transaction: writeTx)
                         }
                     }
-                    throw SenderKeyError.retryable
+                    throw SenderKeyError.DeviceUpdate
 
                 case 410:
                     // Server reports stale devices. We should reset our session and forget that we resent
@@ -1648,18 +1678,25 @@ extension MessageSender {
                             self.senderKeyStore.resetSenderKeyDeliverRecord(for: thread, address: address, writeTx: writeTx)
                         }
                     }
-                    throw SenderKeyError.retryable
+                    throw SenderKeyError.StaleDevices
                 case 428:
-                    if let body = responseData, let expiry = response.retryAfterDate() {
-                        return Promise { resolver in
-                            self.spamChallengeResolver.handleServerChallengeBody(body, retryAfter: expiry) { didSucceed in
-                                didSucceed ? resolver.fulfill(()) : resolver.reject(MessageSenderError.spamChallengeRequired)
+                    guard let body = responseData, let expiry = response.retryAfterDate() else {
+                        throw OWSAssertionError("Invalid spam response body")
+                    }
+                    return Promise { resolver in
+                        self.spamChallengeResolver.handleServerChallengeBody(body, retryAfter: expiry) { didSucceed in
+                            if didSucceed {
+                                resolver.fulfill(())
+                            } else {
+                                let errorDescription = NSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM", comment: "Description for errors returned from the server due to suspected spam.")
+                                let error = OWSErrorWithCodeDescription(.serverRejectedSuspectedSpam, errorDescription) as NSError
+                                error.isRetryable = false
+                                error.isFatal = false
+                                resolver.reject(error)
                             }
-                        }.then {
-                            try retryIfPossible()
                         }
-                    } else {
-                        throw OWSAssertionError("Invalid response body")
+                    }.then {
+                        try retryIfPossible()
                     }
                 default:
                     // Unhandled response code.

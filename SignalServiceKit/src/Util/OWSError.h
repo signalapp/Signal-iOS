@@ -63,7 +63,9 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeAppDeregistered,
     OWSErrorCodeRegistrationTransferAvailable,
     OWSErrorCodeFailedToDecryptDuplicateMessage,
-    OWSErrorCodeServerRejectedSuspectedSpam
+    OWSErrorCodeServerRejectedSuspectedSpam,
+    OWSErrorCodeSenderKeyEphemeralFailure,
+    OWSErrorCodeSenderKeyUnavailable
 };
 
 extern NSString *const OWSErrorRecipientAddressKey;
