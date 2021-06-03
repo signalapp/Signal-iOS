@@ -258,7 +258,6 @@ extension SSKSessionStore: SessionStore {
         try addresses.compactMap { try loadSession(for: $0, context: context) }
     }
 
-
     public func storeSession(_ record: SessionRecord, for address: ProtocolAddress, context: StoreContext) throws {
         try storeSession(record,
                          for: SignalServiceAddress(from: address),
