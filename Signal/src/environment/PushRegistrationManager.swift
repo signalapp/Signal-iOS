@@ -115,10 +115,7 @@ public enum PushRegistrationError: Error {
         Logger.info("")
         assert(type == .voIP)
         assert(credentials.type == .voIP)
-        guard let voipTokenResolver = self.voipTokenResolver else {
-            owsFailDebug("fulfillVoipTokenPromise was unexpectedly nil")
-            return
-        }
+        guard let voipTokenResolver = self.voipTokenResolver else { return }
 
         voipTokenResolver.fulfill(credentials.token)
     }
