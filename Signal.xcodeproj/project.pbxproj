@@ -447,6 +447,8 @@
 		34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E88D252098C5AE00A608F4 /* ContactViewController.swift */; };
 		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */; };
+		34E93F942667F92100CE6FA5 /* ChatColorsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */; };
+		34E93F982668257400CE6FA5 /* color-bubble-64.json in Resources */ = {isa = PBXBuildFile; fileRef = 34E93F972668257400CE6FA5 /* color-bubble-64.json */; };
 		34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */; };
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
 		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
@@ -1517,6 +1519,8 @@
 		34E88D252098C5AE00A608F4 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BodyTextItems.swift"; sourceTree = "<group>"; };
+		34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorsMegaphone.swift; sourceTree = "<group>"; };
+		34E93F972668257400CE6FA5 /* color-bubble-64.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "color-bubble-64.json"; sourceTree = "<group>"; };
 		34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesViewController.swift; sourceTree = "<group>"; };
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
 		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
@@ -3730,16 +3734,17 @@
 		88A505FE23DBAE640005C012 /* Upgrade Views */ = {
 			isa = PBXGroup;
 			children = (
+				34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */,
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
+				88FBE953264B6848005F6C80 /* DonateMegaphone.swift */,
+				88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */,
 				347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */,
-				888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */,
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */,
-				88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */,
-				88FBE953264B6848005F6C80 /* DonateMegaphone.swift */,
+				888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -3772,7 +3777,9 @@
 				34848D5C25D43ADD00E5034B /* activate-payments.json */,
 				34848D5D25D43ADD00E5034B /* add-money.json */,
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
+				88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */,
 				34848D5A25D43ADD00E5034B /* cash-out.json */,
+				34E93F972668257400CE6FA5 /* color-bubble-64.json */,
 				34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */,
 				34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */,
 				34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */,
@@ -3800,7 +3807,6 @@
 				346EFC3925FFDC6900F493C7 /* update-pin-dark.json */,
 				346EFC3A25FFDC6A00F493C7 /* update-pin.json */,
 				88BFD4722335C2B3001797D7 /* waveformLoading.json */,
-				88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -4615,6 +4621,7 @@
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
+				34E93F982668257400CE6FA5 /* color-bubble-64.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5337,6 +5344,7 @@
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				3420CF6F2638A01A00E7DCB0 /* CVWallpaperBlurView.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
+				34E93F942667F92100CE6FA5 /* ChatColorsMegaphone.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */,
 				E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */,

@@ -8,6 +8,7 @@ import Foundation
 protocol GetStartedBannerViewControllerDelegate: class {
     func getStartedBannerDidTapInviteFriends(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidTapCreateGroup(_ banner: GetStartedBannerViewController)
+    func getStartedBannerDidTapAppearance(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidDismissAllCards(_ banner: GetStartedBannerViewController, animated: Bool)
 }
 
@@ -245,10 +246,12 @@ extension GetStartedBannerViewController: GetStartedBannerCellDelegate {
         guard let model = cell.model else { return }
 
         switch model {
-        case .InviteFriends:
+        case .inviteFriends:
             delegate?.getStartedBannerDidTapInviteFriends(self)
-        case .NewGroup:
+        case .newGroup:
             delegate?.getStartedBannerDidTapCreateGroup(self)
+        case .appearance:
+            delegate?.getStartedBannerDidTapAppearance(self)
         }
     }
 }

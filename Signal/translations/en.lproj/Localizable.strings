@@ -586,6 +586,12 @@
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
 
+/* Body for chat colors megaphone */
+"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+
+/* Title for chat colors megaphone */
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
 
@@ -1638,6 +1644,9 @@
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Get started";
+
+/* 'Get Started' button directing users to appearance */
+"GET_STARTED_CARD_APPEARANCE" = "Appearance";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Invite friends";

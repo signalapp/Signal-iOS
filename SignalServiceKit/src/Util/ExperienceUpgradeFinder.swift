@@ -17,6 +17,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     case groupCallsMegaphone
     case sharingSuggestions
     case donateMegaphone
+    case chatColors
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -67,6 +68,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return true
         case .donateMegaphone:
             return RemoteConfig.donateMegaphone
+        case .chatColors:
+            return true
         }
     }
 
@@ -125,6 +128,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
         case .sharingSuggestions:
             return .medium
         case .donateMegaphone:
+            return .low
+        case .chatColors:
             return .low
         }
     }

@@ -2412,6 +2412,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self showNewGroupView];
 }
 
+- (void)getStartedBannerDidTapAppearance:(OWSGetStartedBannerViewController *)banner
+{
+    [self showAppSettingsInAppearanceMode];
+}
+
 - (void)getStartedBannerDidTapInviteFriends:(OWSGetStartedBannerViewController *)banner
 {
     self.inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];

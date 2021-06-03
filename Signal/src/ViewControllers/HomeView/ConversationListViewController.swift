@@ -180,6 +180,7 @@ public enum ShowAppSettingsMode {
     case payments
     case payment(paymentsHistoryItem: PaymentsHistoryItem)
     case paymentsTransferIn
+    case appearance
 }
 
 // MARK: -
@@ -189,6 +190,11 @@ public extension ConversationListViewController {
     @objc
     func showAppSettings() {
         showAppSettings(mode: .none)
+    }
+
+    @objc
+    func showAppSettingsInAppearanceMode() {
+        showAppSettings(mode: .appearance)
     }
 
     func showAppSettings(mode: ShowAppSettingsMode) {
@@ -216,6 +222,9 @@ public extension ConversationListViewController {
             let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
             let paymentsTransferIn = PaymentsTransferInViewController()
             viewControllers += [ paymentsSettings, paymentsTransferIn ]
+        case .appearance:
+            let appearance = AppearanceSettingsTableViewController()
+            viewControllers += [ appearance ]
         }
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true)
