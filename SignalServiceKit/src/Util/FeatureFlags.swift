@@ -178,7 +178,7 @@ public class FeatureFlags: BaseFlags {
     public static let universalDisappearingMessages = true
 
     @objc
-    public static let groupDescriptionEditing = build.includes(.beta)
+    public static let groupDescriptionEditing = true
 
     @objc
     public static let chatColors = true
