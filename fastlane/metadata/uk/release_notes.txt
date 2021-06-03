@@ -1,5 +1,4 @@
-• Signal — неприбуткова організація, яка працює завдяки таким людям як ви. Ми спростили можливість робити внески для Signal за допомогою Apple Pay. Лише перейдіть до Налаштувань > Зробити внесок, щоб почати. Ваш внесок допоможе Signal залишитись незалежним та без реклами. Дякуємо за те, що ви разом з нами!
-• Цікавитесь, чи ваш останній монолог отримав увагу, на яку заслуговував? Відтепер ви зможете побачити, коли хтось прослухав ваші голосові повідомлення. Якщо ви бачите крапку на вашому голосовому повідомленні — воно ще очікує на прослуховування.
-• Відтепер ви зможете побачити у деталях повідомлення, чи були переглянуті одноразові фото та відео.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Бажаєте допомогти у покращенні Signal? У нас є вакансії. Завітайте по деталі на https://signal.org/workworkwork.

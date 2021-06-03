@@ -1,5 +1,4 @@
-• Signal je nezisková organizace, kterou podporují lidé jako vy. Nyní můžete Signalu snadno přispívat pomocí Apple Pay. Stačí přejít do Nastavení > Darovat a začít. Váš dar pomáhá Signalu zůstat nezávislý a bez reklam. Děkujeme, že stojíte při nás!
-• Zajímá vás, zda se vašemu poslednímu monologu dostalo zasloužené pozornosti? Nyní můžete zjistit, kdy někdo poslouchal vaše hlasové zprávy. Pokud na hlasové zprávě vidíte tečku, znamená to, že stále čeká na poslech.
-• Přímo v podrobnostech zprávy můžete nyní také zjistit, kdy byla fotografie nebo video zobrazeno.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Chcete pomoci vylepšit Signal? Nabíráme. Další informace najdete na adrese https://signal.org/workworkwork.

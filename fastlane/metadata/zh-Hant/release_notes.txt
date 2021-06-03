@@ -1,5 +1,4 @@
-•Signal是由像你這樣的人支持的非營利組織。 現在，我們可以輕鬆使用Apple Pay捐款給Signal。 只須轉到“設定”>“捐贈”即可開始。 你的捐款可幫助Signal保持獨立和無廣告。 感謝你與我們站在一起！
-•好奇你最近的獨白是否得到了應有的關注？ 現在，你可以看到某人何時收聽了你的語音留言。 如果你在語音留言中看到圓點，表示仍在等待收聽。
-•現在，你還可以直接從訊息詳細資訊中查看何時查看過一次的照片或影片。
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

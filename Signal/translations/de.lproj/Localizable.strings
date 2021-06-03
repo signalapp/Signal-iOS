@@ -566,13 +566,13 @@
 "CHAT_COLOR_OUTGOING_MESSAGE_2" = "Die Farbe ist nur für dich sichtbar.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+"CHAT_COLOR_SETTINGS_AUTO" = "Auto";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Diese benutzerdefinierte Farbe wird in 1 Unterhaltung verwendet. Möchtest du sie löschen?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Diese personalisierte Farbe wird in 1 Unterhaltung verwendet. Möchtest du sie löschen?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Diese benutzerdefinierte Farbe wird in %@ Unterhaltungen verwendet. Möchtest du sie für alle Unterhaltungen löschen?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Diese personalisierte Farbe wird in %@ Unterhaltungen verwendet. Möchtest du sie für alle Unterhaltungen löschen?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Farbe löschen";
@@ -584,7 +584,19 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Farbe bearbeiten";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Diese benutzerdefinierte Farbe wird in %@ Unterhaltungen verwendet. Möchtest du sie für alle Unterhaltungen speichern?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Diese personalisierte Farbe wird in %@ Unterhaltungen verwendet. Möchtest du sie für alle Unterhaltungen speichern?";
+
+/* Tooltip highlighting the auto chat color option. */
+"CHAT_COLORS_AUTO_TOOLTIP" = "Passt die Farbe automatisch an das Hintergrundbild an";
+
+/* Action text for char colors megaphone */
+"CHAT_COLORS_MEGAPHONE_ACTION" = "Darstellung";
+
+/* Body for chat colors megaphone */
+"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+
+/* Title for chat colors megaphone */
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Unterhaltungsfarbe & Hintergrund";
@@ -1070,10 +1082,13 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Sättigung";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "einfarbig";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Einfarbig";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "benutzerdefinierte Farbe";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Personalisierte Farbe";
+
+/* Tooltip highlighting the custom chat color controls. */
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Zieh, um die Richtung des Farbverlaufs zu ändern";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dies kann einige Minuten dauern.";
@@ -1346,7 +1361,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "Sekunden";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Wenn aktiviert, werden in von dir begonnenen Unterhaltungen neue versendete und empfangene Nachrichten nach dem Lesen verschwinden.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Wenn aktiviert, werden neue versendete und empfangene Nachrichten in von dir neu begonnenen Unterhaltungen nach dem Lesen verschwinden.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "Wochen";
@@ -1535,7 +1550,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfehler. Bitte versuche es später erneut.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Vor Senden der Nachricht erfordert der Server eine Benutzerverifikation.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Vor Senden der Nachricht erfordert der Server eine Nutzerverifikation.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ein unbekannter Fehler ist aufgetreten.";
@@ -1638,6 +1653,9 @@
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Leg los";
+
+/* 'Get Started' button directing users to appearance */
+"GET_STARTED_CARD_APPEARANCE" = "Darstellung";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Freunde einladen";
@@ -1792,11 +1810,17 @@
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ nimmt an diesem Anruf teil";
 
+/* Text explaining that a member is presenting. Embeds {member name} */
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Verbindung wird neu hergestellt";
 
 /* notification body when a group call participant joins with an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Jemand mit einer geänderten Sicherheitsnummer ist diesem Anruf beigetreten.";
+
+/* Toast view text informing user about swiping to screen share */
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Jemand hat einen Gruppenanruf gestartet";
@@ -2941,6 +2965,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Mehr Details";
 
+/* Label for button to compose a new email. */
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+
+/* Error show when user tries to send email without email being configured. */
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Diese Nachricht weiterleiten";
 
@@ -3719,10 +3749,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unbekannter Fehler";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss dieser von dir eine Nachrichtenanfrage akzeptieren.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Nachrichtenanfrage akzeptieren.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss dieser von dir eine Nachrichtenanfrage akzeptieren. Sende ihm eine Nachricht, um eine Nachrichtenanfrage zu stellen.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Nachrichtenanfrage akzeptieren. Sende ihm eine Nachricht, um eine Nachrichtenanfrage zu stellen.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Zahlung kann nicht gesendet werden";
@@ -4661,7 +4691,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kopplungscode kann nicht abgerufen werden";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Um dieses Gerät mit einem anderen Konto zu koppeln, musst du zuerst das Gerät zurücksetzen. Möchtest du den gesamten Verlauf (Nachrichten, Anhänge, Anrufe usw.) wirklich löschen? Dieser Vorgang ist unwiderruflich.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Um dieses Gerät mit einem anderen Konto zu koppeln, musst du es zuerst zurücksetzen. Möchtest du den gesamten Verlauf (Nachrichten, Anhänge, Anrufe usw.) wirklich löschen? Dieser Vorgang ist unwiderruflich.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Alles löschen";
@@ -4895,7 +4925,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Nicht überweisen";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Dein Kontostand beträgt %@. Falls du vor dem Löschen deines Kontos dein Guthaben nicht an eine andere Wallet-Adresse überweist, wirst du es für immer verlieren.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Dein Kontostand beträgt %@. Falls du vor Löschen deines Kontos dein Guthaben nicht an eine andere Wallet-Adresse überweist, wirst du es für immer verlieren.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Kontostand überweisen?";
@@ -4916,7 +4946,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Lege eine Standardzeit für verschwindende Nachrichten für alle von dir begonnenen neuen Unterhaltungen fest.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Lege eine Standardablaufzeit für verschwindende Nachrichten für alle von dir begonnenen neuen Unterhaltungen fest.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "An Signal spenden";
@@ -5747,7 +5777,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifizieren";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die Zeit für verschwindende Nachrichten wird auf %@ festgelegt, sobald du eine Nachricht sendest.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die Ablaufzeit für verschwindende Nachrichten wird auf %@ festgelegt, sobald du dem Nutzer eine Nachricht sendest.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Keine gemeinsamen Gruppen. Prüfe Anfragen sorgfältig.";
@@ -6059,7 +6089,7 @@
 "WALLPAPER_PREVIEW_TITLE" = "Vorschau";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Unterhaltungsfarbe zurücksetzen";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Unterhaltungsfarbe entfernen";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Unterhaltungsfarbe für diese Unterhaltung entfernen?";

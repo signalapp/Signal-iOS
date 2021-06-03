@@ -1,5 +1,4 @@
-• Signal is een organisatie zonder winstoogmerk welke onder andere mogelijk wordt gemaakt door donaties van mensen zoals jij. We hebben het nu makkelijk gemaakt om met Apple Pay aan Signal te doneren via Instellingen > Doneren. Jouw donatie help Signal onafhankelijk en advertentie vrij te houden. Dank voor alle steun!
-• Je kunt vanaf nu zien of iemand naar je audiobericht heeft geluisterd. Als je een stip op je audiobericht ziet dan is het nog niet beluisterd.
-• Je kunt vanaf nu in de berichtdetails zien of een eenmaligeweergave-afbeelding of -video is bekeken.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Ben je geïnteresseerd in helpen om Signal te verbeteren? We huren mensen. Bezoek https://signal.org/workworkwork om hier meer over te lezen.

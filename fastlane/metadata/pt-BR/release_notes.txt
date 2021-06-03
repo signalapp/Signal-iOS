@@ -1,5 +1,4 @@
-• Signal é uma organização sem fins lucrativos mantida por pessoas como você. Agora ficou mais fácil doar para o Signal usando o Apple Pay. Basta ir em Configurações > Doar para começar. A sua doação ajuda o Signal a se manter independente e sem anúncios. Obrigado por estar conosco!
-• Curioso para saber se o seu último monólogo recebeu a atenção que merecia? Agora você pode saber quando alguém ouviu as suas mensagens de voz. Quando o sinal de envio da sua mensagem de voz exibir um ponto, significará que a mensagem de voz ainda aguarda ser ouvida.
-• Agora você também consegue ver diretamente nos detalhes da mensagem quando uma foto ou vídeo êfemero foi visualizado.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Interessado em ajudar a melhorar o Signal? Estamos contratando. Visite https://signal.org/workworkwork para saber mais.

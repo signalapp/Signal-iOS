@@ -1,5 +1,4 @@
-• Signal הוא ארגון ללא מטרות רווח שממונע ע״י אנשים כמוך. עשינו זאת עכשיו קל לתרום אל Signal באמצעות Apple Pay. פשוט לך אל הגדרות > תרום כדי להתחיל. התרומה שלך עוזרת אל Signal להישאר עצמאי ונטול פרסומות. תודה שאתה עומד לצידנו!
-• אתה יכול עכשיו לראות מתי מישהו הקשיב אל הודעות קוליות שלך. אם אתה רואה את הנקודה בהודעה הקולית שלך, היא עדיין ממתינה להאזנה.
-• אתה יכול לראות עכשיו מתי תמונה או וידאו לצפייה חד־פעמית נצפו היישר מפרטי ההודעה.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 מעוניין לעזור לשפר את Signal? אנחנו מגייסים. בקר בכתובת https://signal.org/workworkwork כדי ללמוד עוד.

@@ -1,5 +1,4 @@
-• Signal är en ideell gemenskap av människor som du. Vi har nu gjort det enkelt att donera till Signal med Apple Pay. Gå bara till Inställningar > Donera för att komma igång. Din donation hjälper Signal att vara oberoende och utan reklam. Tack för att du står med oss!
-• Är du nyfiken på om din senaste monolog fick den uppmärksamhet den förtjänade? Du kan nu se när någon har lyssnat på dina röstmeddelanden. Om du ser pricken i ditt röstmeddelande väntar det fortfarande på att lyssnas.
-• Nu kan du också se när en bild eller en video har visats en gång direkt från meddelandedetaljer.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Intresserad av att förbättra Signal? Vi anställer. Besök https://signal.org/workworkwork för att läsa mera.

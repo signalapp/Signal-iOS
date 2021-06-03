@@ -1,6 +1,6 @@
-Milhões de pessoas usam o Signal todos os dias para se comunicar de forma livre e instantânea em qualquer lugar do mundo. Envie e receba mensagens com alta-fidelidade, participe em chamadas de voz/vídeo em HD, e explore um crescente conjunto de novos recursos que lhe ajudam a estar conectado. A tecnologia avançada de preservação da privacidade do Signal está sempre ativada, portanto você pode focar em compartilhar os momentos que importam com as pessoas que lhe são importantes.
+Milhões de pessoas usam o Signal todos os dias para se comunicarem de forma livre e instantânea em qualquer lugar do mundo. Envie e receba mensagens com alta-fidelidade, participe em chamadas de voz/vídeo em HD, e explore um crescente conjunto de novos recursos que lhe ajudam a estar conectado. A tecnologia avançada de preservação da privacidade do Signal está sempre ativada, portanto você pode focar em compartilhar os momentos que importam com as pessoas que lhe são importantes.
 
-• Diga qualquer coisa – A criptografia, de ponta a ponta e estado da arte (empoderada pelo Signal Protocol™ de código aberto), mantém suas conversas seguras. A privacidade não é um modo opcional — é apenas a forma como o Signal trabalha. Cada mensagem, cada chamada, a todo momento.
+• Diga qualquer coisa – A criptografia de ponta a ponta de última geração (empoderada pelo Signal Protocol™ de código aberto) mantém suas conversas seguras. A privacidade não é um modo opcional — é apenas a forma como o Signal trabalha. Cada mensagem, cada chamada, a todo momento.
 
 • Vá rápido – As mensagens são entregues rapidamente e com confiabilidade, mesmo em redes lentas. O Signal está otimizado para operar no ambiente mais restringido possível.
 
@@ -10,7 +10,7 @@ Milhões de pessoas usam o Signal todos os dias para se comunicar de forma livre
 
 • Use sua voz – Se eles moram do outro lado da cidade ou do outro lado do mundo, a qualidade de áudio e vídeo aprimorada do Signal fará com que seus amigos e familiares pareçam estar mais próximos.
 
-• Sussurre nas sombras – Mude para o tema escuro se você se recusa em ver a luz.
+• Sussurre nas sombras – Mude para o tema escuro se você se recusa a ver a luz.
 
 • Pareça familiar – Escolha alertas personalizados para cada contato ou desative completamente os sons. Simon & Garfunkel compuseram uma canção de sucesso sobre isso em 1964, e você pode experimentar o som do silêncio sempre que desejar escolher "Nenhum" como seu toque de notificação.
 

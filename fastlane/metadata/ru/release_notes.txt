@@ -1,5 +1,4 @@
-• Signal — это некоммерческий проект, существующий благодаря таким людям, как вы. Теперь вы можете поддержать Signal, используя Apple Pay. Просто перейдите в Настройки > Поддержать Signal, чтобы начать. Ваши пожертвования помогают Signal оставаться независимым и без рекламы. Спасибо за то, что вы с нами!
-• Теперь вы можете видеть, когда кто-то прослушал ваши голосовые сообщения. Если вы видите точку на своём голосовом сообщении, то оно ещё не было прослушано.
-• Также вы теперь можете видеть, когда было просмотрено одноразовое фото или видео, в подробностях сообщения.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Вам интересно помогать улучшать Signal? Мы нанимаем на работу. Посетите https://signal.org/workworkwork, чтобы узнать больше.

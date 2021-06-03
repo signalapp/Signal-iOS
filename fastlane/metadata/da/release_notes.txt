@@ -1,5 +1,4 @@
-• Signal er en nonprofit, der drives af personer som dig. Vi har nu gjort det let at donere til Signal ved hjælp af Apple Pay. Gå blot til Indstillinger> Doner for at komme i gang. Din donation hjælper Signal med at forblive uafhængig og uden reklamer. Tak fordi du står sammen med os!
-• Nysgerrig om din seneste monolog fik den opmærksomhed, den fortjente? Du kan nu se, når nogen har lyttet til dine talebeskeder. Hvis du ser prikken på din talebesked, venter den stadig på en lytning.
-• Du kan også nu se, når engangs-visning af billede eller video er blevet set direkte fra beskeddetaljer.
+• Become a conversation artist. Use the new color selector to turn every chat into a masterpiece, or let “auto” mode pick something just as palette-able.
+• Once you've found the perfect disappearing message timer, why not try it out everywhere? You can now set a default timer that applies to any chats you start.
 
 Er du interesseret i at hjælpe med at forbedre Signal? Vi ansætter folk. Besøg https://signal.org/workworkwork for at lære mere.

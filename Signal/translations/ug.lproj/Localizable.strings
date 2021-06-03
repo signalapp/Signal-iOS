@@ -586,6 +586,18 @@
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "بۇ رەڭ %@ سۆھبەتكە ئىشلىتىلىدۇ. ھەممە سۆھبەتكە ئۆزگەرتىشنى ساقلامسىز؟";
 
+/* Tooltip highlighting the auto chat color option. */
+"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+
+/* Action text for char colors megaphone */
+"CHAT_COLORS_MEGAPHONE_ACTION" = "Appearance";
+
+/* Body for chat colors megaphone */
+"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+
+/* Title for chat colors megaphone */
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "سۆھبەت رەڭگى ۋە تام قەغەز";
 
@@ -1074,6 +1086,9 @@
 
 /* Title for the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "ئىختىيارىچە رەڭ";
+
+/* Tooltip highlighting the custom chat color controls. */
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "بۇنىڭغا بىر مىنۇتتەك ۋەقىت كېتىشى مۇمكىن.";
@@ -1639,6 +1654,9 @@
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "ئىشلىتىشكە باشلاش";
 
+/* 'Get Started' button directing users to appearance */
+"GET_STARTED_CARD_APPEARANCE" = "Appearance";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
 
@@ -1792,11 +1810,17 @@
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ بۇ چاقىرىقتا";
 
+/* Text explaining that a member is presenting. Embeds {member name} */
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "قايتا ئۇلىنىۋاتىدۇ";
 
 /* notification body when a group call participant joins with an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "بىرەيلەن ئۆزگەرتىلگەن بىخەتەرلىك نومۇرى بىلەن بۇ چاقىرىشقا قوشۇلدى.";
+
+/* Toast view text informing user about swiping to screen share */
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "بەزىلەر بىر گۇرۇپپا چاقىرىقىنى باشلىدى";
@@ -2941,6 +2965,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "تېخىمۇ كۆپ ئۇچۇر";
 
+/* Label for button to compose a new email. */
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+
+/* Error show when user tries to send email without email being configured. */
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "بۇ ئۇچۇرنى ئۇلاپ يوللاڭ";
 
@@ -3089,10 +3119,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ئۆچۈرۈش";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "بۇ%@ بىلەن سۆھبىتىڭىزنى داۋاملاشتۇرامسىز ھەمدە ئىسمىڭىز ۋە سۈرىتىڭىزنى ئۇلار بىلەن ئورتاقلىشامسىز؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "بۇ%@ بىلەن سۆھبىتىڭىزنى داۋاملاشتۇرامسىز ھەمدە ئىسمىڭىز ۋە سۈرىتىڭىزنى ئۇلار بىلەن ھەمبەھىرلەمسىز؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "بۇ گۇرۇپپىدا سۆھبىتىڭىزنى داۋاملاشتۇرامسىز ھەمدە ئىسمىڭىز ۋە سۈرىتىڭىزنى ئۇنىڭ ئەزالىرى بىلەن ئورتاقلىشامسىز؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "بۇ گۇرۇپپىدا سۆھبىتىڭىزنى داۋاملاشتۇرامسىز ھەمدە ئىسمىڭىز ۋە سۈرىتىڭىزنى ئۇنىڭ ئەزالىرى بىلەن ھەمبەھىرلەمسىز؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ نىڭ سىزگە ئۇچۇر يوللىشىغا يول قويامسىز ھەمدە ئىسىم ۋە سۈرەتلىرىڭىزنى ئۇلار بىلەن ھەمبەھىرلەمسىز؟ سىز قوبۇل قىلغۇچە، ئۇلار سىزنىڭ ئۇچۇرلىرىنى كۆرگەنلىكىڭىزنى بىلەلمەيدۇ.";
@@ -3803,7 +3833,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "«%@» نىڭ گۇرۇپپىغا كىرىش تەكلىپىنى رەت قىلامدۇ؟";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "باشقا گۇرۇپپا ئەزالىرى تەكلىپ قىلغان كىشىلەرنىڭ تەپسىلاتلىرى كۆرسىتىلمىدى. ئەگەر تەكلىپ قىلىنغانلار قاتنىشىشنى تاللىسا، ئۇلارنىڭ ئۇچۇرلىرى شۇ ۋاقىتتا ئ‍اندىن گۇرۇپپا بىلەن ئورتاقلىشىدۇ. ئۇلار تەكلىپنى قوبۇل قىلمىغۇچە گۇرۇپپىدىكى ھېچقانداق ئۇچۇرنى كۆرمەيدۇ.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "باشقا گۇرۇپپا ئەزالىرى تەكلىپ قىلغان كىشىلەرنىڭ تەپسىلاتلىرى كۆرسىتىلمىدى. ئەگەر تەكلىپ قىلىنغانلار قاتنىشىشنى تاللىسا، ئۇلارنىڭ ئۇچۇرلىرى شۇ ۋاقىتتا ئ‍اندىن گۇرۇپپا بىلەن ھەمبەھىرلىنىدۇ. ئۇلار تەكلىپنى قوبۇل قىلمىغۇچە گۇرۇپپىدىكى ھېچقانداق ئۇچۇرنى كۆرمەيدۇ.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "بۇ تىزىمدىكى كىشىلەر «%@» غا گۇرۇپپا ئۇلانمىسى ئارقىلىق كىرمەكچى.";
