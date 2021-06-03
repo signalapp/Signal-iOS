@@ -54,10 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
         NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:));
 
 - (BOOL)willExternallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                                      plaintextData:(NSData *)plaintextData
-                                    wasReceivedByUD:(BOOL)wasReceivedByUD
                             serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-    NS_SWIFT_NAME(willExternallyHandleCallMessage(envelope:plaintextData:wasReceivedByUD:serverDeliveryTimestamp:));
+    NS_SWIFT_NAME(willExternallyHandleCallMessage(envelope:serverDeliveryTimestamp:));
 
 @end
 

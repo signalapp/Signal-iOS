@@ -67,8 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)willExternallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                                      plaintextData:(NSData *)plaintextData
-                                    wasReceivedByUD:(BOOL)wasReceivedByUD
                             serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     return NO;

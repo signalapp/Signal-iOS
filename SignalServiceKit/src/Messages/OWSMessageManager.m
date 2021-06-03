@@ -434,8 +434,6 @@ NS_ASSUME_NONNULL_BEGIN
                              transaction:transaction];
         } else if (contentProto.callMessage) {
             if (![self.callMessageHandler willExternallyHandleCallMessageWithEnvelope:envelope
-                                                                        plaintextData:plaintextData
-                                                                      wasReceivedByUD:wasReceivedByUD
                                                               serverDeliveryTimestamp:serverDeliveryTimestamp]) {
                 [self handleIncomingEnvelope:envelope
                              withCallMessage:contentProto.callMessage

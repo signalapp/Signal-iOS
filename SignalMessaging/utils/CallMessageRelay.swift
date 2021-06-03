@@ -14,14 +14,13 @@ public class CallMessageRelay: NSObject {
 
         do {
             let payload = try JSONDecoder().decode(Payload.self, from: payloadData)
-            databaseStorage.asyncWrite { transaction in
-                messageManager.processEnvelope(
-                    payload.envelope,
-                    plaintextData: payload.plaintextData,
-                    wasReceivedByUD: payload.wasReceivedByUD,
-                    serverDeliveryTimestamp: payload.serverDeliveryTimestamp,
-                    transaction: transaction
-                )
+            messageProcessor.processEncryptedEnvelopeData(
+                payload.encryptedEnvelopeData,
+                serverDeliveryTimestamp: payload.serverDeliveryTimestamp
+            ) { error in
+                if let error = error {
+                    owsFailDebug("Failed to process relayed call message \(error)")
+                }
             }
         } catch {
             owsFailDebug("Failed to decode relay voip payload \(error)")
@@ -32,14 +31,10 @@ public class CallMessageRelay: NSObject {
 
     public static func voipPayload(
         envelope: SSKProtoEnvelope,
-        plaintextData: Data,
-        wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64
     ) throws -> [AnyHashable: Any] {
         let payload = Payload(
-            envelope: envelope,
-            plaintextData: plaintextData,
-            wasReceivedByUD: wasReceivedByUD,
+            encryptedEnvelopeData: try envelope.serializedData(),
             serverDeliveryTimestamp: serverDeliveryTimestamp
         )
 
@@ -47,9 +42,7 @@ public class CallMessageRelay: NSObject {
     }
 
     private struct Payload: Codable {
-        let envelope: SSKProtoEnvelope
-        let plaintextData: Data
-        let wasReceivedByUD: Bool
+        let encryptedEnvelopeData: Data
         let serverDeliveryTimestamp: UInt64
     }
 }

@@ -35,7 +35,7 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         owsFailDebug("")
     }
 
-    public func willExternallyHandleCallMessage(envelope: SSKProtoEnvelope, plaintextData: Data, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64) -> Bool {
+    public func willExternallyHandleCallMessage(envelope: SSKProtoEnvelope, serverDeliveryTimestamp: UInt64) -> Bool {
         return false
     }
 }
