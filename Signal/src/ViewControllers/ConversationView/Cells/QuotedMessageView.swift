@@ -328,7 +328,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             let maskLayer = CAShapeLayer()
             bubbleView.addLayoutBlock { view in
                 let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: sharpCorners)
-                let bezierPath = UIView.roundedBezierRect(rect: view.bounds,
+                let bezierPath = UIBezierPath.roundedRect(view.bounds,
                                                           sharpCorners: sharpCorners,
                                                           sharpCornerRadius: sharpCornerRadius,
                                                           wideCornerRadius: wideCornerRadius)

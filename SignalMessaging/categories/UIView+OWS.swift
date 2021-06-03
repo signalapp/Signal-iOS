@@ -1100,11 +1100,16 @@ public extension UIView {
         }
         return result
     }
+}
 
-    static func roundedBezierRect(rect: CGRect,
-                                  sharpCorners: UIRectCorner,
-                                  sharpCornerRadius: CGFloat,
-                                  wideCornerRadius: CGFloat) -> UIBezierPath {
+// MARK: - Corners
+
+@objc
+public extension UIBezierPath {
+    static func roundedRect(_ rect: CGRect,
+                            sharpCorners: UIRectCorner,
+                            sharpCornerRadius: CGFloat,
+                            wideCornerRadius: CGFloat) -> UIBezierPath {
         let bezierPath = UIBezierPath()
 
         func cornerRounding(forCorner corner: UIRectCorner) -> CGFloat {

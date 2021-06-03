@@ -218,7 +218,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
         if let bubbleConfig = self.bubbleConfig {
             let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
-            let bubblePath = UIView.roundedBezierRect(rect: self.bounds,
+            let bubblePath = UIBezierPath.roundedRect(self.bounds,
                                                       sharpCorners: sharpCorners,
                                                       sharpCornerRadius: bubbleConfig.sharpCornerRadius,
                                                       wideCornerRadius: bubbleConfig.wideCornerRadius)
@@ -290,7 +290,7 @@ extension CVColorOrGradientView: OWSBubbleViewHost {
             return UIBezierPath()
         }
         let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
-        let bubblePath = UIView.roundedBezierRect(rect: self.bounds,
+        let bubblePath = UIBezierPath.roundedRect(self.bounds,
                                                   sharpCorners: sharpCorners,
                                                   sharpCornerRadius: bubbleConfig.sharpCornerRadius,
                                                   wideCornerRadius: bubbleConfig.wideCornerRadius)

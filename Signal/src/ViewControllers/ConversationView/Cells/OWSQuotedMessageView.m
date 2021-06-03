@@ -169,10 +169,10 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         layoutCallback:^(UIView *layerView) {
             const CGFloat sharpCornerRadius = 4;
             const CGFloat wideCornerRadius = 12;
-            UIBezierPath *bezierPath = [UIView roundedBezierRectWithRect:layerView.bounds
-                                                            sharpCorners:sharpCorners
-                                                       sharpCornerRadius:sharpCornerRadius
-                                                        wideCornerRadius:wideCornerRadius];
+            UIBezierPath *bezierPath = [UIBezierPath roundedRect:layerView.bounds
+                                                    sharpCorners:sharpCorners
+                                               sharpCornerRadius:sharpCornerRadius
+                                                wideCornerRadius:wideCornerRadius];
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
