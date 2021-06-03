@@ -13,7 +13,9 @@ class NotificationService: UNNotificationServiceExtension {
     var areVersionMigrationsComplete = false
 
     func completeSilenty() {
-        contentHandler?(.init())
+        let content = UNMutableNotificationContent()
+        content.badge = NSNumber(value: databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) })
+        contentHandler?(content)
     }
 
     // The lifecycle of the NSE looks something like the following:
