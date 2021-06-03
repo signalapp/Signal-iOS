@@ -26,7 +26,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSContactAvatarBuilder.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSGroupAvatarBuilder.h>
-#import <SignalMessaging/OWSMessageTextView.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalMessaging/OWSPreferences.h>

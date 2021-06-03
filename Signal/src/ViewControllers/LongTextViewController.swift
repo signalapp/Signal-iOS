@@ -104,8 +104,11 @@ public class LongTextViewController: OWSViewController {
             let hasPendingMessageRequest = databaseStorage.read { transaction in
                 itemViewModel.thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
             }
-            CVComponentBodyText.configureTextView(messageTextView, displayableText: displayableText)
+            CVComponentBodyText.configureTextView(messageTextView,
+                                                  interaction: itemViewModel.interaction,
+                                                  displayableText: displayableText)
             CVComponentBodyText.linkifyData(attributedText: mutableText,
+                                            linkifyStyle: .linkAttribute,
                                             hasPendingMessageRequest: hasPendingMessageRequest,
                                             shouldAllowLinkification: displayableText.shouldAllowLinkification)
 

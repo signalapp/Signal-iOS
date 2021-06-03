@@ -4,9 +4,9 @@
 
 import Foundation
 
-private typealias CacheKey = String
-
 public enum CVTextValue: Equatable, Hashable {
+    public typealias CacheKey = String
+
     case text(text: String)
     case attributedText(attributedText: NSAttributedString)
 
@@ -37,6 +37,15 @@ public enum CVTextValue: Equatable, Hashable {
         }
     }
 
+    public var attributedString: NSAttributedString {
+        switch self {
+        case .text(let text):
+            return NSAttributedString(string: text)
+        case .attributedText(let attributedText):
+            return attributedText
+        }
+    }
+
     var debugDescription: String {
         switch self {
         case .text(let text):
@@ -59,6 +68,7 @@ public enum CVTextValue: Equatable, Hashable {
 // MARK: - UILabel
 
 public struct CVLabelConfig {
+    public typealias CacheKey = String
 
     fileprivate let text: CVTextValue
     public let font: UIFont
@@ -150,8 +160,9 @@ public struct CVLabelConfig {
 // MARK: - UITextView
 
 public struct CVTextViewConfig {
+    public typealias CacheKey = String
 
-    fileprivate let text: CVTextValue
+    public let text: CVTextValue
     public let font: UIFont
     public let textColor: UIColor
     public let textAlignment: NSTextAlignment?
@@ -183,46 +194,6 @@ public struct CVTextViewConfig {
         self.linkTextAttributes = linkTextAttributes
     }
 
-    func applyForMeasurement(textView: UITextView) {
-        textView.font = self.font
-        if let linkTextAttributes = linkTextAttributes {
-            textView.linkTextAttributes = linkTextAttributes
-        }
-
-        // Skip textColor, textAlignment.
-
-        // Apply text last, to protect attributed text attributes.
-        // There are also perf benefits.
-        self.text.apply(textView: textView)
-    }
-
-    public func applyForRendering(textView: UITextView) {
-        textView.font = self.font
-        textView.textColor = self.textColor
-        if let textAlignment = textAlignment {
-            textView.textAlignment = textAlignment
-        } else {
-            textView.textAlignment = .natural
-        }
-        if let linkTextAttributes = linkTextAttributes {
-            textView.linkTextAttributes = linkTextAttributes
-        } else {
-            textView.linkTextAttributes = [:]
-        }
-
-        // Apply text last, to protect attributed text attributes.
-        // There are also perf benefits.
-        self.text.apply(textView: textView)
-    }
-
-    public func measure(maxWidth: CGFloat) -> CGSize {
-        let size = CVText.measureTextView(config: self, maxWidth: maxWidth)
-        if size.width > maxWidth {
-            owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
-        }
-        return size
-    }
-
     public var stringValue: String {
         text.stringValue
     }
@@ -231,7 +202,7 @@ public struct CVTextViewConfig {
         "CVTextViewConfig: \(text.debugDescription)"
     }
 
-    fileprivate var cacheKey: CacheKey {
+    public var cacheKey: CacheKey {
         // textColor and linkTextAttributes (for the attributes we set)
         // don't affect measurement.
         "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(textAlignment?.rawValue ?? 0)"
@@ -241,6 +212,8 @@ public struct CVTextViewConfig {
 // MARK: -
 
 public class CVText {
+    public typealias CacheKey = String
+
     public enum MeasurementMode { case view, layoutManager }
 
     private static var reuseLabels: Bool {
@@ -333,89 +306,36 @@ public class CVText {
         return textContainer.size(for: config.text, font: config.font)
     }
 
-    // MARK: - UITextView
+    // MARK: - CVBodyTextLabel
 
-    private static let textView_main = {
-        buildTextView()
-    }()
-    private static let textView_workQueue = {
-        buildTextView()
-    }()
-    private static var textViewForMeasurement: UITextView {
-        guard reuseTextViews else {
-            return buildTextView()
-        }
+    private static let bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
-        if Thread.isMainThread {
-            return textView_main
-        } else {
-            return textView_workQueue
-        }
-    }
-
-    private static let textViewCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
-
-    public static func measureTextView(mode: MeasurementMode = defaultTextViewMeasurementMode,
-                                       config: CVTextViewConfig,
-                                       maxWidth: CGFloat) -> CGSize {
+    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CGSize {
         unfairLock.withLock {
-            measureTextViewLocked(mode: mode, config: config, maxWidth: maxWidth)
+            measureBodyTextLabelLocked(config: config, maxWidth: maxWidth)
         }
     }
 
-    private static func measureTextViewLocked(mode: MeasurementMode = defaultTextViewMeasurementMode,
-                                              config: CVTextViewConfig,
-                                              maxWidth: CGFloat) -> CGSize {
+    private static func measureBodyTextLabelLocked(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CGSize {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
-           let result = textViewCache.get(key: cacheKey) {
+           let result = bodyTextLabelCache.get(key: cacheKey) {
             return result
         }
 
-        let result: CGSize
-        switch mode {
-        case .layoutManager:
-            result = measureTextViewUsingLayoutManager(config: config, maxWidth: maxWidth)
-        case .view:
-            result = measureTextViewUsingView(config: config, maxWidth: maxWidth)
-        }
+        let result = CVBodyTextLabel.measureSize(config: config, maxWidth: maxWidth)
         owsAssertDebug(result.width > 0)
         owsAssertDebug(result.height > 0)
 
         if cacheMeasurements {
-            textViewCache.set(key: cacheKey, value: result.ceil)
+            bodyTextLabelCache.set(key: cacheKey, value: result.ceil)
         }
 
         return result.ceil
     }
-
-    private static func measureTextViewUsingView(config: CVTextViewConfig, maxWidth: CGFloat) -> CGSize {
-        let textView = textViewForMeasurement
-        config.applyForMeasurement(textView: textView)
-        return textView.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)).ceil
-    }
-
-    private static func measureTextViewUsingLayoutManager(config: CVTextViewConfig, maxWidth: CGFloat) -> CGSize {
-        let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
-        textContainer.lineFragmentPadding = 0
-        return textContainer.size(for: config.text, font: config.font)
-    }
-
-    public static func buildTextView() -> OWSMessageTextView {
-        let textView = OWSMessageTextView()
-
-        textView.backgroundColor = .clear
-        textView.isOpaque = false
-        textView.isEditable = false
-        textView.isSelectable = true
-        textView.textContainer.lineFragmentPadding = 0
-        textView.isScrollEnabled = false
-        textView.textContainerInset = .zero
-        textView.contentInset = .zero
-
-        return textView
-    }
 }
+
+// MARK: -
 
 private extension NSTextContainer {
     func size(for textValue: CVTextValue, font: UIFont) -> CGSize {

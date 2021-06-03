@@ -2947,6 +2947,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "More Info";
 
+/* Label for button to compose a new email. */
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+
+/* Error show when user tries to send email without email being configured. */
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
 

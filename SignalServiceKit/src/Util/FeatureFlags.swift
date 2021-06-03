@@ -181,9 +181,6 @@ public class FeatureFlags: BaseFlags {
     public static let groupDescriptionEditing = build.includes(.beta)
 
     @objc
-    public static let linkifyWithNSDataDetector = false
-
-    @objc
     public static let chatColors = true
 
     public static func buildFlagMap() -> [String: Any] {

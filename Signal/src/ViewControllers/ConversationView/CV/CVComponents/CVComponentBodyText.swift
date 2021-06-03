@@ -14,7 +14,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let hasTapForMore: Bool
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
-        fileprivate let dataItems: [DataItem]
+        fileprivate let items: [CVBodyTextLabel.Item]
 
         public var canUseDedicatedCell: Bool {
             if hasTapForMore || searchText != nil {
@@ -72,6 +72,16 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         componentState.isJumbomojiMessage
     }
 
+    private static func shouldIgnoreEvents(interaction: TSInteraction) -> Bool {
+        guard let outgoingMessage = interaction as? TSOutgoingMessage else {
+            return false
+        }
+        // Ignore taps on links in outgoing messages that haven't been sent yet, as
+        // this interferes with "tap to retry".
+        return outgoingMessage.messageState != .sent
+    }
+    private var shouldIgnoreEvents: Bool { Self.shouldIgnoreEvents(interaction: interaction) }
+
     private static func buildDataDetector(shouldAllowLinkification: Bool) -> NSDataDetector? {
         var checkingTypes = NSTextCheckingResult.CheckingType()
         if shouldAllowLinkification {
@@ -79,7 +89,11 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
         checkingTypes.insert(.address)
         checkingTypes.insert(.phoneNumber)
-        checkingTypes.insert(.date)
+        // TODO:
+        let shouldDetectDates = false
+        if shouldDetectDates {
+            checkingTypes.insert(.date)
+        }
 
         do {
             return try NSDataDetector(types: checkingTypes.rawValue)
@@ -104,41 +118,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private static let unfairLock = UnfairLock()
 
-    fileprivate struct DataItem: Equatable {
-        enum DataType: UInt, Equatable, CustomStringConvertible {
-            case link
-            case address
-            case phoneNumber
-            case date
-            case transitInformation
-
-            // MARK: - CustomStringConvertible
-
-            public var description: String {
-                switch self {
-                case .link:
-                    return ".link"
-                case .address:
-                    return ".address"
-                case .phoneNumber:
-                    return ".phoneNumber"
-                case .date:
-                    return ".date"
-                case .transitInformation:
-                    return ".transitInformation"
-                }
-            }
-        }
-
-        let dataType: DataType
-        let range: NSRange
-        let snippet: String
-        let url: URL
-    }
-
-    private static func detectDataItems(text: String,
-                                        hasPendingMessageRequest: Bool,
-                                        shouldAllowLinkification: Bool) -> [DataItem] {
+    private static func detectItems(text: String,
+                                    attributedString: NSAttributedString?,
+                                    hasPendingMessageRequest: Bool,
+                                    shouldAllowLinkification: Bool) -> [CVBodyTextLabel.Item] {
 
         // Use a lock to ensure that measurement on and off the main thread
         // don't conflict.
@@ -147,6 +130,33 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 // Do not linkify if there is a pending message request.
                 return []
             }
+
+            var items = [CVBodyTextLabel.Item]()
+            // Detect and discard overlapping items, preferring mentions to data items.
+            func hasItemOverlap(_ newItem: CVBodyTextLabel.Item) -> Bool {
+                for oldItem in items {
+                    if let overlap = oldItem.range.intersection(newItem.range),
+                       overlap.length > 0 {
+                        return true
+                    }
+                }
+                return false
+            }
+
+            // Add mentions.
+            if let attributedString = attributedString {
+                attributedString.enumerateMentions { mention, range, _ in
+                    guard let mention = mention else { return }
+                    let mentionItem = CVBodyTextLabel.MentionItem(mention: mention, range: range)
+                    let item: CVBodyTextLabel.Item = .mention(mentionItem: mentionItem)
+                    guard !hasItemOverlap(item) else {
+                        owsFailDebug("Item overlap.")
+                        return
+                    }
+                    items.append(item)
+                }
+            }
+
             // NSDataDetector and UIDataDetector behavior should be aligned.
             //
             // TODO: We might want to move this detection logic into
@@ -156,7 +166,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 owsFailDebug("Could not build dataDetector.")
                 return []
             }
-            var dataItems = [DataItem]()
             for match in detector.matches(in: text, options: [], range: text.entireRange) {
                 guard let snippet = (text as NSString).substring(with: match.range).strippedOrNil else {
                     owsFailDebug("Invalid snippet.")
@@ -165,7 +174,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
                 let matchUrl = match.url
 
-                let dataType: DataItem.DataType
+                let dataType: CVBodyTextLabel.DataItem.DataType
                 var customUrl: URL?
                 let resultType: NSTextCheckingResult.CheckingType = match.resultType
                 if resultType.contains(.orthography) {
@@ -192,6 +201,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     }
                     // "calshow:" URLs expect GMT.
                     let timeInterval = gmtDate.timeIntervalSinceReferenceDate
+                    // I'm not sure if there's official docs around these links.
                     guard let calendarUrl = URL(string: "calshow:\(timeInterval)") else {
                         owsFailDebug("Couldn't build calendarUrl.")
                         continue
@@ -219,8 +229,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     }
                     customUrl = mapUrl
                 } else if resultType.contains(.link) {
-                    Logger.verbose("link")
-                    dataType = .link
+                    if let url = matchUrl,
+                       url.absoluteString.lowercased().hasPrefix("mailto:"),
+                       !snippet.lowercased().hasPrefix("mailto:") {
+                        Logger.verbose("emailAddress")
+                        dataType = .emailAddress
+                    } else {
+                        Logger.verbose("link")
+                        dataType = .link
+                    }
                 } else if resultType.contains(.quote) {
                     Logger.verbose("quote")
                     continue
@@ -297,12 +314,18 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     continue
                 }
 
-                dataItems.append(DataItem(dataType: dataType,
-                                          range: match.range,
-                                          snippet: snippet,
-                                          url: url))
+                let dataItem = CVBodyTextLabel.DataItem(dataType: dataType,
+                                                        range: match.range,
+                                                        snippet: snippet,
+                                                        url: url)
+                let item: CVBodyTextLabel.Item = .dataItem(dataItem: dataItem)
+                guard !hasItemOverlap(item) else {
+                    owsFailDebug("Item overlap.")
+                    continue
+                }
+                items.append(item)
             }
-            return dataItems
+            return items
         }
     }
 
@@ -315,7 +338,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
 
-        let dataItems: [DataItem]
+        let items: [CVBodyTextLabel.Item]
         var shouldUseAttributedText = false
         if let displayableText = bodyText.displayableText,
            let textValue = bodyText.textValue(isTextExpanded: isTextExpanded) {
@@ -324,9 +347,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
             switch textValue {
             case .text(let text):
-                dataItems = detectDataItems(text: text,
-                                            hasPendingMessageRequest: hasPendingMessageRequest,
-                                            shouldAllowLinkification: shouldAllowLinkification)
+                items = detectItems(text: text,
+                                    attributedString: nil,
+                                    hasPendingMessageRequest: hasPendingMessageRequest,
+                                    shouldAllowLinkification: shouldAllowLinkification)
 
                 // UILabels are much cheaper than UITextViews, and we can
                 // usually use them for rendering body text.
@@ -339,16 +363,17 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 if searchText != nil {
                     shouldUseAttributedText = true
                 } else {
-                    shouldUseAttributedText = !dataItems.isEmpty
+                    shouldUseAttributedText = !items.isEmpty
                 }
             case .attributedText(let attributedText):
-                dataItems = detectDataItems(text: attributedText.string,
-                                            hasPendingMessageRequest: hasPendingMessageRequest,
-                                            shouldAllowLinkification: shouldAllowLinkification)
+                items = detectItems(text: attributedText.string,
+                                    attributedString: attributedText,
+                                    hasPendingMessageRequest: hasPendingMessageRequest,
+                                    shouldAllowLinkification: shouldAllowLinkification)
                 shouldUseAttributedText = true
             }
         } else {
-            dataItems = []
+            items = []
         }
 
         return State(bodyText: bodyText,
@@ -357,7 +382,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                      hasTapForMore: hasTapForMore,
                      shouldUseAttributedText: shouldUseAttributedText,
                      hasPendingMessageRequest: hasPendingMessageRequest,
-                     dataItems: dataItems)
+                     items: items)
     }
 
     static func buildComponentState(message: TSMessage,
@@ -432,6 +457,35 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return conversationStyle.bubbleTextColor(message: message)
     }
 
+    private var textSelectionColor: UIColor {
+        guard let message = interaction as? TSMessage else {
+            return .black
+        }
+        return conversationStyle.bubbleSecondaryTextColor(isIncoming: message.isIncoming)
+    }
+
+    public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig,
+                                    componentDelegate: CVComponentDelegate?) -> CVBodyTextLabel.Config {
+        let attributedString = NSMutableAttributedString(attributedString: textViewConfig.text.attributedString)
+        // The original attributed string may not have an overall font
+        // assigned. Without it, measurement will not be correct. We
+        // assign a font here with "add" which will not override any
+        // ranges that already have a different font assigned.
+        attributedString.addAttributeToEntireString(.font, value: textViewConfig.font)
+
+        let selectionColor = textSelectionColor
+
+        return CVBodyTextLabel.Config(attributedString: attributedString,
+                                      font: textViewConfig.font,
+                                      textColor: textViewConfig.textColor,
+                                      selectionColor: selectionColor,
+                                      textAlignment: textViewConfig.textAlignment ?? .natural,
+                                      lineBreakMode: .byWordWrapping,
+                                      numberOfLines: 0,
+                                      cacheKey: textViewConfig.cacheKey,
+                                      items: bodyTextState.items)
+    }
+
     public func configureForRendering(componentView: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {
@@ -444,7 +498,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         case .bodyText(let displayableText):
             configureForBodyText(componentView: componentView,
                                  displayableText: displayableText,
-                                 cellMeasurement: cellMeasurement)
+                                 cellMeasurement: cellMeasurement,
+                                 componentDelegate: componentDelegate)
         case .oversizeTextDownloading:
             owsAssertDebug(!componentView.isDedicatedCellView)
 
@@ -493,7 +548,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func configureForBodyText(componentView: CVComponentViewBodyText,
                                      displayableText: DisplayableText,
-                                     cellMeasurement: CVCellMeasurement) {
+                                     cellMeasurement: CVCellMeasurement,
+                                     componentDelegate: CVComponentDelegate) {
 
         switch textConfig(displayableText: displayableText) {
         case .labelConfig(let labelConfig):
@@ -501,27 +557,18 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                   labelConfig: labelConfig,
                                   cellMeasurement: cellMeasurement)
         case .textViewConfig(let textViewConfig):
-            let textView = componentView.ensuredTextView
+            let bodyTextLabel = componentView.ensuredBodyTextLabel
+            let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig,
+                                                               componentDelegate: componentDelegate)
+            bodyTextLabel.configureForRendering(config: bodyTextLabelConfig)
 
-            var shouldIgnoreEvents = false
-            if let outgoingMessage = interaction as? TSOutgoingMessage {
-                // Ignore taps on links in outgoing messages that haven't been sent yet, as
-                // this interferes with "tap to retry".
-                shouldIgnoreEvents = outgoingMessage.messageState != .sent
-            }
-            textView.shouldIgnoreEvents = shouldIgnoreEvents
-
-            textViewConfig.applyForRendering(textView: textView)
-
-            CVComponentBodyText.configureTextView(textView, displayableText: displayableText)
-
-            if textView.superview == nil {
+            if bodyTextLabel.view.superview == nil {
                 let stackView = componentView.stackView
                 stackView.reset()
                 stackView.configure(config: stackViewConfig,
                                     cellMeasurement: cellMeasurement,
                                     measurementKey: Self.measurementKey_stackView,
-                                    subviews: [ textView ])
+                                    subviews: [ bodyTextLabel.view ])
             }
         }
     }
@@ -592,10 +639,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
-    public static func configureTextView(_ textView: UITextView, displayableText: DisplayableText) {
+    public static func configureTextView(_ textView: UITextView,
+                                         interaction: TSInteraction,
+                                         displayableText: DisplayableText) {
         let dataDetectorTypes: UIDataDetectorTypes = {
             // If we're link-ifying with NSDataDetector, UITextView doesn't need to do data detection.
-            guard !FeatureFlags.linkifyWithNSDataDetector,
+            guard !shouldIgnoreEvents(interaction: interaction),
                   displayableText.shouldAllowLinkification else {
                 return []
             }
@@ -608,65 +657,68 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
+    public enum LinkifyStyle {
+        case linkAttribute
+        case underlined(bodyTextColor: UIColor)
+    }
+
     private func linkifyData(attributedText: NSMutableAttributedString) {
-        Self.linkifyData(attributedText: attributedText, dataItems: bodyTextState.dataItems)
+        Self.linkifyData(attributedText: attributedText,
+                         linkifyStyle: .underlined(bodyTextColor: bodyTextColor),
+                         items: bodyTextState.items)
     }
 
     public static func linkifyData(attributedText: NSMutableAttributedString,
+                                   linkifyStyle: LinkifyStyle,
                                    hasPendingMessageRequest: Bool,
                                    shouldAllowLinkification: Bool) {
 
-        let dataItems = detectDataItems(text: attributedText.string,
-                                        hasPendingMessageRequest: hasPendingMessageRequest,
-                                        shouldAllowLinkification: shouldAllowLinkification)
-        Self.linkifyData(attributedText: attributedText, dataItems: dataItems)
+        let items = detectItems(text: attributedText.string,
+                                attributedString: attributedText,
+                                hasPendingMessageRequest: hasPendingMessageRequest,
+                                shouldAllowLinkification: shouldAllowLinkification)
+        Self.linkifyData(attributedText: attributedText,
+                         linkifyStyle: linkifyStyle,
+                         items: items)
     }
 
     private static func linkifyData(attributedText: NSMutableAttributedString,
-                                    dataItems: [DataItem]) {
-
-        guard FeatureFlags.linkifyWithNSDataDetector else {
-            return
-        }
+                                    linkifyStyle: LinkifyStyle,
+                                    items: [CVBodyTextLabel.Item]) {
 
         // Sort so that we can detect overlap.
-        let dataItems = dataItems.sorted { (left, right) in
+        let items = items.sorted { (left, right) in
             left.range.location < right.range.location
         }
 
-        var mentionRanges = [NSRange]()
-        attributedText.enumerateMentions { mention, subrange, _ in
-            guard nil != mention else { return }
-            mentionRanges.append(subrange)
-        }
-        func shouldSkipDataRange(_ dataRange: NSRange) -> Bool {
-            for mentionRange in mentionRanges {
-                if NSIntersectionRange(mentionRange, dataRange).length > 0 {
-                    return true
-                }
-            }
-            return false
-        }
-
         var lastIndex: Int = 0
-        for dataItem in dataItems {
-            let range = dataItem.range
+        for item in items {
+            let range = item.range
 
             guard range.location >= lastIndex else {
                 owsFailDebug("Overlapping ranges.")
                 continue
             }
-            if shouldSkipDataRange(range) {
-                Logger.warn("Not link-ifying range: \(range)")
+            switch item {
+            case .mention:
+                // Do nothing; mentions are already styled.
                 continue
-            }
-            guard let link = dataItem.url.absoluteString.nilIfEmpty else {
-                owsFailDebug("Could not build data link.")
-                continue
-            }
-            attributedText.addAttribute(.link, value: link, range: range)
+            case .dataItem(let dataItem):
+                guard let link = dataItem.url.absoluteString.nilIfEmpty else {
+                    owsFailDebug("Could not build data link.")
+                    continue
+                }
 
-            lastIndex = max(lastIndex, range.location + range.length)
+                switch linkifyStyle {
+                case .linkAttribute:
+                    attributedText.addAttribute(.link, value: link, range: range)
+                case .underlined(let bodyTextColor):
+                    attributedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: range)
+                    attributedText.addAttribute(.underlineColor, value: bodyTextColor, range: range)
+                }
+
+                lastIndex = max(lastIndex, range.location + range.length)
+            }
         }
     }
 
@@ -733,7 +785,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 case .labelConfig(let labelConfig):
                     return CVText.measureLabel(config: labelConfig, maxWidth: maxWidth).ceil
                 case .textViewConfig(let textViewConfig):
-                    return CVText.measureTextView(config: textViewConfig, maxWidth: maxWidth).ceil
+                    let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig,
+                                                                       componentDelegate: nil)
+                    return CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: maxWidth).ceil
                 }
             case .oversizeTextDownloading:
                 return CVText.measureLabel(config: labelConfigForOversizeTextDownloading, maxWidth: maxWidth).ceil
@@ -756,10 +810,19 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
+        guard let componentView = componentView as? CVComponentViewBodyText else {
+            owsFailDebug("Unexpected componentView.")
+            return false
+        }
 
-        if let mention = tappedMention(sender: sender,
-                                       componentView: componentView) {
-            componentDelegate.cvc_didTapMention(mention)
+        guard !shouldIgnoreEvents else {
+            return false
+        }
+
+        if let bodyTextLabel = componentView.possibleBodyTextLabel,
+           let item = bodyTextLabel.itemForGesture(sender: sender) {
+            bodyTextLabel.animate(selectedItem: item)
+            componentDelegate.cvc_didTapBodyTextItem(.init(item: item))
             return true
         }
 
@@ -772,40 +835,28 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return false
     }
 
-    private func tappedMention(sender: UITapGestureRecognizer,
-                               componentView: CVComponentView) -> Mention? {
-        guard let message = interaction as? TSMessage,
-              let bodyRanges = message.bodyRanges,
-              bodyRanges.hasMentions else {
-            return nil
-        }
+    public override func findLongPressHandler(sender: UILongPressGestureRecognizer,
+                                              componentDelegate: CVComponentDelegate,
+                                              componentView: CVComponentView,
+                                              renderItem: CVRenderItem) -> CVLongPressHandler? {
+
         guard let componentView = componentView as? CVComponentViewBodyText else {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
-        guard let textView = componentView.possibleTextView else {
-            // Not using a text view.
-            return nil
-        }
-        let location = sender.location(in: textView)
-        guard textView.bounds.contains(location) else {
+
+        guard !shouldIgnoreEvents else {
             return nil
         }
 
-        let tappedCharacterIndex = textView.layoutManager.characterIndex(for: location,
-                                                                         in: textView.textContainer,
-                                                                         fractionOfDistanceBetweenInsertionPoints: nil)
-        guard tappedCharacterIndex >= 0,
-              tappedCharacterIndex < textView.attributedText.length else {
+        guard let bodyTextLabel = componentView.possibleBodyTextLabel,
+              let item = bodyTextLabel.itemForGesture(sender: sender) else {
             return nil
         }
-        guard let mention = textView.attributedText.attribute(Mention.attributeKey,
-                                                              at: tappedCharacterIndex,
-                                                              effectiveRange: nil) as? Mention else {
-            owsFailDebug("Missing mention.")
-            return nil
-        }
-        return mention
+        bodyTextLabel.animate(selectedItem: item)
+        return CVLongPressHandler(delegate: componentDelegate,
+                                  renderItem: renderItem,
+                                  gestureLocation: .bodyText(item: item))
     }
 
     // MARK: -
@@ -819,16 +870,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         fileprivate let stackView = ManualStackView(name: "bodyText")
 
-        private var _textView: OWSMessageTextView?
-        fileprivate var possibleTextView: OWSMessageTextView? { _textView }
-        fileprivate var ensuredTextView: OWSMessageTextView {
-            if let textView = _textView {
-                return textView
+        private var _bodyTextLabel: CVBodyTextLabel?
+        fileprivate var possibleBodyTextLabel: CVBodyTextLabel? { _bodyTextLabel }
+        fileprivate var ensuredBodyTextLabel: CVBodyTextLabel {
+            if let bodyTextLabel = _bodyTextLabel {
+                return bodyTextLabel
             }
-            let textView = Self.buildTextView()
-            textView.delegate = self
-            _textView = textView
-            return textView
+            let bodyTextLabel = CVBodyTextLabel()
+            _bodyTextLabel = bodyTextLabel
+            return bodyTextLabel
         }
 
         private var _label: UILabel?
@@ -856,19 +906,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
-        private static func buildTextView() -> OWSMessageTextView {
-            let textView = CVText.buildTextView()
-
-            return textView
-        }
-
         public func reset() {
             if !isDedicatedCellView {
                 stackView.reset()
             }
 
-            _textView?.text = nil
             _label?.text = nil
+            _bodyTextLabel?.reset()
         }
 
         // MARK: - UITextViewDelegate

@@ -14,6 +14,14 @@ public enum CVAttachmentTapAction: Int {
 @objc
 public protocol CVComponentDelegate {
 
+    // MARK: - Body Text Items
+
+    @objc
+    func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject)
+
+    @objc
+    func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject)
+
     // MARK: - Long Press
 
     @objc
@@ -96,8 +104,6 @@ public protocol CVComponentDelegate {
     func cvc_didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
 
     func cvc_didTapGroupInviteLink(url: URL)
-
-    func cvc_didTapMention(_ mention: Mention)
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 

@@ -4064,6 +4064,22 @@ typedef enum : NSUInteger {
     return [self canCall];
 }
 
+// MARK: - Body Text Items
+
+- (void)cvc_didTapBodyTextItem:(CVBodyTextLabelItemObject *)item
+{
+    OWSAssertIsOnMainThread();
+
+    [self didTapBodyTextItem:item];
+}
+
+- (void)cvc_didLongPressBodyTextItem:(CVBodyTextLabelItemObject *)item
+{
+    OWSAssertIsOnMainThread();
+
+    [self didLongPressBodyTextItem:item];
+}
+
 - (void)cvc_didLongPressTextViewItem:(CVCell *)cell
                        itemViewModel:(CVItemViewModelImpl *)itemViewModel
                     shouldAllowReply:(BOOL)shouldAllowReply
@@ -4185,6 +4201,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    if (self.messageActionsViewController == nil) {
+        return;
+    }
     if (![self.messageActionsViewController.focusedInteraction.uniqueId
             isEqualToString:itemViewModel.interaction.uniqueId]) {
         OWSFailDebug(@"Received longpress update for unexpected cell");
@@ -4198,6 +4217,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    if (self.messageActionsViewController == nil) {
+        return;
+    }
     if (![self.messageActionsViewController.focusedInteraction.uniqueId
             isEqualToString:itemViewModel.interaction.uniqueId]) {
         OWSFailDebug(@"Received longpress update for unexpected cell");
@@ -4211,9 +4233,12 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    if (self.messageActionsViewController == nil) {
+        return;
+    }
     if (![self.messageActionsViewController.focusedInteraction.uniqueId
             isEqualToString:itemViewModel.interaction.uniqueId]) {
-        OWSFailDebug(@"Received longpress update for unexpected cell");
+        OWSLogWarn(@"Received longpress update for unexpected cell");
         return;
     }
 
@@ -4369,18 +4394,6 @@ typedef enum : NSUInteger {
     OWSAssertDebug([GroupManager isPossibleGroupInviteLink:url]);
 
     [GroupInviteLinksUI openGroupInviteLink:url fromViewController:self];
-}
-
-- (void)cvc_didTapMention:(Mention *)mention
-{
-    OWSAssertIsOnMainThread();
-
-    [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
-    GroupViewHelper *groupViewHelper = [[GroupViewHelper alloc] initWithThreadViewModel:self.threadViewModel];
-    groupViewHelper.delegate = self;
-    MemberActionSheet *actionSheet = [[MemberActionSheet alloc] initWithAddress:mention.address
-                                                                groupViewHelper:groupViewHelper];
-    [actionSheet presentFromViewController:self];
 }
 
 - (void)cvc_didTapShowMessageDetail:(CVItemViewModelImpl *)itemViewModel
