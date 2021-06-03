@@ -830,7 +830,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                              measurementKey: Self.measurementKey_hInnerStack,
                                                              subviewInfos: hInnerStackSubviewInfos)
         var hInnerStackSize = hInnerStackMeasurement.measuredSize
-        let minBubbleWidth = kOWSMessageCellCornerRadius_Large * 2
+        let minBubbleWidth = Self.bubbleWideCornerRadius * 2
         hInnerStackSize.width = max(hInnerStackSize.width, minBubbleWidth)
 
         var hOuterStackSubviewInfos = [ManualStackSubviewInfo]()

@@ -430,7 +430,9 @@ extension ConversationViewController: MediaPresentationContextProvider {
         let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
 
         // TODO exactly match corner radius for collapsed cells - maybe requires passing a masking view?
-        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: kOWSMessageCellCornerRadius_Small * 2)
+        return MediaPresentationContext(mediaView: mediaView,
+                                        presentationFrame: presentationFrame,
+                                        cornerRadius: CVComponentMessage.bubbleSharpCornerRadius * 2)
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {

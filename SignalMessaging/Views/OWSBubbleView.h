@@ -4,9 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const CGFloat kOWSMessageCellCornerRadius_Large;
-extern const CGFloat kOWSMessageCellCornerRadius_Small;
-
 typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
     OWSDirectionalRectCornerTopLeading = 1 << 0,
     OWSDirectionalRectCornerTopTrailing = 1 << 1,
@@ -31,21 +28,6 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
 - (void)updateLayers;
 
 - (void)setBubbleViewHost:(nullable id<OWSBubbleViewHost>)bubbleViewHost;
-
-@end
-
-#pragma mark -
-
-@interface OWSBubbleView : UIView <OWSBubbleViewHost>
-
-@property (nonatomic, nullable) UIColor *fillColor;
-@property (nonatomic, nullable) NSArray<UIColor *> *fillGradientColors;
-@property (nonatomic, nullable) UIColor *strokeColor;
-@property (nonatomic) CGFloat strokeThickness;
-
-@property (nonatomic) OWSDirectionalRectCorner sharpCorners;
-
-@property (nonatomic) BOOL ensureSubviewsFillBounds;
 
 @end
 

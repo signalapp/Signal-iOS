@@ -89,9 +89,6 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     public func updateAppearance() {
 
-        // TODO:
-        ensureSubviewLayout()
-
         guard let value = self.value,
               let referenceView = self.referenceView else {
             self.backgroundColor = nil
@@ -225,86 +222,42 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
                                                       sharpCorners: sharpCorners,
                                                       sharpCornerRadius: bubbleConfig.sharpCornerRadius,
                                                       wideCornerRadius: bubbleConfig.wideCornerRadius)
-            //            UIBezierPath *bezierPath = [self maskPath];
 
-            //            self.shapeLayer.fillColor = self.fillColor.CGColor;
-            //            self.shapeLayer.strokeColor = self.strokeColor.CGColor;
-            //            self.shapeLayer.lineWidth = self.strokeThickness;
-            //            self.shapeLayer.path = bezierPath.CGPath;
-            //            self.shapeLayer.hidden = (self.fillColor == nil) && (self.strokeColor == nil);
-            //
-            //            NSArray *_Nullable fillGradientCGColors = self.fillGradientCGColors;
-            //            self.gradientLayer.colors = fillGradientCGColors;
-            //            self.gradientLayer.hidden = fillGradientCGColors.count < 1;
-            //            // Currently this view only supports linear (or axial) gradients
-            //            // from the top-left to bottom-right.
-            //            self.gradientLayer.startPoint = CGPointMake(0, 0);
-            //            self.gradientLayer.endPoint = CGPointMake(1, 1);
-            //            self.gradientLayer.frame = self.bounds;
+            if sharpCorners == .allCorners || sharpCorners == [] {
+                // If all of the corners have the same radius, don't
+                // bother using a mask layer.
+                layer.cornerRadius = (sharpCorners == []
+                                        ? bubbleConfig.wideCornerRadius
+                                        : bubbleConfig.sharpCornerRadius)
+                layer.mask = nil
+                layer.masksToBounds = true
+            } else {
+                maskLayer.path = bubblePath.cgPath
+                layer.mask = maskLayer
+                layer.masksToBounds = false
+                layer.cornerRadius = 0
+            }
 
-            //            self.maskLayer.path = bezierPath.CGPath;
-            //
-            //            BOOL noSharpCorners = (self.sharpCorners == 0);
-            //            BOOL allSharpCorners
-            //            = (self.sharpCorners & OWSDirectionalRectCornerAllCorners) == OWSDirectionalRectCornerAllCorners;
-            //
-            //            if (noSharpCorners || allSharpCorners) {
-            //                // Although we have a bubble bezier path, it's just a simple rounded rect
-            //                // It's more performant to use the CA corner mask property than a layer mask
-            //                CGFloat sharpRadius = kOWSMessageCellCornerRadius_Small;
-            //                CGFloat wideRadius = kOWSMessageCellCornerRadius_Large;
-            //
-            //                self.layer.cornerRadius = (self.sharpCorners == 0) ? wideRadius : sharpRadius;
-            //                self.layer.mask = nil;
-            //            } else {
-            //                self.layer.cornerRadius = 0;
-            //                self.layer.mask = self.maskLayer;
-            //            }
-
-            maskLayer.path = bubblePath.cgPath
-            //        self.layer.cornerRadius = 0;
-            layer.mask = maskLayer
-            // TODO:
-            layer.masksToBounds = true
-
-//            if (noSharpCorners || allSharpCorners) {
-//                // Although we have a bubble bezier path, it's just a simple rounded rect
-//                // It's more performant to use the CA corner mask property than a layer mask
-//                CGFloat sharpRadius = kOWSMessageCellCornerRadius_Small;
-//                CGFloat wideRadius = kOWSMessageCellCornerRadius_Large;
-//                
-//                self.layer.cornerRadius = (self.sharpCorners == 0) ? wideRadius : sharpRadius;
-//                self.layer.mask = nil;
-//            } else {
-//                self.layer.cornerRadius = 0;
-//                self.layer.mask = self.maskLayer;
-//            }
-
-            // TODO: Ordering of sublayers.
             if let strokeConfig = bubbleConfig.strokeConfig {
                 shapeLayer.lineWidth = strokeConfig.width
                 shapeLayer.strokeColor = strokeConfig.color.cgColor
                 shapeLayer.fillColor = nil
                 shapeLayer.path = bubblePath.cgPath
                 layer.addSublayer(shapeLayer)
-                // TODO:
-                // self.shapeLayer.path = bezierPath.CGPath;
-                //            } else {
-                //                layer.borderWidth = 0
-                //                layer.borderColor = nil
             } else if shapeLayer.superlayer != nil {
                 shapeLayer.removeFromSuperlayer()
             }
         } else {
-            //            self.layer.cornerRadius = (self.sharpCorners == 0) ? wideRadius : sharpRadius;
+            // If this view isn't being used as a CVC message bubble,
+            // don't bother masking or using shapeLayer to render the stroke.
             layer.mask = nil
-            // TODO:
             layer.masksToBounds = false
             if shapeLayer.superlayer != nil {
                 shapeLayer.removeFromSuperlayer()
-                shapeLayer.removeFromSuperlayer()
             }
         }
+
+        ensureSubviewLayout()
     }
 
     public override func reset() {
