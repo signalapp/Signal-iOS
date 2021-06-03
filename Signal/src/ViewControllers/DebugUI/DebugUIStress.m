@@ -297,7 +297,9 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIStress
                                                  sendStressMessage:thread
                                                          timestamp:timestamp
-                                                             block:^(SignalServiceAddress *_Nullable address) { return data; }];
+                                                             block:^(SignalServiceAddress *_Nullable address) {
+                                                                 return data;
+                                                             }];
                                          }
                                      }]];
     [items

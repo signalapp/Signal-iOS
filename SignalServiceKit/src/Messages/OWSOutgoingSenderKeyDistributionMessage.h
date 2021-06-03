@@ -11,7 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingSenderKeyDistributionMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
-- (instancetype)initWithThread:(TSContactThread *)destinationThread senderKeyDistributionMessageBytes:(NSData *)skdmBytes;
+- (instancetype)initWithThread:(TSContactThread *)destinationThread
+    senderKeyDistributionMessageBytes:(NSData *)skdmBytes;
 
 @end
 

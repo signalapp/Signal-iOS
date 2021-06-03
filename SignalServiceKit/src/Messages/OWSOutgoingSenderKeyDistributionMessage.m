@@ -5,13 +5,14 @@
 #import "OWSOutgoingSenderKeyDistributionMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@interface OWSOutgoingSenderKeyDistributionMessage()
-@property (nonatomic, nonnull) NSData *serializedSKDM;
+@interface OWSOutgoingSenderKeyDistributionMessage ()
+@property (strong, nonatomic, readonly) NSData *serializedSKDM;
 @end
 
 @implementation OWSOutgoingSenderKeyDistributionMessage
 
-- (instancetype)initWithThread:(TSContactThread *)destinationThread senderKeyDistributionMessageBytes:(NSData *)skdmBytes;
+- (instancetype)initWithThread:(TSContactThread *)destinationThread
+    senderKeyDistributionMessageBytes:(NSData *)skdmBytes;
 {
     OWSAssertDebug(destinationThread);
     OWSAssertDebug(skdmBytes);
@@ -19,7 +20,8 @@
         return nil;
     }
 
-    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:destinationThread];
+    TSOutgoingMessageBuilder *messageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:destinationThread];
     self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (self) {
         _serializedSKDM = [skdmBytes copy];
@@ -39,7 +41,7 @@
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     [builder setSenderKeyDistributionMessage:self.serializedSKDM];
 
-    NSError *error;
+    NSError *_Nullable error = nil;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
     if (error || !data) {
         OWSFailDebug(@"could not serialize protobuf: %@", error);
