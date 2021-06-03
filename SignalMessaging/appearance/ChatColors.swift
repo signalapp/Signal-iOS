@@ -230,20 +230,35 @@ public class ChatColors: NSObject, Dependencies {
     public static func autoChatColorForRendering(forThread thread: TSThread?,
                                                  ignoreGlobalDefault: Bool = false,
                                                  transaction: SDSAnyReadTransaction) -> ChatColor {
-        if let thread = thread,
-           let wallpaper = Wallpaper.wallpaperSetting(for: thread, transaction: transaction),
-           wallpaper != .photo {
-            return autoChatColorForRendering(forWallpaper: wallpaper)
-        } else if !ignoreGlobalDefault,
-                  let value = defaultChatColorSetting(transaction: transaction) {
-            // In the global settings, we want to ignore the global default
-            // when rendering the "auto" swatch.
-            return value
-        } else if let wallpaper = Wallpaper.wallpaperSetting(for: nil, transaction: transaction),
-                  wallpaper != .photo {
-            return autoChatColorForRendering(forWallpaper: wallpaper)
+        if let thread = thread {
+            let threadWallpaper = Wallpaper.wallpaperSetting(for: thread, transaction: transaction)
+            if let wallpaper = threadWallpaper,
+               wallpaper != .photo {
+                return autoChatColorForRendering(forWallpaper: wallpaper)
+            } else if !ignoreGlobalDefault,
+                      let value = defaultChatColorSetting(transaction: transaction) {
+                // In the global settings, we want to ignore the global default
+                // when rendering the "auto" swatch.
+                return value
+            } else if nil == threadWallpaper,
+                      let wallpaper = Wallpaper.wallpaperSetting(for: nil, transaction: transaction),
+                      wallpaper != .photo {
+                return autoChatColorForRendering(forWallpaper: wallpaper)
+            } else {
+                return Self.defaultChatColor
+            }
         } else {
-            return Self.defaultChatColor
+            if !ignoreGlobalDefault,
+               let value = defaultChatColorSetting(transaction: transaction) {
+                // In the global settings, we want to ignore the global default
+                // when rendering the "auto" swatch.
+                return value
+            } else if let wallpaper = Wallpaper.wallpaperSetting(for: nil, transaction: transaction),
+                      wallpaper != .photo {
+                return autoChatColorForRendering(forWallpaper: wallpaper)
+            } else {
+                return Self.defaultChatColor
+            }
         }
     }
 
