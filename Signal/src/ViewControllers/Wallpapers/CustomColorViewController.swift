@@ -1507,7 +1507,7 @@ private class CustomColorTooltip: TooltipView {
         label.textColor = .ows_white
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        return label
+        return horizontalStack(forSubviews: [label])
     }
 
     public override var bubbleColor: UIColor {
