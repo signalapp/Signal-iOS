@@ -274,7 +274,7 @@ private final class EnterPublicKeyVC : UIViewController {
     
     // MARK: General
     func setSessionID(to sessionID: String){
-        publicKeyTextView.text = sessionID
+        publicKeyTextView.insertText(sessionID)
     }
 
     func constrainHeight(to height: CGFloat) {
