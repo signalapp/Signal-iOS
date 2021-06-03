@@ -20,7 +20,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Call Handlers
 
-    public func willExternallyHandleCallMessage(
+    public func externallyHandleCallMessage(
         envelope: SSKProtoEnvelope,
         serverDeliveryTimestamp: UInt64
     ) -> Bool {

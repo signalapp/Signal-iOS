@@ -1194,8 +1194,6 @@ void uncaughtExceptionHandler(NSException *exception)
     NSString *_Nullable spamChallengeToken = userInfo[@"rateLimitChallenge"];
     NSString *_Nullable preAuthChallengeToken = userInfo[@"challenge"];
 
-    OWSLogWarn(@"push content: %@", userInfo);
-
     if (spamChallengeToken) {
         SpamChallengeResolver *spamResolver = self.spamChallengeResolver;
         [spamResolver handleIncomingPushChallengeToken:spamChallengeToken];

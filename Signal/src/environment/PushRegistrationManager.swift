@@ -94,7 +94,7 @@ public enum PushRegistrationError: Error {
 
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         Logger.info("")
-        assert(type == .voIP)
+        owsAssertDebug(type == .voIP)
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
             if CallMessageRelay.handleVoipPayload(payload.dictionaryPayload) {
@@ -106,6 +106,7 @@ public enum PushRegistrationError: Error {
                 preauthChallengeResolver.fulfill(challenge)
                 self.preauthChallengeResolver = nil
             } else {
+                owsAssertDebug(!FeatureFlags.notificationServiceExtension)
                 self.messageFetcherJob.run()
             }
         }
@@ -113,8 +114,8 @@ public enum PushRegistrationError: Error {
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         Logger.info("")
-        assert(type == .voIP)
-        assert(credentials.type == .voIP)
+        owsAssertDebug(type == .voIP)
+        owsAssertDebug(credentials.type == .voIP)
         guard let voipTokenResolver = self.voipTokenResolver else { return }
 
         voipTokenResolver.fulfill(credentials.token)
@@ -171,7 +172,7 @@ public enum PushRegistrationError: Error {
 
         guard self.vanillaTokenPromise == nil else {
             let promise = vanillaTokenPromise!
-            assert(promise.isPending)
+            owsAssertDebug(promise.isPending)
             Logger.info("alreay pending promise for vanilla push token")
             return promise.map { $0.hexEncodedString }
         }
@@ -218,6 +219,8 @@ public enum PushRegistrationError: Error {
     }
 
     private func createVoipRegistryIfNecessary() {
+        AssertIsOnMainThread()
+
         guard voipRegistry == nil else { return }
         let voipRegistry = PKPushRegistry(queue: nil)
         self.voipRegistry  = voipRegistry
@@ -241,7 +244,7 @@ public enum PushRegistrationError: Error {
 
         guard self.voipTokenPromise == nil else {
             let promise = self.voipTokenPromise!
-            assert(promise.isPending)
+            owsAssertDebug(promise.isPending)
             return promise.map { $0?.hexEncodedString }
         }
 

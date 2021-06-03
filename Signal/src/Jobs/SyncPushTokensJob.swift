@@ -41,11 +41,11 @@ class SyncPushTokensJob: NSObject {
             }
 
             guard shouldUploadTokens else {
-                Logger.info("No reason to upload pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken ?? ""))")
+                Logger.info("No reason to upload pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
                 return Promise.value(())
             }
 
-            Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken ?? ""))")
+            Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
             return firstly {
                 self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
             }.done(on: .global()) { _ in
@@ -79,7 +79,7 @@ class SyncPushTokensJob: NSObject {
 
     private func recordPushTokensLocally(pushToken: String, voipToken: String?) {
         assert(!Thread.isMainThread)
-        Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken ?? ""))")
+        Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
         var didTokensChange = false
 
@@ -101,6 +101,7 @@ class SyncPushTokensJob: NSObject {
     }
 }
 
-private func redact(_ string: String) -> String {
+private func redact(_ string: String?) -> String {
+    guard let string = string else { return "nil" }
     return OWSIsDebugBuild() ? string : "[ READACTED \(string.prefix(2))...\(string.suffix(2)) ]"
 }

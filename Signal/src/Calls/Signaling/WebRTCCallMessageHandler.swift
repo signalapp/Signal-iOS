@@ -160,7 +160,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         callService.groupCallMessageHandler.handleUpdateMessage(update, for: groupThread, serverReceivedTimestamp: serverReceivedTimestamp)
     }
 
-    public func willExternallyHandleCallMessage(envelope: SSKProtoEnvelope, serverDeliveryTimestamp: UInt64) -> Bool {
+    public func externallyHandleCallMessage(envelope: SSKProtoEnvelope, serverDeliveryTimestamp: UInt64) -> Bool {
         return false
     }
 }

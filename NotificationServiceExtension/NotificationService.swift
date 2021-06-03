@@ -42,10 +42,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         DispatchQueue.main.sync { self.setupIfNecessary() }
 
-        // Until we want to use this extension, crash if this path is hit.
-        guard FeatureFlags.notificationServiceExtension else {
-            owsFail("NSE should never be called.")
-        }
+        owsAssertDebug(FeatureFlags.notificationServiceExtension)
 
         listenForMainAppLaunch()
 
@@ -100,7 +97,6 @@ class NotificationService: UNNotificationServiceExtension {
 
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
-                // TODO: calls..
                 SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
             },

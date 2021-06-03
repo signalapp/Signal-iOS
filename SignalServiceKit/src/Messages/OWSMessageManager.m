@@ -433,8 +433,8 @@ NS_ASSUME_NONNULL_BEGIN
                  serverDeliveryTimestamp:serverDeliveryTimestamp
                              transaction:transaction];
         } else if (contentProto.callMessage) {
-            if (![self.callMessageHandler willExternallyHandleCallMessageWithEnvelope:envelope
-                                                              serverDeliveryTimestamp:serverDeliveryTimestamp]) {
+            if (![self.callMessageHandler externallyHandleCallMessageWithEnvelope:envelope
+                                                          serverDeliveryTimestamp:serverDeliveryTimestamp]) {
                 [self handleIncomingEnvelope:envelope
                              withCallMessage:contentProto.callMessage
                      serverDeliveryTimestamp:serverDeliveryTimestamp

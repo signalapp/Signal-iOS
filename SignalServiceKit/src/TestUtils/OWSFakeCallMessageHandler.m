@@ -66,8 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"");
 }
 
-- (BOOL)willExternallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                            serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+- (BOOL)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
+                        serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     return NO;
 }
