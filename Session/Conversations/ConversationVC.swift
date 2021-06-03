@@ -334,10 +334,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 case .insert:
                     // Perform inserts before updates
                     self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .fade)
-                    shouldScrollToBottom = true
+                    shouldScrollToBottom = (self.scrollButton.alpha == 0)
                 case .update:
                     self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
-                    shouldScrollToBottom = true
+                    shouldScrollToBottom = (self.scrollButton.alpha == 0)
                 default: preconditionFailure()
                 }
             }
