@@ -2,8 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBubbleView.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;

@@ -17,27 +17,26 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
         | OWSDirectionalRectCornerBottomLeading | OWSDirectionalRectCornerBottomTrailing
 };
 
-@class OWSBubbleView;
+@protocol OWSBubbleViewHost <NSObject>
 
-@protocol OWSBubbleViewPartner <NSObject>
-
-- (void)updateLayers;
-
-- (void)setBubbleView:(nullable OWSBubbleView *)bubbleView;
+@property (nonatomic, readonly) UIBezierPath *maskPath;
+@property (nonatomic, readonly) UIView *bubbleReferenceView;
 
 @end
 
 #pragma mark -
 
-@interface OWSBubbleView : UIView
+@protocol OWSBubbleViewPartner <NSObject>
 
-+ (UIBezierPath *)roundedBezierRectWithBubbleTop:(CGFloat)bubbleTop
-                                      bubbleLeft:(CGFloat)bubbleLeft
-                                    bubbleBottom:(CGFloat)bubbleBottom
-                                     bubbleRight:(CGFloat)bubbleRight
-                               sharpCornerRadius:(CGFloat)sharpCornerRadius
-                                wideCornerRadius:(CGFloat)wideCornerRadius
-                                    sharpCorners:(OWSDirectionalRectCorner)sharpCorners;
+- (void)updateLayers;
+
+- (void)setBubbleViewHost:(nullable id<OWSBubbleViewHost>)bubbleViewHost;
+
+@end
+
+#pragma mark -
+
+@interface OWSBubbleView : UIView <OWSBubbleViewHost>
 
 @property (nonatomic, nullable) UIColor *fillColor;
 @property (nonatomic, nullable) NSArray<UIColor *> *fillGradientColors;
@@ -47,12 +46,6 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
 @property (nonatomic) OWSDirectionalRectCorner sharpCorners;
 
 @property (nonatomic) BOOL ensureSubviewsFillBounds;
-
-- (UIBezierPath *)maskPath;
-
-- (CGFloat)minWidth;
-
-- (CGFloat)minHeight;
 
 @end
 

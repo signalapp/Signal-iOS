@@ -21,21 +21,55 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     private weak var referenceView: UIView?
     private var value: ColorOrGradientValue?
 
+    public struct StrokeConfig {
+        let color: UIColor
+        let width: CGFloat
+    }
+    public struct BubbleConfig {
+        let sharpCorners: OWSDirectionalRectCorner
+        let sharpCornerRadius: CGFloat
+        let wideCornerRadius: CGFloat
+        let strokeConfig: StrokeConfig?
+    }
+    private var bubbleConfig: BubbleConfig?
+
     private let gradientLayer = CAGradientLayer()
+    private let shapeLayer = CAShapeLayer()
+    private let maskLayer = CAShapeLayer()
+
+    public var ensureSubviewsFillBounds = false
 
     public init() {
         super.init(name: "CVColorOrGradientView")
 
+        gradientLayer.disableAnimationsWithDelegate()
+        shapeLayer.disableAnimationsWithDelegate()
+        maskLayer.disableAnimationsWithDelegate()
+    }
+
+    private func addDefaultLayoutBlock() {
         addLayoutBlock { view in
             guard let view = view as? CVColorOrGradientView else { return }
-            view.gradientLayer.frame = view.bounds
             view.updateAppearance()
         }
     }
 
-    public func configure(value: ColorOrGradientValue, referenceView: UIView) {
+    private func ensureSubviewLayout() {
+        guard ensureSubviewsFillBounds else { return }
+        for subview in subviews {
+            ManualLayoutView.setSubviewFrame(subview: subview, frame: bounds)
+        }
+    }
+
+    public func configure(value: ColorOrGradientValue,
+                          referenceView: UIView,
+                          bubbleConfig: BubbleConfig? = nil) {
         self.value = value
         self.referenceView = referenceView
+        self.bubbleConfig = bubbleConfig
+
+        addDefaultLayoutBlock()
+
         updateAppearance()
     }
 
@@ -54,6 +88,10 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     }
 
     public func updateAppearance() {
+
+        // TODO:
+        ensureSubviewLayout()
+
         guard let value = self.value,
               let referenceView = self.referenceView else {
             self.backgroundColor = nil
@@ -61,10 +99,10 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
             return
         }
 
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-
         switch value {
+        case .transparent:
+            backgroundColor = nil
+            gradientLayer.removeFromSuperlayer()
         case .solidColor(let color):
             backgroundColor = color
             gradientLayer.removeFromSuperlayer()
@@ -181,7 +219,92 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
             gradientLayer.endPoint = endPointLayerUnitsLL
         }
 
-        CATransaction.commit()
+        if let bubbleConfig = self.bubbleConfig {
+            let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
+            let bubblePath = UIView.roundedBezierRect(rect: self.bounds,
+                                                      sharpCorners: sharpCorners,
+                                                      sharpCornerRadius: bubbleConfig.sharpCornerRadius,
+                                                      wideCornerRadius: bubbleConfig.wideCornerRadius)
+            //            UIBezierPath *bezierPath = [self maskPath];
+
+            //            self.shapeLayer.fillColor = self.fillColor.CGColor;
+            //            self.shapeLayer.strokeColor = self.strokeColor.CGColor;
+            //            self.shapeLayer.lineWidth = self.strokeThickness;
+            //            self.shapeLayer.path = bezierPath.CGPath;
+            //            self.shapeLayer.hidden = (self.fillColor == nil) && (self.strokeColor == nil);
+            //
+            //            NSArray *_Nullable fillGradientCGColors = self.fillGradientCGColors;
+            //            self.gradientLayer.colors = fillGradientCGColors;
+            //            self.gradientLayer.hidden = fillGradientCGColors.count < 1;
+            //            // Currently this view only supports linear (or axial) gradients
+            //            // from the top-left to bottom-right.
+            //            self.gradientLayer.startPoint = CGPointMake(0, 0);
+            //            self.gradientLayer.endPoint = CGPointMake(1, 1);
+            //            self.gradientLayer.frame = self.bounds;
+
+            //            self.maskLayer.path = bezierPath.CGPath;
+            //
+            //            BOOL noSharpCorners = (self.sharpCorners == 0);
+            //            BOOL allSharpCorners
+            //            = (self.sharpCorners & OWSDirectionalRectCornerAllCorners) == OWSDirectionalRectCornerAllCorners;
+            //
+            //            if (noSharpCorners || allSharpCorners) {
+            //                // Although we have a bubble bezier path, it's just a simple rounded rect
+            //                // It's more performant to use the CA corner mask property than a layer mask
+            //                CGFloat sharpRadius = kOWSMessageCellCornerRadius_Small;
+            //                CGFloat wideRadius = kOWSMessageCellCornerRadius_Large;
+            //
+            //                self.layer.cornerRadius = (self.sharpCorners == 0) ? wideRadius : sharpRadius;
+            //                self.layer.mask = nil;
+            //            } else {
+            //                self.layer.cornerRadius = 0;
+            //                self.layer.mask = self.maskLayer;
+            //            }
+
+            maskLayer.path = bubblePath.cgPath
+            //        self.layer.cornerRadius = 0;
+            layer.mask = maskLayer
+            // TODO:
+            layer.masksToBounds = true
+
+//            if (noSharpCorners || allSharpCorners) {
+//                // Although we have a bubble bezier path, it's just a simple rounded rect
+//                // It's more performant to use the CA corner mask property than a layer mask
+//                CGFloat sharpRadius = kOWSMessageCellCornerRadius_Small;
+//                CGFloat wideRadius = kOWSMessageCellCornerRadius_Large;
+//                
+//                self.layer.cornerRadius = (self.sharpCorners == 0) ? wideRadius : sharpRadius;
+//                self.layer.mask = nil;
+//            } else {
+//                self.layer.cornerRadius = 0;
+//                self.layer.mask = self.maskLayer;
+//            }
+
+            // TODO: Ordering of sublayers.
+            if let strokeConfig = bubbleConfig.strokeConfig {
+                shapeLayer.lineWidth = strokeConfig.width
+                shapeLayer.strokeColor = strokeConfig.color.cgColor
+                shapeLayer.fillColor = nil
+                shapeLayer.path = bubblePath.cgPath
+                layer.addSublayer(shapeLayer)
+                // TODO:
+                // self.shapeLayer.path = bezierPath.CGPath;
+                //            } else {
+                //                layer.borderWidth = 0
+                //                layer.borderColor = nil
+            } else if shapeLayer.superlayer != nil {
+                shapeLayer.removeFromSuperlayer()
+            }
+        } else {
+            //            self.layer.cornerRadius = (self.sharpCorners == 0) ? wideRadius : sharpRadius;
+            layer.mask = nil
+            // TODO:
+            layer.masksToBounds = false
+            if shapeLayer.superlayer != nil {
+                shapeLayer.removeFromSuperlayer()
+                shapeLayer.removeFromSuperlayer()
+            }
+        }
     }
 
     public override func reset() {
@@ -190,6 +313,36 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         self.referenceView = nil
         self.value = nil
         self.backgroundColor = nil
+        self.bubbleConfig = nil
+        shapeLayer.removeFromSuperlayer()
         gradientLayer.removeFromSuperlayer()
     }
+
+    // MARK: - CALayerDelegate
+
+    @objc
+    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        // Disable all implicit CALayer animations.
+        NSNull()
+    }
+}
+
+// MARK: -
+
+@objc
+extension CVColorOrGradientView: OWSBubbleViewHost {
+    public var maskPath: UIBezierPath {
+        guard let bubbleConfig = self.bubbleConfig else {
+            owsFailDebug("Missing bubbleConfig.")
+            return UIBezierPath()
+        }
+        let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
+        let bubblePath = UIView.roundedBezierRect(rect: self.bounds,
+                                                  sharpCorners: sharpCorners,
+                                                  sharpCornerRadius: bubbleConfig.sharpCornerRadius,
+                                                  wideCornerRadius: bubbleConfig.wideCornerRadius)
+        return bubblePath
+    }
+
+    public var bubbleReferenceView: UIView { self }
 }

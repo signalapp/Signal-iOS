@@ -25,7 +25,6 @@
 #import "FingerprintViewController.h"
 #import "MediaDetailViewController.h"
 #import "OWSBezierPathView.h"
-#import "OWSBubbleView.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
 #import "OWSNavigationController.h"

@@ -257,11 +257,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         stringWithFormat:@"%@ in thread: %@ timestamp: %llu", [super description], self.uniqueThreadId, self.timestamp];
 }
 
-- (BOOL)isSpecialMessage
-{
-    return [self isDynamicInteraction];
-}
-
 #pragma mark - Any Transaction Hooks
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction

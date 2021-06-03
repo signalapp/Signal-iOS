@@ -91,6 +91,9 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
         }
 
         switch setting.asValue(themeMode: themeMode) {
+        case .transparent:
+            backgroundColor = nil
+            gradientLayer.removeFromSuperlayer()
         case .solidColor(let color):
             backgroundColor = color
             gradientLayer.removeFromSuperlayer()

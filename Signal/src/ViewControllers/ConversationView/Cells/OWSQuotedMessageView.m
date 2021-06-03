@@ -4,7 +4,6 @@
 
 #import "OWSQuotedMessageView.h"
 #import "Environment.h"
-#import "OWSBubbleView.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -163,29 +162,17 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.clipsToBounds = YES;
 
     CAShapeLayer *maskLayer = [CAShapeLayer new];
-    OWSDirectionalRectCorner sharpCorners = self.sharpCorners;
+    UIRectCorner sharpCorners = [UIView uiRectCornerForOWSDirectionalRectCorner:self.sharpCorners];
 
     OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
          initWithFrame:CGRectZero
         layoutCallback:^(UIView *layerView) {
-            CGRect layerFrame = layerView.bounds;
-
-            const CGFloat bubbleLeft = 0.f;
-            const CGFloat bubbleRight = layerFrame.size.width;
-            const CGFloat bubbleTop = 0.f;
-            const CGFloat bubbleBottom = layerFrame.size.height;
-
             const CGFloat sharpCornerRadius = 4;
             const CGFloat wideCornerRadius = 12;
-
-            UIBezierPath *bezierPath = [OWSBubbleView roundedBezierRectWithBubbleTop:bubbleTop
-                                                                          bubbleLeft:bubbleLeft
-                                                                        bubbleBottom:bubbleBottom
-                                                                         bubbleRight:bubbleRight
-                                                                   sharpCornerRadius:sharpCornerRadius
-                                                                    wideCornerRadius:wideCornerRadius
-                                                                        sharpCorners:sharpCorners];
-
+            UIBezierPath *bezierPath = [UIView roundedBezierRectWithRect:layerView.bounds
+                                                            sharpCorners:sharpCorners
+                                                       sharpCornerRadius:sharpCornerRadius
+                                                        wideCornerRadius:wideCornerRadius];
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;

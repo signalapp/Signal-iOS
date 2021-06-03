@@ -30,7 +30,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
     private let shapeLayer = CAShapeLayer()
     private let maskLayer = CAShapeLayer()
 
-    private weak var bubbleView: OWSBubbleView? {
+    private weak var bubbleViewHost: OWSBubbleViewHost? {
         didSet {
             updateLayers()
         }
@@ -92,21 +92,19 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     // MARK: - OWSBubbleViewPartner
 
-    public func setBubbleView(_ bubbleView: OWSBubbleView?) {
-        self.bubbleView = bubbleView
-
-        updateLayers()
+    public func setBubbleViewHost(_ bubbleViewHost: OWSBubbleViewHost?) {
+        self.bubbleViewHost = bubbleViewHost
     }
 
     public func updateLayers() {
         guard isConfigured,
-              let bubbleView = bubbleView else {
+              let bubbleViewHost = bubbleViewHost else {
             return
         }
         // Add the bubble view's path to the local path.
-        let bubbleBezierPath: UIBezierPath = bubbleView.maskPath()
+        let bubbleBezierPath: UIBezierPath = bubbleViewHost.maskPath
         // We need to convert between coordinate systems using layers, not views.
-        let bubbleOffset: CGPoint = self.convert(CGPoint.zero, from: bubbleView)
+        let bubbleOffset: CGPoint = self.convert(CGPoint.zero, from: bubbleViewHost.bubbleReferenceView)
 
         let newState = State(bounds: bounds,
                              bubbleOffset: bubbleOffset,
