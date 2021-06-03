@@ -453,10 +453,11 @@ private class ChatColorPicker: UIView {
         databaseStorage.read { transaction in
             let options = Option.allOptions(transaction: transaction)
             for option in options {
-                func addOptionView(innerView: UIView, isSelected: Bool) {
+                func addOptionView(innerView: UIView, isSelected: Bool, selectionViews: [UIView] = []) {
                     let optionView = OptionView(chatColorViewController: chatColorViewController,
                                                 option: option,
                                                 innerView: innerView,
+                                                selectionViews: selectionViews,
                                                 isSelected: isSelected,
                                                 optionViewInnerSize: optionViewInnerSize,
                                                 optionViewOuterSize: optionViewOuterSize,
@@ -497,14 +498,13 @@ private class ChatColorPicker: UIView {
                     let view = ColorOrGradientSwatchView(setting: value.setting, shapeMode: .circle)
 
                     let isSelected = currentValue.selected == value
-                    if isSelected {
-                        let imageView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
-                        view.addSubview(imageView)
-                        imageView.autoSetDimensions(to: .square(24))
-                        imageView.autoCenterInSuperview()
-                    }
 
-                    addOptionView(innerView: view, isSelected: isSelected)
+                    let editIconView = UIImageView.withTemplateImageName("compose-solid-24", tintColor: .ows_white)
+                    view.addSubview(editIconView)
+                    editIconView.autoSetDimensions(to: .square(24))
+                    editIconView.autoCenterInSuperview()
+
+                    addOptionView(innerView: view, isSelected: isSelected, selectionViews: [ editIconView ])
                 case .addNewOption:
                     let view = OWSLayerView.circleView()
                     view.backgroundColor = Theme.washColor
@@ -557,17 +557,18 @@ private class ChatColorPicker: UIView {
         let option: Option
         var isSelected: Bool {
             didSet {
-                ensureSelectionView()
+                ensureSelectionViews()
             }
         }
         let optionViewInnerSize: CGFloat
         let optionViewOuterSize: CGFloat
         let optionViewSelectionThickness: CGFloat
-        var selectionView: UIView?
+        var selectionViews: [UIView] = []
 
         init(chatColorViewController: ChatColorViewController,
              option: Option,
              innerView: UIView,
+             selectionViews: [UIView],
              isSelected: Bool,
              optionViewInnerSize: CGFloat,
              optionViewOuterSize: CGFloat,
@@ -581,7 +582,9 @@ private class ChatColorPicker: UIView {
 
             super.init()
 
-            configure(chatColorViewController: chatColorViewController, innerView: innerView)
+            configure(chatColorViewController: chatColorViewController,
+                      innerView: innerView,
+                      selectionViews: selectionViews)
         }
 
         required init?(coder: NSCoder) {
@@ -589,7 +592,8 @@ private class ChatColorPicker: UIView {
         }
 
         private func configure(chatColorViewController: ChatColorViewController,
-                               innerView: UIView) {
+                               innerView: UIView,
+                               selectionViews: [UIView]) {
 
             let option = self.option
 
@@ -607,24 +611,21 @@ private class ChatColorPicker: UIView {
             innerView.autoSetDimensions(to: .square(optionViewInnerSize))
             innerView.autoCenterInSuperview()
 
-            ensureSelectionView()
+            var selectionViews = selectionViews
+            let selectionView = OWSLayerView.circleView()
+            selectionView.layer.borderColor = Theme.primaryIconColor.cgColor
+            selectionView.layer.borderWidth = optionViewSelectionThickness
+            self.addSubview(selectionView)
+            selectionView.autoPinEdgesToSuperviewEdges()
+            selectionViews.append(selectionView)
+            self.selectionViews = selectionViews
+
+            ensureSelectionViews()
         }
 
-        private func ensureSelectionView() {
-            let hasSelectionView = self.selectionView != nil
-            guard isSelected != hasSelectionView else {
-                return
-            }
-            if let selectionView = self.selectionView {
-                selectionView.removeFromSuperview()
-                self.selectionView = nil
-            } else {
-                let selectionView = OWSLayerView.circleView()
-                selectionView.layer.borderColor = Theme.primaryIconColor.cgColor
-                selectionView.layer.borderWidth = optionViewSelectionThickness
-                self.addSubview(selectionView)
-                selectionView.autoPinEdgesToSuperviewEdges()
-                self.selectionView = selectionView
+        private func ensureSelectionViews() {
+            for selectionView in selectionViews {
+                selectionView.isHidden = !isSelected
             }
         }
     }
