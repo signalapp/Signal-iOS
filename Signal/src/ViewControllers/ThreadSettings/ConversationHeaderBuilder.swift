@@ -351,6 +351,7 @@ struct ConversationHeaderBuilder: Dependencies {
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
         button.setBackgroundImage(UIImage(color: delegate.tableViewController.cellBackgroundColor), for: .normal)
+        button.accessibilityLabel = text
 
         let imageView = UIImageView()
         imageView.setTemplateImageName(Theme.iconName(icon), tintColor: Theme.primaryTextColor)
