@@ -244,7 +244,12 @@ open class OWSTableViewController2: OWSViewController {
                                 tableView.width > 0)
         }
 
-        if shouldReload { tableView.reloadData() }
+        if shouldReload {
+            let contentOffset = tableView.contentOffset
+            tableView.reloadData()
+            tableView.layoutIfNeeded()
+            tableView.setContentOffset(contentOffset, animated: false)
+        }
     }
 
     public static func buildTopHeader(forView wrappedView: UIView,

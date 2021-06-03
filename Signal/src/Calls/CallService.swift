@@ -746,7 +746,11 @@ extension CallService {
                     self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
                 }
             }.catch(on: .global()) { error in
-                owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
+                if error.isNetworkFailureOrTimeout {
+                    Logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
+                } else {
+                    owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
+                }
             }
         }.catch(on: .global()) { error in
             owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")

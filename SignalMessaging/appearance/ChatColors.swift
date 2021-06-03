@@ -140,6 +140,40 @@ public class ChatColors: NSObject, Dependencies {
         }
     }
 
+    #if DEBUG
+    @objc
+    public static func createFakeChatColors(transaction: SDSAnyWriteTransaction) {
+
+        func randomUnitCGFloat(precision: UInt32 = 256) -> CGFloat {
+            (CGFloat(arc4random_uniform(precision)) / CGFloat(precision)).clamp01()
+        }
+
+        func randomOWSColor() -> OWSColor {
+            OWSColor(red: randomUnitCGFloat(),
+                     green: randomUnitCGFloat(),
+                     blue: randomUnitCGFloat())
+        }
+
+        func randomAngleRadians() -> CGFloat {
+            CGFloat.pi * 2 * randomUnitCGFloat()
+        }
+
+        let count = 256
+        for _ in 0..<count {
+            let setting: ColorOrGradientSetting
+            if arc4random_uniform(2) == 0 {
+                setting = .solidColor(color: randomOWSColor())
+            } else {
+                setting = .gradient(gradientColor1: randomOWSColor(),
+                                    gradientColor2: randomOWSColor(),
+                                    angleRadians: randomAngleRadians())
+            }
+            let value = ChatColor(id: ChatColor.randomId, setting: setting)
+            Self.chatColors.upsertCustomValue(value, transaction: transaction)
+        }
+    }
+    #endif
+
     private func fireChatColorsDidChange() {
         NotificationCenter.default.postNotificationNameAsync(
             Self.chatColorsDidChange,

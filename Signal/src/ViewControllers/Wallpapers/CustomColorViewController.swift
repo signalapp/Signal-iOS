@@ -155,7 +155,22 @@ class CustomColorViewController: OWSTableViewController2 {
         set {}
     }
 
+    private enum NavigationState {
+        case unknown
+        case noUnsavedChanges
+        case hasUnsavedChanges
+    }
+    private var navigationState: NavigationState = .unknown
+
     private func updateNavigation() {
+        let navigationState: NavigationState = (hasUnsavedChanges
+                                                    ? .hasUnsavedChanges
+                                                    : .noUnsavedChanges)
+        guard self.navigationState != navigationState else {
+            return
+        }
+        self.navigationState = navigationState
+
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .cancel,
             target: self,
@@ -270,24 +285,27 @@ class CustomColorViewController: OWSTableViewController2 {
     private static func buildHueSpectrum() -> HSLSpectrum {
         let lightnessSpectrum = CustomColorViewController.lightnessSpectrum
         var values = [HSLValue]()
-        let precision: UInt32 = 1024
-        for index in 0..<(precision + 1) {
-            let alpha = (CGFloat(index) / CGFloat(precision)).clamp01()
+        // This lightness spectrum is non-linear.
+        // The hue spectrum is non-linear to exactly the same extent.
+        // Therefore the hue spectrum only needs as many values
+        // as the lightness spectrum.
+        for lightnessValue in lightnessSpectrum.values {
+            let alpha = lightnessValue.alpha.clamp01()
             // There's a linear hue progression.
             let hue = alpha
             // Saturation is always 1 in the hue spectrum.
             let saturation: CGFloat = 1
             // Derive lightness.
-            let lightness = lightnessSpectrum.value(forAlpha: alpha).lightness
+            let lightness = lightnessValue.lightness
             values.append(HSLValue(hue: hue, saturation: saturation, lightness: lightness, alpha: alpha))
         }
-
         return HSLSpectrum(values: values)
     }
 
     private static func buildSaturationSpectrum(referenceValue: HSLValue) -> HSLSpectrum {
         var values = [HSLValue]()
-        let precision: UInt32 = 1024
+        // This spectrum is linear, so we only need 2 endpoint values.
+        let precision: UInt32 = 1
         for index in 0..<(precision + 1) {
             let alpha = (CGFloat(index) / CGFloat(precision)).clamp01()
             let hue = referenceValue.hue
@@ -324,8 +342,8 @@ class CustomColorViewController: OWSTableViewController2 {
         }
     }
 
-    private func updateMockConversation() {
-        self.previewView?.updateMockConversation()
+    private func updateMockConversation(isDebounced: Bool) {
+        previewView?.updateMockConversation(isDebounced: isDebounced)
     }
 
     // MARK: - Events
@@ -479,7 +497,7 @@ extension CustomColorViewController: SpectrumSliderDelegate {
             owsFailDebug("Unknown slider.")
         }
 
-        updateMockConversation()
+        updateMockConversation(isDebounced: true)
         updateNavigation()
     }
 }
@@ -957,7 +975,21 @@ private class CustomColorPreviewView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    fileprivate func updateMockConversation() {
+    fileprivate lazy var updateMockConversationEvent = {
+        DebouncedEvent(maxFrequencySeconds: 0.05, onQueue: .main) { [weak self] in
+            self?._updateMockConversation()
+        }
+    }()
+
+    fileprivate func updateMockConversation(isDebounced: Bool) {
+        if isDebounced {
+            updateMockConversationEvent.requestNotify()
+        } else {
+            self._updateMockConversation()
+        }
+    }
+
+    private func _updateMockConversation() {
         guard let delegate = delegate else { return }
 
         mockConversationView.customChatColor = delegate.currentChatColor
@@ -1200,7 +1232,7 @@ private class CustomColorPreviewView: UIView {
             let angleRadians = atan2(touchVector.x, touchVector.y)
             delegate.angleRadians = angleRadians
             updateKnobLayout()
-            updateMockConversation()
+            updateMockConversation(isDebounced: true)
         default:
             gestureMode = .none
             break
