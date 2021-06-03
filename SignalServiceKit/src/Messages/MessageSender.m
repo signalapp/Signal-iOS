@@ -632,7 +632,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                                             senderCertificates:senderCertificates
                                                                 sendErrorBlock:sendErrorBlock];
 
-        OWSLogInfo(@"%lu / %lu recipients for message: %lu support sender key.", senderKeyAddresses.count, addresses.count, message.timestamp);
+        OWSLogInfo(@"%lu / %lu recipients for message: %llu support sender key.", senderKeyAddresses.count, addresses.count, message.timestamp);
     } else {
         senderKeyAddresses = @[];
     }

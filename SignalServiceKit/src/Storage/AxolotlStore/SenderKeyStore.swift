@@ -6,11 +6,12 @@ import SignalClient
 
 @objc
 public class SenderKeyStore: NSObject {
+    public typealias DistributionId = UUID
 
     // MARK: - Storage properties
     private let storageLock = UnfairLock()
-    private var sendingDistributionIdCache: [ThreadUniqueId: UUID] = [:]
-    private var keyCache: [UUID: KeyMetadata] = [:]
+    private var sendingDistributionIdCache: [ThreadUniqueId: DistributionId] = [:]
+    private var keyCache: [DistributionId: KeyMetadata] = [:]
 
     public override init() {
         super.init()
@@ -18,7 +19,7 @@ public class SenderKeyStore: NSObject {
     }
 
     /// Returns the distributionId the current device uses to tag senderKey messages sent to the thread.
-    public func distributionIdForSendingToThread(_ thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> UUID {
+    public func distributionIdForSendingToThread(_ thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> DistributionId {
         storageLock.withLock {
             distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
         }
@@ -30,22 +31,24 @@ public class SenderKeyStore: NSObject {
         for thread: TSGroupThread,
         addresses: [SignalServiceAddress],
         writeTx: SDSAnyWriteTransaction
-    ) -> [SignalServiceAddress] {
+    ) throws -> [SignalServiceAddress] {
 
-        let allRecipients = addresses.compactMap { SignalRecipient.get(address: $0, mustHaveDevices: false, transaction: writeTx) }
+        let allRecipients = addresses.compactMap {
+            SignalRecipient.get(address: $0, mustHaveDevices: false, transaction: writeTx)
+        }
         guard allRecipients.count == addresses.count,
               allRecipients.allSatisfy({ $0.address.uuid != nil }) else {
-            owsFailDebug("")
-            return []
+            throw OWSAssertionError("Invalid address")
         }
 
-        let allDevicesMap: [SignalServiceAddress: Set<UInt32>] = allRecipients.reduce(into: [:]) { (builder, recipient) in
-            if let deviceArray = recipient.devices.array as? [NSNumber] {
-                builder[recipient.address] = Set(deviceArray.map { $0.uint32Value })
-            } else {
-                owsFailDebug("Invalid device array")
+        let allDevicesMap: [SignalServiceAddress: Set<UInt32>] = try allRecipients
+            .reduce(into: [:]) { (builder, recipient) in
+                if let deviceArray = recipient.devices.array as? [NSNumber] {
+                    builder[recipient.address] = Set(deviceArray.map { $0.uint32Value })
+                } else {
+                    throw OWSAssertionError("Invalid device array")
+                }
             }
-        }
 
         return storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
@@ -74,12 +77,14 @@ public class SenderKeyStore: NSObject {
     public func recordSenderKeyDelivery(
         for thread: TSGroupThread,
         to address: SignalServiceAddress,
-        writeTx: SDSAnyWriteTransaction) {
-
-        // TODO: owsFailDebug
-        guard let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: writeTx) else { return }
-        guard let uuid = address.uuid else { return }
-        guard let currentDeviceSet = (recipient.devices.array as? [NSNumber])?.map({ $0.uint32Value }) else { return }
+        writeTx: SDSAnyWriteTransaction) throws {
+        guard let uuid = address.uuid else { throw OWSAssertionError("Invalid address") }
+        guard let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: writeTx) else {
+            throw OWSAssertionError("Missing recipient")
+        }
+        guard let currentDeviceSet = (recipient.devices.array as? [NSNumber])?.map({ $0.uint32Value }) else {
+            throw OWSAssertionError("Invalid device set")
+        }
 
         storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
@@ -93,7 +98,6 @@ public class SenderKeyStore: NSObject {
         }
     }
 
-    // TODO
     public func resetSenderKeyDeliverRecord(
         for thread: TSGroupThread,
         address: SignalServiceAddress,
@@ -167,7 +171,7 @@ fileprivate extension SenderKeyStore {
     private var sendingDistributionIdStore: SDSKeyValueStore { Self.sendingDistributionIdStore }
     private var keyMetadataStore: SDSKeyValueStore { Self.keyMetadataStore }
 
-    func getKeyMetadata(for distributionId: UUID, readTx: SDSAnyReadTransaction) -> KeyMetadata? {
+    func getKeyMetadata(for distributionId: DistributionId, readTx: SDSAnyReadTransaction) -> KeyMetadata? {
         storageLock.assertOwner()
         return keyCache[distributionId] ?? {
             let persisted: KeyMetadata?
@@ -182,7 +186,7 @@ fileprivate extension SenderKeyStore {
         }()
     }
 
-    func setMetadata(_ metadata: KeyMetadata?, for distributionId: UUID, writeTx: SDSAnyWriteTransaction) {
+    func setMetadata(_ metadata: KeyMetadata?, for distributionId: DistributionId, writeTx: SDSAnyWriteTransaction) {
         storageLock.assertOwner()
         do {
             try keyMetadataStore.setCodable(metadata, key: distributionId.uuidString, transaction: writeTx)
@@ -192,7 +196,7 @@ fileprivate extension SenderKeyStore {
         }
     }
 
-    func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> UUID {
+    func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> DistributionId {
         storageLock.assertOwner()
 
         if let cachedValue = sendingDistributionIdCache[threadId] {
@@ -213,7 +217,7 @@ fileprivate extension SenderKeyStore {
 // MARK: - Model
 
 fileprivate struct KeyMetadata: Codable {
-    let distributionId: UUID
+    let distributionId: SenderKeyStore.DistributionId
     let ownerUuid: UUID
     let ownerDeviceId: UInt32
 
@@ -230,7 +234,12 @@ fileprivate struct KeyMetadata: Codable {
     var deliveredDevices: [UUID: Set<UInt32>]
     let creationDate: Date
 
-    init?(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: UUID, readTx: SDSAnyReadTransaction) {
+    init?(
+        record: SenderKeyRecord,
+        sender: ProtocolAddress,
+        distributionId: SenderKeyStore.DistributionId,
+        readTx: SDSAnyReadTransaction) {
+
         self.recordData = record.serialize()
         self.distributionId = distributionId
         self.ownerUuid = sender.uuid

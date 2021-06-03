@@ -1280,8 +1280,8 @@ extension MessageSender {
     private enum SenderKeyError: Error {
         // SenderKey TODO: More detailed errors
         // FallbackToFanout should flag the message as unable to be sent with SenderKey
-        case Retryable
-        case FallbackToFanout
+        case retryable
+        case fallbackToFanout
     }
 
     /// Filters the list of participants for a thread that support SenderKey
@@ -1297,6 +1297,7 @@ extension MessageSender {
         return databaseStorage.read { readTx in
             intendedRecipients
                 .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
+                .filter { !$0.isLocalAddress }
                 .filter { udAccessMap[$0]?.udAccess.udAccessMode == UnidentifiedAccessMode.enabled } // Sender Key TODO: Revisit?
                 .filter { $0.isValid }
         }
@@ -1416,13 +1417,15 @@ extension MessageSender {
             guard let localAddress = self.tsAccountManager.localAddress else {
                 throw OWSAssertionError("Invalid account")
             }
-            guard let skdmBytes = self.senderKeyStore.skdmBytesForGroupThread(thread, writeTx: writeTx) else {
-                throw OWSAssertionError("Couldn't build SKDM")
-            }
-            let recipientsNeedingSKDM = self.senderKeyStore.recipientsInNeedOfSenderKey(
+            let recipientsNeedingSKDM = try self.senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
                 addresses: recipients,
                 writeTx: writeTx)
+
+            guard !recipientsNeedingSKDM.isEmpty else { return [] }
+            guard let skdmBytes = self.senderKeyStore.skdmBytesForGroupThread(thread, writeTx: writeTx) else {
+                throw OWSAssertionError("Couldn't build SKDM")
+            }
 
             return recipientsNeedingSKDM.map { address in
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: writeTx)
@@ -1438,20 +1441,28 @@ extension MessageSender {
                     localAddress: localAddress,
                     sendErrorBlock: nil)
             }
-        }.then { skdmSends -> Promise<[Promise<SignalServiceAddress>]> in
+        }.then { skdmSends in
             // First, we double check we have sessions for these message sends
             // Then, we send the message. If it's successful, great! If not, we invoke the sendErrorBlock
             // to *also* fail the original message send.
             firstly { () -> Promise<Void> in
                 MessageSender.ensureSessions(forMessageSends: skdmSends, ignoreErrors: true)
-            }.map { _ -> [Promise<SignalServiceAddress>] in
-                skdmSends.map { messageSend in
+            }.then { _ -> Guarantee<[Result<SignalServiceAddress>]> in
+                // For each SKDM request we kick off a sendMessage promise.
+                // - If it succeeds, great! Record a successful delivery
+                // - Otherwise, invoke the sendErrorBlock
+                // We use when(resolved:) because we want the promise to wait for
+                // all sub-promises to finish, even if some failed.
+                when(resolved: skdmSends.map { messageSend in
                     return firstly { () -> Promise<Any?> in
                         self.sendMessage(toRecipient: messageSend)
                         return Promise(messageSend.asAnyPromise)
                     }.map { _ -> SignalServiceAddress in
-                        self.databaseStorage.write { writeTx in
-                            self.senderKeyStore.recordSenderKeyDelivery(for: thread, to: messageSend.address, writeTx: writeTx)
+                        try self.databaseStorage.write { writeTx in
+                            try self.senderKeyStore.recordSenderKeyDelivery(
+                                for: thread,
+                                to: messageSend.address,
+                                writeTx: writeTx)
                         }
                         return messageSend.address
                     }.recover { error -> Promise<SignalServiceAddress> in
@@ -1461,10 +1472,8 @@ extension MessageSender {
                         sendErrorBlock(messageSend.address, (error as NSError))
                         throw error
                     }
-                }
+                })
             }
-        }.then { sendPromises -> Guarantee<[Result<SignalServiceAddress>]> in
-            when(resolved: sendPromises)
         }.map { resultArray -> [SignalServiceAddress] in
             // We only want to pass along the successful addresses
             resultArray.compactMap { result in
@@ -1517,6 +1526,7 @@ extension MessageSender {
             struct SuccessPayload: Decodable {
                 let uuids404: [UUID]
             }
+            // SenderKey TODO: Verify robustness of JSONDecoder
             guard let responseBody = response.responseData,
                   let response = try? JSONDecoder().decode(SuccessPayload.self, from: responseBody) else {
                 throw OWSAssertionError("Failed to decode 200 response body")
@@ -1571,11 +1581,11 @@ extension MessageSender {
                         responseData: responseData) = error {
                 switch statusCode {
                 case 401:
-                    Logger.warn("Invalid composite authorization header for sender key send request. Falling back to fanout")
-                    throw SenderKeyError.FallbackToFanout
+                    owsFailDebug("Invalid composite authorization header for sender key send request. Falling back to fanout")
+                    throw SenderKeyError.fallbackToFanout
                 case 404:
                     Logger.warn("One of the recipients could not match an account. We don't know which. Falling back to fanout.")
-                    throw SenderKeyError.FallbackToFanout
+                    throw SenderKeyError.fallbackToFanout
                 case 409:
                     // Update the device set for added/removed devices.
                     // This is retryable
@@ -1591,6 +1601,7 @@ extension MessageSender {
                         let accounts: [Account]
                     }
 
+                    // SenderKey TODO: Verify robustness of JSONDecoder
                     guard let response = responseData,
                           let responseBody = try? JSONDecoder().decode(ResponseBody409.self, from: response) else {
                         throw OWSAssertionError("Failed to decode 409 response body")
@@ -1605,7 +1616,7 @@ extension MessageSender {
                                 transaction: writeTx)
                         }
                     }
-                    throw SenderKeyError.Retryable
+                    throw SenderKeyError.retryable
 
                 case 410:
                     // Server reports stale devices. We should reset our session and forget that we resent
@@ -1621,6 +1632,7 @@ extension MessageSender {
                         let accounts: [Account]
                     }
 
+                    // SenderKey TODO: Verify robustness of JSONDecoder
                     guard let response = responseData,
                           let responseBody = try? JSONDecoder().decode(ResponseBody410.self, from: response) else {
                         throw OWSAssertionError("Invalid 410 response body")
@@ -1636,7 +1648,7 @@ extension MessageSender {
                             self.senderKeyStore.resetSenderKeyDeliverRecord(for: thread, address: address, writeTx: writeTx)
                         }
                     }
-                    throw SenderKeyError.Retryable
+                    throw SenderKeyError.retryable
                 case 428:
                     if let body = responseData, let expiry = response.retryAfterDate() {
                         return Promise { resolver in
@@ -1715,17 +1727,19 @@ extension MessageSender {
         // Sender key messages use an access key composed of every recipient's individual access key.
         let allAccessKeys = addresses.compactMap { udAccessMap[$0]?.udAccess.udAccessKey }
         guard addresses.count == allAccessKeys.count else {
-            throw OWSAssertionError("")
+            throw OWSAssertionError("Incomplete access key set")
         }
-        let firstKey = allAccessKeys[0]
+        guard let firstKey = allAccessKeys.first else {
+            throw OWSAssertionError("Must provide at least one address")
+        }
         let remainingKeys = allAccessKeys.dropFirst()
         let compositeKey = remainingKeys.reduce(firstKey, ^)
 
         var urlComponents = URLComponents(string: "v1/messages/multi_recipient")
         urlComponents?.queryItems = [
-            "ts": "\(timestamp)",
-            "isOnline": "\(isOnline)"
-        ].map { URLQueryItem(name: $0.key, value: $0.value) }
+            .init(name: "ts", value: "\(timestamp)"),
+            .init(name: "isOnline", value: "\(isOnline)")
+        ]
 
         guard let urlString = urlComponents?.string else {
             throw OWSAssertionError("Failed to construct URL")
