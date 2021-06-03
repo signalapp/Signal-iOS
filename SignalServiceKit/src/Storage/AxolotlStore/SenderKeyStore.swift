@@ -216,7 +216,7 @@ fileprivate extension SenderKeyStore {
 
 // MARK: - Model
 
-fileprivate struct KeyMetadata: Codable {
+private struct KeyMetadata: Codable {
     let distributionId: SenderKeyStore.DistributionId
     let ownerUuid: UUID
     let ownerDeviceId: UInt32

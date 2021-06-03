@@ -1278,19 +1278,19 @@ extension MessageSender {
 extension MessageSender {
 
     private enum SenderKeyError: OperationError {
-        case InvalidAuthHeader
-        case InvalidRecipient
-        case DeviceUpdate
-        case StaleDevices
-        case RecipientSKDMFailed(Error)
+        case invalidAuthHeader
+        case invalidRecipient
+        case deviceUpdate
+        case staleDevices
+        case recipientSKDMFailed(Error)
 
         var isRetryable: Bool { true }
 
         var isRetryableWithSenderKey: Bool {
             switch self {
-            case .InvalidAuthHeader, .InvalidRecipient:
+            case .invalidAuthHeader, .invalidRecipient:
                 return false
-            case .DeviceUpdate, .StaleDevices, .RecipientSKDMFailed:
+            case .deviceUpdate, .staleDevices, .recipientSKDMFailed:
                 return true
             }
         }
@@ -1498,7 +1498,7 @@ extension MessageSender {
                     }.recover { error -> Promise<SignalServiceAddress> in
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
-                        let wrappedError = SenderKeyError.RecipientSKDMFailed(error)
+                        let wrappedError = SenderKeyError.recipientSKDMFailed(error)
                         sendErrorBlock(messageSend.address, wrappedError)
                         throw wrappedError
                     }
@@ -1515,7 +1515,7 @@ extension MessageSender {
         }.recover { error in
             // If we hit *any* error that we haven't handled, we should fail the send
             // for everyone.
-            let wrappedError = SenderKeyError.RecipientSKDMFailed(error)
+            let wrappedError = SenderKeyError.recipientSKDMFailed(error)
             recipients.forEach { sendErrorBlock($0, wrappedError) }
             return .value([])
         }
@@ -1612,10 +1612,10 @@ extension MessageSender {
                 switch statusCode {
                 case 401:
                     owsFailDebug("Invalid composite authorization header for sender key send request. Falling back to fanout")
-                    throw SenderKeyError.InvalidAuthHeader
+                    throw SenderKeyError.invalidAuthHeader
                 case 404:
                     Logger.warn("One of the recipients could not match an account. We don't know which. Falling back to fanout.")
-                    throw SenderKeyError.InvalidRecipient
+                    throw SenderKeyError.invalidRecipient
                 case 409:
                     // Update the device set for added/removed devices.
                     // This is retryable
@@ -1646,7 +1646,7 @@ extension MessageSender {
                                 transaction: writeTx)
                         }
                     }
-                    throw SenderKeyError.DeviceUpdate
+                    throw SenderKeyError.deviceUpdate
 
                 case 410:
                     // Server reports stale devices. We should reset our session and forget that we resent
@@ -1678,7 +1678,7 @@ extension MessageSender {
                             self.senderKeyStore.resetSenderKeyDeliverRecord(for: thread, address: address, writeTx: writeTx)
                         }
                     }
-                    throw SenderKeyError.StaleDevices
+                    throw SenderKeyError.staleDevices
                 case 428:
                     guard let body = responseData, let expiry = response.retryAfterDate() else {
                         throw OWSAssertionError("Invalid spam response body")

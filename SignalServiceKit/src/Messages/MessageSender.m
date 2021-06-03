@@ -639,9 +639,9 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         senderKeyAddresses = @[];
         if (!message.canSendWithSenderKey) {
             OWSLogInfo(
-                "Last sender key send attempt failed for message %llu. Falling back to fanout.", message.timestamp);
+                @"Last sender key send attempt failed for message %llu. Falling back to fanout.", message.timestamp);
         } else {
-            OWSLogDebug("Sender key not supported for message %llu", message.timestamp);
+            OWSLogDebug(@"Sender key not supported for message %llu", message.timestamp);
         }
     }
     OWSAssertDebug((fanoutSendAddresses.count + senderKeyAddresses.count) == addresses.count);
