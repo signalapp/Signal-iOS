@@ -175,7 +175,7 @@ public class FeatureFlags: BaseFlags {
     public static let spamChallenges = false
 
     @objc
-    public static let universalDisappearingMessages = build.includes(.qa)
+    public static let universalDisappearingMessages = true
 
     @objc
     public static let groupDescriptionEditing = build.includes(.beta)
