@@ -69,6 +69,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
 
     // MARK: Running
     public func execute() {
+        JobQueue.currentlyExecutingJobs.insert(id!)
         let storage = SNMessagingKitConfiguration.shared.storage
         if let message = message as? VisibleMessage {
             guard TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) != nil else { return } // The message has been deleted

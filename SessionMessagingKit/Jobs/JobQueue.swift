@@ -4,6 +4,8 @@ import SessionUtilitiesKit
 public final class JobQueue : NSObject, JobDelegate {
 
     private static var jobIDs: [UInt64:UInt64] = [:]
+
+    internal static var currentlyExecutingJobs: Set<String> = []
     
     @objc public static let shared = JobQueue()
 
@@ -34,6 +36,9 @@ public final class JobQueue : NSObject, JobDelegate {
         allJobTypes.forEach { type in
             let allPendingJobs = SNMessagingKitConfiguration.shared.storage.getAllPendingJobs(of: type)
             allPendingJobs.sorted(by: { $0.id! < $1.id! }).forEach { job in // Retry the oldest jobs first
+                guard !JobQueue.currentlyExecutingJobs.contains(job.id!) else {
+                    return SNLog("Not resuming already executing job.")
+                }
                 SNLog("Resuming pending job of type: \(type).")
                 job.delegate = self
                 job.execute()
@@ -42,6 +47,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobSucceeded(_ job: Job) {
+        JobQueue.currentlyExecutingJobs.remove(job.id!)
         SNMessagingKitConfiguration.shared.storage.write(with: { transaction in
             SNMessagingKitConfiguration.shared.storage.markJobAsSucceeded(job, using: transaction)
         }, completion: {
@@ -50,6 +56,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobFailed(_ job: Job, with error: Error) {
+        JobQueue.currentlyExecutingJobs.remove(job.id!)
         job.failureCount += 1
         let storage = SNMessagingKitConfiguration.shared.storage
         guard !storage.isJobCanceled(job) else { return SNLog("\(type(of: job)) canceled.") }
@@ -71,6 +78,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobFailedPermanently(_ job: Job, with error: Error) {
+        JobQueue.currentlyExecutingJobs.remove(job.id!)
         job.failureCount += 1
         let storage = SNMessagingKitConfiguration.shared.storage
         storage.write(with: { transaction in
