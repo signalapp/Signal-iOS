@@ -385,11 +385,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             } else if let thread = thread as? TSGroupThread, thread.isClosedGroup == true {
                 let groupID = thread.groupModel.groupId
                 let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                do {
-                    try MessageSender.leave(groupPublicKey, using: transaction)
-                } catch {
-                    // TODO: Handle
-                }
+                MessageSender.leave(groupPublicKey, using: transaction).retainUntilComplete()
                 thread.removeAllThreadInteractions(with: transaction)
                 thread.remove(with: transaction)
             } else {
@@ -419,6 +415,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     
     @objc func createNewDM() {
         let newDMVC = NewDMVC()
+        let navigationController = OWSNavigationController(rootViewController: newDMVC)
+        present(navigationController, animated: true, completion: nil)
+    }
+    
+    @objc(createNewDMFromDeepLink:)
+    func createNewDMFromDeepLink(sessionID: String) {
+        let newDMVC = NewDMVC(sessionID: sessionID)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         present(navigationController, animated: true, completion: nil)
     }

@@ -38,6 +38,19 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         return result
     }()
     
+    init(sessionID: String) {
+        super.init(nibName: nil, bundle: nil)
+        enterPublicKeyVC.setSessionID(to: sessionID)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    override init(nibName: String?, bundle: Bundle?) {
+        super.init(nibName: nibName, bundle: bundle)
+    }
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -260,6 +273,10 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     // MARK: General
+    func setSessionID(to sessionID: String){
+        publicKeyTextView.text = sessionID
+    }
+
     func constrainHeight(to height: CGFloat) {
         view.set(.height, to: height)
     }
