@@ -218,7 +218,6 @@ protocol NewConversationButtonSetDelegate {
     
     func joinOpenGroup()
     func createNewDM()
-    func createNewDM(sessionID: String)
     func createClosedGroup()
 }
 

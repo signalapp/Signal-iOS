@@ -66,7 +66,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         explanationLabel.text = NSLocalizedString("vc_home_empty_state_message", comment: "")
         let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
         createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
-        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM as () -> Void), for: UIControl.Event.touchUpInside)
+        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
         createNewPrivateChatButton.set(.width, to: 196)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
         result.axis = .vertical
@@ -385,11 +385,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             } else if let thread = thread as? TSGroupThread, thread.isClosedGroup == true {
                 let groupID = thread.groupModel.groupId
                 let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                do {
-                    try MessageSender.leave(groupPublicKey, using: transaction)
-                } catch {
-                    // TODO: Handle
-                }
+                MessageSender.leave(groupPublicKey, using: transaction).retainUntilComplete()
                 thread.removeAllThreadInteractions(with: transaction)
                 thread.remove(with: transaction)
             } else {
@@ -423,7 +419,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func createNewDM(sessionID: String) {
+    @objc(createNewDMFromDeepLink:)
+    func createNewDMFromDeepLink(sessionID: String) {
         let newDMVC = NewDMVC(sessionID: sessionID)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         present(navigationController, animated: true, completion: nil)

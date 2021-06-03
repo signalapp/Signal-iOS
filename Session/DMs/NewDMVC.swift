@@ -40,15 +40,15 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     
     init(sessionID: String) {
         super.init(nibName: nil, bundle: nil)
-        enterPublicKeyVC.setSessionID(sessionID: sessionID)
+        enterPublicKeyVC.setSessionID(to: sessionID)
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    override init(nibName: String?, bundle: Bundle?) {
+        super.init(nibName: nibName, bundle: bundle)
     }
     
     // MARK: Lifecycle
@@ -217,10 +217,6 @@ private final class EnterPublicKeyVC : UIViewController {
         return result
     }()
     
-    func setSessionID(sessionID: String){
-        self.publicKeyTextView.insertText(sessionID);
-    }
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
@@ -277,6 +273,10 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     // MARK: General
+    func setSessionID(to sessionID: String){
+        publicKeyTextView.text = sessionID
+    }
+
     func constrainHeight(to height: CGFloat) {
         view.set(.height, to: height)
     }
