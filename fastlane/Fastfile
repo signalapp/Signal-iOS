@@ -17,6 +17,8 @@ default_platform(:ios)
 
 desc 'Build, Archive, and Upload to ASC'
 lane :release do |options|
+  xcversion(version: '12.5')
+
   app_identifier = ENV['APP_IDENTIFIER']
   scheme = ENV['SCHEME']
   configuration = 'App Store Release'
