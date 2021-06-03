@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -33,5 +33,9 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func receivedGroupCallUpdateMessage(_ update: SSKProtoDataMessageGroupCallUpdate, for groupThread: TSGroupThread, serverReceivedTimestamp: UInt64) {
         owsFailDebug("")
+    }
+
+    public func externallyHandleCallMessage(envelope: SSKProtoEnvelope, serverDeliveryTimestamp: UInt64) -> Bool {
+        return false
     }
 }

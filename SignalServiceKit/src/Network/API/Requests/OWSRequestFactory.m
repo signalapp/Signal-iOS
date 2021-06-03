@@ -223,19 +223,21 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId
++ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier
+                                         voipIdentifier:(nullable NSString *)voipId
 {
     OWSAssertDebug(identifier.length > 0);
-    OWSAssertDebug(voipId.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
-    OWSAssertDebug(voipId);
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                              method:@"PUT"
-                          parameters:@{
-                              @"apnRegistrationId" : identifier,
-                              @"voipRegistrationId" : voipId ?: @"",
-                          }];
+
+    NSMutableDictionary *parameters = [@{ @"apnRegistrationId" : identifier } mutableCopy];
+    if (voipId.length > 0) {
+        parameters[@"voipRegistrationId"] = voipId;
+    } else {
+        OWSAssertDebug(SSKFeatureFlags.notificationServiceExtension);
+    }
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
 + (TSRequest *)updatePrimaryDeviceAttributesRequest
@@ -269,12 +271,17 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId pushToken:(NSString *)pushToken
++ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
+                                                   pushToken:(NSString *)pushToken
+                                                 isVoipToken:(BOOL)isVoipToken
 {
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(pushToken.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@", pushToken, recipientId];
+    NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@?voip=%@",
+                               pushToken,
+                               recipientId,
+                               isVoipToken ? @"true" : @"false"];
     NSURL *url = [NSURL URLWithString:path];
 
     TSRequest *request = [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];

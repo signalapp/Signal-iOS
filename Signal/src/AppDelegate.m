@@ -1192,10 +1192,14 @@ void uncaughtExceptionHandler(NSException *exception)
 - (BOOL)handleSilentPushContent:(NSDictionary *)userInfo
 {
     NSString *_Nullable spamChallengeToken = userInfo[@"rateLimitChallenge"];
+    NSString *_Nullable preAuthChallengeToken = userInfo[@"challenge"];
 
     if (spamChallengeToken) {
         SpamChallengeResolver *spamResolver = self.spamChallengeResolver;
         [spamResolver handleIncomingPushChallengeToken:spamChallengeToken];
+        return YES;
+    } else if (preAuthChallengeToken) {
+        [self.pushRegistrationManager didReceiveVanillaPreAuthChallengeToken:preAuthChallengeToken];
         return YES;
     }
     return NO;

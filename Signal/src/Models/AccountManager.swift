@@ -61,11 +61,15 @@ public class AccountManager: NSObject {
     func getPreauthChallenge(recipientId: String) -> Promise<String?> {
         return firstly {
             return self.pushRegistrationManager.requestPushTokens()
-        }.then { (_: String, voipToken: String) -> Promise<String?> in
+        }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
             let (pushPromise, pushResolver) = Promise<String>.pending()
             self.pushRegistrationManager.preauthChallengeResolver = pushResolver
 
-            return self.accountServiceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: voipToken).then { () -> Promise<String?> in
+            return self.accountServiceClient.requestPreauthChallenge(
+                recipientId: recipientId,
+                pushToken: voipToken?.nilIfEmpty ?? vanillaToken,
+                isVoipToken: !voipToken.isEmptyOrNil
+            ).then { () -> Promise<String?> in
                 let timeout: TimeInterval
                 if OWSIsDebugBuild() && TSConstants.isUsingProductionService {
                     // won't receive production voip in debug build, don't wait for long
@@ -425,7 +429,7 @@ public class AccountManager: NSObject {
 
     // MARK: Message Delivery
 
-    func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
+    func updatePushTokens(pushToken: String, voipToken: String?) -> Promise<Void> {
         return Promise { resolver in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                           voipToken: voipToken,

@@ -607,7 +607,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 #pragma mark - Network Requests
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
-                                        voipToken:(NSString *)voipToken
+                                        voipToken:(nullable NSString *)voipToken
                                           success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *))failureHandler
 {
@@ -619,7 +619,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 }
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
-                                        voipToken:(NSString *)voipToken
+                                        voipToken:(nullable NSString *)voipToken
                                           success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *))failureHandler
                                  remainingRetries:(int)remainingRetries

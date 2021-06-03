@@ -433,10 +433,13 @@ NS_ASSUME_NONNULL_BEGIN
                  serverDeliveryTimestamp:serverDeliveryTimestamp
                              transaction:transaction];
         } else if (contentProto.callMessage) {
-            [self handleIncomingEnvelope:envelope
-                         withCallMessage:contentProto.callMessage
-                 serverDeliveryTimestamp:serverDeliveryTimestamp
-                             transaction:transaction];
+            if (![self.callMessageHandler externallyHandleCallMessageWithEnvelope:envelope
+                                                          serverDeliveryTimestamp:serverDeliveryTimestamp]) {
+                [self handleIncomingEnvelope:envelope
+                             withCallMessage:contentProto.callMessage
+                     serverDeliveryTimestamp:serverDeliveryTimestamp
+                                 transaction:transaction];
+            }
         } else if (contentProto.typingMessage) {
             [self handleIncomingEnvelope:envelope
                        withTypingMessage:contentProto.typingMessage

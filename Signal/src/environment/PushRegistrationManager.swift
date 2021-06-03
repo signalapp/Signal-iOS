@@ -29,24 +29,24 @@ public enum PushRegistrationError: Error {
     private var vanillaTokenResolver: Resolver<Data>?
 
     private var voipRegistry: PKPushRegistry?
-    private var voipTokenPromise: Promise<Data>?
-    private var voipTokenResolver: Resolver<Data>?
+    private var voipTokenPromise: Promise<Data?>?
+    private var voipTokenResolver: Resolver<Data?>?
 
     public var preauthChallengeResolver: Resolver<String>?
 
     // MARK: Public interface
 
-    public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
+    public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String?)> {
         Logger.info("")
 
         return firstly { () -> Promise<Void> in
             return self.registerUserNotificationSettings()
-        }.then { (_) -> Promise<(pushToken: String, voipToken: String)> in
+        }.then { (_) -> Promise<(pushToken: String, voipToken: String?)> in
             guard !Platform.isSimulator else {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
 
-            return self.registerForVanillaPushToken().then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String)> in
+            return self.registerForVanillaPushToken().then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String?)> in
                 self.registerForVoipPushToken().map { voipPushToken in
                     (pushToken: vanillaPushToken, voipToken: voipPushToken)
                 }
@@ -55,6 +55,18 @@ public enum PushRegistrationError: Error {
     }
 
     // MARK: Vanilla push token
+
+    @objc
+    public func didReceiveVanillaPreAuthChallengeToken(_ challenge: String) {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            AssertIsOnMainThread()
+            if let preauthChallengeResolver = self.preauthChallengeResolver {
+                Logger.info("received vanilla preauth challenge")
+                preauthChallengeResolver.fulfill(challenge)
+                self.preauthChallengeResolver = nil
+            }
+        }
+    }
 
     // Vanilla push token is obtained from the system via AppDelegate
     @objc
@@ -82,15 +94,19 @@ public enum PushRegistrationError: Error {
 
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         Logger.info("")
-        assert(type == .voIP)
+        owsAssertDebug(type == .voIP)
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
-            if let preauthChallengeResolver = self.preauthChallengeResolver,
+            if CallMessageRelay.handleVoipPayload(payload.dictionaryPayload) {
+                // Do nothing. This was a call message relayed from the NSE
+                Logger.info("Handled call message from NSE.")
+            } else if let preauthChallengeResolver = self.preauthChallengeResolver,
                 let challenge = payload.dictionaryPayload["challenge"] as? String {
                 Logger.info("received preauth challenge")
                 preauthChallengeResolver.fulfill(challenge)
                 self.preauthChallengeResolver = nil
             } else {
+                owsAssertDebug(!FeatureFlags.notificationServiceExtension)
                 self.messageFetcherJob.run()
             }
         }
@@ -98,12 +114,9 @@ public enum PushRegistrationError: Error {
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         Logger.info("")
-        assert(type == .voIP)
-        assert(credentials.type == .voIP)
-        guard let voipTokenResolver = self.voipTokenResolver else {
-            owsFailDebug("fulfillVoipTokenPromise was unexpectedly nil")
-            return
-        }
+        owsAssertDebug(type == .voIP)
+        owsAssertDebug(credentials.type == .voIP)
+        guard let voipTokenResolver = self.voipTokenResolver else { return }
 
         voipTokenResolver.fulfill(credentials.token)
     }
@@ -159,7 +172,7 @@ public enum PushRegistrationError: Error {
 
         guard self.vanillaTokenPromise == nil else {
             let promise = vanillaTokenPromise!
-            assert(promise.isPending)
+            owsAssertDebug(promise.isPending)
             Logger.info("alreay pending promise for vanilla push token")
             return promise.map { $0.hexEncodedString }
         }
@@ -205,29 +218,44 @@ public enum PushRegistrationError: Error {
         }
     }
 
-    private func registerForVoipPushToken() -> Promise<String> {
+    private func createVoipRegistryIfNecessary() {
+        AssertIsOnMainThread()
+
+        guard voipRegistry == nil else { return }
+        let voipRegistry = PKPushRegistry(queue: nil)
+        self.voipRegistry  = voipRegistry
+        voipRegistry.desiredPushTypes = [.voIP]
+        voipRegistry.delegate = self
+    }
+
+    private func registerForVoipPushToken() -> Promise<String?> {
         AssertIsOnMainThread()
         Logger.info("")
 
+        // We never populate voip tokens with the service when
+        // using the notification service extension.
+        guard !FeatureFlags.notificationServiceExtension else {
+            Logger.info("Not using VOIP token because NSE is enabled.")
+            // We still must create the voip registry to handle voip
+            // pushes relayed from the NSE.
+            createVoipRegistryIfNecessary()
+            return Promise.value(nil)
+        }
+
         guard self.voipTokenPromise == nil else {
             let promise = self.voipTokenPromise!
-            assert(promise.isPending)
-            return promise.map { $0.hexEncodedString }
+            owsAssertDebug(promise.isPending)
+            return promise.map { $0?.hexEncodedString }
         }
 
         // No pending voip token yet. Create a new promise
-        let (promise, resolver) = Promise<Data>.pending()
+        let (promise, resolver) = Promise<Data?>.pending()
         self.voipTokenPromise = promise
         self.voipTokenResolver = resolver
 
-        if self.voipRegistry == nil {
-            // We don't create the voip registry in init, because it immediately requests the voip token,
-            // potentially before we're ready to handle it.
-            let voipRegistry = PKPushRegistry(queue: nil)
-            self.voipRegistry  = voipRegistry
-            voipRegistry.desiredPushTypes = [.voIP]
-            voipRegistry.delegate = self
-        }
+        // We don't create the voip registry in init, because it immediately requests the voip token,
+        // potentially before we're ready to handle it.
+        createVoipRegistryIfNecessary()
 
         guard let voipRegistry = self.voipRegistry else {
             owsFailDebug("failed to initialize voipRegistry")
@@ -246,9 +274,9 @@ public enum PushRegistrationError: Error {
             resolver.fulfill(voipTokenData)
         }
 
-        return promise.map { (voipTokenData: Data) -> String in
+        return promise.map { (voipTokenData: Data?) -> String? in
             Logger.info("successfully registered for voip push notifications")
-            return voipTokenData.hexEncodedString
+            return voipTokenData?.hexEncodedString
         }.ensure {
             self.voipTokenPromise = nil
         }

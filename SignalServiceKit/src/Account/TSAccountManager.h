@@ -139,7 +139,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
  *  @param pushToken Apple's Push Token
  */
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
-                                        voipToken:(NSString *)voipToken
+                                        voipToken:(nullable NSString *)voipToken
                                           success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *error))failureHandler
     NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));

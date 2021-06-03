@@ -64,7 +64,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)profileAvatarUploadFormRequest;
 
-+ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId;
++ (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier
+                                         voipIdentifier:(nullable NSString *)voipId;
 
 + (TSRequest *)accountWhoAmIRequest;
 
@@ -72,7 +73,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
                                                    pushToken:(NSString *)pushToken
-    NS_SWIFT_NAME(requestPreauthChallengeRequest(recipientId:pushToken:));
+                                                 isVoipToken:(BOOL)isVoipToken
+    NS_SWIFT_NAME(requestPreauthChallengeRequest(recipientId:pushToken:isVoipToken:));
 
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
                                             preauthChallenge:(nullable NSString *)preauthChallenge
