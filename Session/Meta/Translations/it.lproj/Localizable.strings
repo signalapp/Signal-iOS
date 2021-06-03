@@ -185,7 +185,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@ ha lasciato il gruppo.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " %@ è stato rimosso dal gruppo. ";
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
 /* No comment provided by engineer. */
@@ -287,7 +287,7 @@
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Immediato";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticarsi per aprire Session.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticazione per aprire la Sessione.";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Autenticazione fallita";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
