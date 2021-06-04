@@ -385,9 +385,9 @@ extension MessageReceiver {
         if let t = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) {
             thread = t
             thread.setGroupModel(group, with: transaction)
-            // clearing zombie list if the group was not active before the update is received
+            // Clear the zombie list if the group wasn't active
             let storage = SNMessagingKitConfiguration.shared.storage
-            if (!storage.isClosedGroup(groupPublicKey)) {
+            if !storage.isClosedGroup(groupPublicKey) {
                 storage.setZombieMembers(for: groupPublicKey, to: [], using: transaction)
             }
         } else {
@@ -479,7 +479,8 @@ extension MessageReceiver {
         guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             // Update the group
-            let members = Set(group.groupMemberIds).union(membersAsData.map { $0.toHexString() })
+            let addedMembers = membersAsData.map { $0.toHexString() }
+            let members = Set(group.groupMemberIds).union(addedMembers)
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Send the latest encryption key pair to the added members if the current user is the admin of the group
@@ -496,15 +497,15 @@ extension MessageReceiver {
             // the member removed message.
             let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
             if isCurrentUserAdmin {
-                for member in membersAsData.map({ $0.toHexString() }) {
+                for member in addedMembers {
                     MessageSender.sendLatestEncryptionKeyPair(to: member, for: message.groupPublicKey!, using: transaction)
                 }
             }
-            // update zombie members in case the added members are zombies
+            // Update zombie members in case the added members are zombies
             let storage = SNMessagingKitConfiguration.shared.storage
             let zombies = storage.getZombieMembers(for: groupPublicKey)
-            if (!zombies.intersection(membersAsData.map { $0.toHexString() }).isEmpty) {
-                storage.setZombieMembers(for: groupPublicKey, to: zombies.subtracting(membersAsData.map { $0.toHexString() }), using: transaction)
+            if !zombies.intersection(addedMembers).isEmpty {
+                storage.setZombieMembers(for: groupPublicKey, to: zombies.subtracting(addedMembers), using: transaction)
             }
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
