@@ -8,7 +8,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     let thread: TSThread
     let focusedMessageID: String? // This isn't actually used ATM
     var unreadViewItems: [ConversationViewItem] = []
-    var didConstrainScrollButton = false // Part of a workaround to get the scroll button to show up in the right place
+    var scrollButtonConstraint: NSLayoutConstraint?
     // Search
     var isShowingSearchUI = false
     var lastSearchedText: String?
@@ -170,6 +170,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         messagesTableView.pin(to: view)
         view.addSubview(scrollButton)
         scrollButton.pin(.right, to: .right, of: view, withInset: -16)
+        scrollButtonConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
         // Unread count view
         view.addSubview(unreadCountView)
         unreadCountView.addSubview(unreadCountLabel)
@@ -295,10 +296,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             baselineKeyboardHeight = newHeight
             self.messagesTableView.keyboardHeight = newHeight
         }
-        if !didConstrainScrollButton {
-            // HACK: Part of a workaround to get the scroll button to show up in the right place
-            scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -(newHeight + 16)) // + 16 to match the bottom inset of the table view
-            didConstrainScrollButton = true
+        if (newHeight >= self.messagesTableView.keyboardHeight) {
+            scrollButtonConstraint?.constant = -(newHeight + 16)
         }
         let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
         self.messagesTableView.contentOffset.y = newContentOffsetY
@@ -309,6 +308,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
         self.messagesTableView.contentOffset.y -= (self.messagesTableView.keyboardHeight - self.baselineKeyboardHeight)
         self.messagesTableView.keyboardHeight = self.baselineKeyboardHeight
+        scrollButtonConstraint?.constant = -(self.baselineKeyboardHeight + 16)
         self.scrollButton.alpha = self.getScrollButtonOpacity()
         self.unreadCountView.alpha = self.scrollButton.alpha
     }
@@ -334,12 +334,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 case .insert:
                     // Perform inserts before updates
                     self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .fade)
-                    let viewItem = update.viewItem
-                    if viewItem?.interaction is TSOutgoingMessage {
-                        shouldScrollToBottom = true
-                    }
+                    shouldScrollToBottom = Int(self.lastPageTop - self.messagesTableView.contentOffset.y) <= 0
                 case .update:
                     self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
+                    shouldScrollToBottom = Int(self.lastPageTop - self.messagesTableView.contentOffset.y) <= 0
                 default: preconditionFailure()
                 }
             }
