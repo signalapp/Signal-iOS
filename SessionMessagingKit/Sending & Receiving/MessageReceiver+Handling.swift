@@ -385,6 +385,11 @@ extension MessageReceiver {
         if let t = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) {
             thread = t
             thread.setGroupModel(group, with: transaction)
+            // clearing zombie list if the group was not active before the update is received
+            let storage = SNMessagingKitConfiguration.shared.storage
+            if (!storage.isClosedGroup(groupPublicKey)) {
+                storage.setZombieMembers(for: groupPublicKey, to: [], using: transaction)
+            }
         } else {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
             thread.save(with: transaction)
@@ -471,6 +476,7 @@ extension MessageReceiver {
     private static func handleClosedGroupMembersAdded(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case let .membersAdded(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             // Update the group
             let members = Set(group.groupMemberIds).union(membersAsData.map { $0.toHexString() })
@@ -493,6 +499,12 @@ extension MessageReceiver {
                 for member in membersAsData.map({ $0.toHexString() }) {
                     MessageSender.sendLatestEncryptionKeyPair(to: member, for: message.groupPublicKey!, using: transaction)
                 }
+            }
+            // update zombie members in case the added members are zombies
+            let storage = SNMessagingKitConfiguration.shared.storage
+            let zombies = storage.getZombieMembers(for: groupPublicKey)
+            if (!zombies.intersection(membersAsData.map { $0.toHexString() }).isEmpty) {
+                storage.setZombieMembers(for: groupPublicKey, to: zombies.subtracting(membersAsData.map { $0.toHexString() }), using: transaction)
             }
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
