@@ -59,7 +59,9 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
 
     // MARK: Running
     public func execute() {
-        JobQueue.currentlyExecutingJobs.insert(id!)
+        if let id = id {
+            JobQueue.currentlyExecutingJobs.insert(id)
+        }
         guard !isDeferred else { return }
         if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
             // FIXME: It's not clear * how * this happens, but apparently we can get to this point
