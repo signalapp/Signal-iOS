@@ -385,8 +385,8 @@ extension MessageReceiver {
         if let t = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) {
             thread = t
             thread.setGroupModel(group, with: transaction)
-            let storage = SNMessagingKitConfiguration.shared.storage
             // clearing zombie list if the group was not active before the update is received
+            let storage = SNMessagingKitConfiguration.shared.storage
             if (!storage.isClosedGroup(groupPublicKey)) {
                 storage.setZombieMembers(for: groupPublicKey, to: [], using: transaction)
             }
