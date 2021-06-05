@@ -207,7 +207,7 @@ public class RemoteConfig: BaseFlags {
     }
 
     private static func isCountryCodeBucketEnabled(_ flag: Flags.SupportedValuesFlags, valueFlags: [String: AnyObject]) -> Bool {
-        let rawFlag = flag.rawValue
+        let rawFlag = flag.rawFlag
         guard let value = valueFlags[rawFlag] as? String else { return false }
 
         guard !value.isEmpty else { return false }
