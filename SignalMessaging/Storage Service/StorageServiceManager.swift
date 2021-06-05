@@ -18,28 +18,30 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.cleanUpUnknownData()
-        }
+        if CurrentAppContext().hasUI {
+            AppReadiness.runNowOrWhenAppWillBecomeReady {
+                self.cleanUpUnknownData()
+            }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(self.willResignActive),
-                name: .OWSApplicationWillResignActive,
-                object: nil
-            )
-        }
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(self.willResignActive),
+                    name: .OWSApplicationWillResignActive,
+                    object: nil
+                )
+            }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            guard self.tsAccountManager.isRegisteredAndReady else { return }
+            AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+                guard self.tsAccountManager.isRegisteredAndReady else { return }
 
-            // Schedule a restore. This will do nothing unless we've never
-            // registered a manifest before.
-            self.restoreOrCreateManifestIfNecessary()
+                // Schedule a restore. This will do nothing unless we've never
+                // registered a manifest before.
+                self.restoreOrCreateManifestIfNecessary()
 
-            // If we have any pending changes since we last launch, back them up now.
-            self.backupPendingChanges()
+                // If we have any pending changes since we last launch, back them up now.
+                self.backupPendingChanges()
+            }
         }
     }
 

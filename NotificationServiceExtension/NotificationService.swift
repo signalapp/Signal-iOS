@@ -50,15 +50,16 @@ class NotificationService: UNNotificationServiceExtension {
 
         Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier)")
 
-        environment.askMainAppToHandleReceipt { mainAppHandledReceipt in
+        environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
             guard !mainAppHandledReceipt else {
                 Logger.info("Received notification handled by main application.")
-                return self.completeSilenty()
+                self?.completeSilenty()
+                return
             }
 
             Logger.info("Processing received notification.")
 
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync { self.fetchAndProcessMessages() }
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync { self?.fetchAndProcessMessages() }
         }
     }
 
@@ -84,12 +85,14 @@ class NotificationService: UNNotificationServiceExtension {
 
         Logger.info("Beginning message fetch.")
 
-        messageFetcherJob.run().promise.then {
+        messageFetcherJob.run().promise.then { [weak self] () -> Promise<Void> in
+            Logger.info("Waiting for processing to complete.")
+            guard let self = self else { return Promise.value(()) }
             return self.messageProcessor.processingCompletePromise()
-        }.ensure {
+        }.ensure { [weak self] in
             Logger.info("Message fetch completed.")
             environment.isProcessingMessages.set(false)
-            self.completeSilenty()
+            self?.completeSilenty()
         }.catch { error in
             Logger.warn("Error: \(error)")
         }
