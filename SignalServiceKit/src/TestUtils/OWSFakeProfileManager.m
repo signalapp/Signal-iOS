@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setProfileKeyData:(NSData *)profileKey
                forAddress:(SignalServiceAddress *)address
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setProfileGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
                  forAddress:(SignalServiceAddress *)address
-          wasLocallyInitiated:(BOOL)wasLocallyInitiated
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
                  familyName:(nullable NSString *)lastName
               avatarUrlPath:(nullable NSString *)avatarUrlPath
                  forAddress:(nonnull SignalServiceAddress *)address
-          wasLocallyInitiated:(BOOL)wasLocallyInitiated
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
                 transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)addUserToProfileWhitelist:(nonnull SignalServiceAddress *)address
-                wasLocallyInitiated:(BOOL)wasLocallyInitiated
+              wasLocallyInitiated:(BOOL)wasLocallyInitiated
                       transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.recipientWhitelist addObject:address];
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)removeUserFromProfileWhitelist:(nonnull SignalServiceAddress *)address
-                     wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
                            transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.recipientWhitelist removeObject:address];
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)addGroupIdToProfileWhitelist:(nonnull NSData *)groupId
-                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
                          transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.threadWhitelist addObject:groupId.hexadecimalString];
@@ -178,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)removeGroupIdFromProfileWhitelist:(nonnull NSData *)groupId
-                        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
                               transaction:(nonnull SDSAnyWriteTransaction *)transaction
 {
     [self.threadWhitelist removeObject:groupId.hexadecimalString];

@@ -70,7 +70,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSData *)localProfileAvatarData;
 
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
-NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));
+    NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));
 
 - (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
 
