@@ -105,7 +105,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)logProfileWhitelist;
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
 - (void)setLocalProfileKey:(OWSAES256Key *)key
-       wasLocallyInitiated:(BOOL)wasLocallyInitiated
+         userProfileWriter:(UserProfileWriter)userProfileWriter
                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses;

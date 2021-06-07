@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setProfileKeyData:(NSData *)profileKey
                forAddress:(SignalServiceAddress *)address
-      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+        userProfileWriter:(UserProfileWriter)userProfileWriter
               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];

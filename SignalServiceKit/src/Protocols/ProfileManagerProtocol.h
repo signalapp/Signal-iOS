@@ -12,6 +12,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, UserProfileWriter) {
+    UserProfileWriter_LocalUser,
+    UserProfileWriter_ProfileFetch,
+    UserProfileWriter_StorageService,
+    UserProfileWriter_SyncMessageOrLinking,
+};
+
+#pragma mark -
+
 @protocol ProfileManagerProtocol <NSObject>
 
 - (OWSAES256Key *)localProfileKey;
@@ -35,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     transaction:(SDSAnyReadTransaction *)transaction;
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)address
-      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+        userProfileWriter:(UserProfileWriter)userProfileWriter
               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)hasProfileAvatarData:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
@@ -50,14 +59,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setProfileGivenName:(nullable NSString *)firstName
                  familyName:(nullable NSString *)lastName
                  forAddress:(SignalServiceAddress *)address
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+          userProfileWriter:(UserProfileWriter)userProfileWriter
                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)setProfileGivenName:(nullable NSString *)firstName
                  familyName:(nullable NSString *)lastName
               avatarUrlPath:(nullable NSString *)avatarUrlPath
                  forAddress:(SignalServiceAddress *)address
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+          userProfileWriter:(UserProfileWriter)userProfileWriter
                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
@@ -69,24 +78,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
-              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                userProfileWriter:(UserProfileWriter)userProfileWriter
                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
-                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                     userProfileWriter:(UserProfileWriter)userProfileWriter
                            transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
-                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                   userProfileWriter:(UserProfileWriter)userProfileWriter
                          transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId;
 - (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
-                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                        userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)fetchLocalUsersProfile;

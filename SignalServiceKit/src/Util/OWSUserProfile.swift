@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Mantle
 
 @objc
 public extension OWSUserProfile {
@@ -211,5 +212,48 @@ public class ProfileValue: NSObject {
     @objc
     var hasValidBase64Length: Bool {
         validBase64Lengths.contains(encryptedBase64.count)
+    }
+}
+
+// MARK: -
+
+// @objc
+// public
+@objc
+public class UserProfileChangeBuilder: NSObject {
+    @objc
+    public class OptionalString: NSObject {
+        @objc
+        public let value: String?
+
+        init(_ value: String?) {
+            self.value = value
+        }
+    }
+
+    @objc
+    public var givenName: OptionalString?
+    @objc
+    public var familyName: OptionalString?
+}
+
+// MARK: -
+
+@objc
+public extension OWSUserProfile {
+    typealias OptionalString = UserProfileChangeBuilder.OptionalString
+
+    func update(givenName: String?,
+                familyName: String?,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let builder = UserProfileChangeBuilder()
+        builder.givenName = .init(givenName)
+        builder.familyName = .init(familyName)
+        apply(builder,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
     }
 }

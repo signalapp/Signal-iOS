@@ -380,12 +380,12 @@ extension OWSProfileManager {
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
             self.profileManagerImpl.writeAvatarToDisk(with: profileAvatarData,
-                                                  success: { avatarFilename in
-                                                    attempt.avatarFilename = avatarFilename
-                                                    resolver.fulfill(())
-            }, failure: { (error) in
-                resolver.reject(error)
-            })
+                                                      success: { avatarFilename in
+                                                        attempt.avatarFilename = avatarFilename
+                                                        resolver.fulfill(())
+                                                      }, failure: { (error) in
+                                                        resolver.reject(error)
+                                                      })
         }
         return promise
     }
@@ -547,9 +547,9 @@ class PendingProfileUpdate: NSObject, NSCoding {
     @objc
     public required init?(coder aDecoder: NSCoder) {
         guard let idString = aDecoder.decodeObject(forKey: "id") as? String,
-            let id = UUID(uuidString: idString) else {
-                owsFailDebug("Missing id")
-                return nil
+              let id = UUID(uuidString: idString) else {
+            owsFailDebug("Missing id")
+            return nil
         }
         self.id = id
         self.profileGivenName = aDecoder.decodeObject(forKey: "profileGivenName") as? String
@@ -641,7 +641,7 @@ public extension OWSProfileManager {
                                                      method: .get,
                                                      progress: { (_, progress) in
                                                         Logger.verbose("Downloading avatar for \(profileAddress) \(progress.fractionCompleted)")
-            })
+                                                     })
         }.map(on: .global()) { (response: OWSUrlDownloadResponse) -> Data in
             do {
                 return try Data(contentsOf: response.downloadUrl)
@@ -660,7 +660,7 @@ public extension OWSProfileManager {
             return decryptedData
         }.recover { error -> Promise<Data> in
             if error.isNetworkFailureOrTimeout,
-                remainingRetries > 0 {
+               remainingRetries > 0 {
                 // Retry
                 return self.avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
                                                             avatarUrlPath: avatarUrlPath,
