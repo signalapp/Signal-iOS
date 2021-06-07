@@ -341,11 +341,57 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We fire "did change" notifications.
 + (void)applyChanges:(UserProfileChanges *)changes profile:(OWSUserProfile *)profile
 {
-    if (changes.givenName != nil) {
+    BOOL canModifyStorageServiceProperties;
+    if ([OWSUserProfile isLocalProfileAddress:profile.address]) {
+        // Any properties stored in the storage service can only
+        // by modified by the local user or the storage service.
+        // They should not be modified by
+        //
+        // TODO:
+        canModifyStorageServiceProperties = YES;
+    } else {
+        canModifyStorageServiceProperties = YES;
+    }
+
+    if (changes.givenName != nil && canModifyStorageServiceProperties) {
+        // The "profile name" aka "given name" is stored in the storage service.
         profile.givenName = changes.givenName.value;
     }
-    if (changes.familyName != nil) {
+    if (changes.familyName != nil && canModifyStorageServiceProperties) {
+        // The "family name" is stored in the storage service.
         profile.familyName = changes.familyName.value;
+    }
+    if (changes.bio != nil) {
+        profile.bio = changes.bio.value;
+    }
+    if (changes.bioEmoji != nil) {
+        profile.bioEmoji = changes.bioEmoji.value;
+    }
+    if (changes.username != nil) {
+        profile.username = changes.username.value;
+    }
+    if (changes.isUuidCapable != nil) {
+        profile.isUuidCapable = changes.isUuidCapable.value;
+    }
+
+    // Update the avatar properties in lockstep.
+    if (changes.avatarUrlPath != nil && changes.avatarFileName != nil) {
+        [profile setAvatarUrlPath:changes.avatarUrlPath.value avatarFileName:changes.avatarFileName.value];
+    } else if (changes.avatarUrlPath != nil && canModifyStorageServiceProperties) {
+        // The "avatar url path" (but not the "avatar file name") is stored in the storage service.
+        profile.avatarUrlPath = changes.avatarUrlPath.value;
+    } else if (changes.avatarFileName != nil) {
+        profile.avatarFileName = changes.avatarFileName.value;
+    }
+
+    if (changes.lastFetchDate != nil) {
+        profile.lastFetchDate = changes.lastFetchDate.value;
+    }
+    if (changes.lastMessagingDate != nil) {
+        profile.lastMessagingDate = changes.lastMessagingDate.value;
+    }
+    if (changes.profileKey != nil) {
+        profile.profileKey = changes.profileKey.value;
     }
 }
 
