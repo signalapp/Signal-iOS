@@ -289,14 +289,14 @@ public extension OWSUserProfile {
 
     func update(givenName: String?,
                 familyName: String?,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.givenName = .init(givenName)
         changes.familyName = .init(familyName)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
@@ -305,7 +305,7 @@ public extension OWSUserProfile {
                 familyName: String?,
                 avatarUrlPath: String?,
                 avatarFileName: String?,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -314,7 +314,7 @@ public extension OWSUserProfile {
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
@@ -329,7 +329,7 @@ public extension OWSUserProfile {
                 // TODO:
                 //                avatarFileName: String?,
                 lastFetchDate: Date,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -344,7 +344,7 @@ public extension OWSUserProfile {
         //        changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
@@ -358,7 +358,7 @@ public extension OWSUserProfile {
                 avatarUrlPath: String?,
                 avatarFileName: String?,
                 lastFetchDate: Date,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -372,25 +372,25 @@ public extension OWSUserProfile {
         changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
     func update(avatarFileName: String?,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.avatarFileName = .init(avatarFileName)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
     func clear(profileKey: OWSAES256Key?,
-               userProfileWriter: UserProfileWriter,
+               wasLocallyInitiated: Bool,
                transaction: SDSAnyWriteTransaction,
                completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -409,19 +409,19 @@ public extension OWSUserProfile {
         // TODO:
         // builder.lastMessagingDate = .init(nil)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
     func update(profileKey: OWSAES256Key?,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.profileKey = .init(profileKey)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
@@ -429,7 +429,7 @@ public extension OWSUserProfile {
     func update(givenName: String?,
                 familyName: String?,
                 avatarUrlPath: String?,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -439,21 +439,21 @@ public extension OWSUserProfile {
         // TODO:
         // builder.avatarFileName = .init(avatarFileName)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
     func update(username: String?,
                 isUuidCapable: Bool,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
@@ -461,7 +461,7 @@ public extension OWSUserProfile {
     func update(username: String?,
                 isUuidCapable: Bool,
                 lastFetchDate: Date,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -469,43 +469,43 @@ public extension OWSUserProfile {
         changes.isUuidCapable = .init(isUuidCapable)
         changes.lastFetchDate = .init(lastFetchDate)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
     func update(lastMessagingDate: Date,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.lastMessagingDate = .init(lastMessagingDate)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
     #if TESTABLE_BUILD
     func update(lastFetchDate: Date,
-                userProfileWriter: UserProfileWriter,
+                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.lastFetchDate = .init(lastFetchDate)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
-    func discardProfileKey(userProfileWriter: UserProfileWriter,
+    func discardProfileKey(wasLocallyInitiated: Bool,
                            transaction: SDSAnyWriteTransaction,
                            completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.profileKey = .init(nil)
         apply(changes,
-              userProfileWriter: userProfileWriter,
+              wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }

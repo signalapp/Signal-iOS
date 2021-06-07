@@ -1115,7 +1115,7 @@ public class GroupManager: NSObject {
         return firstly { () -> Promise<Void> in
             return self.databaseStorage.write(.promise) { transaction in
                 self.profileManager.addGroupId(toProfileWhitelist: groupModel.groupId,
-                                               userProfileWriter: .localUser,
+                                               wasLocallyInitiated: true,
                                                transaction: transaction)
             }
         }.then(on: .global()) { _ -> Promise<TSGroupThread> in
@@ -1340,7 +1340,7 @@ public class GroupManager: NSObject {
         }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
             self.databaseStorage.write { transaction in
                 self.profileManager.addGroupId(toProfileWhitelist: groupId,
-                                               userProfileWriter: .localUser,
+                                               wasLocallyInitiated: true,
                                                transaction: transaction)
             }
             return groupThread
@@ -2329,7 +2329,7 @@ public class GroupManager: NSObject {
         // We don't want to do this if we're just a pending member or are leaving/have
         // already left the group.
         self.profileManager.addGroupId(toProfileWhitelist: newGroupModel.groupId,
-                                       userProfileWriter: .localUser,
+                                       wasLocallyInitiated: true,
                                        transaction: transaction)
     }
 

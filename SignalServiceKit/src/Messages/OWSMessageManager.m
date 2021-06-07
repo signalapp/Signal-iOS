@@ -537,7 +537,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [self.profileManager setProfileKeyData:profileKey
                                         forAddress:address
-                                 userProfileWriter:UserProfileWriter_LocalUser
+                               wasLocallyInitiated:YES
                                        transaction:transaction];
         }
     }
@@ -978,7 +978,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [self.profileManager setProfileKeyData:profileKey
                                         forAddress:address
-                                 userProfileWriter:UserProfileWriter_LocalUser
+                               wasLocallyInitiated:YES
                                        transaction:transaction];
         }
     }

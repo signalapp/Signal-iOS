@@ -181,7 +181,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
         if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                            userProfileWriter:UserProfileWriter_LocalUser
+                          wasLocallyInitiated:YES
                                   transaction:transaction
                                    completion:nil];
         }
@@ -514,7 +514,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     // Profile changes, record updates with storage service. We don't store avatar information on the service except for
     // the local user.
-    if (self.tsAccountManager.isRegisteredAndReady && userProfileWriter == UserProfileWriter_LocalUser
+    if (self.tsAccountManager.isRegisteredAndReady && wasLocallyInitiated
         && (!onlyAvatarChanged || isLocalUserProfile)) {
         [self.storageServiceManager
             recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
