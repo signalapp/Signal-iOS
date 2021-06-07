@@ -936,7 +936,7 @@ public extension DebugUIScreenshots {
             let avatarFileName = UUID().uuidString + ".jpg"
             try! avatarData.write(to: URL(fileURLWithPath: OWSUserProfile.profileAvatarFilepath(withFilename: avatarFileName)), options: .atomic)
             let profile = OWSUserProfile.getOrBuild(for: address, transaction: transaction)
-            profile.update(withAvatarFileName: avatarFileName, transaction: transaction)
+            profile.update(avatarFileName: avatarFileName, transaction: transaction)
         }
         let contact = self.buildContact(address: address, fullName: givenName, transaction: transaction)
         if let existingAccount = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction) {

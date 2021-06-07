@@ -286,8 +286,8 @@ public class UserProfileChanges: NSObject {
 
 @objc
 public extension OWSUserProfile {
-    
-    @objc
+
+    @objc(updateWithGivenName:familyName:wasLocallyInitiated:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 wasLocallyInitiated: Bool,
@@ -302,7 +302,6 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc
     func update(givenName: String?,
                 familyName: String?,
                 avatarUrlPath: String?,
@@ -322,7 +321,7 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:lastFetchDate:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
@@ -354,7 +353,7 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:avatarFileName:lastFetchDate:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
@@ -384,7 +383,6 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc
     func update(avatarFileName: String?,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
@@ -397,7 +395,6 @@ public extension OWSUserProfile {
               completion: nil)
     }
 
-    @objc
     func clear(profileKey: OWSAES256Key?,
                wasLocallyInitiated: Bool,
                transaction: SDSAnyWriteTransaction,
@@ -423,7 +420,6 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc
     func update(profileKey: OWSAES256Key?,
                 wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
@@ -436,7 +432,7 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc
+    @objc(updateWithGivenName:familyName:avatarUrlPath:wasLocallyInitiated:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 avatarUrlPath: String?,
@@ -455,7 +451,6 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc
     func update(username: String?,
                 isUuidCapable: Bool,
                 transaction: SDSAnyWriteTransaction) {
@@ -470,7 +465,6 @@ public extension OWSUserProfile {
               completion: nil)
     }
 
-    @objc
     func update(username: String?,
                 isUuidCapable: Bool,
                 lastFetchDate: Date,
@@ -487,7 +481,6 @@ public extension OWSUserProfile {
               completion: nil)
     }
 
-    @objc
     func update(lastMessagingDate: Date,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
@@ -502,7 +495,6 @@ public extension OWSUserProfile {
     }
 
     #if TESTABLE_BUILD
-    @objc
     func update(lastFetchDate: Date,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
@@ -516,7 +508,6 @@ public extension OWSUserProfile {
               completion: nil)
     }
 
-    @objc
     func discardProfileKey(transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.profileKey = .init(nil)
