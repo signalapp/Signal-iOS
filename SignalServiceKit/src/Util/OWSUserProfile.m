@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/OWSUserProfile.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
@@ -9,7 +10,6 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -357,7 +357,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We kick off multi-device synchronization.
 // * We fire "did change" notifications.
 - (void)applyChanges:(UserProfileChanges *)changes
-    userProfileWriter:(UserProfileWriter)userProfileWriter
+    wasLocallyInitiated:(BOOL)wasLocallyInitiated
           transaction:(SDSAnyWriteTransaction *)transaction
            completion:(nullable OWSUserProfileCompletion)completion
 {
@@ -573,7 +573,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We fire "did change" notifications.
 - (void)applyChanges:(void (^)(id))changeBlock
          functionName:(const char *)functionName
-    userProfileWriter:(UserProfileWriter)userProfileWriter
+    wasLocallyInitiated:(BOOL)wasLocallyInitiated
           transaction:(SDSAnyWriteTransaction *)transaction
            completion:(nullable OWSUserProfileCompletion)completion
 {

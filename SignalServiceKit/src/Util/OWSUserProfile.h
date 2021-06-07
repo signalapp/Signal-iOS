@@ -105,7 +105,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 // For use by the OWSUserProfile extension only.
 - (void)applyChanges:(UserProfileChanges *)changes
-    userProfileWriter:(UserProfileWriter)userProfileWriter
+    wasLocallyInitiated:(BOOL)wasLocallyInitiated
           transaction:(SDSAnyWriteTransaction *)transaction
            completion:(nullable OWSUserProfileCompletion)completion;
 

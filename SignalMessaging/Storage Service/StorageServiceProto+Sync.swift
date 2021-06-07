@@ -121,7 +121,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
             profileManager.setProfileKeyData(
                 profileKey,
                 for: address,
-                userProfileWriter: .storageService,
+                wasLocallyInitiated: false,
                 transaction: transaction
             )
 
@@ -144,7 +144,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
                     givenName,
                     familyName: familyName,
                     for: address,
-                    userProfileWriter: .storageService,
+                    wasLocallyInitiated: false,
                     transaction: transaction
                 )
             }
@@ -182,13 +182,9 @@ extension StorageServiceProtoContactRecord: Dependencies {
         // If our local whitelisted state differs from the service state, use the service's value.
         if whitelisted != localIsWhitelisted {
             if whitelisted {
-                profileManager.addUser(toProfileWhitelist: address,
-                                       userProfileWriter: .storageService,
-                                       transaction: transaction)
+                profileManager.addUser(toProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             } else {
-                profileManager.removeUser(fromProfileWhitelist: address,
-                                          userProfileWriter: .storageService,
-                                          transaction: transaction)
+                profileManager.removeUser(fromProfileWhitelist: address, wasLocallyInitiated: false, transaction: transaction)
             }
         }
 
@@ -313,13 +309,9 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         // If our local whitelisted state differs from the service state, use the service's value.
         if whitelisted != localIsWhitelisted {
             if whitelisted {
-                profileManager.addGroupId(toProfileWhitelist: id,
-                                          userProfileWriter: .storageService,
-                                          transaction: transaction)
+                profileManager.addGroupId(toProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             } else {
-                profileManager.removeGroupId(fromProfileWhitelist: id,
-                                             userProfileWriter: .storageService,
-                                             transaction: transaction)
+                profileManager.removeGroupId(fromProfileWhitelist: id, wasLocallyInitiated: false, transaction: transaction)
             }
         }
 
@@ -460,13 +452,9 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         // If our local whitelisted state differs from the service state, use the service's value.
         if whitelisted != localIsWhitelisted {
             if whitelisted {
-                profileManager.addGroupId(toProfileWhitelist: groupId,
-                                          userProfileWriter: .storageService,
-                                          transaction: transaction)
+                profileManager.addGroupId(toProfileWhitelist: groupId, wasLocallyInitiated: false, transaction: transaction)
             } else {
-                profileManager.removeGroupId(fromProfileWhitelist: groupId,
-                                             userProfileWriter: .storageService,
-                                             transaction: transaction)
+                profileManager.removeGroupId(fromProfileWhitelist: groupId, wasLocallyInitiated: false, transaction: transaction)
             }
         }
 
@@ -608,7 +596,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             profileManager.setProfileKeyData(
                 profileKey,
                 for: localAddress,
-                userProfileWriter: .storageService,
+                wasLocallyInitiated: false,
                 transaction: transaction
             )
         } else if localProfileKey != nil && !hasProfileKey {
@@ -631,7 +619,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                     familyName: familyName,
                     avatarUrlPath: avatarURL,
                     for: localAddress,
-                    userProfileWriter: .storageService,
+                    wasLocallyInitiated: false,
                     transaction: transaction
                 )
             }
