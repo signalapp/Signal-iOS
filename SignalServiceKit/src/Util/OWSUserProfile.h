@@ -106,8 +106,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 // For use by the OWSUserProfile extension only.
 - (void)applyChanges:(UserProfileChanges *)changes
     wasLocallyInitiated:(BOOL)wasLocallyInitiated
-          transaction:(SDSAnyWriteTransaction *)transaction
-           completion:(nullable OWSUserProfileCompletion)completion;
+            transaction:(SDSAnyWriteTransaction *)transaction
+             completion:(nullable OWSUserProfileCompletion)completion;
 
 #pragma mark - Profile Avatars Directory
 
