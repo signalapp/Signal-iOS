@@ -12,7 +12,6 @@
 #import "BlockListViewController.h"
 #import "ConversationCollectionView.h"
 #import "ConversationInputToolbar.h"
-#import "ConversationListCell.h"
 #import "ConversationListViewController.h"
 #import "ConversationViewController.h"
 #import "DateUtil.h"

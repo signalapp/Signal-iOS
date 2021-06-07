@@ -18,6 +18,9 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
     @objc
     public weak var delegate: ConversationSearchViewDelegate?
 
+    private var viewHasAppeared = false
+    private var lastReloadDate: Date?
+
     @objc
     public var searchText = "" {
         didSet {
@@ -83,7 +86,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.separatorStyle = .none
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
-        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.cellReuseIdentifier())
+        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.reuseIdentifier)
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         databaseStorage.appendUIDatabaseSnapshotDelegate(self)
@@ -106,7 +109,9 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         hasThemeChanged = false
 
         applyTheme()
+        self.lastReloadDate = Date()
         self.tableView.reloadData()
+        self.viewHasAppeared = true
     }
 
     deinit {
@@ -118,6 +123,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         AssertIsOnMainThread()
 
         applyTheme()
+        self.lastReloadDate = Date()
         self.tableView.reloadData()
 
         hasThemeChanged = true
@@ -221,6 +227,20 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             return UITableViewCell()
         }
 
+        let shouldLoadAvatarAsync: Bool = {
+            guard self.viewHasAppeared else {
+                return false
+            }
+            guard let lastReloadDate = self.lastReloadDate else {
+                return true
+            }
+            // We want initial loads and reloads to load avatars sync,
+            // but subsequent avatar loads (e.g. from scrolling) should
+            // be async.
+            let avatarAsyncLoadInterval = kSecondInterval * 1
+            return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
+        }()
+
         switch searchSection {
         case .noResults:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: EmptySearchResultCell.reuseIdentifier) as? EmptySearchResultCell else {
@@ -239,7 +259,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             cell.configure(searchText: searchText)
             return cell
         case .contactThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -248,10 +268,14 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(withThread: searchResult.thread, isBlocked: isBlocked(thread: searchResult.thread))
+            cell.configure(.init(
+                thread: searchResult.thread,
+                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                isBlocked: isBlocked(thread: searchResult.thread)
+            ))
             return cell
         case .groupThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -261,12 +285,13 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 return UITableViewCell()
             }
 
-            cell.configure(
-                withThread: searchResult.thread,
+            cell.configure(.init(
+                thread: searchResult.thread,
+                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
                 overrideDate: nil
-            )
+            ))
             return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
@@ -282,7 +307,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                                                 localUserDisplayMode: .noteToSelf)
             return cell
         case .messages:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.cellReuseIdentifier()) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -312,10 +337,13 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 }
             }
 
-            cell.configure(withThread: searchResult.thread,
-                           isBlocked: isBlocked(thread: searchResult.thread),
-                           overrideSnippet: overrideSnippet,
-                           overrideDate: overrideDate)
+            cell.configure(.init(
+                thread: searchResult.thread,
+                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                isBlocked: isBlocked(thread: searchResult.thread),
+                overrideSnippet: overrideSnippet,
+                overrideDate: overrideDate
+            ))
 
             return cell
         }
@@ -444,6 +472,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         guard searchText.count > 0 else {
             searchResultSet = HomeScreenSearchResultSet.empty
             lastSearchText = nil
+            self.lastReloadDate = Date()
             tableView.reloadData()
             return
         }
@@ -461,19 +490,20 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         },
                                             completion: { [weak self] in
                                                 AssertIsOnMainThread()
-                                                guard let strongSelf = self else { return }
+                                                guard let self = self else { return }
 
                                                 guard let results = searchResults else {
                                                     owsFailDebug("searchResults was unexpectedly nil")
                                                     return
                                                 }
-                                                guard strongSelf.lastSearchText == searchText else {
+                                                guard self.lastSearchText == searchText else {
                                                     // Discard results from stale search.
                                                     return
                                                 }
 
-                                                strongSelf.searchResultSet = results
-                                                strongSelf.tableView.reloadData()
+                                                self.searchResultSet = results
+                                                self.lastReloadDate = Date()
+                                                self.tableView.reloadData()
         })
     }
 
