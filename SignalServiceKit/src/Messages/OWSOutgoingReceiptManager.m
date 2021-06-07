@@ -2,16 +2,16 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOutgoingReceiptManager.h"
-#import "AppReadiness.h"
-#import "MessageSender.h"
-#import "OWSError.h"
-#import "OWSReceiptsForSenderMessage.h"
-#import "SSKEnvironment.h"
-#import "TSContactThread.h"
-#import "TSYapDatabaseObject.h"
 #import <PromiseKit/AnyPromise.h>
+#import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/MessageSender.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSOutgoingReceiptManager.h>
+#import <SignalServiceKit/OWSReceiptsForSenderMessage.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

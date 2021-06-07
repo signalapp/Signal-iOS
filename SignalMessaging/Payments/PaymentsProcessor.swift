@@ -357,7 +357,7 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
 
 // MARK: -
 
-private protocol PaymentProcessingOperationDelegate: class {
+private protocol PaymentProcessingOperationDelegate: AnyObject {
     func continueProcessing(paymentModel: TSPaymentModel)
     func retryProcessing(paymentModel: TSPaymentModel,
                          nextRetryDelayInteral: TimeInterval)

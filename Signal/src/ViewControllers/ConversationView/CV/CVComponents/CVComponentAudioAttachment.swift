@@ -128,10 +128,6 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
-        guard let componentView = componentView as? CVComponentViewAudioAttachment else {
-            owsFailDebug("Unexpected componentView.")
-            return false
-        }
         cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
         return true
     }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol EmojiPickerSectionToolbarDelegate: class {
+protocol EmojiPickerSectionToolbarDelegate: AnyObject {
     func emojiPickerSectionToolbar(_ sectionToolbar: EmojiPickerSectionToolbar, didSelectSection: Int)
     func emojiPickerSectionToolbarShouldShowRecentsSection(_ sectionToolbar: EmojiPickerSectionToolbar) -> Bool
 }

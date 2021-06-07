@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKMessageSenderJobRecord.h"
-#import "TSOutgoingMessage.h"
+#import <SignalServiceKit/SSKMessageSenderJobRecord.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

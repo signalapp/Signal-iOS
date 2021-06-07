@@ -6,7 +6,6 @@ import Foundation
 @testable import Signal
 import BonMot
 
-// TODO:
 class CVTextTest: SignalBaseTest {
     func testTextViewMeasurement() {
         let configs = [
@@ -122,12 +121,28 @@ class CVTextTest: SignalBaseTest {
 
         for config in configs {
             for possibleWidth: CGFloat in stride(from: 100, to: 2000, by: 50) {
-                let viewSize = CVText.measureTextView(mode: .view, config: config, maxWidth: possibleWidth)
-                let defaultSize = CVText.measureTextView(config: config, maxWidth: possibleWidth)
-                XCTAssertEqual(viewSize.width, defaultSize.width)
-                XCTAssertEqual(viewSize.height, defaultSize.height)
+                let bodyTextLabelConfig = Self.bodyTextLabelConfig(textViewConfig: config)
+                let measuredSize = CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: possibleWidth)
+                // CVBodyTextLabel only has a single measurement mechanism; there isn't
+                // an independent way to verify the correctness of measurements.
+                XCTAssertTrue(measuredSize.width > 0)
+                XCTAssertTrue(measuredSize.height > 0)
             }
         }
+    }
+
+    static func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVBodyTextLabel.Config {
+        let selectionColor = UIColor.orange
+        let items: [CVBodyTextLabel.Item] = []
+        return CVBodyTextLabel.Config(attributedString: textViewConfig.text.attributedString,
+                                      font: textViewConfig.font,
+                                      textColor: textViewConfig.textColor,
+                                      selectionColor: selectionColor,
+                                      textAlignment: textViewConfig.textAlignment ?? .natural,
+                                      lineBreakMode: .byWordWrapping,
+                                      numberOfLines: 0,
+                                      cacheKey: textViewConfig.cacheKey,
+                                      items: items)
     }
 
     func testLabelMeasurement() {

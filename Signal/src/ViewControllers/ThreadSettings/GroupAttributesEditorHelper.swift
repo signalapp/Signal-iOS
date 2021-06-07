@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 import UIKit
 
-protocol GroupAttributesEditorHelperDelegate: class {
+protocol GroupAttributesEditorHelperDelegate: AnyObject {
     func groupAttributesEditorContentsDidChange()
     func groupAttributesEditorSelectionDidChange()
 }

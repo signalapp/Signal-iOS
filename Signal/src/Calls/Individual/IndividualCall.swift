@@ -32,7 +32,7 @@ public enum CallDirection {
     case outgoing, incoming
 }
 
-public protocol IndividualCallDelegate: class {
+public protocol IndividualCallDelegate: AnyObject {
     func individualCallStateDidChange(_ call: IndividualCall, state: CallState)
     func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
     func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)

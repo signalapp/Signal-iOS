@@ -8,7 +8,7 @@ import PromiseKit
 
 // All Observer methods will be invoked from the main thread.
 @objc(OWSCallServiceObserver)
-protocol CallServiceObserver: class {
+protocol CallServiceObserver: AnyObject {
     /**
      * Fired whenever the call changes.
      */

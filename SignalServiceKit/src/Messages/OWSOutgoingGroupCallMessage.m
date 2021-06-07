@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOutgoingGroupCallMessage.h"
+#import <SignalServiceKit/OWSOutgoingGroupCallMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface OWSOutgoingGroupCallMessage ()

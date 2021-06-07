@@ -6,7 +6,7 @@ import Foundation
 import SignalRingRTC
 
 @objc
-protocol CallHeaderDelegate: class {
+protocol CallHeaderDelegate: AnyObject {
     func didTapBackButton()
     func didTapMembersButton()
 }

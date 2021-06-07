@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSProfileKeyMessage.h"
-#import "ProfileManagerProtocol.h"
-#import "ProtoUtils.h"
-#import "SSKEnvironment.h"
+#import <SignalServiceKit/OWSProfileKeyMessage.h>
+#import <SignalServiceKit/ProfileManagerProtocol.h>
+#import <SignalServiceKit/ProtoUtils.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

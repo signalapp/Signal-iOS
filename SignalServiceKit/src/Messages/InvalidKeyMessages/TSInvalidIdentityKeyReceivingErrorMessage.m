@@ -2,15 +2,15 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSInvalidIdentityKeyReceivingErrorMessage.h"
-#import "OWSFingerprint.h"
-#import "OWSIdentityManager.h"
-#import "OWSMessageManager.h"
-#import "SSKEnvironment.h"
-#import "TSContactThread.h"
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
+#import <SignalServiceKit/OWSFingerprint.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSMessageManager.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public protocol PaymentsQRScanDelegate: class {
+public protocol PaymentsQRScanDelegate: AnyObject {
     func didScanPaymentAddressQRCode(publicAddressBase58: String)
 }
 

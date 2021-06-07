@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-protocol GroupLinkViewControllerDelegate: class {
+protocol GroupLinkViewControllerDelegate: AnyObject {
     func groupLinkViewViewDidUpdate()
 }
 

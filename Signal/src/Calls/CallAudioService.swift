@@ -9,7 +9,7 @@ import SignalMessaging
 import AVKit
 import SignalRingRTC
 
-protocol CallAudioServiceDelegate: class {
+protocol CallAudioServiceDelegate: AnyObject {
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService)
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }

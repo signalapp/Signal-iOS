@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 import UIKit
 
-protocol GroupAttributesViewControllerDelegate: class {
+protocol GroupAttributesViewControllerDelegate: AnyObject {
     func groupAttributesDidUpdate()
 }
 

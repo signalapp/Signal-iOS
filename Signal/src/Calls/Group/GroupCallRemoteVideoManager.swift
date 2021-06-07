@@ -109,7 +109,7 @@ extension GroupCallRemoteVideoManager: CallObserver {
     }
 }
 
-private protocol GroupCallRemoteVideoViewSizeDelegate: class {
+private protocol GroupCallRemoteVideoViewSizeDelegate: AnyObject {
     func groupCallRemoteVideoViewDidChangeSize(remoteVideoView: GroupCallRemoteVideoView)
     func groupCallRemoteVideoViewDidChangeSuperview(remoteVideoView: GroupCallRemoteVideoView)
 }

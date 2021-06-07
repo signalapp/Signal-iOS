@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-public protocol CVViewStateDelegate: class {
+public protocol CVViewStateDelegate: AnyObject {
     func uiModeDidChange()
 }
 

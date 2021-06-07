@@ -80,7 +80,7 @@ public protocol SSKWebSocket {
 }
 
 @objc
-public protocol SSKWebSocketDelegate: class {
+public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
 
     func websocketDidDisconnect(socket: SSKWebSocket, error: Error?)

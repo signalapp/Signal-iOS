@@ -1,16 +1,16 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "MIMETypeUtil.h"
-#import "OWSDevice.h"
 #import "SSKBaseTestObjC.h"
-#import "TSAttachmentStream.h"
-#import "TSContactThread.h"
-#import "TSIncomingMessage.h"
-#import "TSOutgoingMessage.h"
-#import "TestAppContext.h"
+#import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalServiceKit/TestAppContext.h>
 
 @interface TSThreadTest : SSKBaseTestObjC
 

@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "SDSCrossProcess.h"
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalServiceKit/DarwinNotificationCenter.h>
+#import <SignalServiceKit/SDSCrossProcess.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

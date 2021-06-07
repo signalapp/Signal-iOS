@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOperation.h"
 #import "NSError+OWSOperation.h"
 #import "NSTimer+OWS.h"
-#import "OWSBackgroundTask.h"
-#import "OWSError.h"
+#import <SignalServiceKit/OWSBackgroundTask.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

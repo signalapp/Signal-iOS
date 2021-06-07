@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSGetStartedBannerViewControllerDelegate)
-protocol GetStartedBannerViewControllerDelegate: class {
+protocol GetStartedBannerViewControllerDelegate: AnyObject {
     func getStartedBannerDidTapInviteFriends(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidTapCreateGroup(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidTapAppearance(_ banner: GetStartedBannerViewController)

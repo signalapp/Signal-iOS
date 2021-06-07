@@ -30,7 +30,7 @@ class FailingTSAccountManager: TSAccountManager {
         failureBlock(VerificationFailedError())
     }
 
-    override func registerForPushNotifications(pushToken: String, voipToken: String, success successHandler: @escaping () -> Void, failure failureHandler: @escaping (Error) -> Void) {
+    override func registerForPushNotifications(pushToken: String, voipToken: String?, success successHandler: @escaping () -> Void, failure failureHandler: @escaping (Error) -> Void) {
         if pushToken == PushNotificationRequestResult.FailTSOnly.rawValue || pushToken == PushNotificationRequestResult.FailBoth.rawValue {
             failureHandler(OWSErrorMakeUnableToProcessServerResponseError())
         } else {
@@ -50,7 +50,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
 class VerifyingPushRegistrationManager: PushRegistrationManager {
-    public override func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
+    public override func requestPushTokens() -> Promise<(pushToken: String, voipToken: String?)> {
         return Promise.value(("a", "b"))
     }
 }

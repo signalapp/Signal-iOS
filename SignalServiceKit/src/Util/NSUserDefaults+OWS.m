@@ -3,8 +3,8 @@
 //
 
 #import "NSUserDefaults+OWS.h"
-#import "AppContext.h"
-#import "TSConstants.h"
+#import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/TSConstants.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

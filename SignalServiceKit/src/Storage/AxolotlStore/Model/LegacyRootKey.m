@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "LegacyRootKey.h"
-#import "LegacyChainKey.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/LegacyChainKey.h>
+#import <SignalServiceKit/LegacyRootKey.h>
 
 static NSString* const kCoderData      = @"kCoderData";
 

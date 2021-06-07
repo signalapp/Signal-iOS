@@ -231,7 +231,7 @@ public class CVCellView: UIView, CVRootComponentHost {
 
 // MARK: -
 
-public protocol CVRootComponentHost: class {
+public protocol CVRootComponentHost: AnyObject {
     var renderItem: CVRenderItem? { get set }
     var componentView: CVComponentView? { get set }
     var rootComponent: CVRootComponent? { get }

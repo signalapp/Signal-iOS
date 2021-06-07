@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "Contact.h"
 #import "SSKBaseTestObjC.h"
 #import <Contacts/Contacts.h>
+#import <SignalServiceKit/Contact.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

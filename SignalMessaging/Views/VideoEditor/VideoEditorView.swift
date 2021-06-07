@@ -8,7 +8,7 @@ import PromiseKit
 import Photos
 
 @objc
-public protocol VideoEditorViewDelegate: class {
+public protocol VideoEditorViewDelegate: AnyObject {
     var videoEditorViewController: UIViewController { get }
     func videoEditorUpdateNavigationBar()
 }
@@ -450,7 +450,7 @@ extension VideoEditorView: TrimVideoTimelineViewDelegate {
 
 // MARK: -
 
-protocol TrimVideoTimelineViewDelegate: class {
+protocol TrimVideoTimelineViewDelegate: AnyObject {
     var isPlaying: Bool { get }
     var currentTimeSeconds: TimeInterval { get }
     var untrimmedDurationSeconds: TimeInterval { get }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol ProfileNameViewControllerDelegate: class {
+protocol ProfileNameViewControllerDelegate: AnyObject {
     func profileNameViewDidComplete(givenName: String?, familyName: String?)
 }
 

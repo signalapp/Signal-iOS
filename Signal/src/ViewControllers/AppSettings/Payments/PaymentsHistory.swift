@@ -55,7 +55,7 @@ public struct PaymentsHistoryItem {
 
 // MARK: -
 
-protocol PaymentsHistoryDataSourceDelegate: class {
+protocol PaymentsHistoryDataSourceDelegate: AnyObject {
     var recordType: PaymentsHistoryDataSource.RecordType { get }
 
     var maxRecordCount: Int? { get }

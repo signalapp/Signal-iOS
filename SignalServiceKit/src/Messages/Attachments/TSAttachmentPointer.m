@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSAttachmentPointer.h"
-#import "OWSBackupFragment.h"
-#import "TSAttachmentStream.h"
 #import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/OWSBackupFragment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAttachmentPointer.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

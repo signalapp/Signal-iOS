@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "YDBStorage.h"
-#import "OWSFileSystem.h"
+#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/YDBStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

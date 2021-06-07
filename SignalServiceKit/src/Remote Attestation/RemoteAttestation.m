@@ -2,19 +2,19 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "RemoteAttestation.h"
+#import <SignalServiceKit/RemoteAttestation.h>
 #import "NSError+OWSOperation.h"
-#import "OWSError.h"
-#import "OWSRequestFactory.h"
-#import "RemoteAttestationQuote.h"
-#import "RemoteAttestationSigningCertificate.h"
-#import "SSKEnvironment.h"
-#import "TSNetworkManager.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSRequestFactory.h>
+#import <SignalServiceKit/RemoteAttestationQuote.h>
+#import <SignalServiceKit/RemoteAttestationSigningCertificate.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

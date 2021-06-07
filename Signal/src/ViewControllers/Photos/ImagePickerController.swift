@@ -265,7 +265,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: 
 
     var lastPageYOffset: CGFloat {
-        var yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom + view.safeAreaInsets.bottom
+        let yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom + view.safeAreaInsets.bottom
         return yOffset
     }
 
@@ -573,7 +573,7 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
     }
 }
 
-protocol TitleViewDelegate: class {
+protocol TitleViewDelegate: AnyObject {
     func titleViewWasTapped(_ titleView: TitleView)
 }
 

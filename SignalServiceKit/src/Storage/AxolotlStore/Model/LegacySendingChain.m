@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "LegacySendingChain.h"
-#import "LegacyChainKey.h"
+#import <SignalServiceKit/LegacyChainKey.h>
+#import <SignalServiceKit/LegacySendingChain.h>
 
 @interface LegacySendingChain ()
 

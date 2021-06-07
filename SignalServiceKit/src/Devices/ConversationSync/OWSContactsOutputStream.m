@@ -2,20 +2,20 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContactsOutputStream.h"
-#import "Contact.h"
-#import "ContactsManagerProtocol.h"
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
 #import "NSData+keyVersionByte.h"
-#import "OWSBlockingManager.h"
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSRecipientIdentity.h"
-#import "SignalAccount.h"
-#import "TSContactThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/Contact.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSContactsOutputStream.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

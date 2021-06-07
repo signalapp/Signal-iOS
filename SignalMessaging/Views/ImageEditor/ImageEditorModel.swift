@@ -25,7 +25,7 @@ private class ImageEditorOperation: NSObject {
 // MARK: -
 
 @objc
-public protocol ImageEditorModelObserver: class {
+public protocol ImageEditorModelObserver: AnyObject {
     // Used for large changes to the model, when the entire
     // model should be reloaded.
     func imageEditorModelDidChange(before: ImageEditorContents,

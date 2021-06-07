@@ -180,7 +180,7 @@ struct GalleryDate: Hashable, Comparable, Equatable {
     }
 }
 
-protocol MediaGalleryDelegate: class {
+protocol MediaGalleryDelegate: AnyObject {
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject)
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath])
 

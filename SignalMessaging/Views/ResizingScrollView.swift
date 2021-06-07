@@ -11,7 +11,7 @@ public protocol ResizingView: UIView {
 
 extension UIScrollView: ResizingView {}
 
-public protocol ResizingScrollViewDelegate: class {
+public protocol ResizingScrollViewDelegate: AnyObject {
     var resizingViewMinimumHeight: CGFloat { get }
     var resizingViewMaximumHeight: CGFloat { get }
 }

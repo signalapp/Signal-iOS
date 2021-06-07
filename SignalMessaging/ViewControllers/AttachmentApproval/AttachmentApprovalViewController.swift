@@ -9,7 +9,7 @@ import Photos
 import PromiseKit
 
 @objc
-public protocol AttachmentApprovalViewControllerDelegate: class {
+public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     // In the media send flow, partially swiping to go back from AttachmentApproval,
     // then cancelling would render the mediaSend bottom buttons behind the attachment approval
     // input toolbar.

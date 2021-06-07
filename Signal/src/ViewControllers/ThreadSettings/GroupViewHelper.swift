@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-protocol GroupViewHelperDelegate: class {
+protocol GroupViewHelperDelegate: AnyObject {
     func groupViewHelperDidUpdateGroup()
 
     var currentGroupModel: TSGroupModel? { get }

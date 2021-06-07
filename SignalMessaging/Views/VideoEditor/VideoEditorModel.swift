@@ -11,7 +11,7 @@ public enum VideoEditorError: Error {
 }
 
 @objc
-public protocol VideoEditorModelObserver: class {
+public protocol VideoEditorModelObserver: AnyObject {
     func videoEditorModelDidChange(_ model: VideoEditorModel)
 }
 

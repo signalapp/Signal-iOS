@@ -4,7 +4,7 @@
 
 import UIKit
 
-protocol AttachmentCaptionDelegate: class {
+protocol AttachmentCaptionDelegate: AnyObject {
     func captionView(_ captionView: AttachmentCaptionViewController, didChangeCaptionText captionText: String?, attachmentApprovalItem: AttachmentApprovalItem)
     func captionViewDidCancel()
 }

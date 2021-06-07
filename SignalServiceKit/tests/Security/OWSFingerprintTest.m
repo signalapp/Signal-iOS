@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSFingerprint.h"
 #import "SSKBaseTestObjC.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface OWSFingerprintTest : SSKBaseTestObjC

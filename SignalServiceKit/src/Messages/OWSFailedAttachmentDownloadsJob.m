@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSFailedAttachmentDownloadsJob.h"
-#import "TSAttachmentPointer.h"
+#import <SignalServiceKit/OWSFailedAttachmentDownloadsJob.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAttachmentPointer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

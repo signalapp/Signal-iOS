@@ -3,11 +3,11 @@
 //
 
 #import "SSKBaseTestObjC.h"
-#import "SSKSignedPreKeyStore.h"
-#import "TSPreKeyManager.h"
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+#import <SignalServiceKit/SSKSignedPreKeyStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/SignedPrekeyRecord.h>
+#import <SignalServiceKit/TSPreKeyManager.h>
 
 @interface TSPreKeyManager (Testing)
 

@@ -464,18 +464,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return conversationStyle.bubbleSecondaryTextColor(isIncoming: message.isIncoming)
     }
 
-    public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig,
-                                    componentDelegate: CVComponentDelegate?) -> CVBodyTextLabel.Config {
-        let attributedString = NSMutableAttributedString(attributedString: textViewConfig.text.attributedString)
-        // The original attributed string may not have an overall font
-        // assigned. Without it, measurement will not be correct. We
-        // assign a font here with "add" which will not override any
-        // ranges that already have a different font assigned.
-        attributedString.addAttributeToEntireString(.font, value: textViewConfig.font)
-
+    public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVBodyTextLabel.Config {
         let selectionColor = textSelectionColor
-
-        return CVBodyTextLabel.Config(attributedString: attributedString,
+        return CVBodyTextLabel.Config(attributedString: textViewConfig.text.attributedString,
                                       font: textViewConfig.font,
                                       textColor: textViewConfig.textColor,
                                       selectionColor: selectionColor,
@@ -498,8 +489,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         case .bodyText(let displayableText):
             configureForBodyText(componentView: componentView,
                                  displayableText: displayableText,
-                                 cellMeasurement: cellMeasurement,
-                                 componentDelegate: componentDelegate)
+                                 cellMeasurement: cellMeasurement)
         case .oversizeTextDownloading:
             owsAssertDebug(!componentView.isDedicatedCellView)
 
@@ -548,8 +538,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func configureForBodyText(componentView: CVComponentViewBodyText,
                                      displayableText: DisplayableText,
-                                     cellMeasurement: CVCellMeasurement,
-                                     componentDelegate: CVComponentDelegate) {
+                                     cellMeasurement: CVCellMeasurement) {
 
         switch textConfig(displayableText: displayableText) {
         case .labelConfig(let labelConfig):
@@ -558,8 +547,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                   cellMeasurement: cellMeasurement)
         case .textViewConfig(let textViewConfig):
             let bodyTextLabel = componentView.ensuredBodyTextLabel
-            let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig,
-                                                               componentDelegate: componentDelegate)
+            let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig)
             bodyTextLabel.configureForRendering(config: bodyTextLabelConfig)
 
             if bodyTextLabel.view.superview == nil {
@@ -785,8 +773,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 case .labelConfig(let labelConfig):
                     return CVText.measureLabel(config: labelConfig, maxWidth: maxWidth).ceil
                 case .textViewConfig(let textViewConfig):
-                    let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig,
-                                                                       componentDelegate: nil)
+                    let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig)
                     return CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: maxWidth).ceil
                 }
             case .oversizeTextDownloading:

@@ -7,7 +7,7 @@ import Accelerate
 import AVFoundation
 
 @objc
-public protocol AudioWaveformSamplingObserver: class {
+public protocol AudioWaveformSamplingObserver: AnyObject {
     func audioWaveformDidFinishSampling(_ audioWaveform: AudioWaveform)
 }
 

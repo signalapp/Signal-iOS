@@ -2,7 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSUpload.h"
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -12,6 +11,7 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>

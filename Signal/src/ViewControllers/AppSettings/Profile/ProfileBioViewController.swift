@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol ProfileBioViewControllerDelegate: class {
+protocol ProfileBioViewControllerDelegate: AnyObject {
     func profileBioViewDidComplete(bio: String?,
                                    bioEmoji: String?)
 }

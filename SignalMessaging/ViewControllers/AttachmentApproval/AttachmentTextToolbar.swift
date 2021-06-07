@@ -8,7 +8,7 @@ import UIKit
 // Coincides with Android's max text message length
 let kMaxMessageBodyCharacterCount = 2000
 
-protocol AttachmentTextToolbarDelegate: class, MentionTextViewDelegate {
+protocol AttachmentTextToolbarDelegate: AnyObject, MentionTextViewDelegate {
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)

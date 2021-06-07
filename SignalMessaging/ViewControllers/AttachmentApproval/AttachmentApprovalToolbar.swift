@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-protocol AttachmentApprovalToolbarDelegate: class {
+protocol AttachmentApprovalToolbarDelegate: AnyObject {
     func attachmentApprovalToolbarUpdateMediaRail()
     func attachmentApprovalToolbarStartEditingCaptions()
     func attachmentApprovalToolbarStopEditingCaptions()

@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSProvisioningMessage.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
+#import <SignalServiceKit/OWSProvisioningMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

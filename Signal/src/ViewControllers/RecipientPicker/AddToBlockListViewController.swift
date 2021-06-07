@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-protocol AddToBlockListDelegate: class {
+protocol AddToBlockListDelegate: AnyObject {
     func addToBlockListComplete()
 }
 

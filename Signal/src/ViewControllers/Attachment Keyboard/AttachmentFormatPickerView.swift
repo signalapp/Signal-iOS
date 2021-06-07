@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-protocol AttachmentFormatPickerDelegate: class {
+protocol AttachmentFormatPickerDelegate: AnyObject {
     func didTapCamera()
     func didTapGif()
     func didTapFile()

@@ -2,14 +2,14 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSSignalService.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSCensorshipConfiguration.h"
-#import "OWSError.h"
-#import "OWSHTTPSecurityPolicy.h"
-#import "TSAccountManager.h"
-#import "TSConstants.h"
+#import <SignalServiceKit/OWSCensorshipConfiguration.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
+#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSConstants.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

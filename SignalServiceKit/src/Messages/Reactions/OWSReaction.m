@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSReaction.h"
 #import "SignalServiceKit/SignalServiceKit-Swift.h"
+#import <SignalServiceKit/OWSReaction.h>
 
 @interface OWSReaction ()
 

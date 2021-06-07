@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSFingerprint.h"
-#import "OWSError.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <UIKit/UIImage.h>
 

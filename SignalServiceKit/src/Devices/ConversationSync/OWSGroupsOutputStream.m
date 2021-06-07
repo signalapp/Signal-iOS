@@ -2,14 +2,14 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSGroupsOutputStream.h"
-#import "MIMETypeUtil.h"
-#import "OWSBlockingManager.h"
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSGroupModel.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

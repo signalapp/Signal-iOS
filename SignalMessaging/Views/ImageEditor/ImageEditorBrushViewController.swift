@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public protocol ImageEditorBrushViewControllerDelegate: class {
+public protocol ImageEditorBrushViewControllerDelegate: AnyObject {
     func brushDidComplete(currentColor: ImageEditorColor)
 }
 

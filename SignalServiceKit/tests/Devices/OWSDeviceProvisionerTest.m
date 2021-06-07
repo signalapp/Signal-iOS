@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDeviceProvisioner.h"
-#import "OWSDeviceProvisioningCodeService.h"
-#import "OWSDeviceProvisioningService.h"
-#import "OWSFakeNetworkManager.h"
 #import "SSKBaseTestObjC.h"
-#import "TSNetworkManager.h"
+#import <SignalServiceKit/OWSDeviceProvisioner.h>
+#import <SignalServiceKit/OWSDeviceProvisioningCodeService.h>
+#import <SignalServiceKit/OWSDeviceProvisioningService.h>
+#import <SignalServiceKit/OWSFakeNetworkManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 
 @interface OWSFakeDeviceProvisioningService : OWSDeviceProvisioningService
 

@@ -6,7 +6,7 @@ import Foundation
 import SignalRingRTC
 
 // All Observer methods will be invoked from the main thread.
-public protocol CallObserver: class {
+public protocol CallObserver: AnyObject {
     func individualCallStateDidChange(_ call: SignalCall, state: CallState)
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool)
     func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool)

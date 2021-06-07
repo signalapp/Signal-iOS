@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public protocol ContactNameFieldViewDelegate: class {
+public protocol ContactNameFieldViewDelegate: AnyObject {
     func nameFieldDidChange()
 }
 
@@ -110,7 +110,7 @@ class ContactNameFieldView: UIView {
 // MARK: -
 
 @objc
-public protocol EditContactShareNameViewControllerDelegate: class {
+public protocol EditContactShareNameViewControllerDelegate: AnyObject {
     func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
                                   didEditContactShare contactShare: ContactShareViewModel)
 }

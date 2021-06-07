@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSReadTracking.h"
-#import "TSInteraction.h"
+#import <SignalServiceKit/OWSReadTracking.h>
+#import <SignalServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

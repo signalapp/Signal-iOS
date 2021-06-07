@@ -3,12 +3,12 @@
 //
 
 #import "SSKBaseTestObjC.h"
-#import "SSKEnvironment.h"
-#import "TestAppContext.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TestAppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

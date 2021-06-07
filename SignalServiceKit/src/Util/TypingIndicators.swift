@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc(OWSTypingIndicators)
-public protocol TypingIndicators: class {
+public protocol TypingIndicators: AnyObject {
     @objc
     var keyValueStore: SDSKeyValueStore { get }
 

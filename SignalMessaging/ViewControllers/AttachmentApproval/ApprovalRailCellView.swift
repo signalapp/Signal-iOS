@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-protocol ApprovalRailCellViewDelegate: class {
+protocol ApprovalRailCellViewDelegate: AnyObject {
     func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentApprovalItem: AttachmentApprovalItem)
     func canRemoveApprovalRailCellView(_ approvalRailCellView: ApprovalRailCellView) -> Bool
 }

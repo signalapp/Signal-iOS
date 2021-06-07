@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-protocol ReplaceAdminViewControllerDelegate: class {
+protocol ReplaceAdminViewControllerDelegate: AnyObject {
     func replaceAdmin(uuid: UUID)
 }
 

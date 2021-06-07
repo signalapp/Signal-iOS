@@ -2,16 +2,16 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBlockingManager.h"
-#import "AppContext.h"
-#import "AppReadiness.h"
-#import "MessageSender.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSBlockedPhoneNumbersMessage.h"
-#import "SSKEnvironment.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
+#import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/MessageSender.h>
+#import <SignalServiceKit/OWSBlockedPhoneNumbersMessage.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

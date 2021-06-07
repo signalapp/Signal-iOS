@@ -2,20 +2,20 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDisappearingMessagesJob.h"
-#import "AppContext.h"
-#import "AppReadiness.h"
-#import "ContactsManagerProtocol.h"
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import "NSTimer+OWS.h"
-#import "OWSBackgroundTask.h"
-#import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSDisappearingMessagesFinder.h"
-#import "SSKEnvironment.h"
-#import "TSIncomingMessage.h"
-#import "TSMessage.h"
-#import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/OWSBackgroundTask.h>
+#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSTimer *fallbackTimer;
 
 @end
+
+void AssertIsOnDisappearingMessagesQueue(void);
 
 void AssertIsOnDisappearingMessagesQueue()
 {

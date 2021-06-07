@@ -3,8 +3,8 @@
 //
 
 #import "SSKBaseTestObjC.h"
-#import "SSKPreKeyStore.h"
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+#import <SignalServiceKit/SSKPreKeyStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/SignedPreKeyRecord.h>
 

@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol MessageReactionPickerDelegate: class {
+protocol MessageReactionPickerDelegate: AnyObject {
     func didSelectReaction(reaction: String, isRemoving: Bool)
     func didSelectAnyEmoji()
 }

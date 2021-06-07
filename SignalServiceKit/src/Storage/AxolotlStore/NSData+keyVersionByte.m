@@ -3,8 +3,8 @@
 //
 
 #import "NSData+keyVersionByte.h"
-#import "AxolotlExceptions.h"
 #import <SignalCoreKit/SCKExceptionWrapper.h>
+#import <SignalServiceKit/AxolotlExceptions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

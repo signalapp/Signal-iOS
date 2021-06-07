@@ -371,7 +371,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
 
         Logger.info("Received \(#function) CXSetMutedCallAction")
-        guard let call = callManager.callWithLocalId(action.callUUID) else {
+        guard nil != callManager.callWithLocalId(action.callUUID) else {
             Logger.info("Failing CXSetMutedCallAction for unknown (ended?) call: \(action.callUUID)")
             action.fail()
             return

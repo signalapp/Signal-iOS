@@ -4,7 +4,7 @@
 
 import Foundation
 
-public protocol PaymentsRestoreWalletDelegate: class {
+public protocol PaymentsRestoreWalletDelegate: AnyObject {
     func restoreWalletDidComplete()
 }
 

@@ -12,7 +12,7 @@ import Contacts
 import SignalServiceKit
 
 @objc
-public protocol ContactsPickerDelegate: class {
+public protocol ContactsPickerDelegate: AnyObject {
     func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError)
     func contactsPickerDidCancel(_: ContactsPicker)
     func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact)

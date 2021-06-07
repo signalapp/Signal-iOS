@@ -5,7 +5,7 @@
 import Foundation
 import SignalRingRTC
 
-protocol GroupCallVideoGridLayoutDelegate: class {
+protocol GroupCallVideoGridLayoutDelegate: AnyObject {
     var maxColumns: Int { get }
     var maxRows: Int { get }
     var maxItems: Int { get }

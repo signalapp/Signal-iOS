@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public protocol ContactShareApprovalViewControllerDelegate: class {
+public protocol ContactShareApprovalViewControllerDelegate: AnyObject {
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didApproveContactShare contactShare: ContactShareViewModel)
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
@@ -21,7 +21,7 @@ public protocol ContactShareApprovalViewControllerDelegate: class {
 
 // MARK: -
 
-protocol ContactShareField: class {
+protocol ContactShareField: AnyObject {
 
     var isAvatar: Bool { get }
 
@@ -147,7 +147,7 @@ class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
 
 // MARK: -
 
-protocol ContactShareFieldViewDelegate: class {
+protocol ContactShareFieldViewDelegate: AnyObject {
     func contactShareFieldViewDidChangeSelectedState()
 }
 

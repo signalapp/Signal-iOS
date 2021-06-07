@@ -5,7 +5,7 @@
 import Foundation
 import ContactsUI
 
-protocol NameCollisionResolutionDelegate: class {
+protocol NameCollisionResolutionDelegate: AnyObject {
     // For message requests, we should piggyback on the same action sheet that's presented
     // by the message request actions
     func createBlockThreadActionSheet(sheetCompletion: ((Bool) -> Void)?) -> ActionSheetController

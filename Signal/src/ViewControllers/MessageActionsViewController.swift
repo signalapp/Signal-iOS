@@ -54,7 +54,7 @@ public class MessageAction: NSObject {
 }
 
 @objc
-public protocol MessageActionsViewControllerDelegate: class {
+public protocol MessageActionsViewControllerDelegate: AnyObject {
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withAction: MessageAction?)
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withReaction: String, isRemoving: Bool)
     func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
@@ -416,7 +416,7 @@ extension MessageActionsViewController: MessageActionsToolbarDelegate {
     }
 }
 
-public protocol MessageActionsToolbarDelegate: class {
+public protocol MessageActionsToolbarDelegate: AnyObject {
     func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction)
 }
 

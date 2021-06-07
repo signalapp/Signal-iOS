@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol TextViewWithPlaceholderDelegate: class {
+protocol TextViewWithPlaceholderDelegate: AnyObject {
     /// A method invoked by the text field when its cursor/selection changed without any change
     /// to the text
     func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder)

@@ -18,7 +18,7 @@ public enum ConversationSettingsPresentationMode: UInt {
 // MARK: -
 
 @objc
-public protocol ConversationSettingsViewDelegate: class {
+public protocol ConversationSettingsViewDelegate: AnyObject {
 
     func conversationColorWasUpdated()
 

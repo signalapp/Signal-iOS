@@ -154,7 +154,7 @@ let kNotificationDelayForRemoteRead: TimeInterval = 20
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
-protocol NotificationPresenterAdaptee: class {
+protocol NotificationPresenterAdaptee: AnyObject {
 
     func registerNotificationSettings() -> Promise<Void>
 

@@ -4,7 +4,7 @@
 
 import UIKit
 
-public protocol ImageEditorCropViewControllerDelegate: class {
+public protocol ImageEditorCropViewControllerDelegate: AnyObject {
     func cropDidComplete(transform: ImageEditorTransform)
     func cropDidCancel()
 }

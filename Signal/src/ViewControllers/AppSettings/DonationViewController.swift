@@ -662,7 +662,7 @@ private struct Presets {
 
 // MARK: - CustomValueTextField
 
-private protocol CustomValueTextFieldDelegate: class {
+private protocol CustomValueTextFieldDelegate: AnyObject {
     func customValueTextFieldStateDidChange(_ textField: CustomValueTextField)
 }
 

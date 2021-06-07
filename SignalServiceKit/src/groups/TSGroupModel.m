@@ -2,14 +2,14 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSGroupModel.h"
-#import "FunctionalUtil.h"
 #import "NSData+Image.h"
 #import "UIImage+OWS.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSGroupModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

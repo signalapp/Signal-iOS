@@ -417,7 +417,16 @@ public class CVAttachmentProgressView: ManualLayoutView {
             stateView.state = .downloadUnknownProgress
             return
         }
-        if progress == CGFloat.nan {
+
+        updateState(downloadProgress: progress)
+    }
+
+    private func updateState(downloadProgress progress: CGFloat?) {
+        guard let progress = progress else {
+            stateView.state = .downloadUnknownProgress
+            return
+        }
+        if progress.isNaN {
             owsFailDebug("Progress is nan.")
             stateView.state = .downloadUnknownProgress
         } else if progress > 0 {
@@ -452,17 +461,21 @@ public class CVAttachmentProgressView: ManualLayoutView {
             owsFailDebug("Invalid attachment.")
             stateView.state = .uploadUnknownProgress
             return
-        @unknown default:
-            owsFailDebug("Invalid value.")
+        }
+
+        updateState(uploadProgress: progress)
+    }
+
+    private func updateState(uploadProgress progress: NSNumber?) {
+        guard let progress = progress?.floatValue else {
             stateView.state = .uploadUnknownProgress
             return
         }
-
-        if progress.floatValue == Float.nan {
+        if progress.isNaN {
             owsFailDebug("Progress is nan.")
             stateView.state = .uploadUnknownProgress
-        } else if progress.floatValue > 0 {
-            stateView.state = .uploadProgress(progress: CGFloat(progress.floatValue))
+        } else if progress > 0 {
+            stateView.state = .uploadProgress(progress: CGFloat(progress))
         } else {
             stateView.state = .uploadUnknownProgress
         }

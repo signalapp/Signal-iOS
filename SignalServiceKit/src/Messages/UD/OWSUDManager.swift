@@ -90,7 +90,7 @@ public class OWSUDSendingAccess: NSObject {
     }
 }
 
-@objc public protocol OWSUDManager: class {
+@objc public protocol OWSUDManager: AnyObject {
     @objc
     var keyValueStore: SDSKeyValueStore { get }
     @objc

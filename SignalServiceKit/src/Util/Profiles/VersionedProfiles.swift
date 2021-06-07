@@ -20,7 +20,7 @@ public class VersionedProfileUpdate: NSObject {
 // MARK: -
 
 @objc
-public protocol VersionedProfileRequest: class {
+public protocol VersionedProfileRequest: AnyObject {
     var request: TSRequest { get }
     var profileKey: OWSAES256Key? { get }
 }
@@ -28,7 +28,7 @@ public protocol VersionedProfileRequest: class {
 // MARK: -
 
 @objc
-public protocol VersionedProfiles: class {
+public protocol VersionedProfiles: AnyObject {
     @objc(clearProfileKeyCredentialForAddress:transaction:)
     func clearProfileKeyCredential(for address: SignalServiceAddress,
                                    transaction: SDSAnyWriteTransaction)

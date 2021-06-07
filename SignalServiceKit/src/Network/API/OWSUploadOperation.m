@@ -2,21 +2,21 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSUploadOperation.h"
-#import "MIMETypeUtil.h"
 #import "NSError+OWSOperation.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSDispatch.h"
-#import "OWSError.h"
-#import "OWSOperation.h"
-#import "OWSRequestFactory.h"
-#import "OWSUpload.h"
-#import "SSKEnvironment.h"
-#import "TSAttachmentStream.h"
-#import "TSNetworkManager.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/OWSDispatch.h>
+#import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSOperation.h>
+#import <SignalServiceKit/OWSRequestFactory.h>
+#import <SignalServiceKit/OWSUpload.h>
+#import <SignalServiceKit/OWSUploadOperation.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

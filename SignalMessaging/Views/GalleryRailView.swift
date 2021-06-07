@@ -4,7 +4,7 @@
 
 import PromiseKit
 
-public protocol GalleryRailItemProvider: class {
+public protocol GalleryRailItemProvider: AnyObject {
     var railItems: [GalleryRailItem] { get }
 }
 
@@ -22,7 +22,7 @@ public extension GalleryRailItem where Self: Equatable {
     }
 }
 
-protocol GalleryRailCellViewDelegate: class {
+protocol GalleryRailCellViewDelegate: AnyObject {
     func didTapGalleryRailCellView(_ galleryRailCellView: GalleryRailCellView)
 }
 
@@ -102,7 +102,7 @@ public class GalleryRailCellView: UIView {
     }()
 }
 
-public protocol GalleryRailViewDelegate: class {
+public protocol GalleryRailViewDelegate: AnyObject {
     func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem)
 }
 
