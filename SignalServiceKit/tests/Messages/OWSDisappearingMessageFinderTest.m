@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "SSKBaseTestObjC.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/MockSSKEnvironment.h>
 #import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
 #import <SignalServiceKit/SSKAccessors+SDS.h>
-#import <SignalServiceKit/SSKBaseTestObjC.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSContactThread.h>

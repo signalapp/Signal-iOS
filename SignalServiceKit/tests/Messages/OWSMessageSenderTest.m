@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "SSKBaseTestObjC.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/MessageSender.h>
@@ -9,7 +10,6 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFakeNetworkManager.h>
 #import <SignalServiceKit/OWSUploadOperation.h>
-#import <SignalServiceKit/SSKBaseTestObjC.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupModel.h>
