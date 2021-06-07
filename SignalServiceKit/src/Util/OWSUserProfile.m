@@ -397,7 +397,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                    NSString *_Nullable familyNameBefore = profile.familyName;
                                    NSString *_Nullable avatarUrlPathBefore = profile.avatarUrlPath;
 
-                                   [OWSUserProfile applyChangeBuilder:changeBuilder profile:profile];
+                                   [OWSUserProfile applyChanges:changes profile:profile];
 
                                    profileKeyDidChange = ![NSObject isNullableObject:profileKeyBefore.keyData
                                                                              equalTo:profile.profileKey.keyData];
@@ -487,7 +487,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                    updatedInstance = profile;
                                }];
     } else {
-        [OWSUserProfile applyChangeBuilder:changeBuilder profile:self];
+        [OWSUserProfile applyChanges:changes profile:self];
         [self anyInsertWithTransaction:transaction];
         didChange = YES;
     }
