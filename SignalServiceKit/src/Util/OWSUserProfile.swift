@@ -217,12 +217,10 @@ public class ProfileValue: NSObject {
 
 // MARK: -
 
-// @objc
-// public
 @objc
-public class UserProfileChangeBuilder: NSObject {
+public class UserProfileChanges: NSObject {
     @objc
-    public class OptionalString: NSObject {
+    public class OptionalStringValue: NSObject {
         @objc
         public let value: String?
 
@@ -230,30 +228,286 @@ public class UserProfileChangeBuilder: NSObject {
             self.value = value
         }
     }
+    @objc
+    public class BoolValue: NSObject {
+        @objc
+        public let value: Bool
+
+        init(_ value: Bool) {
+            self.value = value
+        }
+    }
+    @objc
+    public class DateValue: NSObject {
+        @objc
+        public let value: Date
+
+        init(_ value: Date) {
+            self.value = value
+        }
+    }
+    // TODO: Should this be optional?
+    @objc
+    public class ProfileKeyValue: NSObject {
+        @objc
+        public let value: OWSAES256Key?
+
+        init(_ value: OWSAES256Key?) {
+            self.value = value
+        }
+    }
 
     @objc
-    public var givenName: OptionalString?
+    public var givenName: OptionalStringValue?
     @objc
-    public var familyName: OptionalString?
+    public var familyName: OptionalStringValue?
+    @objc
+    public var bio: OptionalStringValue?
+    @objc
+    public var bioEmoji: OptionalStringValue?
+    @objc
+    public var username: OptionalStringValue?
+    @objc
+    public var isUuidCapable: BoolValue?
+    // TODO: Update the avatar properties in lockstep.
+    @objc
+    public var avatarUrlPath: OptionalStringValue?
+    @objc
+    public var avatarFileName: OptionalStringValue?
+    @objc
+    public var lastFetchDate: DateValue?
+    @objc
+    public var lastMessagingDate: DateValue?
+    @objc
+    public var profileKey: ProfileKeyValue?
 }
 
-// MARK: -
+// MARK: - Update With... Methods
 
 @objc
 public extension OWSUserProfile {
-    typealias OptionalString = UserProfileChangeBuilder.OptionalString
 
     func update(givenName: String?,
                 familyName: String?,
                 userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
-        let builder = UserProfileChangeBuilder()
-        builder.givenName = .init(givenName)
-        builder.familyName = .init(familyName)
-        apply(builder,
+        let changes = UserProfileChanges()
+        changes.givenName = .init(givenName)
+        changes.familyName = .init(familyName)
+        apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
+
+    func update(givenName: String?,
+                familyName: String?,
+                avatarUrlPath: String?,
+                avatarFileName: String?,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.givenName = .init(givenName)
+        changes.familyName = .init(familyName)
+        changes.avatarUrlPath = .init(avatarUrlPath)
+        changes.avatarFileName = .init(avatarFileName)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(givenName: String?,
+                familyName: String?,
+                bio: String?,
+                bioEmoji: String?,
+                username: String?,
+                isUuidCapable: Bool,
+                avatarUrlPath: String?,
+                // TODO:
+                //                avatarFileName: String?,
+                lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.givenName = .init(givenName)
+        changes.familyName = .init(familyName)
+        changes.bio = .init(bio)
+        changes.bioEmoji = .init(bioEmoji)
+        changes.username = .init(username)
+        changes.isUuidCapable = .init(isUuidCapable)
+        changes.avatarUrlPath = .init(avatarUrlPath)
+        // TODO:
+        //        changes.avatarFileName = .init(avatarFileName)
+        changes.lastFetchDate = .init(lastFetchDate)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(givenName: String?,
+                familyName: String?,
+                bio: String?,
+                bioEmoji: String?,
+                username: String?,
+                isUuidCapable: Bool,
+                avatarUrlPath: String?,
+                avatarFileName: String?,
+                lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.givenName = .init(givenName)
+        changes.familyName = .init(familyName)
+        changes.bio = .init(bio)
+        changes.bioEmoji = .init(bioEmoji)
+        changes.username = .init(username)
+        changes.isUuidCapable = .init(isUuidCapable)
+        changes.avatarUrlPath = .init(avatarUrlPath)
+        changes.avatarFileName = .init(avatarFileName)
+        changes.lastFetchDate = .init(lastFetchDate)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(avatarFileName: String?,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.avatarFileName = .init(avatarFileName)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func clear(profileKey: OWSAES256Key?,
+               userProfileWriter: UserProfileWriter,
+               transaction: SDSAnyWriteTransaction,
+               completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.profileKey = .init(profileKey)
+        changes.givenName = .init(nil)
+        changes.familyName = .init(nil)
+        changes.bio = .init(nil)
+        changes.bioEmoji = .init(nil)
+        changes.username = .init(nil)
+        // TODO:
+        // builder.isUuidCapable = .init(nil)
+        changes.avatarUrlPath = .init(nil)
+        changes.avatarFileName = .init(nil)
+        // TODO:
+        // builder.lastFetchDate = .init(nil)
+        // TODO:
+        // builder.lastMessagingDate = .init(nil)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(profileKey: OWSAES256Key?,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.profileKey = .init(profileKey)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(givenName: String?,
+                familyName: String?,
+                avatarUrlPath: String?,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.givenName = .init(givenName)
+        changes.familyName = .init(familyName)
+        changes.avatarUrlPath = .init(avatarUrlPath)
+        // TODO:
+        // builder.avatarFileName = .init(avatarFileName)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(username: String?,
+                isUuidCapable: Bool,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.username = .init(username)
+        changes.isUuidCapable = .init(isUuidCapable)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(username: String?,
+                isUuidCapable: Bool,
+                lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.username = .init(username)
+        changes.isUuidCapable = .init(isUuidCapable)
+        changes.lastFetchDate = .init(lastFetchDate)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func update(lastMessagingDate: Date,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.lastMessagingDate = .init(lastMessagingDate)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    #if TESTABLE_BUILD
+    func update(lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
+                transaction: SDSAnyWriteTransaction,
+                completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.lastFetchDate = .init(lastFetchDate)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+
+    func discardProfileKey(userProfileWriter: UserProfileWriter,
+                           transaction: SDSAnyWriteTransaction,
+                           completion: OWSUserProfileCompletion?) {
+        let changes = UserProfileChanges()
+        changes.profileKey = .init(nil)
+        apply(changes,
+              userProfileWriter: userProfileWriter,
+              transaction: transaction,
+              completion: completion)
+    }
+    #endif
 }
