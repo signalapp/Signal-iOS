@@ -286,7 +286,8 @@ public class UserProfileChanges: NSObject {
 
 @objc
 public extension OWSUserProfile {
-
+    
+    @objc
     func update(givenName: String?,
                 familyName: String?,
                 wasLocallyInitiated: Bool,
@@ -301,11 +302,11 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
+    @objc
     func update(givenName: String?,
                 familyName: String?,
                 avatarUrlPath: String?,
                 avatarFileName: String?,
-                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -313,12 +314,15 @@ public extension OWSUserProfile {
         changes.familyName = .init(familyName)
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
+        // TODO: We could make this a parameter.
+        let wasLocallyInitiated = true
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
+    @objc
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
@@ -329,7 +333,6 @@ public extension OWSUserProfile {
                 // TODO:
                 //                avatarFileName: String?,
                 lastFetchDate: Date,
-                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -343,12 +346,15 @@ public extension OWSUserProfile {
         // TODO:
         //        changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
+        // TODO: We could make this a parameter.
+        let wasLocallyInitiated = true
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
+    @objc
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
@@ -358,7 +364,6 @@ public extension OWSUserProfile {
                 avatarUrlPath: String?,
                 avatarFileName: String?,
                 lastFetchDate: Date,
-                wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -371,24 +376,28 @@ public extension OWSUserProfile {
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
+        // TODO: We could make this a parameter.
+        let wasLocallyInitiated = true
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
               completion: completion)
     }
 
+    @objc
     func update(avatarFileName: String?,
-                wasLocallyInitiated: Bool,
-                transaction: SDSAnyWriteTransaction,
-                completion: OWSUserProfileCompletion?) {
+                transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.avatarFileName = .init(avatarFileName)
+        // TODO: We could make this a parameter.
+        let wasLocallyInitiated = true
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
-              completion: completion)
+              completion: nil)
     }
 
+    @objc
     func clear(profileKey: OWSAES256Key?,
                wasLocallyInitiated: Bool,
                transaction: SDSAnyWriteTransaction,
@@ -414,6 +423,7 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
+    @objc
     func update(profileKey: OWSAES256Key?,
                 wasLocallyInitiated: Bool,
                 transaction: SDSAnyWriteTransaction,
@@ -426,6 +436,7 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
+    @objc
     func update(givenName: String?,
                 familyName: String?,
                 avatarUrlPath: String?,
@@ -444,70 +455,78 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
+    @objc
     func update(username: String?,
                 isUuidCapable: Bool,
-                wasLocallyInitiated: Bool,
-                transaction: SDSAnyWriteTransaction,
-                completion: OWSUserProfileCompletion?) {
+                transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
+        // TODO: We could make this a parameter.
+        let wasLocallyInitiated = true
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
-              completion: completion)
+              completion: nil)
     }
 
+    @objc
     func update(username: String?,
                 isUuidCapable: Bool,
                 lastFetchDate: Date,
-                wasLocallyInitiated: Bool,
-                transaction: SDSAnyWriteTransaction,
-                completion: OWSUserProfileCompletion?) {
+                transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
         changes.lastFetchDate = .init(lastFetchDate)
+        // TODO: We could make this a parameter.
+        let wasLocallyInitiated = true
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
-              completion: completion)
+              completion: nil)
     }
 
+    @objc
     func update(lastMessagingDate: Date,
-                wasLocallyInitiated: Bool,
-                transaction: SDSAnyWriteTransaction,
-                completion: OWSUserProfileCompletion?) {
+                transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.lastMessagingDate = .init(lastMessagingDate)
+        // We use wasLocallyInitiated = NO because we don't need
+        // to sync lastMessagingDate to the storage service.
+        let wasLocallyInitiated = false
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
-              completion: completion)
+              completion: nil)
     }
 
     #if TESTABLE_BUILD
+    @objc
     func update(lastFetchDate: Date,
-                wasLocallyInitiated: Bool,
-                transaction: SDSAnyWriteTransaction,
-                completion: OWSUserProfileCompletion?) {
+                transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.lastFetchDate = .init(lastFetchDate)
+        // We use wasLocallyInitiated = NO because we don't need
+        // to sync lastMessagingDate to the storage service.
+        let wasLocallyInitiated = false
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
-              completion: completion)
+              completion: nil)
     }
 
-    func discardProfileKey(wasLocallyInitiated: Bool,
-                           transaction: SDSAnyWriteTransaction,
-                           completion: OWSUserProfileCompletion?) {
+    @objc
+    func discardProfileKey(transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.profileKey = .init(nil)
+        // We use wasLocallyInitiated = NO because we don't need
+        // to sync lastMessagingDate to the storage service.
+        let wasLocallyInitiated = false
         apply(changes,
               wasLocallyInitiated: wasLocallyInitiated,
               transaction: transaction,
-              completion: completion)
+              completion: nil)
     }
     #endif
 }

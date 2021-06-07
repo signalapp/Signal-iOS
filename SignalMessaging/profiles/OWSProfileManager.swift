@@ -412,12 +412,12 @@ extension OWSProfileManager {
                                           transaction: SDSAnyWriteTransaction) {
         Logger.verbose("profile givenName: \(String(describing: attempt.update.profileGivenName)), familyName: \(String(describing: attempt.update.profileFamilyName)), avatarFilename: \(String(describing: attempt.avatarFilename))")
 
-        attempt.userProfile.updateWith(givenName: attempt.update.profileGivenName,
-                                       familyName: attempt.update.profileFamilyName,
-                                       avatarUrlPath: attempt.avatarUrlPath,
-                                       avatarFileName: attempt.avatarFilename,
-                                       transaction: transaction,
-                                       completion: nil)
+        attempt.userProfile.update(givenName: attempt.update.profileGivenName,
+                                   familyName: attempt.update.profileFamilyName,
+                                   avatarUrlPath: attempt.avatarUrlPath,
+                                   avatarFileName: attempt.avatarFilename,
+                                   transaction: transaction,
+                                   completion: nil)
     }
 
     // MARK: - Update Queue
