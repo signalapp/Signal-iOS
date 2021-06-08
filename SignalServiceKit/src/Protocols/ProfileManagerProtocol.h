@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
     UserProfileWriter_AvatarDownload,
     UserProfileWriter_MetadataUpdate,
     UserProfileWriter_Debugging,
+    UserProfileWriter_Tests,
     UserProfileWriter_Unknown,
 };
 

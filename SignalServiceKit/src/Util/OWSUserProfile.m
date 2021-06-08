@@ -58,6 +58,8 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
             return NO;
         case UserProfileWriter_Debugging:
             return NO;
+        case UserProfileWriter_Tests:
+            return NO;
         case UserProfileWriter_Unknown:
             OWSCFailDebug(@"Invalid UserProfileWriter.");
             return NO;
@@ -405,6 +407,8 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
             case UserProfileWriter_MetadataUpdate:
                 canModifyStorageServiceProperties = NO;
             case UserProfileWriter_Debugging:
+                canModifyStorageServiceProperties = YES;
+            case UserProfileWriter_Tests:
                 canModifyStorageServiceProperties = YES;
             case UserProfileWriter_Unknown:
                 OWSFailDebug(@"Invalid UserProfileWriter.");
