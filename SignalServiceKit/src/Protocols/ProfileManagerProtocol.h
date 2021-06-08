@@ -17,8 +17,11 @@ typedef NS_CLOSED_ENUM(NSUInteger, UserProfileWriter) {
     UserProfileWriter_ProfileFetch,
     UserProfileWriter_StorageService,
     UserProfileWriter_SyncMessage,
+    UserProfileWriter_Registration,
     UserProfileWriter_Linking,
     UserProfileWriter_GroupState,
+    UserProfileWriter_Reupload,
+    UserProfileWriter_AvatarDownload,
     UserProfileWriter_Debugging,
     UserProfileWriter_Unknown,
 };
@@ -128,7 +131,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, UserProfileWriter) {
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
     optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
-                  lastFetchDate:(NSDate *)lastFetchDate;
+                  lastFetchDate:(NSDate *)lastFetchDate
+              userProfileWriter:(UserProfileWriter)userProfileWriter;
 
 - (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 

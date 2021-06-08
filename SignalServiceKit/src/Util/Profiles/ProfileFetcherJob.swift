@@ -564,7 +564,8 @@ public class ProfileFetcherJob: NSObject {
                                      isUuidCapable: true,
                                      avatarUrlPath: profile.avatarUrlPath,
                                      optionalDecryptedAvatarData: optionalAvatarData,
-                                     lastFetch: Date())
+                                     lastFetch: Date(),
+                                     userProfileWriter: .profileFetch)
 
         updateUnidentifiedAccess(address: address,
                                  verifier: profile.unidentifiedAccessVerifier,

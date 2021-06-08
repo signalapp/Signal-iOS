@@ -321,14 +321,19 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                               avatarData:avatarData];
 }
 
-- (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateLocalUsername:(nullable NSString *)username
+          userProfileWriter:(UserProfileWriter)userProfileWriter
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(username == nil || username.length > 0);
 
     OWSUserProfile *userProfile = self.localUserProfile;
     OWSAssertDebug(self.localUserProfile);
 
-    [userProfile updateWithUsername:username isUuidCapable:YES transaction:transaction];
+    [userProfile updateWithUsername:username
+                      isUuidCapable:YES
+                  userProfileWriter:userProfileWriter
+                        transaction:transaction];
 }
 
 - (void)writeAvatarToDiskWithData:(NSData *)avatarData
@@ -1608,7 +1613,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
                     [self updateProfileAvatarCache:image filename:fileName];
 
-                    [currentUserProfile updateWithAvatarFileName:fileName transaction:transaction];
+                    [currentUserProfile updateWithAvatarFileName:fileName
+                                               userProfileWriter:UserProfileWriter_AvatarDownload
+                                                     transaction:transaction];
                 });
 
                 OWSAssertDebug(backgroundTask);
@@ -1627,6 +1634,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
     optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
                   lastFetchDate:(NSDate *)lastFetchDate
+              userProfileWriter:(UserProfileWriter)userProfileWriter
 {
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
     OWSAssertDebug(address.isValid);
@@ -1673,6 +1681,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                 [userProfile updateWithUsername:username
                                   isUuidCapable:isUuidCapable
                                   lastFetchDate:lastFetchDate
+                              userProfileWriter:userProfileWriter
                                     transaction:transaction];
                 return;
             }
@@ -1688,6 +1697,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                    avatarUrlPath:avatarUrlPath
                                   avatarFileName:avatarFileName
                                    lastFetchDate:lastFetchDate
+                               userProfileWriter:userProfileWriter
                                      transaction:transaction
                                       completion:nil];
             } else {
@@ -1699,6 +1709,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                    isUuidCapable:isUuidCapable
                                    avatarUrlPath:avatarUrlPath
                                    lastFetchDate:lastFetchDate
+                               userProfileWriter:userProfileWriter
                                      transaction:transaction
                                       completion:nil];
             }
@@ -1707,7 +1718,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                 NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
                 if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
                     OWSLogError(@"downloaded file is missing for profile: %@", userProfile.address);
-                    [userProfile updateWithAvatarFileName:nil transaction:transaction];
+                    [userProfile updateWithAvatarFileName:nil
+                                        userProfileWriter:userProfileWriter
+                                              transaction:transaction];
                 }
             }
         });

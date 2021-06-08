@@ -44,10 +44,16 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
             return NO;
         case UserProfileWriter_SyncMessage:
             return NO;
+        case UserProfileWriter_Registration:
+            return YES;
         case UserProfileWriter_Linking:
             return NO;
         case UserProfileWriter_GroupState:
             return YES;
+        case UserProfileWriter_Reupload:
+            return NO;
+        case UserProfileWriter_AvatarDownload:
+            return NO;
         case UserProfileWriter_Debugging:
             return NO;
         case UserProfileWriter_Unknown:
@@ -383,10 +389,16 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
                 canModifyStorageServiceProperties = YES;
             case UserProfileWriter_SyncMessage:
                 canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_Registration:
+                canModifyStorageServiceProperties = YES;
             case UserProfileWriter_Linking:
                 canModifyStorageServiceProperties = NO;
             case UserProfileWriter_GroupState:
                 OWSFailDebug(@"Group state should not write to user profiles.");
+                canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_Reupload:
+                canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_AvatarDownload:
                 canModifyStorageServiceProperties = NO;
             case UserProfileWriter_Debugging:
                 canModifyStorageServiceProperties = YES;

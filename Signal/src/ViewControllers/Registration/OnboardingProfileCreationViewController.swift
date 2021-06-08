@@ -345,7 +345,8 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
                 profileFamilyName: normalizedFamilyName,
                 profileBio: nil,
                 profileBioEmoji: nil,
-                profileAvatarData: avatarData)
+                profileAvatarData: avatarData,
+                userProfileWriter: .registration)
         }.recover { error in
             owsFailDebug("Error: \(error)")
         }.done {

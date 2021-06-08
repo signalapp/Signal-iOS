@@ -304,6 +304,7 @@ public extension OWSUserProfile {
                 familyName: String?,
                 avatarUrlPath: String?,
                 avatarFileName: String?,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -311,15 +312,13 @@ public extension OWSUserProfile {
         changes.familyName = .init(familyName)
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:lastFetchDate:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:lastFetchDate:userProfileWriter:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
@@ -327,9 +326,8 @@ public extension OWSUserProfile {
                 username: String?,
                 isUuidCapable: Bool,
                 avatarUrlPath: String?,
-                // TODO:
-                //                avatarFileName: String?,
                 lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -340,18 +338,14 @@ public extension OWSUserProfile {
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
         changes.avatarUrlPath = .init(avatarUrlPath)
-        // TODO:
-        //        changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:avatarFileName:lastFetchDate:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:avatarFileName:lastFetchDate:userProfileWriter:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
@@ -361,6 +355,7 @@ public extension OWSUserProfile {
                 avatarUrlPath: String?,
                 avatarFileName: String?,
                 lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -373,8 +368,6 @@ public extension OWSUserProfile {
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
@@ -382,11 +375,10 @@ public extension OWSUserProfile {
     }
 
     func update(avatarFileName: String?,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.avatarFileName = .init(avatarFileName)
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
@@ -441,8 +433,6 @@ public extension OWSUserProfile {
         changes.givenName = .init(givenName)
         changes.familyName = .init(familyName)
         changes.avatarUrlPath = .init(avatarUrlPath)
-        // TODO:
-        // builder.avatarFileName = .init(avatarFileName)
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
@@ -451,12 +441,11 @@ public extension OWSUserProfile {
 
     func update(username: String?,
                 isUuidCapable: Bool,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
@@ -466,13 +455,12 @@ public extension OWSUserProfile {
     func update(username: String?,
                 isUuidCapable: Bool,
                 lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
         changes.lastFetchDate = .init(lastFetchDate)
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,

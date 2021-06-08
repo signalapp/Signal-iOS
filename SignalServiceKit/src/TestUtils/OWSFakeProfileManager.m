@@ -286,6 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
     optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
                   lastFetchDate:(NSDate *)lastFetchDate
+              userProfileWriter:(UserProfileWriter)userProfileWriter
 {
     // Do nothing.
 }
