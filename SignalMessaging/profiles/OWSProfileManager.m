@@ -33,7 +33,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels = 1024;
-const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_WasLocallyInitiated";
+const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_UserProfileWriter";
 
 @interface OWSProfileManager ()
 
@@ -893,7 +893,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                    object:nil
                                  userInfo:@{
                                      kNSNotificationKey_ProfileAddress : address,
-                                     kNSNotificationKey_WasLocallyInitiated : @(wasLocallyInitiated),
+                                     kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                                  }];
         }
     }];
@@ -935,7 +935,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                    object:nil
                                  userInfo:@{
                                      kNSNotificationKey_ProfileAddress : address,
-                                     kNSNotificationKey_WasLocallyInitiated : @(wasLocallyInitiated),
+                                     kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                                  }];
         }
     }];
@@ -1059,7 +1059,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                object:nil
                              userInfo:@{
                                  kNSNotificationKey_ProfileGroupId : groupId,
-                                 kNSNotificationKey_WasLocallyInitiated : @(wasLocallyInitiated),
+                                 kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                              }];
     }];
 }
@@ -1091,7 +1091,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                object:nil
                              userInfo:@{
                                  kNSNotificationKey_ProfileGroupId : groupId,
-                                 kNSNotificationKey_WasLocallyInitiated : @(wasLocallyInitiated),
+                                 kNSNotificationKey_UserProfileWriter : @(userProfileWriter),
                              }];
     }];
 }

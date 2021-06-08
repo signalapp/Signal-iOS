@@ -47,7 +47,11 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
         case UserProfileWriter_Linking:
             return NO;
         case UserProfileWriter_GroupState:
-            // TODO: Revisit this decision.
+            return YES;
+        case UserProfileWriter_Debugging:
+            return NO;
+        case UserProfileWriter_Unknown:
+            OWSCFailDebug(@"Invalid UserProfileWriter.");
             return NO;
     }
 }
@@ -383,6 +387,11 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
                 canModifyStorageServiceProperties = NO;
             case UserProfileWriter_GroupState:
                 OWSFailDebug(@"Group state should not write to user profiles.");
+                canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_Debugging:
+                canModifyStorageServiceProperties = YES;
+            case UserProfileWriter_Unknown:
+                OWSFailDebug(@"Invalid UserProfileWriter.");
                 canModifyStorageServiceProperties = NO;
         }
     } else {

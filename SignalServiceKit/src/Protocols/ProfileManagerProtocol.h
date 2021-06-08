@@ -19,6 +19,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, UserProfileWriter) {
     UserProfileWriter_SyncMessage,
     UserProfileWriter_Linking,
     UserProfileWriter_GroupState,
+    UserProfileWriter_Debugging,
+    UserProfileWriter_Unknown,
 };
 
 #pragma mark -

@@ -895,7 +895,7 @@ public extension DebugUIScreenshots {
 //        self.profileManager.setProfileGivenName(givenName,
 //                                                familyName: familyName,
 //                                                for: address,
-//                                                wasLocallyInitiated: false,
+//                                                userProfileWriter: .debugging,
 //                                                transaction: transaction)
 //
 //        let contact = self.buildContact(address: address, fullName: givenName, transaction: transaction)
@@ -926,7 +926,7 @@ public extension DebugUIScreenshots {
         self.profileManager.setProfileGivenName(givenName,
                                                 familyName: familyName,
                                                 for: address,
-                                                wasLocallyInitiated: false,
+                                                userProfileWriter: .debugging,
                                                 transaction: transaction)
 
         if let avatarBundleFilename = avatarBundleFilename {

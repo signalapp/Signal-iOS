@@ -53,9 +53,8 @@ public class MessageRequestPendingReceipts: NSObject, PendingReceiptRecorder {
                 guard let thread = notification.affectedThread(transaction: transaction) else {
                     return
                 }
-                let wasLocallyInitiated = notification.wasLocallyInitiated
-
-                if wasLocallyInitiated {
+                let userProfileWriter = notification.userProfileWriter
+                if userProfileWriter == .localUser {
                     try self.sendAnyReadyReceipts(threads: [thread], transaction: transaction)
                 } else {
                     try self.removeAnyReadyReceipts(threads: [thread], transaction: transaction)
@@ -269,12 +268,16 @@ public class PendingReceiptFinder {
 // MARK: -
 
 fileprivate extension Notification {
-    var wasLocallyInitiated: Bool {
-        guard let wasLocallyInitiatedValue = userInfo?[kNSNotificationKey_WasLocallyInitiated] as? NSNumber else {
-            owsFailDebug("wasLocallyInitiatedValue was unexpectedly nil")
-            return false
+    var userProfileWriter: UserProfileWriter {
+        guard let userProfileWriterValue = userInfo?[kNSNotificationKey_UserProfileWriter] as? NSNumber else {
+            owsFailDebug("userProfileWriterValue was unexpectedly nil")
+            return .unknown
         }
-        return wasLocallyInitiatedValue.boolValue
+        guard let userProfileWriter = UserProfileWriter(rawValue: UInt(userProfileWriterValue.intValue)) else {
+            owsFailDebug("Invalid userProfileWriterValue")
+            return .unknown
+        }
+        return userProfileWriter
     }
 
     func affectedThread(transaction: GRDBReadTransaction) -> TSThread? {
