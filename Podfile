@@ -109,6 +109,7 @@ post_install do |installer|
   configure_testable_build(installer)
   disable_bitcode(installer)
   disable_armv7(installer)
+  strip_valid_archs(installer)
   disable_non_development_pod_warnings(installer)
   copy_acknowledgements
 end
@@ -189,6 +190,15 @@ def disable_armv7(installer)
     target.build_configurations.each do |config|
       config.build_settings['EXCLUDED_ARCHS'] = 'armv7'
     end
+  end
+end
+
+def strip_valid_archs(installer)
+  Dir.glob('Pods/Target Support Files/**/*.xcconfig') do |xcconfig_path|
+    xcconfig = File.read(xcconfig_path)
+    xcconfig_mod = xcconfig.gsub('VALID_ARCHS[sdk=iphoneos*] = arm64', '')
+    xcconfig_mod = xcconfig_mod.gsub('VALID_ARCHS[sdk=iphonesimulator*] = x86_64', '')
+    File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
   end
 end
 
