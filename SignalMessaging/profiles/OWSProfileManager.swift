@@ -150,7 +150,9 @@ public extension OWSProfileManager {
             Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
 
             return self.databaseStorage.write(.promise) { transaction in
-                self.setLocalProfileKey(newProfileKey, wasLocallyInitiated: true, transaction: transaction)
+                self.setLocalProfileKey(newProfileKey,
+                                        userProfileWriter: .localUser,
+                                        transaction: transaction)
 
                 // Whenever a user's profile key changes, we need to fetch a new
                 // profile key credential for them.

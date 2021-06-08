@@ -1115,7 +1115,7 @@ public class GroupManager: NSObject {
         return firstly { () -> Promise<Void> in
             return self.databaseStorage.write(.promise) { transaction in
                 self.profileManager.addGroupId(toProfileWhitelist: groupModel.groupId,
-                                               wasLocallyInitiated: true,
+                                               userProfileWriter: .localUser,
                                                transaction: transaction)
             }
         }.then(on: .global()) { _ -> Promise<TSGroupThread> in
@@ -1340,7 +1340,7 @@ public class GroupManager: NSObject {
         }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
             self.databaseStorage.write { transaction in
                 self.profileManager.addGroupId(toProfileWhitelist: groupId,
-                                               wasLocallyInitiated: true,
+                                               userProfileWriter: .localUser,
                                                transaction: transaction)
             }
             return groupThread
@@ -2329,7 +2329,7 @@ public class GroupManager: NSObject {
         // We don't want to do this if we're just a pending member or are leaving/have
         // already left the group.
         self.profileManager.addGroupId(toProfileWhitelist: newGroupModel.groupId,
-                                       wasLocallyInitiated: true,
+                                       userProfileWriter: .localUser,
                                        transaction: transaction)
     }
 
@@ -2396,7 +2396,7 @@ public class GroupManager: NSObject {
         // it might be stale.  E.g. maybe they were added by someone who
         // doesn't know their new profile key.  So we only want to fill in
         // missing keys, not overwrite any existing keys.
-        profileManager.fillInMissingProfileKeys(profileKeysByAddress)
+        profileManager.fillInMissingProfileKeys(profileKeysByAddress, userProfileWriter: .groupState)
     }
 
     public static func ensureLocalProfileHasCommitmentIfNecessary() -> Promise<Void> {

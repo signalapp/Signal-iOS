@@ -287,17 +287,17 @@ public class UserProfileChanges: NSObject {
 @objc
 public extension OWSUserProfile {
 
-    @objc(updateWithGivenName:familyName:wasLocallyInitiated:transaction:completion:)
+    @objc(updateWithGivenName:familyName:userProfileWriter:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
-                wasLocallyInitiated: Bool,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.givenName = .init(givenName)
         changes.familyName = .init(familyName)
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
@@ -314,9 +314,9 @@ public extension OWSUserProfile {
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
         // TODO: We could make this a parameter.
-        let wasLocallyInitiated = true
+        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
@@ -346,9 +346,9 @@ public extension OWSUserProfile {
         //        changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
         // TODO: We could make this a parameter.
-        let wasLocallyInitiated = true
+        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
@@ -376,9 +376,9 @@ public extension OWSUserProfile {
         changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)
         // TODO: We could make this a parameter.
-        let wasLocallyInitiated = true
+        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
@@ -388,15 +388,15 @@ public extension OWSUserProfile {
         let changes = UserProfileChanges()
         changes.avatarFileName = .init(avatarFileName)
         // TODO: We could make this a parameter.
-        let wasLocallyInitiated = true
+        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: nil)
     }
 
     func clear(profileKey: OWSAES256Key?,
-               wasLocallyInitiated: Bool,
+               userProfileWriter: UserProfileWriter,
                transaction: SDSAnyWriteTransaction,
                completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -415,28 +415,28 @@ public extension OWSUserProfile {
         // TODO:
         // builder.lastMessagingDate = .init(nil)
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
 
     func update(profileKey: OWSAES256Key?,
-                wasLocallyInitiated: Bool,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
         changes.profileKey = .init(profileKey)
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
 
-    @objc(updateWithGivenName:familyName:avatarUrlPath:wasLocallyInitiated:transaction:completion:)
+    @objc(updateWithGivenName:familyName:avatarUrlPath:userProfileWriter:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 avatarUrlPath: String?,
-                wasLocallyInitiated: Bool,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction,
                 completion: OWSUserProfileCompletion?) {
         let changes = UserProfileChanges()
@@ -446,7 +446,7 @@ public extension OWSUserProfile {
         // TODO:
         // builder.avatarFileName = .init(avatarFileName)
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: completion)
     }
@@ -458,9 +458,9 @@ public extension OWSUserProfile {
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
         // TODO: We could make this a parameter.
-        let wasLocallyInitiated = true
+        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: nil)
     }
@@ -474,9 +474,9 @@ public extension OWSUserProfile {
         changes.isUuidCapable = .init(isUuidCapable)
         changes.lastFetchDate = .init(lastFetchDate)
         // TODO: We could make this a parameter.
-        let wasLocallyInitiated = true
+        let userProfileWriter: UserProfileWriter = .localUser
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: nil)
     }
@@ -487,9 +487,11 @@ public extension OWSUserProfile {
         changes.lastMessagingDate = .init(lastMessagingDate)
         // We use wasLocallyInitiated = NO because we don't need
         // to sync lastMessagingDate to the storage service.
-        let wasLocallyInitiated = false
+        //
+        // TODO: We could make this a parameter.
+        let userProfileWriter: UserProfileWriter = .storageService
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: nil)
     }
@@ -501,9 +503,11 @@ public extension OWSUserProfile {
         changes.lastFetchDate = .init(lastFetchDate)
         // We use wasLocallyInitiated = NO because we don't need
         // to sync lastMessagingDate to the storage service.
-        let wasLocallyInitiated = false
+        //
+        // TODO: We could make this a parameter.
+        let userProfileWriter: UserProfileWriter = .storageService
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: nil)
     }
@@ -513,9 +517,11 @@ public extension OWSUserProfile {
         changes.profileKey = .init(nil)
         // We use wasLocallyInitiated = NO because we don't need
         // to sync lastMessagingDate to the storage service.
-        let wasLocallyInitiated = false
+        //
+        // TODO: We could make this a parameter.
+        let userProfileWriter: UserProfileWriter = .storageService
         apply(changes,
-              wasLocallyInitiated: wasLocallyInitiated,
+              userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: nil)
     }

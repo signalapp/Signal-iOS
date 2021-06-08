@@ -33,6 +33,27 @@ NSString *const kLocalProfileInvariantPhoneNumber = @"kLocalProfileUniqueId";
 
 NSUInteger const kUserProfileSchemaVersion = 1;
 
+BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfileWriter)
+{
+    switch (userProfileWriter) {
+        case UserProfileWriter_LocalUser:
+            return YES;
+        case UserProfileWriter_ProfileFetch:
+            return NO;
+        case UserProfileWriter_StorageService:
+            return NO;
+        case UserProfileWriter_SyncMessage:
+            return NO;
+        case UserProfileWriter_Linking:
+            return NO;
+        case UserProfileWriter_GroupState:
+            // TODO: Revisit this decision.
+            return NO;
+    }
+}
+
+#pragma mark -
+
 @interface OWSUserProfile ()
 
 @property (atomic, nullable) OWSAES256Key *profileKey;
@@ -181,7 +202,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
         if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                          wasLocallyInitiated:YES
+                            userProfileWriter:UserProfileWriter_LocalUser
                                   transaction:transaction
                                    completion:nil];
         }
@@ -339,16 +360,31 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We skip redundant saves by diffing.
 // * We kick off multi-device synchronization.
 // * We fire "did change" notifications.
-+ (void)applyChanges:(UserProfileChanges *)changes profile:(OWSUserProfile *)profile
++ (void)applyChanges:(UserProfileChanges *)changes
+              profile:(OWSUserProfile *)profile
+    userProfileWriter:(UserProfileWriter)userProfileWriter
 {
     BOOL canModifyStorageServiceProperties;
     if ([OWSUserProfile isLocalProfileAddress:profile.address]) {
         // Any properties stored in the storage service can only
         // by modified by the local user or the storage service.
-        // They should not be modified by
-        //
-        // TODO:
-        canModifyStorageServiceProperties = YES;
+        // In particular, they should _not_ be modified by profile
+        // fetches.
+        switch (userProfileWriter) {
+            case UserProfileWriter_LocalUser:
+                canModifyStorageServiceProperties = YES;
+            case UserProfileWriter_ProfileFetch:
+                canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_StorageService:
+                canModifyStorageServiceProperties = YES;
+            case UserProfileWriter_SyncMessage:
+                canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_Linking:
+                canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_GroupState:
+                OWSFailDebug(@"Group state should not write to user profiles.");
+                canModifyStorageServiceProperties = NO;
+        }
     } else {
         canModifyStorageServiceProperties = YES;
     }
@@ -403,7 +439,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We kick off multi-device synchronization.
 // * We fire "did change" notifications.
 - (void)applyChanges:(UserProfileChanges *)changes
-    wasLocallyInitiated:(BOOL)wasLocallyInitiated
+    userProfileWriter:(UserProfileWriter)userProfileWriter
           transaction:(SDSAnyWriteTransaction *)transaction
            completion:(nullable OWSUserProfileCompletion)completion
 {
@@ -443,7 +479,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                    NSString *_Nullable familyNameBefore = profile.familyName;
                                    NSString *_Nullable avatarUrlPathBefore = profile.avatarUrlPath;
 
-                                   [OWSUserProfile applyChanges:changes profile:profile];
+                                   [OWSUserProfile applyChanges:changes
+                                                        profile:profile
+                                              userProfileWriter:userProfileWriter];
 
                                    profileKeyDidChange = ![NSObject isNullableObject:profileKeyBefore.keyData
                                                                              equalTo:profile.profileKey.keyData];
@@ -533,7 +571,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                    updatedInstance = profile;
                                }];
     } else {
-        [OWSUserProfile applyChanges:changes profile:self];
+        [OWSUserProfile applyChanges:changes profile:self userProfileWriter:userProfileWriter];
         [self anyInsertWithTransaction:transaction];
         didChange = YES;
     }
@@ -560,7 +598,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     // Profile changes, record updates with storage service. We don't store avatar information on the service except for
     // the local user.
-    if (self.tsAccountManager.isRegisteredAndReady && wasLocallyInitiated
+    if (self.tsAccountManager.isRegisteredAndReady && shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)
         && (!onlyAvatarChanged || isLocalUserProfile)) {
         [self.storageServiceManager
             recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
@@ -831,7 +869,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         OWSLogInfo(@"Merging user profiles for: %@, %@.", address.uuid, address.phoneNumber);
 
         [userProfileForUuid updateWithProfileKey:userProfileForPhoneNumber.profileKey
-                             wasLocallyInitiated:YES
+                               userProfileWriter:UserProfileWriter_LocalUser
                                      transaction:transaction
                                       completion:^{ [self.profileManager fetchProfileForAddress:address]; }];
     }

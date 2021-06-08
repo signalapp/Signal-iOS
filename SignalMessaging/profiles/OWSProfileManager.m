@@ -426,12 +426,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             userProfile = [OWSUserProfile userProfileForUsername:username transaction:transaction];
         });
-
+        
         if (userProfile) {
             success(userProfile.publicAddress);
             return;
         }
-
+        
         [ProfileFetcherJob fetchProfileWithUsername:username success:success notFound:notFound failure:failure];
     });
 }
@@ -577,13 +577,14 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         [self.whitelistedPhoneNumbersStore removeAllWithTransaction:transaction];
         [self.whitelistedUUIDsStore removeAllWithTransaction:transaction];
         [self.whitelistedGroupsStore removeAllWithTransaction:transaction];
-
+        
         OWSAssertDebug(0 == [self.whitelistedPhoneNumbersStore numberOfKeysWithTransaction:transaction]);
         OWSAssertDebug(0 == [self.whitelistedUUIDsStore numberOfKeysWithTransaction:transaction]);
         OWSAssertDebug(0 == [self.whitelistedGroupsStore numberOfKeysWithTransaction:transaction]);
     });
 }
 
+// TODO: We could add a userProfileWriter parameter.
 - (void)removeThreadFromProfileWhitelist:(TSThread *)thread
 {
     OWSLogWarn(@"Removing thread from profile whitelist: %@", thread);
@@ -591,12 +592,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         if ([thread isKindOfClass:TSContactThread.class]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
             [self removeUserFromProfileWhitelist:contactThread.contactAddress
-                             wasLocallyInitiated:YES
+                               userProfileWriter:UserProfileWriter_LocalUser
                                      transaction:transaction];
         } else {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             [self removeGroupIdFromProfileWhitelist:groupThread.groupModel.groupId
-                                wasLocallyInitiated:YES
+                                  userProfileWriter:UserProfileWriter_LocalUser
                                         transaction:transaction];
         }
     });
@@ -631,7 +632,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSUserProfile *userProfile = self.localUserProfile;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey]
-                     wasLocallyInitiated:YES
+                       userProfileWriter:UserProfileWriter_LocalUser
                              transaction:transaction
                               completion:nil];
     });
@@ -641,7 +642,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)setLocalProfileKey:(OWSAES256Key *)key
-       wasLocallyInitiated:(BOOL)wasLocallyInitiated
+         userProfileWriter:(UserProfileWriter)userProfileWriter
                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSUserProfile *localUserProfile;
@@ -666,7 +667,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     }
 
     [localUserProfile updateWithProfileKey:key
-                       wasLocallyInitiated:wasLocallyInitiated
+                         userProfileWriter:userProfileWriter
                                transaction:transaction
                                 completion:nil];
 }
@@ -678,6 +679,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [self addUsersToProfileWhitelist:@[ address ]];
 }
 
+// TODO: We could add a userProfileWriter parameter.
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
 {
     OWSAssertDebug(addresses);
@@ -694,7 +696,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
             DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
                 [self addConfirmedUnwhitelistedAddresses:addressesToAdd
-                                     wasLocallyInitiated:YES
+                                       userProfileWriter:UserProfileWriter_LocalUser
                                              transaction:writeTransaction];
             });
         }];
@@ -702,7 +704,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
-              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                userProfileWriter:(UserProfileWriter)userProfileWriter
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -710,12 +712,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     NSSet *addressesToAdd = [self addressesNotBlockedOrInWhitelist:@[ address ] transaction:transaction];
     [self addConfirmedUnwhitelistedAddresses:addressesToAdd
-                         wasLocallyInitiated:wasLocallyInitiated
+                           userProfileWriter:userProfileWriter
                                  transaction:transaction];
 }
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
-               wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                 userProfileWriter:(UserProfileWriter)userProfileWriter
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(addresses);
@@ -728,7 +730,9 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         return;
     }
 
-    [self addConfirmedUnwhitelistedAddresses:addressesToAdd wasLocallyInitiated:YES transaction:transaction];
+    [self addConfirmedUnwhitelistedAddresses:addressesToAdd
+                           userProfileWriter:userProfileWriter
+                                 transaction:transaction];
 }
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
@@ -739,7 +743,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
-                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                     userProfileWriter:(UserProfileWriter)userProfileWriter
                            transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -747,10 +751,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     NSSet *addressesToRemove = [self addressesInWhitelist:@[ address ] transaction:transaction];
     [self removeConfirmedWhitelistedAddresses:addressesToRemove
-                          wasLocallyInitiated:wasLocallyInitiated
+                            userProfileWriter:userProfileWriter
                                   transaction:transaction];
 }
 
+// TODO: We could add a userProfileWriter parameter.
 - (void)removeUsersFromProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
 {
     OWSAssertDebug(addresses);
@@ -766,7 +771,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
         DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
             [self removeConfirmedWhitelistedAddresses:addressesToRemove
-                                  wasLocallyInitiated:YES
+                                    userProfileWriter:UserProfileWriter_LocalUser
                                           transaction:writeTransaction];
         });
     }];
@@ -853,7 +858,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)removeConfirmedWhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToRemove
-                        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                          userProfileWriter:(UserProfileWriter)userProfileWriter
                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (addressesToRemove.count == 0) {
@@ -878,7 +883,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [transaction addSyncCompletion:^{
         // Mark the removed whitelisted addresses for update
-        if (wasLocallyInitiated) {
+        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
             [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToRemove.allObjects];
         }
 
@@ -895,7 +900,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)addConfirmedUnwhitelistedAddresses:(NSSet<SignalServiceAddress *> *)addressesToAdd
-                       wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                         userProfileWriter:(UserProfileWriter)userProfileWriter
                                transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (addressesToAdd.count == 0) {
@@ -920,7 +925,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [transaction addSyncCompletion:^{
         // Mark the new whitelisted addresses for update
-        if (wasLocallyInitiated) {
+        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
             [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:addressesToAdd.allObjects];
         }
 
@@ -959,6 +964,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return result;
 }
 
+// TODO: We could add a userProfileWriter parameter.
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
@@ -972,13 +978,15 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             return;
         }
         DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-            [self addConfirmedUnwhitelistedGroupId:groupId wasLocallyInitiated:YES transaction:writeTransaction];
+            [self addConfirmedUnwhitelistedGroupId:groupId
+                                 userProfileWriter:UserProfileWriter_LocalUser
+                                       transaction:writeTransaction];
         });
     }];
 }
 
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
-                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                   userProfileWriter:(UserProfileWriter)userProfileWriter
                          transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
@@ -986,10 +994,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
     if (![self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:transaction]) {
-        [self addConfirmedUnwhitelistedGroupId:groupId wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
+        [self addConfirmedUnwhitelistedGroupId:groupId userProfileWriter:userProfileWriter transaction:transaction];
     }
 }
 
+// TODO: We could add a userProfileWriter parameter.
 - (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
@@ -1003,13 +1012,15 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             return;
         }
         DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-            [self removeConfirmedWhitelistedGroupId:groupId wasLocallyInitiated:YES transaction:writeTransaction];
+            [self removeConfirmedWhitelistedGroupId:groupId
+                                  userProfileWriter:UserProfileWriter_LocalUser
+                                        transaction:writeTransaction];
         });
     }];
 }
 
 - (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
-                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                        userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
@@ -1017,14 +1028,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
     if ([self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:transaction]) {
-        [self removeConfirmedWhitelistedGroupId:groupId
-                            wasLocallyInitiated:wasLocallyInitiated
-                                    transaction:transaction];
+        [self removeConfirmedWhitelistedGroupId:groupId userProfileWriter:userProfileWriter transaction:transaction];
     }
 }
 
 - (void)removeConfirmedWhitelistedGroupId:(NSData *)groupId
-                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                        userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
@@ -1041,7 +1050,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [transaction addSyncCompletion:^{
         // Mark the group for update
-        if (wasLocallyInitiated) {
+        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
             [self recordPendingUpdatesForStorageServiceWithGroupId:groupId];
         }
 
@@ -1056,7 +1065,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)addConfirmedUnwhitelistedGroupId:(NSData *)groupId
-                     wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                       userProfileWriter:(UserProfileWriter)userProfileWriter
                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
@@ -1073,7 +1082,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     [transaction addSyncCompletion:^{
         // Mark the group for update
-        if (wasLocallyInitiated) {
+        if (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)) {
             [self recordPendingUpdatesForStorageServiceWithGroupId:groupId];
         }
 
@@ -1097,7 +1106,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             OWSFailDebug(@"Missing groupThread.");
             return;
         }
-
+        
         [self.storageServiceManager recordPendingUpdatesWithGroupModel:groupThread.groupModel];
     }];
 }
@@ -1116,6 +1125,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     }
 }
 
+// TODO: We could add a userProfileWriter parameter.
 - (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -1123,10 +1133,14 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
-        [self addGroupIdToProfileWhitelist:groupId wasLocallyInitiated:YES transaction:transaction];
+        [self addGroupIdToProfileWhitelist:groupId
+                         userProfileWriter:UserProfileWriter_LocalUser
+                               transaction:transaction];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self addUserToProfileWhitelist:contactThread.contactAddress wasLocallyInitiated:YES transaction:transaction];
+        [self addUserToProfileWhitelist:contactThread.contactAddress
+                      userProfileWriter:UserProfileWriter_LocalUser
+                            transaction:transaction];
     }
 }
 
@@ -1195,20 +1209,20 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)address
-      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+        userProfileWriter:(UserProfileWriter)userProfileWriter
               transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self setProfileKeyData:profileKeyData
                  forAddress:address
         onlyFillInIfMissing:NO
-        wasLocallyInitiated:wasLocallyInitiated
+          userProfileWriter:userProfileWriter
                 transaction:transaction];
 }
 
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)addressParam
       onlyFillInIfMissing:(BOOL)onlyFillInIfMissing
-      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+        userProfileWriter:(UserProfileWriter)userProfileWriter
               transaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
@@ -1236,7 +1250,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [self.versionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
 
     [userProfile updateWithProfileKey:profileKey
-                  wasLocallyInitiated:wasLocallyInitiated
+                    userProfileWriter:userProfileWriter
                           transaction:transaction
                            completion:^{
                                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1254,6 +1268,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 }
 
 - (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
+               userProfileWriter:(UserProfileWriter)userProfileWriter
 {
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (SignalServiceAddress *address in profileKeys) {
@@ -1276,7 +1291,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             [self setProfileKeyData:profileKeyData
                          forAddress:address
                 onlyFillInIfMissing:YES
-                wasLocallyInitiated:NO
+                  userProfileWriter:userProfileWriter
                         transaction:transaction];
         }
     });
@@ -1285,7 +1300,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 - (void)setProfileGivenName:(nullable NSString *)givenName
                  familyName:(nullable NSString *)familyName
                  forAddress:(SignalServiceAddress *)addressParam
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+          userProfileWriter:(UserProfileWriter)userProfileWriter
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
@@ -1294,7 +1309,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
     [userProfile updateWithGivenName:givenName
                           familyName:familyName
-                 wasLocallyInitiated:wasLocallyInitiated
+                   userProfileWriter:userProfileWriter
                          transaction:transaction
                           completion:nil];
 }
@@ -1303,7 +1318,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                  familyName:(nullable NSString *)familyName
               avatarUrlPath:(nullable NSString *)avatarUrlPath
                  forAddress:(SignalServiceAddress *)addressParam
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+          userProfileWriter:(UserProfileWriter)userProfileWriter
                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
@@ -1313,7 +1328,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     [userProfile updateWithGivenName:givenName
                           familyName:familyName
                        avatarUrlPath:avatarUrlPath
-                 wasLocallyInitiated:wasLocallyInitiated
+                   userProfileWriter:userProfileWriter
                          transaction:transaction
                           completion:nil];
 
@@ -1638,7 +1653,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         // We may have to fill in it below.
         if (optionalDecryptedAvatarData.length > 0) {
             OWSAssertDebug(avatarUrlPath.length > 0);
-
+            
             NSString *newAvatarFileName = [self generateAvatarFilename];
             NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFileName];
             BOOL success = [optionalDecryptedAvatarData writeToFile:filePath atomically:YES];
@@ -1649,11 +1664,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 avatarImage = [UIImage imageWithContentsOfFile:filePath];
             }
         }
-
+        
         __block OWSUserProfile *userProfile;
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
-
+            
             if (!userProfile.profileKey) {
                 [userProfile updateWithUsername:username
                                   isUuidCapable:isUuidCapable
@@ -1661,7 +1676,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                     transaction:transaction];
                 return;
             }
-
+            
             if (avatarImage != nil) {
                 [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
                 [userProfile updateWithGivenName:givenName
@@ -1687,7 +1702,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                      transaction:transaction
                                       completion:nil];
             }
-
+            
             if (userProfile.avatarFileName.length > 0) {
                 NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
                 if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
@@ -1696,7 +1711,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 }
             }
         });
-
+        
         // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
         // So if avatarUrlPath is set and avatarFileName is not set, we should to
         // download this avatar. downloadAvatarForUserProfile will de-bounce
