@@ -637,7 +637,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSUserProfile *userProfile = self.localUserProfile;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey]
-                       userProfileWriter:UserProfileWriter_LocalUser
+                       userProfileWriter:UserProfileWriter_Debugging
                              transaction:transaction
                               completion:nil];
     });
@@ -1853,7 +1853,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         }
     }
 
-    [userProfile updateWithLastMessagingDate:[NSDate new] transaction:transaction];
+    [userProfile updateWithLastMessagingDate:[NSDate new]
+                           userProfileWriter:UserProfileWriter_MetadataUpdate
+                                 transaction:transaction];
 }
 
 #pragma mark - User Interface
@@ -1935,7 +1937,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         if (userProfile.profileKey == nil) {
             continue;
         }
-        [userProfile discardProfileKeyWithTransaction:transaction];
+        [userProfile discardProfileKeyWithUserProfileWriter:UserProfileWriter_Debugging transaction:transaction];
     }
 }
 #endif

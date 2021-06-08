@@ -54,6 +54,8 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
             return NO;
         case UserProfileWriter_AvatarDownload:
             return NO;
+        case UserProfileWriter_MetadataUpdate:
+            return NO;
         case UserProfileWriter_Debugging:
             return NO;
         case UserProfileWriter_Unknown:
@@ -399,6 +401,8 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
             case UserProfileWriter_Reupload:
                 canModifyStorageServiceProperties = NO;
             case UserProfileWriter_AvatarDownload:
+                canModifyStorageServiceProperties = NO;
+            case UserProfileWriter_MetadataUpdate:
                 canModifyStorageServiceProperties = NO;
             case UserProfileWriter_Debugging:
                 canModifyStorageServiceProperties = YES;

@@ -12,8 +12,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_CLOSED_ENUM(NSUInteger, UserProfileWriter) {
-    UserProfileWriter_LocalUser,
+// This enum is serialized.
+typedef NS_ENUM(NSUInteger, UserProfileWriter) {
+    UserProfileWriter_LocalUser = 0,
     UserProfileWriter_ProfileFetch,
     UserProfileWriter_StorageService,
     UserProfileWriter_SyncMessage,
@@ -22,6 +23,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, UserProfileWriter) {
     UserProfileWriter_GroupState,
     UserProfileWriter_Reupload,
     UserProfileWriter_AvatarDownload,
+    UserProfileWriter_MetadataUpdate,
     UserProfileWriter_Debugging,
     UserProfileWriter_Unknown,
 };

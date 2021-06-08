@@ -389,6 +389,8 @@ public extension OWSUserProfile {
                userProfileWriter: UserProfileWriter,
                transaction: SDSAnyWriteTransaction,
                completion: OWSUserProfileCompletion?) {
+        // This is only used for debugging.
+        owsAssertDebug(userProfileWriter == .debugging)
         let changes = UserProfileChanges()
         changes.profileKey = .init(profileKey)
         changes.givenName = .init(nil)
@@ -396,13 +398,10 @@ public extension OWSUserProfile {
         changes.bio = .init(nil)
         changes.bioEmoji = .init(nil)
         changes.username = .init(nil)
-        // TODO:
         // builder.isUuidCapable = .init(nil)
         changes.avatarUrlPath = .init(nil)
         changes.avatarFileName = .init(nil)
-        // TODO:
         // builder.lastFetchDate = .init(nil)
-        // TODO:
         // builder.lastMessagingDate = .init(nil)
         apply(changes,
               userProfileWriter: userProfileWriter,
@@ -468,14 +467,10 @@ public extension OWSUserProfile {
     }
 
     func update(lastMessagingDate: Date,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.lastMessagingDate = .init(lastMessagingDate)
-        // We use wasLocallyInitiated = NO because we don't need
-        // to sync lastMessagingDate to the storage service.
-        //
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .storageService
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
@@ -484,28 +479,20 @@ public extension OWSUserProfile {
 
     #if TESTABLE_BUILD
     func update(lastFetchDate: Date,
+                userProfileWriter: UserProfileWriter,
                 transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.lastFetchDate = .init(lastFetchDate)
-        // We use wasLocallyInitiated = NO because we don't need
-        // to sync lastMessagingDate to the storage service.
-        //
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .storageService
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
               completion: nil)
     }
 
-    func discardProfileKey(transaction: SDSAnyWriteTransaction) {
+    func discardProfileKey(userProfileWriter: UserProfileWriter,
+                           transaction: SDSAnyWriteTransaction) {
         let changes = UserProfileChanges()
         changes.profileKey = .init(nil)
-        // We use wasLocallyInitiated = NO because we don't need
-        // to sync lastMessagingDate to the storage service.
-        //
-        // TODO: We could make this a parameter.
-        let userProfileWriter: UserProfileWriter = .storageService
         apply(changes,
               userProfileWriter: userProfileWriter,
               transaction: transaction,
