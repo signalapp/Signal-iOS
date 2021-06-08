@@ -562,7 +562,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         aCoder.encode(profileBioEmoji, forKey: "profileBioEmoji")
         aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
         aCoder.encode(unsavedRotatedProfileKey, forKey: "unsavedRotatedProfileKey")
-        aCoder.encode(userProfileWriter.rawValue, forKey: "userProfileWriter")
+        aCoder.encodeCInt(Int32(userProfileWriter.rawValue), forKey: "userProfileWriter")
     }
 
     @objc
@@ -583,7 +583,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
            let userProfileWriter = UserProfileWriter(rawValue: UInt(aDecoder.decodeInt32(forKey: "userProfileWriter"))) {
             self.userProfileWriter = userProfileWriter
         } else {
-            self.userProfileWriter = .localUser
+            self.userProfileWriter = .unknown
         }
     }
 }

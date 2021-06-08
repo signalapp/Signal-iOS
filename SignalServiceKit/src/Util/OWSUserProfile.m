@@ -63,6 +63,45 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
         case UserProfileWriter_Unknown:
             OWSCFailDebug(@"Invalid UserProfileWriter.");
             return NO;
+        default:
+            OWSCFailDebug(@"Invalid UserProfileWriter.");
+            return NO;
+    }
+}
+
+NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
+{
+    switch (userProfileWriter) {
+        case UserProfileWriter_LocalUser:
+            return @"LocalUser";
+        case UserProfileWriter_ProfileFetch:
+            return @"ProfileFetch";
+        case UserProfileWriter_StorageService:
+            return @"StorageService";
+        case UserProfileWriter_SyncMessage:
+            return @"SyncMessage";
+        case UserProfileWriter_Registration:
+            return @"Registration";
+        case UserProfileWriter_Linking:
+            return @"Linking";
+        case UserProfileWriter_GroupState:
+            return @"GroupState";
+        case UserProfileWriter_Reupload:
+            return @"Reupload";
+        case UserProfileWriter_AvatarDownload:
+            return @"AvatarDownload";
+        case UserProfileWriter_MetadataUpdate:
+            return @"MetadataUpdate";
+        case UserProfileWriter_Debugging:
+            return @"Debugging";
+        case UserProfileWriter_Tests:
+            return @"Tests";
+        case UserProfileWriter_Unknown:
+            OWSCFailDebug(@"Invalid UserProfileWriter.");
+            return @"Unknown";
+        default:
+            OWSCFailDebug(@"Invalid UserProfileWriter.");
+            return @"default";
     }
 }
 
@@ -387,32 +426,49 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
         switch (userProfileWriter) {
             case UserProfileWriter_LocalUser:
                 canModifyStorageServiceProperties = YES;
+                break;
             case UserProfileWriter_ProfileFetch:
                 canModifyStorageServiceProperties = NO;
+                break;
             case UserProfileWriter_StorageService:
                 canModifyStorageServiceProperties = YES;
+                break;
             case UserProfileWriter_SyncMessage:
                 canModifyStorageServiceProperties = NO;
+                break;
             case UserProfileWriter_Registration:
                 canModifyStorageServiceProperties = YES;
+                break;
             case UserProfileWriter_Linking:
                 canModifyStorageServiceProperties = NO;
+                break;
             case UserProfileWriter_GroupState:
                 OWSFailDebug(@"Group state should not write to user profiles.");
                 canModifyStorageServiceProperties = NO;
+                break;
             case UserProfileWriter_Reupload:
                 canModifyStorageServiceProperties = NO;
+                break;
             case UserProfileWriter_AvatarDownload:
                 canModifyStorageServiceProperties = NO;
+                break;
             case UserProfileWriter_MetadataUpdate:
                 canModifyStorageServiceProperties = NO;
+                break;
             case UserProfileWriter_Debugging:
                 canModifyStorageServiceProperties = YES;
+                break;
             case UserProfileWriter_Tests:
                 canModifyStorageServiceProperties = YES;
+                break;
             case UserProfileWriter_Unknown:
                 OWSFailDebug(@"Invalid UserProfileWriter.");
                 canModifyStorageServiceProperties = NO;
+                break;
+            default:
+                OWSFailDebug(@"Invalid UserProfileWriter.");
+                canModifyStorageServiceProperties = NO;
+                break;
         }
     } else {
         canModifyStorageServiceProperties = YES;
@@ -521,28 +577,45 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
                                    BOOL avatarUrlPathDidChange = ![NSObject isNullableObject:avatarUrlPathBefore
                                                                                      equalTo:profile.avatarUrlPath];
 
-                                   //            if (fromProfileFetch && isLocalUser) {
-                                   //                // Step 1: protect db state that is "owned" by storage service.
-                                   //                profile.givenName = givenNameBefore;
-                                   //                profile.familyName = familyNameBefore;
-                                   //                // Protect avatar state too.
-                                   //                //                _avatarUrlPath = avatarUrlPath;
-                                   //                //                _avatarFileName = avatarFileName;
-                                   //
-                                   //                // Step 2: if db state that is "owned" by storage service doesn't
-                                   //                // match profile fetch state, re-upload.
-                                   //            }
+                                   if (isLocalUserProfile) {
+                                       BOOL shouldReupload = NO;
 
-                                   if ([profile.address.phoneNumber
-                                           isEqualToString:kLocalProfileInvariantPhoneNumber]) {
                                        BOOL hasValidProfileNameBefore = givenNameBefore.length > 0;
                                        BOOL hasValidProfileNameAfter = profile.givenName.length > 0;
                                        if (hasValidProfileNameBefore && !hasValidProfileNameAfter) {
-                                           OWSFailDebug(@"Restoring local profile name.");
+                                           OWSFailDebug(@"Restoring local profile name: %@, %@.",
+                                               changes.updateMethodName,
+                                               NSStringForUserProfileWriter(userProfileWriter));
                                            // Profile names are required; never clear the profile
                                            // name for the local user.
                                            profile.givenName = givenNameBefore;
+                                           shouldReupload = YES;
+                                       }
 
+                                       // If db state that is "owned" by storage service doesn't
+                                       // match profile fetch state, re-upload.
+                                       if (userProfileWriter == UserProfileWriter_ProfileFetch) {
+                                           BOOL givenNameDoesNotMatch
+                                               = ![NSObject isNullableObject:changes.givenName.value
+                                                                     equalTo:profile.givenName];
+                                           BOOL familyNameDoesNotMatch
+                                               = ![NSObject isNullableObject:changes.familyName.value
+                                                                     equalTo:profile.familyName];
+                                           BOOL avatarUrlPathDoesNotMatch
+                                               = ![NSObject isNullableObject:changes.avatarUrlPath.value
+                                                                     equalTo:profile.avatarUrlPath];
+                                           if (givenNameDoesNotMatch || familyNameDoesNotMatch
+                                               || avatarUrlPathDoesNotMatch) {
+                                               OWSLogWarn(@"Updating profile to reflect profile state: %@, %@.",
+                                                   changes.updateMethodName,
+                                                   NSStringForUserProfileWriter(userProfileWriter));
+                                               shouldReupload = YES;
+                                           }
+                                       }
+
+                                       if (shouldReupload && self.tsAccountManager.isPrimaryDevice) {
+                                           // shouldReuploadProtectedProfileName has side effects,
+                                           // so only invoke it if shouldReupload is true.
                                            if (OWSUserProfile.shouldReuploadProtectedProfileName) {
                                                [transaction addAsyncCompletionOffMain:^{
                                                    [self.profileManager reuploadLocalProfile];
@@ -566,7 +639,7 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
                                        || avatarUrlPathDidChange) {
                                        OWSLogInfo(@"address: %@ (isLocal: %d), profileKeyDidChange: %d (%d -> %d) %@, "
                                                   @"givenNameDidChange: %d (%d -> %d), familyNameDidChange: %d (%d -> "
-                                                  @"%d), avatarUrlPathDidChange: %d (%d -> %d)",
+                                                  @"%d), avatarUrlPathDidChange: %d (%d -> %d), %@, %@.",
                                            profile.address,
                                            profile.address.isLocalAddress,
                                            profileKeyDidChange,
@@ -581,7 +654,9 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
                                            profile.familyName != nil,
                                            avatarUrlPathDidChange,
                                            avatarUrlPathBefore != nil,
-                                           profile.avatarUrlPath != nil);
+                                           profile.avatarUrlPath != nil,
+                                           changes.updateMethodName,
+                                           NSStringForUserProfileWriter(userProfileWriter));
                                    }
 
                                    NSDictionary *afterSnapshot = [profile.dictionaryValue

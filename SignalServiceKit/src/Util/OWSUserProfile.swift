@@ -278,6 +278,16 @@ public class UserProfileChanges: NSObject {
     public var lastMessagingDate: DateValue?
     @objc
     public var profileKey: OptionalProfileKeyValue?
+
+    @objc
+    public let updateMethodName: String
+
+    init(file: String = #file, function: String = #function, line: Int = #line) {
+        let filename = (file as NSString).lastPathComponent
+        // We format the filename & line number in a format compatible
+        // with XCode's "Open Quickly..." feature.
+        self.updateMethodName = "[\(filename):\(line) \(function)]"
+    }
 }
 
 // MARK: - Update With... Methods
