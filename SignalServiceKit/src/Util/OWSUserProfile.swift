@@ -246,9 +246,8 @@ public class UserProfileChanges: NSObject {
             self.value = value
         }
     }
-    // TODO: Should this be optional?
     @objc
-    public class ProfileKeyValue: NSObject {
+    public class OptionalProfileKeyValue: NSObject {
         @objc
         public let value: OWSAES256Key?
 
@@ -269,7 +268,6 @@ public class UserProfileChanges: NSObject {
     public var username: OptionalStringValue?
     @objc
     public var isUuidCapable: BoolValue?
-    // TODO: Update the avatar properties in lockstep.
     @objc
     public var avatarUrlPath: OptionalStringValue?
     @objc
@@ -279,7 +277,7 @@ public class UserProfileChanges: NSObject {
     @objc
     public var lastMessagingDate: DateValue?
     @objc
-    public var profileKey: ProfileKeyValue?
+    public var profileKey: OptionalProfileKeyValue?
 }
 
 // MARK: - Update With... Methods
