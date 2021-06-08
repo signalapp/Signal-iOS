@@ -615,7 +615,10 @@ extension MobileCoinAPI {
 
                 return PaymentsError.authorizationFailure
             case .invalidServerResponse(let reason):
-                owsFailDebug("Error: \(error), reason: \(reason)")
+                // TODO: It would be preferable to owsFailDebug()
+                //       here. Ledger errors can now occur during
+                //       fee transitions, but should be very rare.
+                Logger.warn("Error: \(error), reason: \(reason)")
                 return PaymentsError.invalidServerResponse
             case .attestationVerificationFailed(let reason):
                 owsFailDebug("Error: \(error), reason: \(reason)")
