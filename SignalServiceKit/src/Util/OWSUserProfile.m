@@ -496,7 +496,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
 
     // Update the avatar properties in lockstep.
-    if (changes.avatarUrlPath != nil && changes.avatarFileName != nil) {
+    if (changes.avatarUrlPath != nil && changes.avatarFileName != nil && canModifyStorageServiceProperties) {
         [profile setAvatarUrlPath:changes.avatarUrlPath.value avatarFileName:changes.avatarFileName.value];
     } else if (changes.avatarUrlPath != nil && canModifyStorageServiceProperties) {
         // The "avatar url path" (but not the "avatar file name") is stored in the storage service.
