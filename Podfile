@@ -49,10 +49,6 @@ pod 'SQLCipher', ">= 4.0.1"
 pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
 # pod 'Mantle', path: '../Mantle'
 
-# Forked to incorporate our self-built binary artifact.
-pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework', branch: 'mkirk/1.0.2t'
-#pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'
-
 pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
 # pod 'Starscream', path: '../Starscream'
 
@@ -71,9 +67,10 @@ pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'lottie-ios', :inhibit_warnings => true
 pod 'BonMot', inhibit_warnings: true
+pod 'OpenSSL-Universal', inhibit_warnings: true
 
 # For catalyst we need to be on master until 3.6.7 or later is released
-pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true, binary: true
+pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true
 
 pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.0.0'
 

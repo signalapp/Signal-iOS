@@ -4,7 +4,7 @@
 
 import Foundation
 import CommonCrypto
-import openssl
+import OpenSSL
 
 struct SelfSignedIdentity {
     private static let temporaryIdentityKeychainIdentifier = "org.signal.temporaryIdentityKeychainIdentifier"
@@ -88,12 +88,15 @@ struct SelfSignedIdentity {
             throw OWSAssertionError("failed to allocate a new EVP_PKEY")
         }
         defer { EVP_PKEY_free(pkey) }
-
-        guard let rsa = RSA_generate_key(4096, UInt(RSA_F4), nil, nil) else {
+        
+        let rsa = RSA_new()
+        let exponent = BN_new()
+        BN_set_word(exponent, UInt(RSA_F4))
+        guard RSA_generate_key_ex(rsa, 4096, exponent, nil) > 0 else {
             throw OWSAssertionError("failed to generate RSA keypair")
         }
 
-        guard EVP_PKEY_assign(pkey, EVP_PKEY_RSA, rsa) > 0 else {
+        guard EVP_PKEY_assign(pkey, EVP_PKEY_RSA, UnsafeMutableRawPointer(rsa)) > 0 else {
             throw OWSAssertionError("failed to assign RSA keypair into EVP_PKEY")
         }
 
@@ -124,10 +127,10 @@ struct SelfSignedIdentity {
 
         // Expiration
 
-        guard X509_gmtime_adj(x509.pointee.cert_info.pointee.validity.pointee.notBefore, 0) != nil else {
+        guard X509_gmtime_adj(X509_getm_notBefore(x509), 0) != nil else {
             throw OWSAssertionError("failed to set X509 not before")
         }
-        guard X509_gmtime_adj(x509.pointee.cert_info.pointee.validity.pointee.notAfter, Int(kDayInterval) * days) != nil else {
+        guard X509_gmtime_adj(X509_getm_notAfter(x509), Int(kDayInterval) * days) != nil else {
             throw OWSAssertionError("failed to set X509 not after")
         }
 
@@ -176,7 +179,7 @@ struct SelfSignedIdentity {
             guard byteCount > 0, let bytes = optionalBytes else {
                 throw OWSAssertionError("Failed to get certificate DER data")
             }
-            defer { CRYPTO_free(bytes) }
+            defer { CRYPTO_free(bytes, "", 0) }
 
             let data = Data(bytes: bytes, count: Int(byteCount))
 
@@ -193,7 +196,7 @@ struct SelfSignedIdentity {
             guard byteCount > 0, let bytes = optionalBytes else {
                 throw OWSAssertionError("Failed to get private key DER data")
             }
-            defer { CRYPTO_free(bytes) }
+            defer { CRYPTO_free(bytes, "", 0) }
 
             let data = Data(bytes: bytes, count: Int(byteCount))
 

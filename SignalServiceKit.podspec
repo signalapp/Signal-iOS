@@ -46,7 +46,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'Mantle'
   s.dependency 'Starscream'
   s.dependency 'libPhoneNumber-iOS'
-  s.dependency 'GRKOpenSSLFramework'
+  s.dependency 'OpenSSL-Universal'
   s.dependency 'SAMKeychain'
   s.dependency 'Reachability'
   s.dependency 'SwiftProtobuf'
