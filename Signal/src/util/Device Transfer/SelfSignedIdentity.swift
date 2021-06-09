@@ -89,9 +89,20 @@ struct SelfSignedIdentity {
         }
         defer { EVP_PKEY_free(pkey) }
         
-        let rsa = RSA_new()
-        let exponent = BN_new()
-        BN_set_word(exponent, UInt(RSA_F4))
+        guard let rsa = RSA_new() else {
+            throw OWSAssertionError("failed to allocate a new RSA")
+        }
+        defer { RSA_free(rsa) }
+        
+        guard let exponent = BN_new() else {
+            throw OWSAssertionError("failed to allocate a new exponent")
+        }
+        defer { BN_free(exponent) }
+        
+        guard BN_set_word(exponent, UInt(RSA_F4)) > 0 else {
+            throw OWSAssertionError("failed to set exponent")
+        }
+        
         guard RSA_generate_key_ex(rsa, 4096, exponent, nil) > 0 else {
             throw OWSAssertionError("failed to generate RSA keypair")
         }
@@ -179,7 +190,7 @@ struct SelfSignedIdentity {
             guard byteCount > 0, let bytes = optionalBytes else {
                 throw OWSAssertionError("Failed to get certificate DER data")
             }
-            defer { CRYPTO_free(bytes, "", 0) }
+            defer { CRYPTO_free(bytes, #file, #line) }
 
             let data = Data(bytes: bytes, count: Int(byteCount))
 
@@ -196,7 +207,7 @@ struct SelfSignedIdentity {
             guard byteCount > 0, let bytes = optionalBytes else {
                 throw OWSAssertionError("Failed to get private key DER data")
             }
-            defer { CRYPTO_free(bytes, "", 0) }
+            defer { CRYPTO_free(bytes, #file, #line) }
 
             let data = Data(bytes: bytes, count: Int(byteCount))
 
