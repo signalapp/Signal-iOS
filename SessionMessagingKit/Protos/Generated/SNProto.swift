@@ -1579,6 +1579,9 @@ extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.SNProtoDataM
         builder.setMembers(members)
         builder.setAdmins(admins)
         builder.setWrappers(wrappers)
+        if hasExpireTimer {
+            builder.setExpireTimer(expireTimer)
+        }
         return builder
     }
 
@@ -1640,6 +1643,10 @@ extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.SNProtoDataM
             proto.wrappers = wrappedItems.map { $0.proto }
         }
 
+        @objc public func setExpireTimer(_ valueParam: UInt32) {
+            proto.expireTimer = valueParam
+        }
+
         @objc public func build() throws -> SNProtoDataMessageClosedGroupControlMessage {
             return try SNProtoDataMessageClosedGroupControlMessage.parseProto(proto)
         }
@@ -1683,6 +1690,13 @@ extension SNProtoDataMessageClosedGroupControlMessageKeyPairWrapper.SNProtoDataM
 
     @objc public var admins: [Data] {
         return proto.admins
+    }
+
+    @objc public var expireTimer: UInt32 {
+        return proto.expireTimer
+    }
+    @objc public var hasExpireTimer: Bool {
+        return proto.hasExpireTimer
     }
 
     private init(proto: SessionProtos_DataMessage.ClosedGroupControlMessage,
