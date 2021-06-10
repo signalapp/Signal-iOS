@@ -107,6 +107,7 @@ post_install do |installer|
   disable_bitcode(installer)
   disable_armv7(installer)
   strip_valid_archs(installer)
+  update_frameworks_script(installer)
   disable_non_development_pod_warnings(installer)
   copy_acknowledgements
 end
@@ -197,6 +198,22 @@ def strip_valid_archs(installer)
     xcconfig_mod = xcconfig_mod.gsub('VALID_ARCHS[sdk=iphonesimulator*] = x86_64', '')
     File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
   end
+end
+
+#update_framework_scripts updates Pod-Signal-frameworks.sh to fix a bug in the .XCFramework->.framework 
+#conversation process, by ensuring symlinks are properly respected in the XCFramework. 
+#See https://github.com/CocoaPods/CocoaPods/issues/7587
+def update_frameworks_script(installer)
+    fw_script = File.read('Pods/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh')
+    fw_script_mod = fw_script.gsub('      lipo -remove "$arch" -output "$binary" "$binary"
+', '      realBinary="${binary}"
+      if [ -L "${realBinary}" ]; then
+        echo "Symlinked..."
+        dirname="$(dirname "${realBinary}")"
+        realBinary="${dirname}/$(readlink "${realBinary}")"
+      fi
+      lipo -remove "${arch}" -output "${realBinary}" "${realBinary}" || exit 1')
+    File.open('Pods/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh', "w") { |file| file << fw_script_mod }
 end
 
 # Disable warnings on any Pod not currently being modified
