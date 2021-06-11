@@ -718,6 +718,8 @@ private class ChatColorTooltip: TooltipView {
                                        comment: "Tooltip highlighting the auto chat color option.")
         label.font = .ows_dynamicTypeSubheadline
         label.textColor = .ows_white
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         return horizontalStack(forSubviews: [label])
     }
 
