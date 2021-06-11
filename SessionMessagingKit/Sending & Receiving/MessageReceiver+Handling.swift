@@ -208,7 +208,7 @@ extension MessageReceiver {
             for closedGroup in message.closedGroups {
                 guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
                 handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
-                    members: [String](closedGroup.members), admins: [String](closedGroup.admins), expireTimer: 0, messageSentTimestamp: message.sentTimestamp!, using: transaction)
+                    members: [String](closedGroup.members), admins: [String](closedGroup.admins), expirationTimer: 0, messageSentTimestamp: message.sentTimestamp!, using: transaction)
             }
             // Open groups
             for openGroupURL in message.openGroups {
@@ -368,15 +368,15 @@ extension MessageReceiver {
     }
     
     private static func handleNewClosedGroup(_ message: ClosedGroupControlMessage, using transaction: Any) {
-        guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData, expireTimer) = message.kind else { return }
+        guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData, expirationTimer) = message.kind else { return }
         let groupPublicKey = publicKeyAsData.toHexString()
         let members = membersAsData.map { $0.toHexString() }
         let admins = adminsAsData.map { $0.toHexString() }
         handleNewClosedGroup(groupPublicKey: groupPublicKey, name: name, encryptionKeyPair: encryptionKeyPair,
-            members: members, admins: admins, expireTimer: expireTimer, messageSentTimestamp: message.sentTimestamp!, using: transaction)
+            members: members, admins: admins, expirationTimer: expirationTimer, messageSentTimestamp: message.sentTimestamp!, using: transaction)
     }
 
-    private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], expireTimer: UInt32, messageSentTimestamp: UInt64, using transaction: Any) {
+    private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], expirationTimer: UInt32, messageSentTimestamp: UInt64, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -397,8 +397,8 @@ extension MessageReceiver {
             let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupCreated)
             infoMessage.save(with: transaction)
         }
-        let isExpirationTimerEnabled = (expireTimer > 0)
-        let expirationTimerDuration = (isExpirationTimerEnabled ? expireTimer : 24 * 60 * 60)
+        let isExpirationTimerEnabled = (expirationTimer > 0)
+        let expirationTimerDuration = (isExpirationTimerEnabled ? expirationTimer : 24 * 60 * 60)
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: isExpirationTimerEnabled,
             durationSeconds: expirationTimerDuration)
         configuration.save(with: transaction)

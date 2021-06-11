@@ -66,7 +66,7 @@ struct SessionProtos_Envelope {
   mutating func clearTimestamp() {self._timestamp = nil}
 
   var content: Data {
-    get {return _content ?? SwiftProtobuf.Internal.emptyData}
+    get {return _content ?? Data()}
     set {_content = newValue}
   }
   /// Returns true if `content` has been explicitly set.
@@ -264,7 +264,7 @@ struct SessionProtos_KeyPair {
 
   /// @required
   var publicKey: Data {
-    get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+    get {return _publicKey ?? Data()}
     set {_publicKey = newValue}
   }
   /// Returns true if `publicKey` has been explicitly set.
@@ -274,7 +274,7 @@ struct SessionProtos_KeyPair {
 
   /// @required
   var privateKey: Data {
-    get {return _privateKey ?? SwiftProtobuf.Internal.emptyData}
+    get {return _privateKey ?? Data()}
     set {_privateKey = newValue}
   }
   /// Returns true if `privateKey` has been explicitly set.
@@ -364,107 +364,113 @@ struct SessionProtos_DataMessage {
   // methods supported on all messages.
 
   var body: String {
-    get {return _body ?? String()}
-    set {_body = newValue}
+    get {return _storage._body ?? String()}
+    set {_uniqueStorage()._body = newValue}
   }
   /// Returns true if `body` has been explicitly set.
-  var hasBody: Bool {return self._body != nil}
+  var hasBody: Bool {return _storage._body != nil}
   /// Clears the value of `body`. Subsequent reads from it will return its default value.
-  mutating func clearBody() {self._body = nil}
+  mutating func clearBody() {_uniqueStorage()._body = nil}
 
-  var attachments: [SessionProtos_AttachmentPointer] = []
+  var attachments: [SessionProtos_AttachmentPointer] {
+    get {return _storage._attachments}
+    set {_uniqueStorage()._attachments = newValue}
+  }
 
   var group: SessionProtos_GroupContext {
-    get {return _group ?? SessionProtos_GroupContext()}
-    set {_group = newValue}
+    get {return _storage._group ?? SessionProtos_GroupContext()}
+    set {_uniqueStorage()._group = newValue}
   }
   /// Returns true if `group` has been explicitly set.
-  var hasGroup: Bool {return self._group != nil}
+  var hasGroup: Bool {return _storage._group != nil}
   /// Clears the value of `group`. Subsequent reads from it will return its default value.
-  mutating func clearGroup() {self._group = nil}
+  mutating func clearGroup() {_uniqueStorage()._group = nil}
 
   var flags: UInt32 {
-    get {return _flags ?? 0}
-    set {_flags = newValue}
+    get {return _storage._flags ?? 0}
+    set {_uniqueStorage()._flags = newValue}
   }
   /// Returns true if `flags` has been explicitly set.
-  var hasFlags: Bool {return self._flags != nil}
+  var hasFlags: Bool {return _storage._flags != nil}
   /// Clears the value of `flags`. Subsequent reads from it will return its default value.
-  mutating func clearFlags() {self._flags = nil}
+  mutating func clearFlags() {_uniqueStorage()._flags = nil}
 
   var expireTimer: UInt32 {
-    get {return _expireTimer ?? 0}
-    set {_expireTimer = newValue}
+    get {return _storage._expireTimer ?? 0}
+    set {_uniqueStorage()._expireTimer = newValue}
   }
   /// Returns true if `expireTimer` has been explicitly set.
-  var hasExpireTimer: Bool {return self._expireTimer != nil}
+  var hasExpireTimer: Bool {return _storage._expireTimer != nil}
   /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
-  mutating func clearExpireTimer() {self._expireTimer = nil}
+  mutating func clearExpireTimer() {_uniqueStorage()._expireTimer = nil}
 
   var profileKey: Data {
-    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
-    set {_profileKey = newValue}
+    get {return _storage._profileKey ?? Data()}
+    set {_uniqueStorage()._profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
-  var hasProfileKey: Bool {return self._profileKey != nil}
+  var hasProfileKey: Bool {return _storage._profileKey != nil}
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
-  mutating func clearProfileKey() {self._profileKey = nil}
+  mutating func clearProfileKey() {_uniqueStorage()._profileKey = nil}
 
   var timestamp: UInt64 {
-    get {return _timestamp ?? 0}
-    set {_timestamp = newValue}
+    get {return _storage._timestamp ?? 0}
+    set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {return _storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
-  mutating func clearTimestamp() {self._timestamp = nil}
+  mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
   var quote: SessionProtos_DataMessage.Quote {
-    get {return _quote ?? SessionProtos_DataMessage.Quote()}
-    set {_quote = newValue}
+    get {return _storage._quote ?? SessionProtos_DataMessage.Quote()}
+    set {_uniqueStorage()._quote = newValue}
   }
   /// Returns true if `quote` has been explicitly set.
-  var hasQuote: Bool {return self._quote != nil}
+  var hasQuote: Bool {return _storage._quote != nil}
   /// Clears the value of `quote`. Subsequent reads from it will return its default value.
-  mutating func clearQuote() {self._quote = nil}
+  mutating func clearQuote() {_uniqueStorage()._quote = nil}
 
-  var preview: [SessionProtos_DataMessage.Preview] = []
+  var preview: [SessionProtos_DataMessage.Preview] {
+    get {return _storage._preview}
+    set {_uniqueStorage()._preview = newValue}
+  }
 
   var profile: SessionProtos_DataMessage.LokiProfile {
-    get {return _profile ?? SessionProtos_DataMessage.LokiProfile()}
-    set {_profile = newValue}
+    get {return _storage._profile ?? SessionProtos_DataMessage.LokiProfile()}
+    set {_uniqueStorage()._profile = newValue}
   }
   /// Returns true if `profile` has been explicitly set.
-  var hasProfile: Bool {return self._profile != nil}
+  var hasProfile: Bool {return _storage._profile != nil}
   /// Clears the value of `profile`. Subsequent reads from it will return its default value.
-  mutating func clearProfile() {self._profile = nil}
+  mutating func clearProfile() {_uniqueStorage()._profile = nil}
 
   var openGroupInvitation: SessionProtos_DataMessage.OpenGroupInvitation {
-    get {return _openGroupInvitation ?? SessionProtos_DataMessage.OpenGroupInvitation()}
-    set {_openGroupInvitation = newValue}
+    get {return _storage._openGroupInvitation ?? SessionProtos_DataMessage.OpenGroupInvitation()}
+    set {_uniqueStorage()._openGroupInvitation = newValue}
   }
   /// Returns true if `openGroupInvitation` has been explicitly set.
-  var hasOpenGroupInvitation: Bool {return self._openGroupInvitation != nil}
+  var hasOpenGroupInvitation: Bool {return _storage._openGroupInvitation != nil}
   /// Clears the value of `openGroupInvitation`. Subsequent reads from it will return its default value.
-  mutating func clearOpenGroupInvitation() {self._openGroupInvitation = nil}
+  mutating func clearOpenGroupInvitation() {_uniqueStorage()._openGroupInvitation = nil}
 
   var closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage {
-    get {return _closedGroupControlMessage ?? SessionProtos_DataMessage.ClosedGroupControlMessage()}
-    set {_closedGroupControlMessage = newValue}
+    get {return _storage._closedGroupControlMessage ?? SessionProtos_DataMessage.ClosedGroupControlMessage()}
+    set {_uniqueStorage()._closedGroupControlMessage = newValue}
   }
   /// Returns true if `closedGroupControlMessage` has been explicitly set.
-  var hasClosedGroupControlMessage: Bool {return self._closedGroupControlMessage != nil}
+  var hasClosedGroupControlMessage: Bool {return _storage._closedGroupControlMessage != nil}
   /// Clears the value of `closedGroupControlMessage`. Subsequent reads from it will return its default value.
-  mutating func clearClosedGroupControlMessage() {self._closedGroupControlMessage = nil}
+  mutating func clearClosedGroupControlMessage() {_uniqueStorage()._closedGroupControlMessage = nil}
 
   var syncTarget: String {
-    get {return _syncTarget ?? String()}
-    set {_syncTarget = newValue}
+    get {return _storage._syncTarget ?? String()}
+    set {_uniqueStorage()._syncTarget = newValue}
   }
   /// Returns true if `syncTarget` has been explicitly set.
-  var hasSyncTarget: Bool {return self._syncTarget != nil}
+  var hasSyncTarget: Bool {return _storage._syncTarget != nil}
   /// Clears the value of `syncTarget`. Subsequent reads from it will return its default value.
-  mutating func clearSyncTarget() {self._syncTarget = nil}
+  mutating func clearSyncTarget() {_uniqueStorage()._syncTarget = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -732,7 +738,7 @@ struct SessionProtos_DataMessage {
     mutating func clearType() {self._type = nil}
 
     var publicKey: Data {
-      get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+      get {return _publicKey ?? Data()}
       set {_publicKey = newValue}
     }
     /// Returns true if `publicKey` has been explicitly set.
@@ -764,21 +770,21 @@ struct SessionProtos_DataMessage {
 
     var wrappers: [SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper] = []
 
-    var expireTimer: UInt32 {
-      get {return _expireTimer ?? 0}
-      set {_expireTimer = newValue}
+    var expirationTimer: UInt32 {
+      get {return _expirationTimer ?? 0}
+      set {_expirationTimer = newValue}
     }
-    /// Returns true if `expireTimer` has been explicitly set.
-    var hasExpireTimer: Bool {return self._expireTimer != nil}
-    /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
-    mutating func clearExpireTimer() {self._expireTimer = nil}
+    /// Returns true if `expirationTimer` has been explicitly set.
+    var hasExpirationTimer: Bool {return self._expirationTimer != nil}
+    /// Clears the value of `expirationTimer`. Subsequent reads from it will return its default value.
+    mutating func clearExpirationTimer() {self._expirationTimer = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     enum TypeEnum: SwiftProtobuf.Enum {
       typealias RawValue = Int
 
-      /// publicKey, name, encryptionKeyPair, members, admins, expireTimer
+      /// publicKey, name, encryptionKeyPair, members, admins, expirationTimer
       case new // = 1
 
       /// publicKey, wrappers
@@ -833,7 +839,7 @@ struct SessionProtos_DataMessage {
 
       /// @required
       var publicKey: Data {
-        get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+        get {return _publicKey ?? Data()}
         set {_publicKey = newValue}
       }
       /// Returns true if `publicKey` has been explicitly set.
@@ -843,7 +849,7 @@ struct SessionProtos_DataMessage {
 
       /// @required
       var encryptedKeyPair: Data {
-        get {return _encryptedKeyPair ?? SwiftProtobuf.Internal.emptyData}
+        get {return _encryptedKeyPair ?? Data()}
         set {_encryptedKeyPair = newValue}
       }
       /// Returns true if `encryptedKeyPair` has been explicitly set.
@@ -865,22 +871,12 @@ struct SessionProtos_DataMessage {
     fileprivate var _publicKey: Data? = nil
     fileprivate var _name: String? = nil
     fileprivate var _encryptionKeyPair: SessionProtos_KeyPair? = nil
-    fileprivate var _expireTimer: UInt32? = nil
+    fileprivate var _expirationTimer: UInt32? = nil
   }
 
   init() {}
 
-  fileprivate var _body: String? = nil
-  fileprivate var _group: SessionProtos_GroupContext? = nil
-  fileprivate var _flags: UInt32? = nil
-  fileprivate var _expireTimer: UInt32? = nil
-  fileprivate var _profileKey: Data? = nil
-  fileprivate var _timestamp: UInt64? = nil
-  fileprivate var _quote: SessionProtos_DataMessage.Quote? = nil
-  fileprivate var _profile: SessionProtos_DataMessage.LokiProfile? = nil
-  fileprivate var _openGroupInvitation: SessionProtos_DataMessage.OpenGroupInvitation? = nil
-  fileprivate var _closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage? = nil
-  fileprivate var _syncTarget: String? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 #if swift(>=4.2)
@@ -927,7 +923,7 @@ struct SessionProtos_ConfigurationMessage {
   mutating func clearProfilePicture() {self._profilePicture = nil}
 
   var profileKey: Data {
-    get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
+    get {return _profileKey ?? Data()}
     set {_profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
@@ -945,7 +941,7 @@ struct SessionProtos_ConfigurationMessage {
     // methods supported on all messages.
 
     var publicKey: Data {
-      get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+      get {return _publicKey ?? Data()}
       set {_publicKey = newValue}
     }
     /// Returns true if `publicKey` has been explicitly set.
@@ -991,7 +987,7 @@ struct SessionProtos_ConfigurationMessage {
 
     /// @required
     var publicKey: Data {
-      get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
+      get {return _publicKey ?? Data()}
       set {_publicKey = newValue}
     }
     /// Returns true if `publicKey` has been explicitly set.
@@ -1019,7 +1015,7 @@ struct SessionProtos_ConfigurationMessage {
     mutating func clearProfilePicture() {self._profilePicture = nil}
 
     var profileKey: Data {
-      get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
+      get {return _profileKey ?? Data()}
       set {_profileKey = newValue}
     }
     /// Returns true if `profileKey` has been explicitly set.
@@ -1127,7 +1123,7 @@ struct SessionProtos_AttachmentPointer {
   mutating func clearContentType() {self._contentType = nil}
 
   var key: Data {
-    get {return _key ?? SwiftProtobuf.Internal.emptyData}
+    get {return _key ?? Data()}
     set {_key = newValue}
   }
   /// Returns true if `key` has been explicitly set.
@@ -1145,7 +1141,7 @@ struct SessionProtos_AttachmentPointer {
   mutating func clearSize() {self._size = nil}
 
   var thumbnail: Data {
-    get {return _thumbnail ?? SwiftProtobuf.Internal.emptyData}
+    get {return _thumbnail ?? Data()}
     set {_thumbnail = newValue}
   }
   /// Returns true if `thumbnail` has been explicitly set.
@@ -1154,7 +1150,7 @@ struct SessionProtos_AttachmentPointer {
   mutating func clearThumbnail() {self._thumbnail = nil}
 
   var digest: Data {
-    get {return _digest ?? SwiftProtobuf.Internal.emptyData}
+    get {return _digest ?? Data()}
     set {_digest = newValue}
   }
   /// Returns true if `digest` has been explicitly set.
@@ -1272,45 +1268,51 @@ struct SessionProtos_GroupContext {
 
   /// @required
   var id: Data {
-    get {return _id ?? SwiftProtobuf.Internal.emptyData}
-    set {_id = newValue}
+    get {return _storage._id ?? Data()}
+    set {_uniqueStorage()._id = newValue}
   }
   /// Returns true if `id` has been explicitly set.
-  var hasID: Bool {return self._id != nil}
+  var hasID: Bool {return _storage._id != nil}
   /// Clears the value of `id`. Subsequent reads from it will return its default value.
-  mutating func clearID() {self._id = nil}
+  mutating func clearID() {_uniqueStorage()._id = nil}
 
   /// @required
   var type: SessionProtos_GroupContext.TypeEnum {
-    get {return _type ?? .unknown}
-    set {_type = newValue}
+    get {return _storage._type ?? .unknown}
+    set {_uniqueStorage()._type = newValue}
   }
   /// Returns true if `type` has been explicitly set.
-  var hasType: Bool {return self._type != nil}
+  var hasType: Bool {return _storage._type != nil}
   /// Clears the value of `type`. Subsequent reads from it will return its default value.
-  mutating func clearType() {self._type = nil}
+  mutating func clearType() {_uniqueStorage()._type = nil}
 
   var name: String {
-    get {return _name ?? String()}
-    set {_name = newValue}
+    get {return _storage._name ?? String()}
+    set {_uniqueStorage()._name = newValue}
   }
   /// Returns true if `name` has been explicitly set.
-  var hasName: Bool {return self._name != nil}
+  var hasName: Bool {return _storage._name != nil}
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
-  mutating func clearName() {self._name = nil}
+  mutating func clearName() {_uniqueStorage()._name = nil}
 
-  var members: [String] = []
+  var members: [String] {
+    get {return _storage._members}
+    set {_uniqueStorage()._members = newValue}
+  }
 
   var avatar: SessionProtos_AttachmentPointer {
-    get {return _avatar ?? SessionProtos_AttachmentPointer()}
-    set {_avatar = newValue}
+    get {return _storage._avatar ?? SessionProtos_AttachmentPointer()}
+    set {_uniqueStorage()._avatar = newValue}
   }
   /// Returns true if `avatar` has been explicitly set.
-  var hasAvatar: Bool {return self._avatar != nil}
+  var hasAvatar: Bool {return _storage._avatar != nil}
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
-  mutating func clearAvatar() {self._avatar = nil}
+  mutating func clearAvatar() {_uniqueStorage()._avatar = nil}
 
-  var admins: [String] = []
+  var admins: [String] {
+    get {return _storage._admins}
+    set {_uniqueStorage()._admins = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1351,10 +1353,7 @@ struct SessionProtos_GroupContext {
 
   init() {}
 
-  fileprivate var _id: Data? = nil
-  fileprivate var _type: SessionProtos_GroupContext.TypeEnum? = nil
-  fileprivate var _name: String? = nil
-  fileprivate var _avatar: SessionProtos_AttachmentPointer? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 #if swift(>=4.2)
@@ -1388,13 +1387,16 @@ extension SessionProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      case 2: try decoder.decodeSingularStringField(value: &self._source)
-      case 5: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
-      case 7: try decoder.decodeSingularUInt32Field(value: &self._sourceDevice)
-      case 8: try decoder.decodeSingularBytesField(value: &self._content)
-      case 10: try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._source) }()
+      case 5: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 7: try { try decoder.decodeSingularUInt32Field(value: &self._sourceDevice) }()
+      case 8: try { try decoder.decodeSingularBytesField(value: &self._content) }()
+      case 10: try { try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp) }()
       default: break
       }
     }
@@ -1456,9 +1458,12 @@ extension SessionProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
-      case 2: try decoder.decodeSingularEnumField(value: &self._action)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self._action) }()
       default: break
       }
     }
@@ -1510,12 +1515,15 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularMessageField(value: &self._dataMessage)
-      case 5: try decoder.decodeSingularMessageField(value: &self._receiptMessage)
-      case 6: try decoder.decodeSingularMessageField(value: &self._typingMessage)
-      case 7: try decoder.decodeSingularMessageField(value: &self._configurationMessage)
-      case 8: try decoder.decodeSingularMessageField(value: &self._dataExtractionNotification)
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._dataMessage) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._receiptMessage) }()
+      case 6: try { try decoder.decodeSingularMessageField(value: &self._typingMessage) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._configurationMessage) }()
+      case 8: try { try decoder.decodeSingularMessageField(value: &self._dataExtractionNotification) }()
       default: break
       }
     }
@@ -1566,9 +1574,12 @@ extension SessionProtos_KeyPair: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._publicKey)
-      case 2: try decoder.decodeSingularBytesField(value: &self._privateKey)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._publicKey) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._privateKey) }()
       default: break
       }
     }
@@ -1606,9 +1617,12 @@ extension SessionProtos_DataExtractionNotification: SwiftProtobuf.Message, Swift
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      case 2: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       default: break
       }
     }
@@ -1657,94 +1671,155 @@ extension SessionProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     105: .same(proto: "syncTarget"),
   ]
 
+  fileprivate class _StorageClass {
+    var _body: String? = nil
+    var _attachments: [SessionProtos_AttachmentPointer] = []
+    var _group: SessionProtos_GroupContext? = nil
+    var _flags: UInt32? = nil
+    var _expireTimer: UInt32? = nil
+    var _profileKey: Data? = nil
+    var _timestamp: UInt64? = nil
+    var _quote: SessionProtos_DataMessage.Quote? = nil
+    var _preview: [SessionProtos_DataMessage.Preview] = []
+    var _profile: SessionProtos_DataMessage.LokiProfile? = nil
+    var _openGroupInvitation: SessionProtos_DataMessage.OpenGroupInvitation? = nil
+    var _closedGroupControlMessage: SessionProtos_DataMessage.ClosedGroupControlMessage? = nil
+    var _syncTarget: String? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _body = source._body
+      _attachments = source._attachments
+      _group = source._group
+      _flags = source._flags
+      _expireTimer = source._expireTimer
+      _profileKey = source._profileKey
+      _timestamp = source._timestamp
+      _quote = source._quote
+      _preview = source._preview
+      _profile = source._profile
+      _openGroupInvitation = source._openGroupInvitation
+      _closedGroupControlMessage = source._closedGroupControlMessage
+      _syncTarget = source._syncTarget
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   public var isInitialized: Bool {
-    if !SwiftProtobuf.Internal.areAllInitialized(self.attachments) {return false}
-    if let v = self._group, !v.isInitialized {return false}
-    if let v = self._quote, !v.isInitialized {return false}
-    if !SwiftProtobuf.Internal.areAllInitialized(self.preview) {return false}
-    if let v = self._openGroupInvitation, !v.isInitialized {return false}
-    if let v = self._closedGroupControlMessage, !v.isInitialized {return false}
-    return true
+    return withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if !SwiftProtobuf.Internal.areAllInitialized(_storage._attachments) {return false}
+      if let v = _storage._group, !v.isInitialized {return false}
+      if let v = _storage._quote, !v.isInitialized {return false}
+      if !SwiftProtobuf.Internal.areAllInitialized(_storage._preview) {return false}
+      if let v = _storage._openGroupInvitation, !v.isInitialized {return false}
+      if let v = _storage._closedGroupControlMessage, !v.isInitialized {return false}
+      return true
+    }
   }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._body)
-      case 2: try decoder.decodeRepeatedMessageField(value: &self.attachments)
-      case 3: try decoder.decodeSingularMessageField(value: &self._group)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self._flags)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self._expireTimer)
-      case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
-      case 7: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
-      case 8: try decoder.decodeSingularMessageField(value: &self._quote)
-      case 10: try decoder.decodeRepeatedMessageField(value: &self.preview)
-      case 101: try decoder.decodeSingularMessageField(value: &self._profile)
-      case 102: try decoder.decodeSingularMessageField(value: &self._openGroupInvitation)
-      case 104: try decoder.decodeSingularMessageField(value: &self._closedGroupControlMessage)
-      case 105: try decoder.decodeSingularStringField(value: &self._syncTarget)
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularStringField(value: &_storage._body) }()
+        case 2: try { try decoder.decodeRepeatedMessageField(value: &_storage._attachments) }()
+        case 3: try { try decoder.decodeSingularMessageField(value: &_storage._group) }()
+        case 4: try { try decoder.decodeSingularUInt32Field(value: &_storage._flags) }()
+        case 5: try { try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer) }()
+        case 6: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
+        case 7: try { try decoder.decodeSingularUInt64Field(value: &_storage._timestamp) }()
+        case 8: try { try decoder.decodeSingularMessageField(value: &_storage._quote) }()
+        case 10: try { try decoder.decodeRepeatedMessageField(value: &_storage._preview) }()
+        case 101: try { try decoder.decodeSingularMessageField(value: &_storage._profile) }()
+        case 102: try { try decoder.decodeSingularMessageField(value: &_storage._openGroupInvitation) }()
+        case 104: try { try decoder.decodeSingularMessageField(value: &_storage._closedGroupControlMessage) }()
+        case 105: try { try decoder.decodeSingularStringField(value: &_storage._syncTarget) }()
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._body {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
-    if !self.attachments.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.attachments, fieldNumber: 2)
-    }
-    if let v = self._group {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
-    if let v = self._flags {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
-    }
-    if let v = self._expireTimer {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 5)
-    }
-    if let v = self._profileKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
-    }
-    if let v = self._timestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 7)
-    }
-    if let v = self._quote {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-    }
-    if !self.preview.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.preview, fieldNumber: 10)
-    }
-    if let v = self._profile {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
-    }
-    if let v = self._openGroupInvitation {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 102)
-    }
-    if let v = self._closedGroupControlMessage {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 104)
-    }
-    if let v = self._syncTarget {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 105)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._body {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+      }
+      if !_storage._attachments.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._attachments, fieldNumber: 2)
+      }
+      if let v = _storage._group {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      }
+      if let v = _storage._flags {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 4)
+      }
+      if let v = _storage._expireTimer {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 5)
+      }
+      if let v = _storage._profileKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+      }
+      if let v = _storage._timestamp {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 7)
+      }
+      if let v = _storage._quote {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      }
+      if !_storage._preview.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._preview, fieldNumber: 10)
+      }
+      if let v = _storage._profile {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
+      }
+      if let v = _storage._openGroupInvitation {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 102)
+      }
+      if let v = _storage._closedGroupControlMessage {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 104)
+      }
+      if let v = _storage._syncTarget {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 105)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_DataMessage, rhs: SessionProtos_DataMessage) -> Bool {
-    if lhs._body != rhs._body {return false}
-    if lhs.attachments != rhs.attachments {return false}
-    if lhs._group != rhs._group {return false}
-    if lhs._flags != rhs._flags {return false}
-    if lhs._expireTimer != rhs._expireTimer {return false}
-    if lhs._profileKey != rhs._profileKey {return false}
-    if lhs._timestamp != rhs._timestamp {return false}
-    if lhs._quote != rhs._quote {return false}
-    if lhs.preview != rhs.preview {return false}
-    if lhs._profile != rhs._profile {return false}
-    if lhs._openGroupInvitation != rhs._openGroupInvitation {return false}
-    if lhs._closedGroupControlMessage != rhs._closedGroupControlMessage {return false}
-    if lhs._syncTarget != rhs._syncTarget {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._body != rhs_storage._body {return false}
+        if _storage._attachments != rhs_storage._attachments {return false}
+        if _storage._group != rhs_storage._group {return false}
+        if _storage._flags != rhs_storage._flags {return false}
+        if _storage._expireTimer != rhs_storage._expireTimer {return false}
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._timestamp != rhs_storage._timestamp {return false}
+        if _storage._quote != rhs_storage._quote {return false}
+        if _storage._preview != rhs_storage._preview {return false}
+        if _storage._profile != rhs_storage._profile {return false}
+        if _storage._openGroupInvitation != rhs_storage._openGroupInvitation {return false}
+        if _storage._closedGroupControlMessage != rhs_storage._closedGroupControlMessage {return false}
+        if _storage._syncTarget != rhs_storage._syncTarget {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1774,11 +1849,14 @@ extension SessionProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftProtobuf.
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._author)
-      case 3: try decoder.decodeSingularStringField(value: &self._text)
-      case 4: try decoder.decodeRepeatedMessageField(value: &self.attachments)
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._author) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._text) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.attachments) }()
       default: break
       }
     }
@@ -1826,11 +1904,14 @@ extension SessionProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.Messag
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._contentType)
-      case 2: try decoder.decodeSingularStringField(value: &self._fileName)
-      case 3: try decoder.decodeSingularMessageField(value: &self._thumbnail)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self._flags)
+      case 1: try { try decoder.decodeSingularStringField(value: &self._contentType) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._fileName) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._thumbnail) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self._flags) }()
       default: break
       }
     }
@@ -1884,10 +1965,13 @@ extension SessionProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftProtobu
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._url)
-      case 2: try decoder.decodeSingularStringField(value: &self._title)
-      case 3: try decoder.decodeSingularMessageField(value: &self._image)
+      case 1: try { try decoder.decodeSingularStringField(value: &self._url) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._title) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._image) }()
       default: break
       }
     }
@@ -1924,9 +2008,12 @@ extension SessionProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, SwiftPro
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._displayName)
-      case 2: try decoder.decodeSingularStringField(value: &self._profilePicture)
+      case 1: try { try decoder.decodeSingularStringField(value: &self._displayName) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._profilePicture) }()
       default: break
       }
     }
@@ -1965,9 +2052,12 @@ extension SessionProtos_DataMessage.OpenGroupInvitation: SwiftProtobuf.Message, 
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._url)
-      case 3: try decoder.decodeSingularStringField(value: &self._name)
+      case 1: try { try decoder.decodeSingularStringField(value: &self._url) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._name) }()
       default: break
       }
     }
@@ -2001,7 +2091,7 @@ extension SessionProtos_DataMessage.ClosedGroupControlMessage: SwiftProtobuf.Mes
     5: .same(proto: "members"),
     6: .same(proto: "admins"),
     7: .same(proto: "wrappers"),
-    8: .same(proto: "expireTimer"),
+    8: .same(proto: "expirationTimer"),
   ]
 
   public var isInitialized: Bool {
@@ -2013,15 +2103,18 @@ extension SessionProtos_DataMessage.ClosedGroupControlMessage: SwiftProtobuf.Mes
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      case 2: try decoder.decodeSingularBytesField(value: &self._publicKey)
-      case 3: try decoder.decodeSingularStringField(value: &self._name)
-      case 4: try decoder.decodeSingularMessageField(value: &self._encryptionKeyPair)
-      case 5: try decoder.decodeRepeatedBytesField(value: &self.members)
-      case 6: try decoder.decodeRepeatedBytesField(value: &self.admins)
-      case 7: try decoder.decodeRepeatedMessageField(value: &self.wrappers)
-      case 8: try decoder.decodeSingularUInt32Field(value: &self._expireTimer)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._publicKey) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._name) }()
+      case 4: try { try decoder.decodeSingularMessageField(value: &self._encryptionKeyPair) }()
+      case 5: try { try decoder.decodeRepeatedBytesField(value: &self.members) }()
+      case 6: try { try decoder.decodeRepeatedBytesField(value: &self.admins) }()
+      case 7: try { try decoder.decodeRepeatedMessageField(value: &self.wrappers) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self._expirationTimer) }()
       default: break
       }
     }
@@ -2049,7 +2142,7 @@ extension SessionProtos_DataMessage.ClosedGroupControlMessage: SwiftProtobuf.Mes
     if !self.wrappers.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.wrappers, fieldNumber: 7)
     }
-    if let v = self._expireTimer {
+    if let v = self._expirationTimer {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 8)
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -2063,7 +2156,7 @@ extension SessionProtos_DataMessage.ClosedGroupControlMessage: SwiftProtobuf.Mes
     if lhs.members != rhs.members {return false}
     if lhs.admins != rhs.admins {return false}
     if lhs.wrappers != rhs.wrappers {return false}
-    if lhs._expireTimer != rhs._expireTimer {return false}
+    if lhs._expirationTimer != rhs._expirationTimer {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2096,9 +2189,12 @@ extension SessionProtos_DataMessage.ClosedGroupControlMessage.KeyPairWrapper: Sw
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._publicKey)
-      case 2: try decoder.decodeSingularBytesField(value: &self._encryptedKeyPair)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._publicKey) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._encryptedKeyPair) }()
       default: break
       }
     }
@@ -2141,13 +2237,16 @@ extension SessionProtos_ConfigurationMessage: SwiftProtobuf.Message, SwiftProtob
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeRepeatedMessageField(value: &self.closedGroups)
-      case 2: try decoder.decodeRepeatedStringField(value: &self.openGroups)
-      case 3: try decoder.decodeSingularStringField(value: &self._displayName)
-      case 4: try decoder.decodeSingularStringField(value: &self._profilePicture)
-      case 5: try decoder.decodeSingularBytesField(value: &self._profileKey)
-      case 6: try decoder.decodeRepeatedMessageField(value: &self.contacts)
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.closedGroups) }()
+      case 2: try { try decoder.decodeRepeatedStringField(value: &self.openGroups) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._displayName) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._profilePicture) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.contacts) }()
       default: break
       }
     }
@@ -2204,12 +2303,15 @@ extension SessionProtos_ConfigurationMessage.ClosedGroup: SwiftProtobuf.Message,
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._publicKey)
-      case 2: try decoder.decodeSingularStringField(value: &self._name)
-      case 3: try decoder.decodeSingularMessageField(value: &self._encryptionKeyPair)
-      case 4: try decoder.decodeRepeatedBytesField(value: &self.members)
-      case 5: try decoder.decodeRepeatedBytesField(value: &self.admins)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._publicKey) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._name) }()
+      case 3: try { try decoder.decodeSingularMessageField(value: &self._encryptionKeyPair) }()
+      case 4: try { try decoder.decodeRepeatedBytesField(value: &self.members) }()
+      case 5: try { try decoder.decodeRepeatedBytesField(value: &self.admins) }()
       default: break
       }
     }
@@ -2262,11 +2364,14 @@ extension SessionProtos_ConfigurationMessage.Contact: SwiftProtobuf.Message, Swi
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._publicKey)
-      case 2: try decoder.decodeSingularStringField(value: &self._name)
-      case 3: try decoder.decodeSingularStringField(value: &self._profilePicture)
-      case 4: try decoder.decodeSingularBytesField(value: &self._profileKey)
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._publicKey) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._name) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._profilePicture) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
       default: break
       }
     }
@@ -2312,9 +2417,12 @@ extension SessionProtos_ReceiptMessage: SwiftProtobuf.Message, SwiftProtobuf._Me
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      case 2: try decoder.decodeRepeatedUInt64Field(value: &self.timestamp)
+      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 2: try { try decoder.decodeRepeatedUInt64Field(value: &self.timestamp) }()
       default: break
       }
     }
@@ -2369,19 +2477,22 @@ extension SessionProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf.
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try decoder.decodeSingularFixed64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._contentType)
-      case 3: try decoder.decodeSingularBytesField(value: &self._key)
-      case 4: try decoder.decodeSingularUInt32Field(value: &self._size)
-      case 5: try decoder.decodeSingularBytesField(value: &self._thumbnail)
-      case 6: try decoder.decodeSingularBytesField(value: &self._digest)
-      case 7: try decoder.decodeSingularStringField(value: &self._fileName)
-      case 8: try decoder.decodeSingularUInt32Field(value: &self._flags)
-      case 9: try decoder.decodeSingularUInt32Field(value: &self._width)
-      case 10: try decoder.decodeSingularUInt32Field(value: &self._height)
-      case 11: try decoder.decodeSingularStringField(value: &self._caption)
-      case 101: try decoder.decodeSingularStringField(value: &self._url)
+      case 1: try { try decoder.decodeSingularFixed64Field(value: &self._id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._contentType) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._key) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self._size) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._thumbnail) }()
+      case 6: try { try decoder.decodeSingularBytesField(value: &self._digest) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self._fileName) }()
+      case 8: try { try decoder.decodeSingularUInt32Field(value: &self._flags) }()
+      case 9: try { try decoder.decodeSingularUInt32Field(value: &self._width) }()
+      case 10: try { try decoder.decodeSingularUInt32Field(value: &self._height) }()
+      case 11: try { try decoder.decodeSingularStringField(value: &self._caption) }()
+      case 101: try { try decoder.decodeSingularStringField(value: &self._url) }()
       default: break
       }
     }
@@ -2462,54 +2573,101 @@ extension SessionProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf._Mess
     6: .same(proto: "admins"),
   ]
 
+  fileprivate class _StorageClass {
+    var _id: Data? = nil
+    var _type: SessionProtos_GroupContext.TypeEnum? = nil
+    var _name: String? = nil
+    var _members: [String] = []
+    var _avatar: SessionProtos_AttachmentPointer? = nil
+    var _admins: [String] = []
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _id = source._id
+      _type = source._type
+      _name = source._name
+      _members = source._members
+      _avatar = source._avatar
+      _admins = source._admins
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   public var isInitialized: Bool {
-    if let v = self._avatar, !v.isInitialized {return false}
-    return true
+    return withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._avatar, !v.isInitialized {return false}
+      return true
+    }
   }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._id)
-      case 2: try decoder.decodeSingularEnumField(value: &self._type)
-      case 3: try decoder.decodeSingularStringField(value: &self._name)
-      case 4: try decoder.decodeRepeatedStringField(value: &self.members)
-      case 5: try decoder.decodeSingularMessageField(value: &self._avatar)
-      case 6: try decoder.decodeRepeatedStringField(value: &self.admins)
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularBytesField(value: &_storage._id) }()
+        case 2: try { try decoder.decodeSingularEnumField(value: &_storage._type) }()
+        case 3: try { try decoder.decodeSingularStringField(value: &_storage._name) }()
+        case 4: try { try decoder.decodeRepeatedStringField(value: &_storage._members) }()
+        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._avatar) }()
+        case 6: try { try decoder.decodeRepeatedStringField(value: &_storage._admins) }()
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._id {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    }
-    if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
-    }
-    if let v = self._name {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    }
-    if !self.members.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.members, fieldNumber: 4)
-    }
-    if let v = self._avatar {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-    }
-    if !self.admins.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.admins, fieldNumber: 6)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._id {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+      }
+      if let v = _storage._type {
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
+      }
+      if let v = _storage._name {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+      }
+      if !_storage._members.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._members, fieldNumber: 4)
+      }
+      if let v = _storage._avatar {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      }
+      if !_storage._admins.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._admins, fieldNumber: 6)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_GroupContext, rhs: SessionProtos_GroupContext) -> Bool {
-    if lhs._id != rhs._id {return false}
-    if lhs._type != rhs._type {return false}
-    if lhs._name != rhs._name {return false}
-    if lhs.members != rhs.members {return false}
-    if lhs._avatar != rhs._avatar {return false}
-    if lhs.admins != rhs.admins {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._id != rhs_storage._id {return false}
+        if _storage._type != rhs_storage._type {return false}
+        if _storage._name != rhs_storage._name {return false}
+        if _storage._members != rhs_storage._members {return false}
+        if _storage._avatar != rhs_storage._avatar {return false}
+        if _storage._admins != rhs_storage._admins {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -27,7 +27,7 @@ extension MessageSender {
             let thread = TSContactThread.getOrCreateThread(withContactSessionID: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
-                encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData, expireTimer: 0)
+                encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData, expirationTimer: 0)
             let closedGroupControlMessage = ClosedGroupControlMessage(kind: closedGroupControlMessageKind)
             // Sending this non-durably is okay because we show a loader to the user. If they close the app while the
             // loader is still showing, it's within expectation that the group creation might be incomplete.
@@ -163,7 +163,7 @@ extension MessageSender {
         let members = [String](Set(group.groupMemberIds).union(newMembers))
         let membersAsData = members.map { Data(hex: $0) }
         let adminsAsData = group.groupAdminIds.map { Data(hex: $0) }
-        let expireTimer = thread.disappearingMessagesDuration(with: transaction)
+        let expirationTimer = thread.disappearingMessagesDuration(with: transaction)
         guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else {
             SNLog("Couldn't find encryption key pair for closed group: \(groupPublicKey).")
             return Promise(error: Error.noKeyPair)
@@ -176,7 +176,7 @@ extension MessageSender {
             let thread = TSContactThread.getOrCreateThread(withContactSessionID: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: group.groupName!,
-                encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData, expireTimer: expireTimer)
+                encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData, expirationTimer: expirationTimer)
             let closedGroupControlMessage = ClosedGroupControlMessage(kind: closedGroupControlMessageKind)
             MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
         }

@@ -14,7 +14,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
     
     // MARK: Kind
     public enum Kind : CustomStringConvertible {
-        case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data], expireTimer: UInt32)
+        case new(publicKey: Data, name: String, encryptionKeyPair: ECKeyPair, members: [Data], admins: [Data], expirationTimer: UInt32)
         /// An encryption key pair encrypted for each member individually.
         ///
         /// - Note: `publicKey` is only set when an encryption key pair is sent in a one-to-one context (i.e. not in a group).
@@ -89,9 +89,9 @@ public final class ClosedGroupControlMessage : ControlMessage {
     public override var isValid: Bool {
         guard super.isValid, let kind = kind else { return false }
         switch kind {
-        case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expireTimer):
+        case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expirationTimer):
             return !publicKey.isEmpty && !name.isEmpty && !encryptionKeyPair.publicKey.isEmpty
-                && !encryptionKeyPair.privateKey.isEmpty && !members.isEmpty && !admins.isEmpty && expireTimer >= 0
+                && !encryptionKeyPair.privateKey.isEmpty && !members.isEmpty && !admins.isEmpty
         case .encryptionKeyPair: return true
         case .nameChange(let name): return !name.isEmpty
         case .membersAdded(let members): return !members.isEmpty
@@ -112,8 +112,8 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 let encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as? ECKeyPair,
                 let members = coder.decodeObject(forKey: "members") as? [Data],
                 let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
-                let expireTimer = coder.decodeObject(forKey: "expireTimer") as? UInt32 ?? 0
-            self.kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins, expireTimer: expireTimer)
+                let expirationTimer = coder.decodeObject(forKey: "expirationTimer") as? UInt32 ?? 0
+            self.kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins, expirationTimer: expirationTimer)
         case "encryptionKeyPair":
             let publicKey = coder.decodeObject(forKey: "publicKey") as? Data
             guard let wrappers = coder.decodeObject(forKey: "wrappers") as? [KeyPairWrapper] else { return nil }
@@ -139,14 +139,14 @@ public final class ClosedGroupControlMessage : ControlMessage {
         super.encode(with: coder)
         guard let kind = kind else { return }
         switch kind {
-        case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expireTimer):
+        case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expirationTimer):
             coder.encode("new", forKey: "kind")
             coder.encode(publicKey, forKey: "publicKey")
             coder.encode(name, forKey: "name")
             coder.encode(encryptionKeyPair, forKey: "encryptionKeyPair")
             coder.encode(members, forKey: "members")
             coder.encode(admins, forKey: "admins")
-            coder.encode(expireTimer, forKey: "expireTimer")
+            coder.encode(expirationTimer, forKey: "expirationTimer")
         case .encryptionKeyPair(let publicKey, let wrappers):
             coder.encode("encryptionKeyPair", forKey: "kind")
             coder.encode(publicKey, forKey: "publicKey")
@@ -175,11 +175,11 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case .new:
             guard let publicKey = closedGroupControlMessageProto.publicKey, let name = closedGroupControlMessageProto.name,
                 let encryptionKeyPairAsProto = closedGroupControlMessageProto.encryptionKeyPair else { return nil }
+            let expirationTimer = closedGroupControlMessageProto.expirationTimer
             do {
-                let expireTimer = closedGroupControlMessageProto.expireTimer
                 let encryptionKeyPair = try ECKeyPair(publicKeyData: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded(), privateKeyData: encryptionKeyPairAsProto.privateKey)
                 kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair,
-                    members: closedGroupControlMessageProto.members, admins: closedGroupControlMessageProto.admins, expireTimer: expireTimer)
+                    members: closedGroupControlMessageProto.members, admins: closedGroupControlMessageProto.admins, expirationTimer: expirationTimer)
             } catch {
                 SNLog("Couldn't parse key pair.")
                 return nil
@@ -211,7 +211,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
         do {
             let closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGroupControlMessageBuilder
             switch kind {
-            case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expireTimer):
+            case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expirationTimer):
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .new)
                 closedGroupControlMessage.setPublicKey(publicKey)
                 closedGroupControlMessage.setName(name)
@@ -224,7 +224,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 }
                 closedGroupControlMessage.setMembers(members)
                 closedGroupControlMessage.setAdmins(admins)
-                closedGroupControlMessage.setExpireTimer(expireTimer)
+                closedGroupControlMessage.setExpirationTimer(expirationTimer)
             case .encryptionKeyPair(let publicKey, let wrappers):
                 closedGroupControlMessage = SNProtoDataMessageClosedGroupControlMessage.builder(type: .encryptionKeyPair)
                 if let publicKey = publicKey {
