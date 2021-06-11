@@ -61,7 +61,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         // TODO: We could consider actually handling the update here. Not sure if there's enough time though, seeing as though
                         // in some cases we need to send messages (e.g. our sender key) to a number of other users.
                         switch closedGroupControlMessage.kind {
-                        case .new(_, let name, _, _, _): snippet = "\(senderDisplayName) added you to \(name)"
+                        case .new(_, let name, _, _, _, _): snippet = "\(senderDisplayName) added you to \(name)"
                         default: return self.completeSilenty()
                         }
                     default: return self.completeSilenty()
