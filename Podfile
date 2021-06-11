@@ -56,7 +56,9 @@ pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS'
 # pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
 
 pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
+pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
 # pod 'YYImage', path: '../YYImage'
+# pod 'YYImage/libwebp', path:'../YYImage'
 
 ###
 # third party pods
