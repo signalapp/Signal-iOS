@@ -111,6 +111,7 @@ public enum ColorOrGradientSetting: Equatable, Codable {
 // ColorOrGradientSetting is used for persistence and comparison.
 // ColorOrGradientValue is used for rendering.
 public enum ColorOrGradientValue: CustomStringConvertible {
+    case transparent
     case solidColor(color: UIColor)
     // If angleRadians = 0, gradientColor1 is N.
     // If angleRadians = PI / 2, gradientColor1 is E.
@@ -121,6 +122,8 @@ public enum ColorOrGradientValue: CustomStringConvertible {
 
     public var description: String {
         switch self {
+        case .transparent:
+            return "[transparent]"
         case .solidColor(let color):
             return "[solidColor: \(color.asOWSColor)]"
         case .gradient(let gradientColor1, let gradientColor2, let angleRadians):

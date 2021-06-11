@@ -1061,6 +1061,8 @@ private class CALayerDelegateNoAnimations: NSObject, CALayerDelegate {
     }
 }
 
+// MARK: -
+
 extension CALayer {
     private static let delegateNoAnimations = CALayerDelegateNoAnimations()
 
@@ -1069,5 +1071,108 @@ extension CALayer {
         owsAssertDebug(self.delegate == nil)
 
         self.delegate = Self.delegateNoAnimations
+    }
+}
+
+// MARK: - Corners
+
+@objc
+public extension UIView {
+    static func uiRectCorner(forOWSDirectionalRectCorner corner: OWSDirectionalRectCorner) -> UIRectCorner {
+        if corner == .allCorners {
+            return .allCorners
+        }
+
+        var result: UIRectCorner = []
+        let isRTL = CurrentAppContext().isRTL
+
+        if corner.contains(.topLeading) {
+            result.insert(isRTL ? .topRight : .topLeft)
+        }
+        if corner.contains(.topTrailing) {
+            result.insert(isRTL ? .topLeft : .topRight)
+        }
+        if corner.contains(.bottomTrailing) {
+            result.insert(isRTL ? .bottomLeft : .bottomRight)
+        }
+        if corner.contains(.bottomLeading) {
+            result.insert(isRTL ? .bottomRight : .bottomLeft)
+        }
+        return result
+    }
+}
+
+// MARK: - Corners
+
+@objc
+public extension UIBezierPath {
+    static func roundedRect(_ rect: CGRect,
+                            sharpCorners: UIRectCorner,
+                            sharpCornerRadius: CGFloat,
+                            wideCornerRadius: CGFloat) -> UIBezierPath {
+        let bezierPath = UIBezierPath()
+
+        func cornerRounding(forCorner corner: UIRectCorner) -> CGFloat {
+            sharpCorners.contains(corner) ? sharpCornerRadius : wideCornerRadius
+        }
+        let topLeftRounding = cornerRounding(forCorner: .topLeft)
+        let topRightRounding = cornerRounding(forCorner: .topRight)
+        let bottomRightRounding = cornerRounding(forCorner: .bottomRight)
+        let bottomLeftRounding = cornerRounding(forCorner: .bottomLeft)
+
+        let topAngle = CGFloat.halfPi * 3
+        let rightAngle = CGFloat.halfPi * 0
+        let bottomAngle = CGFloat.halfPi * 1
+        let leftAngle = CGFloat.halfPi * 2
+
+        let bubbleLeft = rect.minX
+        let bubbleTop = rect.minY
+        let bubbleRight = rect.maxX
+        let bubbleBottom = rect.maxY
+
+        // starting just to the right of the top left corner and working clockwise
+        bezierPath.move(to: CGPoint(x: bubbleLeft + topLeftRounding, y: bubbleTop))
+
+        // top right corner
+        bezierPath.addArc(
+            withCenter: CGPoint(x: bubbleRight - topRightRounding,
+                                y: bubbleTop + topRightRounding),
+            radius: topRightRounding,
+            startAngle: topAngle,
+            endAngle: rightAngle,
+            clockwise: true
+        )
+
+        // bottom right corner
+        bezierPath.addArc(
+            withCenter: CGPoint(x: bubbleRight - bottomRightRounding,
+                                y: bubbleBottom - bottomRightRounding),
+            radius: bottomRightRounding,
+            startAngle: rightAngle,
+            endAngle: bottomAngle,
+            clockwise: true
+        )
+
+        // bottom left corner
+        bezierPath.addArc(
+            withCenter: CGPoint(x: bubbleLeft + bottomLeftRounding,
+                                y: bubbleBottom - bottomLeftRounding),
+            radius: bottomLeftRounding,
+            startAngle: bottomAngle,
+            endAngle: leftAngle,
+            clockwise: true
+        )
+
+        // top left corner
+        bezierPath.addArc(
+            withCenter: CGPoint(x: bubbleLeft + topLeftRounding,
+                                y: bubbleTop + topLeftRounding),
+            radius: topLeftRounding,
+            startAngle: leftAngle,
+            endAngle: topAngle,
+            clockwise: true
+        )
+
+        return bezierPath
     }
 }

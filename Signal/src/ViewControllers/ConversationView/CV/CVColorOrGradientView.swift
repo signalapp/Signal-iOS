@@ -21,21 +21,55 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     private weak var referenceView: UIView?
     private var value: ColorOrGradientValue?
 
+    public struct StrokeConfig {
+        let color: UIColor
+        let width: CGFloat
+    }
+    public struct BubbleConfig {
+        let sharpCorners: OWSDirectionalRectCorner
+        let sharpCornerRadius: CGFloat
+        let wideCornerRadius: CGFloat
+        let strokeConfig: StrokeConfig?
+    }
+    private var bubbleConfig: BubbleConfig?
+
     private let gradientLayer = CAGradientLayer()
+    private let shapeLayer = CAShapeLayer()
+    private let maskLayer = CAShapeLayer()
+
+    public var ensureSubviewsFillBounds = false
 
     public init() {
         super.init(name: "CVColorOrGradientView")
 
+        gradientLayer.disableAnimationsWithDelegate()
+        shapeLayer.disableAnimationsWithDelegate()
+        maskLayer.disableAnimationsWithDelegate()
+    }
+
+    private func addDefaultLayoutBlock() {
         addLayoutBlock { view in
             guard let view = view as? CVColorOrGradientView else { return }
-            view.gradientLayer.frame = view.bounds
             view.updateAppearance()
         }
     }
 
-    public func configure(value: ColorOrGradientValue, referenceView: UIView) {
+    private func ensureSubviewLayout() {
+        guard ensureSubviewsFillBounds else { return }
+        for subview in subviews {
+            ManualLayoutView.setSubviewFrame(subview: subview, frame: bounds)
+        }
+    }
+
+    public func configure(value: ColorOrGradientValue,
+                          referenceView: UIView,
+                          bubbleConfig: BubbleConfig? = nil) {
         self.value = value
         self.referenceView = referenceView
+        self.bubbleConfig = bubbleConfig
+
+        addDefaultLayoutBlock()
+
         updateAppearance()
     }
 
@@ -54,6 +88,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     }
 
     public func updateAppearance() {
+
         guard let value = self.value,
               let referenceView = self.referenceView else {
             self.backgroundColor = nil
@@ -61,10 +96,10 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
             return
         }
 
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-
         switch value {
+        case .transparent:
+            backgroundColor = nil
+            gradientLayer.removeFromSuperlayer()
         case .solidColor(let color):
             backgroundColor = color
             gradientLayer.removeFromSuperlayer()
@@ -181,7 +216,48 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
             gradientLayer.endPoint = endPointLayerUnitsLL
         }
 
-        CATransaction.commit()
+        if let bubbleConfig = self.bubbleConfig {
+            let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
+            let bubblePath = UIBezierPath.roundedRect(self.bounds,
+                                                      sharpCorners: sharpCorners,
+                                                      sharpCornerRadius: bubbleConfig.sharpCornerRadius,
+                                                      wideCornerRadius: bubbleConfig.wideCornerRadius)
+
+            if sharpCorners == .allCorners || sharpCorners == [] {
+                // If all of the corners have the same radius, don't
+                // bother using a mask layer.
+                layer.cornerRadius = (sharpCorners == []
+                                        ? bubbleConfig.wideCornerRadius
+                                        : bubbleConfig.sharpCornerRadius)
+                layer.mask = nil
+                layer.masksToBounds = true
+            } else {
+                maskLayer.path = bubblePath.cgPath
+                layer.mask = maskLayer
+                layer.masksToBounds = false
+                layer.cornerRadius = 0
+            }
+
+            if let strokeConfig = bubbleConfig.strokeConfig {
+                shapeLayer.lineWidth = strokeConfig.width
+                shapeLayer.strokeColor = strokeConfig.color.cgColor
+                shapeLayer.fillColor = nil
+                shapeLayer.path = bubblePath.cgPath
+                layer.addSublayer(shapeLayer)
+            } else if shapeLayer.superlayer != nil {
+                shapeLayer.removeFromSuperlayer()
+            }
+        } else {
+            // If this view isn't being used as a CVC message bubble,
+            // don't bother masking or using shapeLayer to render the stroke.
+            layer.mask = nil
+            layer.masksToBounds = false
+            if shapeLayer.superlayer != nil {
+                shapeLayer.removeFromSuperlayer()
+            }
+        }
+
+        ensureSubviewLayout()
     }
 
     public override func reset() {
@@ -190,6 +266,36 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         self.referenceView = nil
         self.value = nil
         self.backgroundColor = nil
+        self.bubbleConfig = nil
+        shapeLayer.removeFromSuperlayer()
         gradientLayer.removeFromSuperlayer()
     }
+
+    // MARK: - CALayerDelegate
+
+    @objc
+    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+        // Disable all implicit CALayer animations.
+        NSNull()
+    }
+}
+
+// MARK: -
+
+@objc
+extension CVColorOrGradientView: OWSBubbleViewHost {
+    public var maskPath: UIBezierPath {
+        guard let bubbleConfig = self.bubbleConfig else {
+            owsFailDebug("Missing bubbleConfig.")
+            return UIBezierPath()
+        }
+        let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
+        let bubblePath = UIBezierPath.roundedRect(self.bounds,
+                                                  sharpCorners: sharpCorners,
+                                                  sharpCornerRadius: bubbleConfig.sharpCornerRadius,
+                                                  wideCornerRadius: bubbleConfig.wideCornerRadius)
+        return bubblePath
+    }
+
+    public var bubbleReferenceView: UIView { self }
 }

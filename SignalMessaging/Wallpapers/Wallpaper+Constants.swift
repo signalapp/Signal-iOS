@@ -11,6 +11,8 @@ extension Wallpaper {
             return nil
         }
         switch setting.asValue(themeMode: themeMode) {
+        case .transparent:
+            return nil
         case .solidColor(let color):
             return color
         case .gradient:

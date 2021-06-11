@@ -325,6 +325,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
     private var bottomNestedCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .contactShare, .bodyText, .footer] }
 
+    public static let bubbleSharpCornerRadius: CGFloat = 4
+    public static let bubbleWideCornerRadius: CGFloat = 18
+
     public func configureForRendering(componentView: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {
@@ -333,26 +336,21 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return
         }
 
-        var outerBubbleView: OWSBubbleView?
+        var outerBubbleView: CVColorOrGradientView?
         func configureBubbleView() {
-            let bubbleView = componentView.bubbleView
-
-            if let bubbleChatColor = self.bubbleChatColor {
-                let chatColorView = componentView.chatColorView
-                chatColorView.configure(value: bubbleChatColor,
-                                        referenceView: componentDelegate.view)
-                bubbleView.addSubview(chatColorView)
-            }
-
-            bubbleView.sharpCorners = self.sharpCorners
+            let chatColorView = componentView.chatColorView
+            var strokeConfig: CVColorOrGradientView.StrokeConfig?
             if let bubbleStrokeColor = self.bubbleStrokeColor {
-                bubbleView.strokeColor = bubbleStrokeColor
-                bubbleView.strokeThickness = 1
-            } else {
-                bubbleView.strokeColor = nil
-                bubbleView.strokeThickness = 0
+                strokeConfig = CVColorOrGradientView.StrokeConfig(color: bubbleStrokeColor, width: 1)
             }
-            outerBubbleView = bubbleView
+            let bubbleConfig = CVColorOrGradientView.BubbleConfig(sharpCorners: self.sharpCorners,
+                                                                  sharpCornerRadius: Self.bubbleSharpCornerRadius,
+                                                                  wideCornerRadius: Self.bubbleWideCornerRadius,
+                                                                  strokeConfig: strokeConfig)
+            chatColorView.configure(value: self.bubbleChatColor,
+                                    referenceView: componentDelegate.view,
+                                    bubbleConfig: bubbleConfig)
+            outerBubbleView = chatColorView
         }
 
         let outerContentView = configureContentStack(componentView: componentView,
@@ -383,14 +381,13 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         let contentViewSwipeToReplyWrapper = componentView.contentViewSwipeToReplyWrapper
         if let bubbleView = outerBubbleView {
             bubbleView.addSubview(outerContentView)
-            bubbleView.ensureSubviewsFillBounds = true
             contentViewSwipeToReplyWrapper.subview = bubbleView
 
             if let componentAndView = findActiveComponentAndView(key: .bodyMedia,
                                                                  messageView: componentView) {
                 if let bodyMediaComponent = componentAndView.component as? CVComponentBodyMedia {
                     if let bubbleViewPartner = bodyMediaComponent.bubbleViewPartner(componentView: componentAndView.componentView) {
-                        bubbleViewPartner.setBubbleView(bubbleView)
+                        bubbleViewPartner.setBubbleViewHost(bubbleView)
                         contentViewSwipeToReplyWrapper.addLayoutBlock { _ in
                             // The "bubble view partner" must update it's layers
                             // to reflect the bubble view state.
@@ -757,12 +754,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return max(0, reactionsHeight - reactionsVOverlap)
     }
 
-    private var bubbleChatColor: ColorOrGradientValue? {
+    private var bubbleChatColor: ColorOrGradientValue {
         if !conversationStyle.hasWallpaper && (wasRemotelyDeleted || isBorderlessViewOnceMessage) {
             return .solidColor(color: Theme.backgroundColor)
         }
         if isBubbleTransparent {
-            return nil
+            return .transparent
         }
         return itemModel.conversationStyle.bubbleChatColor(isIncoming: isIncoming)
     }
@@ -833,7 +830,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                              measurementKey: Self.measurementKey_hInnerStack,
                                                              subviewInfos: hInnerStackSubviewInfos)
         var hInnerStackSize = hInnerStackMeasurement.measuredSize
-        let minBubbleWidth = kOWSMessageCellCornerRadius_Large * 2
+        let minBubbleWidth = Self.bubbleWideCornerRadius * 2
         hInnerStackSize.width = max(hInnerStackSize.width, minBubbleWidth)
 
         var hOuterStackSubviewInfos = [ManualStackSubviewInfo]()
@@ -1195,9 +1192,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         fileprivate let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
 
-        fileprivate let bubbleView = OWSBubbleView()
-
-        // TODO: Combine with OWSBubbleView?
         fileprivate let chatColorView = CVColorOrGradientView()
 
         // Contains the actual renderable message content, arranged vertically.
@@ -1342,7 +1336,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // MARK: -
 
         override required init() {
-            bubbleView.layoutMargins = .zero
+            chatColorView.layoutMargins = .zero
+            chatColorView.ensureSubviewsFillBounds = true
 
             avatarViewSwipeToReplyWrapper.subview = avatarView
             swipeToReplyIconSwipeToReplyWrapper.subview = swipeToReplyIconView
@@ -1375,7 +1370,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             if !isDedicatedCellView {
                 hOuterStack.reset()
                 hInnerStack.reset()
-                bubbleView.removeAllSubviews()
                 contentStack.reset()
                 topFullWidthStackView.reset()
                 topNestedStackView.reset()

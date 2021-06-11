@@ -206,10 +206,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
     }
 
-    static func buildState(interaction: TSInteraction,
-                           hasTapForMore: Bool) -> State {
+    static func buildState(interaction: TSInteraction, hasTapForMore: Bool) -> State {
 
-        let isFailedOutgoingMessage = Self.isFailedOutgoingMessage(interaction: interaction)
         let timestampText = Self.timestampText(forInteraction: interaction,
                                                shouldUseLongFormat: false)
 

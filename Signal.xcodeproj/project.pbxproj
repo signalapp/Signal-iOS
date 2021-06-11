@@ -739,7 +739,6 @@
 		885AC56723AB42430077705E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885AC56623AB42430077705E /* NotificationService.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		8860CC1925084AD500A4D18E /* LinkPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34129B8521EF8779005457A8 /* LinkPreviewView.swift */; };
-		8860CC1A25084AFB00A4D18E /* OWSBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF001206BD5A500025978 /* OWSBubbleView.m */; };
 		8860CC1C25084BD400A4D18E /* OWSBubbleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34DBF002206BD5A500025978 /* OWSBubbleView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8860CC1E25084D6200A4D18E /* GroupViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E6003924251AD50026AD4B /* GroupViewUtils.swift */; };
 		8860CC212508507F00A4D18E /* GroupLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8860CC202508507F00A4D18E /* GroupLinkPreview.swift */; };
@@ -1502,7 +1501,6 @@
 		34D913491F62D4A500722898 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
 		34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAnalytics.swift; sourceTree = "<group>"; };
 		34D99CE3217509C1000AFB39 /* AppEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
-		34DBF001206BD5A500025978 /* OWSBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBubbleView.m; sourceTree = "<group>"; };
 		34DBF002206BD5A500025978 /* OWSBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBubbleView.h; sourceTree = "<group>"; };
 		34DC9BD721543E0A00FDDCEC /* DebugContactsUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugContactsUtils.m; sourceTree = "<group>"; };
 		34DC9BD821543E0B00FDDCEC /* DebugContactsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugContactsUtils.h; sourceTree = "<group>"; };
@@ -2654,7 +2652,6 @@
 				34AC0A06211B39E900997B47 /* OWSActionSheets.swift */,
 				34E5AA4626262F3300258621 /* OWSBubbleShapeView.swift */,
 				34DBF002206BD5A500025978 /* OWSBubbleView.h */,
-				34DBF001206BD5A500025978 /* OWSBubbleView.m */,
 				4C618198219DF03A009BD6B5 /* OWSButton.swift */,
 				34AC0A09211B39E900997B47 /* OWSFlatButton.swift */,
 				34AC09FE211B39E700997B47 /* OWSLayerView.swift */,
@@ -5069,7 +5066,6 @@
 				34C529092361D3540009DB2A /* ApprovalFooterView.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
 				3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */,
-				8860CC1A25084AFB00A4D18E /* OWSBubbleView.m in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
 				4C9C50FE22F36FA50054A33F /* OutboundMessage+OWS.swift in Sources */,

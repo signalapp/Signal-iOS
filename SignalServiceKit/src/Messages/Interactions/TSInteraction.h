@@ -80,10 +80,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 
-// This property is used to flag interactions that
-// require special handling in the conversation view.
-@property (nonatomic, readonly) BOOL isSpecialMessage;
-
 - (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;

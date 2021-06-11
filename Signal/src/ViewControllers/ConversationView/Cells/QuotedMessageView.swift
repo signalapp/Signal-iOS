@@ -327,18 +327,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             // Let's do it by hand with a CAShapeLayer
             let maskLayer = CAShapeLayer()
             bubbleView.addLayoutBlock { view in
-                let layerFrame = view.bounds
-                let bubbleLeft: CGFloat = 0
-                let bubbleRight = layerFrame.width
-                let bubbleTop: CGFloat = 0
-                let bubbleBottom = layerFrame.height
-                let bezierPath = OWSBubbleView.roundedBezierRect(withBubbleTop: bubbleTop,
-                                                                 bubbleLeft: bubbleLeft,
-                                                                 bubbleBottom: bubbleBottom,
-                                                                 bubbleRight: bubbleRight,
-                                                                 sharpCornerRadius: sharpCornerRadius,
-                                                                 wideCornerRadius: wideCornerRadius,
-                                                                 sharpCorners: sharpCorners)
+                let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: sharpCorners)
+                let bezierPath = UIBezierPath.roundedRect(view.bounds,
+                                                          sharpCorners: sharpCorners,
+                                                          sharpCornerRadius: sharpCornerRadius,
+                                                          wideCornerRadius: wideCornerRadius)
                 maskLayer.path = bezierPath.cgPath
             }
             bubbleView.layer.mask = maskLayer
