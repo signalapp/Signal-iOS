@@ -112,7 +112,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 let encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as? ECKeyPair,
                 let members = coder.decodeObject(forKey: "members") as? [Data],
                 let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
-                let expireTimer = coder.decodeObject(forKey: "expireTimer") as! UInt32
+                let expireTimer = coder.decodeObject(forKey: "expireTimer") as? UInt32 ?? 0
             self.kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins, expireTimer: expireTimer)
         case "encryptionKeyPair":
             let publicKey = coder.decodeObject(forKey: "publicKey") as? Data
@@ -179,7 +179,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 let expireTimer = closedGroupControlMessageProto.expireTimer
                 let encryptionKeyPair = try ECKeyPair(publicKeyData: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded(), privateKeyData: encryptionKeyPairAsProto.privateKey)
                 kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair,
-                            members: closedGroupControlMessageProto.members, admins: closedGroupControlMessageProto.admins, expireTimer: expireTimer)
+                    members: closedGroupControlMessageProto.members, admins: closedGroupControlMessageProto.admins, expireTimer: expireTimer)
             } catch {
                 SNLog("Couldn't parse key pair.")
                 return nil

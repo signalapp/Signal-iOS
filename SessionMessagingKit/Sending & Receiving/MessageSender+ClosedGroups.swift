@@ -163,7 +163,6 @@ extension MessageSender {
         let members = [String](Set(group.groupMemberIds).union(newMembers))
         let membersAsData = members.map { Data(hex: $0) }
         let adminsAsData = group.groupAdminIds.map { Data(hex: $0) }
-        // Get expiration timer value for the group
         let expireTimer = thread.disappearingMessagesDuration(with: transaction)
         guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else {
             SNLog("Couldn't find encryption key pair for closed group: \(groupPublicKey).")

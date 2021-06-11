@@ -397,12 +397,10 @@ extension MessageReceiver {
             let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupCreated)
             infoMessage.save(with: transaction)
         }
-        var configuration: OWSDisappearingMessagesConfiguration
-        if (expireTimer > 0) {
-            configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: expireTimer)
-        } else {
-            configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
-        }
+        let isExpirationTimerEnabled = (expireTimer > 0)
+        let expirationTimerDuration = (isExpirationTimerEnabled ? expireTimer : 24 * 60 * 60)
+        let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: isExpirationTimerEnabled,
+            durationSeconds: expirationTimerDuration)
         configuration.save(with: transaction)
         // Add the group to the user's set of public keys to poll for
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
