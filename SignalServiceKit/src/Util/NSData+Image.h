@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -70,9 +70,19 @@ NSString *_Nullable MIMETypeForImageFormat(ImageFormat value);
 // If present, it is used to validate the file format contents.
 + (ImageMetadata *)imageMetadataWithPath:(NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
 
++ (ImageMetadata *)imageMetadataWithPath:(NSString *)filePath
+                                mimeType:(nullable NSString *)declaredMimeType
+                          ignoreFileSize:(BOOL)ignoreFileSize;
+
 // filePath and declaredMimeType are optional.
 // If present, they are used to validate the file format contents.
+// Returns nil if file size > OWSMediaUtils.kMaxFileSizeImage or animated file size >
+// OWSMediaUtils.kMaxFileSizeAnimatedImage
 - (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType;
+
+- (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath
+                                mimeType:(nullable NSString *)declaredMimeType
+                          ignoreFileSize:(BOOL)ignoreFileSize;
 
 @end
 

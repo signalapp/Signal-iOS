@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "DataSource.h"
 #import "NSData+Image.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/iOSVersions.h>
-#import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.cachedImageMetadata != nil) {
             return self.cachedImageMetadata;
         }
-        ImageMetadata *imageMetadata = [self.data imageMetadataWithPath:nil mimeType:self.mimeType];
+        ImageMetadata *imageMetadata = [self.data imageMetadataWithPath:nil mimeType:self.mimeType ignoreFileSize:YES];
         self.cachedImageMetadata = imageMetadata;
         return imageMetadata;
     }
@@ -446,7 +446,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.cachedImageMetadata != nil) {
             return self.cachedImageMetadata;
         }
-        ImageMetadata *imageMetadata = [NSData imageMetadataWithPath:self.dataUrl.path mimeType:self.mimeType];
+        ImageMetadata *imageMetadata = [NSData imageMetadataWithPath:self.dataUrl.path
+                                                            mimeType:self.mimeType
+                                                      ignoreFileSize:YES];
         self.cachedImageMetadata = imageMetadata;
         return imageMetadata;
     }
