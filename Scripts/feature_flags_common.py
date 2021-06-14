@@ -49,11 +49,15 @@ def set_feature_flags(new_flags_level):
     text = '\n'.join(new_lines)
     with open(flags_path, 'wt') as f:
         f.write(text)
-        
-    # git add .
-    cmds = ['git', 'add', '.']
-    execute_command(cmds)
 
-    # git commit -m "Feature flags for .beta."
-    cmds = ['git', 'commit', '-m', '"Feature flags for .%s."' % ( new_flags_level, )]
-    execute_command(cmds)
+    output = subprocess.check_output(['git', 'status', '--porcelain'])
+    if len(output.strip()) > 0:
+        # git add .
+        cmds = ['git', 'add', '.']
+        execute_command(cmds)
+
+        # git commit -m "Feature flags for .beta."
+        cmds = ['git', 'commit', '-m', '"Feature flags for .%s."' % ( new_flags_level, )]
+        execute_command(cmds)
+    else:
+        print "Feature flags already set to %s, nothing to do" % new_flags_level

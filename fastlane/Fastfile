@@ -16,7 +16,7 @@
 default_platform(:ios)
 
 desc 'Build, Archive, and Upload to ASC'
-lane :release do
+lane :release do |options|
   app_identifier = ENV['APP_IDENTIFIER']
   scheme = ENV['SCHEME']
   configuration = 'App Store Release'
@@ -72,12 +72,23 @@ lane :release do
   lock.flock(File::LOCK_EX)
   puts "\e[32mTransporter lock acquired!\e[0m"
 
-  upload_to_testflight(
-    app_identifier: app_identifier,
-    skip_submission: true,
-    skip_waiting_for_build_processing: true,
-    ipa: './Signal.ipa'
-  )
+  if options[:nightly].to_i > 0
+    upload_to_testflight(
+      app_identifier: app_identifier,
+      ipa: './Signal.ipa',
+      changelog: "nightly-#{Time.now.strftime('%m-%d-%Y')}",
+      notify_external_testers: true,
+      distribute_external: true,
+      groups: %w(Internal Engineers QA)
+    )
+  else
+    upload_to_testflight(
+      app_identifier: app_identifier,
+      skip_submission: true,
+      skip_waiting_for_build_processing: true,
+      ipa: './Signal.ipa'
+    )
+  end
 
   lock.flock(File::LOCK_UN)
   lock.close

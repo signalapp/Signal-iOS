@@ -5,7 +5,8 @@ import re
 import commands
 import subprocess
 import argparse
-import inspect    
+import inspect
+from datetime import date
 
 def fail(message):
     file_name = __file__
@@ -29,7 +30,7 @@ def execute_command(command):
 
 def find_project_root():
     path = os.path.abspath(os.curdir)
-    
+
     while True:
         # print 'path', path
         if not os.path.exists(path):
@@ -41,21 +42,21 @@ def find_project_root():
         if not new_path or new_path == path:
             break
         path = new_path
-    
+
     fail('Could not find project root path')
-        
-        
+
+
 def is_valid_release_version(value):
     regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
     match = regex.search(value)
     return match is not None
-        
-        
+
+
 def is_valid_build_version(value):
     regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)\.(\d+)$')
     match = regex.search(value)
     return match is not None
-        
+
 
 def set_versions(plist_file_path, release_version, build_version):
     if not is_valid_release_version(release_version):
@@ -74,7 +75,7 @@ def set_versions(plist_file_path, release_version, build_version):
     file_regex = re.compile(r'<key>CFBundleShortVersionString</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
     file_match = file_regex.search(text)
     # print 'match', match
-    if not file_match:   
+    if not file_match:
         fail('Could not parse .plist')
     text = text[:file_match.start(1)] + release_version + text[file_match.end(1):]
 
@@ -85,14 +86,14 @@ def set_versions(plist_file_path, release_version, build_version):
     file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
     file_match = file_regex.search(text)
     # print 'match', match
-    if not file_match:   
+    if not file_match:
         fail('Could not parse .plist')
     text = text[:file_match.start(1)] + build_version + text[file_match.end(1):]
-    
+
     with open(plist_file_path, 'wt') as f:
         f.write(text)
-        
-        
+
+
 def get_versions(plist_file_path):
     with open(plist_file_path, 'rt') as f:
         text = f.read()
@@ -103,47 +104,52 @@ def get_versions(plist_file_path):
     file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
     file_match = file_regex.search(text)
     # print 'match', match
-    if not file_match:   
+    if not file_match:
         fail('Could not parse .plist')
-    
+
     # e.g. "2.13.0.13"
     old_build_version = file_match.group(1)
     print 'old_build_version:', old_build_version
-    
+
     if not is_valid_build_version(old_build_version):
         fail('Invalid build version: %s' % old_build_version)
-    
+
     build_number_regex = re.compile(r'\.(\d+)$')
     build_number_match = build_number_regex.search(old_build_version)
-    if not build_number_match:   
+    if not build_number_match:
         fail('Could not parse .plist version')
-    
+
     # e.g. "13"
     old_build_number = build_number_match.group(1)
     print 'old_build_number:', old_build_number
-    
+
     release_number_regex = re.compile(r'^(.+)\.\d+$')
     release_number_match = release_number_regex.search(old_build_version)
-    if not release_number_match:   
+    if not release_number_match:
         fail('Could not parse .plist')
-    
+
     # e.g. "2.13.0"
     old_release_version = release_number_match.group(1)
     print 'old_release_version:', old_release_version
-    
+
     # Given "2.13.0.13", this should return "2.13.0" and "13" as strings.
     return old_release_version, old_build_number
-        
-        
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Precommit cleanup script.')
     parser.add_argument('--version', help='used for starting a new version.')
     parser.add_argument('--internal', action='store_true', help='used to indicate throwaway builds.')
+    parser.add_argument('--nightly', action='store_true', help='used to indicate nightly builds.')
 
     args = parser.parse_args()
 
     is_internal = args.internal
-    
+    is_nightly = args.nightly
+
+    if is_nightly and is_internal:
+        fail('The --nightly flag and the --internal flag cannot be used together')
+
     project_root_path = find_project_root()
     # print 'project_root_path', project_root_path
     # plist_path
@@ -158,7 +164,7 @@ if __name__ == '__main__':
     nse_plist_path = os.path.join(project_root_path, 'NotificationServiceExtension', 'Info.plist')
     if not os.path.exists(nse_plist_path):
         fail('Could not find NSE info .plist')
-        
+
     output = subprocess.check_output(['git', 'status', '--porcelain'])
     if len(output.strip()) > 0:
         print output
@@ -167,13 +173,13 @@ if __name__ == '__main__':
     if len(output.strip()) > 0:
         print output
         fail('Git repository has untracked files.')
-    
+
     # Ensure .plist is in xml format, not binary.
     output = subprocess.check_output(['plutil', '-convert', 'xml1', main_plist_path])
     output = subprocess.check_output(['plutil', '-convert', 'xml1', sae_plist_path])
     output = subprocess.check_output(['plutil', '-convert', 'xml1', nse_plist_path])
     # print 'output', output
-    
+
     # ---------------
     # Main App
     # ---------------
@@ -187,7 +193,7 @@ if __name__ == '__main__':
     else:
         new_build_number = str(1 + int(old_build_number))
         print 'new_build_number:', new_build_number
-    
+
         new_release_version = old_release_version
         new_build_version = old_release_version + "." + new_build_number
 
@@ -195,19 +201,19 @@ if __name__ == '__main__':
     print 'new_build_version:', new_build_version
 
     set_versions(main_plist_path, new_release_version, new_build_version)
-    
+
     # ---------------
     # Share Extension
     # ---------------
 
     set_versions(sae_plist_path, new_release_version, new_build_version)
-    
+
     # ------------------------------
     # Notification Service Extension
     # ------------------------------
 
     set_versions(nse_plist_path, new_release_version, new_build_version)
-    
+
     # ---------------
     # Git
     # ---------------
@@ -216,6 +222,8 @@ if __name__ == '__main__':
 
     if is_internal:
         commit_message = '"Bump build to %s." (Internal)' % new_build_version
+    elif is_nightly:
+        commit_message = '"Bump build to %s." (nightly-%s)' % ( new_build_version, date.today().strftime("%m-%d-%Y") )
     else:
         commit_message = '"Bump build to %s."' % new_build_version
     command = ['git', 'commit', '-m', commit_message]
@@ -224,7 +232,9 @@ if __name__ == '__main__':
     tag_name = new_build_version
     if is_internal:
         tag_name += "-internal"
+    elif is_nightly:
+        tag_name += "-nightly"
     command = ['git', 'tag', tag_name]
     execute_command(command)
-    
-        
+
+
