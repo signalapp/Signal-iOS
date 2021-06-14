@@ -33,9 +33,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @class TSThread;
 @class ThreadViewModel;
 
-@protocol CVComponentDelegate;
-
-@interface ConversationViewController : OWSViewController <CVComponentDelegate>
+@interface ConversationViewController : OWSViewController
 
 @property (nonatomic, readonly) CGFloat safeContentHeight;
 
@@ -62,16 +60,11 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 
 #pragma mark - Keyboard Shortcuts
 
-- (void)showConversationSettings;
 - (void)focusInputToolbar;
 - (void)openAllMedia;
 - (void)openStickerKeyboard;
 - (void)openAttachmentKeyboard;
 - (void)openGifSearch;
-- (void)dismissMessageActionsAnimated:(BOOL)animated;
-- (void)dismissMessageActionsAnimated:(BOOL)animated completion:(void (^)(void))completion;
-
-@property (nonatomic, readonly) BOOL isShowingSelectionUI;
 
 @end
 
@@ -87,7 +80,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) BOOL isViewVisible;
-@property (nonatomic, readonly) BOOL isPresentingMessageActions;
 @property (nonatomic, readonly) ConversationHeaderView *headerView;
 
 @property (nonatomic, readonly) ConversationViewLayout *layout;
@@ -103,7 +95,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 - (void)reloadCollectionViewForReset;
 
 - (void)updateNavigationBarSubtitleLabel;
-- (void)dismissMessageActionsIfNecessary;
 - (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)updateNavigationTitle;
 - (void)updateUnreadMessageFlagWithTransaction:(SDSAnyReadTransaction *)transaction;
@@ -123,8 +114,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 #pragma mark - Selection
 
 @property (nonatomic, readonly) MessageActionsToolbar *selectionToolbar;
-
-@property (nonatomic, readonly) id<CVComponentDelegate> componentDelegate;
 
 @end
 
