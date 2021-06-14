@@ -80,7 +80,6 @@ typedef enum : NSUInteger {
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
-    CNContactViewControllerDelegate,
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
     ConversationSettingsViewDelegate,
@@ -1433,14 +1432,6 @@ typedef enum : NSUInteger {
     [[OWSProfileManager shared] presentAddThreadToProfileWhitelist:self.thread
                                                 fromViewController:self
                                                            success:successHandler];
-}
-
-#pragma mark - CNContactViewControllerDelegate
-
-- (void)contactViewController:(CNContactViewController *)viewController
-       didCompleteWithContact:(nullable CNContact *)contact
-{
-    [self.navigationController popToViewController:self animated:YES];
 }
 
 #pragma mark - ContactsViewHelperObserver

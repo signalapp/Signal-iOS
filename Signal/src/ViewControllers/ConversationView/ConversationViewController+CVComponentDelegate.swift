@@ -727,10 +727,13 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        let contactViewController = contactsViewHelper.contactViewController(for: address,
-                                                                             editImmediately: true,
-                                                                             addToExisting: nil,
-                                                                             updatedNameComponents: newNameComponents)
+        guard let contactViewController = contactsViewHelper.contactViewController(for: address,
+                                                                                   editImmediately: true,
+                                                                                   addToExisting: nil,
+                                                                                   updatedNameComponents: newNameComponents) else {
+            owsFailDebug("Could not build contact view.")
+            return
+        }
         contactViewController.delegate = self
         navigationController?.pushViewController(contactViewController, animated: true)
     }

@@ -219,7 +219,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
 
 extension SpamCaptchaViewController {
     @objc
-    static func presentActionSheet(from fromVC: UIViewController) {
+    public static func presentActionSheet(from fromVC: UIViewController) {
 
         let titleLabel = UILabel()
         titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold

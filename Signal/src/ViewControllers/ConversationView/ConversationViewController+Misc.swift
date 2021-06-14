@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import ContactsUI
 
 @objc
 public extension ConversationViewController {
@@ -277,5 +278,15 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
 
         Logger.verbose("Search controller became ready after \(cumulativeDelay) seconds")
         searchController.uiSearchController.searchBar.becomeFirstResponder()
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: CNContactViewControllerDelegate {
+    @objc
+    public func contactViewController(_ viewController: CNContactViewController,
+                                      didCompleteWith contact: CNContact?) {
+        navigationController?.popToViewController(self, animated: true)
     }
 }
