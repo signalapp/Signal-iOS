@@ -66,6 +66,15 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return true
     }
 
+    public func isSystemContactWithSignalAccount(_ address: SignalServiceAddress) -> Bool {
+        return true
+    }
+
+    public func isSystemContactWithSignalAccount(_ address: SignalServiceAddress,
+                                                 transaction: SDSAnyReadTransaction) -> Bool {
+        return true
+    }
+
     public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],
                                            transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         return addresses

@@ -68,8 +68,7 @@ extension ConversationViewController {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
             case .link:
-                // TODO: Show action sheet with options for links.
-                didTapLink(dataItem: dataItem)
+                didLongPressLink(dataItem: dataItem)
             case .address:
                 // Open in iOS Maps app using URL.
                 //
@@ -78,14 +77,7 @@ extension ConversationViewController {
                 // TODO: Show action sheet with options for addresses.
                 UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
             case .phoneNumber:
-                // Initiate PSTN call using URL.
-                //
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/SMSLinks/SMSLinks.html
-                // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/FacetimeLinks/FacetimeLinks.html
-                //
-                // TODO: Show action sheet with options for phone numbers.
-                UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
+                didLongPressPhoneNumber(dataItem: dataItem)
             case .date:
                 // Open in iOS Calendar app using default URL.
                 //
@@ -104,6 +96,141 @@ extension ConversationViewController {
         case .mention(let mentionItem):
             didTapOrLongPressMention(mentionItem.mention)
         }
+    }
+
+    // * URL
+    //   * tap - open URL in safari
+    //   * long press - preview + open link in safari / add to reading list / copy link / share
+    private func didLongPressLink(dataItem: CVBodyTextLabel.DataItem) {
+        let actionSheet = ActionSheetController(title: dataItem.snippet.strippedOrNil)
+
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
+                                                                         comment: "Label for button to open a link."),
+                                                accessibilityIdentifier: "link_open_link",
+                                                style: .default) { [weak self] _ in
+            self?.openLink(dataItem: dataItem)
+        })
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.copyButton,
+                                                accessibilityIdentifier: "link_copy",
+                                                style: .default) { _ in
+            UIPasteboard.general.string = dataItem.snippet
+            // TODO: Show toast?
+        })
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.shareButton,
+                                                accessibilityIdentifier: "link_share",
+                                                style: .default) { _ in
+            AttachmentSharing.showShareUI(for: dataItem.url, sender: self)
+        })
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
+    }
+
+    // * phone number
+    //   * tap - action sheet with call.
+    //   * long press - show phone number + call PSTN / facetime audio / facetime video / send messages / add to contacts / copy
+    private func didLongPressPhoneNumber(dataItem: CVBodyTextLabel.DataItem) {
+        guard let snippet = dataItem.snippet.strippedOrNil,
+              let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: snippet),
+              let e164 = phoneNumber.toE164().strippedOrNil else {
+            owsFailDebug("Invalid phone number.")
+            UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
+            return
+        }
+        let address = SignalServiceAddress(phoneNumber: e164)
+
+        if !address.isLocalAddress,
+           Self.contactsManagerImpl.isKnownRegisteredUserWithSneakyTransaction(address: address) {
+            let groupViewHelper: GroupViewHelper? = {
+                guard threadViewModel.isGroupThread else {
+                    return nil
+                }
+                let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+                groupViewHelper.delegate = self
+                return groupViewHelper
+            }()
+            let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+            actionSheet.present(from: self)
+            return
+        }
+
+        let actionSheet = ActionSheetController(title: e164)
+
+        if address.isLocalAddress {
+            // Show no options.
+        } else if blockingManager.isAddressBlocked(address) {
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString(
+                "BLOCK_LIST_UNBLOCK_BUTTON",
+                comment: "Button label for the 'unblock' button"
+            ),
+                                                    accessibilityIdentifier: "phone_number_unblock",
+                                                    style: .default) { [weak self] _ in
+                guard let self = self else { return }
+                BlockListUIUtils.showUnblockAddressActionSheet(
+                    address,
+                    from: self,
+                    completionBlock: nil
+                )
+            })
+        } else {
+            // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_CALL",
+                                                                             comment: "Label for button to call a phone number."),
+                                                    accessibilityIdentifier: "phone_number_call",
+                                                    style: .default) { _ in
+                guard let url = URL(string: "tel:" + e164) else {
+                    owsFailDebug("Invalid phone number.")
+                    return
+                }
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            })
+            // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/SMSLinks/SMSLinks.html
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_SMS",
+                                                                             comment: "Label for button to send a text message a phone number."),
+                                                    accessibilityIdentifier: "phone_number_text_message",
+                                                    style: .default) { _ in
+                guard let url = URL(string: "sms:" + e164) else {
+                    owsFailDebug("Invalid phone number.")
+                    return
+                }
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            })
+            // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/FacetimeLinks/FacetimeLinks.html
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO",
+                                                                             comment: "Label for button to make a Facetime video call to a phone number."),
+                                                    accessibilityIdentifier: "phone_number_facetime_video",
+                                                    style: .default) { _ in
+                guard let url = URL(string: "facetime:" + e164) else {
+                    owsFailDebug("Invalid phone number.")
+                    return
+                }
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            })
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO",
+                                                                             comment: "Label for button to make a Facetime audio call to a phone number."),
+                                                    accessibilityIdentifier: "phone_number_facetime_audio",
+                                                    style: .default) { _ in
+                guard let url = URL(string: "facetime-audio:" + e164) else {
+                    owsFailDebug("Invalid phone number.")
+                    return
+                }
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            })
+            // TODO: We could show an "add to contact" action for this phone number.
+            //       Ideally we could detect whether this phone number is already in a system contact.
+            // TODO: We could show an "share" action for this phone number.
+        }
+
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.copyButton,
+                                                accessibilityIdentifier: "phone_number_copy",
+                                                style: .default) { _ in
+            UIPasteboard.general.string = dataItem.snippet
+            // TODO: Show toast?
+        })
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheet)
     }
 
     private func didLongPressEmail(dataItem: CVBodyTextLabel.DataItem) {
@@ -129,6 +256,7 @@ extension ConversationViewController {
         // TODO: We could show (Send Signal Message/Signal call) actions for this email address.
         //       Ideally we could detect whether this email address corresponds to a system contact
         //       which is a registered Signal user.
+        // TODO: We could show an "share" action for this email address.
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -136,6 +264,12 @@ extension ConversationViewController {
     }
 
     private func didTapLink(dataItem: CVBodyTextLabel.DataItem) {
+        AssertIsOnMainThread()
+
+        openLink(dataItem: dataItem)
+    }
+
+    private func openLink(dataItem: CVBodyTextLabel.DataItem) {
         AssertIsOnMainThread()
 
         if isMailtoUrl(dataItem.url) {

@@ -21,12 +21,12 @@ extension ConversationSettingsViewController {
         return !thread.isGroupThread
     }
 
-    private var hasExistingContact: Bool {
+    private var hasExistingSystemContact: Bool {
         guard let contactThread = thread as? TSContactThread else {
             owsFailDebug("Invalid thread.")
             return false
         }
-        return contactsManagerImpl.hasSignalAccount(for: contactThread.contactAddress)
+        return contactsManagerImpl.isSystemContact(address: contactThread.contactAddress)
     }
 
     // MARK: - Table
@@ -175,7 +175,7 @@ extension ConversationSettingsViewController {
               let contactThread = thread as? TSContactThread,
               contactsManagerImpl.supportsContactEditing else { return }
 
-        if hasExistingContact {
+        if hasExistingSystemContact {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")

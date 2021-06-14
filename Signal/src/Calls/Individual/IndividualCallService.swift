@@ -502,7 +502,7 @@ import SignalMessaging
 
             var isUnknownCaller = false
             if call.individualCall.direction == .incoming {
-                isUnknownCaller = !self.contactsManagerImpl.hasSignalAccount(for: call.individualCall.thread.contactAddress)
+                isUnknownCaller = !self.contactsManagerImpl.isSystemContactWithSignalAccount(call.individualCall.thread.contactAddress)
                 if isUnknownCaller {
                     Logger.warn("Using relay server because remote user is an unknown caller")
                 }
@@ -763,7 +763,7 @@ import SignalMessaging
                 return
             }
             call.individualCall.isRemoteSharingScreen = false
-            
+
         case .reconnecting:
             self.handleReconnecting(call: call)
 

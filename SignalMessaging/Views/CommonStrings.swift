@@ -69,6 +69,9 @@ import Foundation
                                                      comment: "The label for the 'save' button in action sheets.")
 
     @objc
+    static public let shareButton = NSLocalizedString("BUTTON_SHARE", comment: "Label for the 'share' button.")
+
+    @objc
     static public let help = NSLocalizedString("SETTINGS_HELP", comment: "Title for help button and help pages in app settings.")
 
     @objc

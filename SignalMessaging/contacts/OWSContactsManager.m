@@ -922,19 +922,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self isSystemContactWithPhoneNumber:phoneNumber];
 }
 
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber
+- (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    return [self hasSignalAccountForAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
+    return [self hasSignalAccountForAddress:address];
 }
 
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber transaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
+                             transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    return [self hasSignalAccountForAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]
-                                transaction:transaction];
+    return [self hasSignalAccountForAddress:address transaction:transaction];
 }
 
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
@@ -1358,6 +1358,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
 }
 
-NS_ASSUME_NONNULL_END
+- (BOOL)isKnownRegisteredUserWithSneakyTransaction:(SignalServiceAddress *)address
+{
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(
+        SDSAnyReadTransaction *transaction) { result = [self isKnownRegisteredUser:address transaction:transaction]; }];
+    return result;
+}
+
+- (BOOL)isKnownRegisteredUser:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [SignalRecipient isRegisteredRecipient:address transaction:transaction];
+}
 
 @end
+
+NS_ASSUME_NONNULL_END

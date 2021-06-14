@@ -544,18 +544,20 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 - (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers
 {
     return [self.e164PhoneNumbers
-        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable phoneNumber,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [OWSContact.contactsManager isSystemContactWithSignalAccount:recipientId];
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            return [OWSContact.contactsManager isSystemContactWithSignalAccount:address];
         }]];
 }
 
 - (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbersWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.e164PhoneNumbers
-        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable phoneNumber,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [OWSContact.contactsManager isSystemContactWithSignalAccount:recipientId transaction:transaction];
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            return [OWSContact.contactsManager isSystemContactWithSignalAccount:address transaction:transaction];
         }]];
 }
 
