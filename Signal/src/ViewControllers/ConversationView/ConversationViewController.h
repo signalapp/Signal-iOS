@@ -47,8 +47,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
                                  action:(ConversationViewAction)action
                          focusMessageId:(nullable NSString *)focusMessageId NS_DESIGNATED_INITIALIZER;
 
-- (void)updateMessageActionsStateForCell:(UIView *)cell;
-
 - (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
                                    messageDraft:(nullable MessageBody *)messageDraft
                                  voiceMemoDraft:(nullable VoiceMessageModel *)voiceMemoDraft
