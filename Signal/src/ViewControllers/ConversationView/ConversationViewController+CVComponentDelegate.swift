@@ -11,6 +11,12 @@ extension ConversationViewController: CVComponentDelegate {
     @objc
     public var componentDelegate: CVComponentDelegate { self }
 
+    @objc
+    public var isConversationPreview: Bool { false }
+
+    @objc
+    public var wallpaperBlurProvider: WallpaperBlurProvider? { backgroundContainer }
+
     // MARK: - Body Text Items
 
     @objc
@@ -488,9 +494,13 @@ extension ConversationViewController: CVComponentDelegate {
             // but there will be some legacy ones in the wild, behind which await
             // as-of-yet-undecrypted messages
             if let errorMessage = message as? TSInvalidIdentityKeyReceivingErrorMessage {
-                // Deliberately crash if the user fails to explicitly accept the new identity
-                // key. In practice we haven't been creating these messages in over a year.
-                errorMessage.throws_acceptNewIdentityKey()
+                do {
+                    try errorMessage.acceptNewIdentityKey()
+                } catch {
+                    // Deliberately crash if the user fails to explicitly accept the new identity
+                    // key. In practice we haven't been creating these messages in over a year.
+                    owsFail("Error: \(error)")
+                }
             }
         })
 

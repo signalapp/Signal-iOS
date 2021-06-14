@@ -3311,16 +3311,6 @@ typedef enum : NSUInteger {
     return inputToolbar;
 }
 
-- (BOOL)isConversationPreview
-{
-    return NO;
-}
-
-- (nullable id<WallpaperBlurProvider>)wallpaperBlurProvider
-{
-    return self.backgroundContainer;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
