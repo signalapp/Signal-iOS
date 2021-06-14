@@ -86,17 +86,20 @@ extension ConversationViewController {
         self.messageActionsViewController = nil
     }
 
-    var isPresentingMessageActions: Bool {
+    @objc
+    public var isPresentingMessageActions: Bool {
         self.messageActionsViewController != nil
     }
 
-    func dismissMessageActions(animated: Bool) {
+    @objc
+    public func dismissMessageActions(animated: Bool) {
         dismissMessageActions(animated: animated, completion: nil)
     }
 
-    typealias MessageActionsCompletion = () -> Void
+    public typealias MessageActionsCompletion = () -> Void
 
-    func dismissMessageActions(animated: Bool, completion: MessageActionsCompletion?) {
+    @objc
+    public func dismissMessageActions(animated: Bool, completion: MessageActionsCompletion?) {
         Logger.verbose("")
 
         guard let messageActionsViewController = messageActionsViewController else {

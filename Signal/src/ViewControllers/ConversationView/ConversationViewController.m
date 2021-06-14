@@ -82,7 +82,6 @@ typedef enum : NSUInteger {
     AVAudioPlayerDelegate,
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
-    ConversationSettingsViewDelegate,
     ConversationHeaderViewDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
@@ -164,7 +163,7 @@ typedef enum : NSUInteger {
     }
 
     [self.contactsViewHelper addObserver:self];
-    _contactShareViewHelper.delegate = self;
+    self.contactShareViewHelper.delegate = self;
 
     self.actionOnOpen = action;
 
@@ -611,8 +610,8 @@ typedef enum : NSUInteger {
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled
 {
-    if (_userHasScrolled != userHasScrolled) {
-        _userHasScrolled = userHasScrolled;
+    if (self.userHasScrolled != userHasScrolled) {
+        self.userHasScrolled = userHasScrolled;
         [self ensureBannerState];
     }
 }
@@ -988,7 +987,7 @@ typedef enum : NSUInteger {
 
     self.isViewCompletelyAppeared = NO;
 
-    [self dismissMessageActionsAnimated:NO];
+    [self dismissMessageActionsWithAnimated:NO];
     [self dismissReactionsDetailSheetAnimated:NO];
     [self saveLastVisibleSortIdAndOnScreenPercentage];
 }
@@ -2331,7 +2330,7 @@ typedef enum : NSUInteger {
 
     // Re-styling the message actions is tricky,
     // since this happens rarely just dismiss
-    [self dismissMessageActionsAnimated:NO];
+    [self dismissMessageActionsWithAnimated:NO];
     [self dismissReactionsDetailSheetAnimated:NO];
 }
 
@@ -3067,7 +3066,7 @@ typedef enum : NSUInteger {
 
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    [self dismissMessageActionsAnimated:NO];
+    [self dismissMessageActionsWithAnimated:NO];
     [self dismissReactionsDetailSheetAnimated:NO];
 
     self.scrollContinuity = ScrollContinuityBottom;

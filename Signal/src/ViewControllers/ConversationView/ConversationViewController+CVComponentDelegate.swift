@@ -495,7 +495,7 @@ extension ConversationViewController: CVComponentDelegate {
             // as-of-yet-undecrypted messages
             if let errorMessage = message as? TSInvalidIdentityKeyReceivingErrorMessage {
                 do {
-                    try errorMessage.acceptNewIdentityKey()
+                    _ = try errorMessage.acceptNewIdentityKey()
                 } catch {
                     // Deliberately crash if the user fails to explicitly accept the new identity
                     // key. In practice we haven't been creating these messages in over a year.
