@@ -79,8 +79,7 @@ typedef enum : NSUInteger {
 // TODO: Audit protocol conformance, here and in header.
 @interface ConversationViewController () <ContactsViewHelperObserver,
     UINavigationControllerDelegate,
-    UITextViewDelegate,
-    ConversationCollectionViewDelegate>
+    UITextViewDelegate>
 
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
@@ -1897,66 +1896,6 @@ typedef enum : NSUInteger {
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
     [self scrollingAnimationDidComplete];
-}
-
-#pragma mark - ConversationCollectionViewDelegate
-
-- (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
-{
-    OWSAssertIsOnMainThread();
-}
-
-- (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize
-{
-    OWSAssertIsOnMainThread();
-
-    if (oldSize.width != newSize.width) {
-        [self resetForSizeOrOrientationChange];
-    }
-
-    [self updateScrollingContent];
-}
-
-- (void)collectionViewWillAnimate
-{
-    [self scrollingAnimationDidStart];
-}
-
-- (void)scrollingAnimationDidStart
-{
-    OWSAssertIsOnMainThread();
-
-    // scrollingAnimationStartDate blocks landing of loads, so we must ensure
-    // that it is always cleared in a timely way, even if the animation
-    // is cancelled. Wait no more than N seconds.
-    [self.scrollingAnimationCompletionTimer invalidate];
-    self.scrollingAnimationCompletionTimer =
-        [NSTimer weakScheduledTimerWithTimeInterval:5
-                                             target:self
-                                           selector:@selector(scrollingAnimationCompletionTimerDidFire:)
-                                           userInfo:nil
-                                            repeats:NO];
-}
-
-- (void)scrollingAnimationCompletionTimerDidFire:(NSTimer *)timer
-{
-    OWSAssertIsOnMainThread();
-
-    OWSFailDebug(@"Scrolling animation did not complete in a timely way.");
-
-    // scrollingAnimationCompletionTimer should already have been cleared,
-    // but we need to ensure that it is cleared in a timely way.
-    [self scrollingAnimationDidComplete];
-}
-
-- (void)scrollingAnimationDidComplete
-{
-    OWSAssertIsOnMainThread();
-
-    [self.scrollingAnimationCompletionTimer invalidate];
-    self.scrollingAnimationCompletionTimer = nil;
-
-    [self autoLoadMoreIfNecessary];
 }
 
 #pragma mark - Database Observation

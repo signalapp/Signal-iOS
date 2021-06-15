@@ -443,3 +443,68 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         }
     }
 }
+
+// MARK: -
+
+extension ConversationViewController: ConversationCollectionViewDelegate {
+    @objc
+    public func collectionViewWillChangeSize(from oldSize: CGSize, to newSize: CGSize) {
+        AssertIsOnMainThread()
+
+        // Do nothing.
+    }
+
+    @objc
+    public func collectionViewDidChangeSize(from oldSize: CGSize, to newSize: CGSize) {
+        AssertIsOnMainThread()
+
+        if oldSize.width != newSize.width {
+            resetForSizeOrOrientationChange()
+        }
+
+        updateScrollingContent()
+    }
+
+    @objc
+    public func collectionViewWillAnimate() {
+        AssertIsOnMainThread()
+
+        scrollingAnimationDidStart()
+    }
+
+    @objc
+    public func scrollingAnimationDidStart() {
+        AssertIsOnMainThread()
+
+        // scrollingAnimationStartDate blocks landing of loads, so we must ensure
+        // that it is always cleared in a timely way, even if the animation
+        // is cancelled. Wait no more than N seconds.
+        scrollingAnimationCompletionTimer?.invalidate()
+        scrollingAnimationCompletionTimer = Timer.weakScheduledTimer(withTimeInterval: 5,
+                                                                     target: self,
+                                                                     selector: #selector(scrollingAnimationCompletionTimerDidFire),
+                                                                     userInfo: nil,
+                                                                     repeats: false)
+    }
+
+    @objc
+    private func scrollingAnimationCompletionTimerDidFire(_ timer: Timer) {
+        AssertIsOnMainThread()
+
+        owsFailDebug("Scrolling animation did not complete in a timely way.")
+
+        // scrollingAnimationCompletionTimer should already have been cleared,
+        // but we need to ensure that it is cleared in a timely way.
+        scrollingAnimationDidComplete()
+    }
+
+    @objc
+    public func scrollingAnimationDidComplete() {
+        AssertIsOnMainThread()
+
+        scrollingAnimationCompletionTimer?.invalidate()
+        scrollingAnimationCompletionTimer = nil
+
+        autoLoadMoreIfNecessary()
+    }
+}
