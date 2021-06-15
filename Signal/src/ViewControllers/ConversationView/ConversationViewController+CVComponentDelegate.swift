@@ -376,20 +376,7 @@ extension ConversationViewController: CVComponentDelegate {
         return endAnimation
     }
 
-    // TODO:
-    //    @objc
-    //    public var view: UIView { get }
-    //
-    //    public var isConversationPreview: Bool { get }
-    //
-    //    public var wallpaperBlurProvider: WallpaperBlurProvider? { get }
-
     // MARK: - Selection
-
-    // TODO: Move these methods to +Selection.swift
-    //    @objc
-    //    public var isShowingSelectionUI: Bool {
-    //    }
 
     // TODO: Move these methods to +Selection.swift
     @objc
