@@ -595,7 +595,14 @@ typedef struct {
 
 #pragma mark - Image Metadata
 
-+ (ImageMetadata *)imageMetadataWithPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
++ (ImageMetadata *)imageMetadataWithPath:(NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
+{
+    return [NSData imageMetadataWithPath:filePath mimeType:declaredMimeType ignoreFileSize:NO];
+}
+
++ (ImageMetadata *)imageMetadataWithPath:(NSString *)filePath
+                                mimeType:(nullable NSString *)declaredMimeType
+                          ignoreFileSize:(BOOL)ignoreFileSize
 {
     NSError *error = nil;
     NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
@@ -607,7 +614,12 @@ typedef struct {
     // CGImageSource. We should usually only be reading
     // from (a small portion of) the file header,
     // depending on the file format.
-    return [data imageMetadataWithPath:filePath mimeType:mimeType];
+    return [data imageMetadataWithPath:filePath mimeType:declaredMimeType ignoreFileSize:ignoreFileSize];
+}
+
+- (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
+{
+    return [self imageMetadataWithPath:filePath mimeType:declaredMimeType ignoreFileSize:NO];
 }
 
 // If filePath and/or declaredMimeType is supplied, we warn
@@ -619,7 +631,9 @@ typedef struct {
 //
 // If maxImageDimension is supplied we enforce the _smaller_ of
 // that value and the per-format max dimension
-- (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath mimeType:(nullable NSString *)declaredMimeType
+- (ImageMetadata *)imageMetadataWithPath:(nullable NSString *)filePath
+                                mimeType:(nullable NSString *)declaredMimeType
+                          ignoreFileSize:(BOOL)ignoreFileSize
 {
     BOOL canBeLottieSticker = (declaredMimeType != nil && [OWSMimeTypeLottieSticker isEqualToString:declaredMimeType]);
     ImageFormat imageFormat = [self ows_guessImageFormatWithCanBeLottieSticker:canBeLottieSticker];
@@ -703,10 +717,11 @@ typedef struct {
         return ImageMetadata.invalid;
     }
 
-    const NSUInteger kMaxFileSize
-        = (isAnimated ? OWSMediaUtils.kMaxFileSizeAnimatedImage : OWSMediaUtils.kMaxFileSizeImage);
+    NSUInteger targetFileSize = ignoreFileSize
+        ? OWSMediaUtils.kMaxFileSizeGeneric
+        : (isAnimated ? OWSMediaUtils.kMaxFileSizeAnimatedImage : OWSMediaUtils.kMaxFileSizeImage);
     NSUInteger fileSize = self.length;
-    if (fileSize > kMaxFileSize) {
+    if (fileSize > targetFileSize) {
         OWSLogWarn(@"Oversize image.");
         return ImageMetadata.invalid;
     }
