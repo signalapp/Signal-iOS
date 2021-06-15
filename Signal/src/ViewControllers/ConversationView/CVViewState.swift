@@ -123,6 +123,8 @@ public class CVViewState: NSObject {
     public var hasIncrementedGroupCallTooltipShownCount = false
     public var groupCallBarButtonItem: UIBarButtonItem?
 
+    public var lastMessageSentDate: Date?
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -286,6 +288,11 @@ public extension ConversationViewController {
     var groupCallBarButtonItem: UIBarButtonItem? {
         get { viewState.groupCallBarButtonItem }
         set { viewState.groupCallBarButtonItem = newValue }
+    }
+
+    var lastMessageSentDate: Date? {
+        get { viewState.lastMessageSentDate }
+        set { viewState.lastMessageSentDate = newValue }
     }
 
     // MARK: - Gestures

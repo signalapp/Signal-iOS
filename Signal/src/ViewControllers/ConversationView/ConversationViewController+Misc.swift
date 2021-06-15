@@ -8,7 +8,7 @@ import ContactsUI
 @objc
 public extension ConversationViewController {
 
-    func showUnblockConversationUI(completionBlock: BlockActionCompletionBlock?) {
+    func showUnblockConversationUI(completion: BlockActionCompletionBlock?) {
         self.userHasScrolled = false
 
         // To avoid "noisy" animations (hiding the keyboard before showing
@@ -19,7 +19,7 @@ public extension ConversationViewController {
         // hidden.
         dismissKeyBoard()
 
-        BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self, completionBlock: completionBlock)
+        BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self, completionBlock: completion)
     }
 
     // MARK: - Identity
@@ -84,6 +84,62 @@ public extension ConversationViewController {
 
         dismissKeyBoard()
         self.presentActionSheet(actionSheet)
+    }
+
+    // MARK: - Verification
+
+    // Returns a collection of the group members who are "no longer verified".
+    var noLongerVerifiedAddresses: [SignalServiceAddress] {
+        databaseStorage.read { transaction in
+            self.noLongerVerifiedAddresses(transaction: transaction)
+        }
+    }
+
+    // Returns a collection of the group members who are "no longer verified".
+    func noLongerVerifiedAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        thread.recipientAddresses.filter { address in
+            Self.identityManager.verificationState(for: address,
+                                                   transaction: transaction) == .noLongerVerified
+        }
+    }
+
+    func resetVerificationStateToDefault() {
+        AssertIsOnMainThread()
+
+        databaseStorage.write { transaction in
+            let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses(transaction: transaction)
+            for address in noLongerVerifiedAddresses {
+                owsAssertDebug(address.isValid)
+
+                guard let recipientIdentity = Self.identityManager.recipientIdentity(for: address,
+                                                                                     transaction: transaction) else {
+                    owsFailDebug("Missing recipientIdentity.")
+                    continue
+                }
+                guard recipientIdentity.identityKey.count > 0 else {
+                    owsFailDebug("Invalid identityKey.")
+                    continue
+                }
+                Self.identityManager.setVerificationState(.default,
+                                                          identityKey: recipientIdentity.identityKey,
+                                                          address: address,
+                                                          isUserInitiatedChange: true,
+                                                          transaction: transaction)
+            }
+        }
+    }
+
+    func showNoLongerVerifiedUI() {
+        AssertIsOnMainThread()
+
+        let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses
+        if noLongerVerifiedAddresses.count > 1 {
+            showConversationSettingsAndShowVerification()
+        } else if noLongerVerifiedAddresses.count == 1,
+                  let address = noLongerVerifiedAddresses.last {
+            // Pick one in an arbitrary but deterministic manner.
+            showFingerprint(address: address)
+        }
     }
 
     // MARK: - Toast

@@ -337,6 +337,8 @@
 		34A4D87F2677B23100A794E7 /* ConversationViewController+MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D87E2677B23100A794E7 /* ConversationViewController+MessageActions.swift */; };
 		34A4D8812677B2AB00A794E7 /* ConversationViewController+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8802677B2AB00A794E7 /* ConversationViewController+Calls.swift */; };
 		34A4D8832677C59400A794E7 /* ConversationViewController+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8822677C59300A794E7 /* ConversationViewController+Misc.swift */; };
+		34A4D8852677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8842677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift */; };
+		34A4D8872678F24300A794E7 /* ConversationViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8862678F24300A794E7 /* ConversationViewController+Delegates.swift */; };
 		34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */; };
 		34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */; };
 		34AC09DD211B39B100997B47 /* ViewControllerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1389,6 +1391,8 @@
 		34A4D87E2677B23100A794E7 /* ConversationViewController+MessageActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+MessageActions.swift"; sourceTree = "<group>"; };
 		34A4D8802677B2AB00A794E7 /* ConversationViewController+Calls.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Calls.swift"; sourceTree = "<group>"; };
 		34A4D8822677C59300A794E7 /* ConversationViewController+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Misc.swift"; sourceTree = "<group>"; };
+		34A4D8842677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+ConversationInputToolbarDelegate.swift"; sourceTree = "<group>"; };
+		34A4D8862678F24300A794E7 /* ConversationViewController+Delegates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Delegates.swift"; sourceTree = "<group>"; };
 		34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSImagePickerController.swift; sourceTree = "<group>"; };
 		34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaAlbumView.swift; sourceTree = "<group>"; };
 		34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
@@ -2538,10 +2542,12 @@
 				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
 				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34D1F06E1F8678AA0066283D /* ConversationViewController.m */,
+				34A4D8862678F24300A794E7 /* ConversationViewController+Delegates.swift */,
 				3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */,
 				34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */,
 				347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */,
 				34A4D8802677B2AB00A794E7 /* ConversationViewController+Calls.swift */,
+				34A4D8842677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift */,
 				3470518D254B511B00A19468 /* ConversationViewController+CVC.swift */,
 				34A4D87C2677A1EF00A794E7 /* ConversationViewController+CVComponentDelegate.swift */,
 				88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */,
@@ -5550,6 +5556,7 @@
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				348815CE25545B1000D4F4C4 /* CVComponentGenericAttachment.swift in Sources */,
 				3426A368255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift in Sources */,
+				34A4D8872678F24300A794E7 /* ConversationViewController+Delegates.swift in Sources */,
 				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,
 				8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
@@ -5563,6 +5570,7 @@
 				88A4CC09246CB0960082211F /* OnboardingTransferChoiceViewController.swift in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,
 				34955A73260A366600F3789A /* OnboardingDroppedYdbViewController.swift in Sources */,
+				34A4D8852677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift in Sources */,
 				880D9027247F90CC003D2B14 /* Emoji+Available.swift in Sources */,
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
