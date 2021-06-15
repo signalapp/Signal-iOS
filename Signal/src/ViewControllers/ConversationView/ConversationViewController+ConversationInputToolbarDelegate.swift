@@ -9,6 +9,16 @@ import PromiseKit
 extension ConversationViewController: ConversationInputToolbarDelegate {
 
     @objc
+    public func isBlockedConversation() -> Bool {
+        blockingManager.isThreadBlocked(thread)
+    }
+
+    @objc
+    public func isGroup() -> Bool {
+        isGroupConversation
+    }
+
+    @objc
     public func sendButtonPressed() {
         AssertIsOnMainThread()
 
@@ -66,7 +76,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        guard !isBlockedConversation else {
+        guard !isBlockedConversation() else {
             showUnblockConversationUI { [weak self] isBlocked in
                 if !isBlocked {
                     self?.tryToSendTextMessage(messageBody, updateKeyboardState: false)

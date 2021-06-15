@@ -62,7 +62,7 @@ public extension ConversationViewController {
             return
         }
 
-        if isBlockedConversation {
+        if isBlockedConversation() {
             showUnblockConversationUI { [weak self] isBlocked in
                 guard let self = self else { return }
                 if !isBlocked {

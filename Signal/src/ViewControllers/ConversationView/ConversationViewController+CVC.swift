@@ -74,11 +74,6 @@ extension ConversationViewController {
     }
 
     @objc
-    public var isBlockedConversation: Bool {
-        blockingManager.isThreadBlocked(thread)
-    }
-
-    @objc
     public var isShowingSelectionUI: Bool {
         viewState.isShowingSelectionUI
     }
