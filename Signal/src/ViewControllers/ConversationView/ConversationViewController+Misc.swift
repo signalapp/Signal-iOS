@@ -437,3 +437,151 @@ public extension ConversationViewController {
         }
     }
 }
+
+// MARK: - Timers
+
+extension ConversationViewController {
+    @objc
+    public func startReadTimer() {
+        AssertIsOnMainThread()
+
+        readTimer?.invalidate()
+        let readTimer = Timer.weakTimer(withTimeInterval: 0.1,
+                                         target: self,
+                                         selector: #selector(readTimerDidFire),
+                                         userInfo: nil,
+                                         repeats: true)
+        self.readTimer = readTimer
+        RunLoop.main.add(readTimer, forMode: .common)
+    }
+
+    @objc
+    private func readTimerDidFire() {
+        AssertIsOnMainThread()
+
+        if layout.isUpdating {
+            return
+        }
+        markVisibleMessagesAsRead()
+    }
+
+    @objc
+    public func cancelReadTimer() {
+        AssertIsOnMainThread()
+
+        readTimer?.invalidate()
+        self.readTimer = nil
+    }
+
+    private var readTimer: Timer? {
+        get { viewState.readTimer }
+        set { viewState.readTimer = newValue }
+    }
+
+    @objc
+    public var reloadTimer: Timer? {
+        get { viewState.reloadTimer }
+        set { viewState.reloadTimer = newValue }
+    }
+
+    @objc
+    func startReloadTimer() {
+        AssertIsOnMainThread()
+        let reloadTimer = Timer.weakTimer(withTimeInterval: 1.0,
+                                          target: self,
+                                          selector: #selector(reloadTimerDidFire),
+                                          userInfo: nil,
+                                          repeats: true)
+        self.reloadTimer = reloadTimer
+        RunLoop.main.add(reloadTimer, forMode: .common)
+    }
+
+    @objc
+    private func reloadTimerDidFire() {
+        AssertIsOnMainThread()
+
+        if isUserScrolling || !isViewCompletelyAppeared || !isViewVisible
+                || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared
+                || isPresentingMessageActions {
+            return
+        }
+
+        let timeSinceLastReload = abs(self.lastReloadDate.timeIntervalSinceNow)
+        let kReloadFrequency: TimeInterval = 60
+        if timeSinceLastReload < kReloadFrequency {
+            return
+        }
+
+        Logger.verbose("reloading conversation view contents.")
+
+        // Auto-load more if necessary...
+        if !autoLoadMoreIfNecessary() {
+            // ...Otherwise, reload everything.
+            //
+            // TODO: We could make this cheaper by using enqueueReload()
+            // if we moved volatile profile / footer state to the view state.
+            loadCoordinator.enqueueReload()
+        }
+    }
+
+    var lastSortIdMarkedRead: UInt64 {
+        get { viewState.lastSortIdMarkedRead }
+        set { viewState.lastSortIdMarkedRead = newValue }
+    }
+
+    var isMarkingAsRead: Bool {
+        get { viewState.isMarkingAsRead }
+        set { viewState.isMarkingAsRead = newValue }
+    }
+
+    private func setLastSortIdMarkedRead(lastSortIdMarkedRead: UInt64) {
+        AssertIsOnMainThread()
+        owsAssertDebug(self.isMarkingAsRead)
+
+        self.lastSortIdMarkedRead = lastSortIdMarkedRead
+    }
+
+    @objc
+    public func markVisibleMessagesAsRead() {
+        AssertIsOnMainThread()
+
+        if nil != self.presentedViewController {
+            return
+        }
+        if OWSWindowManager.shared.shouldShowCallView {
+            return
+        }
+        if navigationController?.topViewController != self {
+            return
+        }
+
+        // Always clear the thread unread flag
+        clearThreadUnreadFlagIfNecessary()
+
+        let lastVisibleSortId = self.lastVisibleSortId
+        let isShowingUnreadMessage = lastVisibleSortId > self.lastSortIdMarkedRead
+        if !self.isMarkingAsRead && isShowingUnreadMessage {
+            self.isMarkingAsRead = true
+            clearUnreadMessageFlagIfNecessary()
+
+            BenchManager.benchAsync(title: "marking as read") { benchCompletion in
+                Self.receiptManager.markAsReadLocally(beforeSortId: lastVisibleSortId,
+                                                      thread: self.thread,
+                                                      hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest) {
+                    AssertIsOnMainThread()
+                    self.setLastSortIdMarkedRead(lastSortIdMarkedRead: lastVisibleSortId)
+                    self.isMarkingAsRead = false
+
+                    // If -markVisibleMessagesAsRead wasn't invoked on a
+                    // timer, we'd want to double check that the current
+                    // -lastVisibleSortId hasn't incremented since we
+                    // started the read receipt request. But we have a
+                    // timer, so if it has changed, this method will just
+                    // be reinvoked in < 100ms.
+
+                    benchCompletion()
+                }
+            }
+        }
+    }
+}

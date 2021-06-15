@@ -138,6 +138,12 @@ public class CVViewState: NSObject {
 
     public var actionOnOpen: ConversationViewAction = .none
 
+    public var readTimer: Timer?
+    public var reloadTimer: Timer?
+
+    public var lastSortIdMarkedRead: UInt64 = 0
+    public var isMarkingAsRead = false
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -292,11 +298,6 @@ public extension ConversationViewController {
     var isMeasuringKeyboardHeight: Bool { inputToolbar?.isMeasuringKeyboardHeight ?? false }
 
     var mediaCache: CVMediaCache { viewState.mediaCache }
-
-    var userHasScrolled: Bool {
-        get { viewState.userHasScrolled }
-        set { viewState.userHasScrolled = newValue }
-    }
 
     var groupCallBarButtonItem: UIBarButtonItem? {
         get { viewState.groupCallBarButtonItem }

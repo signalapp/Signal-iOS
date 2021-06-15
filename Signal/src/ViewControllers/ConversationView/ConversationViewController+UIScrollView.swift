@@ -26,6 +26,17 @@ extension ConversationViewController {
         get { viewState.isWaitingForDeceleration }
         set { viewState.isWaitingForDeceleration = newValue }
     }
+    @objc
+    public var userHasScrolled: Bool {
+        get { viewState.userHasScrolled }
+        set {
+            guard viewState.userHasScrolled != newValue else {
+                return
+            }
+            viewState.userHasScrolled = newValue
+            ensureBannerState()
+        }
+    }
 
     // MARK: -
 

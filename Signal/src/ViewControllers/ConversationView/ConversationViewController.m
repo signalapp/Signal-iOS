@@ -86,14 +86,9 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) CVViewState *viewState;
 
-@property (nonatomic, nullable) NSTimer *readTimer;
-@property (nonatomic) BOOL isMarkingAsRead;
 @property (nonatomic) ConversationHeaderView *headerView;
 
-@property (nonatomic) uint64_t lastSortIdMarkedRead;
-
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
-@property (nonatomic) NSTimer *reloadTimer;
 
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 
@@ -150,12 +145,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(self.inputAccessoryPlaceholder != nil);
     _searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder;
 
-    self.reloadTimer = [NSTimer weakTimerWithTimeInterval:1.f
-                                                   target:self
-                                                 selector:@selector(reloadTimerDidFire)
-                                                 userInfo:nil
-                                                  repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:self.reloadTimer forMode:NSRunLoopCommonModes];
+    [self startReloadTimer];
 
     __weak ConversationViewController *weakSelf = self;
     _otherUsersProfileDidChangeEvent =
@@ -298,37 +288,6 @@ typedef enum : NSUInteger {
 {
     [self.reloadTimer invalidate];
     [self.scrollUpdateTimer invalidate];
-}
-
-- (void)reloadTimerDidFire
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.isUserScrolling || !self.isViewCompletelyAppeared || !self.isViewVisible
-        || !CurrentAppContext().isAppForegroundAndActive || !self.viewHasEverAppeared
-        || self.isPresentingMessageActions) {
-        return;
-    }
-
-    NSDate *now = [NSDate new];
-    if (self.lastReloadDate) {
-        NSTimeInterval timeSinceLastReload = [now timeIntervalSinceDate:self.lastReloadDate];
-        const NSTimeInterval kReloadFrequency = 60.f;
-        if (timeSinceLastReload < kReloadFrequency) {
-            return;
-        }
-    }
-
-    OWSLogVerbose(@"reloading conversation view contents.");
-
-    // Auto-load more if necessary...
-    if (![self autoLoadMoreIfNecessary]) {
-        // ...Otherwise, reload everything.
-        //
-        // TODO: We could make this cheaper by using enqueueReload()
-        // if we moved volatile profile / footer state to the view state.
-        [self.loadCoordinator enqueueReload];
-    }
 }
 
 - (void)viewDidLoad
@@ -553,39 +512,6 @@ typedef enum : NSUInteger {
 #ifdef TESTABLE_BUILD
     [self.initialLoadBenchSteps step:@"viewWillAppear.2"];
 #endif
-}
-
-- (void)setUserHasScrolled:(BOOL)userHasScrolled
-{
-    if (self.userHasScrolled != userHasScrolled) {
-        self.userHasScrolled = userHasScrolled;
-        [self ensureBannerState];
-    }
-}
-
-- (void)startReadTimer
-{
-    [self.readTimer invalidate];
-    self.readTimer = [NSTimer weakTimerWithTimeInterval:0.1f
-                                                 target:self
-                                               selector:@selector(readTimerDidFire)
-                                               userInfo:nil
-                                                repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:self.readTimer forMode:NSRunLoopCommonModes];
-}
-
-- (void)readTimerDidFire
-{
-    if (self.layout.isUpdating) {
-        return;
-    }
-    [self markVisibleMessagesAsRead];
-}
-
-- (void)cancelReadTimer
-{
-    [self.readTimer invalidate];
-    self.readTimer = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -1131,61 +1057,6 @@ typedef enum : NSUInteger {
 {
     [self updateNavigationTitle];
     [self.loadCoordinator enqueueReloadWithCanReuseInteractionModels:YES canReuseComponentStates:NO];
-}
-
-#pragma mark -
-
-- (void)setLastSortIdMarkedRead:(uint64_t)lastSortIdMarkedRead
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.isMarkingAsRead);
-    _lastSortIdMarkedRead = lastSortIdMarkedRead;
-}
-
-- (void)markVisibleMessagesAsRead
-{
-    OWSAssertIsOnMainThread();
-    if (self.presentedViewController) {
-        return;
-    }
-    if (OWSWindowManager.shared.shouldShowCallView) {
-        return;
-    }
-    if (self.navigationController.topViewController != self) {
-        return;
-    }
-
-    // Always clear the thread unread flag
-    [self clearThreadUnreadFlagIfNecessary];
-
-    uint64_t lastVisibleSortId = [self lastVisibleSortId];
-    BOOL isShowingUnreadMessage = (lastVisibleSortId > [self lastSortIdMarkedRead]);
-    if (!self.isMarkingAsRead && isShowingUnreadMessage) {
-        self.isMarkingAsRead = YES;
-        [self clearUnreadMessageFlagIfNecessary];
-
-        [BenchManager benchAsyncWithTitle:@"marking as read"
-                                    block:^(void (^_Nonnull benchCompletion)(void)) {
-                                        [[OWSReceiptManager shared]
-                                            markAsReadLocallyBeforeSortId:lastVisibleSortId
-                                                                   thread:self.thread
-                                                 hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
-                                                               completion:^{
-                                                                   OWSAssertIsOnMainThread();
-                                                                   [self setLastSortIdMarkedRead:lastVisibleSortId];
-                                                                   self.isMarkingAsRead = NO;
-
-                                                                   // If -markVisibleMessagesAsRead wasn't invoked on a
-                                                                   // timer, we'd want to double check that the current
-                                                                   // -lastVisibleSortId hasn't incremented since we
-                                                                   // started the read receipt request. But we have a
-                                                                   // timer, so if it has changed, this method will just
-                                                                   // be reinvoked in <100ms.
-
-                                                                   benchCompletion();
-                                                               }];
-                                    }];
-    }
 }
 
 #pragma mark - Drafts

@@ -38,7 +38,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 @property (nonatomic, readonly) CGFloat safeContentHeight;
 
 @property (nonatomic, readonly) CVLoadCoordinator *loadCoordinator;
-@property (nonatomic, nullable, readonly) NSArray<TSMessage *> *unreadMentionMessages;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
