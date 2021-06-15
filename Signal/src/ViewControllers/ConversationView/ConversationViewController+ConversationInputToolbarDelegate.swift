@@ -470,59 +470,18 @@ fileprivate extension ConversationViewController {
             self.presentFullScreen(pickerModal, animated: true)
         }
     }
+}
 
-    // MARK: - Attachment Picking: GIFs
+// MARK: - Attachment Picking: GIFs
 
+@objc
+public extension ConversationViewController {
     func showGifPicker() {
         let gifModal = GifPickerNavigationViewController()
         gifModal.approvalDelegate = self
         dismissKeyBoard()
         present(gifModal, animated: true)
     }
-
-    //    // MARK: - Media
-    //
-    //    func takePicture() {
-    //        AssertIsOnMainThread()
-    //        owsAssertDebug(self.delegate)
-    //
-    //        [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
-    //         if (!granted) {
-    //         Logger.warn("Camera permission denied.")
-    //         return
-    //         }
-    //
-    //         UIImagePickerController *picker = [OWSImagePickerController new]
-    //         picker.delegate = self
-    //         picker.allowsEditing = NO
-    //         picker.sourceType = UIImagePickerControllerSourceTypeCamera
-    //         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ]
-    //
-    //         [self.delegate.fromViewController presentViewController:picker animated:YES completion:nil]
-    //         }]
-    //    }
-    //
-    //    - (void)chooseFromLibrary
-    //    {
-    //    AssertIsOnMainThread()
-    //    owsAssertDebug(self.delegate)
-    //
-    //    [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
-    //    if (!granted) {
-    //    Logger.warn("Media Library permission denied.")
-    //    return
-    //    }
-    //
-    //    UIImagePickerController *picker = [OWSImagePickerController new]
-    //    picker.delegate = self
-    //    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary
-    //    picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ]
-    //
-    //    [self.delegate.fromViewController presentViewController:picker animated:YES completion:nil]
-    //    }]
-    //    }
-    //
-    // }
 }
 
 // MARK: -
@@ -569,16 +528,6 @@ extension ConversationViewController: LocationPickerDelegate {
 
 extension ConversationViewController: UIDocumentPickerDelegate {
 
-    //    @available(iOS 11.0, *)
-    //    optional func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL])
-    //
-    //
-    //    // called if the user dismisses the document picker without selecting a document (using the Cancel button)
-    //    @available(iOS 8.0, *)
-    //    optional func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController)
-    //
-    //
-    //    @available(iOS, introduced: 8.0, deprecated: 11.0)
     @objc
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
         Logger.debug("Picked document at url: \(url)")
@@ -667,7 +616,6 @@ extension ConversationViewController: UIDocumentPickerDelegate {
         showApprovalDialog(forAttachment: attachment)
     }
 
-    // TODO: Thread safety.
     private func showApprovalDialogAfterProcessingVideoURL(_ movieURL: URL, filename: String?) {
         AssertIsOnMainThread()
 

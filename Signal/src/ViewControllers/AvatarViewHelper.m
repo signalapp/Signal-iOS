@@ -62,6 +62,47 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate.fromViewController presentActionSheet:actionSheet];
 }
 
+- (void)takePicture
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.delegate);
+
+    [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
+        if (!granted) {
+            OWSLogWarn(@"Camera permission denied.");
+            return;
+        }
+
+        UIImagePickerController *picker = [OWSImagePickerController new];
+        picker.delegate = self;
+        picker.allowsEditing = NO;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
+
+        [self.delegate.fromViewController presentViewController:picker animated:YES completion:nil];
+    }];
+}
+
+- (void)chooseFromLibrary
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.delegate);
+
+    [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
+        if (!granted) {
+            OWSLogWarn(@"Media Library permission denied.");
+            return;
+        }
+
+        UIImagePickerController *picker = [OWSImagePickerController new];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
+
+        [self.delegate.fromViewController presentViewController:picker animated:YES completion:nil];
+    }];
+}
+
 /*
  *  Dismissing UIImagePickerController
  */
