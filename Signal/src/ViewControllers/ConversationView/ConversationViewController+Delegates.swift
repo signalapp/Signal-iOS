@@ -497,7 +497,13 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
         // but we need to ensure that it is cleared in a timely way.
         scrollingAnimationDidComplete()
     }
+}
 
+// MARK: -
+
+// TODO: Maybe move these methods elsewhere.
+// TODO: Some of these methods might become private.
+extension ConversationViewController {
     @objc
     public func scrollingAnimationDidComplete() {
         AssertIsOnMainThread()
@@ -506,5 +512,14 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
         scrollingAnimationCompletionTimer = nil
 
         autoLoadMoreIfNecessary()
+    }
+
+    @objc
+    public func resetForSizeOrOrientationChange() {
+        AssertIsOnMainThread()
+
+        updateConversationStyle()
+
+        self.scrollContinuity = .bottom
     }
 }

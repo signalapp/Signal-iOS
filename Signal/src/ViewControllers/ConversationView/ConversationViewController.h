@@ -87,7 +87,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
                  messageBody:(MessageBody *_Nullable)messageBody NS_SWIFT_NAME(tryToSendAttachments(_:messageBody:));
 
 - (void)updateBarButtonItems;
-- (void)ensureBannerState;
 
 // TODO: Remove or rework method.
 - (void)reloadCollectionViewForReset;

@@ -7,9 +7,9 @@ import Foundation
 @objc
 public extension ConversationViewController {
 
-    static func createBannerWithTitle(title: String,
-                                      bannerColor: UIColor,
-                                      tapBlock: @escaping () -> Void) -> UIView {
+    static func createBanner(title: String,
+                             bannerColor: UIColor,
+                             tapBlock: @escaping () -> Void) -> UIView {
         owsAssertDebug(title.count > 0)
 
         let bannerView = GestureView()
@@ -42,13 +42,13 @@ public extension ConversationViewController {
     // MARK: - Pending Join Requests Banner
 
     func createPendingJoinRequestBanner(viewState: CVViewState,
-                                        count pendingMemberRequestCount: UInt,
+                                        count pendingMemberRequestCount: Int,
                                         viewMemberRequestsBlock: @escaping () -> Void) -> UIView {
         owsAssertDebug(pendingMemberRequestCount > 0)
 
         let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT",
                                        comment: "Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}.")
-        let title = String(format: format, OWSFormat.formatUInt(pendingMemberRequestCount))
+        let title = String(format: format, OWSFormat.formatInt(pendingMemberRequestCount))
 
         let dismissButton = OWSButton(title: CommonStrings.dismissButton) { [weak self] in
             AssertIsOnMainThread()
@@ -535,5 +535,200 @@ private class NameCollisionBanner: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController {
+
+    @objc
+    public func ensureBannerState() {
+        AssertIsOnMainThread()
+
+        // This method should be called rarely, so it's simplest to discard and
+        // rebuild the indicator view every time.
+        bannerView?.removeFromSuperview()
+        self.bannerView = nil
+
+        var banners = [UIView]()
+
+        // Most of these banners should hide themselves when the user scrolls
+        if !userHasScrolled {
+            let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses
+            if !noLongerVerifiedAddresses.isEmpty {
+                let message: String
+                if noLongerVerifiedAddresses.count > 1 {
+                    message = NSLocalizedString("MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
+                                                comment: "Indicates that more than one member of this group conversation is no longer verified.")
+                } else {
+                    let address = noLongerVerifiedAddresses.first!
+                    let displayName = contactsManager.displayName(for: address)
+                    let format = (isGroupConversation
+                                    ? NSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
+                                                        comment: "Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}.")
+                                    : NSLocalizedString("MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
+                                                        comment: "Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}."))
+                    message = String(format: format, displayName)
+                }
+
+                let banner = ConversationViewController.createBanner(title: message,
+                                                                     bannerColor: .ows_accentRed) { [weak self] in
+                    self?.noLongerVerifiedBannerViewWasTapped()
+                }
+                banners.append(banner)
+            }
+
+            func buildBlockStateMessage() -> String? {
+                guard isGroupConversation else {
+                    return nil
+                }
+                let blockedGroupMemberCount = self.blockedGroupMemberCount
+                if blockedGroupMemberCount == 1 {
+                    return NSLocalizedString("MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
+                                             comment: "Indicates that a single member of this group has been blocked.")
+                } else if blockedGroupMemberCount > 1 {
+                    return String(format: NSLocalizedString("MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
+                                                            comment: "Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}."),
+                                  OWSFormat.formatInt(blockedGroupMemberCount))
+                } else {
+                    return nil
+                }
+            }
+            if let blockStateMessage = buildBlockStateMessage() {
+                let banner = ConversationViewController.createBanner(title: blockStateMessage,
+                                                                     bannerColor: .ows_accentRed) { [weak self] in
+                    self?.blockBannerViewWasTapped()
+                }
+                banners.append(banner)
+            }
+
+            let pendingMemberRequestCount = self.pendingMemberRequestCount
+            if pendingMemberRequestCount > 0,
+               self.canApprovePendingMemberRequests,
+               !viewState.isPendingMemberRequestsBannerHidden {
+                let banner = self.createPendingJoinRequestBanner(viewState: viewState,
+                                                                 count: pendingMemberRequestCount) { [weak self] in
+                    self?.showConversationSettingsAndShowMemberRequests()
+                }
+                banners.append(banner)
+            }
+
+            if let migrationInfo = self.manualMigrationInfoForGroup,
+               migrationInfo.canGroupBeMigrated,
+               !viewState.isMigrateGroupBannerHidden,
+               !GroupManager.areMigrationsBlocking {
+                let banner = createMigrateGroupBanner(viewState: viewState, migrationInfo: migrationInfo)
+                banners.append(banner)
+            }
+
+            if let banner = createDroppedGroupMembersBannerIfNecessary(viewState: viewState),
+               !viewState.isDroppedGroupMembersBannerHidden {
+                banners.append(banner)
+            }
+        }
+
+        if let banner = createMessageRequestNameCollisionBannerIfNecessary(viewState: viewState) {
+            banners.append(banner)
+        }
+
+        if let banner = createGroupMembershipCollisionBannerIfNecessary() {
+            banners.append(banner)
+        }
+
+        if banners.isEmpty {
+            if hasViewDidAppearEverBegun {
+                updateContentInsets(animated: false)
+            }
+            return
+        }
+
+        let bannerView = UIStackView(arrangedSubviews: banners)
+        bannerView.axis = .vertical
+        bannerView.alignment = .fill
+        self.view.addSubview(bannerView)
+        bannerView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        bannerView.autoPinEdge(toSuperviewEdge: .leading)
+        bannerView.autoPinEdge(toSuperviewEdge: .trailing)
+        self.view.layoutSubviews()
+
+        self.bannerView = bannerView
+        if hasViewDidAppearEverBegun {
+            updateContentInsets(animated: false)
+        }
+    }
+
+    private var pendingMemberRequestCount: Int {
+        if let groupThread = thread as? TSGroupThread {
+            return groupThread.groupMembership.requestingMembers.count
+        } else {
+            return 0
+        }
+    }
+
+    private var canApprovePendingMemberRequests: Bool {
+        if let groupThread = thread as? TSGroupThread {
+            return groupThread.isLocalUserFullMemberAndAdministrator
+        } else {
+            return false
+        }
+    }
+
+    private func blockBannerViewWasTapped() {
+        AssertIsOnMainThread()
+
+        if isBlockedConversation() {
+            // If this a blocked conversation, offer to unblock.
+            showUnblockConversationUI(completion: nil)
+        } else if isGroupConversation {
+            // If this a group conversation with at least one blocked member,
+            // Show the block list view.
+            let blockedGroupMemberCount = self.blockedGroupMemberCount
+            if blockedGroupMemberCount > 0 {
+                let vc = BlockListViewController()
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+
+    private func noLongerVerifiedBannerViewWasTapped() {
+        AssertIsOnMainThread()
+
+        let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses
+        if noLongerVerifiedAddresses.isEmpty {
+            return
+        }
+        let hasMultiple = noLongerVerifiedAddresses.count > 1
+
+        let actionSheet = ActionSheetController()
+
+        actionSheet.addAction(ActionSheetAction(title: (hasMultiple
+                                                            ? NSLocalizedString("VERIFY_PRIVACY_MULTIPLE",
+                                                                                comment: "Label for button or row which allows users to verify the safety numbers of multiple users.")
+                                                            : NSLocalizedString("VERIFY_PRIVACY",
+                                                                                comment: "Label for button or row which allows users to verify the safety number of another user.")),
+                                                style: .default) { [weak self] _ in
+            self?.showNoLongerVerifiedUI()
+        })
+
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.dismissButton,
+                                                accessibilityIdentifier: "dismiss",
+                                                style: .cancel) { [weak self] _ in
+            self?.resetVerificationStateToDefault()
+        })
+
+        dismissKeyBoard()
+        presentActionSheet(actionSheet)
+    }
+
+    private var blockedGroupMemberCount: Int {
+        guard let groupThread = thread as? TSGroupThread else {
+            owsFailDebug("Invalid thread.")
+            return 0
+        }
+        let blockedMembers = groupThread.groupModel.groupMembers.filter { address in
+            Self.blockingManager.isAddressBlocked(address)
+        }
+        return blockedMembers.count
     }
 }
