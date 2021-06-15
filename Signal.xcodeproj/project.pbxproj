@@ -339,6 +339,7 @@
 		34A4D8832677C59400A794E7 /* ConversationViewController+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8822677C59300A794E7 /* ConversationViewController+Misc.swift */; };
 		34A4D8852677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8842677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift */; };
 		34A4D8872678F24300A794E7 /* ConversationViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8862678F24300A794E7 /* ConversationViewController+Delegates.swift */; };
+		34A4D8892679296600A794E7 /* ConversationViewController+UIScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */; };
 		34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */; };
 		34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */; };
 		34AC09DD211B39B100997B47 /* ViewControllerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1393,6 +1394,7 @@
 		34A4D8822677C59300A794E7 /* ConversationViewController+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Misc.swift"; sourceTree = "<group>"; };
 		34A4D8842677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+ConversationInputToolbarDelegate.swift"; sourceTree = "<group>"; };
 		34A4D8862678F24300A794E7 /* ConversationViewController+Delegates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Delegates.swift"; sourceTree = "<group>"; };
+		34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+UIScrollView.swift"; sourceTree = "<group>"; };
 		34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSImagePickerController.swift; sourceTree = "<group>"; };
 		34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaAlbumView.swift; sourceTree = "<group>"; };
 		34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
@@ -2560,6 +2562,7 @@
 				4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */,
 				88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */,
 				3426A369255D9D7C0036407F /* ConversationViewController+Selection.swift */,
+				34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */,
 				88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */,
 				888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */,
 				3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */,
@@ -5737,6 +5740,7 @@
 				4CD4E7D623E8CCFE00834B1B /* AudioSource.swift in Sources */,
 				348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */,
 				346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */,
+				34A4D8892679296600A794E7 /* ConversationViewController+UIScrollView.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */,
 				880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */,

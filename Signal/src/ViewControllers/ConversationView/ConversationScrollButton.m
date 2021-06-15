@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ConversationScrollButton
 
-- (nullable instancetype)initWithIconName:(NSString *)iconName
+- (instancetype)initWithIconName:(NSString *)iconName
 {
     self = [super initWithFrame:CGRectZero];
     if (!self) {

@@ -13,6 +13,7 @@
 #import "ConversationCollectionView.h"
 #import "ConversationInputToolbar.h"
 #import "ConversationListViewController.h"
+#import "ConversationScrollButton.h"
 #import "ConversationViewController.h"
 #import "DateUtil.h"
 #import "DebugContactsUtils.h"

@@ -52,10 +52,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
                                  voiceMemoDraft:(nullable VoiceMessageModel *)voiceMemoDraft
     NS_SWIFT_NAME(buildInputToolbar(conversationStyle:messageDraft:voiceMemoDraft:));
 
-#pragma mark 3D Touch/UIContextMenu Methods
-
-- (void)previewSetup;
-
 #pragma mark - Keyboard Shortcuts
 
 - (void)focusInputToolbar;
@@ -94,9 +90,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 - (void)updateNavigationBarSubtitleLabel;
 - (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)updateNavigationTitle;
-- (void)updateUnreadMessageFlagWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (void)updateUnreadMessageFlagUsingAsyncTransaction;
-- (void)configureScrollDownButtons;
 - (void)performBatchUpdates:(void (^_Nonnull)(void))batchUpdates
                  completion:(void (^_Nonnull)(BOOL))completion
             logFailureBlock:(void (^_Nonnull)(void))logFailureBlock

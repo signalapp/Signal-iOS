@@ -125,6 +125,19 @@ public class CVViewState: NSObject {
 
     public var lastMessageSentDate: Date?
 
+    public let scrollDownButton = ConversationScrollButton(iconName: "chevron-down-20")
+    public var isHidingScrollDownButton = false
+    public let scrollToNextMentionButton = ConversationScrollButton(iconName: "mention-24")
+    public var isHidingScrollToNextMentionButton = false
+    @objc
+    public var scrollUpdateTimer: Timer?
+    public var isWaitingForDeceleration = false
+
+    public var unreadMessageCount: UInt = 0
+    public var unreadMentionMessages = [TSMessage]()
+
+    public var actionOnOpen: ConversationViewAction = .none
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -293,6 +306,11 @@ public extension ConversationViewController {
     var lastMessageSentDate: Date? {
         get { viewState.lastMessageSentDate }
         set { viewState.lastMessageSentDate = newValue }
+    }
+
+    var actionOnOpen: ConversationViewAction {
+        get { viewState.actionOnOpen }
+        set { viewState.actionOnOpen = newValue }
     }
 
     // MARK: - Gestures

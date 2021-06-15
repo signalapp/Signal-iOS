@@ -346,3 +346,94 @@ extension ConversationViewController: CNContactViewControllerDelegate {
         navigationController?.popToViewController(self, animated: true)
     }
 }
+
+// MARK: - Preview / 3D Touch / UIContextMenu Methods
+
+@objc
+public extension ConversationViewController {
+    var isInPreviewPlatter: Bool {
+        get { viewState.isInPreviewPlatter }
+        set {
+            guard viewState.isInPreviewPlatter != newValue else {
+                return
+            }
+            viewState.isInPreviewPlatter = newValue
+            if hasViewWillAppearEverBegun {
+                ensureBottomViewType()
+            }
+            configureScrollDownButtons()
+        }
+    }
+
+    func previewSetup() {
+        isInPreviewPlatter = true
+        actionOnOpen = .none
+    }
+}
+
+// MARK: - Unread Counts
+
+@objc
+public extension ConversationViewController {
+    var unreadMessageCount: UInt {
+        get { viewState.unreadMessageCount }
+        set {
+            guard viewState.unreadMessageCount != newValue else {
+                return
+            }
+            viewState.unreadMessageCount = newValue
+            configureScrollDownButtons()
+        }
+    }
+
+    var unreadMentionMessages: [TSMessage] {
+        get { viewState.unreadMentionMessages }
+        set {
+            guard viewState.unreadMentionMessages != newValue else {
+                return
+            }
+            viewState.unreadMentionMessages = newValue
+            configureScrollDownButtons()
+        }
+    }
+
+    func updateUnreadMessageFlagUsingAsyncTransaction() {
+        // Resubmits to the main queue because we can't verify we're not already in a transaction we don't know about.
+        // This method may be called in response to all sorts of view state changes, e.g. scroll state. These changes
+        // can be a result of a UIKit response to app activity that already has an open transaction.
+        //
+        // We need a transaction to proceed, but we can't verify that we're not already in one (unless explicitly handed
+        // one) To workaround this, we async a block to open a fresh transaction on the main queue.
+        DispatchQueue.main.async {
+            Self.databaseStorage.read { transaction in
+                self.updateUnreadMessageFlag(transaction: transaction)
+            }
+        }
+    }
+
+    func updateUnreadMessageFlag(transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
+
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+        let unreadCount = interactionFinder.unreadCount(transaction: transaction.unwrapGrdbRead)
+        self.unreadMessageCount = unreadCount
+
+        if let localAddress = tsAccountManager.localAddress {
+            self.unreadMentionMessages = MentionFinder.messagesMentioning(address: localAddress,
+                                                                          in: thread,
+                                                                          includeReadMessages: false,
+                                                                          transaction: transaction.unwrapGrdbRead)
+        } else {
+            owsFailDebug("Missing localAddress.")
+        }
+    }
+
+    /// Checks to see if the unread message flag can be cleared. Shortcircuits if the flag is not set to begin with
+    func clearUnreadMessageFlagIfNecessary() {
+        AssertIsOnMainThread()
+
+        if unreadMessageCount > 0 {
+            updateUnreadMessageFlagUsingAsyncTransaction()
+        }
+    }
+}
