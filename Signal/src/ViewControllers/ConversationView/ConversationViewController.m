@@ -77,18 +77,10 @@ typedef enum : NSUInteger {
 #pragma mark -
 
 // TODO: Audit protocol conformance, here and in header.
-@interface ConversationViewController () <AVAudioPlayerDelegate,
-    ContactShareViewHelperDelegate,
-    ConversationHeaderViewDelegate,
-    ConversationInputTextViewDelegate,
-    ConversationSearchControllerDelegate,
-    ContactsViewHelperObserver,
-    UIDocumentMenuDelegate,
-    UIDocumentPickerDelegate,
+@interface ConversationViewController () <ContactsViewHelperObserver,
     UINavigationControllerDelegate,
     UITextViewDelegate,
-    ConversationCollectionViewDelegate,
-    InputAccessoryViewPlaceholderDelegate>
+    ConversationCollectionViewDelegate>
 
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
@@ -1571,17 +1563,6 @@ typedef enum : NSUInteger {
     self.scrollToNextMentionButton.unreadCount = self.unreadMentionMessages.count;
 }
 
-#pragma mark UIDocumentMenuDelegate
-
-- (void)documentMenu:(UIDocumentMenuViewController *)documentMenu
-    didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
-{
-    documentPicker.delegate = self;
-
-    [self dismissKeyBoard];
-    [self presentFormSheetViewController:documentPicker animated:YES completion:nil];
-}
-
 #pragma mark -
 
 - (void)setLastSortIdMarkedRead:(uint64_t)lastSortIdMarkedRead
@@ -1659,13 +1640,6 @@ typedef enum : NSUInteger {
     }
 }
 
-#pragma mark - ConversationHeaderViewDelegate
-
-- (void)didTapConversationHeaderView:(ConversationHeaderView *)conversationHeaderView
-{
-    [self showConversationSettings];
-}
-
 #ifdef USE_DEBUG_UI
 - (void)navigationTitleLongPressed:(UIGestureRecognizer *)gestureRecognizer
 {
@@ -1674,31 +1648,6 @@ typedef enum : NSUInteger {
     }
 }
 #endif
-
-#pragma mark - ConversationInputTextViewDelegate
-
-- (void)textViewDidChange:(UITextView *)textView
-{
-    if (textView.text.length > 0) {
-        [self.typingIndicatorsImpl didStartTypingOutgoingInputInThread:self.thread];
-    }
-}
-
-- (void)inputTextViewSendMessagePressed
-{
-    [self sendButtonPressed];
-}
-
-- (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment
-{
-    // If the thing we pasted is sticker-like, send it immediately
-    // and render it borderless.
-    if (attachment.isBorderless) {
-        [self tryToSendAttachments:@[ attachment ] messageBody:nil];
-    } else {
-        [self showApprovalDialogForAttachment:attachment];
-    }
-}
 
 - (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments messageBody:(MessageBody *_Nullable)messageBody
 {
@@ -2010,48 +1959,6 @@ typedef enum : NSUInteger {
     [self autoLoadMoreIfNecessary];
 }
 
-#pragma mark ConversationSearchControllerDelegate
-
-- (void)didDismissSearchController:(UISearchController *)searchController
-{
-    OWSLogVerbose(@"");
-    OWSAssertIsOnMainThread();
-    // This method is called not only when the user taps "cancel" in the searchController, but also
-    // called when the searchController was dismissed because we switched to another uiMode, like
-    // "selection". We only want to revert to "normal" in the former case - when the user tapped
-    // "cancel" in the search controller. Otherwise, if we're already in another mode, like
-    // "selection", we want to stay in that mode.
-    if (self.uiMode == ConversationUIMode_Search) {
-        self.uiMode = ConversationUIMode_Normal;
-    }
-}
-
-- (void)conversationSearchController:(ConversationSearchController *)conversationSearchController
-              didUpdateSearchResults:(nullable ConversationScreenSearchResultSet *)conversationScreenSearchResultSet
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"conversationScreenSearchResultSet: %@", conversationScreenSearchResultSet.debugDescription);
-    self.lastSearchedText = conversationScreenSearchResultSet.searchText;
-    [self.loadCoordinator enqueueReload];
-    if (conversationScreenSearchResultSet) {
-        [BenchManager completeEventWithEventId:self.lastSearchedText];
-    }
-}
-
-- (void)conversationSearchController:(ConversationSearchController *)conversationSearchController
-                  didSelectMessageId:(NSString *)messageId
-{
-    OWSLogDebug(@"messageId: %@", messageId);
-    [self ensureInteractionLoadedThenScrollToInteraction:messageId
-                                      onScreenPercentage:1
-                                               alignment:ScrollAlignmentCenterIfNotEntirelyOnScreen
-                                              isAnimated:YES];
-    [BenchManager completeEventWithEventId:[NSString stringWithFormat:@"Conversation Search Nav: %@", messageId]];
-}
-
-#pragma mark -
-
 #pragma mark - Database Observation
 
 - (BOOL)isViewVisible
@@ -2074,14 +1981,6 @@ typedef enum : NSUInteger {
         cell.isCellVisible = isCellVisible;
     }
     [self updateScrollingContent];
-}
-
-#pragma mark - ContactShareViewHelperDelegate
-
-- (void)didCreateOrEditContact
-{
-    OWSLogInfo(@"");
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - CollectionView updates
@@ -2195,84 +2094,6 @@ typedef enum : NSUInteger {
     [self updateInputToolbarLayout];
     [self viewSafeAreaInsetsDidChangeForLoad];
     [self updateConversationStyle];
-}
-
-#pragma mark - InputAccessoryViewPlaceholderDelegate
-
-- (void)inputAccessoryPlaceholderKeyboardIsDismissingInteractively
-{
-    // No animation, just follow along with the keyboard.
-    self.isDismissingInteractively = YES;
-    [self updateBottomBarPosition];
-    self.isDismissingInteractively = NO;
-}
-
-- (void)inputAccessoryPlaceholderKeyboardIsDismissingWithAnimationDuration:(NSTimeInterval)animationDuration
-                                                            animationCurve:(UIViewAnimationCurve)animationCurve
-{
-    [self handleKeyboardStateChange:animationDuration animationCurve:animationCurve];
-}
-
-- (void)inputAccessoryPlaceholderKeyboardDidDismiss
-{
-    [self updateBottomBarPosition];
-    [self updateContentInsetsAnimated:NO];
-}
-
-- (void)inputAccessoryPlaceholderKeyboardIsPresentingWithAnimationDuration:(NSTimeInterval)animationDuration
-                                                            animationCurve:(UIViewAnimationCurve)animationCurve
-{
-    [self handleKeyboardStateChange:animationDuration animationCurve:animationCurve];
-}
-
-- (void)inputAccessoryPlaceholderKeyboardDidPresent
-{
-    [self updateBottomBarPosition];
-    [self updateContentInsetsAnimated:NO];
-}
-
-- (void)handleKeyboardStateChange:(NSTimeInterval)animationDuration animationCurve:(UIViewAnimationCurve)animationCurve
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.transitionCoordinator.isInteractive) {
-        return;
-    }
-
-    self.scrollContinuity = ScrollContinuityBottom;
-
-    if (self.shouldAnimateKeyboardChanges && animationDuration > 0) {
-        if (self.hasViewDidAppearEverCompleted) {
-            // Make note of when the keyboard animation will block
-            // loads from landing during the keyboard animation.
-            // It isn't safe to block loads for long, so we cap
-            // how long they will be blocked for.
-            NSTimeInterval keyboardAnimationBlockLoadInterval = kSecondInterval * 1.0;
-            NSDate *animationCompletionDate =
-                [[NSDate new] dateByAddingTimeInterval:keyboardAnimationBlockLoadInterval];
-            NSDate *lastKeyboardAnimationDate = [[NSDate new] dateByAddingTimeInterval:-1.0];
-            if (self.viewState.lastKeyboardAnimationDate == nil ||
-                [self.viewState.lastKeyboardAnimationDate isBeforeDate:lastKeyboardAnimationDate]) {
-                self.viewState.lastKeyboardAnimationDate = animationCompletionDate;
-                self.scrollContinuity = ScrollContinuityBottom;
-            }
-        }
-
-        // The animation curve provided by the keyboard notifications
-        // is a private value not represented in UIViewAnimationOptions.
-        // We don't use a block based animation here because it's not
-        // possible to pass a curve directly to block animations.
-        [UIView beginAnimations:@"keyboardStateChange" context:nil];
-        [UIView setAnimationBeginsFromCurrentState:YES];
-        [UIView setAnimationCurve:animationCurve];
-        [UIView setAnimationDuration:animationDuration];
-        [self updateBottomBarPosition];
-        [UIView commitAnimations];
-        [self updateContentInsetsAnimated:YES];
-    } else {
-        [self updateBottomBarPosition];
-        [self updateContentInsetsAnimated:NO];
-    }
 }
 
 #pragma mark - Keyboard Shortcuts

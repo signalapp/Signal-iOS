@@ -16,6 +16,8 @@ public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate
                                       didSelectMessageId: String)
 }
 
+// MARK: -
+
 @objc
 public class ConversationSearchController: NSObject {
 

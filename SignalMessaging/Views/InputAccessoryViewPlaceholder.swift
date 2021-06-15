@@ -1,17 +1,19 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-protocol InputAccessoryViewPlaceholderDelegate: AnyObject {
+public protocol InputAccessoryViewPlaceholderDelegate: AnyObject {
     func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
     func inputAccessoryPlaceholderKeyboardDidPresent()
     func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve)
     func inputAccessoryPlaceholderKeyboardDidDismiss()
     func inputAccessoryPlaceholderKeyboardIsDismissingInteractively()
 }
+
+// MARK: -
 
 /// Input accessory views always render at the full width of the window.
 /// This wrapper allows resizing the accessory view to fit within its

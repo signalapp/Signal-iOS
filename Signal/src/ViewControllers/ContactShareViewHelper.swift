@@ -12,6 +12,8 @@ public protocol ContactShareViewHelperDelegate: AnyObject {
     func didCreateOrEditContact()
 }
 
+// MARK: -
+
 @objc
 public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 

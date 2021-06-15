@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
 
@@ -223,5 +224,222 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
         AssertIsOnMainThread()
 
         return .send
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: ContactShareViewHelperDelegate {
+    @objc
+    public func didCreateOrEditContact() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        self.dismiss(animated: true, completion: nil)
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: ConversationHeaderViewDelegate {
+    @objc
+    public func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView) {
+        AssertIsOnMainThread()
+
+        showConversationSettings()
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: ConversationInputTextViewDelegate {
+    @objc
+    public func didPasteAttachment(_ attachment: SignalAttachment?) {
+        AssertIsOnMainThread()
+
+        guard let attachment = attachment else {
+            owsFailDebug("Missing attachment.")
+            return
+        }
+
+        // If the thing we pasted is sticker-like, send it immediately
+        // and render it borderless.
+        if attachment.isBorderless {
+            tryToSendAttachments([ attachment ], messageBody: nil)
+        } else {
+            showApprovalDialog(forAttachment: attachment)
+        }
+    }
+
+    @objc
+    public func inputTextViewSendMessagePressed() {
+        AssertIsOnMainThread()
+
+        sendButtonPressed()
+    }
+
+    @objc
+    public func textViewDidChange(_ textView: UITextView) {
+        AssertIsOnMainThread()
+
+        if textView.text.strippedOrNil != nil {
+            typingIndicatorsImpl.didStartTypingOutgoingInput(inThread: thread)
+        }
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: ConversationSearchControllerDelegate {
+    @objc
+    public func didDismissSearchController(_ searchController: UISearchController) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
+        // This method is called not only when the user taps "cancel" in the searchController, but also
+        // called when the searchController was dismissed because we switched to another uiMode, like
+        // "selection". We only want to revert to "normal" in the former case - when the user tapped
+        // "cancel" in the search controller. Otherwise, if we're already in another mode, like
+        // "selection", we want to stay in that mode.
+        if uiMode == .search {
+            uiMode = .normal
+        }
+    }
+
+    @objc
+    public func conversationSearchController(_ conversationSearchController: ConversationSearchController,
+                                             didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("conversationScreenSearchResultSet: \(resultSet.debugDescription)")
+
+        self.lastSearchedText = resultSet?.searchText
+        loadCoordinator.enqueueReload()
+
+        if let resultSet = resultSet {
+            BenchManager.completeEvent(eventId: resultSet.searchText)
+        }
+    }
+
+    @objc
+    public func conversationSearchController(_ conversationSearchController: ConversationSearchController,
+                                             didSelectMessageId messageId: String) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("messageId: \(messageId)")
+
+        ensureInteractionLoadedThenScrollToInteraction(messageId,
+                                                       onScreenPercentage: 1,
+                                                       alignment: .centerIfNotEntirelyOnScreen,
+                                                       isAnimated: true)
+        BenchManager.completeEvent(eventId: String(format: "Conversation Search Nav: \(messageId)"))
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: UIDocumentMenuDelegate {
+    @objc
+    public func documentMenu(_ documentMenu: UIDocumentMenuViewController,
+                             didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
+        AssertIsOnMainThread()
+
+        documentPicker.delegate = self
+        dismissKeyBoard()
+        presentFormSheet(documentPicker, animated: true)
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
+    @objc
+    public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval,
+                                                              animationCurve: UIView.AnimationCurve) {
+        AssertIsOnMainThread()
+
+        handleKeyboardStateChange(animationDuration: animationDuration,
+                                  animationCurve: animationCurve)
+    }
+
+    @objc
+    public func inputAccessoryPlaceholderKeyboardDidPresent() {
+        AssertIsOnMainThread()
+
+        updateBottomBarPosition()
+        updateContentInsets(animated: false)
+    }
+
+    @objc
+    public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval,
+                                                              animationCurve: UIView.AnimationCurve) {
+        AssertIsOnMainThread()
+
+        handleKeyboardStateChange(animationDuration: animationDuration,
+                                  animationCurve: animationCurve)
+    }
+
+    @objc
+    public func inputAccessoryPlaceholderKeyboardDidDismiss() {
+        AssertIsOnMainThread()
+
+        updateBottomBarPosition()
+        updateContentInsets(animated: false)
+    }
+
+    @objc
+    public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
+        AssertIsOnMainThread()
+
+        // No animation, just follow along with the keyboard.
+        self.isDismissingInteractively = true
+        updateBottomBarPosition()
+        self.isDismissingInteractively = false
+    }
+
+    private func handleKeyboardStateChange(animationDuration: TimeInterval,
+                                           animationCurve: UIView.AnimationCurve) {
+        AssertIsOnMainThread()
+
+        if let transitionCoordinator = self.transitionCoordinator,
+           transitionCoordinator.isInteractive {
+            return
+        }
+
+        self.scrollContinuity = .bottom
+
+        if shouldAnimateKeyboardChanges, animationDuration > 0 {
+            if hasViewDidAppearEverCompleted {
+                // Make note of when the keyboard animation will block
+                // loads from landing during the keyboard animation.
+                // It isn't safe to block loads for long, so we cap
+                // how long they will be blocked for.
+                let keyboardAnimationBlockLoadInterval: TimeInterval = kSecondInterval * 1.0
+                let animationCompletionDate = Date().addingTimeInterval(keyboardAnimationBlockLoadInterval)
+                let lastKeyboardAnimationDate = Date().addingTimeInterval(-1.0)
+                if viewState.lastKeyboardAnimationDate == nil ||
+                    viewState.lastKeyboardAnimationDate?.isBefore(lastKeyboardAnimationDate) == true {
+                    viewState.lastKeyboardAnimationDate = animationCompletionDate
+                    self.scrollContinuity = .bottom
+                }
+            }
+
+            // The animation curve provided by the keyboard notifications
+            // is a private value not represented in UIViewAnimationOptions.
+            // We don't use a block based animation here because it's not
+            // possible to pass a curve directly to block animations.
+            UIView.beginAnimations("keyboardStateChange", context: nil)
+            UIView.setAnimationBeginsFromCurrentState(true)
+            UIView.setAnimationCurve(animationCurve)
+            UIView.setAnimationDuration(animationDuration)
+            updateBottomBarPosition()
+            UIView.commitAnimations()
+            updateContentInsets(animated: true)
+        } else {
+            updateBottomBarPosition()
+            updateContentInsets(animated: false)
+        }
     }
 }

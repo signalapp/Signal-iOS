@@ -1,20 +1,26 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-@objc protocol ConversationInputTextViewDelegate {
+@objc
+protocol ConversationInputTextViewDelegate {
     func didPasteAttachment(_ attachment: SignalAttachment?)
     func inputTextViewSendMessagePressed()
     func textViewDidChange(_ textView: UITextView)
 }
 
-@objc protocol ConversationTextViewToolbarDelegate {
+// MARK: -
+
+@objc
+protocol ConversationTextViewToolbarDelegate {
     func textViewDidChange(_ textView: UITextView)
     func textViewDidChangeSelection(_ textView: UITextView)
     func textViewDidBecomeFirstResponder(_ textView: UITextView)
 }
+
+// MARK: -
 
 @objcMembers
 class ConversationInputTextView: MentionTextView {
