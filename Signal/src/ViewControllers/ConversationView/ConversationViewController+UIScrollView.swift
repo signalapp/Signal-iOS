@@ -189,60 +189,13 @@ extension ConversationViewController: UIScrollViewDelegate {
             return
         }
 
-        autoLoadMoreIfNecessary()
+        _ = autoLoadMoreIfNecessary()
 
         if !isUserScrolling {
             saveLastVisibleSortIdAndOnScreenPercentage()
         }
     }
 
-    //    @available(iOS 2.0, *)
-    //    optional func scrollViewDidScroll(_ scrollView: UIScrollView) // any offset changes
-    //
-    //    @available(iOS 3.2, *)
-    //    optional func scrollViewDidZoom(_ scrollView: UIScrollView) // any zoom scale changes
-    //
-    //
-    //    // called on start of dragging (may require some time and or distance to move)
-    //    @available(iOS 2.0, *)
-    //
-    //    // called on finger up if the user dragged. velocity is in points/millisecond. targetContentOffset may be changed to adjust where the scroll view comes to rest
-    //    @available(iOS 5.0, *)
-    //    optional func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
-    //
-    //    // called on finger up if the user dragged. decelerate is true if it will continue moving afterwards
-    //    @available(iOS 2.0, *)
-    //
-    //
-    //    @available(iOS 2.0, *)
-    //    optional func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) // called on finger up as we are moving
-    //
-    //    @available(iOS 2.0, *)
-    //
-    //
-    //    @available(iOS 2.0, *)
-    //
-    //
-    //    @available(iOS 2.0, *)
-    //    optional func viewForZooming(in scrollView: UIScrollView) -> UIView? // return a view that will be scaled. if delegate returns nil, nothing happens
-    //
-    //    @available(iOS 3.2, *)
-    //    optional func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) // called before the scroll view begins zooming its content
-    //
-    //    @available(iOS 2.0, *)
-    //    optional func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) // scale between minimum and maximum. called after any 'bounce' animations
-    //
-    //
-    //    @available(iOS 2.0, *)
-    //
-    //    @available(iOS 2.0, *)
-    //
-    //
-    //    /* Also see -[UIScrollView adjustedContentInsetDidChange]
-    //     */
-    //    @available(iOS 11.0, *)
-    //    optional func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView)
-    //
     @objc
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
