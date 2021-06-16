@@ -7,6 +7,29 @@ import SignalMessaging
 import SignalServiceKit
 import PromiseKit
 
+// The lifecycle of the NSE looks something like the following:
+//  1)  App receives notification
+//  2)  System creates an instance of the extension class
+//      and calls `didReceive` in the background
+//  3)  Extension processes messages / displays whatever
+//      notifications it needs to
+//  4)  Extension notifies its work is complete by calling
+//      the contentHandler
+//  5)  If the extension takes too long to perform its work
+//      (more than 30s), it will be notified and immediately
+//      terminated
+//
+// Note that the NSE does *not* always spawn a new process to
+// handle a new notification and will also try and process notifications
+// in parallel. `didReceive` could be called twice for the same process,
+// but it will always be called on different threads. It may or may not be
+// called on the same instance of `NotificationService` as a previous
+// notification.
+//
+// We keep a global `environment` singleton to ensure that our app context,
+// database, logging, etc. are only ever setup once per *process*
+let environment = NSEEnvironment()
+
 class NotificationService: UNNotificationServiceExtension {
 
     var contentHandler: ((UNNotificationContent) -> Void)?
@@ -18,43 +41,25 @@ class NotificationService: UNNotificationServiceExtension {
         contentHandler?(content)
     }
 
-    // The lifecycle of the NSE looks something like the following:
-    //  1)  App receives notification
-    //  2)  System creates an instance of the extension class
-    //      and calls this method in the background
-    //  3)  Extension processes messages / displays whatever
-    //      notifications it needs to
-    //  4)  Extension notifies its work is complete by calling
-    //      the contentHandler
-    //  5)  If the extension takes too long to perform its work
-    //      (more than 30s), it will be notified and immediately
-    //      terminated
-    //
-    // Note that the NSE does *not* always spawn a new process to
-    // handle a new notification and will also try and process notifications
-    // in parallel. `didReceive` could be called twice for the same process,
-    // but will always be called on different threads. To deal with this we
-    // ensure that we only do setup *once* per process and we dispatch to
-    // the main queue to make sure the calls to the message fetcher job
-    // run serially.
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
 
-        DispatchQueue.main.sync { self.setupIfNecessary() }
+        environment.setupIfNecessary()
 
         owsAssertDebug(FeatureFlags.notificationServiceExtension)
 
-        listenForMainAppLaunch()
+        Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier)")
 
-        askMainAppToHandleReceipt { mainAppHandledReceipt in
+        environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
             guard !mainAppHandledReceipt else {
                 Logger.info("Received notification handled by main application.")
-                return self.completeSilenty()
+                self?.completeSilenty()
+                return
             }
 
             Logger.info("Processing received notification.")
 
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync { self.fetchAndProcessMessages() }
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync { self?.fetchAndProcessMessages() }
         }
     }
 
@@ -68,161 +73,6 @@ class NotificationService: UNNotificationServiceExtension {
         completeSilenty()
     }
 
-    private var hasSetup = false
-    func setupIfNecessary() {
-        AssertIsOnMainThread()
-
-        // The NSE will often re-use the same process, so if we're
-        // already setup we want to do nothing. We're already ready
-        // to process new messages.
-        guard !hasSetup else { return }
-
-        hasSetup = true
-
-        // This should be the first thing we do.
-        SetCurrentAppContext(NotificationServiceExtensionContext())
-
-        DebugLogger.shared().enableTTYLogging()
-        if _isDebugAssertConfiguration() {
-            DebugLogger.shared().enableFileLogging()
-        } else if OWSPreferences.isLoggingEnabled() {
-            DebugLogger.shared().enableFileLogging()
-        }
-
-        Logger.info("")
-
-        _ = AppVersion.shared()
-
-        Cryptography.seedRandom()
-
-        AppSetup.setupEnvironment(
-            appSpecificSingletonBlock: {
-                SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
-                SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
-            },
-            migrationCompletion: { [weak self] error in
-                if let error = error {
-                    // TODO: Maybe notify that you should open the main app.
-                    owsFailDebug("Error \(error)")
-                    return
-                }
-                self?.versionMigrationsDidComplete()
-            }
-        )
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(storageIsReady),
-                                               name: .StorageIsReady,
-                                               object: nil)
-
-        Logger.info("completed.")
-
-        OWSAnalytics.appLaunchDidBegin()
-    }
-
-    @objc
-    func versionMigrationsDidComplete() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        areVersionMigrationsComplete = true
-
-        checkIsAppReady()
-    }
-
-    @objc
-    func storageIsReady() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        checkIsAppReady()
-    }
-
-    @objc
-    func checkIsAppReady() {
-        AssertIsOnMainThread()
-
-        // Only mark the app as ready once.
-        guard !AppReadiness.isAppReady else { return }
-
-        // App isn't ready until storage is ready AND all version migrations are complete.
-        guard storageCoordinator.isStorageReady && areVersionMigrationsComplete else { return }
-
-        // Note that this does much more than set a flag; it will also run all deferred blocks.
-        AppReadiness.setAppIsReady()
-
-        AppVersion.shared().nseLaunchDidComplete()
-    }
-
-    func askMainAppToHandleReceipt(handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void) {
-        DispatchQueue.main.async {
-            // We track whether we've ever handled the call back to ensure
-            // we only notify the caller once and avoid any races that may
-            // occur between the notification observer and the dispatch
-            // after block.
-            var hasCalledBack = false
-
-            // Listen for an indication that the main app is going to handle
-            // this notification. If the main app is active we don't want to
-            // process any messages here.
-            let token = DarwinNotificationCenter.addObserver(for: .mainAppHandledNotification, queue: .main) { token in
-                guard !hasCalledBack else { return }
-
-                hasCalledBack = true
-
-                handledCallback(true)
-
-                if DarwinNotificationCenter.isValidObserver(token) {
-                    DarwinNotificationCenter.removeObserver(token)
-                }
-            }
-
-            // Notify the main app that we received new content to process.
-            // If it's running, it will notify us so we can bail out.
-            DarwinNotificationCenter.post(.nseDidReceiveNotification)
-
-            // The main app should notify us nearly instantaneously if it's
-            // going to process this notification so we only wait a fraction
-            // of a second to hear back from it.
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.001) {
-                if DarwinNotificationCenter.isValidObserver(token) {
-                    DarwinNotificationCenter.removeObserver(token)
-                }
-
-                guard !hasCalledBack else { return }
-
-                hasCalledBack = true
-
-                // If we haven't called back yet and removed the observer token,
-                // the main app is not running and will not handle receipt of this
-                // notification.
-                handledCallback(false)
-            }
-        }
-    }
-
-    private var mainAppLaunchObserverToken = DarwinNotificationInvalidObserver
-    func listenForMainAppLaunch() {
-        guard !DarwinNotificationCenter.isValidObserver(mainAppLaunchObserverToken) else { return }
-        mainAppLaunchObserverToken = DarwinNotificationCenter.addObserver(for: .mainAppLaunched, queue: .global(), using: { _ in
-            // If we're currently processing messages we want to commit
-            // suicide to ensure that we don't try and process messages
-            // while the main app is running. If we're not processing
-            // messages we keep alive since future notifications will
-            // be passed off gracefully to the main app. We only kill
-            // ourselves as a last resort.
-            // TODO: We could eventually make the message fetch process
-            // cancellable to never have to exit here.
-            guard self.isProcessingMessages.get() else { return }
-            Logger.info("Exiting because main app launched while we were processing messages.")
-            exit(0)
-        })
-    }
-
-    private let isProcessingMessages = AtomicBool(false)
-
     func fetchAndProcessMessages() {
         AssertIsOnMainThread()
 
@@ -231,16 +81,18 @@ class NotificationService: UNNotificationServiceExtension {
             return completeSilenty()
         }
 
-        isProcessingMessages.set(true)
+        environment.isProcessingMessages.set(true)
 
         Logger.info("Beginning message fetch.")
 
-        messageFetcherJob.run().promise.then {
+        messageFetcherJob.run().promise.then { [weak self] () -> Promise<Void> in
+            Logger.info("Waiting for processing to complete.")
+            guard let self = self else { return Promise.value(()) }
             return self.messageProcessor.processingCompletePromise()
-        }.ensure {
+        }.ensure { [weak self] in
             Logger.info("Message fetch completed.")
-            self.isProcessingMessages.set(false)
-            self.completeSilenty()
+            environment.isProcessingMessages.set(false)
+            self?.completeSilenty()
         }.catch { error in
             Logger.warn("Error: \(error)")
         }

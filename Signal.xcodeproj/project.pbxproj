@@ -722,6 +722,7 @@
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		8841584C252F9F1C0078903D /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8841584B252F9F1C0078903D /* SignalCall.swift */; };
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
+		88489AFB266AB59800EE1166 /* NSEEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88489AFA266AB59800EE1166 /* NSEEnvironment.swift */; };
 		884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */; };
 		885091C02525650100428A37 /* PHPhotoLibrary+Xcode11.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */; };
 		8851DB3F24CCE9C8001EACD2 /* MentionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */; };
@@ -801,7 +802,7 @@
 		88A4CC1D246D00090082211F /* DeviceTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC1C246D00090082211F /* DeviceTransferProgressViewController.swift */; };
 		88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */; };
 		88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F923DBA1360005C012 /* IntroducingPINs.swift */; };
-		88A595E323AB48E80029E835 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */; };
+		88A595E323AB48E80029E835 /* NSEContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A595E223AB48E80029E835 /* NSEContext.swift */; };
 		88A9419524099F7E000E9700 /* attachment_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419424099F7E000E9700 /* attachment_dark.json */; };
 		88A9419724099F85000E9700 /* attachment_light.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419624099F85000E9700 /* attachment_light.json */; };
 		88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A941982409A391000E9700 /* LottieToggleButton.swift */; };
@@ -1808,6 +1809,7 @@
 		884596EF24B93E13002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/Localizable.strings; sourceTree = "<group>"; };
 		884596F024B93E32002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDescriptionPreviewView.swift; sourceTree = "<group>"; };
+		88489AFA266AB59800EE1166 /* NSEEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSEEnvironment.swift; sourceTree = "<group>"; };
 		884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchMegaphone.swift; sourceTree = "<group>"; };
 		885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHPhotoLibrary+Xcode11.swift"; sourceTree = "<group>"; };
 		8851DB3E24CCE9C8001EACD2 /* MentionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTextView.swift; sourceTree = "<group>"; };
@@ -1958,7 +1960,7 @@
 		88A4CC1C246D00090082211F /* DeviceTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferProgressViewController.swift; sourceTree = "<group>"; };
 		88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManager.swift; sourceTree = "<group>"; };
 		88A505F923DBA1360005C012 /* IntroducingPINs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroducingPINs.swift; sourceTree = "<group>"; };
-		88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtensionContext.swift; sourceTree = "<group>"; };
+		88A595E223AB48E80029E835 /* NSEContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSEContext.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
 		88A9419424099F7E000E9700 /* attachment_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = attachment_dark.json; sourceTree = "<group>"; };
 		88A9419624099F85000E9700 /* attachment_light.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = attachment_light.json; sourceTree = "<group>"; };
@@ -3573,10 +3575,11 @@
 			children = (
 				885AC57023AB428C0077705E /* NotificationServiceExtension.entitlements */,
 				8872409323E12DF500824D62 /* NotificationServiceExtension-AppStore.entitlements */,
-				885AC56623AB42430077705E /* NotificationService.swift */,
 				885AC56823AB42430077705E /* Info.plist */,
-				88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */,
+				885AC56623AB42430077705E /* NotificationService.swift */,
 				88D7BA9B266804C40088D1C2 /* NSECallMessageHandler.swift */,
+				88A595E223AB48E80029E835 /* NSEContext.swift */,
+				88489AFA266AB59800EE1166 /* NSEEnvironment.swift */,
 			);
 			path = NotificationServiceExtension;
 			sourceTree = "<group>";
@@ -5120,8 +5123,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88489AFB266AB59800EE1166 /* NSEEnvironment.swift in Sources */,
 				88D7BA9C266804C40088D1C2 /* NSECallMessageHandler.swift in Sources */,
-				88A595E323AB48E80029E835 /* NotificationServiceExtensionContext.swift in Sources */,
+				88A595E323AB48E80029E835 /* NSEContext.swift in Sources */,
 				885AC56723AB42430077705E /* NotificationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

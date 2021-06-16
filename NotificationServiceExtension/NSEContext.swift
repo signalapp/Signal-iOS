@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-class NotificationServiceExtensionContext: NSObject, AppContext {
+class NSEContext: NSObject, AppContext {
     let isMainApp = false
     let isMainAppAndActive = false
 
