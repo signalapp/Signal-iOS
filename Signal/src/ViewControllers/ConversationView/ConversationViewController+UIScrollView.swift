@@ -7,7 +7,7 @@ import Foundation
 extension ConversationViewController {
 
     fileprivate var scrollDownButton: ConversationScrollButton { viewState.scrollDownButton }
-    fileprivate var scrollToNextMentionButton: ConversationScrollButton { viewState.scrollDownButton }
+    fileprivate var scrollToNextMentionButton: ConversationScrollButton { viewState.scrollToNextMentionButton }
     fileprivate var isHidingScrollDownButton: Bool {
         get { viewState.isHidingScrollDownButton }
         set { viewState.isHidingScrollDownButton = newValue }
@@ -82,56 +82,61 @@ extension ConversationViewController {
             scrollToNextMentionIsHidden = !shouldScrollToMentionAppear
         }
 
+        self.scrollDownButton.unreadCount = self.unreadMessageCount
+        self.scrollToNextMentionButton.unreadCount = UInt(self.unreadMentionMessages.count)
+
         let scrollDownVisibilityDidChange = scrollDownIsHidden != scrollDownWasHidden
         let scrollToNextMentionVisibilityDidChange = scrollToNextMentionIsHidden != scrollToNextMentionWasHidden
         let shouldAnimateChanges = self.hasAppearedAndHasAppliedFirstLoad
 
-        if scrollDownVisibilityDidChange || scrollToNextMentionVisibilityDidChange {
+        guard scrollDownVisibilityDidChange || scrollToNextMentionVisibilityDidChange else {
+            return
+        }
+
+        if scrollDownVisibilityDidChange {
+            self.scrollDownButton.isHidden = false
+            self.isHidingScrollDownButton = scrollDownIsHidden
+            scrollDownButton.layer.removeAllAnimations()
+        }
+        if scrollToNextMentionVisibilityDidChange {
+            self.scrollToNextMentionButton.isHidden = false
+            self.isHidingScrollToNextMentionButton = scrollToNextMentionIsHidden
+            scrollToNextMentionButton.layer.removeAllAnimations()
+        }
+
+        let alphaBlock = {
             if scrollDownVisibilityDidChange {
-                self.scrollDownButton.isHidden = false
-                self.isHidingScrollDownButton = scrollDownIsHidden
-                scrollDownButton.layer.removeAllAnimations()
+                self.scrollDownButton.alpha = scrollDownIsHidden ? 0 : 1
             }
             if scrollToNextMentionVisibilityDidChange {
-                self.scrollToNextMentionButton.isHidden = false
-                self.isHidingScrollToNextMentionButton = scrollToNextMentionIsHidden
-                scrollToNextMentionButton.layer.removeAllAnimations()
+                self.scrollToNextMentionButton.alpha = scrollToNextMentionIsHidden ? 0 : 1
             }
-
-            let alphaBlock = {
-                if scrollDownVisibilityDidChange {
-                    self.scrollDownButton.alpha = scrollDownIsHidden ? 0 : 1
-                }
-                if scrollToNextMentionVisibilityDidChange {
-                    self.scrollToNextMentionButton.alpha = scrollToNextMentionIsHidden ? 0 : 1
-                }
+        }
+        let completionBlock = {
+            if scrollDownVisibilityDidChange {
+                self.scrollDownButton.isHidden = scrollDownIsHidden
+                self.isHidingScrollDownButton = false
             }
-            let completionBlock = {
-                if scrollDownVisibilityDidChange {
-                    self.scrollDownButton.isHidden = scrollDownIsHidden
-                    self.isHidingScrollDownButton = false
-                }
-                if scrollToNextMentionVisibilityDidChange {
-                    self.scrollToNextMentionButton.isHidden = scrollToNextMentionIsHidden
-                    self.isHidingScrollToNextMentionButton = false
-                }
-            }
-
-            if shouldAnimateChanges {
-                UIView.animate(withDuration: 0.2,
-                               animations: alphaBlock) { finished in
-                    if finished {
-                        completionBlock()
-                    }
-                }
-            } else {
-                alphaBlock()
-                completionBlock()
+            if scrollToNextMentionVisibilityDidChange {
+                self.scrollToNextMentionButton.isHidden = scrollToNextMentionIsHidden
+                self.isHidingScrollToNextMentionButton = false
             }
         }
 
-        self.scrollDownButton.unreadCount = self.unreadMessageCount
-        self.scrollToNextMentionButton.unreadCount = UInt(self.unreadMentionMessages.count)
+        scrollDownButton.layer.removeAllAnimations()
+        scrollToNextMentionButton.layer.removeAllAnimations()
+
+        if shouldAnimateChanges {
+            UIView.animate(withDuration: 0.2,
+                           animations: alphaBlock) { finished in
+                if finished {
+                    completionBlock()
+                }
+            }
+        } else {
+            alphaBlock()
+            completionBlock()
+        }
     }
 }
 
