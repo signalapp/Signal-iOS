@@ -81,14 +81,10 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 - (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments
                  messageBody:(MessageBody *_Nullable)messageBody NS_SWIFT_NAME(tryToSendAttachments(_:messageBody:));
 
-- (void)updateBarButtonItems;
-
 // TODO: Remove or rework method.
 - (void)reloadCollectionViewForReset;
 
-- (void)updateNavigationBarSubtitleLabel;
 - (void)reloadReactionsDetailSheetWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (void)updateNavigationTitle;
 - (void)performBatchUpdates:(void (^_Nonnull)(void))batchUpdates
                  completion:(void (^_Nonnull)(BOOL))completion
             logFailureBlock:(void (^_Nonnull)(void))logFailureBlock

@@ -67,14 +67,11 @@ public class ConversationHeaderView: UIStackView {
     private let titleLabel: UILabel
     private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
-    private let avatarView: ConversationAvatarView
+    private let avatarView = ConversationAvatarView(diameter: 36,
+                                                    localUserDisplayMode: .noteToSelf)
 
     @objc
-    public required init(thread: TSThread) {
-        let avatarView = ConversationAvatarView(diameter: 36,
-                                                localUserDisplayMode: .noteToSelf)
-        avatarView.configureWithSneakyTransaction(thread: thread)
-        self.avatarView = avatarView
+    public required init() {
         // remove default border on avatarView
         avatarView.layer.borderWidth = 0
 
@@ -132,6 +129,11 @@ public class ConversationHeaderView: UIStackView {
 
     required public override init(frame: CGRect) {
         notImplemented()
+    }
+
+    @objc
+    public func configure(thread: TSThread) {
+        avatarView.configureWithSneakyTransaction(thread: thread)
     }
 
     public override var intrinsicContentSize: CGSize {

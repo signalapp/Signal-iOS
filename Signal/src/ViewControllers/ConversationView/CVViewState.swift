@@ -26,6 +26,8 @@ public class CVViewState: NSObject {
     public var conversationStyle: ConversationStyle
     @objc
     public var inputToolbar: ConversationInputToolbar?
+    @objc
+    public let headerView = ConversationHeaderView()
 
     @objc
     public var hasTriedToMigrateGroup = false
@@ -212,6 +214,8 @@ public extension ConversationViewController {
         get { viewState.conversationStyle }
         set { viewState.conversationStyle = newValue }
     }
+
+    var headerView: ConversationHeaderView { viewState.headerView }
 
     var inputToolbar: ConversationInputToolbar? {
         get { viewState.inputToolbar }

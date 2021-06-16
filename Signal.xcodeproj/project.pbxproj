@@ -340,6 +340,7 @@
 		34A4D8852677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8842677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift */; };
 		34A4D8872678F24300A794E7 /* ConversationViewController+Delegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8862678F24300A794E7 /* ConversationViewController+Delegates.swift */; };
 		34A4D8892679296600A794E7 /* ConversationViewController+UIScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */; };
+		34A4D88B26795AF800A794E7 /* ConversationViewController+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4D88A26795AF800A794E7 /* ConversationViewController+UI.swift */; };
 		34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */; };
 		34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */; };
 		34AC09DD211B39B100997B47 /* ViewControllerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1395,6 +1396,7 @@
 		34A4D8842677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+ConversationInputToolbarDelegate.swift"; sourceTree = "<group>"; };
 		34A4D8862678F24300A794E7 /* ConversationViewController+Delegates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Delegates.swift"; sourceTree = "<group>"; };
 		34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+UIScrollView.swift"; sourceTree = "<group>"; };
+		34A4D88A26795AF800A794E7 /* ConversationViewController+UI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+UI.swift"; sourceTree = "<group>"; };
 		34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSImagePickerController.swift; sourceTree = "<group>"; };
 		34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaAlbumView.swift; sourceTree = "<group>"; };
 		34AC09BF211B39AE00997B47 /* ViewControllerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewControllerUtils.h; sourceTree = "<group>"; };
@@ -2562,6 +2564,7 @@
 				4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */,
 				88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */,
 				3426A369255D9D7C0036407F /* ConversationViewController+Selection.swift */,
+				34A4D88A26795AF800A794E7 /* ConversationViewController+UI.swift */,
 				34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */,
 				88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */,
 				888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */,
@@ -5781,6 +5784,7 @@
 				88588D1B252D3DFF00405414 /* CallControls.swift in Sources */,
 				88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */,
 				34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */,
+				34A4D88B26795AF800A794E7 /* ConversationViewController+UI.swift in Sources */,
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
 				880D902A2480887F003D2B14 /* EmojiPickerSheet.swift in Sources */,
 				887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */,
