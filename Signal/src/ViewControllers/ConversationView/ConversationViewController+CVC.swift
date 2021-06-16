@@ -123,6 +123,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         let renderState = update.renderState
         let isFirstLoad = renderState.isFirstLoad
 
+        layout.update(conversationStyle: renderState.conversationStyle)
+
         var scrollAction = scrollAction
         if !viewState.hasAppliedFirstLoad {
             scrollAction = CVScrollAction(action: .initialPosition, isAnimated: false)
@@ -767,9 +769,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         // We need to kick off a reload cycle if conversationStyle changes.
         loadCoordinator.updateConversationStyle(newConversationStyle)
-
-        // TODO: In "new CVC" we shouldn't update the layout's style until the render state changes.
-        layout.update(conversationStyle: newConversationStyle)
 
         return true
     }

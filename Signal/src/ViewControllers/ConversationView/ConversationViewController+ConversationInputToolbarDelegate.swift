@@ -133,9 +133,11 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         }
         BenchManager.completeEvent(eventId: "fromSendUntil_toggleDefaultKeyboard")
 
-        // TODO: Review thread-safety.
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in
+            // Reload a fresh instance of the thread model; our models are not
+            // thread-safe, so it wouldn't be safe to update the model in an
+            // async write.
             guard let thread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: transaction) else {
                 owsFailDebug("Missing thread.")
                 return
@@ -258,11 +260,14 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             let thread = self.thread
             let currentDraft = inputToolbar.messageBody()
             Self.databaseStorage.asyncWrite { transaction in
-                guard let latestThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: transaction) else {
+                // Reload a fresh instance of the thread model; our models are not
+                // thread-safe, so it wouldn't be safe to update the model in an
+                // async write.
+                guard let thread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: transaction) else {
                     owsFailDebug("Missing thread.")
                     return
                 }
-                latestThread.update(withDraft: currentDraft, transaction: transaction)
+                thread.update(withDraft: currentDraft, transaction: transaction)
             }
         }
     }

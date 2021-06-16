@@ -156,6 +156,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
     public func update(conversationStyle: ConversationStyle) {
         AssertIsOnMainThread()
 
+        guard !self.conversationStyle.isEqualForCellRendering(conversationStyle) else {
+            return
+        }
+
         self.conversationStyle = conversationStyle
 
         invalidateLayout()

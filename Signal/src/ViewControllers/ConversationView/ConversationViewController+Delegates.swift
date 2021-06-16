@@ -501,21 +501,17 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
 
 // MARK: -
 
-// TODO: Maybe move these methods elsewhere.
-// TODO: Some of these methods might become private.
 extension ConversationViewController {
-    @objc
-    public func scrollingAnimationDidComplete() {
+    func scrollingAnimationDidComplete() {
         AssertIsOnMainThread()
 
         scrollingAnimationCompletionTimer?.invalidate()
         scrollingAnimationCompletionTimer = nil
 
-        autoLoadMoreIfNecessary()
+        _ = autoLoadMoreIfNecessary()
     }
 
-    @objc
-    public func resetForSizeOrOrientationChange() {
+    func resetForSizeOrOrientationChange() {
         AssertIsOnMainThread()
 
         updateConversationStyle()

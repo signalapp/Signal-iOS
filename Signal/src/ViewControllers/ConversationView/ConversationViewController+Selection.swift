@@ -44,6 +44,21 @@ public class CVCellSelection {
 extension ConversationViewController {
 
     @objc
+    public func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool {
+        isMessageSelected(interaction)
+    }
+
+    @objc
+    public func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {
+        didSelectMessage(itemViewModel)
+    }
+
+    @objc
+    public func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {
+        didDeselectMessage(itemViewModel)
+    }
+
+    @objc
     public func addToSelection(_ interactionId: String) {
         cellSelection.add(interactionId)
         // TODO: Update cells/selection view?
