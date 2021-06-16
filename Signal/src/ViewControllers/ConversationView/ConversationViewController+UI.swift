@@ -8,6 +8,8 @@ extension ConversationViewController {
 
     @objc
     public func updateNavigationTitle() {
+        AssertIsOnMainThread()
+
         self.title = nil
 
         var name: String?
@@ -48,6 +50,8 @@ extension ConversationViewController {
 
     @objc
     public func createHeaderViews() {
+        AssertIsOnMainThread()
+
         headerView.configure(thread: thread)
         headerView.accessibilityLabel = NSLocalizedString("CONVERSATION_SETTINGS",
                                                           comment: "title for conversation settings screen")
@@ -67,6 +71,8 @@ extension ConversationViewController {
 
     @objc
     private func navigationTitleLongPressed(_ gestureRecognizer: UIGestureRecognizer) {
+        AssertIsOnMainThread()
+
         if gestureRecognizer.state == .began {
             showDebugUI(thread, self)
         }
@@ -77,6 +83,8 @@ extension ConversationViewController {
 
     @objc
     public func updateBarButtonItems() {
+        AssertIsOnMainThread()
+
         // Don't include "Back" text on view controllers pushed above us, just use the arrow.
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "",
                                                            style: .plain,
@@ -172,6 +180,8 @@ extension ConversationViewController {
 
     @objc
     public func updateNavigationBarSubtitleLabel() {
+        AssertIsOnMainThread()
+
         let hasCompactHeader = self.traitCollection.verticalSizeClass == .compact
         if hasCompactHeader {
             self.headerView.attributedSubtitle = nil
@@ -248,4 +258,24 @@ extension ConversationViewController {
         collectionView.collectionViewLayout.collectionViewContentSize.height
     }
 
+    @objc
+    public func buildInputToolbar(conversationStyle: ConversationStyle,
+                                  messageDraft: MessageBody?,
+                                  voiceMemoDraft: VoiceMessageModel?) -> ConversationInputToolbar {
+        AssertIsOnMainThread()
+        owsAssertDebug(hasViewWillAppearEverBegun)
+
+        let inputToolbar = ConversationInputToolbar(conversationStyle: conversationStyle,
+                                                    messageDraft: messageDraft,
+                                                    inputToolbarDelegate: self,
+                                                    inputTextViewDelegate: self,
+                                                    mentionDelegate: self)
+        inputToolbar.accessibilityIdentifier = "inputToolbar"
+
+        if let voiceMemoDraft = voiceMemoDraft {
+            inputToolbar.showVoiceMemoDraft(voiceMemoDraft)
+        }
+
+        return inputToolbar
+    }
 }

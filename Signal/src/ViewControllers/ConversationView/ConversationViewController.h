@@ -46,11 +46,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
                                  action:(ConversationViewAction)action
                          focusMessageId:(nullable NSString *)focusMessageId NS_DESIGNATED_INITIALIZER;
 
-- (ConversationInputToolbar *)buildInputToolbar:(ConversationStyle *)conversationStyle
-                                   messageDraft:(nullable MessageBody *)messageDraft
-                                 voiceMemoDraft:(nullable VoiceMessageModel *)voiceMemoDraft
-    NS_SWIFT_NAME(buildInputToolbar(conversationStyle:messageDraft:voiceMemoDraft:));
-
 #pragma mark - Keyboard Shortcuts
 
 - (void)focusInputToolbar;
@@ -78,9 +73,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 @property (nonatomic, readonly) CVViewState *viewState;
 
-- (void)tryToSendAttachments:(NSArray<SignalAttachment *> *)attachments
-                 messageBody:(MessageBody *_Nullable)messageBody NS_SWIFT_NAME(tryToSendAttachments(_:messageBody:));
-
 // TODO: Remove or rework method.
 - (void)reloadCollectionViewForReset;
 
@@ -90,7 +82,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ConversationUIMode) {
             logFailureBlock:(void (^_Nonnull)(void))logFailureBlock
        shouldAnimateUpdates:(BOOL)shouldAnimateUpdates
              isLoadAdjacent:(BOOL)isLoadAdjacent;
-- (BOOL)autoLoadMoreIfNecessary;
 
 #pragma mark - Search
 

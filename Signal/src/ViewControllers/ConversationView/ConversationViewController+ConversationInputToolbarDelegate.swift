@@ -241,6 +241,93 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         sendVoiceMessageModel(voiceMemoDraft)
     }
 
+    @objc
+    public func saveDraft() {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
+        if !inputToolbar.isHidden {
+            let thread = self.thread
+            let currentDraft = inputToolbar.messageBody()
+            Self.databaseStorage.asyncWrite { transaction in
+                guard let latestThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: transaction) else {
+                    owsFailDebug("Missing thread.")
+                    return
+                }
+                latestThread.update(withDraft: currentDraft, transaction: transaction)
+            }
+        }
+    }
+
+    @objc
+    public func tryToSendAttachments(_ attachments: [SignalAttachment],
+                                     messageBody: MessageBody?) {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
+        DispatchMainThreadSafe {
+            if self.isBlockedConversation() {
+                self.showUnblockConversationUI { [weak self] isBlocked in
+                    if !isBlocked {
+                        self?.tryToSendAttachments(attachments, messageBody: messageBody)
+                    }
+                }
+                return
+            }
+
+            let didShowSNAlert = self.showSafetyNumberConfirmationIfNecessary(
+                confirmationText: SafetyNumberStrings.confirmSendButton) { [weak self] didConfirmIdentity in
+                 if didConfirmIdentity {
+                    self?.tryToSendAttachments(attachments, messageBody: messageBody)
+                 }
+            }
+            if didShowSNAlert {
+                return
+            }
+
+            for attachment in attachments {
+                if attachment.hasError {
+                    Logger.warn("Invalid attachment: \(attachment.errorName ?? "Missing data").")
+                    self.showErrorAlert(forAttachment: attachment)
+                    return
+                }
+            }
+
+            let didAddToProfileWhitelist = ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: self.thread)
+
+            let message = Self.databaseStorage.read { transaction in
+                ThreadUtil.enqueueMessage(with: messageBody,
+                                          mediaAttachments: attachments,
+                                          thread: self.thread,
+                                          quotedReplyModel: inputToolbar.quotedReply,
+                                          linkPreviewDraft: nil,
+                                          transaction: transaction)
+            }
+
+            self.messageWasSent(message)
+
+            if didAddToProfileWhitelist {
+                self.ensureBannerState()
+            }
+        }
+    }
+
     // MARK: - Accessory View
 
     @objc

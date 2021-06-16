@@ -791,3 +791,65 @@ extension ConversationViewController: CVViewStateDelegate {
         loadCoordinator.enqueueReload()
     }
 }
+
+// MARK: - Load More
+
+extension ConversationViewController {
+    @objc
+    public func autoLoadMoreIfNecessary() -> Bool {
+        AssertIsOnMainThread()
+
+        guard hasAppearedAndHasAppliedFirstLoad else {
+            return false
+        }
+        let isMainAppAndActive = CurrentAppContext().isMainAppAndActive
+        guard isViewVisible, isMainAppAndActive else {
+            return false
+        }
+        guard showLoadOlderHeader || showLoadNewerHeader else {
+            return false
+        }
+        guard let navigationController = navigationController else {
+            return false
+        }
+        navigationController.view.layoutIfNeeded()
+        let navControllerSize = navigationController.view.frame.size
+        let loadThreshold = navControllerSize.largerAxis * 3
+        let distanceFromTop = collectionView.contentOffset.y
+        let isCloseToTop = distanceFromTop < loadThreshold
+        if showLoadOlderHeader, isCloseToTop {
+            if loadCoordinator.didLoadOlderRecently {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    _ = self?.autoLoadMoreIfNecessary()
+                }
+                return false
+            }
+
+            loadCoordinator.loadOlderItems()
+            return true
+        }
+
+        let distanceFromBottom = collectionView.contentSize.height - collectionView.bounds.size.height
+            - collectionView.contentOffset.y
+        let isCloseToBottom = distanceFromBottom < loadThreshold
+        if showLoadNewerHeader, isCloseToBottom {
+            if loadCoordinator.didLoadNewerRecently {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    _ = self?.autoLoadMoreIfNecessary()
+                }
+                return false
+            }
+
+            loadCoordinator.loadNewerItems()
+            return true
+        }
+
+        return false
+    }
+
+    @objc
+    public var showLoadOlderHeader: Bool { loadCoordinator.showLoadOlderHeader }
+
+    @objc
+    public var showLoadNewerHeader: Bool { loadCoordinator.showLoadNewerHeader }
+}
