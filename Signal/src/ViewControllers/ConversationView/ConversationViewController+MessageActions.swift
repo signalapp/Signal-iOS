@@ -134,4 +134,43 @@ extension ConversationViewController {
         // Check whether there is still a view item for this interaction.
         return self.indexPath(forInteractionUniqueId: messageActionInteractionId) == nil
     }
+
+    public func reloadReactionsDetailSheet(transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
+
+        guard let reactionsDetailSheet = self.reactionsDetailSheet else {
+            return
+        }
+
+        let messageId = reactionsDetailSheet.messageId
+
+        guard let indexPath = self.indexPath(forInteractionUniqueId: messageId),
+              let renderItem = self.renderItem(forIndex: indexPath.row) else {
+            // The message no longer exists, dismiss the sheet.
+            dismissReactionsDetailSheet(animated: true)
+            return
+        }
+        guard let reactionState = renderItem.reactionState,
+              reactionState.hasReactions else {
+            // There are no longer reactions on this message, dismiss the sheet.
+            dismissReactionsDetailSheet(animated: true)
+            return
+        }
+
+        // Update the detail sheet with the latest reaction
+        // state, in case the reactions have changed.
+        reactionsDetailSheet.setReactionState(reactionState, transaction: transaction)
+    }
+
+    public func dismissReactionsDetailSheet(animated: Bool) {
+        AssertIsOnMainThread()
+
+        guard let reactionsDetailSheet = self.reactionsDetailSheet else {
+            return
+        }
+
+        reactionsDetailSheet.dismiss(animated: animated) {
+            self.reactionsDetailSheet = nil
+        }
+    }
 }

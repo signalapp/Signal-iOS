@@ -86,15 +86,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         updateConversationStyle()
     }
 
-    @objc
-    public func buildLoadCoordinator(conversationStyle: ConversationStyle,
-                                     focusMessageIdOnOpen: String?) -> CVLoadCoordinator {
-        CVLoadCoordinator(delegate: self,
-                          componentDelegate: self,
-                          conversationStyle: conversationStyle,
-                          focusMessageIdOnOpen: focusMessageIdOnOpen)
-    }
-
     func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken {
         AssertIsOnMainThread()
 
@@ -240,7 +231,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         DispatchQueue.main.async {
             let benchSteps = BenchSteps()
             Self.databaseStorage.uiRead { transaction in
-                self.reloadReactionsDetailSheet(with: transaction)
+                self.reloadReactionsDetailSheet(transaction: transaction)
                 self.updateUnreadMessageFlag(transaction: transaction)
             }
             if hasViewDidAppearEverCompleted {

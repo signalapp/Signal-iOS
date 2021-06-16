@@ -20,7 +20,8 @@ public protocol InputAccessoryViewPlaceholderDelegate: AnyObject {
 /// presenting view.
 @objc
 public class InputAccessoryViewPlaceholder: UIView {
-    @objc weak var delegate: InputAccessoryViewPlaceholderDelegate?
+    @objc
+    public weak var delegate: InputAccessoryViewPlaceholderDelegate?
 
     /// The amount of the application frame that is overlapped
     /// by the keyboard.

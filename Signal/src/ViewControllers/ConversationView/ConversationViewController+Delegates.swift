@@ -119,7 +119,7 @@ extension ConversationViewController: ContactsPickerDelegate {
         contactShareRecord.isProfileAvatar = isProfileAvatar
 
         let contactShare = ContactShareViewModel(contactShareRecord: contactShareRecord,
-                                               avatarImageData: avatarImageData)
+                                                 avatarImageData: avatarImageData)
 
         let approveContactShare = ContactShareApprovalViewController(contactShare: contactShare)
         approveContactShare.delegate = self
@@ -167,7 +167,7 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
     private func send(contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
-    Logger.verbose("Sending contact share.")
+        Logger.verbose("Sending contact share.")
 
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in
@@ -212,7 +212,7 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
     public func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
         AssertIsOnMainThread()
 
-            Logger.info("")
+        Logger.info("")
 
         return databaseStorage.read { transaction in
             Self.contactsManager.displayName(for: self.thread, transaction: transaction)

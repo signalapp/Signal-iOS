@@ -238,14 +238,14 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
         let actionSheetMessage: String
         if thread.isGroupThread {
             actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
-                comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}")
+                                                       comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}")
             actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
-                comment: "Action sheet message to confirm blocking a group via a message request.")
+                                                   comment: "Action sheet message to confirm blocking a group via a message request.")
         } else {
             actionSheetTitleFormat = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
-                comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
+                                                       comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}")
             actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
-                comment: "Action sheet message to confirm blocking a conversation via a message request.")
+                                                   comment: "Action sheet message to confirm blocking a conversation via a message request.")
         }
 
         let threadName = contactsManager.displayNameWithSneakyTransaction(thread: thread)
@@ -253,9 +253,9 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
 
         let blockActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_ACTION",
-            comment: "Action sheet action to confirm blocking a thread via a message request.")
+                                                 comment: "Action sheet action to confirm blocking a thread via a message request.")
         let blockAndDeleteActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
-            comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")
+                                                          comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")
 
         actionSheet.addAction(ActionSheetAction(title: blockActionTitle) { [weak self] _ in
             self?.blockThread()
@@ -287,14 +287,14 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
             actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
                                                    comment: "Action sheet message to confirm deleting a group via a message request.")
             confirmationText = NSLocalizedString("MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
-                                                  comment: "Action sheet action to confirm deleting a group via a message request.")
+                                                 comment: "Action sheet action to confirm deleting a group via a message request.")
         } else { // either 1:1 thread, or a group of which I'm not a member
             actionSheetTitle = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
                                                  comment: "Action sheet title to confirm deleting a conversation via a message request.")
             actionSheetMessage = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
                                                    comment: "Action sheet message to confirm deleting a conversation via a message request.")
             confirmationText = NSLocalizedString("MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION",
-                                                  comment: "Action sheet action to confirm deleting a conversation via a message request.")
+                                                 comment: "Action sheet action to confirm deleting a conversation via a message request.")
         }
 
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)

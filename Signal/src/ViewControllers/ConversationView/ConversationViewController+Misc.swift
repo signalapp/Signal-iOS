@@ -8,6 +8,26 @@ import ContactsUI
 @objc
 public extension ConversationViewController {
 
+    func updateV2GroupIfNecessary() {
+        AssertIsOnMainThread()
+
+        guard let groupThread = thread as? TSGroupThread,
+              thread.isGroupV2Thread else {
+            return
+        }
+        // Try to update the v2 group to latest from the service.
+        // This will help keep us in sync if we've missed any group updates, etc.
+        groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
+    }
+
+    func presentAddThreadToProfileWhitelist(success: @escaping () -> Void) {
+        AssertIsOnMainThread()
+
+        profileManagerImpl.presentAddThread(toProfileWhitelist: thread,
+                                            from: self,
+                                            success: success)
+    }
+
     func showUnblockConversationUI(completion: BlockActionCompletionBlock?) {
         self.userHasScrolled = false
 
@@ -447,10 +467,10 @@ extension ConversationViewController {
 
         readTimer?.invalidate()
         let readTimer = Timer.weakTimer(withTimeInterval: 0.1,
-                                         target: self,
-                                         selector: #selector(readTimerDidFire),
-                                         userInfo: nil,
-                                         repeats: true)
+                                        target: self,
+                                        selector: #selector(readTimerDidFire),
+                                        userInfo: nil,
+                                        repeats: true)
         self.readTimer = readTimer
         RunLoop.main.add(readTimer, forMode: .common)
     }
@@ -501,8 +521,8 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         if isUserScrolling || !isViewCompletelyAppeared || !isViewVisible
-                || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared
-                || isPresentingMessageActions {
+            || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared
+            || isPresentingMessageActions {
             return
         }
 

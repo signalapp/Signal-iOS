@@ -147,6 +147,10 @@ extension ConversationViewController {
 
     @objc
     public func updateSelectionButtons() {
+        guard let selectionToolbar = self.selectionToolbar else {
+            owsFailDebug("Missing selectionToolbar.")
+            return
+        }
         guard let deleteButton = selectionToolbar.buttonItem(for: .delete) else {
             owsFailDebug("deleteButton was unexpectedly nil")
             return

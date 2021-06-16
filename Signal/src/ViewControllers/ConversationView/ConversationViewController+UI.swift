@@ -227,10 +227,10 @@ extension ConversationViewController {
             subtitleText.appendTemplatedImage(named: "timer-outline-16", font: subtitleFont)
             subtitleText.append(iconSpacer, attributes: attributes)
             subtitleText.append(NSString.formatDurationSeconds(
-                                    disappearingMessagesConfiguration.durationSeconds,
-                                    useShortFormat: true
-                                    ),
-                attributes: attributes)
+                disappearingMessagesConfiguration.durationSeconds,
+                useShortFormat: true
+            ),
+            attributes: attributes)
         }
 
         if isVerified {
@@ -277,5 +277,80 @@ extension ConversationViewController {
         }
 
         return inputToolbar
+    }
+}
+// MARK: - Keyboard Shortcuts
+
+public extension ConversationViewController {
+    func focusInputToolbar() {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
+        inputToolbar.clearDesiredKeyboard()
+        self.popKeyBoard()
+    }
+
+    func openAllMedia() {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+
+        self.showConversationSettingsAndShowAllMedia()
+    }
+
+    func openStickerKeyboard() {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
+        inputToolbar.showStickerKeyboard()
+    }
+
+    func openAttachmentKeyboard() {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard let inputToolbar = inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
+        inputToolbar.showAttachmentKeyboard()
+    }
+
+    func openGifSearch() {
+        AssertIsOnMainThread()
+
+        guard hasViewWillAppearEverBegun else {
+            owsFailDebug("InputToolbar not yet ready.")
+            return
+        }
+        guard nil != inputToolbar else {
+            owsFailDebug("Missing inputToolbar.")
+            return
+        }
+
+        self.showGifPicker()
     }
 }

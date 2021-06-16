@@ -46,8 +46,6 @@ struct CVUpdateToken {
     let lastMessageForInboxSortId: UInt64?
 }
 
-// MARK: -
-
 @objc
 public class CVLoadCoordinator: NSObject {
 
@@ -87,17 +85,12 @@ public class CVLoadCoordinator: NSObject {
 
     private var loadDidLandResolver: Resolver<Void>?
 
-    required init(delegate: CVLoadCoordinatorDelegate,
-                  componentDelegate: CVComponentDelegate,
-                  conversationStyle: ConversationStyle,
-                  focusMessageIdOnOpen: String?) {
-        self.delegate = delegate
-        self.componentDelegate = componentDelegate
-        self.viewState = delegate.viewState
+    required init(viewState: CVViewState) {
+        self.viewState = viewState
         let threadViewModel = viewState.threadViewModel
         self.threadUniqueId = threadViewModel.threadRecord.uniqueId
         self.thread = threadViewModel.threadRecord
-        self.conversationStyle = conversationStyle
+        self.conversationStyle = viewState.conversationStyle
 
         let viewStateSnapshot = CVViewStateSnapshot.snapshot(viewState: viewState,
                                                              typingIndicatorsSender: nil,
@@ -108,6 +101,13 @@ public class CVLoadCoordinator: NSObject {
         self.messageMapping = CVMessageMapping(thread: threadViewModel.threadRecord)
 
         super.init()
+    }
+
+    func configure(delegate: CVLoadCoordinatorDelegate,
+                   componentDelegate: CVComponentDelegate,
+                   focusMessageIdOnOpen: String?) {
+        self.delegate = delegate
+        self.componentDelegate = componentDelegate
 
         Self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
 

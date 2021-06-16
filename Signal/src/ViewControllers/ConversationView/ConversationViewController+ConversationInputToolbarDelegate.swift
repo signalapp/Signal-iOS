@@ -293,9 +293,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
             let didShowSNAlert = self.showSafetyNumberConfirmationIfNecessary(
                 confirmationText: SafetyNumberStrings.confirmSendButton) { [weak self] didConfirmIdentity in
-                 if didConfirmIdentity {
+                if didConfirmIdentity {
                     self?.tryToSendAttachments(attachments, messageBody: messageBody)
-                 }
+                }
             }
             if didShowSNAlert {
                 return

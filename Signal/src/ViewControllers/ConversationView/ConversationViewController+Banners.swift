@@ -467,7 +467,7 @@ private class NameCollisionBanner: UIView {
             imageName: "x-circle-16",
             tintColor: Theme.secondaryTextAndIconColor)
         button.accessibilityLabel = NSLocalizedString("BANNER_CLOSE_ACCESSIBILITY_LABEL",
-            comment: "Accessibility label for banner close button")
+                                                      comment: "Accessibility label for banner close button")
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setCompressionResistanceHigh()
         button.setContentHuggingHigh()

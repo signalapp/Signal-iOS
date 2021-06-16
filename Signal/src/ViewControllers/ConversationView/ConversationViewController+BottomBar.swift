@@ -180,7 +180,7 @@ public extension ConversationViewController {
         AssertIsOnMainThread()
 
         guard let messageDraft = (Self.databaseStorage.uiRead { transaction in
-                self.thread.currentDraft(with: transaction)
+            self.thread.currentDraft(with: transaction)
         }) else {
             return
         }
