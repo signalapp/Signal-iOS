@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSDeviceProvisioningURLParser;
+
 @protocol OWSLinkDeviceViewControllerDelegate
 
 - (void)expectMoreDevices;
@@ -20,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<OWSLinkDeviceViewControllerDelegate> delegate;
 
 - (void)controller:(nullable OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string;
+
+- (void)provisionWithConfirmationWithParser:(OWSDeviceProvisioningURLParser *)parser;
 
 @end
 

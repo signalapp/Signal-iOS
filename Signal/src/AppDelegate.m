@@ -6,6 +6,7 @@
 #import "ConversationListViewController.h"
 #import "DebugLogger.h"
 #import "MainAppContext.h"
+#import "OWSDeviceProvisioningURLParser.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
@@ -48,6 +49,7 @@ NSString *const kURLSchemeSGNLKey = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
 static NSString *const kURLHostAddStickersPrefix = @"addstickers";
 NSString *const kURLHostTransferPrefix = @"transfer";
+NSString *const kURLHostLinkDevicePrefix = @"linkdevice";
 
 static NSTimeInterval launchStartedAt;
 
@@ -458,6 +460,14 @@ void uncaughtExceptionHandler(NSException *exception)
                 return NO;
             }
             return [self tryToShowStickerPackView:stickerPackInfo];
+        } else if ([url.host hasPrefix:kURLHostLinkDevicePrefix] && [self.tsAccountManager isRegistered]) {
+            OWSDeviceProvisioningURLParser *parser =
+                [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:url.absoluteString];
+            if (!parser.isValid) {
+                OWSFailDebug(@"Invalid URL: %@", url);
+                return NO;
+            }
+            return [self tryToShowLinkDeviceViewWithParser:parser];
         } else {
             OWSLogVerbose(@"Invalid URL: %@", url);
             OWSFailDebug(@"Unknown URL host: %@", url.host);
@@ -508,6 +518,45 @@ void uncaughtExceptionHandler(NSException *exception)
         } else {
             [packView presentFrom:rootViewController animated:NO];
         }
+    });
+    return YES;
+}
+
+- (BOOL)tryToShowLinkDeviceViewWithParser:(OWSDeviceProvisioningURLParser *)parser
+{
+    OWSAssertDebug(!self.didAppLaunchFail);
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+        if (!self.tsAccountManager.isRegistered) {
+            OWSFailDebug(@"Ignoring linked device URL; not registered.");
+            return;
+        }
+
+        UINavigationController *navController = [AppSettingsViewController inModalNavigationController];
+        NSMutableArray<UIViewController *> *viewControllers = [navController.viewControllers mutableCopy];
+
+        LinkedDevicesTableViewController *linkedDevicesVC = [LinkedDevicesTableViewController new];
+        [viewControllers addObject:linkedDevicesVC];
+
+        OWSLinkDeviceViewController *linkDeviceVC = [OWSLinkDeviceViewController new];
+        [viewControllers addObject:linkDeviceVC];
+
+        linkDeviceVC.delegate = linkedDevicesVC;
+
+        [navController setViewControllers:viewControllers animated:NO];
+
+        UIViewController *rootViewController = self.window.rootViewController;
+        if (rootViewController.presentedViewController) {
+            [rootViewController dismissViewControllerAnimated:NO
+                                                   completion:^{
+                                                       [rootViewController presentFormSheetViewController:navController
+                                                                                                 animated:NO
+                                                                                               completion:^ {}];
+                                                   }];
+        } else {
+            [rootViewController presentFormSheetViewController:navController animated:NO completion:^ {}];
+        }
+
+        [linkDeviceVC provisionWithConfirmationWithParser:parser];
     });
     return YES;
 }

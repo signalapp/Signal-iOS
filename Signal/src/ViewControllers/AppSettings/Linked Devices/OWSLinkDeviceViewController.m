@@ -138,34 +138,39 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self presentActionSheet:actionSheet];
     } else {
-        NSString *title = NSLocalizedString(
-            @"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
-        NSString *linkingDescription
-            = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
-
-        ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title
-                                                                                  message:linkingDescription];
-
-        ActionSheetAction *cancelAction =
-            [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
-                                               style:ActionSheetActionStyleCancel
-                                             handler:^(ActionSheetAction *action) {
-                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                     [self popToLinkedDeviceList];
-                                                 });
-                                             }];
-        [actionSheet addAction:cancelAction];
-
-        ActionSheetAction *proceedAction = [[ActionSheetAction alloc]
-            initWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
-                    style:ActionSheetActionStyleDefault
-                  handler:^(ActionSheetAction *action) {
-                      [self provisionWithParser:parser];
-                  }];
-        [actionSheet addAction:proceedAction];
-
-        [self presentActionSheet:actionSheet];
+        [self provisionWithConfirmationWithParser:parser];
     }
+}
+
+- (void)provisionWithConfirmationWithParser:(OWSDeviceProvisioningURLParser *)parser
+{
+    NSString *title = NSLocalizedString(
+        @"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
+    NSString *linkingDescription
+        = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
+
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title
+                                                                              message:linkingDescription];
+
+    ActionSheetAction *cancelAction =
+        [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                           style:ActionSheetActionStyleCancel
+                                         handler:^(ActionSheetAction *action) {
+                                             dispatch_async(dispatch_get_main_queue(), ^{
+                                                 [self popToLinkedDeviceList];
+                                             });
+                                         }];
+    [actionSheet addAction:cancelAction];
+
+    ActionSheetAction *proceedAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
+                style:ActionSheetActionStyleDefault
+              handler:^(ActionSheetAction *action) {
+                  [self provisionWithParser:parser];
+              }];
+    [actionSheet addAction:proceedAction];
+
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)provisionWithParser:(OWSDeviceProvisioningURLParser *)parser
