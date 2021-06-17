@@ -1116,7 +1116,7 @@ typedef enum : NSUInteger {
         }
 
         // If the user is in the system contacts, show a badge
-        if ([self.contactsManagerImpl hasSignalAccountForAddress:thread.contactAddress]) {
+        if ([self.contactsManagerImpl isSystemContactWithAddress:thread.contactAddress]) {
             icon =
                 [[UIImage imageNamed:@"contact-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }

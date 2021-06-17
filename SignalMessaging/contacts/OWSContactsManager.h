@@ -48,8 +48,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 // This will always return an instance of SignalAccount.
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
-- (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address;
-- (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - System Contact Fetching
 
@@ -99,6 +97,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
                           transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+
+- (BOOL)isKnownRegisteredUserWithSneakyTransaction:(SignalServiceAddress *)address
+    NS_SWIFT_NAME(isKnownRegisteredUserWithSneakyTransaction(address:));
+- (BOOL)isKnownRegisteredUser:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 
