@@ -363,7 +363,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalClient:
-    :commit: c042f16fbb3fe1c12dab4fb6865d971dcc6ffb53
+    :commit: ffd2fe1664cd23d1ae7dc5d3a7c6c33bc702b93e
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :commit: eea6884e55261bf157ad6054c72c3c51d7788d4c
@@ -413,7 +413,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalClient: c7d38b94cf6374b90c5f27f8b459d7bb7f91cb7f
+  SignalClient: 2353bbeaaa062b98457690c26e1d5e3c2cb772a0
   SignalCoreKit: 43daa8f15d6125d54705f35628ac35051bb205c6
   SignalMetadataKit: eb928ec98376ab5a6ef2108a7fcd3b2d792b8c65
   SignalRingRTC: d993f1a01f4ead5dbc1ef3a502fd676bc0c92000
