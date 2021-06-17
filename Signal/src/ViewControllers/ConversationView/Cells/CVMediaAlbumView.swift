@@ -468,13 +468,13 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         case 2:
             // X X
             // side-by-side.
-            let imageSize = CGSize(square: (maxWidth - kSpacingPts) / 2)
+            let imageSize = CGSize(square: floor((maxWidth - kSpacingPts) / 2))
             return .oneHorizontalRow(row: ImageGroup(imageCount: 2, imageSize: imageSize))
         case 3:
             //   x
             // X x
             // Big on left, 2 small on right.
-            let smallImageSize: CGFloat = (maxWidth - kSpacingPts * 2) / 3
+            let smallImageSize: CGFloat = floor((maxWidth - kSpacingPts * 2) / 3)
             let bigImageSize: CGFloat = smallImageSize * 2 + kSpacingPts
             return .twoVerticalColumns(column1: ImageGroup(imageCount: 1, imageSize: .square(bigImageSize)),
                                        column2: ImageGroup(imageCount: 2, imageSize: .square(smallImageSize)))
@@ -482,15 +482,15 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             // XX
             // XX
             // Square
-            let imageSize = CGSize(square: (maxWidth - CVMediaAlbumView.kSpacingPts) / 2)
+            let imageSize = CGSize(square: floor((maxWidth - CVMediaAlbumView.kSpacingPts) / 2))
             return .twoVerticalColumns(column1: ImageGroup(imageCount: 2, imageSize: imageSize),
                                        column2: ImageGroup(imageCount: 2, imageSize: imageSize))
         default:
             // X X
             // xxx
             // 2 big on top, 3 small on bottom.
-            let bigImageSize: CGFloat = (maxWidth - kSpacingPts) / 2
-            let smallImageSize: CGFloat = (maxWidth - kSpacingPts * 2) / 3
+            let bigImageSize: CGFloat = floor((maxWidth - kSpacingPts) / 2)
+            let smallImageSize: CGFloat = floor((maxWidth - kSpacingPts * 2) / 3)
             return .twoHorizontalRows(row1: ImageGroup(imageCount: 2, imageSize: .square(bigImageSize)),
                                        row2: ImageGroup(imageCount: 3, imageSize: .square(smallImageSize)))
         }
