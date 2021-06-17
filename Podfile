@@ -78,12 +78,15 @@ pod 'BonMot', inhibit_warnings: true
 pod 'ZXingObjC', git: 'https://github.com/zxingify/zxingify-objc.git', inhibit_warnings: true, binary: true
 
 # TODO: Rebuild.
-pod 'LibMobileCoin', git: 'https://github.com/mobilecoinofficial/libmobilecoin-ios-artifacts.git', :tag => 'v1.1.0-pre2'
+pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0'
+# pod 'LibMobileCoin', git: 'https://github.com/mobilecoinofficial/libmobilecoin-ios-artifacts.git', :tag => 'v1.1.0-pre2'
+# pod 'LibMobileCoin', git: 'https://github.com/mobilecoinofficial/libmobilecoin-ios-artifacts.git', :tag => 'v1.1.0-pre2'
 # pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.0.0'
 # pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0-pre2'
 
 # pod 'MobileCoin'
-pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0-pre2'
+pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
+# pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0-pre2'
 # pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git'
 # pod 'MobileCoin', path: '../MobileCoin-Swift'
 
