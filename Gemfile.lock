@@ -1,10 +1,9 @@
 GIT
   remote: https://github.com/signalapp/cocoapods-binary.git
-  revision: c5c5a8bb6ecb2a397e3a4861d742a089dd875676
-  branch: jrose/acknowledgements
+  revision: b48a32c5622c766f70d2b3e55dc0763a512e53c0
   specs:
     cocoapods-binary (0.4.4)
-      cocoapods (>= 1.10.1, < 2.0)
+      cocoapods (>= 1.5.0, < 2.0)
       fourflusher (~> 2.0)
       xcpretty (~> 0.3.0)
 
