@@ -320,6 +320,14 @@ class GroupAndContactStreamTest: SignalBaseTest {
 }
 
 class TestContactsManager: NSObject, ContactsManagerProtocol {
+    func isSystemContactWithSignalAccount(_ address: SignalServiceAddress) -> Bool {
+        false
+    }
+
+    func isSystemContactWithSignalAccount(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+        false
+    }
+
     func hasNameInSystemContacts(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         false
     }
