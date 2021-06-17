@@ -60,6 +60,9 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
 
     // MARK: Running
     public func execute() {
+        if let id = id {
+            JobQueue.currentlyExecutingJobs.insert(id)
+        }
         guard let stream = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentStream else {
             return handleFailure(error: Error.noAttachment)
         }

@@ -789,4 +789,38 @@ static NSTimeInterval launchStartedAt;
     }];
 }
 
+# pragma mark - App Link
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
+{
+    NSURLComponents *components = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:true];
+    
+    // URL Scheme is sessionmessenger://DM?sessionID=1234
+    // We can later add more parameters like message etc.
+    NSString *intent = components.host;
+    if (intent != nil && [intent isEqualToString:@"DM"]) {
+        NSArray<NSURLQueryItem*> *params = [components queryItems];
+        NSPredicate *sessionIDPredicate = [NSPredicate predicateWithFormat:@"name == %@", @"sessionID"];
+        NSArray<NSURLQueryItem*> *matches = [params filteredArrayUsingPredicate:sessionIDPredicate];
+        if (matches.count > 0) {
+            NSString *sessionID = matches.firstObject.value;
+            [self createNewDMFromDeepLink:sessionID];
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)createNewDMFromDeepLink:(NSString *)sessionID
+{
+    UIViewController *viewController = self.window.rootViewController;
+    if ([viewController class] == [OWSNavigationController class]) {
+        UIViewController *visibleVC = ((OWSNavigationController *)viewController).visibleViewController;
+        if ([visibleVC isKindOfClass:HomeVC.class]) {
+            HomeVC *homeVC = (HomeVC *)visibleVC;
+            [homeVC createNewDMFromDeepLink:sessionID];
+        }
+    }
+}
+
 @end

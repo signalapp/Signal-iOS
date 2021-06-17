@@ -25,9 +25,7 @@ extension MessageReceiver {
         // Touch the thread to update the home screen preview
         let storage = SNMessagingKitConfiguration.shared.storage
         guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { return }
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
-        thread.touch(with: transaction)
+        ThreadUpdateBatcher.shared.touch(threadID)
     }
 
     
@@ -210,7 +208,7 @@ extension MessageReceiver {
             for closedGroup in message.closedGroups {
                 guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
                 handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
-                    members: [String](closedGroup.members), admins: [String](closedGroup.admins), messageSentTimestamp: message.sentTimestamp!, using: transaction)
+                    members: [String](closedGroup.members), admins: [String](closedGroup.admins), expirationTimer: 0, messageSentTimestamp: message.sentTimestamp!, using: transaction)
             }
             // Open groups
             for openGroupURL in message.openGroups {
@@ -370,15 +368,15 @@ extension MessageReceiver {
     }
     
     private static func handleNewClosedGroup(_ message: ClosedGroupControlMessage, using transaction: Any) {
-        guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData) = message.kind else { return }
+        guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData, expirationTimer) = message.kind else { return }
         let groupPublicKey = publicKeyAsData.toHexString()
         let members = membersAsData.map { $0.toHexString() }
         let admins = adminsAsData.map { $0.toHexString() }
         handleNewClosedGroup(groupPublicKey: groupPublicKey, name: name, encryptionKeyPair: encryptionKeyPair,
-            members: members, admins: admins, messageSentTimestamp: message.sentTimestamp!, using: transaction)
+            members: members, admins: admins, expirationTimer: expirationTimer, messageSentTimestamp: message.sentTimestamp!, using: transaction)
     }
 
-    private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], messageSentTimestamp: UInt64, using transaction: Any) {
+    private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], expirationTimer: UInt32, messageSentTimestamp: UInt64, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -387,6 +385,11 @@ extension MessageReceiver {
         if let t = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) {
             thread = t
             thread.setGroupModel(group, with: transaction)
+            // Clear the zombie list if the group wasn't active
+            let storage = SNMessagingKitConfiguration.shared.storage
+            if !storage.isClosedGroup(groupPublicKey) {
+                storage.setZombieMembers(for: groupPublicKey, to: [], using: transaction)
+            }
         } else {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
             thread.save(with: transaction)
@@ -394,6 +397,11 @@ extension MessageReceiver {
             let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupCreated)
             infoMessage.save(with: transaction)
         }
+        let isExpirationTimerEnabled = (expirationTimer > 0)
+        let expirationTimerDuration = (isExpirationTimerEnabled ? expirationTimer : 24 * 60 * 60)
+        let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: isExpirationTimerEnabled,
+            durationSeconds: expirationTimerDuration)
+        configuration.save(with: transaction)
         // Add the group to the user's set of public keys to poll for
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
         // Store the key pair
@@ -473,9 +481,11 @@ extension MessageReceiver {
     private static func handleClosedGroupMembersAdded(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case let .membersAdded(membersAsData) = message.kind else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             // Update the group
-            let members = Set(group.groupMemberIds).union(membersAsData.map { $0.toHexString() })
+            let addedMembers = membersAsData.map { $0.toHexString() }
+            let members = Set(group.groupMemberIds).union(addedMembers)
             let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Send the latest encryption key pair to the added members if the current user is the admin of the group
@@ -492,9 +502,15 @@ extension MessageReceiver {
             // the member removed message.
             let isCurrentUserAdmin = group.groupAdminIds.contains(getUserHexEncodedPublicKey())
             if isCurrentUserAdmin {
-                for member in membersAsData.map({ $0.toHexString() }) {
+                for member in addedMembers {
                     MessageSender.sendLatestEncryptionKeyPair(to: member, for: message.groupPublicKey!, using: transaction)
                 }
+            }
+            // Update zombie members in case the added members are zombies
+            let storage = SNMessagingKitConfiguration.shared.storage
+            let zombies = storage.getZombieMembers(for: groupPublicKey)
+            if !zombies.intersection(addedMembers).isEmpty {
+                storage.setZombieMembers(for: groupPublicKey, to: zombies.subtracting(addedMembers), using: transaction)
             }
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }

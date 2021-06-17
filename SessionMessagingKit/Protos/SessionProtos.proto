@@ -39,7 +39,7 @@ message Content {
   optional ReceiptMessage             receiptMessage             = 5;
   optional TypingMessage              typingMessage              = 6;
   optional ConfigurationMessage       configurationMessage       = 7;
-  optional DataExtractionNotification dataExtractionNotification = 82;
+  optional DataExtractionNotification dataExtractionNotification = 8;
 }
 
 message KeyPair {
@@ -111,7 +111,7 @@ message DataMessage {
   message ClosedGroupControlMessage {
 
     enum Type {
-      NEW                         = 1; // publicKey, name, encryptionKeyPair, members, admins
+      NEW                         = 1; // publicKey, name, encryptionKeyPair, members, admins, expirationTimer
       ENCRYPTION_KEY_PAIR         = 3; // publicKey, wrappers
       NAME_CHANGE                 = 4; // name
       MEMBERS_ADDED               = 5; // members
@@ -135,6 +135,7 @@ message DataMessage {
     repeated bytes          members           = 5;
     repeated bytes          admins            = 6;
     repeated KeyPairWrapper wrappers          = 7;
+    optional uint32         expirationTimer   = 8;
   }
 
   optional string                    body                      = 1;

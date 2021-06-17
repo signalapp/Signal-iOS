@@ -3,7 +3,7 @@
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ ist nun im App Store verfügbar.";
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Neue Session-Version verfügbar";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Neue Version von Session verfügbar";
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aktualisieren";
 /* No comment provided by engineer. */
@@ -532,4 +532,4 @@
 "vc_share_loading_message" = "Anlagen werden vorbereitet...";
 "vc_share_sending_message" = "Wird gesendet ...";
 "view_open_group_invitation_description" = "Gruppeneinladung öffnen";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"vc_conversation_settings_invite_button_title" = "Mitglieder hinzufügen";

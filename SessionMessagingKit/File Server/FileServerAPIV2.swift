@@ -114,4 +114,12 @@ public final class FileServerAPIV2 : NSObject {
             return file
         }
     }
+
+    public static func getVersion(_ platform: String) -> Promise<String> {
+        let request = Request(verb: .get, endpoint: "session_version?platform=\(platform)")
+        return send(request, useOldServer: false).map(on: DispatchQueue.global(qos: .userInitiated)) { json in
+            guard let version = json["result"] as? String else { throw Error.parsingFailed }
+            return version
+        }
+    }
 }

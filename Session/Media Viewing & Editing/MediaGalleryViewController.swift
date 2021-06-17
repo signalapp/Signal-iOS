@@ -630,7 +630,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                                 // To keep it simple, this isn't exactly *amount* sized if `message` window overlaps the end or
                                 // beginning of the view. Still, we have sufficient buffer to fetch more as the user swipes.
                                 let start: Int = initialIndex - Int(amount) / 2
-                                let end: Int = initialIndex + Int(amount) / 2
+                                let end: Int = initialIndex + Int(amount) / 2 + 1
 
                                 return start..<end
                             case .before:
@@ -640,7 +640,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                                 return start..<end
                             case  .after:
                                 let start: Int = initialIndex
-                                let end: Int = initialIndex  + Int(amount)
+                                let end: Int = initialIndex  + Int(amount) + 1
 
                                 return start..<end
                             }

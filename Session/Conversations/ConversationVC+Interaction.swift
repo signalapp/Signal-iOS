@@ -705,27 +705,21 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     // MARK: Data Extraction Notifications
     @objc func sendScreenshotNotificationIfNeeded() {
-        // Disabled until other platforms implement it as well
-        /*
         guard thread is TSContactThread else { return }
         let message = DataExtractionNotification()
         message.kind = .screenshot
         Storage.write { transaction in
             MessageSender.send(message, in: self.thread, using: transaction)
         }
-         */
     }
     
     func sendMediaSavedNotificationIfNeeded(for viewItem: ConversationViewItem) {
-        // Disabled until other platforms implement it as well
-        /*
         guard thread is TSContactThread, viewItem.interaction.interactionType() == .incomingMessage else { return }
         let message = DataExtractionNotification()
         message.kind = .mediaSaved(timestamp: viewItem.interaction.timestamp)
         Storage.write { transaction in
             MessageSender.send(message, in: self.thread, using: transaction)
         }
-         */
     }
 
     // MARK: Requesting Permission
