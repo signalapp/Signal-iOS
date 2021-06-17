@@ -139,7 +139,7 @@ extension ConversationViewController {
         }
         let address = SignalServiceAddress(phoneNumber: e164)
 
-        if !address.isLocalAddress,
+        if address.isLocalAddress ||
            Self.contactsManagerImpl.isKnownRegisteredUserWithSneakyTransaction(address: address) {
             let groupViewHelper: GroupViewHelper? = {
                 guard threadViewModel.isGroupThread else {
