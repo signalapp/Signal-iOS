@@ -439,6 +439,9 @@
 /* Label for the 'set' button. */
 "BUTTON_SET" = "Set";
 
+/* Label for the 'share' button. */
+"BUTTON_SHARE" = "Compartir";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "Start";
 
@@ -590,7 +593,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
 
 /* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Appearance";
+"CHAT_COLORS_MEGAPHONE_ACTION" = "Aparencia";
 
 /* Body for chat colors megaphone */
 "CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
@@ -1655,7 +1658,7 @@
 "GET_STARTED_BANNER_TITLE" = "Comezar";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Appearance";
+"GET_STARTED_CARD_APPEARANCE" = "Aparencia";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Convidar amizades";
@@ -1877,7 +1880,7 @@
 "GROUP_CREATION_FAILED" = "Non todos os membros puideron ser engadidos ao grupo. Toca para volver tentar.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "more";
+"GROUP_DESCRIPTION_MORE" = "máis";
 
 /* Placeholder text for 'group description' field. */
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
@@ -2375,7 +2378,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "You changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Cambiaches a descrición do grupo";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
@@ -2974,6 +2977,21 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
 
+/* Label for button to open a link. */
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to call a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Chamar";
+
+/* Label for button to make a Facetime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+
+/* Label for button to make a Facetime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+
+/* Label for button to send a text message a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Reply to This Message";
 
@@ -3161,7 +3179,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Enviado parcialmente, toca para detalles";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "Envío en pausa";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Paused";
@@ -5651,7 +5669,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Completa a verificación";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";

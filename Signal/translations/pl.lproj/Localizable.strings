@@ -439,6 +439,9 @@
 /* Label for the 'set' button. */
 "BUTTON_SET" = "Ustaw";
 
+/* Label for the 'share' button. */
+"BUTTON_SHARE" = "Udostępnij";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "Rozpocznij";
 
@@ -587,16 +590,16 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Ten kolor jest używany w %@ rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "\"Automatyczny\" dopasowuje kolor do tapety";
 
 /* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Appearance";
+"CHAT_COLORS_MEGAPHONE_ACTION" = "Wygląd";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "Teraz możesz zmieniać kolory swoich rozmów dzięki gradientom i nie tylko.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Własne kolory czatów";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Kolor i tapeta czatu";
@@ -1088,7 +1091,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Własny kolor";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Przeciągnij, aby zmienić kierunek gradientu";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "To może zająć kilka minut.";
@@ -1655,7 +1658,7 @@
 "GET_STARTED_BANNER_TITLE" = "Rozpocznij";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Appearance";
+"GET_STARTED_CARD_APPEARANCE" = "Wygląd";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Zaproś znajomych";
@@ -1811,7 +1814,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ uczestniczy w rozmowie";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ udostępnia";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Ponowne łączenie";
@@ -1820,7 +1823,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Ktoś ze zmienionym numerem bezpieczeństwa dołączył do tej rozmowy.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Przesuń w górę, aby zobaczyć udostępniony ekran";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Ktoś rozpoczął połączenie grupowe";
@@ -2663,7 +2666,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Prośba o kontakt";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nie znaleziono wyników dla \"%@\"";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Brak wyników dla \"%@\"";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archiwum";
@@ -2966,13 +2969,28 @@
 "MESSAGE_ACTION_DETAILS" = "Więcej informacji";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nowa wiadomość e-mail";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-mail nie jest skonfigurowany.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Przekaż tę wiadomość";
+
+/* Label for button to open a link. */
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to call a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Zadzwoń";
+
+/* Label for button to make a Facetime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+
+/* Label for button to make a Facetime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+
+/* Label for button to send a text message a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Odpowiedz na wiadomość";
@@ -5183,7 +5201,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Przedstawiamy płatności (beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Twoje konto zostanie automatycznie przywrócone przy ponownej instalacji Signal, jeśli potwierdzisz swój PIN Signal. Możesz też przywrócić swoje środki, używając hasła odzyskiwania, które jest Twoim, złożonym z 24słów, unikalnym hasłem. Zapisz je i przechowuj w bezpiecznym miejscu.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Twoje konto zostanie automatycznie przywrócone przy ponownej instalacji Signal, jeśli potwierdzisz swój PIN Signal. Możesz też przywrócić swoje środki, używając hasła odzyskiwania, które jest Twoim, złożonym z 24 słów, unikalnym hasłem. Zapisz je i przechowuj w bezpiecznym miejscu.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Dodaj środki";

@@ -439,6 +439,9 @@
 /* Label for the 'set' button. */
 "BUTTON_SET" = "Definir";
 
+/* Label for the 'share' button. */
+"BUTTON_SHARE" = "Partilhar";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "Iniciar";
 
@@ -587,16 +590,16 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Esta cor é utilizada em %@ conversas. Deseja guardar as alterações em todas as conversas?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "Faz corresponder automaticamente a cor com o fundo de ecrã";
 
 /* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Appearance";
+"CHAT_COLORS_MEGAPHONE_ACTION" = "Aspeto";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "Agora você pode alterar as cores nas suas conversas com gradientes e muito mais.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Cores personalizadas de conversas";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Cor e fundo de ecrã da conversa";
@@ -617,10 +620,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupos";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Pesquisar número de telefone";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Procurar número de telefone";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Pesquisar nome de utilizador";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Procurar nome de utilizador";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Para ver quais dos seus contactos são utilizadores do Signal, permita o acesso aos contactos nas definições iOS da aplicação.";
@@ -1022,7 +1025,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remover %@ de administrador do grupo?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "pesquisar";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "procurar";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Desbloquear grupo";
@@ -1088,7 +1091,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Cor personalizada";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Arraste para alterar a orientação do gradiente";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Isto poderá demorar alguns minutos.";
@@ -1337,7 +1340,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "As mensagens nesta conversa irão ser destruídas após %@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Tempo personalizado";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Temporizador personalizado";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dias";
@@ -1655,7 +1658,7 @@
 "GET_STARTED_BANNER_TITLE" = "Começar";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Appearance";
+"GET_STARTED_CARD_APPEARANCE" = "Aspeto";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Convidar amigos";
@@ -1811,7 +1814,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ está nesta chamada";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ está a apresentar";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "A ligar novamente";
@@ -1820,7 +1823,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Alguém se juntou a esta chamada com um número de segurança modificado.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Deslize para cima ver o ecrã de partilha";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Alguém iniciou uma chamada de grupo";
@@ -2639,7 +2642,7 @@
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Bloqueado";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Pesquisar";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Procurar";
 
 /* A prefix indicating that a message preview is a draft */
 "HOME_VIEW_DRAFT_PREFIX" = "Rascunho: ";
@@ -2762,7 +2765,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convidar amigos para o Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Pesquisar";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Procurar";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Convidar amigos";
@@ -2804,7 +2807,7 @@
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ir para a conversa anterior";
 
 /* A keyboard command to begin a search on the conversation list. */
-"KEY_COMMAND_SEARCH" = "Pesquisar";
+"KEY_COMMAND_SEARCH" = "Procurar";
 
 /* A keyboard command to present the application settings dialog. */
 "KEY_COMMAND_SETTINGS" = "Definições";
@@ -2888,7 +2891,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Ative o 'Acesso à rede local'";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Pesquisar por nome ou endereço";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Procurar por nome ou endereço";
 
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Selecionar localização";
@@ -2966,13 +2969,28 @@
 "MESSAGE_ACTION_DETAILS" = "Mais informação";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nova mensagem de e-mail";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-mail não configurado.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Reencaminhar esta mensagem";
+
+/* Label for button to open a link. */
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to call a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Telefonar";
+
+/* Label for button to make a Facetime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+
+/* Label for button to make a Facetime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+
+/* Label for button to send a text message a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Responder a esta mensagem";
@@ -3311,7 +3329,7 @@
 "new_message" = " Nova mensagem ";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Pesquisar";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Procurar";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Procurar utilizador";
@@ -4670,10 +4688,10 @@
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nome, utilizador ou número";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Pesquisar por nome ou número";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Procurar por nome ou número";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Pesquisar";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Procurar";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Outros contactos";

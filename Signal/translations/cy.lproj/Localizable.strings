@@ -439,6 +439,9 @@
 /* Label for the 'set' button. */
 "BUTTON_SET" = "Gosod";
 
+/* Label for the 'share' button. */
+"BUTTON_SHARE" = "Rhannu";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "Cychwyn";
 
@@ -587,16 +590,16 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Defnyddir y lliw hwn ar gyfer %@ sgwrs. Ydych chi wir eisiau ei newid ar gyfer pob sgwrs?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "Yn dewis lliw yn awtomatig sy'n cyfateb i'r papur wal";
 
 /* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Appearance";
+"CHAT_COLORS_MEGAPHONE_ACTION" = "Golwg";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "Gallwch nawr newid y lliwiau yn eich sgyrsiau gyda graddiannau a mwy.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Lliw Chwaeth Sgwrsio";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Lliw a Phapur Wal Sgwrsio";
@@ -1088,7 +1091,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Lliw Chwaeth";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Llusgo i newid cyfeiriad y graddiant";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Gall hyn gymryd ychydig funudau.";
@@ -1457,7 +1460,7 @@
 "EMAIL_INVITE_SUBJECT" = "Gadewch i ni newid i Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Nid yw'ch dyfais wedi'i gyflunio i anfon negeseuon e-bost. I anfon cais am gymorth, gosodwch e-bost ar eich dyfais neu anfonwch e-bost i support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Nid yw'ch dyfais wedi'i ffurfweddu i anfon negeseuon e-bost. I anfon cais am gymorth, gosodwch e-bost ar eich dyfais neu anfonwch e-bost i support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "E-bost ddim ar gael";
@@ -1655,7 +1658,7 @@
 "GET_STARTED_BANNER_TITLE" = "Dechrau arni";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Appearance";
+"GET_STARTED_CARD_APPEARANCE" = "Golwg";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Gwahodd ffrindiau";
@@ -1811,7 +1814,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "Mae %@ yn yr alwad hon";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "Mae %@ yn cyflwyno";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Yn Ailgysylltu";
@@ -1820,7 +1823,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Mae rhywun wedi ymuno â'r alwad hon gyda rhif diogelwch sydd wedi newid.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Ysgubwch i fyny i rannu sgrîn";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Dechreuodd rhywun alwad grŵp";
@@ -2966,13 +2969,28 @@
 "MESSAGE_ACTION_DETAILS" = "Rhagor o Wybodaeth";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Neges E-bost Newydd";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-bost heb ei ffurfweddu";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Anfon y Neges Hon Ymlaen";
+
+/* Label for button to open a link. */
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to call a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Galw";
+
+/* Label for button to make a Facetime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+
+/* Label for button to make a Facetime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+
+/* Label for button to send a text message a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Ateb y Neges Hon";
@@ -5726,7 +5744,7 @@
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Rhowch wybod i ni am y broblem:";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Anfonwch eich cais am gymorth mewn ebost i support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Anfonwch eich cais am gymorth mewn e-bost i support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Hidlydd: %@";

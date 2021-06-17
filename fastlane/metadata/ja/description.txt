@@ -23,4 +23,4 @@ https://support.signal.org
 ソースコード:
 https://github.com/signalapp
 
-当社の Twitter (@signalapp) や Instagram (@signal_app) をフォローして、最新のアップデートやお知らせをご確認ください。
+私たちのTwitter (@signalapp) やInstagram (@signal_app) をフォローして、最新のアップデートやお知らせをご確認ください。

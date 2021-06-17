@@ -439,6 +439,9 @@
 /* Label for the 'set' button. */
 "BUTTON_SET" = "Instellen";
 
+/* Label for the 'share' button. */
+"BUTTON_SHARE" = "Proxyadres delen via andere app";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "Beginnen";
 
@@ -593,10 +596,10 @@
 "CHAT_COLORS_MEGAPHONE_ACTION" = "Uiterlijk";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "Je kunt vanaf nu de kleur van berichtbubbels aanpassen en bijvoorbeeld een kleurverloop toepassen.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Zelfgekozen gesprekskleuren";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Gesprekskleur & -achtergrond";
@@ -1250,7 +1253,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Deze iPad als nieuw apparaat toevoegen zonder gespreksgeschiedenis over te zetten";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Voeg als nieuw apparaat toe";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Als nieuw apparaat toevoegen";
 
 /* The title for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Registreren zonder overzetten";
@@ -1337,7 +1340,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in dit gesprek zullen na %@ verlopen.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Zelf gekozen tijdspanne";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Zelfgekozen tijdspanne";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "dagen";
@@ -1781,7 +1784,7 @@
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Kan geen beeld en geluid van %@ ontvangen";
 
 /* Text explaining that you are the only person currently in the group call */
-"GROUP_CALL_NO_ONE_HERE" = "Er is niemand behalve jou in dit gesprek";
+"GROUP_CALL_NO_ONE_HERE" = "Er is niemand behalve jij in dit gesprek";
 
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Er is nog niemand in de oproep aanwezig.";
@@ -1811,7 +1814,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "Gesprek met %@";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ deelt zijn of haar scherm";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Opnieuw verbinden";
@@ -1820,7 +1823,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Iemand neemt nu deel aan het gesprek met een veiligheidsnummer dat is veranderd.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Veeg omhoog om gedeeld scherm te zien";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Iemand heeft een groepsoproep gestart";
@@ -1883,7 +1886,7 @@
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Voeg een groepsomschrijving toe …";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Groepsomschrijvingen zijn zichtbaar voor alle leden van deze groep en voor alle personen die zijn uitgenodigd om lid te worden.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "De groepsnaam, -afbeelding en -omschrijving zijn zichtbaar voor alle leden van deze groep, voor alle personen die zijn uitgenodigd om lid te worden en voor alle personen die een werkende groepsverwijzing hebben, zelfs als ze nog niet hebben verzocht om lid te worden.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Groepsomschrijving";
@@ -2048,7 +2051,7 @@
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Kennissen uitnodigen";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Nodig vrienden en kennissen uit voor deze groep via een groepsverwijzing.";
+"GROUP_LINK_PROMOTION_UPDATE" = "Je kunt vrienden en kennissen voor deze groep uitnodigen via een groepsverwijzing";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen die deze code scannen zullen in staat zijn lid te worden van je groep. Als de optie ‘Beheerderstoestemming vereisen’ is ingeschakeld moet een beheerder eerst nog toestemming geven voor iemand lid mag worden van de groep.";
@@ -2966,13 +2969,28 @@
 "MESSAGE_ACTION_DETAILS" = "Meer informatie";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nieuw e-mailbericht";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-mail is niet ingesteld";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Dit bericht doorsturen";
+
+/* Label for button to open a link. */
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to call a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Bellen";
+
+/* Label for button to make a Facetime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+
+/* Label for button to make a Facetime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+
+/* Label for button to send a text message a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Op dit bericht reageren";
@@ -3587,7 +3605,7 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Dit verzoek afwijzen?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Opruimkosten";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Afrondingskosten";
 
 /* Error indicating that a payment request could not be cancelled. */
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Het overschrijvingsverzoek kan niet worden geannuleerd.";
@@ -4916,7 +4934,7 @@
 "SETTINGS_DATA_TITLE" = "Dataverbruik";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standaardtijdspanne voor nieuwe gesprekken";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standaard-tijdspanne voor nieuwe gesprekken";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Registratie opzeggen";
@@ -4946,7 +4964,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Verlopende berichten";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Stel een standaardtijdspanne in voor verlopende berichten voor alle nieuwe gesprekken die jij initieert.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Stel een standaard-tijdspanne in voor verlopende berichten voor alle nieuwe gesprekken die jij initieert.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Aan Signal doneren";
@@ -5222,7 +5240,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Overschrijvingsdetails waaronder de hoeveelheid en het tijdstip van de betaling zijn onderdeel van het kasboek van MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Er worden “opruimkosten” in rekening gebracht wanneer de munten die je bezit niet kunnen worden samengevoegd om een overschrijving te voltooien. Door deze opruimkosten kunnen je toch overschrijvingen blijven maken.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Er worden “afrondingskosten” in rekening gebracht wanneer de munten die je bezit niet kunnen worden samengevoegd om een overschrijving te voltooien. Door deze afrondingskosten kunnen je toch overschrijvingen blijven doen.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Je hebt niet genoeg MOB om deze overschrijving te kunnen plaatsen. Je huidige krediet is %@.";

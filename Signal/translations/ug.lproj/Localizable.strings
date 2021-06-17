@@ -439,6 +439,9 @@
 /* Label for the 'set' button. */
 "BUTTON_SET" = "بېكىتىڭ";
 
+/* Label for the 'share' button. */
+"BUTTON_SHARE" = "ھەمبەھىرلە";
+
 /* Label for the 'start' button. */
 "BUTTON_START" = "باشلا";
 
@@ -587,16 +590,16 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "بۇ رەڭ %@ سۆھبەتكە ئىشلىتىلىدۇ. ھەممە سۆھبەتكە ئۆزگەرتىشنى ساقلامسىز؟";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "تام قەغەز رەڭگىگە ئۆزلۈكىدىن ماسلىشىدۇ";
 
 /* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Appearance";
+"CHAT_COLORS_MEGAPHONE_ACTION" = "كۆرۈنۈش";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "ھازىر يانتۇ ۋە باشقا ئۇسۇللار ئارقىلىق سۆھبەت رەڭگىنى ئۆزگەرتەلەيسىز.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "ئىختىيارىچە سۆھبەت رەڭگى";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "سۆھبەت رەڭگى ۋە تام قەغەز";
@@ -1088,7 +1091,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "ئىختىيارىچە رەڭ";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "گىرادۇس يۆنىلىشىنى ئۆزگەرتىش ئۈچۈن سۆرەڭ";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "بۇنىڭغا بىر مىنۇتتەك ۋەقىت كېتىشى مۇمكىن.";
@@ -1655,7 +1658,7 @@
 "GET_STARTED_BANNER_TITLE" = "ئىشلىتىشكە باشلاش";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Appearance";
+"GET_STARTED_CARD_APPEARANCE" = "كۆرۈنۈش";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
@@ -1811,7 +1814,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ بۇ چاقىرىقتا";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = " %@نامايان قىلىۋاتىدۇ";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "قايتا ئۇلىنىۋاتىدۇ";
@@ -1820,7 +1823,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "بىرەيلەن ئۆزگەرتىلگەن بىخەتەرلىك نومۇرى بىلەن بۇ چاقىرىشقا قوشۇلدى.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "ئۈستىگە سىيرىلسا ئېكران ھەمبەھىرلەشنى كۆرسىتىدۇ";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "بەزىلەر بىر گۇرۇپپا چاقىرىقىنى باشلىدى";
@@ -2966,13 +2969,28 @@
 "MESSAGE_ACTION_DETAILS" = "تېخىمۇ كۆپ ئۇچۇر";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "يېڭى ئېلخەت ئۇچۇرى";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ئېلخەت سەپلەنمىگەن.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "بۇ ئۇچۇرنى ئۇلاپ يوللاڭ";
+
+/* Label for button to open a link. */
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to call a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "چاقىر";
+
+/* Label for button to make a Facetime audio call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+
+/* Label for button to make a Facetime video call to a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+
+/* Label for button to send a text message a phone number. */
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "بۇ ئۇچۇرغا جاۋاب";
