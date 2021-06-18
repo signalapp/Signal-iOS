@@ -234,8 +234,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         if let avatarData = avatarData {
             avatarImageView.image = UIImage(data: avatarData)
         } else {
-            let avatar = Self.avatarBuilder.avatarImageForLocalUserWithSneakyTransaction(diameterPoints: avatarDiameter,
-                                                                                         localUserDisplayMode: .asUser)
+            let localAddress = tsAccountManager.localAddress!
+            let avatar = Self.avatarBuilder.avatarImageForContactDefault(address: localAddress,
+                                                                         diameterPoints: avatarDiameter)
             avatarImageView.image = avatar
         }
         avatarImageView.clipsToBounds = true

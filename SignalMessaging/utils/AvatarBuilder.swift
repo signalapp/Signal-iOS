@@ -248,6 +248,27 @@ public class AvatarBuilder: NSObject {
         return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
+    @objc
+    public func avatarImageForContactDefault(address: SignalServiceAddress,
+                                             diameterPoints: UInt) -> UIImage? {
+        let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
+        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
+        let shouldBlurAvatar = false
+        let backgroundColor = ChatColors.avatarColor(forAddress: address).asOWSColor
+        let requestType: RequestType = .contactDefaultIcon(backgroundColor: backgroundColor)
+        let request = Request(requestType: requestType,
+                              diameterPixels: diameterPixels,
+                              isDarkThemeEnabled: isDarkThemeEnabled,
+                              shouldBlurAvatar: shouldBlurAvatar)
+        let avatarContentType: AvatarContentType = .contactDefaultIcon(backgroundColor: backgroundColor)
+        let avatarContent = AvatarContent(request: request,
+                                          contentType: avatarContentType,
+                                          diameterPixels: request.diameterPixels,
+                                          isDarkThemeEnabled: request.isDarkThemeEnabled,
+                                          shouldBlurAvatar: request.shouldBlurAvatar)
+        return avatarImage(forRequest: request, avatarContent: avatarContent)
+    }
+
     // MARK: - Requests
 
     public enum RequestType {
