@@ -277,9 +277,11 @@ extension CVUpdate {
         }
 
         // If user sends a new outgoing message, animate the change.
-        var isOnlyModifyingLastMessage = true
+        var shouldAnimateUpdate = true
+        var onlyAppearanceUpdateChanges = true
+        var previousItemCount = oldItemCount
         for updateItem in updateItems {
-            guard isOnlyModifyingLastMessage else {
+            guard shouldAnimateUpdate else {
                 // Exit early if we already know that we're not just
                 // inserting a new message at the bottom of the conversation.
                 break
@@ -287,19 +289,25 @@ extension CVUpdate {
 
             switch updateItem {
             case .delete(let renderItem, _):
+                onlyAppearanceUpdateChanges = false
                 if renderItem.interactionType != .unreadIndicator {
-                    isOnlyModifyingLastMessage = false
+                    shouldAnimateUpdate = false
+                } else {
+                    // Ensure insert check passes if we're removing an unreadIndicator, and inserting a new message
+                    previousItemCount = oldItemCount - 1
                 }
             case .insert(let renderItem, let newIndex):
+                onlyAppearanceUpdateChanges = false
                 switch renderItem.interactionType {
                 case .incomingMessage, .outgoingMessage, .typingIndicator:
-                    if newIndex < oldItemCount {
-                        isOnlyModifyingLastMessage = false
+                    if newIndex < previousItemCount {
+                        shouldAnimateUpdate = false
                     }
+                    break
                 case .unreadIndicator:
                     break
                 default:
-                    isOnlyModifyingLastMessage = false
+                    shouldAnimateUpdate = true
                 }
             case .update(let renderItem, _, let newIndex):
                 let itemId = Self.itemId(for: renderItem)
@@ -307,20 +315,21 @@ extension CVUpdate {
                 if didOnlyAppearanceChange {
                     continue
                 }
+
+                onlyAppearanceUpdateChanges = false
                 switch renderItem.interactionType {
                 case .incomingMessage, .outgoingMessage, .typingIndicator:
                     // We skip animations for the last _two_
                     // interactions, not one since there
                     // may be a typing indicator.
-                    if newIndex + 2 < updateItems.count {
-                        isOnlyModifyingLastMessage = false
+                    if newIndex + 2 > updateItems.count {
+                        shouldAnimateUpdate = false
                     }
                 default:
-                    isOnlyModifyingLastMessage = false
+                    shouldAnimateUpdate = false
                 }
             }
         }
-        let shouldAnimateUpdate = !isOnlyModifyingLastMessage
-        return shouldAnimateUpdate
+        return shouldAnimateUpdate && !onlyAppearanceUpdateChanges
     }
 }
