@@ -32,6 +32,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         let strokeConfig: StrokeConfig?
     }
     private var bubbleConfig: BubbleConfig?
+    private var hasPillRounding = false
 
     private let gradientLayer = CAGradientLayer()
     private let shapeLayer = CAShapeLayer()
@@ -63,10 +64,15 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     public func configure(value: ColorOrGradientValue,
                           referenceView: UIView,
-                          bubbleConfig: BubbleConfig? = nil) {
+                          bubbleConfig: BubbleConfig? = nil,
+                          hasPillRounding: Bool = false) {
+        // At most one of these parameters should be set.
+        owsAssertDebug(!hasPillRounding || bubbleConfig == nil)
+
         self.value = value
         self.referenceView = referenceView
         self.bubbleConfig = bubbleConfig
+        self.hasPillRounding = hasPillRounding
 
         addDefaultLayoutBlock()
 
@@ -251,7 +257,14 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
             // If this view isn't being used as a CVC message bubble,
             // don't bother masking or using shapeLayer to render the stroke.
             layer.mask = nil
-            layer.masksToBounds = false
+
+            if hasPillRounding {
+                layer.masksToBounds = true
+                layer.cornerRadius = bounds.size.smallerAxis / 2
+            } else {
+                layer.masksToBounds = false
+                layer.cornerRadius = 0
+            }
             if shapeLayer.superlayer != nil {
                 shapeLayer.removeFromSuperlayer()
             }
@@ -267,6 +280,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         self.value = nil
         self.backgroundColor = nil
         self.bubbleConfig = nil
+        self.hasPillRounding = false
         shapeLayer.removeFromSuperlayer()
         gradientLayer.removeFromSuperlayer()
     }

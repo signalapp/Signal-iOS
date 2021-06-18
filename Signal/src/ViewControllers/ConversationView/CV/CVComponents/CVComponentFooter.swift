@@ -94,9 +94,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         if isBorderless && conversationStyle.hasWallpaper {
             let chatColorView = componentView.chatColorView
             chatColorView.configure(value: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
-                                    referenceView: componentDelegate.view)
-            chatColorView.layer.cornerRadius = 11
-            chatColorView.layer.masksToBounds = true
+                                    referenceView: componentDelegate.view,
+                                    hasPillRounding: true)
             innerStack.addSubviewToFillSuperviewEdges(chatColorView)
         }
 
