@@ -797,7 +797,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         if hasSenderAvatarLayout {
             // Sender avatar in groups.
-            contentMaxWidth -= ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing
+            contentMaxWidth -= CGFloat(ConversationStyle.groupMessageAvatarDiameter) + ConversationStyle.messageStackSpacing
         }
 
         owsAssertDebug(conversationStyle.maxMediaMessageWidth <= conversationStyle.maxMessageWidth)
@@ -819,7 +819,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if hasSenderAvatarLayout,
            nil != self.senderAvatar {
             // Sender avatar in groups.
-            let avatarSize = CGSize.square(ConversationStyle.groupMessageAvatarDiameter)
+            let avatarSize = CGSize.square(CGFloat(ConversationStyle.groupMessageAvatarDiameter))
             hInnerStackSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
         // NOTE: The contentStackSize does not have fixed width and may grow

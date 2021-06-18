@@ -228,19 +228,20 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let avatarDiameter: CGFloat = 88
+        let avatarDiameter: UInt = 88
         let avatarImageView = AvatarImageView()
         avatarImageView.contentMode = .scaleAspectFit
         if let avatarData = avatarData {
             avatarImageView.image = UIImage(data: avatarData)
         } else {
-            let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: UInt(avatarDiameter),
-                                                        localUserDisplayMode: .asUser)
-            avatarImageView.image = avatarBuilder.buildDefaultImage()
+            let localAddress = tsAccountManager.localAddress!
+            let avatar = Self.avatarBuilder.avatarImageForContactDefault(address: localAddress,
+                                                                         diameterPoints: avatarDiameter)
+            avatarImageView.image = avatar
         }
         avatarImageView.clipsToBounds = true
-        avatarImageView.layer.cornerRadius = avatarDiameter / 2
-        avatarImageView.autoSetDimensions(to: CGSize(square: avatarDiameter))
+        avatarImageView.layer.cornerRadius = CGFloat(avatarDiameter) / 2
+        avatarImageView.autoSetDimensions(to: CGSize(square: CGFloat(avatarDiameter)))
 
         cell.contentView.addSubview(avatarImageView)
         avatarImageView.autoPinHeightToSuperviewMargins()

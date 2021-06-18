@@ -407,7 +407,7 @@ extension ConversationSettingsViewController {
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel, sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
-        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing))
+        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
 
         let helper = contactsViewHelper
         let groupMembership = groupModel.groupMembership
@@ -424,7 +424,7 @@ extension ConversationSettingsViewController {
                 cell.contentView.preservesSuperviewLayoutMargins = true
 
                 let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers,
-                                                                  iconSize: kSmallAvatarSize,
+                                                                  iconSize: AvatarBuilder.smallAvatarSizePoints,
                                                                   innerIconSize: 24,
                                                                   iconTintColor: Theme.primaryTextColor)
 
@@ -550,7 +550,7 @@ extension ConversationSettingsViewController {
                     cell.contentView.preservesSuperviewLayoutMargins = true
 
                     let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
-                                                                      iconSize: kSmallAvatarSize,
+                                                                      iconSize: AvatarBuilder.smallAvatarSizePoints,
                                                                       innerIconSize: 24,
                                                                       iconTintColor: Theme.primaryTextColor)
 
@@ -631,7 +631,7 @@ extension ConversationSettingsViewController {
 
     private func buildMutualGroupsSection(sectionIndex: Int) -> OWSTableSection {
         let section = OWSTableSection()
-        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing))
+        section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
 
         // "Add to a Group" cell.
         section.add(OWSTableItem(
@@ -646,7 +646,7 @@ extension ConversationSettingsViewController {
 
                 let iconView = OWSTableItem.buildIconInCircleView(
                     icon: .settingsAddMembers,
-                    iconSize: kSmallAvatarSize,
+                    iconSize: AvatarBuilder.smallAvatarSizePoints,
                     innerIconSize: 24,
                     iconTintColor: Theme.primaryTextColor
                 )
@@ -728,7 +728,7 @@ extension ConversationSettingsViewController {
 
                     let iconView = OWSTableItem.buildIconInCircleView(
                         icon: .settingsShowAllMembers,
-                                                                      iconSize: kSmallAvatarSize,
+                                                                      iconSize: AvatarBuilder.smallAvatarSizePoints,
                                                                       innerIconSize: 24,
                                                                       iconTintColor: Theme.primaryTextColor
                     )

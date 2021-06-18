@@ -134,8 +134,8 @@ const NSUInteger kMinimumSearchLength = 1;
     _tableViewController = [OWSTableViewController2 new];
     _tableViewController.delegate = self;
 
-    self.tableViewController.defaultSeparatorInsetLeading
-        = OWSTableViewController2.cellHInnerMargin + kSmallAvatarSize + ContactCellView.avatarTextHSpacing;
+    self.tableViewController.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin
+        + AvatarBuilder.smallAvatarSizePoints + ContactCellView.avatarTextHSpacing;
 
     [self addChildViewController:self.tableViewController];
     [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];

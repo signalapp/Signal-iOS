@@ -1176,3 +1176,15 @@ public extension UIBezierPath {
         return bezierPath
     }
 }
+
+// MARK: -
+
+public extension CGFloat {
+    var pointsAsPixels: CGFloat {
+        self * UIScreen.main.scale
+    }
+
+    var sqr: CGFloat {
+        self * self
+    }
+}

@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
     OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
     ChatColors *chatColors = [ChatColors new];
+    AvatarBuilder *avatarBuilder = [AvatarBuilder new];
 
     self = [super initWithAudioSession:audioSession
            incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -48,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
                     contactsViewHelper:contactsViewHelper
          broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
                      orphanDataCleaner:orphanDataCleaner
-                            chatColors:chatColors];
+                            chatColors:chatColors
+                         avatarBuilder:avatarBuilder];
 
     OWSAssertDebug(self);
     return self;

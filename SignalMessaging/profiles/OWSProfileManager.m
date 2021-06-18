@@ -40,8 +40,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 // This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) OWSUserProfile *localUserProfile;
 
-// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSCache<NSString *, UIImage *> *profileAvatarImageCache;
+
+@property (atomic, readonly) NSCache<NSString *, NSData *> *profileAvatarDataCache;
 
 @end
 
@@ -102,7 +103,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     _whitelistedGroupsStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
 
-    _profileAvatarImageCache = [NSCache new];
+    _profileAvatarImageCache = [[NSCache alloc] initWithCountLimit:32];
+    _profileAvatarDataCache = [[NSCache alloc] initWithCountLimit:64];
 
     OWSSingletonAssert();
 
@@ -292,7 +294,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     if (filename.length < 1) {
         return nil;
     }
-    return [self loadProfileDataWithFilename:filename];
+    return [self loadProfileAvatarDataWithFilename:filename];
 }
 
 - (nullable NSString *)localUsername
@@ -310,7 +312,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     NSData *_Nullable avatarData = nil;
     if (shouldIncludeAvatar && userProfile.avatarFileName.length > 0) {
-        avatarData = [self loadProfileDataWithFilename:userProfile.avatarFileName];
+        avatarData = [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
     }
     return [[OWSProfileSnapshot alloc] initWithGivenName:userProfile.givenName
                                               familyName:userProfile.familyName
@@ -345,12 +347,13 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *fileName = [self generateAvatarFilename];
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
+        NSString *filename = [self generateAvatarFilename];
+        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
         BOOL success = [avatarData writeToFile:filePath atomically:YES];
         OWSAssertDebug(success);
         if (success) {
-            return successBlock(fileName);
+            [self updateProfileAvatarDataCache:avatarData filename:filename];
+            return successBlock(filename);
         }
         failureBlock(OWSErrorWithCodeDescription(OWSErrorCodeAvatarWriteFailed, @"Avatar write failed."));
     });
@@ -1468,7 +1471,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
     if (userProfile.avatarFileName.length > 0) {
-        return [self loadProfileDataWithFilename:userProfile.avatarFileName];
+        return [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
     }
 
     return nil;
@@ -1480,6 +1483,11 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+
+    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
+        // Try to fill in missing avatar.
+        [self downloadAvatarForUserProfile:userProfile];
+    }
 
     return userProfile.avatarUrlPath;
 }
@@ -1566,8 +1574,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             return;
         }
 
-        NSString *fileName = [self generateAvatarFilename];
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
+        NSString *filename = [self generateAvatarFilename];
+        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
 
         // downloadAndDecryptProfileAvatarForProfileAddress:... ensures that
         // only one download is in flight at a time for a given avatar.
@@ -1585,6 +1593,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                     OWSFailDebug(@"Could not write avatar to disk.");
                     return;
                 }
+
+                [self updateProfileAvatarDataCache:decryptedData filename:filename];
+
                 UIImage *_Nullable image = [UIImage imageWithContentsOfFile:filePath];
                 if (image == nil) {
                     OWSLogError(@"Could not read avatar image.");
@@ -1611,9 +1622,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                         }
                     }
 
-                    [self updateProfileAvatarCache:image filename:fileName];
+                    [self updateProfileAvatarImageCache:image filename:filename];
 
-                    [currentUserProfile updateWithAvatarFileName:fileName
+                    [currentUserProfile updateWithAvatarFileName:filename
                                                userProfileWriter:UserProfileWriter_AvatarDownload
                                                      transaction:transaction];
                 });
@@ -1668,6 +1679,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             if (!success) {
                 OWSFailDebug(@"Could not write avatar to disk.");
             } else {
+                [self updateProfileAvatarDataCache:optionalDecryptedAvatarData filename:newAvatarFileName];
+
                 avatarFileName = newAvatarFileName;
                 avatarImage = [UIImage imageWithContentsOfFile:filePath];
             }
@@ -1687,7 +1700,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             }
             
             if (avatarImage != nil) {
-                [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
+                [self updateProfileAvatarImageCache:avatarImage filename:avatarFileName];
                 [userProfile updateWithGivenName:givenName
                                       familyName:familyName
                                              bio:bio
@@ -1772,12 +1785,29 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 #pragma mark - Avatar Disk Cache
 
-- (nullable NSData *)loadProfileDataWithFilename:(NSString *)filename
+- (nullable NSData *)loadProfileAvatarDataWithFilename:(NSString *)filename
 {
     OWSAssertDebug(filename.length > 0);
 
+    NSData *_Nullable avatarData = [self.profileAvatarDataCache objectForKey:filename];
+    if (nil != avatarData) {
+        return avatarData;
+    }
+
     NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
-    return [NSData dataWithContentsOfFile:filePath];
+    avatarData = [NSData dataWithContentsOfFile:filePath];
+
+    if (![avatarData ows_isValidImage]) {
+        return nil;
+    }
+
+    if (nil != avatarData) {
+        [self updateProfileAvatarDataCache:avatarData filename:filename];
+        return avatarData;
+    }
+
+    OWSLogWarn(@"Could not load profile avatar data.");
+    return nil;
 }
 
 - (nullable UIImage *)loadProfileAvatarWithFilename:(NSString *)filename
@@ -1786,36 +1816,45 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         return nil;
     }
 
-    UIImage *_Nullable image = nil;
-    @synchronized(self.profileAvatarImageCache)
-    {
-        image = [self.profileAvatarImageCache objectForKey:filename];
-    }
+    UIImage *_Nullable image = [self.profileAvatarImageCache objectForKey:filename];
     if (image) {
         return image;
     }
 
-    NSData *data = [self loadProfileDataWithFilename:filename];
-    if (![data ows_isValidImage]) {
+    NSData *_Nullable data = [self loadProfileAvatarDataWithFilename:filename];
+    if (nil == data) {
         return nil;
     }
     image = [UIImage imageWithData:data];
-    [self updateProfileAvatarCache:image filename:filename];
-    return image;
+    if (image) {
+        [self updateProfileAvatarImageCache:image filename:filename];
+        return image;
+    } else {
+        OWSLogWarn(@"Could not load profile avatar.");
+        return nil;
+    }
 }
 
-- (void)updateProfileAvatarCache:(nullable UIImage *)image filename:(NSString *)filename
+- (void)updateProfileAvatarImageCache:(UIImage *)image filename:(NSString *)filename
 {
+    OWSAssertDebug(image != nil);
     OWSAssertDebug(filename.length > 0);
 
-    @synchronized(self.profileAvatarImageCache)
-    {
-        if (image) {
-            [self.profileAvatarImageCache setObject:image forKey:filename];
-        } else {
-            [self.profileAvatarImageCache removeObjectForKey:filename];
-        }
+    [self.profileAvatarImageCache setObject:image forKey:filename];
+}
+
+- (void)updateProfileAvatarDataCache:(nullable NSData *)imageData filename:(NSString *)filename
+{
+    if (filename.length < 1) {
+        OWSFailDebug(@"Invalid filename.");
+        return;
     }
+    if (imageData.length < 1) {
+        OWSFailDebug(@"Invalid imageData.");
+        return;
+    }
+
+    [self.profileAvatarDataCache setObject:imageData forKey:filename];
 }
 
 - (AnyPromise *)downloadAndDecryptProfileAvatarForProfileAddress:(SignalServiceAddress *)profileAddress

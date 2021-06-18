@@ -30,9 +30,9 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
     @objc
     init?(thread: TSThread, readTx: SDSAnyReadTransaction) {
-        guard let avatarImage = OWSAvatarBuilder.buildImage(
-                thread: thread,
-                diameter: UInt(UIScreen.main.bounds.size.smallerAxis),
+        guard let avatarImage = Self.avatarBuilder.avatarImage(
+                forThread: thread,
+                diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
                 localUserDisplayMode: .asUser,
                 transaction: readTx) else { return nil }
 
@@ -51,18 +51,17 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
                                                                 ? .noteToSelf
                                                                 : .asUser)
             if address.isLocalAddress, !renderLocalUserAsNoteToSelf {
-                return Self.profileManager.localProfileAvatarImage() ??
-                    OWSContactAvatarBuilder(
-                        forLocalUserWithDiameter: diameter,
-                        localUserDisplayMode: localUserDisplayMode,
-                        transaction: readTx
-                    ).buildDefaultImage()
+                if let avatar = Self.profileManager.localProfileAvatarImage() {
+                    return avatar
+                }
+                return Self.avatarBuilder.avatarImageForLocalUser(diameterPoints: diameter,
+                                                                  localUserDisplayMode: localUserDisplayMode,
+                                                                  transaction: readTx)
             } else {
-                return OWSContactAvatarBuilder.buildImageForNonLocalAddress(
-                    address,
-                    diameter: UInt(UIScreen.main.bounds.size.smallerAxis),
-                    transaction: readTx
-                )
+                return Self.avatarBuilder.avatarImage(forAddress: address,
+                                                      diameterPoints: diameter,
+                                                      localUserDisplayMode: localUserDisplayMode,
+                                                      transaction: readTx)
             }
         }() else { return nil }
 

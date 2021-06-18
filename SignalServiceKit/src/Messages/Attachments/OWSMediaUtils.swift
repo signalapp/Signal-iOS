@@ -73,7 +73,7 @@ public class OWSMediaUtils: NSObject {
     public class func thumbnail(forImageData imageData: Data, maxDimensionPoints: CGFloat) throws -> UIImage {
         Logger.verbose("thumbnailing image data.")
 
-        guard (imageData as NSData).ows_isValidImage() else {
+        guard imageData.ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
         guard let originalImage = UIImage(data: imageData) else {

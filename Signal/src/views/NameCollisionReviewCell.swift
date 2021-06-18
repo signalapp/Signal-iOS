@@ -28,10 +28,10 @@ extension NameCollision {
         if address.isLocalAddress, let localProfileAvatar = profileManager.localProfileAvatarImage() {
             return localProfileAvatar
         } else {
-            return OWSContactAvatarBuilder.buildImageForNonLocalAddress(
-                address,
-                diameter: 64,
-                transaction: transaction)
+            return Self.avatarBuilder.avatarImage(forAddress: address,
+                                                  diameterPoints: 64,
+                                                  localUserDisplayMode: .asUser,
+                                                  transaction: transaction)
         }
     }
 
@@ -89,7 +89,7 @@ extension NameCollision {
 class NameCollisionCell: UITableViewCell {
     typealias Action = (title: String, action: () -> Void)
 
-    let avatarView = ConversationAvatarView(diameter: 64,
+    let avatarView = ConversationAvatarView(diameterPoints: 64,
                                             localUserDisplayMode: .asUser)
 
     let nameLabel: UILabel = {

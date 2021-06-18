@@ -10,7 +10,7 @@ public class ConversationListCell: UITableViewCell {
     @objc
     public static let reuseIdentifier = "ConversationListCell"
 
-    private let avatarView = ConversationAvatarView(diameter: ConversationListCell.avatarSize,
+    private let avatarView = ConversationAvatarView(diameterPoints: ConversationListCell.avatarSize,
                                                     localUserDisplayMode: .noteToSelf,
                                                     shouldLoadAsync: false)
 
@@ -89,7 +89,7 @@ public class ConversationListCell: UITableViewCell {
         Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45
     }
 
-    // This value is now larger than kStandardAvatarSize.
+    // This value is now larger than AvatarBuilder.standardAvatarSizePoints.
     private static let avatarSize: UInt = 56
 
     private let avatarHSpacing: UInt = 12

@@ -114,7 +114,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
         if typingIndicator.avatar != nil {
-            let avatarSize: CGSize = .square(ConversationStyle.groupMessageAvatarDiameter)
+            let avatarSize: CGSize = .square(CGFloat(ConversationStyle.groupMessageAvatarDiameter))
             outerSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
 

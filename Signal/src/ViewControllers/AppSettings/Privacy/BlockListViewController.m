@@ -148,8 +148,8 @@ NS_ASSUME_NONNULL_BEGIN
         for (TSGroupModel *blockedGroup in blockedGroups) {
             UIImage *_Nullable image = blockedGroup.groupAvatarImage;
             if (!image) {
-                image = [OWSGroupAvatarBuilder defaultAvatarForGroupId:blockedGroup.groupId
-                                                              diameter:kStandardAvatarSize];
+                image = [self.avatarBuilder avatarImageForGroupId:blockedGroup.groupId
+                                                   diameterPoints:AvatarBuilder.standardAvatarSizePoints];
             }
             [blockedGroupsSection
                 addItem:[OWSTableItem

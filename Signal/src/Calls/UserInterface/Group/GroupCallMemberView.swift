@@ -242,7 +242,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
-    let avatarView = ConversationAvatarView(diameter: 0,
+    let avatarView = ConversationAvatarView(diameterPoints: 0,
                                             localUserDisplayMode: .asUser)
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
     lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
@@ -307,12 +307,14 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         let profileImage = databaseStorage.uiRead { transaction -> UIImage? in
             avatarView.configure(address: device.address,
-                                 diameter: avatarDiameter,
+                                 diameterPoints: avatarDiameter,
                                  localUserDisplayMode: .asUser,
                                  transaction: transaction)
             avatarWidthConstraint.constant = CGFloat(avatarDiameter)
 
-            return self.contactsManagerImpl.image(for: device.address, transaction: transaction)
+            return self.contactsManagerImpl.avatarImage(forAddress: device.address,
+                                                        shouldValidate: true,
+                                                        transaction: transaction)
         }
 
         backgroundAvatarView.image = profileImage

@@ -344,7 +344,7 @@ public extension OWSTableItem {
                                       iconSize iconSizeParam: UInt? = nil,
                                       innerIconSize innerIconSizeParam: CGFloat? = nil,
                                       iconTintColor: UIColor? = nil) -> UIView {
-        let iconSize = CGFloat(iconSizeParam ?? kStandardAvatarSize)
+        let iconSize = CGFloat(iconSizeParam ?? AvatarBuilder.standardAvatarSizePoints)
         let innerIconSize: CGFloat
         if let innerIconSizeParam = innerIconSizeParam {
             innerIconSize = innerIconSizeParam

@@ -4,6 +4,7 @@
 
 #import <SignalServiceKit/SSKEnvironment.h>
 
+@class AvatarBuilder;
 @class BroadcastMediaMessageJobQueue;
 @class ChatColors;
 @class ContactsViewHelper;
@@ -42,7 +43,8 @@
                   contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
        broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
                    orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                          chatColors:(ChatColors *)chatColors;
+                          chatColors:(ChatColors *)chatColors
+                       avatarBuilder:(AvatarBuilder *)avatarBuilder;
 
 @property (nonatomic, readonly) OWSAudioSession *audioSessionRef;
 @property (nonatomic, readonly) OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueueRef;
@@ -56,6 +58,7 @@
 @property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic, readonly) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic, readonly) ChatColors *chatColorsRef;
+@property (nonatomic, readonly) AvatarBuilder *avatarBuilderRef;
 
 @property (class, nonatomic) Environment *shared;
 

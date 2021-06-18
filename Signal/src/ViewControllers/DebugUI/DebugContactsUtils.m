@@ -124,8 +124,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     // imageThumbnailData from programmatically assigned imageData. We could make our
                                     // own thumbnail in Contact.m, but it's not worth it for the sake of debug UI.
                                     UIImage *avatarImage = (shouldUseLargeAvatar
-                                            ? [OWSAvatarBuilder buildNoiseAvatarWithDiameter:avatarDiameter]
-                                            : [OWSAvatarBuilder buildRandomAvatarWithDiameter:avatarDiameter]);
+                                            ? [AvatarBuilder buildNoiseAvatarWithDiameterPoints:avatarDiameter]
+                                            : [AvatarBuilder buildRandomAvatarWithDiameterPoints:avatarDiameter]);
                                     contact.imageData = UIImageJPEGRepresentation(avatarImage, (CGFloat)0.9);
                                     OWSLogDebug(@"avatar size: %lu bytes", (unsigned long)contact.imageData.length);
                                 }

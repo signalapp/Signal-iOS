@@ -51,7 +51,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                       comment: "The title for the 'group invites' view.")
         }
 
-        defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing
+        defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
         configureSegmentedControl()
 

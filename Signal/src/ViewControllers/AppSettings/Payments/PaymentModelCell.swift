@@ -7,7 +7,7 @@ import Foundation
 public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
-    let contactAvatarView = ConversationAvatarView(diameter: PaymentModelCell.avatarDiameter,
+    let contactAvatarView = ConversationAvatarView(diameterPoints: PaymentModelCell.avatarDiameter,
                                                    localUserDisplayMode: .asUser)
 
     let nameLabel = UILabel()

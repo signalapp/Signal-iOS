@@ -61,25 +61,14 @@ public class ContactShareViewModel: NSObject {
             return avatarImage
         }
 
-        var colorSeed = name.displayName
-        let recipientIds = systemContactsWithSignalAccountPhoneNumbers(transaction: transaction)
-        if let firstRecipientId = recipientIds.first {
-            // Try to use the first signal id as the default
-            // avatar's color seed, so that it is as consistent
-            // as possible with the user's avatar in other views.
-            colorSeed = firstRecipientId
-        }
-
-        let avatarBuilder = OWSContactAvatarBuilder(nonSignalNameComponents: name.components,
-                                                    colorSeed: colorSeed,
-                                                    diameter: UInt(diameter))
-        // Note: we use buildDefaultImage() and not build() so that contact
-        // share views always reflect the contents of the contact share.
-        // build() might return an avatar from a corresponding system
-        // contact or profile.  This could mislead the user into thinking
+        // Note: We build an avatar that _never_ reflects the name,
+        // not any corresponding system contact or profile.
+        // This could mislead the user into thinking
         // that an avatar they did not share was in fact included in the
         // contact share.
-        return avatarBuilder.buildDefaultImage()
+        return Self.avatarBuilder.avatarImage(personNameComponents: name.components,
+                                              diameterPoints: UInt(diameter),
+                                              transaction: transaction)
     }
 
     // MARK: Delegated -> dbRecord

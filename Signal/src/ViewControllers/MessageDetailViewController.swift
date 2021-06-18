@@ -339,7 +339,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 section.headerTitle = sectionTitle
             }
 
-            section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(kSmallAvatarSize) + ContactCellView.avatarTextHSpacing))
+            section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
 
             for recipient in recipients {
                 section.add(contactItem(

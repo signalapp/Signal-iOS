@@ -281,7 +281,7 @@ private class MentionableUserCell: UITableViewCell {
 
     let displayNameLabel = UILabel()
     let usernameLabel = UILabel()
-    let avatarView = ConversationAvatarView(diameter: MentionableUserCell.avatarSize,
+    let avatarView = ConversationAvatarView(diameterPoints: MentionableUserCell.avatarSize,
                                             localUserDisplayMode: .asUser)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

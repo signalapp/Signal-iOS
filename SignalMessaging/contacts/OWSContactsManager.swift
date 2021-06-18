@@ -235,34 +235,6 @@ fileprivate extension OWSContactsManager {
 @objc
 public extension OWSContactsManager {
 
-    // MARK: - Avatar Cache
-
-    private static let unfairLock = UnfairLock()
-
-    func getImageFromAvatarCache(key: String, diameter: CGFloat) -> UIImage? {
-        Self.unfairLock.withLock {
-            self.avatarCachePrivate.image(forKey: key as NSString, diameter: diameter)
-        }
-    }
-
-    func setImageForAvatarCache(_ image: UIImage, forKey key: String, diameter: CGFloat) {
-        Self.unfairLock.withLock {
-            self.avatarCachePrivate.setImage(image, forKey: key as NSString, diameter: diameter)
-        }
-    }
-
-    func removeAllFromAvatarCacheWithKey(_ key: String) {
-        Self.unfairLock.withLock {
-            self.avatarCachePrivate.removeAllImages(forKey: key as NSString)
-        }
-    }
-
-    func removeAllFromAvatarCache() {
-        Self.unfairLock.withLock {
-            self.avatarCachePrivate.removeAllImages()
-        }
-    }
-
     // MARK: - Low Trust Thread Warnings
 
     func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
@@ -476,5 +448,126 @@ extension SortableValue: Equatable, Comparable {
 fileprivate extension OWSContactsManager {
     func sort<T>(_ values: [SortableValue<T>]) -> [T] {
         return values.sorted().map { $0.value }
+    }
+}
+
+// MARK: -
+
+extension OWSContactsManager {
+
+    @objc
+    public func avatarImage(forAddress address: SignalServiceAddress?,
+                            shouldValidate: Bool,
+                            transaction: SDSAnyReadTransaction) -> UIImage? {
+        guard let imageData = avatarImageData(forAddress: address,
+                                              shouldValidate: shouldValidate,
+                                              transaction: transaction) else {
+            return nil
+        }
+        guard let image = UIImage(data: imageData) else {
+            owsFailDebug("Invalid image.")
+            return nil
+        }
+        return image
+    }
+
+    @objc
+    public func avatarImageData(forAddress address: SignalServiceAddress?,
+                                shouldValidate: Bool,
+                                transaction: SDSAnyReadTransaction) -> Data? {
+        guard let address = address,
+              address.isValid else {
+            owsFailDebug("Missing or invalid address.")
+            return nil
+        }
+
+        if SSKPreferences.preferContactAvatars(transaction: transaction) {
+            return (systemContactOrSyncedImageData(forAddress: address,
+                                                   shouldValidate: shouldValidate,
+                                                   transaction: transaction)
+                        ?? profileAvatarImageData(forAddress: address,
+                                                  shouldValidate: shouldValidate,
+                                                  transaction: transaction))
+        } else {
+            return (profileAvatarImageData(forAddress: address,
+                                           shouldValidate: shouldValidate,
+                                           transaction: transaction)
+                        ?? systemContactOrSyncedImageData(forAddress: address,
+                                                          shouldValidate: shouldValidate,
+                                                          transaction: transaction))
+        }
+    }
+
+    fileprivate func profileAvatarImageData(forAddress address: SignalServiceAddress?,
+                                            shouldValidate: Bool,
+                                            transaction: SDSAnyReadTransaction) -> Data? {
+        func validateIfNecessary(_ imageData: Data) -> Data? {
+            guard shouldValidate else {
+                return imageData
+            }
+            guard imageData.ows_isValidImage else {
+                owsFailDebug("Invalid image data.")
+                return nil
+            }
+            return imageData
+        }
+
+        guard let address = address,
+              address.isValid else {
+            owsFailDebug("Missing or invalid address.")
+            return nil
+        }
+
+        if let avatarData = profileManagerImpl.profileAvatarData(for: address, transaction: transaction),
+           let validData = validateIfNecessary(avatarData) {
+            return validData
+        }
+
+        return nil
+    }
+
+    fileprivate func systemContactOrSyncedImageData(forAddress address: SignalServiceAddress?,
+                                                    shouldValidate: Bool,
+                                                    transaction: SDSAnyReadTransaction) -> Data? {
+        func validateIfNecessary(_ imageData: Data) -> Data? {
+            guard shouldValidate else {
+                return imageData
+            }
+            guard imageData.ows_isValidImage else {
+                owsFailDebug("Invalid image data.")
+                return nil
+            }
+            return imageData
+        }
+
+        guard let address = address,
+              address.isValid else {
+            owsFailDebug("Missing or invalid address.")
+            return nil
+        }
+
+        if let phoneNumber = self.phoneNumber(for: address, transaction: transaction),
+           let contact = self.allContactsMap[phoneNumber],
+           let cnContactId = contact.cnContactId,
+           let avatarData = self.avatarData(forCNContactId: cnContactId),
+           let validData = validateIfNecessary(avatarData) {
+            return validData
+        }
+
+        // If we haven't loaded system contacts yet, we may have a cached copy in the db
+        if let signalAccount = self.fetchSignalAccount(for: address, transaction: transaction) {
+            if let contact = signalAccount.contact,
+               let cnContactId = contact.cnContactId,
+               let avatarData = self.avatarData(forCNContactId: cnContactId),
+               let validData = validateIfNecessary(avatarData) {
+                return validData
+            }
+
+            if let contactAvatarJpegData = signalAccount.contactAvatarJpegData,
+               let validData = validateIfNecessary(contactAvatarJpegData) {
+                return validData
+            }
+        }
+        return nil
     }
 }

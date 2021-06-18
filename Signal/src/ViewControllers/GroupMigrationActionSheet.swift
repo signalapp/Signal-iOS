@@ -163,7 +163,7 @@ public class GroupMigrationActionSheet: UIView {
         mutating func addMemberRow(address: SignalServiceAddress,
                                    transaction: SDSAnyReadTransaction) {
 
-            let avatarView = ConversationAvatarView(diameter: 28,
+            let avatarView = ConversationAvatarView(diameterPoints: 28,
                                                     localUserDisplayMode: .asUser)
             avatarView.configure(address: address, transaction: transaction)
 

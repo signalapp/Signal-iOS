@@ -471,6 +471,7 @@
 		34FB6A5125D1CD6000E599B1 /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */; };
 		34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */; };
 		34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */; };
+		34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC7EEB265834F30046707A /* AvatarBuilder.swift */; };
 		34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */; };
 		34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FDB29121FF986600A01202 /* UIView+OWS.swift */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
@@ -492,12 +493,6 @@
 		451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = B97940251832BD2400BD66CB /* UIUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */; };
 		451F8A451FD71570005CB9DA /* BlockListUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 343D3D991E9283F100165CA4 /* BlockListUIUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */; };
-		451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */; };
-		451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */; };
-		451F8A491FD715CF005CB9DA /* OWSAvatarBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		451F8A4A1FD715D9005CB9DA /* OWSContactAvatarBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		451F8A4B1FD715E1005CB9DA /* OWSGroupAvatarBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 452037D01EE84975004E4CDF /* DebugUISessionState.m */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
 		4521C3C01F59F3BA00B4C582 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
@@ -1555,6 +1550,7 @@
 		34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewUtils.swift; sourceTree = "<group>"; };
 		34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentModelCell.swift; sourceTree = "<group>"; };
+		34FC7EEB265834F30046707A /* AvatarBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AvatarBuilder.swift; sourceTree = "<group>"; };
 		34FCCA03264AEDFE00A63EDE /* CustomColorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomColorViewController.swift; sourceTree = "<group>"; };
 		34FDB29121FF986600A01202 /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+OWS.swift"; sourceTree = "<group>"; };
 		38AD4FA92310B7E00038BA75 /* SignalRingRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SignalRingRTC.framework; path = ThirdParty/WebRTC/Build/SignalRingRTC.framework; sourceTree = "<group>"; };
@@ -1596,10 +1592,6 @@
 		455A16DC1F1FEA0000F86704 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		455AC69D1F4F8B0300134004 /* ImageCacheTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCacheTest.swift; sourceTree = "<group>"; };
 		45638BDB1F3DD0D400128435 /* DebugUICalling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUICalling.swift; sourceTree = "<group>"; };
-		45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAvatarBuilder.h; sourceTree = "<group>"; };
-		45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAvatarBuilder.m; sourceTree = "<group>"; };
-		45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSGroupAvatarBuilder.h; sourceTree = "<group>"; };
-		45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSGroupAvatarBuilder.m; sourceTree = "<group>"; };
 		45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScrubbingLogFormatterTest.m; sourceTree = "<group>"; };
 		456D0FD51F63094D008499CD /* km */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = km; path = translations/km.lproj/Localizable.strings; sourceTree = "<group>"; };
 		456D0FD81F631F4E008499CD /* lt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lt; path = translations/lt.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1608,8 +1600,6 @@
 		457C87B72032645C008D52D6 /* DebugUINotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUINotifications.swift; sourceTree = "<group>"; };
 		457F671A20746193000EABCD /* QuotedReplyPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyPreview.swift; sourceTree = "<group>"; };
 		45847E861E4283C30080EAB3 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
-		45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactAvatarBuilder.h; sourceTree = "<group>"; };
-		45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactAvatarBuilder.m; sourceTree = "<group>"; };
 		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationSheet.swift; sourceTree = "<group>"; };
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
@@ -2467,6 +2457,7 @@
 			isa = PBXGroup;
 			children = (
 				349ED991221EE80D008045B0 /* AppPreferences.swift */,
+				34FC7EEB265834F30046707A /* AvatarBuilder.swift */,
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
@@ -2489,12 +2480,6 @@
 				34BEDB1521C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.m */,
 				34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */,
 				34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */,
-				45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */,
-				45666EC51D99483D008FE134 /* OWSAvatarBuilder.m */,
-				45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */,
-				45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */,
-				45666EC71D994C0D008FE134 /* OWSGroupAvatarBuilder.h */,
-				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
 				3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */,
 				3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */,
 				346129371FD1B47200532771 /* OWSPreferences.h */,
@@ -4178,7 +4163,6 @@
 				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
 				34AC09F2211B39B100997B47 /* OWSViewController.h in Headers */,
 				4C38E500230374D700E464B9 /* UIViewController+Permissions.h in Headers */,
-				451F8A491FD715CF005CB9DA /* OWSAvatarBuilder.h in Headers */,
 				34AC09E4211B39B100997B47 /* ScreenLockViewController.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
 				342950892124CB0A0000B063 /* OWSSearchBar.h in Headers */,
@@ -4188,13 +4172,11 @@
 				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
 				450C801020AD1AE400F3A091 /* OWSWindowManager.h in Headers */,
 				34480B631FD0A98800BC14EF /* UIView+OWS.h in Headers */,
-				451F8A4B1FD715E1005CB9DA /* OWSGroupAvatarBuilder.h in Headers */,
 				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
 				34AC09DD211B39B100997B47 /* ViewControllerUtils.h in Headers */,
 				451F8A451FD71570005CB9DA /* BlockListUIUtils.h in Headers */,
 				34AC0A0E211B39EA00997B47 /* ContactsViewHelper.h in Headers */,
 				34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */,
-				451F8A4A1FD715D9005CB9DA /* OWSContactAvatarBuilder.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
 				342950842124C9750000B063 /* OWSTextView.h in Headers */,
 				3478506A1FD9B78A007B8332 /* AppSetup.h in Headers */,
@@ -5243,6 +5225,7 @@
 				348C686D246B0B110039705A /* ThreadUtil.swift in Sources */,
 				342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */,
 				342950822124C9750000B063 /* OWSTextField.m in Sources */,
+				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
 				34AC0A13211B39EA00997B47 /* DisappearingTimerConfigurationView.swift in Sources */,
 				4CA46F4D219CFDAA0038ABDE /* GalleryRailView.swift in Sources */,
 				3474C57026111605006723D2 /* PaymentsUI.swift in Sources */,
@@ -5279,7 +5262,6 @@
 				34123C60239AA93B00782788 /* ViewOnceTooltip.swift in Sources */,
 				348ECD8C25F278460083C47D /* DebugLogger.swift in Sources */,
 				34FB6A5125D1CD6000E599B1 /* OWSTableViewController2.swift in Sources */,
-				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
 				34C2EEB42270D1CE00BCA1D0 /* StickerView.swift in Sources */,
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
@@ -5362,7 +5344,6 @@
 				889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
-				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
 				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
 				348D8E72262DF67A0019CAA8 /* ConversationAvatarView.swift in Sources */,
 				3474C57226111605006723D2 /* PaymentsFormat.swift in Sources */,
@@ -5388,7 +5369,6 @@
 				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
 				88C6FC3B24D0C73C001BAABB /* MentionPicker.swift in Sources */,
 				34C529092361D3540009DB2A /* ApprovalFooterView.swift in Sources */,
-				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
 				3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,

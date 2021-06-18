@@ -67,7 +67,7 @@ public class ConversationHeaderView: UIStackView {
     private let titleLabel: UILabel
     private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
-    private let avatarView = ConversationAvatarView(diameter: 36,
+    private let avatarView = ConversationAvatarView(diameterPoints: 36,
                                                     localUserDisplayMode: .noteToSelf)
 
     @objc

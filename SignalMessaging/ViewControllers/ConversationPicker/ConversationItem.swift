@@ -91,8 +91,10 @@ extension ContactConversationItem: ConversationItem {
     }
 
     var image: UIImage? {
-        return databaseStorage.uiRead { transaction in
-            return self.contactsManagerImpl.image(for: self.address, transaction: transaction)
+        databaseStorage.read { transaction in
+            self.contactsManagerImpl.avatarImage(forAddress: self.address,
+                                                 shouldValidate: true,
+                                                 transaction: transaction)
         }
     }
 
@@ -135,8 +137,10 @@ extension GroupConversationItem: ConversationItem {
 
     var image: UIImage? {
         guard let groupThread = groupThread else { return nil }
-        return OWSAvatarBuilder.buildImage(thread: groupThread,
-                                           diameter: kStandardAvatarSize,
-                                           localUserDisplayMode: .noteToSelf)
+        return databaseStorage.read { transaction in
+            Self.avatarBuilder.avatarImage(forGroupThread: groupThread,
+                                           diameterPoints: AvatarBuilder.standardAvatarSizePoints,
+                                           transaction: transaction)
+        }
     }
 }
