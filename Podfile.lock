@@ -39,7 +39,7 @@ PODS:
     - SwiftNIOSSL (< 3.0.0, >= 2.8.0)
     - SwiftNIOTransportServices (< 2.0.0, >= 1.6.0)
     - SwiftProtobuf (< 2.0.0, >= 1.9.0)
-  - LibMobileCoin (1.0.0):
+  - LibMobileCoin (1.1.0):
     - gRPC-Swift (~> 1.0.0)
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (0.9.15)
@@ -72,11 +72,11 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - MobileCoin (1.0.0):
-    - MobileCoin/Core (= 1.0.0)
-  - MobileCoin/Core (1.0.0):
+  - MobileCoin (1.1.0):
+    - MobileCoin/Core (= 1.1.0)
+  - MobileCoin/Core (1.1.0):
     - gRPC-Swift (~> 1.0)
-    - LibMobileCoin (~> 1.0)
+    - LibMobileCoin (~> 1.1)
     - Logging (~> 1.4)
     - SwiftNIO (~> 2.22)
     - SwiftNIOHPACK (~> 1.16)
@@ -233,11 +233,11 @@ DEPENDENCIES:
   - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - GRDB.swift/SQLCipher
-  - LibMobileCoin (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, branch `signal/1.0.0`)
+  - LibMobileCoin (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, branch `signal/1.1.0`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin
+  - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v1.1.0`)
   - OpenSSL-Universal (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - PromiseKit
   - PureLayout
@@ -281,7 +281,6 @@ SPEC REPOS:
     - libwebp
     - Logging
     - lottie-ios
-    - MobileCoin
     - PromiseKit
     - PureLayout
     - Reachability
@@ -308,7 +307,7 @@ EXTERNAL SOURCES:
     :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/Curve25519Kit"
   LibMobileCoin:
-    :branch: signal/1.0.0
+    :branch: signal/1.1.0
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
     :branch: signal-master
@@ -316,6 +315,9 @@ EXTERNAL SOURCES:
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
+  MobileCoin:
+    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
+    :tag: v1.1.0
   OpenSSL-Universal:
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   SignalArgon2:
@@ -350,7 +352,7 @@ CHECKOUT OPTIONS:
     :commit: 87bfaf0748ecbac417fe90219b529d4f6f0eb272
     :git: "ssh://git@github.com/signalapp/Curve25519Kit"
   LibMobileCoin:
-    :commit: edb7bd84ad9e9dea0b0689cd24b327d00e4f13eb
+    :commit: efc71bf035bd960aff8f572920c01fca77b2096f
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
     :commit: 9e30e12883947b95972c1eee36b6801a09689364
@@ -358,6 +360,9 @@ CHECKOUT OPTIONS:
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
+  MobileCoin:
+    :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
+    :tag: v1.1.0
   OpenSSL-Universal:
     :commit: c277886d6fc025f828dafba03eacfef2ecc7936a
     :git: https://github.com/signalapp/GRKOpenSSLFramework
@@ -403,13 +408,13 @@ SPEC CHECKSUMS:
   Curve25519Kit: 4b6cddbe2d44be0ccb37e15ba719a145edab8aff
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   gRPC-Swift: 77154009a019e97f8c4bd8f2bb75fe9726801157
-  LibMobileCoin: c6399204cc78ef6d0f5fb3e01c2d4da489918edd
+  LibMobileCoin: b6f5200b484ceac10bf988a42c1168e1d443bacc
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  MobileCoin: 8eb614b1f881495bef81e958f2c9a18ba796c49f
+  MobileCoin: 59f940b9f71e6fdcfd206150ebda839a132b58be
   OpenSSL-Universal: d8fb58afffcf2dafe4ad99e17efe236bcd216c2e
   PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
@@ -439,6 +444,6 @@ SPEC CHECKSUMS:
   ZKGroup: 15a08eed5870a44b9dd14af0824ac95f6eed7380
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 5fc94b70db8b5442c10ccb7a038d09d90ee5db4f
+PODFILE CHECKSUM: 9c62b96571f04c5ac9537c247f49bfe7d0225c2e
 
 COCOAPODS: 1.10.1

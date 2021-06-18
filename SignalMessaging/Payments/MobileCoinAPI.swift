@@ -158,50 +158,89 @@ public class MobileCoinAPI: Dependencies {
         }
     }
 
-    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) throws -> TSPaymentAmount {
+    func getEstimatedFee(forPaymentAmount paymentAmount: TSPaymentAmount) throws -> Promise<TSPaymentAmount> {
         Logger.verbose("")
 
         guard paymentAmount.isValidAmount(canBeEmpty: false) else {
             throw OWSAssertionError("Invalid amount.")
         }
 
+        let client = self.client
+
         // We don't need to support amountPicoMobHigh.
-        let result = client.estimateTotalFee(toSendAmount: paymentAmount.picoMob,
-                                             feeLevel: Self.feeLevel)
-        switch result {
-        case .success(let feePicoMob):
-            let fee = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
-            guard fee.isValidAmount(canBeEmpty: false) else {
-                throw OWSAssertionError("Invalid amount.")
+        return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
+            let (promise, resolver) = Promise<TSPaymentAmount>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
             }
-            Logger.verbose("Success paymentAmount: \(paymentAmount), fee: \(fee), ")
-            return fee
-        case .failure(let error):
-            let error = Self.convertMCError(error: error)
+            client.estimateTotalFee(toSendAmount: paymentAmount.picoMob,
+                                    feeLevel: Self.feeLevel) { (result: Swift.Result<UInt64,
+                                                                                     TransactionEstimationFetcherError>) in
+                switch result {
+                case .success(let feePicoMob):
+                    let fee = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
+                    guard fee.isValidAmount(canBeEmpty: false) else {
+                        resolver.reject(OWSAssertionError("Invalid amount."))
+                        return
+                    }
+                    Logger.verbose("Success paymentAmount: \(paymentAmount), fee: \(fee), ")
+                    resolver.fulfill(fee)
+                case .failure(let error):
+                    let error = Self.convertMCError(error: error)
+                    resolver.reject(error)
+                }
+            }
+            return promise
+        }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
             if case PaymentsError.insufficientFunds = error {
                 Logger.warn("Error: \(error)")
             } else {
                 owsFailDebugUnlessMCNetworkFailure(error)
             }
             throw error
+        }.timeout(seconds: Self.timeoutDuration, description: "getEstimatedFee") { () -> Error in
+            PaymentsError.timeout
         }
     }
 
-    func maxTransactionAmount() throws -> TSPaymentAmount {
+    func maxTransactionAmount() throws -> Promise<TSPaymentAmount> {
         // We don't need to support amountPicoMobHigh.
-        let result = client.amountTransferable(feeLevel: Self.feeLevel)
-        switch result {
-        case .success(let feePicoMob):
-            let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
-            guard paymentAmount.isValidAmount(canBeEmpty: true) else {
-                throw OWSAssertionError("Invalid amount.")
+
+        let client = self.client
+
+        return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
+            let (promise, resolver) = Promise<TSPaymentAmount>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
             }
-            Logger.verbose("Success paymentAmount: \(paymentAmount), ")
-            return paymentAmount
-        case .failure(let error):
-            let error = Self.convertMCError(error: error)
-            owsFailDebugUnlessMCNetworkFailure(error)
+            client.amountTransferable(feeLevel: Self.feeLevel) { (result: Swift.Result<UInt64,
+                                                                                       BalanceTransferEstimationFetcherError>) in
+                switch result {
+                case .success(let feePicoMob):
+                    let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
+                    guard paymentAmount.isValidAmount(canBeEmpty: true) else {
+                        resolver.reject(OWSAssertionError("Invalid amount."))
+                        return
+                    }
+                    Logger.verbose("Success paymentAmount: \(paymentAmount), ")
+                    resolver.fulfill(paymentAmount)
+                case .failure(let error):
+                    let error = Self.convertMCError(error: error)
+                    resolver.reject(error)
+                }
+            }
+            return promise
+        }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
+            if case PaymentsError.insufficientFunds = error {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebugUnlessMCNetworkFailure(error)
+            }
             throw error
+        }.timeout(seconds: Self.timeoutDuration, description: "maxTransactionAmount") { () -> Error in
+            PaymentsError.timeout
         }
     }
 
@@ -230,7 +269,7 @@ public class MobileCoinAPI: Dependencies {
             }.done(on: .global()) { (balance: TSPaymentAmount) in
                 Logger.verbose("balance: \(balance.picoMob)")
             }
-        }.map(on: .global()) { () -> TSPaymentAmount in
+        }.then(on: .global()) { () -> Promise<TSPaymentAmount> in
             try self.getEstimatedFee(forPaymentAmount: paymentAmount)
         }.then(on: .global()) { (estimatedFeeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
             Logger.verbose("estimatedFeeAmount: \(estimatedFeeAmount.picoMob)")
@@ -284,15 +323,27 @@ public class MobileCoinAPI: Dependencies {
 
         let client = self.client
 
-        return firstly(on: .global()) { () throws -> Promise<Bool> in
-            let result = client.requiresDefragmentation(toSendAmount: paymentAmount.picoMob, feeLevel: Self.feeLevel)
-            switch result {
-            case .success(let shouldDefragment):
-                return Promise.value(shouldDefragment)
-            case .failure(let error):
-                let error = Self.convertMCError(error: error)
-                throw error
+        return firstly(on: .global()) { () -> Promise<Bool> in
+            let (promise, resolver) = Promise<Bool>.pending()
+            if DebugFlags.paymentsNoRequestsComplete.get() {
+                // Never resolve.
+                return promise
             }
+            client.requiresDefragmentation(toSendAmount: paymentAmount.picoMob,
+                                           feeLevel: Self.feeLevel) { (result: Swift.Result<Bool,
+                                                                                            TransactionEstimationFetcherError>) in
+                switch result {
+                case .success(let shouldDefragment):
+                    resolver.fulfill(shouldDefragment)
+                case .failure(let error):
+                    let error = Self.convertMCError(error: error)
+                    resolver.reject(error)
+                }
+            }
+            return promise
+        }.recover(on: .global()) { (error: Error) -> Promise<Bool> in
+            owsFailDebugUnlessMCNetworkFailure(error)
+            throw error
         }.timeout(seconds: Self.timeoutDuration, description: "requiresDefragmentation") { () -> Error in
             PaymentsError.timeout
         }
@@ -564,7 +615,10 @@ extension MobileCoinAPI {
 
                 return PaymentsError.authorizationFailure
             case .invalidServerResponse(let reason):
-                owsFailDebug("Error: \(error), reason: \(reason)")
+                // TODO: It would be preferable to owsFailDebug()
+                //       here. Ledger errors can now occur during
+                //       fee transitions, but should be very rare.
+                Logger.warn("Error: \(error), reason: \(reason)")
                 return PaymentsError.invalidServerResponse
             case .attestationVerificationFailed(let reason):
                 owsFailDebug("Error: \(error), reason: \(reason)")
@@ -610,15 +664,6 @@ extension MobileCoinAPI {
                 Logger.warn("Error: \(error)")
                 return PaymentsError.inputsAlreadySpent
             }
-        case let error as MobileCoin.TransactionEstimationError:
-            switch error {
-            case .invalidInput(let reason):
-                owsFailDebug("Error: \(error), reason: \(reason)")
-                return PaymentsError.invalidInput
-            case .insufficientBalance:
-                Logger.warn("Error: \(error)")
-                return PaymentsError.insufficientFunds
-            }
         case let error as MobileCoin.DefragTransactionPreparationError:
             switch error {
             case .invalidInput(let reason):
@@ -631,7 +676,7 @@ extension MobileCoinAPI {
                 // Recurse.
                 return convertMCError(error: connectionError)
             }
-        case let error as MobileCoin.BalanceTransferEstimationError:
+        case let error as MobileCoin.BalanceTransferEstimationFetcherError:
             switch error {
             case .feeExceedsBalance:
                 // TODO: Review this mapping.
@@ -641,6 +686,21 @@ extension MobileCoinAPI {
                 // TODO: Review this mapping.
                 Logger.warn("Error: \(error)")
                 return PaymentsError.insufficientFunds
+            case .connectionError(let connectionError):
+                // Recurse.
+                return convertMCError(error: connectionError)
+            }
+        case let error as MobileCoin.TransactionEstimationFetcherError:
+            switch error {
+            case .invalidInput(let reason):
+                owsFailDebug("Error: \(error), reason: \(reason)")
+                return PaymentsError.invalidInput
+            case .insufficientBalance:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.insufficientFunds
+            case .connectionError(let connectionError):
+                // Recurse.
+                return convertMCError(error: connectionError)
             }
         default:
             owsFailDebug("Unexpected error: \(error)")

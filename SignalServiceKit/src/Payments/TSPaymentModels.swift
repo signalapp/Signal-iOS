@@ -140,9 +140,9 @@ extension TSPaymentAddress: TSPaymentBaseModel {
                                 publicAddressData: Data,
                                 signatureData: Data) -> Bool {
         do {
-            let privateKey = try ECPublicKey(keyData: publicIdentityKeyData).key
-            return try privateKey.verifySignature(message: publicAddressData,
-                                                  signature: signatureData)
+            let publicKey = try ECPublicKey(keyData: publicIdentityKeyData).key
+            return try publicKey.verifySignature(message: publicAddressData,
+                                                 signature: signatureData)
         } catch {
             owsFailDebug("Error: \(error)")
             return false

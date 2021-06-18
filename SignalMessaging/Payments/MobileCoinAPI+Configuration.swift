@@ -177,6 +177,7 @@ extension MobileCoinAPI {
     private enum AttestationType {
         case mrSigner(mrSignerData: Data)
         case mrEnclave(mrEnclaveData: Data)
+        case mrEnclaves(mrEnclaveDatas: [Data])
         case mrSignerAndMrEnclave(mrSignerData: Data, mrEnclaveData: Data)
     }
 
@@ -219,6 +220,14 @@ extension MobileCoinAPI {
             }
         }
 
+        private static func buildMrEnclaves(mrEnclaveDatas: [Data],
+                                            attestationInfo: AttestationInfo) throws -> [MobileCoin.Attestation.MrEnclave] {
+            try mrEnclaveDatas.map {
+                try buildMrEnclave(mrEnclaveData: $0,
+                                   attestationInfo: attestationInfo)
+            }
+        }
+
         private static func buildAttestation(attestationType: AttestationType,
                                              attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation {
             switch attestationType {
@@ -230,6 +239,10 @@ extension MobileCoinAPI {
                 let mrEnclave = try buildMrEnclave(mrEnclaveData: mrEnclaveData,
                                                    attestationInfo: attestationInfo)
                 return MobileCoin.Attestation(mrEnclaves: [mrEnclave])
+            case .mrEnclaves(let mrEnclaveDatas):
+                let mrEnclaves = try buildMrEnclaves(mrEnclaveDatas: mrEnclaveDatas,
+                                                     attestationInfo: attestationInfo)
+                return MobileCoin.Attestation(mrEnclaves: mrEnclaves)
             case .mrSignerAndMrEnclave(let mrSignerData, let mrEnclaveData):
                 let mrSigner = try buildMrSigner(mrSignerData: mrSignerData,
                                                  attestationInfo: attestationInfo)
@@ -256,22 +269,22 @@ extension MobileCoinAPI {
             }
         }
 
-        private static func buildAttestationConfig(mrEnclaveConsensus: Data,
-                                                   mrEnclaveFogView: Data,
-                                                   mrEnclaveFogKeyImage: Data,
-                                                   mrEnclaveFogMerkleProof: Data,
-                                                   mrEnclaveFogReport: Data) -> OWSAttestationConfig {
+        private static func buildAttestationConfig(mrEnclaveConsensus: [Data],
+                                                   mrEnclaveFogView: [Data],
+                                                   mrEnclaveFogKeyImage: [Data],
+                                                   mrEnclaveFogMerkleProof: [Data],
+                                                   mrEnclaveFogReport: [Data]) -> OWSAttestationConfig {
             do {
                 return OWSAttestationConfig(
-                    consensus: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveConsensus),
+                    consensus: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveConsensus),
                                                     attestationInfo: .consensus),
-                    fogView: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogView),
+                    fogView: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogView),
                                                   attestationInfo: .fogView),
-                    fogKeyImage: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogKeyImage),
+                    fogKeyImage: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogKeyImage),
                                                       attestationInfo: .fogKeyImage),
-                    fogMerkleProof: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogMerkleProof),
+                    fogMerkleProof: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogMerkleProof),
                                                          attestationInfo: .fogMerkleProof),
-                    fogReport: try buildAttestation(attestationType: .mrEnclave(mrEnclaveData: mrEnclaveFogReport),
+                    fogReport: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogReport),
                                                     attestationInfo: .fogReport)
                 )
             } catch {
@@ -284,11 +297,45 @@ extension MobileCoinAPI {
             signalMainNet
         }
 
+        // consensus-enclave.css
+        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
+        // MRENCLAVE: 0x653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83,
+        // ingest-enclave.css
+        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
+        // MRENCLAVE: 0xf3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499,
+        // ledger-enclave.css
+        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
+        // MRENCLAVE: 0x89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd,
+        // view-enclave.css
+        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
+        // MRENCLAVE: 0xdd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a,
         static var signalMainNet: OWSAttestationConfig {
-            let mrEnclaveConsensus = Data.data(fromHex: "e66db38b8a43a33f6c1610d335a361963bb2b31e056af0dc0a895ac6c857cab9")!
-            let mrEnclaveFogView = Data.data(fromHex: "ddd59da874fdf3239d5edb1ef251df07a8728c9ef63057dd0b50ade5a9ddb041")!
-            let mrEnclaveFogReport = Data.data(fromHex: "709ab90621e3a8d9eb26ed9e2830e091beceebd55fb01c5d7c31d27e83b9b0d1")!
-            let mrEnclaveFogLedger = Data.data(fromHex: "511eab36de691ded50eb08b173304194da8b9d86bfdd7102001fe6bb279c3666")!
+            // We need the old and new enclave values here.
+            let mrEnclaveConsensus = [
+                // Old value
+                Data.data(fromHex: "e66db38b8a43a33f6c1610d335a361963bb2b31e056af0dc0a895ac6c857cab9")!,
+                // ~July 8, 2021
+                Data.data(fromHex: "653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83")!
+            ]
+            let mrEnclaveFogView = [
+                // Old value
+                Data.data(fromHex: "ddd59da874fdf3239d5edb1ef251df07a8728c9ef63057dd0b50ade5a9ddb041")!,
+                // ~July 8, 2021
+                Data.data(fromHex: "dd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a")!
+            ]
+            // Report aka Ingest.
+            let mrEnclaveFogReport = [
+                // Old value
+                Data.data(fromHex: "709ab90621e3a8d9eb26ed9e2830e091beceebd55fb01c5d7c31d27e83b9b0d1")!,
+                // ~July 8, 2021
+                Data.data(fromHex: "f3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499")!
+            ]
+            let mrEnclaveFogLedger = [
+                // Old value
+                Data.data(fromHex: "511eab36de691ded50eb08b173304194da8b9d86bfdd7102001fe6bb279c3666")!,
+                // ~July 8, 2021
+                Data.data(fromHex: "89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd")!
+            ]
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
                                           mrEnclaveFogView: mrEnclaveFogView,
                                           mrEnclaveFogKeyImage: mrEnclaveFogLedger,
@@ -296,16 +343,43 @@ extension MobileCoinAPI {
                                           mrEnclaveFogReport: mrEnclaveFogReport)
         }
 
+        
+        // consensus
+        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
+        // MRENCLAVE: 0x9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af,
+        // ingest
+        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
+        // MRENCLAVE: 0xa4764346f91979b4906d4ce26102228efe3aba39216dec1e7d22e6b06f919f11,
+        // ledger
+        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
+        // MRENCLAVE: 0x768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3,
+        // view
+        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
+        // MRENCLAVE: 0xe154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e,
         static var mobileCoinTestNet: OWSAttestationConfig {
             // These networks currently share the same attestation config.
             signalTestNet
         }
 
         static var signalTestNet: OWSAttestationConfig {
-            let mrEnclaveConsensus = Data.data(fromHex: "9268c3220a5260e51e4b586f00e4677fed2b80380f1eeaf775af60f8e880fde8")!
-            let mrEnclaveFogView = Data.data(fromHex: "4e598799faa4bb08a3bd55c0bcda7e1d22e41151d0c591f6c2a48b3562b0881e")!
-            let mrEnclaveFogReport = Data.data(fromHex: "185875464ccd67a879d58181055383505a719b364b12d56d9bef90a40bed07ca")!
-            let mrEnclaveFogLedger = Data.data(fromHex: "7330c9987f21b91313b39dcdeaa7da8da5ca101c929f5740c207742c762e6dcd")!
+            // We need the old and new enclave values here.
+            let mrEnclaveConsensus = [
+                // ~June 2, 2021
+                Data.data(fromHex: "9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af")!
+            ]
+            let mrEnclaveFogView = [
+                // ~June 2, 2021
+                Data.data(fromHex: "e154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e")!,
+            ]
+            // Report aka Ingest.
+            let mrEnclaveFogReport = [
+                // ~June 2, 2021
+                Data.data(fromHex: "a4764346f91979b4906d4ce26102228efe3aba39216dec1e7d22e6b06f919f11")!
+            ]
+            let mrEnclaveFogLedger = [
+                // ~June 2, 2021
+                Data.data(fromHex: "768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3")!,
+            ]
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
                                           mrEnclaveFogView: mrEnclaveFogView,
                                           mrEnclaveFogKeyImage: mrEnclaveFogLedger,
