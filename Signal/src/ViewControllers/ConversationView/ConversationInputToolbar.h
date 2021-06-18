@@ -58,9 +58,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)paymentButtonPressed;
 
-- (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment;
+- (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset
+                           attachment:(SignalAttachment *)attachment
+    NS_SWIFT_NAME(didSelectRecentPhoto(asset:attachment:));
 
-- (void)showUnblockConversationUI:(nullable BlockActionCompletionBlock)completionBlock;
+- (void)showUnblockConversationUI:(nullable BlockActionCompletionBlock)completion
+    NS_SWIFT_NAME(showUnblockConversationUI(completion:));
 
 - (BOOL)isBlockedConversation;
 

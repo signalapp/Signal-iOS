@@ -1236,27 +1236,6 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public class VideoCompressionResult: NSObject {
-        @objc
-        public let attachmentPromise: AnyPromise
-
-        @objc
-        public let exportSession: AVAssetExportSession?
-
-        fileprivate init(attachmentPromise: Promise<SignalAttachment>, exportSession: AVAssetExportSession?) {
-            self.attachmentPromise = AnyPromise(attachmentPromise)
-            self.exportSession = exportSession
-            super.init()
-        }
-    }
-
-    @objc
-    public class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> VideoCompressionResult {
-        let (attachmentPromise, exportSession) = compressVideoAsMp4(dataSource: dataSource, dataUTI: dataUTI)
-        return VideoCompressionResult(attachmentPromise: attachmentPromise, exportSession: exportSession)
-    }
-
-    @objc
     public class func isVideoThatNeedsCompression(dataSource: DataSource, dataUTI: String) -> Bool {
         guard videoUTISet.contains(dataUTI) else {
             // not a video

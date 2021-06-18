@@ -3,6 +3,7 @@
 //
 
 #import <SignalServiceKit/TSInvalidIdentityKeyErrorMessage.h>
+#import <SignalServiceKit/OWSError.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,6 +17,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)throws_acceptNewIdentityKey
 {
     OWSAbstractMethod();
+}
+
+- (BOOL)acceptNewIdentityKeyWithError:(NSError **)error
+{
+    @try {
+        [self throws_acceptNewIdentityKey];
+        return YES;
+    } @catch (NSException *exception) {
+        *error = OWSErrorMakeAssertionError(@"Error: %@", exception.debugDescription);
+        return NO;
+    }
 }
 
 - (nullable NSData *)throws_newIdentityKey

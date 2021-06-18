@@ -7,6 +7,9 @@ import Foundation
 extension ConversationViewController {
 
     @objc
+    public var isGroupConversation: Bool { thread.isGroupThread }
+
+    @objc
     public static var messageSection: Int { CVLoadCoordinator.messageSection }
 
     @objc
@@ -68,6 +71,11 @@ extension ConversationViewController {
     @objc
     public var areCellsAnimating: Bool {
         viewState.activeCellAnimations.count > 0
+    }
+
+    @objc
+    public var isShowingSelectionUI: Bool {
+        viewState.isShowingSelectionUI
     }
 }
 

@@ -114,6 +114,17 @@ public class CVViewState: NSObject {
 
     public let mediaCache = CVMediaCache()
 
+    public let contactShareViewHelper = ContactShareViewHelper()
+
+    public var userHasScrolled = false
+
+    public var groupCallTooltip: GroupCallTooltip?
+    public var groupCallTooltipTailReferenceView: UIView?
+    public var hasIncrementedGroupCallTooltipShownCount = false
+    public var groupCallBarButtonItem: UIBarButtonItem?
+
+    public var lastMessageSentDate: Date?
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -147,7 +158,10 @@ public class CVViewState: NSObject {
     @objc
     public let backgroundContainer = CVBackgroundContainer()
 
+    weak var reactionsDetailSheet: ReactionsDetailSheet?
+
     // MARK: - Voice Messages
+
     @objc
     public var currentVoiceMessageModel: VoiceMessageModel?
 
@@ -266,6 +280,21 @@ public extension ConversationViewController {
 
     var mediaCache: CVMediaCache { viewState.mediaCache }
 
+    var userHasScrolled: Bool {
+        get { viewState.userHasScrolled }
+        set { viewState.userHasScrolled = newValue }
+    }
+
+    var groupCallBarButtonItem: UIBarButtonItem? {
+        get { viewState.groupCallBarButtonItem }
+        set { viewState.groupCallBarButtonItem = newValue }
+    }
+
+    var lastMessageSentDate: Date? {
+        get { viewState.lastMessageSentDate }
+        set { viewState.lastMessageSentDate = newValue }
+    }
+
     // MARK: - Gestures
 
     var collectionViewTapGestureRecognizer: UITapGestureRecognizer {
@@ -298,6 +327,13 @@ public extension ConversationViewController {
     }
     var backgroundContainer: CVBackgroundContainer {
         get { viewState.backgroundContainer }
+    }
+    internal var reactionsDetailSheet: ReactionsDetailSheet? {
+        get { viewState.reactionsDetailSheet }
+        set { viewState.reactionsDetailSheet = newValue }
+    }
+    var contactShareViewHelper: ContactShareViewHelper {
+        get { viewState.contactShareViewHelper }
     }
 
     // MARK: -
