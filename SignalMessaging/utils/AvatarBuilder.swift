@@ -487,7 +487,7 @@ public class AvatarBuilder: NSObject {
     }
 
     // TODO: Tune configuration of this NSCache.
-    private let contentToImageCache: NSCache<NSString, UIImage> = NSCache(countLimit: 50)
+    private let contentToImageCache: NSCache<NSString, UIImage> = NSCache(countLimit: 128)
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent) -> UIImage? {
         let cacheKey = avatarContent.cacheKey
@@ -503,7 +503,16 @@ public class AvatarBuilder: NSObject {
             return nil
         }
 
-        contentToImageCache.setObject(image, forKey: cacheKey as NSString)
+        // The avatars in our hot code paths which are 36-56pt.  At 3x scale,
+        // a threshold of 200 will include these avatars.
+        let maxCacheSizePixels = 200
+        let canCacheAvatarImage = (image.pixelWidth <= maxCacheSizePixels &&
+            image.pixelHeight <= maxCacheSizePixels)
+
+        if canCacheAvatarImage {
+            contentToImageCache.setObject(image, forKey: cacheKey as NSString)
+        }
+
         return image
     }
 
