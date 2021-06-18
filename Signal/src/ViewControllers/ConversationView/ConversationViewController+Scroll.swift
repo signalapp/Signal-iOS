@@ -425,7 +425,7 @@ extension ConversationViewController {
 
     @objc
     func scrollToNextMentionButtonTapped() {
-        if let nextMessage = unreadMentionMessages?.first {
+        if let nextMessage = unreadMentionMessages.first {
             ensureInteractionLoadedThenScrollToInteraction(nextMessage.uniqueId,
                                                            alignment: .bottomIfNotEntirelyOnScreen,
                                                            isAnimated: true)
@@ -667,7 +667,7 @@ extension ConversationViewController {
         return CGPoint(x: 0, y: cellFrame.origin.y - messageActionsOriginalFocusY)
     }
 
-// MARK: -
+    // MARK: -
 
     private struct LastVisibleInteraction {
         public let interaction: TSInteraction
@@ -689,8 +689,8 @@ extension ConversationViewController {
     private func lastVisibleInteractionWithSneakyTransaction(thread: TSThread) -> LastVisibleInteraction? {
         databaseStorage.read { transaction in
             guard let lastVisibleInteraction = thread.lastVisibleInteraction(transaction: transaction),
-               let interaction = thread.firstInteraction(atOrAroundSortId: lastVisibleInteraction.sortId,
-                                                         transaction: transaction) else {
+                  let interaction = thread.firstInteraction(atOrAroundSortId: lastVisibleInteraction.sortId,
+                                                            transaction: transaction) else {
 
                 return nil
             }

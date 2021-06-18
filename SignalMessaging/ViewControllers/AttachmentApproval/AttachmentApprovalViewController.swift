@@ -1041,23 +1041,23 @@ extension AttachmentApprovalViewController: ApprovalRailCellViewDelegate {
 }
 
 extension AttachmentApprovalViewController: InputAccessoryViewPlaceholderDelegate {
-    func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+    public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
     }
 
-    func inputAccessoryPlaceholderKeyboardDidPresent() {
+    public func inputAccessoryPlaceholderKeyboardDidPresent() {
         updateBottomToolViewPosition()
     }
 
-    func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
+    public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
     }
 
-    func inputAccessoryPlaceholderKeyboardDidDismiss() {
+    public func inputAccessoryPlaceholderKeyboardDidDismiss() {
         updateBottomToolViewPosition()
     }
 
-    func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
+    public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
         updateBottomToolViewPosition()
     }
 

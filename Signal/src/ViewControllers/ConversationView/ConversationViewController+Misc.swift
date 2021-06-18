@@ -8,6 +8,26 @@ import ContactsUI
 @objc
 public extension ConversationViewController {
 
+    func updateV2GroupIfNecessary() {
+        AssertIsOnMainThread()
+
+        guard let groupThread = thread as? TSGroupThread,
+              thread.isGroupV2Thread else {
+            return
+        }
+        // Try to update the v2 group to latest from the service.
+        // This will help keep us in sync if we've missed any group updates, etc.
+        groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
+    }
+
+    func presentAddThreadToProfileWhitelist(success: @escaping () -> Void) {
+        AssertIsOnMainThread()
+
+        profileManagerImpl.presentAddThread(toProfileWhitelist: thread,
+                                            from: self,
+                                            success: success)
+    }
+
     func showUnblockConversationUI(completion: BlockActionCompletionBlock?) {
         self.userHasScrolled = false
 
@@ -344,5 +364,244 @@ extension ConversationViewController: CNContactViewControllerDelegate {
     public func contactViewController(_ viewController: CNContactViewController,
                                       didCompleteWith contact: CNContact?) {
         navigationController?.popToViewController(self, animated: true)
+    }
+}
+
+// MARK: - Preview / 3D Touch / UIContextMenu Methods
+
+@objc
+public extension ConversationViewController {
+    var isInPreviewPlatter: Bool {
+        get { viewState.isInPreviewPlatter }
+        set {
+            guard viewState.isInPreviewPlatter != newValue else {
+                return
+            }
+            viewState.isInPreviewPlatter = newValue
+            if hasViewWillAppearEverBegun {
+                ensureBottomViewType()
+            }
+            configureScrollDownButtons()
+        }
+    }
+
+    func previewSetup() {
+        isInPreviewPlatter = true
+        actionOnOpen = .none
+    }
+}
+
+// MARK: - Unread Counts
+
+@objc
+public extension ConversationViewController {
+    var unreadMessageCount: UInt {
+        get { viewState.unreadMessageCount }
+        set {
+            guard viewState.unreadMessageCount != newValue else {
+                return
+            }
+            viewState.unreadMessageCount = newValue
+            configureScrollDownButtons()
+        }
+    }
+
+    var unreadMentionMessages: [TSMessage] {
+        get { viewState.unreadMentionMessages }
+        set {
+            guard viewState.unreadMentionMessages != newValue else {
+                return
+            }
+            viewState.unreadMentionMessages = newValue
+            configureScrollDownButtons()
+        }
+    }
+
+    func updateUnreadMessageFlagUsingAsyncTransaction() {
+        // Resubmits to the main queue because we can't verify we're not already in a transaction we don't know about.
+        // This method may be called in response to all sorts of view state changes, e.g. scroll state. These changes
+        // can be a result of a UIKit response to app activity that already has an open transaction.
+        //
+        // We need a transaction to proceed, but we can't verify that we're not already in one (unless explicitly handed
+        // one) To workaround this, we async a block to open a fresh transaction on the main queue.
+        DispatchQueue.main.async {
+            Self.databaseStorage.read { transaction in
+                self.updateUnreadMessageFlag(transaction: transaction)
+            }
+        }
+    }
+
+    func updateUnreadMessageFlag(transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
+
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+        let unreadCount = interactionFinder.unreadCount(transaction: transaction.unwrapGrdbRead)
+        self.unreadMessageCount = unreadCount
+
+        if let localAddress = tsAccountManager.localAddress {
+            self.unreadMentionMessages = MentionFinder.messagesMentioning(address: localAddress,
+                                                                          in: thread,
+                                                                          includeReadMessages: false,
+                                                                          transaction: transaction.unwrapGrdbRead)
+        } else {
+            owsFailDebug("Missing localAddress.")
+        }
+    }
+
+    /// Checks to see if the unread message flag can be cleared. Shortcircuits if the flag is not set to begin with
+    func clearUnreadMessageFlagIfNecessary() {
+        AssertIsOnMainThread()
+
+        if unreadMessageCount > 0 {
+            updateUnreadMessageFlagUsingAsyncTransaction()
+        }
+    }
+}
+
+// MARK: - Timers
+
+extension ConversationViewController {
+    @objc
+    public func startReadTimer() {
+        AssertIsOnMainThread()
+
+        readTimer?.invalidate()
+        let readTimer = Timer.weakTimer(withTimeInterval: 0.1,
+                                        target: self,
+                                        selector: #selector(readTimerDidFire),
+                                        userInfo: nil,
+                                        repeats: true)
+        self.readTimer = readTimer
+        RunLoop.main.add(readTimer, forMode: .common)
+    }
+
+    @objc
+    private func readTimerDidFire() {
+        AssertIsOnMainThread()
+
+        if layout.isUpdating {
+            return
+        }
+        markVisibleMessagesAsRead()
+    }
+
+    @objc
+    public func cancelReadTimer() {
+        AssertIsOnMainThread()
+
+        readTimer?.invalidate()
+        self.readTimer = nil
+    }
+
+    private var readTimer: Timer? {
+        get { viewState.readTimer }
+        set { viewState.readTimer = newValue }
+    }
+
+    @objc
+    public var reloadTimer: Timer? {
+        get { viewState.reloadTimer }
+        set { viewState.reloadTimer = newValue }
+    }
+
+    @objc
+    func startReloadTimer() {
+        AssertIsOnMainThread()
+        let reloadTimer = Timer.weakTimer(withTimeInterval: 1.0,
+                                          target: self,
+                                          selector: #selector(reloadTimerDidFire),
+                                          userInfo: nil,
+                                          repeats: true)
+        self.reloadTimer = reloadTimer
+        RunLoop.main.add(reloadTimer, forMode: .common)
+    }
+
+    @objc
+    private func reloadTimerDidFire() {
+        AssertIsOnMainThread()
+
+        if isUserScrolling || !isViewCompletelyAppeared || !isViewVisible
+            || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared
+            || isPresentingMessageActions {
+            return
+        }
+
+        let timeSinceLastReload = abs(self.lastReloadDate.timeIntervalSinceNow)
+        let kReloadFrequency: TimeInterval = 60
+        if timeSinceLastReload < kReloadFrequency {
+            return
+        }
+
+        Logger.verbose("reloading conversation view contents.")
+
+        // Auto-load more if necessary...
+        if !autoLoadMoreIfNecessary() {
+            // ...Otherwise, reload everything.
+            //
+            // TODO: We could make this cheaper by using enqueueReload()
+            // if we moved volatile profile / footer state to the view state.
+            loadCoordinator.enqueueReload()
+        }
+    }
+
+    var lastSortIdMarkedRead: UInt64 {
+        get { viewState.lastSortIdMarkedRead }
+        set { viewState.lastSortIdMarkedRead = newValue }
+    }
+
+    var isMarkingAsRead: Bool {
+        get { viewState.isMarkingAsRead }
+        set { viewState.isMarkingAsRead = newValue }
+    }
+
+    private func setLastSortIdMarkedRead(lastSortIdMarkedRead: UInt64) {
+        AssertIsOnMainThread()
+        owsAssertDebug(self.isMarkingAsRead)
+
+        self.lastSortIdMarkedRead = lastSortIdMarkedRead
+    }
+
+    @objc
+    public func markVisibleMessagesAsRead() {
+        AssertIsOnMainThread()
+
+        if nil != self.presentedViewController {
+            return
+        }
+        if OWSWindowManager.shared.shouldShowCallView {
+            return
+        }
+        if navigationController?.topViewController != self {
+            return
+        }
+
+        // Always clear the thread unread flag
+        clearThreadUnreadFlagIfNecessary()
+
+        let lastVisibleSortId = self.lastVisibleSortId
+        let isShowingUnreadMessage = lastVisibleSortId > self.lastSortIdMarkedRead
+        if !self.isMarkingAsRead && isShowingUnreadMessage {
+            self.isMarkingAsRead = true
+            clearUnreadMessageFlagIfNecessary()
+
+            BenchManager.benchAsync(title: "marking as read") { benchCompletion in
+                Self.receiptManager.markAsReadLocally(beforeSortId: lastVisibleSortId,
+                                                      thread: self.thread,
+                                                      hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest) {
+                    AssertIsOnMainThread()
+                    self.setLastSortIdMarkedRead(lastSortIdMarkedRead: lastVisibleSortId)
+                    self.isMarkingAsRead = false
+
+                    // If -markVisibleMessagesAsRead wasn't invoked on a
+                    // timer, we'd want to double check that the current
+                    // -lastVisibleSortId hasn't incremented since we
+                    // started the read receipt request. But we have a
+                    // timer, so if it has changed, this method will just
+                    // be reinvoked in < 100ms.
+
+                    benchCompletion()
+                }
+            }
+        }
     }
 }

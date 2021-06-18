@@ -376,26 +376,6 @@ extension ConversationViewController: CVComponentDelegate {
         return endAnimation
     }
 
-    // MARK: - Selection
-
-    // TODO: Move these methods to +Selection.swift
-    @objc
-    public func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool {
-        isMessageSelected(interaction)
-    }
-
-    // TODO: Move these methods to +Selection.swift
-    @objc
-    public func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {
-        didSelectMessage(itemViewModel)
-    }
-
-    // TODO: Move these methods to +Selection.swift
-    @objc
-    public func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {
-        didDeselectMessage(itemViewModel)
-    }
-
     // MARK: - System Cell
 
     @objc

@@ -86,15 +86,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         updateConversationStyle()
     }
 
-    @objc
-    public func buildLoadCoordinator(conversationStyle: ConversationStyle,
-                                     focusMessageIdOnOpen: String?) -> CVLoadCoordinator {
-        CVLoadCoordinator(delegate: self,
-                          componentDelegate: self,
-                          conversationStyle: conversationStyle,
-                          focusMessageIdOnOpen: focusMessageIdOnOpen)
-    }
-
     func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken {
         AssertIsOnMainThread()
 
@@ -131,6 +122,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         let renderState = update.renderState
         let isFirstLoad = renderState.isFirstLoad
+
+        layout.update(conversationStyle: renderState.conversationStyle)
 
         var scrollAction = scrollAction
         if !viewState.hasAppliedFirstLoad {
@@ -240,8 +233,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         DispatchQueue.main.async {
             let benchSteps = BenchSteps()
             Self.databaseStorage.uiRead { transaction in
-                self.reloadReactionsDetailSheet(with: transaction)
-                self.updateUnreadMessageFlag(with: transaction)
+                self.reloadReactionsDetailSheet(transaction: transaction)
+                self.updateUnreadMessageFlag(transaction: transaction)
             }
             if hasViewDidAppearEverCompleted {
                 _ = self.autoLoadMoreIfNecessary()
@@ -777,9 +770,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // We need to kick off a reload cycle if conversationStyle changes.
         loadCoordinator.updateConversationStyle(newConversationStyle)
 
-        // TODO: In "new CVC" we shouldn't update the layout's style until the render state changes.
-        layout.update(conversationStyle: newConversationStyle)
-
         return true
     }
 }
@@ -790,4 +780,66 @@ extension ConversationViewController: CVViewStateDelegate {
     public func uiModeDidChange() {
         loadCoordinator.enqueueReload()
     }
+}
+
+// MARK: - Load More
+
+extension ConversationViewController {
+    @objc
+    public func autoLoadMoreIfNecessary() -> Bool {
+        AssertIsOnMainThread()
+
+        guard hasAppearedAndHasAppliedFirstLoad else {
+            return false
+        }
+        let isMainAppAndActive = CurrentAppContext().isMainAppAndActive
+        guard isViewVisible, isMainAppAndActive else {
+            return false
+        }
+        guard showLoadOlderHeader || showLoadNewerHeader else {
+            return false
+        }
+        guard let navigationController = navigationController else {
+            return false
+        }
+        navigationController.view.layoutIfNeeded()
+        let navControllerSize = navigationController.view.frame.size
+        let loadThreshold = navControllerSize.largerAxis * 3
+        let distanceFromTop = collectionView.contentOffset.y
+        let isCloseToTop = distanceFromTop < loadThreshold
+        if showLoadOlderHeader, isCloseToTop {
+            if loadCoordinator.didLoadOlderRecently {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    _ = self?.autoLoadMoreIfNecessary()
+                }
+                return false
+            }
+
+            loadCoordinator.loadOlderItems()
+            return true
+        }
+
+        let distanceFromBottom = collectionView.contentSize.height - collectionView.bounds.size.height
+            - collectionView.contentOffset.y
+        let isCloseToBottom = distanceFromBottom < loadThreshold
+        if showLoadNewerHeader, isCloseToBottom {
+            if loadCoordinator.didLoadNewerRecently {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    _ = self?.autoLoadMoreIfNecessary()
+                }
+                return false
+            }
+
+            loadCoordinator.loadNewerItems()
+            return true
+        }
+
+        return false
+    }
+
+    @objc
+    public var showLoadOlderHeader: Bool { loadCoordinator.showLoadOlderHeader }
+
+    @objc
+    public var showLoadNewerHeader: Bool { loadCoordinator.showLoadNewerHeader }
 }

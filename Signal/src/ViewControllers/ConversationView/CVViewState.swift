@@ -26,6 +26,8 @@ public class CVViewState: NSObject {
     public var conversationStyle: ConversationStyle
     @objc
     public var inputToolbar: ConversationInputToolbar?
+    @objc
+    public let headerView = ConversationHeaderView()
 
     @objc
     public var hasTriedToMigrateGroup = false
@@ -125,6 +127,25 @@ public class CVViewState: NSObject {
 
     public var lastMessageSentDate: Date?
 
+    public let scrollDownButton = ConversationScrollButton(iconName: "chevron-down-20")
+    public var isHidingScrollDownButton = false
+    public let scrollToNextMentionButton = ConversationScrollButton(iconName: "mention-24")
+    public var isHidingScrollToNextMentionButton = false
+    @objc
+    public var scrollUpdateTimer: Timer?
+    public var isWaitingForDeceleration = false
+
+    public var unreadMessageCount: UInt = 0
+    public var unreadMentionMessages = [TSMessage]()
+
+    public var actionOnOpen: ConversationViewAction = .none
+
+    public var readTimer: Timer?
+    public var reloadTimer: Timer?
+
+    public var lastSortIdMarkedRead: UInt64 = 0
+    public var isMarkingAsRead = false
+
     // MARK: - Gestures
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
@@ -193,6 +214,8 @@ public extension ConversationViewController {
         get { viewState.conversationStyle }
         set { viewState.conversationStyle = newValue }
     }
+
+    var headerView: ConversationHeaderView { viewState.headerView }
 
     var inputToolbar: ConversationInputToolbar? {
         get { viewState.inputToolbar }
@@ -280,11 +303,6 @@ public extension ConversationViewController {
 
     var mediaCache: CVMediaCache { viewState.mediaCache }
 
-    var userHasScrolled: Bool {
-        get { viewState.userHasScrolled }
-        set { viewState.userHasScrolled = newValue }
-    }
-
     var groupCallBarButtonItem: UIBarButtonItem? {
         get { viewState.groupCallBarButtonItem }
         set { viewState.groupCallBarButtonItem = newValue }
@@ -293,6 +311,11 @@ public extension ConversationViewController {
     var lastMessageSentDate: Date? {
         get { viewState.lastMessageSentDate }
         set { viewState.lastMessageSentDate = newValue }
+    }
+
+    var actionOnOpen: ConversationViewAction {
+        get { viewState.actionOnOpen }
+        set { viewState.actionOnOpen = newValue }
     }
 
     // MARK: - Gestures
