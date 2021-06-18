@@ -39,7 +39,7 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
         case UserProfileWriter_LocalUser:
             return YES;
         case UserProfileWriter_ProfileFetch:
-            return NO;
+            return YES;
         case UserProfileWriter_StorageService:
             return NO;
         case UserProfileWriter_SyncMessage:
