@@ -103,8 +103,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     _whitelistedGroupsStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
 
-    _profileAvatarImageCache = [[NSCache alloc] initWithCountLimit:8];
-    _profileAvatarDataCache = [[NSCache alloc] initWithCountLimit:16];
+    _profileAvatarImageCache = [[NSCache alloc] initWithCountLimit:32];
+    _profileAvatarDataCache = [[NSCache alloc] initWithCountLimit:64];
 
     OWSSingletonAssert();
 

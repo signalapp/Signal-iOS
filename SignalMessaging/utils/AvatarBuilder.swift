@@ -229,9 +229,7 @@ public class AvatarBuilder: NSObject {
     }
 
     @objc
-    public func avatarImage(forGroupId groupId: Data,
-                            diameterPoints: UInt,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
+    public func avatarImage(forGroupId groupId: Data, diameterPoints: UInt) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let isDarkThemeEnabled = Theme.isDarkThemeEnabled
         let shouldBlurAvatar = false
@@ -240,7 +238,14 @@ public class AvatarBuilder: NSObject {
                               diameterPixels: diameterPixels,
                               isDarkThemeEnabled: isDarkThemeEnabled,
                               shouldBlurAvatar: shouldBlurAvatar)
-        return avatarImage(forRequest: request, transaction: transaction)
+        let backgroundColor = ChatColors.avatarColor(forGroupId: groupId)
+        let avatarContentType: AvatarContentType = .groupDefault(backgroundColor: backgroundColor.asOWSColor)
+        let avatarContent = AvatarContent(request: request,
+                                          contentType: avatarContentType,
+                                          diameterPixels: request.diameterPixels,
+                                          isDarkThemeEnabled: request.isDarkThemeEnabled,
+                                          shouldBlurAvatar: request.shouldBlurAvatar)
+        return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
     // MARK: - Requests
@@ -423,15 +428,20 @@ public class AvatarBuilder: NSObject {
     // MARK: -
 
     private func avatarImage(forRequest request: Request,
+                             avatarContent: AvatarContent) -> UIImage? {
+        guard let avatarImage = avatarImage(forAvatarContent: avatarContent) else {
+            return nil
+        }
+        return avatarImage
+    }
+
+    private func avatarImage(forRequest request: Request,
                              transaction: SDSAnyReadTransaction) -> UIImage? {
         guard let avatarContent = avatarContent(forRequest: request,
                                                 transaction: transaction) else {
             return nil
         }
-        guard let avatarImage = avatarImage(forAvatarContent: avatarContent) else {
-            return nil
-        }
-        return avatarImage
+        return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
     // TODO: Tune configuration of this NSCache.

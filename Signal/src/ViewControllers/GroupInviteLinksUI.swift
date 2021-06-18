@@ -201,11 +201,8 @@ class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func loadDefaultContent() {
-        avatarView.image = databaseStorage.read { transaction in
-            Self.avatarBuilder.avatarImage(forGroupId: groupV2ContextInfo.groupId,
-                                           diameterPoints: Self.avatarSize,
-                                           transaction: transaction)
-        }
+        avatarView.image = Self.avatarBuilder.avatarImage(forGroupId: groupV2ContextInfo.groupId,
+                                                          diameterPoints: Self.avatarSize)
         groupTitleLabel.text = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
                                                  comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet.")
         groupSubtitleLabel.text = ""
