@@ -2978,7 +2978,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Přeposlat tuto zprávu";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Otevřít odkaz";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Volat";
@@ -2990,7 +2990,7 @@
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Odeslat textovou zprávu";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Odpovědět na tuto zprávu";

@@ -2978,19 +2978,19 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "轉寄此訊息";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "開啟連結";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "通話";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime 聲音";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime 影像";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "傳送文字訊息";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "回覆這個訊息";
@@ -4910,7 +4910,7 @@
 "SETTINGS_COPYRIGHT" = "版權Signal Messenger\n根據GPLv3版權";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "資料使用量";
+"SETTINGS_DATA" = "數據使用量";
 
 /* Item title for the low bandwidth call setting */
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "使用較少的數據";
@@ -4931,7 +4931,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "重置自動下載設定";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "資料使用量";
+"SETTINGS_DATA_TITLE" = "數據使用量";
 
 /* table cell label in conversation settings */
 "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "新聊天的預設計時器";

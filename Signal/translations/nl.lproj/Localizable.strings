@@ -440,7 +440,7 @@
 "BUTTON_SET" = "Instellen";
 
 /* Label for the 'share' button. */
-"BUTTON_SHARE" = "Proxyadres delen via andere app";
+"BUTTON_SHARE" = "Delen via andere app";
 
 /* Label for the 'start' button. */
 "BUTTON_START" = "Beginnen";
@@ -2978,19 +2978,19 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Dit bericht doorsturen";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Verwijzing volgen";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Bellen";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime-audio-oproep";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime-video-oproep";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Tekstbericht verzenden";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Op dit bericht reageren";
