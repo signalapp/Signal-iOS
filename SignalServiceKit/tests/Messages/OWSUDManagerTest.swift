@@ -33,7 +33,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         self.write { transaction in
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: self.aliceAddress,
-                                                  wasLocallyInitiated: true,
+                                                  userProfileWriter: .tests,
                                                   transaction: transaction)
         }
 
@@ -171,7 +171,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         self.write { transaction in
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: bobRecipientAddress,
-                                                  wasLocallyInitiated: true,
+                                                  userProfileWriter: .tests,
                                                   transaction: transaction)
         }
 
@@ -232,7 +232,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         write { transaction in
             self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData,
                                                   for: bobRecipientAddress,
-                                                  wasLocallyInitiated: true,
+                                                  userProfileWriter: .tests,
                                                   transaction: transaction)
         }
 

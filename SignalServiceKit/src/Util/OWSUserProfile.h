@@ -3,6 +3,7 @@
 //
 
 #import <SignalServiceKit/BaseModel.h>
+#import <SignalServiceKit/ProfileManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,6 +13,7 @@ typedef void (^OWSUserProfileCompletion)(void);
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
+@class UserProfileChanges;
 
 extern NSNotificationName const kNSNotificationNameProfileWhitelistDidChange;
 extern NSNotificationName const kNSNotificationNameLocalProfileDidChange;
@@ -23,6 +25,10 @@ extern NSString *const kNSNotificationKey_ProfileAddress;
 extern NSString *const kNSNotificationKey_ProfileGroupId;
 
 extern NSString *const kLocalProfileInvariantPhoneNumber;
+
+BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfileWriter);
+
+#pragma mark -
 
 @interface OWSUserProfile : BaseModel
 
@@ -66,19 +72,19 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                  avatarFileName:(nullable NSString *)avatarFileName
-                   avatarUrlPath:(nullable NSString *)avatarUrlPath
-                             bio:(nullable NSString *)bio
-                        bioEmoji:(nullable NSString *)bioEmoji
-                      familyName:(nullable NSString *)familyName
-                   isUuidCapable:(BOOL)isUuidCapable
-                   lastFetchDate:(nullable NSDate *)lastFetchDate
-               lastMessagingDate:(nullable NSDate *)lastMessagingDate
-                      profileKey:(nullable OWSAES256Key *)profileKey
-                     profileName:(nullable NSString *)profileName
-            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
-                   recipientUUID:(nullable NSString *)recipientUUID
-                        username:(nullable NSString *)username
+                avatarFileName:(nullable NSString *)avatarFileName
+                 avatarUrlPath:(nullable NSString *)avatarUrlPath
+                           bio:(nullable NSString *)bio
+                      bioEmoji:(nullable NSString *)bioEmoji
+                    familyName:(nullable NSString *)familyName
+                 isUuidCapable:(BOOL)isUuidCapable
+                 lastFetchDate:(nullable NSDate *)lastFetchDate
+             lastMessagingDate:(nullable NSDate *)lastMessagingDate
+                    profileKey:(nullable OWSAES256Key *)profileKey
+                   profileName:(nullable NSString *)profileName
+          recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                 recipientUUID:(nullable NSString *)recipientUUID
+                      username:(nullable NSString *)username
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:familyName:isUuidCapable:lastFetchDate:lastMessagingDate:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
@@ -101,79 +107,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-#pragma mark - Update With... Methods
-
-- (void)updateWithGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-              avatarUrlPath:(nullable NSString *)avatarUrlPath
-             avatarFileName:(nullable NSString *)avatarFileName
-                transaction:(SDSAnyWriteTransaction *)transaction
-                 completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-                        bio:(nullable NSString *)bio
-                   bioEmoji:(nullable NSString *)bioEmoji
-                   username:(nullable NSString *)username
-              isUuidCapable:(BOOL)isUuidCapable
-              avatarUrlPath:(nullable NSString *)avatarUrlPath
-              lastFetchDate:(NSDate *)lastFetchDate
-                transaction:(SDSAnyWriteTransaction *)transaction
-                 completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-                        bio:(nullable NSString *)bio
-                   bioEmoji:(nullable NSString *)bioEmoji
-                   username:(nullable NSString *)username
-              isUuidCapable:(BOOL)isUuidCapable
-              avatarUrlPath:(nullable NSString *)avatarUrlPath
-             avatarFileName:(nullable NSString *)avatarFileName
-              lastFetchDate:(NSDate *)lastFetchDate
-                transaction:(SDSAnyWriteTransaction *)transaction
-                 completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)updateWithProfileKey:(OWSAES256Key *)profileKey
-         wasLocallyInitiated:(BOOL)wasLocallyInitiated
-                 transaction:(SDSAnyWriteTransaction *)transaction
-                  completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
-                transaction:(SDSAnyWriteTransaction *)transaction
-                 completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-              avatarUrlPath:(nullable NSString *)avatarUrlPath
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
-                transaction:(SDSAnyWriteTransaction *)transaction
-                 completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)clearWithProfileKey:(OWSAES256Key *)profileKey
-        wasLocallyInitiated:(BOOL)wasLocallyInitiated
-                transaction:(SDSAnyWriteTransaction *)transaction
-                 completion:(nullable OWSUserProfileCompletion)completion;
-
-- (void)updateWithUsername:(nullable NSString *)username
-             isUuidCapable:(BOOL)isUuidCapable
-               transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)updateWithUsername:(nullable NSString *)username
-             isUuidCapable:(BOOL)isUuidCapable
-             lastFetchDate:(nullable NSDate *)lastFetchDate
-               transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)updateWithLastMessagingDate:(NSDate *)lastMessagingDate transaction:(SDSAnyWriteTransaction *)transaction;
-
-#if TESTABLE_BUILD
-- (void)updateWithLastFetchDate:(NSDate *)lastFetchDate transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)discardProfileKeyWithTransaction:(SDSAnyWriteTransaction *)transaction;
-#endif
+// For use by the OWSUserProfile extension only.
+- (void)applyChanges:(UserProfileChanges *)changes
+    userProfileWriter:(UserProfileWriter)userProfileWriter
+          transaction:(SDSAnyWriteTransaction *)transaction
+           completion:(nullable OWSUserProfileCompletion)completion;
 
 #pragma mark - Profile Avatars Directory
 

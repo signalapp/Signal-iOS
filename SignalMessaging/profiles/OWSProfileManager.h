@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels;
-extern const NSString *kNSNotificationKey_WasLocallyInitiated;
+extern const NSString *kNSNotificationKey_UserProfileWriter;
 
 @class MessageSender;
 @class OWSAES256Key;
@@ -72,7 +72,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
     NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));
 
-- (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateLocalUsername:(nullable NSString *)username
+          userProfileWriter:(UserProfileWriter)userProfileWriter
+                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
@@ -105,7 +107,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)logProfileWhitelist;
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
 - (void)setLocalProfileKey:(OWSAES256Key *)key
-       wasLocallyInitiated:(BOOL)wasLocallyInitiated
+         userProfileWriter:(UserProfileWriter)userProfileWriter
                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses;

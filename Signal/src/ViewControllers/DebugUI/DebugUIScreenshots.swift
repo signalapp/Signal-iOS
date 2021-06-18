@@ -895,7 +895,7 @@ public extension DebugUIScreenshots {
 //        self.profileManager.setProfileGivenName(givenName,
 //                                                familyName: familyName,
 //                                                for: address,
-//                                                wasLocallyInitiated: false,
+//                                                userProfileWriter: .debugging,
 //                                                transaction: transaction)
 //
 //        let contact = self.buildContact(address: address, fullName: givenName, transaction: transaction)
@@ -926,7 +926,7 @@ public extension DebugUIScreenshots {
         self.profileManager.setProfileGivenName(givenName,
                                                 familyName: familyName,
                                                 for: address,
-                                                wasLocallyInitiated: false,
+                                                userProfileWriter: .debugging,
                                                 transaction: transaction)
 
         if let avatarBundleFilename = avatarBundleFilename {
@@ -936,7 +936,9 @@ public extension DebugUIScreenshots {
             let avatarFileName = UUID().uuidString + ".jpg"
             try! avatarData.write(to: URL(fileURLWithPath: OWSUserProfile.profileAvatarFilepath(withFilename: avatarFileName)), options: .atomic)
             let profile = OWSUserProfile.getOrBuild(for: address, transaction: transaction)
-            profile.update(withAvatarFileName: avatarFileName, transaction: transaction)
+            profile.update(avatarFileName: avatarFileName,
+                           userProfileWriter: .debugging,
+                           transaction: transaction)
         }
         let contact = self.buildContact(address: address, fullName: givenName, transaction: transaction)
         if let existingAccount = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction) {
@@ -971,7 +973,8 @@ public extension DebugUIScreenshots {
                 profileFamilyName: familyName,
                 profileBio: nil,
                 profileBioEmoji: nil,
-                profileAvatarData: avatarData
+                profileAvatarData: avatarData,
+                userProfileWriter: .debugging
             ).asVoid()
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error)")

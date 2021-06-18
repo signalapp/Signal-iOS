@@ -476,9 +476,11 @@ NS_ASSUME_NONNULL_BEGIN
     [[[TestModel alloc] init] anyInsertWithTransaction:transaction];
 
     // OWSUserProfile
-    [[OWSUserProfile getOrBuildUserProfileForAddress:address1 transaction:transaction] updateWithUsername:nil
-                                                                                            isUuidCapable:YES
-                                                                                              transaction:transaction];
+    [[OWSUserProfile getOrBuildUserProfileForAddress:address1
+                                         transaction:transaction] updateWithUsername:nil
+                                                                       isUuidCapable:YES
+                                                                   userProfileWriter:UserProfileWriter_Debugging
+                                                                         transaction:transaction];
 
     // OWSBackupFragment
     //

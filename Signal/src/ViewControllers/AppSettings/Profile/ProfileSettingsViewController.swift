@@ -181,7 +181,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                                                             profileFamilyName: normalizedFamilyName,
                                                             profileBio: normalizedBio,
                                                             profileBioEmoji: normalizedBioEmoji,
-                                                            profileAvatarData: avatarData)
+                                                            profileAvatarData: avatarData,
+                                                            userProfileWriter: .localUser)
             }.done { _ in
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()

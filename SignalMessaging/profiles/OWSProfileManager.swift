@@ -22,7 +22,8 @@ public extension OWSProfileManager {
                                          profileBio: String?,
                                          profileBioEmoji: String?,
                                          profileAvatarData: Data?,
-                                         unsavedRotatedProfileKey: OWSAES256Key? = nil) -> Promise<Void> {
+                                         unsavedRotatedProfileKey: OWSAES256Key? = nil,
+                                         userProfileWriter: UserProfileWriter) -> Promise<Void> {
         assert(CurrentAppContext().isMainApp)
 
         return DispatchQueue.global().async(.promise) {
@@ -31,7 +32,8 @@ public extension OWSProfileManager {
                                         profileBio: profileBio,
                                         profileBioEmoji: profileBioEmoji,
                                         profileAvatarData: profileAvatarData,
-                                        unsavedRotatedProfileKey: unsavedRotatedProfileKey)
+                                        unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+                                        userProfileWriter: userProfileWriter)
         }.then { update in
             return self.attemptToUpdateProfileOnService(update: update)
         }.then { (_) throws -> Promise<Void> in
@@ -80,7 +82,8 @@ public extension OWSProfileManager {
                                                            profileBio: profileBio,
                                                            profileBioEmoji: profileBioEmoji,
                                                            profileAvatarData: profileAvatarData,
-                                                           unsavedRotatedProfileKey: unsavedRotatedProfileKey)
+                                                           unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+                                                           userProfileWriter: .reupload)
     }
 
     @objc
@@ -150,7 +153,9 @@ public extension OWSProfileManager {
             Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
 
             return self.databaseStorage.write(.promise) { transaction in
-                self.setLocalProfileKey(newProfileKey, wasLocallyInitiated: true, transaction: transaction)
+                self.setLocalProfileKey(newProfileKey,
+                                        userProfileWriter: .localUser,
+                                        transaction: transaction)
 
                 // Whenever a user's profile key changes, we need to fetch a new
                 // profile key credential for them.
@@ -206,13 +211,15 @@ public extension OWSProfileManager {
                                          profileFamilyName: String?,
                                          profileBio: String?,
                                          profileBioEmoji: String?,
-                                         profileAvatarData: Data?) -> AnyPromise {
+                                         profileAvatarData: Data?,
+                                         userProfileWriter: UserProfileWriter) -> AnyPromise {
         return AnyPromise(updateLocalProfilePromise(
             profileGivenName: profileGivenName,
             profileFamilyName: profileFamilyName,
             profileBio: profileBio,
             profileBioEmoji: profileBioEmoji,
-            profileAvatarData: profileAvatarData
+            profileAvatarData: profileAvatarData,
+            userProfileWriter: userProfileWriter
         ))
     }
 }
@@ -280,13 +287,16 @@ extension OWSProfileManager {
 
         let attempt = ProfileUpdateAttempt(update: update,
                                            userProfile: userProfile)
+        let userProfileWriter = attempt.userProfileWriter
 
         let promise = firstly {
             writeProfileAvatarToDisk(attempt: attempt)
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             // Optimistically update local profile state.
             databaseStorage.write { transaction in
-                self.updateLocalProfile(with: attempt, transaction: transaction)
+                self.updateLocalProfile(with: attempt,
+                                        userProfileWriter: userProfileWriter,
+                                        transaction: transaction)
             }
 
             Logger.info("Versioned profile update.")
@@ -306,7 +316,9 @@ extension OWSProfileManager {
                     }
                 }
 
-                self.updateLocalProfile(with: attempt, transaction: transaction)
+                self.updateLocalProfile(with: attempt,
+                                        userProfileWriter: userProfileWriter,
+                                        transaction: transaction)
             }
 
             self.attemptDidComplete(retryDelay: retryDelay, didSucceed: true)
@@ -380,12 +392,12 @@ extension OWSProfileManager {
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
             self.profileManagerImpl.writeAvatarToDisk(with: profileAvatarData,
-                                                  success: { avatarFilename in
-                                                    attempt.avatarFilename = avatarFilename
-                                                    resolver.fulfill(())
-            }, failure: { (error) in
-                resolver.reject(error)
-            })
+                                                      success: { avatarFilename in
+                                                        attempt.avatarFilename = avatarFilename
+                                                        resolver.fulfill(())
+                                                      }, failure: { (error) in
+                                                        resolver.reject(error)
+                                                      })
         }
         return promise
     }
@@ -409,15 +421,17 @@ extension OWSProfileManager {
     }
 
     private class func updateLocalProfile(with attempt: ProfileUpdateAttempt,
+                                          userProfileWriter: UserProfileWriter,
                                           transaction: SDSAnyWriteTransaction) {
         Logger.verbose("profile givenName: \(String(describing: attempt.update.profileGivenName)), familyName: \(String(describing: attempt.update.profileFamilyName)), avatarFilename: \(String(describing: attempt.avatarFilename))")
 
-        attempt.userProfile.updateWith(givenName: attempt.update.profileGivenName,
-                                       familyName: attempt.update.profileFamilyName,
-                                       avatarUrlPath: attempt.avatarUrlPath,
-                                       avatarFileName: attempt.avatarFilename,
-                                       transaction: transaction,
-                                       completion: nil)
+        attempt.userProfile.update(givenName: attempt.update.profileGivenName,
+                                   familyName: attempt.update.profileFamilyName,
+                                   avatarUrlPath: attempt.avatarUrlPath,
+                                   avatarFileName: attempt.avatarFilename,
+                                   userProfileWriter: userProfileWriter,
+                                   transaction: transaction,
+                                   completion: nil)
     }
 
     // MARK: - Update Queue
@@ -429,7 +443,8 @@ extension OWSProfileManager {
                                             profileBio: String?,
                                             profileBioEmoji: String?,
                                             profileAvatarData: Data?,
-                                            unsavedRotatedProfileKey: OWSAES256Key?) -> PendingProfileUpdate {
+                                            unsavedRotatedProfileKey: OWSAES256Key?,
+                                            userProfileWriter: UserProfileWriter) -> PendingProfileUpdate {
         Logger.verbose("")
 
         // Note that this might overwrite a pending profile update.
@@ -440,7 +455,8 @@ extension OWSProfileManager {
                                           profileBio: profileBio,
                                           profileBioEmoji: profileBioEmoji,
                                           profileAvatarData: profileAvatarData,
-                                          unsavedRotatedProfileKey: unsavedRotatedProfileKey)
+                                          unsavedRotatedProfileKey: unsavedRotatedProfileKey,
+                                          userProfileWriter: userProfileWriter)
         databaseStorage.write { transaction in
             self.settingsStore.setObject(update, key: kPendingProfileUpdateKey, transaction: transaction)
         }
@@ -511,12 +527,15 @@ class PendingProfileUpdate: NSObject, NSCoding {
         return !avatarData.isEmpty
     }
 
+    let userProfileWriter: UserProfileWriter
+
     init(profileGivenName: String?,
          profileFamilyName: String?,
          profileBio: String?,
          profileBioEmoji: String?,
          profileAvatarData: Data?,
-         unsavedRotatedProfileKey: OWSAES256Key?) {
+         unsavedRotatedProfileKey: OWSAES256Key?,
+         userProfileWriter: UserProfileWriter) {
 
         self.id = UUID()
         self.profileGivenName = profileGivenName
@@ -525,6 +544,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.profileBioEmoji = profileBioEmoji
         self.profileAvatarData = profileAvatarData
         self.unsavedRotatedProfileKey = unsavedRotatedProfileKey
+        self.userProfileWriter = userProfileWriter
     }
 
     func hasSameIdAs(_ other: PendingProfileUpdate) -> Bool {
@@ -542,14 +562,15 @@ class PendingProfileUpdate: NSObject, NSCoding {
         aCoder.encode(profileBioEmoji, forKey: "profileBioEmoji")
         aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
         aCoder.encode(unsavedRotatedProfileKey, forKey: "unsavedRotatedProfileKey")
+        aCoder.encodeCInt(Int32(userProfileWriter.rawValue), forKey: "userProfileWriter")
     }
 
     @objc
     public required init?(coder aDecoder: NSCoder) {
         guard let idString = aDecoder.decodeObject(forKey: "id") as? String,
-            let id = UUID(uuidString: idString) else {
-                owsFailDebug("Missing id")
-                return nil
+              let id = UUID(uuidString: idString) else {
+            owsFailDebug("Missing id")
+            return nil
         }
         self.id = id
         self.profileGivenName = aDecoder.decodeObject(forKey: "profileGivenName") as? String
@@ -558,6 +579,12 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.profileBioEmoji = aDecoder.decodeObject(forKey: "profileBioEmoji") as? String
         self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
         self.unsavedRotatedProfileKey = aDecoder.decodeObject(forKey: "unsavedRotatedProfileKey") as? OWSAES256Key
+        if aDecoder.containsValue(forKey: "userProfileWriter"),
+           let userProfileWriter = UserProfileWriter(rawValue: UInt(aDecoder.decodeInt32(forKey: "userProfileWriter"))) {
+            self.userProfileWriter = userProfileWriter
+        } else {
+            self.userProfileWriter = .unknown
+        }
     }
 }
 
@@ -571,6 +598,8 @@ private class ProfileUpdateAttempt {
     // These properties are populated during the update process.
     var avatarFilename: String?
     var avatarUrlPath: String?
+
+    var userProfileWriter: UserProfileWriter { update.userProfileWriter }
 
     init(update: PendingProfileUpdate, userProfile: OWSUserProfile) {
         self.update = update
@@ -641,7 +670,7 @@ public extension OWSProfileManager {
                                                      method: .get,
                                                      progress: { (_, progress) in
                                                         Logger.verbose("Downloading avatar for \(profileAddress) \(progress.fractionCompleted)")
-            })
+                                                     })
         }.map(on: .global()) { (response: OWSUrlDownloadResponse) -> Data in
             do {
                 return try Data(contentsOf: response.downloadUrl)
@@ -660,7 +689,7 @@ public extension OWSProfileManager {
             return decryptedData
         }.recover { error -> Promise<Data> in
             if error.isNetworkFailureOrTimeout,
-                remainingRetries > 0 {
+               remainingRetries > 0 {
                 // Retry
                 return self.avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
                                                             avatarUrlPath: avatarUrlPath,

@@ -227,7 +227,9 @@ class UsernameViewController: OWSTableViewController2 {
 
             Self.networkManager.makePromise(request: usernameRequest).done { _ in
                 self.databaseStorage.write { transaction in
-                    Self.profileManagerImpl.updateLocalUsername(usernameToUse, transaction: transaction)
+                    Self.profileManagerImpl.updateLocalUsername(usernameToUse,
+                                                                userProfileWriter: .localUser,
+                                                                transaction: transaction)
                 }
                 modalView.dismiss {
                     self.usernameSavedOrCanceled()
