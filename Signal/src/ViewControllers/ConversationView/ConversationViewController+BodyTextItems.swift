@@ -120,6 +120,8 @@ extension ConversationViewController {
 
         if StickerPackInfo.isStickerPackShare(dataItem.url) {
             if let stickerPackInfo = StickerPackInfo.parseStickerPackShare(dataItem.url) {
+                actionSheet.title = NSLocalizedString("MESSAGE_ACTION_TITLE_STICKER_PACK",
+                                                      comment: "Title for message actions for a sticker pack.")
                 actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_STICKER_PACK",
                                                                                  comment: "Label for button to open a sticker pack."),
                                                         accessibilityIdentifier: "link_open_sticker_pack",
@@ -130,6 +132,8 @@ extension ConversationViewController {
                 owsFailDebug("Invalid URL: \(dataItem.url)")
             }
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
+            actionSheet.title = NSLocalizedString("MESSAGE_ACTION_TITLE_GROUP_INVITE",
+                                                  comment: "Title for message actions for a group invite link.")
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE",
                                                                              comment: "Label for button to open a group invite."),
                                                     accessibilityIdentifier: "link_open_group_invite",

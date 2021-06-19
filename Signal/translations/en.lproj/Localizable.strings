@@ -3007,6 +3007,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
 
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Sticker Pack";
+
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
 
