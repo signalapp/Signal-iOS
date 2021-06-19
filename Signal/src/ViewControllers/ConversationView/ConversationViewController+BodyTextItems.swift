@@ -27,6 +27,12 @@ extension ConversationViewController {
 
     @objc
     public func didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+        AssertIsOnMainThread()
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return
+        }
+
         switch item.item {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
@@ -64,6 +70,12 @@ extension ConversationViewController {
 
     @objc
     public func didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+        AssertIsOnMainThread()
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return
+        }
+
         switch item.item {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
@@ -102,14 +114,37 @@ extension ConversationViewController {
     //   * tap - open URL in safari
     //   * long press - preview + open link in safari / add to reading list / copy link / share
     private func didLongPressLink(dataItem: CVBodyTextLabel.DataItem) {
+        AssertIsOnMainThread()
+
         let actionSheet = ActionSheetController(title: dataItem.snippet.strippedOrNil)
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
-                                                                         comment: "Label for button to open a link."),
-                                                accessibilityIdentifier: "link_open_link",
-                                                style: .default) { [weak self] _ in
-            self?.openLink(dataItem: dataItem)
-        })
+        if StickerPackInfo.isStickerPackShare(dataItem.url) {
+            if let stickerPackInfo = StickerPackInfo.parseStickerPackShare(dataItem.url) {
+                actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_STICKER_PACK",
+                                                                                 comment: "Label for button to open a sticker pack."),
+                                                        accessibilityIdentifier: "link_open_sticker_pack",
+                                                        style: .default) { [weak self] _ in
+                    self?.cvc_didTapStickerPack(stickerPackInfo)
+                })
+            } else {
+                owsFailDebug("Invalid URL: \(dataItem.url)")
+            }
+        } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE",
+                                                                             comment: "Label for button to open a group invite."),
+                                                    accessibilityIdentifier: "link_open_group_invite",
+                                                    style: .default) { [weak self] _ in
+                self?.cvc_didTapGroupInviteLink(url: dataItem.url)
+            })
+        } else {
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
+                                                                             comment: "Label for button to open a link."),
+                                                    accessibilityIdentifier: "link_open_link",
+                                                    style: .default) { [weak self] _ in
+                self?.openLink(dataItem: dataItem)
+            })
+        }
+
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.copyButton,
                                                 accessibilityIdentifier: "link_copy",
                                                 style: .default) { _ in
@@ -272,7 +307,15 @@ extension ConversationViewController {
     private func openLink(dataItem: CVBodyTextLabel.DataItem) {
         AssertIsOnMainThread()
 
-        if isMailtoUrl(dataItem.url) {
+        if StickerPackInfo.isStickerPackShare(dataItem.url) {
+            guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(dataItem.url) else {
+                owsFailDebug("Invalid URL: \(dataItem.url)")
+                return
+            }
+            cvc_didTapStickerPack(stickerPackInfo)
+        } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
+            cvc_didTapGroupInviteLink(url: dataItem.url)
+        } else if isMailtoUrl(dataItem.url) {
             didTapEmail(dataItem: dataItem)
         } else {
             // Open in Safari.

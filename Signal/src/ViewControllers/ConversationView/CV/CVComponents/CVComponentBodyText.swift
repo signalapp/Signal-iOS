@@ -901,46 +901,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             _label?.text = nil
             _bodyTextLabel?.reset()
         }
-
-        // MARK: - UITextViewDelegate
-
-    }
-}
-
-// MARK: -
-
-extension CVComponentBodyText.CVComponentViewBodyText: UITextViewDelegate {
-
-    public func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        shouldInteractWithUrl(url)
-    }
-
-    public func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange) -> Bool {
-        shouldInteractWithUrl(url)
-    }
-
-    private func shouldInteractWithUrl(_ url: URL) -> Bool {
-        guard let componentDelegate = componentDelegate else {
-            owsFailDebug("Missing componentDelegate.")
-            return true
-        }
-        guard tsAccountManager.isRegisteredAndReady else {
-            return true
-        }
-        if StickerPackInfo.isStickerPackShare(url) {
-            if let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) {
-                componentDelegate.cvc_didTapStickerPack(stickerPackInfo)
-                return false
-            } else {
-                owsFailDebug("Invalid URL: \(url)")
-                return true
-            }
-        }
-        if GroupManager.isPossibleGroupInviteLink(url) {
-            componentDelegate.cvc_didTapGroupInviteLink(url: url)
-            return false
-        }
-        return true
     }
 }
 
