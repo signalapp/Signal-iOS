@@ -119,21 +119,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     private var hasEverHadLayout = false
 
-    private var currentLayoutInfo: LayoutInfo? {
-        didSet {
-            if oldValue != nil, currentLayoutInfo == nil {
-                Logger.verbose("---- Clearing")
-            } else if oldValue == nil, currentLayoutInfo != nil {
-                Logger.verbose("---- Setting")
-            } else if oldValue != nil, currentLayoutInfo != nil {
-                Logger.verbose("---- Changing")
-            }
-        }
-    }
-    @objc
-    public var hasLayoutInfo: Bool { nil != currentLayoutInfo }
-    @objc
-    public var debugContentSize: CGSize { currentLayoutInfo?.contentSize ?? .zero }
+    private var currentLayoutInfo: LayoutInfo?
 
     private func ensureCurrentLayoutInfo() -> LayoutInfo {
         AssertIsOnMainThread()
@@ -146,7 +132,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         let layoutInfo = Self.buildLayoutInfo(state: currentState)
         currentLayoutInfo = layoutInfo
-
         hasEverHadLayout = true
         return layoutInfo
     }
@@ -194,6 +179,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         ensureState()
 
+        // When landing some CVC loads, we maintain scroll continuity by setting a
+        // `contentOffsetAdjustment` on the UICollectionViewLayoutInvalidationContext
+        // of the first call to invalidateLayout() after the land loads.  In particular,
+        // this can be used maintain scroll continuity when landing a load during an
+        // active scroll gesture or animation.
         if let delegate = self.delegate,
            let scrollContinuityToken = self.scrollContinuityMode.activeScrollContinuityToken {
 
@@ -203,37 +193,15 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let layoutInfoBeforeUpdate = scrollContinuityToken.layoutInfo
             let layoutInfoAfterUpdate = ensureCurrentLayoutInfo()
 
-            Logger.verbose("---- status: " +
-                            "layoutInfoBeforeUpdate.contentSize: \(layoutInfoBeforeUpdate.contentSize), " +
-                            "layoutInfoAfterUpdate.contentSize: \(layoutInfoAfterUpdate.contentSize), " +
-                            "isPerformingBatchUpdates: \(isPerformingBatchUpdates), " +
-                            ""
-            )
-
             if let contentOffsetAdjustment = Self.invalidationContentOffsetAdjustment(delegate: delegate,
                                                                                       layoutInfoBeforeUpdate: layoutInfoBeforeUpdate,
                                                                                       layoutInfoAfterUpdate: layoutInfoAfterUpdate),
                contentOffsetAdjustment != .zero {
                 context.contentOffsetAdjustment = contentOffsetAdjustment
             }
-
-            //            if let pendingContentOffsetAdjustment = self.pendingContentOffsetAdjustment {
-            //                context.contentOffsetAdjustment = pendingContentOffsetAdjustment
-            //                self.pendingContentOffsetAdjustment = nil
-            //            }
         }
-
-        Logger.verbose("---- context with end 1: \(self.collectionView?.contentOffset ?? .zero)")
 
         super.invalidateLayout(with: context)
-
-        Logger.verbose("---- context with end 2: \(self.collectionView?.contentOffset ?? .zero)")
-
-        if context.contentOffsetAdjustment != .zero,
-           let collectionView = self.collectionView as? ConversationCollectionView {
-            Logger.verbose("---- setting shouldBreakOnContentOffsetChanges")
-            collectionView.shouldBreakOnContentOffsetChanges = true
-        }
     }
 
     // We use this hook to ensure scroll state continuity.  As the collection
@@ -241,8 +209,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     private static func invalidationContentOffsetAdjustment(delegate: ConversationViewLayoutDelegate,
                                                             layoutInfoBeforeUpdate: LayoutInfo,
                                                             layoutInfoAfterUpdate: LayoutInfo) -> CGPoint? {
-        Logger.verbose("---- layoutInfoBeforeUpdate.contentSize: \(layoutInfoBeforeUpdate.contentSize)")
-        Logger.verbose("---- layoutInfoAfterUpdate.contentSize: \(layoutInfoAfterUpdate.contentSize)")
 
         var beforeItemLayoutMap = [String: ItemLayout]()
         for itemLayout in layoutInfoBeforeUpdate.itemLayouts {
@@ -265,11 +231,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let frameAfterUpdate = afterItemLayout.layoutAttributes.frame
             let offset = frameAfterUpdate.origin - frameBeforeUpdate.origin
             let contentOffsetAdjustment = CGPoint(x: 0, y: offset.y)
-            Logger.verbose("---- contentOffsetAdjustment: \(contentOffsetAdjustment)")
             return contentOffsetAdjustment
         }
-
-        Logger.verbose("No continuity match.")
 
         return nil
     }
@@ -346,8 +309,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
             owsFailDebug("Missing state")
             return buildEmptyLayoutInfo()
         }
-
-        Logger.verbose("---- Building")
 
         let conversationStyle = state.conversationStyle
         let layoutItems = state.layoutItems
@@ -547,48 +508,35 @@ public class ConversationViewLayout: UICollectionViewLayout {
     public func willPerformBatchUpdates(scrollContinuityToken: CVScrollContinuityToken?) {
         AssertIsOnMainThread()
         owsAssertDebug(self.scrollContinuityMode == .none)
-
-        Logger.verbose("---- 1")
-
         owsAssertDebug(currentLayoutInfo != nil)
 
         isPerformingBatchUpdates = true
-        Logger.verbose("---- 2")
 
+        // When landing some CVC loads, we maintain scroll continuity by setting a
+        // `contentOffsetAdjustment` on the UICollectionViewLayoutInvalidationContext
+        // pass to invalidateLayout().  The timing of this adjustment to the
+        // `contentOffset` is delicate.  It should can only safely be done in the first
+        // call to invalidateLayout() after willPerformBatchUpdates().
         if let scrollContinuityToken = scrollContinuityToken {
-//        if isLoadAdjacent {
-            Logger.verbose("---- Setting scrollContinuityToken")
             self.scrollContinuityMode = .pending(scrollContinuityToken: scrollContinuityToken)
         } else {
             self.scrollContinuityMode = .none
         }
-
-//        if isLoadAdjacent {
-//            Logger.verbose("---- Setting scrollContinuityToken")
-//            self.possibleScrollContinuityToken = scrollContinuityToken
-//        }
     }
 
     @objc
     public func didPerformBatchUpdates(scrollContinuityToken: CVScrollContinuityToken?) {
         AssertIsOnMainThread()
-//        owsAssertDebug(self.pendingScrollContinuityToken == nil)
-
-        Logger.verbose("----")
 
         isPerformingBatchUpdates = false
-
-//        if isLoadAdjacent {
-//            self.pendingScrollContinuityToken = scrollContinuityToken
-//        }
     }
 
     @objc
     public func didCompleteBatchUpdates() {
         AssertIsOnMainThread()
 
-        Logger.verbose("----")
-
+        // Call invalidateLayout() in case any "pending" CVScrollContinuityToken
+        // in scrollContinuityMode is applied. This should be redundant.
         invalidateLayout()
 
         owsAssertDebug(self.scrollContinuityMode == .none)
@@ -626,15 +574,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // The updateItems parameter is an array of UICollectionViewUpdateItem instances for each
     // element that is moving to a new index path.
     public override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
-        Logger.verbose("----")
-
         super.prepare(forCollectionViewUpdates: updateItems)
     }
 
     // Called inside an animation block after the update.
     public override func finalizeCollectionViewUpdates() {
-        Logger.verbose("----")
-
         super.finalizeCollectionViewUpdates()
 
         switch scrollContinuityMode {
@@ -651,15 +595,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // UICollectionView calls this when its bounds have changed inside an
     // animation block before displaying cells in its new bounds.
     public override func prepare(forAnimatedBoundsChange oldBounds: CGRect) {
-        Logger.verbose("----")
-
         super.prepare(forAnimatedBoundsChange: oldBounds)
     }
 
     // also called inside the animation block
     public override func finalizeAnimatedBoundsChange() {
-        Logger.verbose("----")
-
         super.finalizeAnimatedBoundsChange()
     }
 
@@ -691,13 +631,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     private func targetContentOffset(proposedContentOffset: CGPoint,
                                      withScrollingVelocity velocity: CGPoint?) -> CGPoint {
 
-//        if isPerformingBatchUpdates, isLoadAdjacent {
-////            if !DebugFlags.reduceLogChatter {
-//                Logger.verbose("---- 0 isPerformingBatchUpdates, isLoadAdjacent")
-////            }
-//            return proposedContentOffset
-//        }
-
         guard let delegate = delegate else {
             owsFailDebug("Missing delegate.")
             if let velocity = velocity {
@@ -709,16 +642,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
 
         guard velocity == nil else {
-            Logger.verbose("---- 1 no velocity, returning proposedContentOffset, proposedContentOffset: \(proposedContentOffset), \(debugInfo)")
             return proposedContentOffset
         }
 
         if isUpdating {
             let targetContentOffset = delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-            Logger.verbose("---- 3 isUpdating returning targetContentOffset, proposedContentOffset: \(proposedContentOffset), targetContentOffset: \(targetContentOffset), \(debugInfo)")
             return targetContentOffset
         } else {
-            Logger.verbose("---- 4 returning proposedContentOffset, proposedContentOffset: \(proposedContentOffset), \(debugInfo)")
             return proposedContentOffset
         }
     }
