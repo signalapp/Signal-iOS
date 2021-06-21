@@ -3368,7 +3368,9 @@ struct SignalServiceProtos_AttachmentPointer {
     typealias RawValue = Int
     case voiceMessage // = 1
     case borderless // = 2
-    case gif // = 4
+
+    /// 4 is reserved
+    case gif // = 8
 
     init() {
       self = .voiceMessage
@@ -3378,7 +3380,7 @@ struct SignalServiceProtos_AttachmentPointer {
       switch rawValue {
       case 1: self = .voiceMessage
       case 2: self = .borderless
-      case 4: self = .gif
+      case 8: self = .gif
       default: return nil
       }
     }
@@ -3387,7 +3389,7 @@ struct SignalServiceProtos_AttachmentPointer {
       switch self {
       case .voiceMessage: return 1
       case .borderless: return 2
-      case .gif: return 4
+      case .gif: return 8
       }
     }
 
@@ -7298,7 +7300,7 @@ extension SignalServiceProtos_AttachmentPointer.Flags: SwiftProtobuf._ProtoNameP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "VOICE_MESSAGE"),
     2: .same(proto: "BORDERLESS"),
-    4: .same(proto: "GIF")
+    8: .same(proto: "GIF")
   ]
 }
 
