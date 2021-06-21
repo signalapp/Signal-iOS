@@ -245,9 +245,15 @@ extension ConversationViewController: UIScrollViewDelegate {
     public func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         AssertIsOnMainThread()
 
-        scrollingAnimationDidStart()
+        if canLoadOlderItems {
+            let newContentOffset = CGPoint(x: 0, y: 0)
+            collectionView.setContentOffset(newContentOffset, animated: true)
+            return false
+        } else {
+            scrollingAnimationDidStart()
 
-        return true
+            return true
+        }
     }
 
     @objc
