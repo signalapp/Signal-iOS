@@ -620,6 +620,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         var maxLabelWidth = (maxWidth -
                                 (textStackConfig.layoutMargins.totalWidth +
                                     rootStackConfig.layoutMargins.totalWidth))
+        maxLabelWidth -= cancelSize + rightStackConfig.spacing
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
         var rightStackSubviewInfos = [ManualStackSubviewInfo]()

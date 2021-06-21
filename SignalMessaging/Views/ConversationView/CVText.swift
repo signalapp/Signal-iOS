@@ -258,7 +258,7 @@ public class CVText {
 
     public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         unfairLock.withLock {
-            measureLabelLocked(mode: mode, config: config, maxWidth: maxWidth)
+            measureLabelLocked(mode: mode, config: config, maxWidth: max(0, maxWidth))
         }
     }
 
