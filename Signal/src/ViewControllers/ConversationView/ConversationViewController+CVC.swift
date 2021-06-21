@@ -100,8 +100,18 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         collectionView.layoutIfNeeded()
         // ENDHACK to work around radar #28167779
 
+        // Snapshot CVC layout state before we land the load;
+        // we use this to ensure scroll continuity when landing the load.
+        let scrollContinuityToken = layout.buildScrollContinuityToken()
+
+        // CVC will often use this state to ensure scroll continuity
+        // when landing loads, so ensure the value is updated before
+        // landing loads.
+        self.updateLastKnownDistanceFromBottom()
+
         return CVUpdateToken(isScrolledToBottom: self.isScrolledToBottom,
-                             lastMessageForInboxSortId: threadViewModel.lastMessageForInbox?.sortId)
+                             lastMessageForInboxSortId: threadViewModel.lastMessageForInbox?.sortId,
+                             scrollContinuityToken: scrollContinuityToken)
     }
 
     func updateWithNewRenderState(update: CVUpdate,
@@ -340,12 +350,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     private func reloadCollectionViewImmediately() {
         AssertIsOnMainThread()
 
-        layout.willReloadData()
-        UIView.performWithoutAnimation {
-            self.collectionView.reloadData()
-            self.layout.invalidateLayout()
-        }
-        layout.didReloadData()
+        self.collectionView.cvc_reloadData(animated: false, cvc: self)
     }
 
     private func updateForMinorUpdate(scrollAction: CVScrollAction) {
@@ -458,6 +463,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 scrollAction scrollActionParam: CVScrollAction,
                                 threadInteractionCount: UInt,
                                 updateToken: CVUpdateToken) {
+        AssertIsOnMainThread()
         owsAssertDebug(!items.isEmpty)
 
         Logger.verbose("")
@@ -622,11 +628,18 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
-        self.performBatchUpdates(batchUpdatesBlock,
-                                 completion: completion,
-                                 logFailureBlock: logFailureBlock,
-                                 shouldAnimateUpdates: shouldAnimateUpdate,
-                                 isLoadAdjacent: isLoadAdjacent)
+        var scrollContinuityToken: CVScrollContinuityToken?
+        if isLoadAdjacent, hasScrollingAnimation {
+            scrollContinuityToken = updateToken.scrollContinuityToken
+        }
+
+        // We use an obj-c free function so that we can handle NSException.
+        self.collectionView.cvc_performBatchUpdates(batchUpdatesBlock,
+                                                    completion: completion,
+                                                    failure: logFailureBlock,
+                                                    animated: shouldAnimateUpdate,
+                                                    scrollContinuityToken: scrollContinuityToken,
+                                                    cvc: self)
     }
 
     private var scrolledToEdgeTolerancePoints: CGFloat {

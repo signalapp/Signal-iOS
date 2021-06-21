@@ -516,8 +516,17 @@ extension ConversationViewController {
     @objc
     public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
 
+        // TODO: Remove logging in this method once scroll continuity
+        // issues are resolved.
         if !DebugFlags.reduceLogChatter {
             Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
+        }
+
+        guard !layout.isHandlingScrollContinuity else {
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("---- layout.isHandlingScrollContinuity")
+            }
+            return proposedContentOffset
         }
 
         if isPresentingMessageActions,

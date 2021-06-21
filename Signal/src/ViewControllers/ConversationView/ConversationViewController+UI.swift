@@ -5,7 +5,6 @@
 import Foundation
 
 extension ConversationViewController {
-
     @objc
     public func updateNavigationTitle() {
         AssertIsOnMainThread()
