@@ -144,9 +144,9 @@ extension ConversationViewController {
                 let newYOffset = (oldYOffset + insetChange).clamp(minYOffset, safeContentHeight)
                 let newOffset = CGPoint(x: 0, y: newYOffset)
 
-                UIView.performWithoutAnimation {
-                    collectionView.setContentOffset(newOffset, animated: false)
-                }
+                // This offset change will be animated by UIKit's UIView animation block
+                // which updateContentInsets() is called within
+                collectionView.setContentOffset(newOffset, animated: false)
             }
         }
     }
