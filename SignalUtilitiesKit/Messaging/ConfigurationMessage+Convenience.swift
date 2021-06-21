@@ -22,7 +22,7 @@ extension ConfigurationMessage {
                     guard storage.isClosedGroup(groupPublicKey),
                         let encryptionKeyPair = storage.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { return }
                     let closedGroup = ClosedGroup(publicKey: groupPublicKey, name: thread.groupModel.groupName!, encryptionKeyPair: encryptionKeyPair,
-                        members: Set(thread.groupModel.groupMemberIds), admins: Set(thread.groupModel.groupAdminIds))
+                        members: Set(thread.groupModel.groupMemberIds), admins: Set(thread.groupModel.groupAdminIds), expirationTimer: thread.disappearingMessagesDuration(with: transaction))
                     closedGroups.insert(closedGroup)
                 case .openGroup:
                     if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
