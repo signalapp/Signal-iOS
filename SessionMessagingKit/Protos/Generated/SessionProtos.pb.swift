@@ -971,6 +971,15 @@ struct SessionProtos_ConfigurationMessage {
 
     var admins: [Data] = []
 
+    var expirationTimer: UInt32 {
+      get {return _expirationTimer ?? 0}
+      set {_expirationTimer = newValue}
+    }
+    /// Returns true if `expirationTimer` has been explicitly set.
+    var hasExpirationTimer: Bool {return self._expirationTimer != nil}
+    /// Clears the value of `expirationTimer`. Subsequent reads from it will return its default value.
+    mutating func clearExpirationTimer() {self._expirationTimer = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -978,6 +987,7 @@ struct SessionProtos_ConfigurationMessage {
     fileprivate var _publicKey: Data? = nil
     fileprivate var _name: String? = nil
     fileprivate var _encryptionKeyPair: SessionProtos_KeyPair? = nil
+    fileprivate var _expirationTimer: UInt32? = nil
   }
 
   struct Contact {
@@ -2294,6 +2304,7 @@ extension SessionProtos_ConfigurationMessage.ClosedGroup: SwiftProtobuf.Message,
     3: .same(proto: "encryptionKeyPair"),
     4: .same(proto: "members"),
     5: .same(proto: "admins"),
+    6: .same(proto: "expirationTimer"),
   ]
 
   public var isInitialized: Bool {
@@ -2312,6 +2323,7 @@ extension SessionProtos_ConfigurationMessage.ClosedGroup: SwiftProtobuf.Message,
       case 3: try { try decoder.decodeSingularMessageField(value: &self._encryptionKeyPair) }()
       case 4: try { try decoder.decodeRepeatedBytesField(value: &self.members) }()
       case 5: try { try decoder.decodeRepeatedBytesField(value: &self.admins) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self._expirationTimer) }()
       default: break
       }
     }
@@ -2333,6 +2345,9 @@ extension SessionProtos_ConfigurationMessage.ClosedGroup: SwiftProtobuf.Message,
     if !self.admins.isEmpty {
       try visitor.visitRepeatedBytesField(value: self.admins, fieldNumber: 5)
     }
+    if let v = self._expirationTimer {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2342,6 +2357,7 @@ extension SessionProtos_ConfigurationMessage.ClosedGroup: SwiftProtobuf.Message,
     if lhs._encryptionKeyPair != rhs._encryptionKeyPair {return false}
     if lhs.members != rhs.members {return false}
     if lhs.admins != rhs.admins {return false}
+    if lhs._expirationTimer != rhs._expirationTimer {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
