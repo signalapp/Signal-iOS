@@ -179,62 +179,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         ensureState()
 
-        // When landing some CVC loads, we maintain scroll continuity by setting a
-        // `contentOffsetAdjustment` on the UICollectionViewLayoutInvalidationContext
-        // of the first call to invalidateLayout() after the land loads.  In particular,
-        // this can be used maintain scroll continuity when landing a load during an
-        // active scroll gesture or animation.
-        if let delegate = self.delegate,
-           let scrollContinuityToken = self.scrollContinuityMode.activeScrollContinuityToken {
-
-            // Clear the token to ensure that we only adjust the contentOffset once.
-            self.scrollContinuityMode = .none
-
-            let layoutInfoBeforeUpdate = scrollContinuityToken.layoutInfo
-            let layoutInfoAfterUpdate = ensureCurrentLayoutInfo()
-
-            if let contentOffsetAdjustment = Self.invalidationContentOffsetAdjustment(delegate: delegate,
-                                                                                      layoutInfoBeforeUpdate: layoutInfoBeforeUpdate,
-                                                                                      layoutInfoAfterUpdate: layoutInfoAfterUpdate),
-               contentOffsetAdjustment != .zero {
-                context.contentOffsetAdjustment = contentOffsetAdjustment
-            }
-        }
-
         super.invalidateLayout(with: context)
-    }
-
-    // We use this hook to ensure scroll state continuity.  As the collection
-    // view's content size changes, we want to keep the same cells in view.
-    private static func invalidationContentOffsetAdjustment(delegate: ConversationViewLayoutDelegate,
-                                                            layoutInfoBeforeUpdate: LayoutInfo,
-                                                            layoutInfoAfterUpdate: LayoutInfo) -> CGPoint? {
-
-        var beforeItemLayoutMap = [String: ItemLayout]()
-        for itemLayout in layoutInfoBeforeUpdate.itemLayouts {
-            beforeItemLayoutMap[itemLayout.interactionUniqueId] = itemLayout
-        }
-
-        // Honor the scroll continuity bias.
-        //
-        // If we prefer continuity with regard to the bottom
-        // of the conversation, start with the last items.
-        let afterItemLayouts = (delegate.scrollContinuity == .bottom
-                                    ? layoutInfoAfterUpdate.itemLayouts.reversed()
-                                    : layoutInfoAfterUpdate.itemLayouts)
-
-        for afterItemLayout in afterItemLayouts {
-            guard let beforeItemLayout = beforeItemLayoutMap[afterItemLayout.interactionUniqueId] else {
-                continue
-            }
-            let frameBeforeUpdate = beforeItemLayout.layoutAttributes.frame
-            let frameAfterUpdate = afterItemLayout.layoutAttributes.frame
-            let offset = frameAfterUpdate.origin - frameBeforeUpdate.origin
-            let contentOffsetAdjustment = CGPoint(x: 0, y: offset.y)
-            return contentOffsetAdjustment
-        }
-
-        return nil
     }
 
     private func ensureState() {
@@ -470,44 +415,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
     @objc
     public private(set) var isPerformingBatchUpdates = false
 
-    private enum ScrollContinuityMode: Equatable, CustomStringConvertible {
-        case none
-        case pending(scrollContinuityToken: CVScrollContinuityToken)
-        case active(scrollContinuityToken: CVScrollContinuityToken)
-
-        var activeScrollContinuityToken: CVScrollContinuityToken? {
-            switch self {
-            case .none, .pending:
-                return nil
-            case .active(let scrollContinuityToken):
-                return scrollContinuityToken
-            }
-        }
-
-        // MARK: - CustomStringConvertible
-
-        public var description: String {
-            switch self {
-            case .none:
-                return "none"
-            case .pending:
-                return "pending"
-            case .active:
-                return "active"
-            }
-        }
-    }
-    private var scrollContinuityMode: ScrollContinuityMode = .none
-
-    @objc
-    public var isHandlingScrollContinuity: Bool {
-        self.scrollContinuityMode != .none
-    }
-
     @objc
     public func willPerformBatchUpdates(scrollContinuityToken: CVScrollContinuityToken?) {
         AssertIsOnMainThread()
-        owsAssertDebug(self.scrollContinuityMode == .none)
         owsAssertDebug(currentLayoutInfo != nil)
 
         isPerformingBatchUpdates = true
@@ -515,13 +425,57 @@ public class ConversationViewLayout: UICollectionViewLayout {
         // When landing some CVC loads, we maintain scroll continuity by setting a
         // `contentOffsetAdjustment` on the UICollectionViewLayoutInvalidationContext
         // pass to invalidateLayout().  The timing of this adjustment to the
-        // `contentOffset` is delicate.  It should can only safely be done in the first
-        // call to invalidateLayout() after willPerformBatchUpdates().
-        if let scrollContinuityToken = scrollContinuityToken {
-            self.scrollContinuityMode = .pending(scrollContinuityToken: scrollContinuityToken)
-        } else {
-            self.scrollContinuityMode = .none
+        // `contentOffset` is delicate.  It must be done just before
+        // UICollectionView.performBatchUpdates().
+        if let delegate = self.delegate,
+           let scrollContinuityToken = scrollContinuityToken {
+            ensureState()
+            let layoutInfoBeforeUpdate = scrollContinuityToken.layoutInfo
+            let layoutInfoAfterUpdate = ensureCurrentLayoutInfo()
+
+            if let contentOffsetAdjustment = Self.invalidationContentOffsetAdjustment(delegate: delegate,
+                                                                                      layoutInfoBeforeUpdate: layoutInfoBeforeUpdate,
+                                                                                      layoutInfoAfterUpdate: layoutInfoAfterUpdate),
+               contentOffsetAdjustment != .zero {
+
+                let context = UICollectionViewLayoutInvalidationContext()
+                context.contentOffsetAdjustment = contentOffsetAdjustment
+                self.invalidateLayout(with: context)
+            }
         }
+    }
+
+    // Try to determine the correct adjustment to `content offset` that will
+    // ensure scroll continuity.
+    private static func invalidationContentOffsetAdjustment(delegate: ConversationViewLayoutDelegate,
+                                                            layoutInfoBeforeUpdate: LayoutInfo,
+                                                            layoutInfoAfterUpdate: LayoutInfo) -> CGPoint? {
+
+        var beforeItemLayoutMap = [String: ItemLayout]()
+        for itemLayout in layoutInfoBeforeUpdate.itemLayouts {
+            beforeItemLayoutMap[itemLayout.interactionUniqueId] = itemLayout
+        }
+
+        // Honor the scroll continuity bias.
+        //
+        // If we prefer continuity with regard to the bottom
+        // of the conversation, start with the last items.
+        let afterItemLayouts = (delegate.scrollContinuity == .bottom
+                                    ? layoutInfoAfterUpdate.itemLayouts.reversed()
+                                    : layoutInfoAfterUpdate.itemLayouts)
+
+        for afterItemLayout in afterItemLayouts {
+            guard let beforeItemLayout = beforeItemLayoutMap[afterItemLayout.interactionUniqueId] else {
+                continue
+            }
+            let frameBeforeUpdate = beforeItemLayout.layoutAttributes.frame
+            let frameAfterUpdate = afterItemLayout.layoutAttributes.frame
+            let offset = frameAfterUpdate.origin - frameBeforeUpdate.origin
+            let contentOffsetAdjustment = CGPoint(x: 0, y: offset.y)
+            return contentOffsetAdjustment
+        }
+
+        return nil
     }
 
     @objc
@@ -534,13 +488,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     @objc
     public func didCompleteBatchUpdates() {
         AssertIsOnMainThread()
-
-        // Call invalidateLayout() in case any "pending" CVScrollContinuityToken
-        // in scrollContinuityMode is applied. This should be redundant.
-        invalidateLayout()
-
-        owsAssertDebug(self.scrollContinuityMode == .none)
-        self.scrollContinuityMode = .none
     }
 
     private var isReloadingData = false
@@ -580,16 +527,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // Called inside an animation block after the update.
     public override func finalizeCollectionViewUpdates() {
         super.finalizeCollectionViewUpdates()
-
-        switch scrollContinuityMode {
-        case .none:
-            break
-        case .pending(let scrollContinuityToken):
-            // Activate
-            self.scrollContinuityMode = .active(scrollContinuityToken: scrollContinuityToken)
-        case .active:
-            owsFailDebug("Unexpected scrollContinuityMode.")
-        }
     }
 
     // UICollectionView calls this when its bounds have changed inside an
@@ -608,7 +545,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             owsFailDebug("Missing delegate.")
             return "Missing delegate"
         }
-        return "isUserScrolling: \(delegate.isUserScrolling), hasScrollingAnimation: \(delegate.hasScrollingAnimation), scrollContinuity: \(delegate.scrollContinuity), isPerformingBatchUpdates: \(isPerformingBatchUpdates), isReloadingData: \(isReloadingData), scrollContinuityMode: \(scrollContinuityMode)"
+        return "isUserScrolling: \(delegate.isUserScrolling), hasScrollingAnimation: \(delegate.hasScrollingAnimation), scrollContinuity: \(delegate.scrollContinuity), isPerformingBatchUpdates: \(isPerformingBatchUpdates), isReloadingData: \(isReloadingData)"
     }
 
     // MARK: -

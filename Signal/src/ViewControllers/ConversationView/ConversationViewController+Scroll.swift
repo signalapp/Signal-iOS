@@ -522,25 +522,6 @@ extension ConversationViewController {
             Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
         }
 
-        guard !layout.isHandlingScrollContinuity else {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("---- layout.isHandlingScrollContinuity")
-            }
-            // If the user "over-scrolls" past the top of the scroll view's content
-            // to where contentOffset is negative, UIScrollView will initiate a
-            // "settling animation" with the intention of coming to rest at
-            // contentOffset of zero.  If a load lands during this "settling"
-            // animation, the animation will proceed, setting contentOffset to
-            // small values even if new content has been prepended at the
-            // top of the load window.  From the user's POV, this causes the
-            // scroll position to have "jumped up" to the top of the scroll
-            // view.  This can also trigger multiple "load older" loads.
-            // To avoid this, we clamp the contentOffset to X >= 0 while
-            // layout.isHandlingScrollContinuity, e.g. when landing "load
-            // older" loads.
-            return CGPoint(x: 0, y: max(0, proposedContentOffset.y))
-        }
-
         if isPresentingMessageActions,
            let contentOffset = targetContentOffsetForMessageActionInteraction {
             if !DebugFlags.reduceLogChatter {
