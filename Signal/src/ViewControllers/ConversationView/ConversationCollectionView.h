@@ -24,7 +24,6 @@ typedef void (^CVCPerformBatchUpdatesFailure)(void);
 @interface ConversationCollectionView : UICollectionView
 
 @property (weak, nonatomic) id<ConversationCollectionViewDelegate> layoutDelegate;
-@property (nonatomic) BOOL shouldBreakOnContentOffsetChanges;
 
 - (void)reloadData NS_UNAVAILABLE;
 - (void)cvc_reloadDataWithAnimated:(BOOL)animated
@@ -37,10 +36,7 @@ typedef void (^CVCPerformBatchUpdatesFailure)(void);
                         failure:(CVCPerformBatchUpdatesFailure)failure
                        animated:(BOOL)animated
           scrollContinuityToken:(nullable CVScrollContinuityToken *)scrollContinuityToken
-                            cvc:(ConversationViewController *)cvc NS_SWIFT_NAME(cvc_performBatchUpdates(_:completion:
-                                    failure:
-                                    scrollContinuityToken:
-                                    cvc:));
+                            cvc:(ConversationViewController *)cvc NS_SWIFT_NAME(cvc_performBatchUpdates(_:completion:failure:scrollContinuityToken:cvc:));
 
 @end
 
