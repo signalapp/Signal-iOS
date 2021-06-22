@@ -43,7 +43,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
-@property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -67,7 +66,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
     _cnContactCache = [[NSCache alloc] initWithCountLimit:50];
-    _cnContactAvatarCache = [[NSCache alloc] initWithCountLimit:25];
 
     OWSSingletonAssert();
 
@@ -184,31 +182,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // Don't bother to cache avatar data.
     CNContact *_Nullable cnContact = [self cnContactWithId:contactId];
     return [Contact avatarDataForCNContact:cnContact];
-}
-
-- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
-{
-    OWSAssertDebug(self.cnContactAvatarCache);
-
-    if (!contactId) {
-        return nil;
-    }
-
-    UIImage *_Nullable avatarImage;
-    @synchronized(self.cnContactAvatarCache) {
-        avatarImage = [self.cnContactAvatarCache objectForKey:contactId];
-        if (!avatarImage) {
-            NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
-            if (avatarData && [avatarData ows_isValidImage]) {
-                avatarImage = [UIImage imageWithData:avatarData];
-            }
-            if (avatarImage) {
-                [self.cnContactAvatarCache setObject:avatarImage forKey:contactId];
-            }
-        }
-    }
-
-    return avatarImage;
 }
 
 #pragma mark - SystemContactsFetcherDelegate
@@ -505,7 +478,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             self.allContacts = sortedContacts;
             self.allContactsMap = [allContactsMap copy];
             [self.cnContactCache removeAllObjects];
-            [self.cnContactAvatarCache removeAllObjects];
 
             [[NSNotificationCenter defaultCenter]
                 postNotificationNameAsync:OWSContactsManagerContactsDidChangeNotification

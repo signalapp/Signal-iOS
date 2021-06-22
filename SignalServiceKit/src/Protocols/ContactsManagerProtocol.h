@@ -72,7 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;
 - (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId;
-- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId;
 
 @end
 
