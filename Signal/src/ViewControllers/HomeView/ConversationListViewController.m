@@ -785,7 +785,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (avatarImage == nil) {
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             avatarImage = [self.avatarBuilder avatarImageForLocalUserWithDiameterPoints:kAvatarSize
-                                                                   localUserDisplayMode:LocalUserDisplayModeNoteToSelf
+                                                                   localUserDisplayMode:LocalUserDisplayModeAsLocalUser
                                                                             transaction:transaction];
         }];
     }
