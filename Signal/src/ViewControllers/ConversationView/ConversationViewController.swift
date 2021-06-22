@@ -535,8 +535,6 @@ public class ConversationViewController: OWSViewController {
         dismissMessageActions(animated: false)
         dismissReactionsDetailSheet(animated: false)
 
-        self.scrollContinuity = .bottom
-
         guard hasAppearedAndHasAppliedFirstLoad else {
             return
         }

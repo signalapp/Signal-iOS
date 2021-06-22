@@ -88,8 +88,6 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl) {
-        self.scrollContinuity = .bottom
-
         uiMode = .selection
 
         self.addToSelection(itemViewModel.interaction.uniqueId)

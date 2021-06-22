@@ -70,8 +70,6 @@ public class CVViewState: NSObject {
 
         return scrollingAnimationCompletionTimer != nil
     }
-    @objc
-    public var scrollContinuity: ScrollContinuity = .bottom
     public var scrollActionForSizeTransition: CVScrollAction?
     public var scrollActionForUpdate: CVScrollAction?
     public var lastKnownDistanceFromBottom: CGFloat?
@@ -271,11 +269,6 @@ public extension ConversationViewController {
     }
 
     var hasScrollingAnimation: Bool { viewState.hasScrollingAnimation }
-
-    var scrollContinuity: ScrollContinuity {
-        get { viewState.scrollContinuity }
-        set { viewState.scrollContinuity = newValue }
-    }
 
     var uiMode: ConversationUIMode {
         get { viewState.uiMode }
