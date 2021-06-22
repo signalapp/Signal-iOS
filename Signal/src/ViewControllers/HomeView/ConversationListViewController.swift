@@ -19,7 +19,7 @@ public extension ConversationListViewController {
             configureUnreadPaymentsBannerMultiple(paymentsReminderView, unreadCount: 1)
             return
         }
-        guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {
+        guard nil != TSContactThread.getWithContactAddress(address, transaction: transaction) else {
             configureUnreadPaymentsBannerMultiple(paymentsReminderView, unreadCount: 1)
             return
         }
