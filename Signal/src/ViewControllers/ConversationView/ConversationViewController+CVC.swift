@@ -65,7 +65,7 @@ extension ConversationViewController {
 
     @objc
     public var isLayoutApplyingUpdate: Bool {
-        layout.isApplyingUpdate
+        layout.isPerformBatchUpdatesOrReloadDataBeingAppliedOrSettling
     }
 
     @objc
@@ -628,8 +628,21 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
+        // We have two scroll continuity mechanisms.
+        // One is the targetContentOffset(forProposedContentOffset:) method in CVC+Scroll.swift.
+        // To work correctly, it often needs a valid "last known distance from bottom" value. We didn't always have one. This method ensures that a valid value is always prepared before we land the load.
+
+        // We have two scroll continuity mechanisms:
+        //
+        // * The first is in the targetContentOffset(forProposedContentOffset:) method in CVC+Scroll.swift.
+        //   This handles scroll continuity in most cases.
+        // * The second is in ConversationViewLayout.willPerformBatchUpdates().
+        //   We manipulate the content offset using
+        //   UICollectionViewLayoutInvalidationContext.contentOffsetAdjustment.
+        //   We (currently) only apply the second mechanism when landing "adjacent"
+        //   loads during a scroll gesture or animation. 
         var scrollContinuityToken: CVScrollContinuityToken?
-        if isLoadAdjacent, hasScrollingAnimation {
+        if isLoadAdjacent && (hasScrollingAnimation || isUserScrolling) {
             scrollContinuityToken = updateToken.scrollContinuityToken
         }
 

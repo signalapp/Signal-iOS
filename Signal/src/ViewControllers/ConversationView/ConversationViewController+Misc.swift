@@ -479,7 +479,7 @@ extension ConversationViewController {
     private func readTimerDidFire() {
         AssertIsOnMainThread()
 
-        if layout.isUpdating {
+        if layout.isPerformBatchUpdatesOrReloadDataBeingApplied {
             return
         }
         markVisibleMessagesAsRead()

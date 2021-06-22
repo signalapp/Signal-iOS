@@ -139,14 +139,11 @@ NS_ASSUME_NONNULL_BEGIN
     @try {
         void (^updateBlock)(void) = ^{
             ConversationViewLayout *layout = cvc.layout;
-            layout.isApplyingUpdate = YES;
             [layout willPerformBatchUpdatesWithScrollContinuityToken:scrollContinuityToken];
             [cvc.collectionView
                 performBatchUpdates:^{ batchUpdates(); }
                 completion:^(BOOL finished) {
                     [layout didCompleteBatchUpdates];
-
-                    layout.isApplyingUpdate = NO;
 
                     completion(finished);
                 }];

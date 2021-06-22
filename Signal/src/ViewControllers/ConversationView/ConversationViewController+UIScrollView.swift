@@ -245,6 +245,17 @@ extension ConversationViewController: UIScrollViewDelegate {
     public func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         AssertIsOnMainThread()
 
+        // If the user taps on the status bar, the UIScrollView tries to perform
+        // a "scroll to top" animation that swings _past_ the top of the scroll
+        // view content, then bounces back to settle at zero.  This is likely
+        // to trigger a "load older" load which can land before the animation
+        // settles.  If so, the animation will overwrite the contentOffset,
+        // breaking scroll continuity and probably triggering another "load older"
+        // load.  So there's also a risk of a load loop.
+        //
+        // To avoid this, we use a simple animation to "scroll to top" unless
+        // we know its safe to use the default animation, e.g. when there's no
+        // older content to load.
         if canLoadOlderItems {
             let newContentOffset = CGPoint(x: 0, y: 0)
             collectionView.setContentOffset(newContentOffset, animated: true)
