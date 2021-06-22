@@ -36,7 +36,7 @@ typedef void (^CVCPerformBatchUpdatesFailure)(void);
                         failure:(CVCPerformBatchUpdatesFailure)failure
                        animated:(BOOL)animated
           scrollContinuityToken:(nullable CVScrollContinuityToken *)scrollContinuityToken
-                            cvc:(ConversationViewController *)cvc NS_SWIFT_NAME(cvc_performBatchUpdates(_:completion:failure:scrollContinuityToken:cvc:));
+                            cvc:(ConversationViewController *)cvc NS_SWIFT_NAME(cvc_performBatchUpdates(_:completion:failure:animated:scrollContinuityToken:cvc:));
 
 @end
 

@@ -126,7 +126,6 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     private func addContentsForMemberRequests(contents: OWSTableContents) {
 
-        let tableView = self.tableView
         let canApproveMemberRequests = groupViewHelper.canApproveMemberRequests
 
         let groupMembership = groupModel.groupMembership

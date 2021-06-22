@@ -164,7 +164,7 @@ extension ConversationViewController {
             title: NSLocalizedString("ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE",
                                      comment: "Label for button to learn more about message requests."),
             style: .default,
-            handler: { [weak self] _ in
+            handler: { _ in
                 // TODO: Finalize this behavior.
                 let url = URL(string: "https://support.signal.org/hc/articles/360007459591")!
                 UIApplication.shared.open(url, options: [:])

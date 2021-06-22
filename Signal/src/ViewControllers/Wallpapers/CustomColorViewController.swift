@@ -504,7 +504,7 @@ extension CustomColorViewController: SpectrumSliderDelegate {
 
 // MARK: -
 
-private protocol SpectrumSliderDelegate: class {
+private protocol SpectrumSliderDelegate: AnyObject {
     func spectrumSliderDidChange(_ spectrumSlider: SpectrumSlider)
 }
 
@@ -891,7 +891,7 @@ extension CustomColorViewController: CustomColorPreviewDelegate {
 
 // MARK: -
 
-private protocol CustomColorPreviewDelegate: class {
+private protocol CustomColorPreviewDelegate: AnyObject {
     var angleRadians: CGFloat { get set }
     var editMode: CustomColorViewController.EditMode { get }
     var gradientColor1: OWSColor { get }
