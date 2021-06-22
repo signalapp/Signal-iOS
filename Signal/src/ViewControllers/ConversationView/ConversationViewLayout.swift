@@ -407,6 +407,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     // Flag set before performBatchUpdates() and cleared after it _returns_.
     private var isPerformingBatchUpdates = false
+    private var isPerformingBatchUpdatesWithInvalidation = false
 
     // Returns true during performBatchUpdates() or reloadData().
     // Unlike isPerformBatchUpdatesOrReloadDataBeingAppliedOrSettling, this
@@ -431,6 +432,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
     public func willPerformBatchUpdates(scrollContinuityToken: CVScrollContinuityToken?) {
         AssertIsOnMainThread()
         owsAssertDebug(currentLayoutInfo != nil)
+        owsAssertDebug(!isReloadingData)
+        owsAssertDebug(!isPerformingBatchUpdates)
+        owsAssertDebug(!isPerformingBatchUpdatesWithInvalidation)
 
         isPerformingBatchUpdates = true
         updateCompletionCounter.increment()
@@ -450,6 +454,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                                                       layoutInfoBeforeUpdate: layoutInfoBeforeUpdate,
                                                                                       layoutInfoAfterUpdate: layoutInfoAfterUpdate),
                contentOffsetAdjustment != .zero {
+
+                self.isPerformingBatchUpdatesWithInvalidation = true
 
                 let context = UICollectionViewLayoutInvalidationContext()
                 context.contentOffsetAdjustment = contentOffsetAdjustment
@@ -494,8 +500,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
     @objc
     public func didPerformBatchUpdates(scrollContinuityToken: CVScrollContinuityToken?) {
         AssertIsOnMainThread()
+        owsAssertDebug(!isReloadingData)
+        owsAssertDebug(isPerformingBatchUpdates)
 
         isPerformingBatchUpdates = false
+        isPerformingBatchUpdatesWithInvalidation = false
     }
 
     @objc
@@ -508,6 +517,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
     @objc
     public func willReloadData() {
         AssertIsOnMainThread()
+        owsAssertDebug(!isReloadingData)
+        owsAssertDebug(!isPerformingBatchUpdates)
+        owsAssertDebug(!isPerformingBatchUpdatesWithInvalidation)
 
         isReloadingData = true
         updateCompletionCounter.increment()
@@ -516,6 +528,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
     @objc
     public func didReloadData() {
         AssertIsOnMainThread()
+        owsAssertDebug(isReloadingData)
+        owsAssertDebug(!isPerformingBatchUpdates)
+        owsAssertDebug(!isPerformingBatchUpdatesWithInvalidation)
 
         isReloadingData = false
         updateCompletionCounter.decrementOrZero()
@@ -599,7 +614,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         // While applying reloadData() and performBatchUpdates(), allow CVC
         // to maintain scroll continuity.
-        if isPerformBatchUpdatesOrReloadDataBeingApplied {
+        if isPerformBatchUpdatesOrReloadDataBeingApplied,
+           !isPerformingBatchUpdatesWithInvalidation {
             let targetContentOffset = delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
             return targetContentOffset
         } else {
