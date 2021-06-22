@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSRecordTranscriptJob.h"
 #import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
-#import <SignalServiceKit/OWSRecordTranscriptJob.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -23,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSRecordTranscriptJob
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
-                           attachmentHandler:(void (^)(
-                                                 NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transcript);
@@ -183,49 +181,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.earlyMessageManager applyPendingMessagesFor:outgoingMessage transaction:transaction];
 
     if (outgoingMessage.isViewOnceMessage) {
+        // Don't download attachments for "view-once" messages from linked devices.
         // To be extra-conservative, always mark as complete immediately.
         [ViewOnceMessages markAsCompleteWithMessage:outgoingMessage sendSyncMessages:NO transaction:transaction];
-    } else if (outgoingMessage.allAttachmentIds.count > 0) {
-        // Don't download attachments for "view-once" messages from linked devices.
-        //
-        // Don't enqueue the attachment downloads until the write
-        // transaction is committed or attachmentDownloads might race
-        // and not be able to find the attachment(s)/message/thread.
-        [transaction addAsyncCompletionOffMain:^{
-            [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:outgoingMessage.uniqueId
-                attachmentGroup:AttachmentGroupAllAttachmentsIncoming
-                downloadBehavior:AttachmentDownloadBehaviorBypassAll
-                touchMessageImmediately:NO
-                success:^(NSArray *attachmentStreams) {
-                    NSString *_Nullable quotedThumbnailPointerId
-                        = transcript.quotedMessage.thumbnailAttachmentPointerId;
-                    TSAttachmentStream *_Nullable quotedThumbnailStream = nil;
-                    if (quotedThumbnailPointerId) {
-                        // If we have a thumbnail attachment pointer, find the corresponding stream
-                        for (TSAttachmentStream *candidate in attachmentStreams) {
-                            if ([candidate.uniqueId
-                                    isEqualToString:transcript.quotedMessage.thumbnailAttachmentPointerId]) {
-                                quotedThumbnailStream = candidate;
-                                break;
-                            }
-                        }
-                    }
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        if (quotedThumbnailStream) {
-                            [outgoingMessage
-                                anyUpdateMessageWithTransaction:transaction
-                                                          block:^(TSMessage *message) {
-                                                              [message setQuotedMessageThumbnailAttachmentStream:
-                                                                           quotedThumbnailStream];
-                                                          }];
-                        }
-                    });
-                    attachmentHandler(attachmentStreams);
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"failed to fetch transcripts attachments for message: %@", outgoingMessage);
-                }];
-        }];
+    } else {
+        [self.attachmentDownloads enqueueDownloadOfAttachmentsForNewMessage:outgoingMessage transaction:transaction];
     }
 }
 

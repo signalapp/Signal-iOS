@@ -87,10 +87,21 @@ public class OWSAttachmentDownloads: NSObject {
 
         SwiftSingletons.register(self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(profileWhitelistDidChange(notification:)),
-                                               name: .profileWhitelistDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(profileWhitelistDidChange(notification:)),
+            name: .profileWhitelistDidChange,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil
+        )
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
     }
 
     @objc
@@ -116,6 +127,42 @@ public class OWSAttachmentDownloads: NSObject {
             }
             self.enqueueDownloadOfAllAttachments(forThread: whitelistedThread,
                                                  transaction: transaction)
+        }
+    }
+
+    @objc
+    func applicationDidBecomeActive() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
+    }
+
+    // MARK: -
+
+    private static let pendingNewMessageDownloads = SDSKeyValueStore(collection: "PendingNewMessageDownloads")
+
+    private func startPendingNewMessageDownloads() {
+        guard CurrentAppContext().isMainApp else { return }
+
+        let pendingNewMessageDownloads = databaseStorage.read { transaction in
+            Self.pendingNewMessageDownloads.allUIntValuesMap(transaction: transaction)
+        }
+
+        guard !pendingNewMessageDownloads.isEmpty else { return }
+
+        databaseStorage.asyncWrite { transaction in
+            for (pendingNewMessageId, rawDownloadBehavior) in pendingNewMessageDownloads {
+                guard let downloadBehavior = AttachmentDownloadBehavior(rawValue: rawDownloadBehavior) else {
+                    owsFailDebug("Unexpected download behavior \(rawDownloadBehavior)")
+                    Self.pendingNewMessageDownloads.removeValue(forKey: pendingNewMessageId, transaction: transaction)
+                    continue
+                }
+
+                self.enqueueDownloadOfAttachmentsForNewMessageId(
+                    pendingNewMessageId,
+                    downloadBehavior: downloadBehavior,
+                    touchMessageImmediately: true,
+                    transaction: transaction
+                )
+            }
         }
     }
 
@@ -678,22 +725,6 @@ public extension OWSAttachmentDownloads {
                         failure: failure)
     }
 
-    @objc(enqueueMessageDownloadWithAttachmentPointer:message:category:downloadBehavior:success:failure:)
-    func enqueueMessageDownload(attachmentPointer: TSAttachmentPointer,
-                                message: TSMessage,
-                                category: AttachmentCategory,
-                                downloadBehavior: AttachmentDownloadBehavior,
-                                success: @escaping ([TSAttachmentStream]) -> Void,
-                                failure: @escaping (Error) -> Void) {
-        let jobType: JobType = .messageAttachment(attachmentId: attachmentPointer.uniqueId,
-                                                  message: message)
-        let jobRequest = JobRequest(jobType: jobType, category: category)
-        enqueueDownload(jobRequest: jobRequest,
-                        downloadBehavior: downloadBehavior,
-                        success: success,
-                        failure: failure)
-    }
-
     private func enqueueDownload(jobRequest: JobRequest,
                                  downloadBehavior: AttachmentDownloadBehavior,
                                  success: @escaping ([TSAttachmentStream]) -> Void,
@@ -761,6 +792,103 @@ public extension OWSAttachmentDownloads {
             }
         } catch {
             owsFailDebug("Error: \(error)")
+        }
+    }
+
+    @objc
+    func enqueueDownloadOfAttachmentsForNewMessage(_ message: TSMessage, transaction: SDSAnyWriteTransaction) {
+        // No attachments, nothing to do.
+        guard !message.allAttachmentIds().isEmpty else { return }
+
+        enqueueDownloadOfAttachmentsForNewMessageId(
+            message.uniqueId,
+            downloadBehavior: message is TSOutgoingMessage ? .bypassAll : .default,
+            touchMessageImmediately: false,
+            transaction: transaction
+        )
+    }
+
+    private func enqueueDownloadOfAttachmentsForNewMessageId(
+        _ messageId: String,
+        downloadBehavior: AttachmentDownloadBehavior,
+        touchMessageImmediately: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        // If we're not the main app, queue up the download for the next time
+        // the main app launches.
+        guard CurrentAppContext().isMainApp else {
+            Self.pendingNewMessageDownloads.setUInt(
+                downloadBehavior.rawValue,
+                key: messageId,
+                transaction: transaction
+            )
+            return
+        }
+
+        Self.pendingNewMessageDownloads.removeValue(forKey: messageId, transaction: transaction)
+
+        // Don't enqueue the attachment downloads until the write
+        // transaction is committed or attachmentDownloads might race
+        // and not be able to find the attachment(s)/message/thread.
+        transaction.addAsyncCompletionOffMain {
+            self.enqueueDownloadOfAttachments(
+                forMessageId: messageId,
+                attachmentGroup: .allAttachmentsIncoming,
+                downloadBehavior: downloadBehavior,
+                touchMessageImmediately: touchMessageImmediately
+            ) { streams in
+                Logger.debug("Successfully fetched attachments: \(streams.count) for message: \(messageId)")
+            } failure: { error in
+                Logger.warn("Failed to fetch attachments for message: \(messageId) with error: \(error)")
+            }
+        }
+    }
+
+    @objc
+    func enqueueDownloadOfAttachments(forMessageId messageId: String,
+                                      attachmentGroup: AttachmentGroup,
+                                      downloadBehavior: AttachmentDownloadBehavior,
+                                      touchMessageImmediately: Bool,
+                                      success: @escaping ([TSAttachmentStream]) -> Void,
+                                      failure: @escaping (Error) -> Void) {
+
+        Self.serialQueue.async {
+            guard !CurrentAppContext().isRunningTests else {
+                failure(Self.buildError())
+                return
+            }
+            Self.databaseStorage.read { transaction in
+                guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
+                    failure(Self.buildError())
+                    return
+                }
+                let jobRequests = Self.buildJobRequests(forMessage: message,
+                                                        attachmentGroup: attachmentGroup,
+                                                        transaction: transaction)
+                guard !jobRequests.isEmpty else {
+                    success([])
+                    return
+                }
+                self.enqueueJobs(jobRequests: jobRequests,
+                                 downloadBehavior: downloadBehavior,
+                                 transaction: transaction,
+                                 success: { attachmentStreams in
+                                    success(attachmentStreams)
+
+                                    Self.updateQuotedMessageThumbnail(messageId: messageId,
+                                                                      jobRequests: jobRequests,
+                                                                      attachmentStreams: attachmentStreams)
+                                 },
+                                 failure: failure)
+
+                if touchMessageImmediately {
+                    Self.databaseStorage.asyncWrite { transaction in
+                        Self.databaseStorage.touch(interaction: message,
+                                                   shouldReindex: false,
+                                                   transaction: transaction)
+                    }
+                }
+            }
         }
     }
 
@@ -946,54 +1074,6 @@ public extension OWSAttachmentDownloads {
         }
 
         return jobRequests
-    }
-
-    @objc
-    func enqueueDownloadOfAttachments(forMessageId messageId: String,
-                                      attachmentGroup: AttachmentGroup,
-                                      downloadBehavior: AttachmentDownloadBehavior,
-                                      touchMessageImmediately: Bool,
-                                      success: @escaping ([TSAttachmentStream]) -> Void,
-                                      failure: @escaping (Error) -> Void) {
-
-        Self.serialQueue.async {
-            guard !CurrentAppContext().isRunningTests else {
-                failure(Self.buildError())
-                return
-            }
-            Self.databaseStorage.read { transaction in
-                guard let message = TSMessage.anyFetchMessage(uniqueId: messageId, transaction: transaction) else {
-                    failure(Self.buildError())
-                    return
-                }
-                let jobRequests = Self.buildJobRequests(forMessage: message,
-                                                        attachmentGroup: attachmentGroup,
-                                                        transaction: transaction)
-                guard !jobRequests.isEmpty else {
-                    success([])
-                    return
-                }
-                self.enqueueJobs(jobRequests: jobRequests,
-                                 downloadBehavior: downloadBehavior,
-                                 transaction: transaction,
-                                 success: { attachmentStreams in
-                                    success(attachmentStreams)
-
-                                    Self.updateQuotedMessageThumbnail(messageId: messageId,
-                                                                      jobRequests: jobRequests,
-                                                                      attachmentStreams: attachmentStreams)
-                                 },
-                                 failure: failure)
-
-                if touchMessageImmediately {
-                    Self.databaseStorage.asyncWrite { transaction in
-                        Self.databaseStorage.touch(interaction: message,
-                                                   shouldReindex: false,
-                                                   transaction: transaction)
-                    }
-                }
-            }
-        }
     }
 
     private class func updateQuotedMessageThumbnail(messageId: String,

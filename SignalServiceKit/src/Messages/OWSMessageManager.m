@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSMessageManager.h"
 #import "NSNotificationCenter+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -26,7 +27,6 @@
 #import <SignalServiceKit/OWSGroupInfoRequestMessage.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
-#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
@@ -1624,10 +1624,6 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
-                                   attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                                       OWSLogDebug(@"successfully fetched transcript attachments: %lu",
-                                           (unsigned long)attachmentStreams.count);
-                                   }
                                          transaction:transaction];
         }
     } else if (syncMessage.request) {
@@ -2204,23 +2200,7 @@ NS_ASSUME_NONNULL_BEGIN
                            transaction:transaction];
     }
 
-    // Don't enqueue the attachment downloads until the write
-    // transaction is committed or attachmentDownloads might race
-    // and not be able to find the attachment(s)/message/thread.
-    [transaction addAsyncCompletionOffMain:^{
-        [self.attachmentDownloads enqueueDownloadOfAttachmentsForMessageId:message.uniqueId
-            attachmentGroup:AttachmentGroupAllAttachmentsIncoming
-            downloadBehavior:AttachmentDownloadBehaviorDefault
-            touchMessageImmediately:NO
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogDebug(@"Successfully fetched attachments: %lu for message: %@",
-                    (unsigned long)attachmentStreams.count,
-                    message);
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to fetch attachments for message: %@ with error: %@", message, error);
-            }];
-    }];
+    [self.attachmentDownloads enqueueDownloadOfAttachmentsForNewMessage:message transaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:message
                                                                       thread:thread

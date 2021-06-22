@@ -198,6 +198,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
 }
 
+- (BOOL)isNSE
+{
+    return NO;
+}
+
 - (BOOL)isRTL
 {
     static BOOL isRTL = NO;
