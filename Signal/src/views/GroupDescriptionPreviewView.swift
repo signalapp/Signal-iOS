@@ -69,7 +69,8 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     )
     private static let moreTextPlusPrefixLength = (moreTextPrefix + moreText).utf16.count
 
-    private static let textThatFitsCache = NSCache<NSString, NSString>()
+    private let textThatFitsCache = NSCache<NSString, NSString>(countLimit: 128)
+
     func truncateVisibleTextIfNecessary() {
         // When using autolayout, we need to initially set the text
         // to the full text otherwise the view will never get any width.
@@ -85,7 +86,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
 
         // If we have already determine the attributed text for
         // this size + description, use it.
-        if let cachedText = Self.textThatFitsCache.object(forKey: cacheKey) {
+        if let cachedText = textThatFitsCache.object(forKey: cacheKey) {
             return setTextThatFits(cachedText as String)
         }
 
@@ -94,7 +95,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
             setTextThatFits(textThatFits)
 
             // Cache the text that fits for this size + description.
-            Self.textThatFitsCache.setObject(textThatFits as NSString, forKey: cacheKey)
+            textThatFitsCache.setObject(textThatFits as NSString, forKey: cacheKey)
         }
 
         setTextThatFits(textThatFits)

@@ -1204,12 +1204,9 @@ fileprivate extension CVComponentState {
 
     // TODO: Now that we're caching the displayable text on the view items,
     //       I'm not sure if we still need this cache.
-    private static let displayableTextCache: NSCache<NSString, DisplayableText> = {
-        let cache = NSCache<NSString, DisplayableText>()
-        // Cache the results for up to 1,000 messages.
-        cache.countLimit = 1000
-        return cache
-    }()
+    //
+    // Cache the results for up to 1,000 messages.
+    private static let displayableTextCache = NSCache<NSString, DisplayableText>(countLimit: 1000)
 
     static func displayableText(cacheKey: String,
                                 mentionStyle: Mention.Style,

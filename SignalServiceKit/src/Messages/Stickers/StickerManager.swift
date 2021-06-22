@@ -873,7 +873,7 @@ public class StickerManager: NSObject {
 
     private static let cacheQueue = DispatchQueue(label: "stickerManager.cacheQueue")
     // This cache shoud only be accessed on cacheQueue.
-    private var suggestedStickersCache = NSCache<NSString, NSArray>()
+    private var suggestedStickersCache = NSCache<NSString, NSArray>(countLimit: 5)
 
     // We clear the cache every time we install or uninstall a sticker.
     private func clearSuggestedStickersCache() {

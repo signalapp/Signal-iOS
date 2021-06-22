@@ -84,8 +84,11 @@ private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseMo
 
     let cacheName: String
 
-    init(cacheName: String) {
+    let cacheCountLimit: Int
+
+    init(cacheName: String, cacheCountLimit: Int) {
         self.cacheName = cacheName
+        self.cacheCountLimit = cacheCountLimit
     }
 }
 
@@ -133,7 +136,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     //       NSCache's default behavior is opaque.
     //       We're currently only using this to cache
     //       small models, but that could change.
-    fileprivate let nsCache = NSCache<KeyType, ModelCacheValueBox<ValueType>>()
+    fileprivate let nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>
 
     private let adapter: ModelCacheAdapter<KeyType, ValueType>
 
@@ -151,6 +154,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     init(mode: Mode, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         self.mode = mode
         self.adapter = adapter
+        self.nsCache = NSCache(countLimit: adapter.cacheCountLimit)
 
         switch mode {
         case .read:
@@ -649,7 +653,7 @@ public class UserProfileReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "UserProfile")
+    private let adapter = Adapter(cacheName: "UserProfile", cacheCountLimit: 32)
 
     @objc
     public override init() {
@@ -718,7 +722,7 @@ public class SignalAccountReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "SignalAccount")
+    private let adapter = Adapter(cacheName: "SignalAccount", cacheCountLimit: 32)
 
     @objc
     public override init() {
@@ -786,7 +790,7 @@ public class SignalRecipientReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "SignalRecipient")
+    private let adapter = Adapter(cacheName: "SignalRecipient", cacheCountLimit: 32)
 
     @objc
     public override init() {
@@ -851,7 +855,7 @@ public class ThreadReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "TSThread")
+    private let adapter = Adapter(cacheName: "TSThread", cacheCountLimit: 32)
 
     @objc
     public override init() {
@@ -925,7 +929,7 @@ public class InteractionReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "TSInteraction")
+    private let adapter = Adapter(cacheName: "TSInteraction", cacheCountLimit: 256)
 
     @objc
     public override init() {
@@ -1003,7 +1007,7 @@ public class AttachmentReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "TSAttachment")
+    private let adapter = Adapter(cacheName: "TSAttachment", cacheCountLimit: 256)
 
     @objc
     public override init() {
@@ -1067,7 +1071,7 @@ public class InstalledStickerCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "InstalledSticker")
+    private let adapter = Adapter(cacheName: "InstalledSticker", cacheCountLimit: 32)
 
     @objc
     public override init() {

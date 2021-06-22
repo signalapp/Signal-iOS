@@ -7,14 +7,8 @@ import Foundation
 @objc
 public class CVMediaCache: NSObject {
 
-    private static func buildMediaCache(countLimit: Int) -> NSCache<NSString, AnyObject> {
-        let cache = NSCache<NSString, AnyObject>()
-        cache.countLimit = countLimit
-        return cache
-    }
-
-    private let stillMediaCache = buildMediaCache(countLimit: 16)
-    private let animatedMediaCache = buildMediaCache(countLimit: 8)
+    private let stillMediaCache = NSCache<NSString, AnyObject>(countLimit: 16)
+    private let animatedMediaCache = NSCache<NSString, AnyObject>(countLimit: 8)
 
     private let stillMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 12)
     private let animatedMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 6)
@@ -84,15 +78,13 @@ public class CVMediaCache: NSObject {
 
 private class MediaInnerCache<KeyType: Hashable, ValueType> {
 
-    private let maxSize: UInt
-
-    private var cache = OrderedDictionary<KeyType, ValueType>()
+    private var cache: LRUCache<KeyType, ValueType>
 
     @objc
-    public required init(maxSize: UInt = 0) {
+    public required init(maxSize: Int = 0) {
         AssertIsOnMainThread()
 
-        self.maxSize = maxSize
+        cache = LRUCache<KeyType, ValueType>(maxSize: maxSize)
     }
 
     // MARK: - API
@@ -100,30 +92,18 @@ private class MediaInnerCache<KeyType: Hashable, ValueType> {
     func get(_ key: KeyType) -> ValueType? {
         AssertIsOnMainThread()
 
-        guard let value = cache[key] else {
-            return nil
-        }
-        cache.moveExistingKeyToFirst(key)
-        return value
+        return cache.get(key: key)
     }
 
     func set(value: ValueType, forKey key: KeyType) {
         AssertIsOnMainThread()
 
-        guard maxSize > 0 else {
-            return
-        }
-
-        cache.remove(key: key)
-        cache.prepend(key: key, value: value)
-        if cache.count > maxSize {
-            cache.removeSubrange(Int(maxSize)...)
-        }
+        cache.set(key: key, value: value)
     }
 
     func removeAllObjects() {
         AssertIsOnMainThread()
 
-        cache.removeAll()
+        cache.clear()
     }
 }

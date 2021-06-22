@@ -66,10 +66,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-    _cnContactCache = [NSCache new];
-    _cnContactCache.countLimit = 50;
-    _cnContactAvatarCache = [NSCache new];
-    _cnContactAvatarCache.countLimit = 25;
+    _cnContactCache = [[NSCache alloc] initWithCountLimit:50];
+    _cnContactAvatarCache = [[NSCache alloc] initWithCountLimit:25];
 
     OWSSingletonAssert();
 

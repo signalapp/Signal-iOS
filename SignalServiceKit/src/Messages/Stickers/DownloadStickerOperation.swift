@@ -9,7 +9,7 @@ class DownloadStickerOperation: CDNDownloadOperation {
 
     // MARK: - Cache
 
-    private static let cache = NSCache<NSString, NSURL>()
+    private static let cache = NSCache<NSString, NSURL>(countLimit: 256)
 
     public class func cachedUrl(for stickerInfo: StickerInfo) -> URL? {
         guard let stickerUrl = cache.object(forKey: stickerInfo.asKey() as NSString) else {

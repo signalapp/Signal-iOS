@@ -81,7 +81,7 @@ public class StickerKeyboard: CustomKeyboard {
         updatePageConstraints()
     }
 
-    private let reusableStickerViewCache = NSCache<StickerInfo, StickerReusableView>()
+    private let reusableStickerViewCache = NSCache<StickerInfo, StickerReusableView>(countLimit: 32)
     private func reloadStickers() {
         let oldStickerPacks = stickerPacks
 

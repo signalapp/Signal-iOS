@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -175,7 +175,7 @@ public extension ContactDiscoveryTask {
 public extension ContactDiscoveryTask {
 
     private static let unfairLock = UnfairLock()
-    private static let undiscoverableUserCache = NSCache<NSString, NSDate>()
+    private static let undiscoverableUserCache = NSCache<NSString, NSDate>(countLimit: 256)
 
     fileprivate static func markUsersAsRecentlyKnownToBeUndiscoverable(_ addresses: [SignalServiceAddress]) {
         guard !addresses.isEmpty else {
