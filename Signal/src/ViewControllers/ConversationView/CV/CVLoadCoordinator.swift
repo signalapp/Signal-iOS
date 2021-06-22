@@ -44,6 +44,7 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 struct CVUpdateToken {
     let isScrolledToBottom: Bool
     let lastMessageForInboxSortId: UInt64?
+    let scrollContinuityToken: CVScrollContinuityToken
 }
 
 @objc

@@ -501,7 +501,7 @@ extension ConversationViewController {
     }
 
     // The highest valid content offset when the view is at rest.
-    private var maxContentOffsetY: CGFloat {
+    internal var maxContentOffsetY: CGFloat {
         let contentHeight = self.safeContentHeight
         let adjustedContentInset = collectionView.adjustedContentInset
         let rawValue = contentHeight + adjustedContentInset.bottom - collectionView.bounds.size.height
@@ -516,6 +516,8 @@ extension ConversationViewController {
     @objc
     public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
 
+        // TODO: Remove logging in this method once scroll continuity
+        // issues are resolved.
         if !DebugFlags.reduceLogChatter {
             Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
         }

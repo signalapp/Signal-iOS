@@ -497,7 +497,7 @@ public class ConversationViewController: OWSViewController {
             return
         }
         // We use an obj-c free function so that we can handle NSException.
-        CVCReloadCollectionViewForReset(self)
+        self.collectionView.cvc_reloadData(animated: false, cvc: self)
     }
 
     var isViewVisible: Bool {
@@ -522,24 +522,6 @@ public class ConversationViewController: OWSViewController {
             cell.isCellVisible = isCellVisible
         }
         self.updateScrollingContent()
-    }
-
-    // MARK: - CollectionView updates
-
-    func performBatchUpdates(_ batchUpdates: @escaping () -> Void,
-                             completion: @escaping (Bool) -> Void,
-                             logFailureBlock: @escaping () -> Void,
-                             shouldAnimateUpdates: Bool,
-                             isLoadAdjacent: Bool) {
-        AssertIsOnMainThread()
-
-        // We use an obj-c free function so that we can handle NSException.
-        CVCPerformBatchUpdates(self,
-                               batchUpdates,
-                               completion,
-                               logFailureBlock,
-                               shouldAnimateUpdates,
-                               isLoadAdjacent)
     }
 
     // MARK: - Orientation
