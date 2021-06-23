@@ -143,10 +143,11 @@ public class SignalCall: NSObject, CallManagerCallReference {
         owsAssertDebug(thread.groupModel.groupsVersion == .V2)
 
         let videoCaptureController = VideoCaptureController()
+        let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
 
         guard let groupCall = Self.callService.callManager.createGroupCall(
             groupId: thread.groupModel.groupId,
-            sfuUrl: TSConstants.sfuURL,
+            sfuUrl: sfuURL,
             videoCaptureController: videoCaptureController
         ) else {
             owsFailDebug("Failed to create group call")
