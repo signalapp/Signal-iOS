@@ -474,7 +474,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         AssertIsOnMainThread()
         owsAssertDebug(!isReloadingData)
         owsAssertDebug(!isPerformingBatchUpdates)
-        owsAssertDebug(delegateScrollContinuityMode == .none)
+        owsAssertDebug(delegateScrollContinuityMode == .disabled)
 
         isPerformingBatchUpdates = true
         updateCompletionCounter.increment()
@@ -607,7 +607,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         AssertIsOnMainThread()
         owsAssertDebug(!isReloadingData)
         owsAssertDebug(!isPerformingBatchUpdates)
-        owsAssertDebug(delegateScrollContinuityMode == .none)
+        owsAssertDebug(delegateScrollContinuityMode == .disabled)
 
         isReloadingData = true
         updateCompletionCounter.increment()

@@ -515,8 +515,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                         // Whenever we send an outgoing message from the local device,
                         // auto-scroll to the bottom of the conversation, regardless
                         // of scroll state.
-                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow,
-                                                      isAnimated: !updateToken.isScrolledToBottom)
+                        scrollAction = CVScrollAction(action: .bottomOfLoadWindow, isAnimated: true)
                         break
                     } else if isAutoScrollInteraction,
                               isScrolledToBottom {
