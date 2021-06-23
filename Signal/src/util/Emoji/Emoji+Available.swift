@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 extension Emoji {
@@ -10,6 +10,8 @@ extension Emoji {
 
     static func warmAvailableCache() {
         owsAssertDebug(!Thread.isMainThread)
+
+        guard CurrentAppContext().hasUI else { return }
 
         var availableCache = [Emoji: Bool]()
         var uncachedEmoji = [Emoji]()
