@@ -497,7 +497,7 @@ public class CVLoadCoordinator: NSObject {
         }
         #endif
         guard isLoading.tryToSetFlag() else {
-            Logger.info("Ignoring; already loading.")
+            Logger.verbose("Ignoring; already loading.")
             return
         }
 

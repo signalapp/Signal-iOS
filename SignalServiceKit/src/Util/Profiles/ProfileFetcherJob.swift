@@ -368,8 +368,6 @@ public class ProfileFetcherJob: NSObject {
                                             currentVersionedProfileRequest = nil
 
                                             if shouldUseVersionedFetch {
-                                                // TODO: Remove
-                                                Logger.info("Versioned profile fetch.")
                                                 do {
                                                     let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
                                                     currentVersionedProfileRequest = request
@@ -379,7 +377,6 @@ public class ProfileFetcherJob: NSObject {
                                                     return nil
                                                 }
                                             } else {
-                                                // TODO: Remove
                                                 Logger.info("Unversioned profile fetch.")
                                                 return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
                                             }
