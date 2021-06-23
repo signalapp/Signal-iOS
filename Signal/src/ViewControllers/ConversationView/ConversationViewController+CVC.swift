@@ -537,6 +537,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 scrollAction = .none
                 isLoadAdjacent = true
             case .loadNewer, .loadNewest:
+                scrollContinuity = .top
                 isLoadAdjacent = true
             default:
                 break
