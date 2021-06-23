@@ -722,7 +722,7 @@ public class SignalAccountReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "SignalAccount", cacheCountLimit: 32)
+    private let adapter = Adapter(cacheName: "SignalAccount", cacheCountLimit: 256  )
 
     @objc
     public override init() {
@@ -790,7 +790,7 @@ public class SignalRecipientReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "SignalRecipient", cacheCountLimit: 32)
+    private let adapter = Adapter(cacheName: "SignalRecipient", cacheCountLimit: 256)
 
     @objc
     public override init() {
@@ -929,7 +929,7 @@ public class InteractionReadCache: NSObject {
     }
 
     private let cache: ModelReadCacheWrapper<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "TSInteraction", cacheCountLimit: 256)
+    private let adapter = Adapter(cacheName: "TSInteraction", cacheCountLimit: 1024)
 
     @objc
     public override init() {

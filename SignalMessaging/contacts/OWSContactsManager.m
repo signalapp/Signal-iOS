@@ -157,23 +157,18 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId
 {
-    OWSAssertDebug(self.cnContactCache);
-
     if (!contactId) {
         return nil;
     }
 
-    CNContact *_Nullable cnContact;
-    @synchronized(self.cnContactCache) {
-        cnContact = [self.cnContactCache objectForKey:contactId];
-        if (!cnContact) {
-            cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
-            if (cnContact) {
-                [self.cnContactCache setObject:cnContact forKey:contactId];
-            }
-        }
+    CNContact *_Nullable cnContact = [self.cnContactCache objectForKey:contactId];
+    if (cnContact != nil) {
+        return cnContact;
     }
-
+    cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
+    if (cnContact != nil) {
+        [self.cnContactCache setObject:cnContact forKey:contactId];
+    }
     return cnContact;
 }
 
@@ -182,6 +177,27 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // Don't bother to cache avatar data.
     CNContact *_Nullable cnContact = [self cnContactWithId:contactId];
     return [Contact avatarDataForCNContact:cnContact];
+}
+
+- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
+{
+    if (contactId == nil) {
+        return nil;
+    }
+    NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
+    if (avatarData == nil) {
+        return nil;
+    }
+    if ([avatarData ows_isValidImage]) {
+        OWSLogWarn(@"Invalid image.");
+        return nil;
+    }
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:avatarData];
+    if (avatarImage == nil) {
+        OWSLogWarn(@"Could not load image.");
+        return nil;
+    }
+    return avatarImage;
 }
 
 #pragma mark - SystemContactsFetcherDelegate
