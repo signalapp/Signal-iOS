@@ -7,6 +7,11 @@ import Foundation
 @objc
 public extension ConversationListViewController {
 
+    func scanQRCode() {
+//        let view = QRCodeScanViewController()
+//        navigationController?.pushViewController(view, animated: true)
+    }
+
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
                                              paymentModel: TSPaymentModel,
                                              transaction: SDSAnyReadTransaction) {

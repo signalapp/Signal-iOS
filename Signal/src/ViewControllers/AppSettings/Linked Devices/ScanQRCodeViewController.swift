@@ -9,10 +9,10 @@ import Vision
 
 @objc
 protocol QRCodeScanDelegate: AnyObject {
-    func qrCodeScanView(_ qrCodeScanViewController: QRCodeScanViewController,
-                        didDetectQRCodeString value: String)
-    func qrCodeScanView(_ qrCodeScanViewController: QRCodeScanViewController,
-                        didDetectQRCodeData value: Data)
+    func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
+                               qrCodeData value: Data,
+                               qrCodeString value: String?)
+    func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController)
 }
 
 // MARK: -
@@ -115,7 +115,8 @@ class QRCodeScanViewController: OWSViewController {
         scanner = nil
     }
 
-    private func tryToStartScanning() {
+    @objc
+    public func tryToStartScanning() {
         AssertIsOnMainThread()
 
         guard nil == scanner else {
@@ -131,7 +132,7 @@ class QRCodeScanViewController: OWSViewController {
                 // so just disable sharing when in capture mode.
                 self.startScanning()
             } else {
-                self.navigationController?.popViewController(animated: true)
+                self.delegate?.qrCodeScanViewDismiss(self)
             }
         }
     }
@@ -176,29 +177,10 @@ class QRCodeScanViewController: OWSViewController {
         self.view.addSubview(maskingView)
         maskingView.autoPinEdgesToSuperviewEdges()
 
-//    }
-//
-//    var hasCaptureStarted = false
-//    private func setupPhotoCapture() {
-//        photoCapture.delegate = self
-//        captureButton.delegate = photoCapture
-
-//        let captureReady = { [weak self] in
-//            guard let self = self else { return }
-//            self.hasCaptureStarted = true
-//            BenchEventComplete(eventId: "Show-Camera")
-//        }
-//
-//        // If the session is already running, we're good to go.
-//        guard !photoCapture.session.isRunning else {
-//            return captureReady()
-//        }
-
         firstly {
             scanner.startVideoCapture()
         }.done {
             Logger.info("Ready.")
-//            captureReady()
         }.catch { [weak self] error in
             owsFailDebug("Error: \(error)")
             guard let self = self else { return }
@@ -212,7 +194,10 @@ class QRCodeScanViewController: OWSViewController {
         OWSActionSheets.showActionSheet(title: nil,
                                         message: error.localizedDescription,
                                         buttonTitle: CommonStrings.dismissButton,
-                                        buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
+                                        buttonAction: { [weak self] _ in
+                                            guard let self = self else { return }
+                                            self.delegate?.qrCodeScanViewDismiss(self)
+                                        })
     }
 
     private lazy var detectQRCodeRequest: VNDetectBarcodesRequest = {
@@ -243,15 +228,31 @@ class QRCodeScanViewController: OWSViewController {
             return results.compactMap {
                 $0 as? VNBarcodeObservation
             }.filter { (barcode: VNBarcodeObservation) in
-                barcode.symbology == .QR &&
-                    barcode.confidence > 0.9
+                guard barcode.symbology == .QR else {
+                    owsFailDebug("Invalid symbology.")
+                    return false
+                }
+                guard nil != barcode.barcodeDescriptor as? CIQRCodeDescriptor else {
+                    owsFailDebug("Invalid barcodeDescriptor.")
+                    return false
+                }
+                guard barcode.confidence > 0.9 else {
+                    // Require high confidence.
+                    return false
+                }
+                return true
             }
         }
-        let barcodes = filterBarcodes()
+        let barcodes = filterBarcodes().sorted { (left, right) in
+            // If multiple bardcodes found, prefer barcode with higher confidence.
+            left.confidence > right.confidence
+        }
         guard !barcodes.isEmpty else {
             return
         }
+        Logger.verbose("---")
         for barcode in barcodes {
+            Logger.verbose("barcode.confidence: \(barcode.confidence)")
             if let payloadStringValue = barcode.payloadStringValue {
                 Logger.verbose("payloadStringValue: \(payloadStringValue)")
             }
@@ -259,33 +260,26 @@ class QRCodeScanViewController: OWSViewController {
                 Logger.verbose("barcodeDescriptor: \(barcodeDescriptor)")
             }
         }
-//
-//
-//
-//        /**
-//         @brief The string representation of the barcode's payload.  Depending on the symbology of the barcode and/or the payload data itself, a string representation of the payload may not be available.
-//         */
-//        open var payloadStringValue: String? { get }
-//
-//        DispatchQueue.main.async { [self] in
-//            if captureSession.isRunning {
-//                view.layer.sublayers?.removeSubrange(1...)
-//
-//                // 2
-//                for barcode in barcodes {
-//                    guard
-//                        // TODO: Check for QR Code symbology and confidence score
-//                        let potentialQRCode = barcode as? VNBarcodeObservation
-//                    else { return }
-//
-//                    // 3
-//                    showAlert(
-//                        withTitle: potentialQRCode.symbology.rawValue,
-//                        // TODO: Check the confidence score
-//                        message: potentialQRCode.payloadStringValue ?? "" )
-//                }
-//            }
-//        }
+        if let barcode = barcodes.first,
+           let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor {
+            Logger.info("Scanned QR Code.")
+
+            let qrCodeData = barcodeDescriptor.errorCorrectedPayload
+            let qrCodeString = barcode.payloadStringValue
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self,
+                      let delegate = self.delegate else {
+                    return
+                }
+                self.stopScanning()
+
+                // Vibrate
+                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+
+                delegate.qrCodeScanViewScanned(self, qrCodeData: qrCodeData, qrCodeString: qrCodeString)
+            }
+        }
     }
 }
 

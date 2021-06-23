@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,10 +34,13 @@ extension PhotoCaptureError: LocalizedError {
     }
 }
 
+// MARK: -
+
+@objc
 class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
-    var interactiveDismiss : PhotoCaptureInteractiveDismiss!
+    var interactiveDismiss: PhotoCaptureInteractiveDismiss!
 
     @objc public lazy var photoCapture = PhotoCapture()
 
@@ -50,7 +53,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         view.setContentHuggingHigh()
         return view
     }()
-    
+
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         photoCapture.stopCapture().done {
@@ -116,7 +119,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         view.addGestureRecognizer(pinchZoomGesture)
         view.addGestureRecognizer(tapToFocusGesture)
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
-        
+
         if let navController = self.navigationController {
             interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navController)
             interactiveDismiss.interactiveDismissDelegate = self
@@ -166,7 +169,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
-    
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -195,7 +198,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             }
         }
     }
-    
+
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
     }
     func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
@@ -203,7 +206,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
     }
-        
+
     // MARK: -
     var isRecordingMovie: Bool = false
 
@@ -320,7 +323,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             self?.didTapFlashMode()
         }
     }()
-    
+
     lazy var pinchZoomGesture: UIPinchGestureRecognizer = {
         return UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:)))
     }()
@@ -381,7 +384,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             owsFailDebug("Error: \(error)")
         }
     }
-    
+
     @objc
     func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
