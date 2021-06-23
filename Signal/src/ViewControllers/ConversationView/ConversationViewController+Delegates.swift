@@ -408,8 +408,6 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
             return
         }
 
-        self.scrollContinuity = .bottom
-
         if shouldAnimateKeyboardChanges, animationDuration > 0 {
             if hasViewDidAppearEverCompleted {
                 // Make note of when the keyboard animation will block
@@ -422,7 +420,6 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
                 if viewState.lastKeyboardAnimationDate == nil ||
                     viewState.lastKeyboardAnimationDate?.isBefore(lastKeyboardAnimationDate) == true {
                     viewState.lastKeyboardAnimationDate = animationCompletionDate
-                    self.scrollContinuity = .bottom
                 }
             }
 
@@ -515,7 +512,5 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         updateConversationStyle()
-
-        self.scrollContinuity = .bottom
     }
 }

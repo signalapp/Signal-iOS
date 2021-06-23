@@ -30,25 +30,6 @@ public enum ScrollAlignment: Int {
 
 // MARK: -
 
-@objc
-public enum ScrollContinuity: Int, CustomStringConvertible {
-    case top
-    case bottom
-
-    // MARK: - CustomStringConvertible
-
-    public var description: String {
-        switch self {
-        case .top:
-            return "top"
-        case .bottom:
-            return "bottom"
-        }
-    }
-}
-
-// MARK: -
-
 // TODO: Do we need to specify the load alignment (top, bottom, center)
 // or that implicit in the value?
 public struct CVScrollAction: Equatable, CustomStringConvertible {
@@ -432,18 +413,21 @@ extension ConversationViewController {
         }
     }
 
-    @objc
-    func updateLastKnownDistanceFromBottom() {
+    @discardableResult
+    func updateLastKnownDistanceFromBottom() -> CGFloat? {
         guard hasAppearedAndHasAppliedFirstLoad else {
-            return
+            return nil
         }
 
         // Never update the lastKnownDistanceFromBottom,
         // if we're presenting the message actions which
         // temporarily meddles with the content insets.
-        if !isPresentingMessageActions {
-            self.lastKnownDistanceFromBottom = self.safeDistanceFromBottom
+        guard !isPresentingMessageActions else {
+            return nil
         }
+        let lastKnownDistanceFromBottom = self.safeDistanceFromBottom
+        self.lastKnownDistanceFromBottom = lastKnownDistanceFromBottom
+        return lastKnownDistanceFromBottom
     }
 
     // We use this hook to ensure scroll state continuity.  As the collection
@@ -513,8 +497,8 @@ extension ConversationViewController {
 
     // We use this hook to ensure scroll state continuity.  As the collection
     // view's content size changes, we want to keep the same cells in view.
-    @objc
-    public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+    public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint,
+                                    lastKnownDistanceFromBottom: CGFloat?) -> CGPoint {
 
         // TODO: Remove logging in this method once scroll continuity
         // issues are resolved.
@@ -530,6 +514,8 @@ extension ConversationViewController {
             return contentOffset
         }
 
+        // TODO: Consider handling these transitions using a scroll
+        // continuity token.
         if let contentOffset = targetContentOffsetForSizeTransition() {
             if !DebugFlags.reduceLogChatter {
                 Logger.verbose("---- targetContentOffsetForSizeTransition: \(contentOffset)")
@@ -537,6 +523,8 @@ extension ConversationViewController {
             return contentOffset
         }
 
+        // TODO: Consider handling these transitions using a scroll
+        // continuity token.
         if let contentOffset = targetContentOffsetForUpdate() {
             if !DebugFlags.reduceLogChatter {
                 Logger.verbose("---- targetContentOffsetForUpdate: \(contentOffset)")
@@ -544,8 +532,8 @@ extension ConversationViewController {
             return contentOffset
         }
 
-        if scrollContinuity == .bottom,
-           let contentOffset = targetContentOffsetForBottom() {
+        // TODO: Can we improve this case?
+        if let contentOffset = targetContentOffsetForBottom(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom) {
             if !DebugFlags.reduceLogChatter {
                 Logger.verbose("---- forLastKnownDistanceFromBottom: \(contentOffset)")
             }
@@ -558,26 +546,33 @@ extension ConversationViewController {
         return proposedContentOffset
     }
 
-    private func targetContentOffsetForBottom() -> CGPoint? {
+    var shouldUseDelegateScrollContinuity: Bool {
+        if isPresentingMessageActions {
+            return true
+        }
+        if let scrollAction = viewState.scrollActionForSizeTransition,
+           scrollAction != .none {
+            return true
+        }
+        if let scrollAction = viewState.scrollActionForUpdate,
+           !scrollAction.isAnimated {
+            switch scrollAction.action {
+            case .bottomOfLoadWindow, .scrollTo:
+                return true
+            default:
+                break
+            }
+        }
+        return false
+    }
+
+    private func targetContentOffsetForBottom(lastKnownDistanceFromBottom: CGFloat?) -> CGPoint? {
         guard let lastKnownDistanceFromBottom = self.lastKnownDistanceFromBottom else {
             return nil
         }
 
         let contentOffset = self.contentOffset(forLastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
         return contentOffset
-    }
-
-    private func canInteractionBeUsedForScrollContinuity(_ interaction: TSInteraction) -> Bool {
-        guard !interaction.isDynamicInteraction() else {
-            return false
-        }
-
-        switch interaction.interactionType() {
-        case .unknown, .unreadIndicator, .dateHeader, .typingIndicator:
-            return false
-        case .incomingMessage, .outgoingMessage, .error, .call, .info, .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer:
-            return true
-        }
     }
 
     private func targetContentOffsetForSizeTransition() -> CGPoint? {

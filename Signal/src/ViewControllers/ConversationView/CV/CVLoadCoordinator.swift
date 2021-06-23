@@ -8,8 +8,6 @@ import PromiseKit
 protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
     var viewState: CVViewState { get }
 
-    func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint
-
     func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken
 
     func updateWithNewRenderState(update: CVUpdate,
@@ -26,15 +24,11 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 
     var isScrollNearBottomOfLoadWindow: Bool { get }
 
-    var isUserScrolling: Bool { get }
-
-    var hasScrollingAnimation: Bool { get }
-
-    var scrollContinuity: ScrollContinuity { get }
-
     var isLayoutApplyingUpdate: Bool { get }
 
     var areCellsAnimating: Bool { get }
+
+    var conversationViewController: ConversationViewController? { get }
 }
 
 // MARK: -
@@ -45,6 +39,7 @@ struct CVUpdateToken {
     let isScrolledToBottom: Bool
     let lastMessageForInboxSortId: UInt64?
     let scrollContinuityToken: CVScrollContinuityToken
+    let lastKnownDistanceFromBottom: CGFloat?
 }
 
 @objc
@@ -457,6 +452,10 @@ public class CVLoadCoordinator: NSObject {
         // make sure we don't show it again.
         hasClearedUnreadMessagesIndicator = true
 
+        guard nil != messageMapping.oldestUnreadInteraction else {
+            return
+        }
+
         loadRequestBuilder.clearOldestUnreadInteraction()
         loadIfNecessary()
     }
@@ -855,36 +854,12 @@ extension CVLoadCoordinator: ConversationViewLayoutDelegate {
         showLoadNewerHeader ? LoadMoreMessagesView.fixedHeight : 0
     }
 
-    public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+    public var conversationViewController: ConversationViewController? {
         guard let delegate = self.delegate else {
             owsFailDebug("Missing delegate.")
-            return proposedContentOffset
+            return nil
         }
-        return delegate.targetContentOffset(forProposedContentOffset: proposedContentOffset)
-    }
-
-    public var isUserScrolling: Bool {
-        guard let delegate = self.delegate else {
-            owsFailDebug("Missing delegate.")
-            return false
-        }
-        return delegate.isUserScrolling
-    }
-
-    public var hasScrollingAnimation: Bool {
-        guard let delegate = self.delegate else {
-            owsFailDebug("Missing delegate.")
-            return false
-        }
-        return delegate.hasScrollingAnimation
-    }
-
-    public var scrollContinuity: ScrollContinuity {
-        guard let delegate = self.delegate else {
-            owsFailDebug("Missing delegate.")
-            return .bottom
-        }
-        return delegate.scrollContinuity
+        return delegate.conversationViewController
     }
 }
 

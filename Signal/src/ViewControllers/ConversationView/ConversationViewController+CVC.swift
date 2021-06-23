@@ -82,6 +82,11 @@ extension ConversationViewController {
 // MARK: -
 
 extension ConversationViewController: CVLoadCoordinatorDelegate {
+
+    public var conversationViewController: ConversationViewController? {
+        self
+    }
+
     func chatColorDidChange() {
         updateConversationStyle()
     }
@@ -107,11 +112,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // CVC will often use this state to ensure scroll continuity
         // when landing loads, so ensure the value is updated before
         // landing loads.
-        self.updateLastKnownDistanceFromBottom()
+        let lastKnownDistanceFromBottom = self.updateLastKnownDistanceFromBottom()
 
         return CVUpdateToken(isScrolledToBottom: self.isScrolledToBottom,
                              lastMessageForInboxSortId: threadViewModel.lastMessageForInbox?.sortId,
-                             scrollContinuityToken: scrollContinuityToken)
+                             scrollContinuityToken: scrollContinuityToken,
+                             lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
     }
 
     func updateWithNewRenderState(update: CVUpdate,
@@ -229,7 +235,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         let benchSteps = BenchSteps()
 
-        self.scrollContinuity = .bottom
         self.updateLastKnownDistanceFromBottom()
         self.updateInputToolbarLayout()
         self.ensureSelectionViewState()
@@ -447,8 +452,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     private func resetViewStateAfterError() {
         Logger.verbose("")
 
-        scrollContinuity = .bottom
-
         reloadCollectionViewForReset()
 
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
@@ -528,25 +531,53 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
-        scrollContinuity = isScrolledToBottom ? .bottom : .top
-        var isLoadAdjacent = false
-        if let loadType = renderState.loadType {
-            switch loadType {
-            case .loadOlder:
-                scrollContinuity = .bottom
-                scrollAction = .none
-                isLoadAdjacent = true
-            case .loadNewer, .loadNewest:
-                scrollContinuity = .top
-                isLoadAdjacent = true
-            default:
-                break
-            }
-        } else {
-            owsFailDebug("Missing loadType.")
+        if .loadOlder == renderState.loadType {
+            scrollAction = .none
         }
 
         viewState.scrollActionForUpdate = scrollAction
+
+        // We have two scroll continuity mechanisms:
+        //
+        // * The first is in the targetContentOffset(forProposedContentOffset:) method in CVC+Scroll.swift.
+        //   This handles scroll continuity in most cases.
+        // * The second is in ConversationViewLayout.willPerformBatchUpdates().
+        //   We manipulate the content offset using
+        //   UICollectionViewLayoutInvalidationContext.contentOffsetAdjustment.
+        //
+        // We prefer the second mechanism and only use the first mechanism to
+        // handle special cases (ie. when shouldUseDelegateScrollContinuity is true).
+        let scrollContinuity: ScrollContinuity = {
+            guard let loadType = renderState.loadType else {
+                owsFailDebug("Missing loadType.")
+                return .delegateScrollContinuity
+            }
+
+            // TODO: We could extend the layout's invalidation-based approach
+            // to scroll continuity to support more of these cases.
+            if shouldUseDelegateScrollContinuity {
+                return .delegateScrollContinuity
+            }
+
+            let scrollContinuityToken = updateToken.scrollContinuityToken
+
+            switch loadType {
+            case .loadInitialMapping:
+                return .none
+            case .loadSameLocation:
+                return .contentRelativeToViewport(token: scrollContinuityToken,
+                                                  isRelativeToTop: false)
+            case .loadOlder:
+                return .contentRelativeToViewport(token: scrollContinuityToken,
+                                                  isRelativeToTop: true)
+            case .loadNewer, .loadNewest:
+                return .contentRelativeToViewport(token: scrollContinuityToken,
+                                                  isRelativeToTop: false)
+            case .loadPageAroundInteraction:
+                return .contentRelativeToViewport(token: scrollContinuityToken,
+                                                  isRelativeToTop: false)
+            }
+        }()
 
         let batchUpdatesBlock = {
             AssertIsOnMainThread()
@@ -629,30 +660,13 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }
 
-        // We have two scroll continuity mechanisms.
-        // One is the targetContentOffset(forProposedContentOffset:) method in CVC+Scroll.swift.
-        // To work correctly, it often needs a valid "last known distance from bottom" value. We didn't always have one. This method ensures that a valid value is always prepared before we land the load.
-
-        // We have two scroll continuity mechanisms:
-        //
-        // * The first is in the targetContentOffset(forProposedContentOffset:) method in CVC+Scroll.swift.
-        //   This handles scroll continuity in most cases.
-        // * The second is in ConversationViewLayout.willPerformBatchUpdates().
-        //   We manipulate the content offset using
-        //   UICollectionViewLayoutInvalidationContext.contentOffsetAdjustment.
-        //   We (currently) only apply the second mechanism when landing "adjacent"
-        //   loads during a scroll gesture or animation. 
-        var scrollContinuityToken: CVScrollContinuityToken?
-        if isLoadAdjacent && (hasScrollingAnimation || isUserScrolling) {
-            scrollContinuityToken = updateToken.scrollContinuityToken
-        }
-
         // We use an obj-c free function so that we can handle NSException.
         self.collectionView.cvc_performBatchUpdates(batchUpdatesBlock,
                                                     completion: completion,
                                                     failure: logFailureBlock,
                                                     animated: shouldAnimateUpdate,
-                                                    scrollContinuityToken: scrollContinuityToken,
+                                                    scrollContinuity: scrollContinuity,
+                                                    lastKnownDistanceFromBottom: updateToken.lastKnownDistanceFromBottom,
                                                     cvc: self)
     }
 

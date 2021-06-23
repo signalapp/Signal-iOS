@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setFrame:(CGRect)frame
 {
+    OWSAssertIsOnMainThread();
+
     if (frame.size.width == 0 || frame.size.height == 0) {
         // Ignore iOS Auto Layout's tendency to temporarily zero out the
         // frame of this view during the layout process.
@@ -39,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBounds:(CGRect)bounds
 {
+    OWSAssertIsOnMainThread();
+
     if (bounds.size.width == 0 || bounds.size.height == 0) {
         // Ignore iOS Auto Layout's tendency to temporarily zero out the
         // frame of this view during the layout process.
@@ -65,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
 {
+    OWSAssertIsOnMainThread();
+
     if (animated) {
         [self.layoutDelegate collectionViewWillAnimate];
     }
@@ -74,6 +80,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setContentOffset:(CGPoint)contentOffset
 {
+    OWSAssertIsOnMainThread();
+
     if (self.contentSize.height < 1 && contentOffset.y <= 0) {
         // [UIScrollView _adjustContentOffsetIfNecessary] resets the content
         // offset to zero under a number of undocumented conditions.  We don't
@@ -102,85 +110,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [super scrollRectToVisible:rect animated:animated];
-}
-
-- (void)cvc_reloadDataWithAnimated:(BOOL)animated cvc:(ConversationViewController *)cvc
-{
-    @try {
-        if (animated) {
-            [cvc.layout willReloadData];
-            [UIView performWithoutAnimation:^{ [super reloadData]; }];
-            [cvc.layout invalidateLayout];
-            [cvc.layout didReloadData];
-        } else {
-            [cvc.layout willReloadData];
-            [super reloadData];
-            [cvc.layout invalidateLayout];
-            [cvc.layout didReloadData];
-        }
-    } @catch (NSException *exception) {
-        OWSLogWarn(@"currentRenderStateDebugDescription: %@", cvc.currentRenderStateDebugDescription);
-        OWSCFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
-            exception.description,
-            exception.name,
-            exception.reason,
-            exception.userInfo);
-        @throw exception;
-    }
-}
-
-- (void)cvc_performBatchUpdates:(CVCPerformBatchUpdatesBlock)batchUpdates
-                     completion:(CVCPerformBatchUpdatesCompletion)completion
-                        failure:(CVCPerformBatchUpdatesFailure)failure
-                       animated:(BOOL)animated
-          scrollContinuityToken:(nullable CVScrollContinuityToken *)scrollContinuityToken
-                            cvc:(ConversationViewController *)cvc
-{
-    @try {
-        void (^updateBlock)(void) = ^{
-            ConversationViewLayout *layout = cvc.layout;
-            [layout willPerformBatchUpdatesWithScrollContinuityToken:scrollContinuityToken];
-            [cvc.collectionView
-                performBatchUpdates:^{ batchUpdates(); }
-                completion:^(BOOL finished) {
-                    [layout didCompleteBatchUpdates];
-
-                    completion(finished);
-                }];
-            [layout didPerformBatchUpdatesWithScrollContinuityToken:scrollContinuityToken];
-
-            [BenchManager completeEventWithEventId:@"message-send"];
-        };
-
-        if (animated) {
-            updateBlock();
-        } else {
-            // HACK: We use `UIView.animateWithDuration:0` rather than `UIView.performWithAnimation` to work around a
-            // UIKit Crash like:
-            //
-            //     *** Assertion failure in -[ConversationViewLayout prepareForCollectionViewUpdates:],
-            //     /BuildRoot/Library/Caches/com.apple.xbs/Sources/UIKit_Sim/UIKit-3600.7.47/UICollectionViewLayout.m:760
-            //     *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'While
-            //     preparing update a visible view at <NSIndexPath: 0xc000000011c00016> {length = 2, path = 0 - 142}
-            //     wasn't found in the current data model and was not in an update animation. This is an internal
-            //     error.'
-            //
-            // I'm unclear if this is a bug in UIKit, or if we're doing something crazy in
-            // ConversationViewLayout#prepareLayout. To reproduce, rapidily insert and delete items into the
-            // conversation. See `DebugUIMessages#thrashCellsInThread:`
-            [UIView animateWithDuration:0.0 animations:updateBlock];
-        }
-    } @catch (NSException *exception) {
-        OWSCFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
-            exception.description,
-            exception.name,
-            exception.reason,
-            exception.userInfo);
-
-        failure();
-
-        @throw exception;
-    }
 }
 
 @end
