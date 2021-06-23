@@ -5,6 +5,7 @@
 import Foundation
 import AVFoundation
 import PromiseKit
+import Vision
 
 @objc
 protocol QRCodeScanDelegate: AnyObject {
@@ -24,12 +25,7 @@ class QRCodeScanViewController: OWSViewController {
     private var scanner: QRCodeScanner?
 
     deinit {
-        UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        scanner?.stopCapture().done {
-            Logger.debug("stopCapture completed")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
+        stopScanning()
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -48,17 +44,83 @@ class QRCodeScanViewController: OWSViewController {
 //        return scanner.previewView
 //    }
 
+    // MARK: - View Lifecycle
+
     @objc
     override func viewDidLoad() {
+        AssertIsOnMainThread()
+
         super.viewDidLoad()
 
         view.backgroundColor = .ows_black
+
+        addObservers()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
         AssertIsOnMainThread()
 
         super.viewDidAppear(animated)
+
+        tryToStartScanning()
+    }
+
+    public override func viewDidDisappear(_ animated: Bool) {
+        AssertIsOnMainThread()
+
+        super.viewDidDisappear(animated)
+
+        stopScanning()
+    }
+
+    // MARK: - Notifications
+
+    private func addObservers() {
+        AssertIsOnMainThread()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didEnterBackground),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil
+        )
+    }
+
+    @objc func didEnterBackground() {
+        AssertIsOnMainThread()
+
+        stopScanning()
+    }
+
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        tryToStartScanning()
+    }
+
+    // MARK: - Scanning
+
+    private func stopScanning() {
+        scanner?.stopCapture().done {
+            Logger.debug("stopCapture completed")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
+        scanner = nil
+    }
+
+    private func tryToStartScanning() {
+        AssertIsOnMainThread()
+
+        guard nil == scanner else {
+            return
+        }
 
         self.ows_askForCameraPermissions { [weak self] granted in
             guard let self = self else { return }
@@ -81,7 +143,9 @@ class QRCodeScanViewController: OWSViewController {
             return
         }
 
-        let scanner = QRCodeScanner()
+        view.removeAllSubviews()
+
+        let scanner = QRCodeScanner(sampleBufferDelegate: self)
         self.scanner = scanner
 
         let previewView = scanner.previewView
@@ -149,6 +213,99 @@ class QRCodeScanViewController: OWSViewController {
                                         message: error.localizedDescription,
                                         buttonTitle: CommonStrings.dismissButton,
                                         buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
+    }
+
+    private lazy var detectQRCodeRequest: VNDetectBarcodesRequest = {
+        let request = VNDetectBarcodesRequest { request, error in
+            if let error = error {
+                DispatchQueue.main.async { [weak self] in
+                    self?.showFailureUI(error: error)
+                }
+                return
+            }
+            self.processClassification(request)
+        }
+
+        if VNDetectBarcodesRequest.supportedSymbologies.contains(.QR) {
+            request.symbologies = [ .QR ]
+        } else {
+            owsFailDebug("Does not support .QR.")
+        }
+
+        return request
+    }()
+
+    private func processClassification(_ request: VNRequest) {
+        func filterBarcodes() -> [VNBarcodeObservation] {
+            guard let results = request.results else {
+                return []
+            }
+            return results.compactMap {
+                $0 as? VNBarcodeObservation
+            }.filter { (barcode: VNBarcodeObservation) in
+                barcode.symbology == .QR &&
+                    barcode.confidence > 0.9
+            }
+        }
+        let barcodes = filterBarcodes()
+        guard !barcodes.isEmpty else {
+            return
+        }
+        for barcode in barcodes {
+            if let payloadStringValue = barcode.payloadStringValue {
+                Logger.verbose("payloadStringValue: \(payloadStringValue)")
+            }
+            if let barcodeDescriptor = barcode.barcodeDescriptor {
+                Logger.verbose("barcodeDescriptor: \(barcodeDescriptor)")
+            }
+        }
+//
+//
+//
+//        /**
+//         @brief The string representation of the barcode's payload.  Depending on the symbology of the barcode and/or the payload data itself, a string representation of the payload may not be available.
+//         */
+//        open var payloadStringValue: String? { get }
+//
+//        DispatchQueue.main.async { [self] in
+//            if captureSession.isRunning {
+//                view.layer.sublayers?.removeSubrange(1...)
+//
+//                // 2
+//                for barcode in barcodes {
+//                    guard
+//                        // TODO: Check for QR Code symbology and confidence score
+//                        let potentialQRCode = barcode as? VNBarcodeObservation
+//                    else { return }
+//
+//                    // 3
+//                    showAlert(
+//                        withTitle: potentialQRCode.symbology.rawValue,
+//                        // TODO: Check the confidence score
+//                        message: potentialQRCode.payloadStringValue ?? "" )
+//                }
+//            }
+//        }
+    }
+}
+
+// MARK: -
+
+extension QRCodeScanViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(_ output: AVCaptureOutput,
+                       didOutput sampleBuffer: CMSampleBuffer,
+                       from connection: AVCaptureConnection) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            owsFailDebug("Missing pixelBuffer.")
+            return
+        }
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
+                                                        orientation: .right)
+        do {
+            try imageRequestHandler.perform([detectQRCodeRequest])
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
     }
 }
 
@@ -245,12 +402,12 @@ private class QRCodeScanner {
     private let sessionQueue = DispatchQueue(label: "QRCodeScanner.sessionQueue")
 
     let session = AVCaptureSession()
-    let output = QRCodeScanOutput()
+    let output: QRCodeScanOutput
 
-    private var currentCaptureInput: AVCaptureDeviceInput?
-    private var captureDevice: AVCaptureDevice? {
-        return currentCaptureInput?.device
-    }
+//    private var currentCaptureInput: AVCaptureDeviceInput?
+//    private var captureDevice: AVCaptureDevice? {
+//        return currentCaptureInput?.device
+//    }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
 
     private var _captureOrientation: AVCaptureVideoOrientation = .portrait
@@ -265,7 +422,8 @@ private class QRCodeScanner {
         }
     }
 
-    required init() {
+    required init(sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate) {
+        output = QRCodeScanOutput(sampleBufferDelegate: sampleBufferDelegate)
     }
 
     // MARK: - Public
@@ -330,26 +488,27 @@ private class QRCodeScanner {
             defer { self.session.commitConfiguration() }
 
             self.captureOrientation = initialCaptureOrientation
+            // TODO:
             self.session.sessionPreset = .high
 
-            try self.updateCurrentInput(position: .back)
+            try self.setCurrentInput(position: .back)
 
-            guard let photoOutput = self.output.photoOutput else {
-                owsFailDebug("Missing photoOutput.")
-                throw QRCodeScanError.initializationFailed
-            }
+//            guard let photoOutput = self.output.photoOutput else {
+//                owsFailDebug("Missing photoOutput.")
+//                throw QRCodeScanError.initializationFailed
+//            }
+//
+//            guard self.session.canAddOutput(photoOutput) else {
+//                owsFailDebug("!canAddOutput(photoOutput).")
+//                throw QRCodeScanError.initializationFailed
+//            }
+//            self.session.addOutput(photoOutput)
 
-            guard self.session.canAddOutput(photoOutput) else {
-                owsFailDebug("!canAddOutput(photoOutput).")
-                throw QRCodeScanError.initializationFailed
-            }
-            self.session.addOutput(photoOutput)
-
-            if let connection = photoOutput.connection(with: .video) {
-                if connection.isVideoStabilizationSupported {
-                    connection.preferredVideoStabilizationMode = .auto
-                }
-            }
+//            if let connection = photoOutput.connection(with: .video) {
+//                if connection.isVideoStabilizationSupported {
+//                    connection.preferredVideoStabilizationMode = .auto
+//                }
+//            }
 
             let videoDataOutput = self.output.videoDataOutput
             guard self.session.canAddOutput(videoDataOutput) else {
@@ -402,16 +561,19 @@ private class QRCodeScanner {
     //
     //            self.session.beginConfiguration()
     //            defer { self.session.commitConfiguration() }
-    //            try self.updateCurrentInput(position: newPosition)
+    //            try self.setCurrentInput(position: newPosition)
     //        }
     //    }
 
     // This method should be called on the serial queue,
     // and between calls to session.beginConfiguration/commitConfiguration
-    public func updateCurrentInput(position: AVCaptureDevice.Position) throws {
+    public func setCurrentInput(position: AVCaptureDevice.Position) throws {
+//        owsAssertDebug(currentCaptureInput == nil)
         assertIsOnSessionQueue()
 
-        guard let device = output.videoDevice(position: position) else {
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera,
+                                                   for: .video,
+                                                   position: position) else {
             throw QRCodeScanError.assertionError(description: "Missing videoDevice.")
         }
 
@@ -433,12 +595,11 @@ private class QRCodeScanner {
 
         let newInput = try AVCaptureDeviceInput(device: device)
 
-        if let oldInput = self.currentCaptureInput {
-            session.removeInput(oldInput)
-        }
+//        if let oldInput = self.currentCaptureInput {
+//            session.removeInput(oldInput)
+//        }
         session.addInput(newInput)
-
-        currentCaptureInput = newInput
+//        currentCaptureInput = newInput
 
 //        resetFocusAndExposure()
     }
@@ -505,59 +666,63 @@ private class QRCodeScanPreviewView: UIView {
 
 private class QRCodeScanOutput {
 
-    let imageOutput: ImageCaptureOutput
+//    let imageOutput: ImageCaptureOutput
 
-    let videoDataOutput: AVCaptureVideoDataOutput
+    let videoDataOutput = AVCaptureVideoDataOutput()
 
     //    let movieRecordingQueue = DispatchQueue(label: "CaptureOutput.movieRecordingQueue", qos: .userInitiated)
     //    var movieRecording: MovieRecording?
 
     // MARK: - Init
 
-    required init() {
-        imageOutput = PhotoCaptureOutputAdaptee()
+    required init(sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate) {
+        videoDataOutput.videoSettings =
+            [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
+        videoDataOutput.setSampleBufferDelegate(
+            sampleBufferDelegate,
+            queue: DispatchQueue.global(qos: DispatchQoS.QoSClass.default))
 
-        videoDataOutput = AVCaptureVideoDataOutput()
+//        imageOutput = PhotoCaptureOutputAdaptee()
 
 //        super.init()
 
 //        videoDataOutput.setSampleBufferDelegate(self, queue: movieRecordingQueue)
     }
 
-    var photoOutput: AVCaptureOutput? {
-        return imageOutput.avOutput
-    }
+//    var photoOutput: AVCaptureOutput? {
+//        return imageOutput.avOutput
+//    }
 
-    var flashMode: AVCaptureDevice.FlashMode {
-        get { return imageOutput.flashMode }
-        set { imageOutput.flashMode = newValue }
-    }
+//    var flashMode: AVCaptureDevice.FlashMode {
+//        get {  imageOutput.flashMode }
+//        set { imageOutput.flashMode = newValue }
+//    }
 
-    func videoDevice(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
-        return imageOutput.videoDevice(position: position)
-    }
+//    func videoDevice(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+//        return imageOutput.videoDevice(position: position)
+//    }
 
-    func takePhoto(delegate: CaptureOutputDelegate, captureRect: CGRect) {
-        delegate.assertIsOnSessionQueue()
-
-        guard let photoOutput = photoOutput else {
-            owsFailDebug("photoOutput was unexpectedly nil")
-            return
-        }
-
-        guard let photoVideoConnection = photoOutput.connection(with: .video) else {
-            owsFailDebug("photoVideoConnection was unexpectedly nil")
-            return
-        }
-
-        ImpactHapticFeedback.impactOccured(style: .medium)
-
-        let videoOrientation = delegate.captureOrientation
-        photoVideoConnection.videoOrientation = videoOrientation
-        Logger.verbose("videoOrientation: \(videoOrientation), deviceOrientation: \(UIDevice.current.orientation)")
-
-        return imageOutput.takePhoto(delegate: delegate, captureRect: captureRect)
-    }
+//    func takePhoto(delegate: CaptureOutputDelegate, captureRect: CGRect) {
+//        delegate.assertIsOnSessionQueue()
+//
+//        guard let photoOutput = photoOutput else {
+//            owsFailDebug("photoOutput was unexpectedly nil")
+//            return
+//        }
+//
+//        guard let photoVideoConnection = photoOutput.connection(with: .video) else {
+//            owsFailDebug("photoVideoConnection was unexpectedly nil")
+//            return
+//        }
+//
+//        ImpactHapticFeedback.impactOccured(style: .medium)
+//
+//        let videoOrientation = delegate.captureOrientation
+//        photoVideoConnection.videoOrientation = videoOrientation
+//        Logger.verbose("videoOrientation: \(videoOrientation), deviceOrientation: \(UIDevice.current.orientation)")
+//
+//        return imageOutput.takePhoto(delegate: delegate, captureRect: captureRect)
+//    }
 
     //    // MARK: - Movie Output
     //
