@@ -288,19 +288,16 @@ extension CVUpdate {
             }
 
             switch updateItem {
-            case .delete(let renderItem, _):
+            case .delete(_, _):
                 onlyAppearanceUpdateChanges = false
-                if renderItem.interactionType != .unreadIndicator {
-                    shouldAnimateUpdate = false
-                } else {
-                    // Ensure insert check passes if we're removing an unreadIndicator, and inserting a new message
-                    previousItemCount = oldItemCount - 1
-                }
+                previousItemCount = oldItemCount - 1
+                continue
             case .insert(let renderItem, let newIndex):
                 onlyAppearanceUpdateChanges = false
                 switch renderItem.interactionType {
                 case .incomingMessage, .outgoingMessage, .typingIndicator:
-                    if newIndex < previousItemCount {
+                    // Allow animated insert if this item is one from the last item, as last item is likely a typing indicator
+                    if newIndex < previousItemCount - 1 {
                         shouldAnimateUpdate = false
                     }
                     break
