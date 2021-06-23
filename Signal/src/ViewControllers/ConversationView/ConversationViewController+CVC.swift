@@ -259,6 +259,13 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     }
 
     private func loadDidLand() {
+        switch viewState.selectionAnimationState {
+        case .willAnimate:
+            viewState.selectionAnimationState = .animating
+        case .animating, .idle:
+            viewState.selectionAnimationState = .idle
+        }
+
         self.loadCoordinator.loadDidLand()
     }
 
@@ -818,8 +825,20 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 // MARK: -
 
 extension ConversationViewController: CVViewStateDelegate {
-    public func uiModeDidChange() {
+    public func viewStateUIModeDidChange(oldValue: ConversationUIMode) {
         loadCoordinator.enqueueReload()
+
+        if oldValue != uiMode && (oldValue == .selection || uiMode == .selection) {
+
+             // Block loads while things animate.
+            viewState.selectionAnimationState = .willAnimate
+
+             DispatchQueue.main.asyncAfter(deadline: .now() + CVComponentMessage.selectionAnimationDuration) {
+                self.viewState.selectionAnimationState = .idle
+                 // Enqueue a new load after animation so the "wasShowingSelectionUI" state is updated.
+                 self.loadCoordinator.enqueueReload()
+             }
+         }
     }
 }
 

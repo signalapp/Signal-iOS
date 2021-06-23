@@ -25,7 +25,10 @@ open class ManualLayoutView: UIView {
 
     public typealias LayoutBlock = (UIView) -> Void
 
+    public typealias TransformBlock = (UIView) -> Void
+
     private var layoutBlocks = [LayoutBlock]()
+    private var transformBlocks = [TransformBlock]()
 
     public var name: String { accessibilityLabel ?? "Unknown" }
 
@@ -143,6 +146,23 @@ open class ManualLayoutView: UIView {
         }
     }
 
+    @objc
+    public func applyTransformBlocks() {
+        AssertIsOnMainThread()
+
+        for transformBlock in transformBlocks {
+            transformBlock(self)
+        }
+
+        for subview in subviews {
+            if let manualLayoutSubview = subview as? ManualLayoutView {
+                manualLayoutSubview.applyTransformBlocks()
+            }
+        }
+
+        transformBlocks.removeAll()
+    }
+
     public static func setSubviewFrame(subview: UIView, frame: CGRect) {
         guard subview.frame != frame else {
             return
@@ -157,6 +177,7 @@ open class ManualLayoutView: UIView {
 
         removeAllSubviews()
         layoutBlocks.removeAll()
+        transformBlocks.removeAll()
 
         invalidateIntrinsicContentSize()
         setNeedsLayout()
@@ -190,6 +211,10 @@ open class ManualLayoutView: UIView {
 
     public func addLayoutBlock(_ layoutBlock: @escaping LayoutBlock) {
         layoutBlocks.append(layoutBlock)
+    }
+
+    public func addTransformBlock(_ transformBlock: @escaping TransformBlock) {
+        transformBlocks.append(transformBlock)
     }
 
     public func centerSubviewWithLayoutBlock(_ subview: UIView,

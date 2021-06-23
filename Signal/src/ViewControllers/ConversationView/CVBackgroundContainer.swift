@@ -6,7 +6,6 @@ import Foundation
 
 @objc
 public protocol CVBackgroundContainerDelegate: AnyObject {
-    func updateSelectionHighlight()
     func updateScrollingContent()
 }
 
@@ -23,8 +22,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
     fileprivate var wallpaperView: WallpaperView?
 
-    public let selectionHighlightView = SelectionHighlightView()
-
     @objc
     public weak var delegate: CVBackgroundContainerDelegate?
 
@@ -35,13 +32,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
         self.isUserInteractionEnabled = false
         // Render all background views behind the collection view.
         self.layer.zPosition = -1
-
-        selectionHighlightView.isUserInteractionEnabled = false
-        addSubview(selectionHighlightView)
-        selectionHighlightView.layer.zPosition = ZPositioning.selectionHighlight.rawValue
-        #if TESTABLE_BUILD
-        selectionHighlightView.accessibilityIdentifier = "selectionHighlightView"
-        #endif
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -78,16 +68,10 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
         super.layoutSubviews()
 
-        let shouldUpdateSelectionHighlight = selectionHighlightView.frame != bounds
-
         wallpaperView?.contentView?.frame = bounds
         wallpaperView?.dimmingView?.frame = bounds
-        selectionHighlightView.frame = bounds
 
         delegate?.updateScrollingContent()
-        if shouldUpdateSelectionHighlight {
-            delegate?.updateSelectionHighlight()
-        }
     }
 }
 
@@ -103,9 +87,6 @@ extension CVBackgroundContainer: WallpaperBlurProvider {
 // MARK: -
 
 extension ConversationViewController: CVBackgroundContainerDelegate {
-    var selectionHighlightView: SelectionHighlightView {
-        backgroundContainer.selectionHighlightView
-    }
 
     @objc
     public func updateScrollingContent() {
@@ -119,6 +100,5 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
             cell.updateScrollingContent()
         }
 
-        updateSelectionHighlight()
     }
 }

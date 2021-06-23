@@ -6,6 +6,8 @@ import Foundation
 
 @objc
 public class CVComponentMessage: CVComponentBase, CVRootComponent {
+    @objc
+    public static let selectionAnimationDuration: TimeInterval = 0.2
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         .`default`
@@ -418,11 +420,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // hOuterStack
 
         var hOuterStackSubviews = [UIView]()
-        if isShowingSelectionUI {
+        if isShowingSelectionUI || wasShowingSelectionUI {
             let selectionView = componentView.selectionView
             selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
             hOuterStackSubviews.append(selectionView)
         }
+
         if isOutgoing {
             hOuterStackSubviews.append(componentView.cellSpacer)
         }
@@ -547,6 +550,65 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
         componentView.hInnerStack.isAccessibilityElement = true
+
+        // Configure hOuterStack/hInnerStack animations animations
+        if isShowingSelectionUI || wasShowingSelectionUI {
+            // Configure selection animations
+            let selectionView = componentView.selectionView
+            let selectionViewWidth = ConversationStyle.selectionViewWidth
+            let layoutMargins = CurrentAppContext().isRTL ? hOuterStackConfig.layoutMargins.right : hOuterStackConfig.layoutMargins.left
+            let selectionOffset = -(layoutMargins + selectionViewWidth)
+            let hInnerStackOffset = -(hOuterStackConfig.spacing + selectionViewWidth)
+            if isShowingSelectionUI && !wasShowingSelectionUI { // Animate in
+                selectionView.addTransformBlock { view in
+                    let animation = CABasicAnimation(keyPath: "transform.translation.x")
+                    animation.fromValue = selectionOffset
+                    animation.toValue = 0
+                    animation.duration = CVComponentMessage.selectionAnimationDuration
+                    animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                    view.layer.add(animation, forKey: "insert")
+                }
+
+                if isIncoming {
+                    hInnerStack.addTransformBlock { view in
+                        let animation = CABasicAnimation(keyPath: "transform.translation.x")
+                        animation.fromValue = hInnerStackOffset
+                        animation.toValue = 0
+                        animation.duration = CVComponentMessage.selectionAnimationDuration
+                        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                        view.layer.add(animation, forKey: "insert")
+                    }
+                }
+            } else if !isShowingSelectionUI && wasShowingSelectionUI { // Animate out
+                selectionView.addTransformBlock { view in
+                    let animation = CABasicAnimation(keyPath: "transform.translation.x")
+                    animation.fromValue = 0
+                    animation.toValue = selectionOffset
+                    animation.duration = CVComponentMessage.selectionAnimationDuration
+                    animation.isRemovedOnCompletion = false
+                    animation.repeatCount = 0
+                    animation.fillMode = CAMediaTimingFillMode.forwards
+                    animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                    view.layer.add(animation, forKey: "remove")
+                }
+
+                if isIncoming {
+                    hInnerStack.addTransformBlock { view in
+                        let animation = CABasicAnimation(keyPath: "transform.translation.x")
+                        animation.fromValue = 0
+                        animation.toValue = hInnerStackOffset
+                        animation.duration = CVComponentMessage.selectionAnimationDuration
+                        animation.isRemovedOnCompletion = false
+                        animation.repeatCount = 0
+                        animation.fillMode = CAMediaTimingFillMode.forwards
+                        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                        view.layer.add(animation, forKey: "remove")
+                    }
+                }
+            }
+        }
+
+        hOuterStack.applyTransformBlocks()
     }
 
     private func configureContentStack(componentView: CVComponentViewMessage,
@@ -834,7 +896,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         hInnerStackSize.width = max(hInnerStackSize.width, minBubbleWidth)
 
         var hOuterStackSubviewInfos = [ManualStackSubviewInfo]()
-        if isShowingSelectionUI {
+        if isShowingSelectionUI || wasShowingSelectionUI {
             let selectionViewSize = CGSize(width: selectionViewWidth, height: 0)
             hOuterStackSubviewInfos.append(selectionViewSize.asManualSubviewInfo(hasFixedWidth: true))
         }

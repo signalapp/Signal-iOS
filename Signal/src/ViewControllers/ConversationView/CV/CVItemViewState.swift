@@ -29,6 +29,7 @@ public struct CVItemViewState: Equatable {
     let nextAudioAttachment: AudioAttachment?
 
     let isShowingSelectionUI: Bool
+    let wasShowingSelectionUI: Bool
 
     public class Builder {
         var shouldShowSenderAvatar = false
@@ -43,6 +44,7 @@ public struct CVItemViewState: Equatable {
         var bodyTextState: CVComponentBodyText.State?
         var nextAudioAttachment: AudioAttachment?
         var isShowingSelectionUI = false
+        var wasShowingSelectionUI = false
 
         func build() -> CVItemViewState {
             CVItemViewState(shouldShowSenderAvatar: shouldShowSenderAvatar,
@@ -56,7 +58,8 @@ public struct CVItemViewState: Equatable {
                             dateHeaderState: dateHeaderState,
                             bodyTextState: bodyTextState,
                             nextAudioAttachment: nextAudioAttachment,
-                            isShowingSelectionUI: isShowingSelectionUI)
+                            isShowingSelectionUI: isShowingSelectionUI,
+                            wasShowingSelectionUI: wasShowingSelectionUI)
         }
     }
 }
@@ -251,7 +254,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                                          hasTapForMore: hasTapForMore,
                                                                          hasPendingMessageRequest: threadViewModel.hasPendingMessageRequest)
         }
-
+        itemViewState.wasShowingSelectionUI = viewStateSnapshot.wasShowingSelectionUI
         itemViewState.isShowingSelectionUI = viewStateSnapshot.isShowingSelectionUI
 
         if let outgoingMessage = interaction as? TSOutgoingMessage {

@@ -156,6 +156,10 @@ public class CVComponentBase: NSObject {
         itemModel.itemViewState.isShowingSelectionUI
     }
 
+    var wasShowingSelectionUI: Bool {
+        itemModel.itemViewState.wasShowingSelectionUI
+    }
+
     // MARK: - Root Components
 
     public static func configureCellRootComponent(rootComponent: CVRootComponent,
