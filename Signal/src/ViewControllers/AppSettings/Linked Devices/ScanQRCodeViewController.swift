@@ -40,10 +40,6 @@ class QRCodeScanViewController: OWSViewController {
         return true
     }
 
-//    private var previewView: CapturePreviewView {
-//        return scanner.previewView
-//    }
-
     // MARK: - View Lifecycle
 
     @objc
@@ -127,9 +123,6 @@ class QRCodeScanViewController: OWSViewController {
             guard let self = self else { return }
 
             if granted {
-                // Camera stops capturing when "sharing" while in capture mode.
-                // Also, it's less obvious whats being "shared" at this point,
-                // so just disable sharing when in capture mode.
                 self.startScanning()
             } else {
                 self.delegate?.qrCodeScanViewDismiss(self)
@@ -266,6 +259,9 @@ class QRCodeScanViewController: OWSViewController {
 
             let qrCodeData = barcodeDescriptor.errorCorrectedPayload
             let qrCodeString = barcode.payloadStringValue
+            
+            Logger.verbose("----- qrCodeData: \(qrCodeData.count), \(qrCodeData.hexadecimalString)")
+            Logger.verbose("----- qrCodeString: \(qrCodeString?.count), \(qrCodeString)")
 
             DispatchQueue.main.async { [weak self] in
                 guard let self = self,
@@ -281,6 +277,16 @@ class QRCodeScanViewController: OWSViewController {
             }
         }
     }
+    
+//    private static func parseQRCode(codewords: Data) -> Data {
+//        // Endianness doesn't matter.
+//        let byteParser = ByteParser(data: codewords, littleEndian: false)
+//        
+//        // CIQRCodeDescriptor codewords (mode + character count + data + terminator + padding)
+//       let byteEncodingMode: UInt = 4
+//        byteParser.nex
+//
+//    }
 }
 
 // MARK: -
@@ -389,19 +395,13 @@ enum QRCodeScanError: Error {
 
 private class QRCodeScanner {
 
-    //    weak var delegate: PhotoCaptureDelegate?
-
     lazy private(set) var previewView = QRCodeScanPreviewView(session: session)
 
     private let sessionQueue = DispatchQueue(label: "QRCodeScanner.sessionQueue")
 
-    let session = AVCaptureSession()
-    let output: QRCodeScanOutput
+    private let session = AVCaptureSession()
+    private let output: QRCodeScanOutput
 
-//    private var currentCaptureInput: AVCaptureDeviceInput?
-//    private var captureDevice: AVCaptureDevice? {
-//        return currentCaptureInput?.device
-//    }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
 
     private var _captureOrientation: AVCaptureVideoOrientation = .portrait
@@ -422,10 +422,6 @@ private class QRCodeScanner {
 
     // MARK: - Public
 
-    //    public var flashMode: AVCaptureDevice.FlashMode {
-    //        return captureOutput.flashMode
-    //    }
-
     @objc
     private func orientationDidChange(notification: Notification) {
         AssertIsOnMainThread()
@@ -439,10 +435,6 @@ private class QRCodeScanner {
                 return
             }
             self.captureOrientation = captureOrientation
-
-            //            DispatchQueue.main.async {
-            //                self.delegate?.photoCapture(self, didChangeOrientation: captureOrientation)
-            //            }
         }
     }
 
@@ -476,33 +468,14 @@ private class QRCodeScanner {
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
-//            guard let delegate = self.delegate else { return }
 
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }
 
             self.captureOrientation = initialCaptureOrientation
-            // TODO:
             self.session.sessionPreset = .high
 
             try self.setCurrentInput(position: .back)
-
-//            guard let photoOutput = self.output.photoOutput else {
-//                owsFailDebug("Missing photoOutput.")
-//                throw QRCodeScanError.initializationFailed
-//            }
-//
-//            guard self.session.canAddOutput(photoOutput) else {
-//                owsFailDebug("!canAddOutput(photoOutput).")
-//                throw QRCodeScanError.initializationFailed
-//            }
-//            self.session.addOutput(photoOutput)
-
-//            if let connection = photoOutput.connection(with: .video) {
-//                if connection.isVideoStabilizationSupported {
-//                    connection.preferredVideoStabilizationMode = .auto
-//                }
-//            }
 
             let videoDataOutput = self.output.videoDataOutput
             guard self.session.canAddOutput(videoDataOutput) else {

@@ -340,6 +340,11 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         OWSFailDebug(@"could not serialize proto: %@", error);
         return nil;
     }
+    
+    OWSLogVerbose(@"----- qrCodeData: %lu, %@",
+                  (unsigned long) fingerprintData.length,
+                  fingerprintData.hexadecimalString);
+    
 
     OWSLogDebug(@"Building fingerprint with data: %@", fingerprintData);
 

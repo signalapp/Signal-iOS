@@ -116,6 +116,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
 {
+    OWSAssertIsOnMainThread();
+    
     NSError *error;
     if ([self.fingerprint matchesLogicalFingerprintsData:combinedFingerprintData error:&error]) {
         [self showVerificationSucceeded];
@@ -126,6 +128,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showVerificationSucceeded
 {
+    OWSAssertIsOnMainThread();
+    
     [self.class showVerificationSucceeded:self
                               identityKey:self.identityKey
                          recipientAddress:self.recipientAddress
@@ -135,7 +139,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showVerificationFailedWithError:(NSError *)error
 {
-
+    OWSAssertIsOnMainThread();
+    
     [self.class showVerificationFailedWithError:error
         viewController:self
         retryBlock:^{ [self.qrCodeScanViewController tryToStartScanning]; }
@@ -149,6 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
                       contactName:(NSString *)contactName
                               tag:(NSString *)tag
 {
+    OWSAssertIsOnMainThread();    
     OWSAssertDebug(viewController);
     OWSAssertDebug(identityKey.length > 0);
     OWSAssertDebug(address.isValid);
