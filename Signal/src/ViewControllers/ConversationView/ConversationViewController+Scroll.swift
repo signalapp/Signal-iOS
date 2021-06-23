@@ -416,7 +416,6 @@ extension ConversationViewController {
     @discardableResult
     func updateLastKnownDistanceFromBottom() -> CGFloat? {
         guard hasAppearedAndHasAppliedFirstLoad else {
-            Logger.verbose("---- !hasAppearedAndHasAppliedFirstLoad")
             return nil
         }
 
@@ -569,10 +568,8 @@ extension ConversationViewController {
 
     private func targetContentOffsetForBottom(lastKnownDistanceFromBottom: CGFloat?) -> CGPoint? {
         guard let lastKnownDistanceFromBottom = self.lastKnownDistanceFromBottom else {
-            Logger.verbose("---- lastKnownDistanceFromBottom: unknown")
             return nil
         }
-        Logger.verbose("---- lastKnownDistanceFromBottom: \(lastKnownDistanceFromBottom)")
 
         let contentOffset = self.contentOffset(forLastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
         return contentOffset

@@ -545,8 +545,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // * The second is in ConversationViewLayout.willPerformBatchUpdates().
         //   We manipulate the content offset using
         //   UICollectionViewLayoutInvalidationContext.contentOffsetAdjustment.
-        //   We (currently) only apply the second mechanism when landing "adjacent"
-        //   loads during a scroll gesture or animation.
+        //
+        // We prefer the second mechanism and only use the first mechanism to
+        // handle special cases (ie. when shouldUseDelegateScrollContinuity is true).
         let scrollContinuity: ScrollContinuity = {
             guard let loadType = renderState.loadType else {
                 owsFailDebug("Missing loadType.")
