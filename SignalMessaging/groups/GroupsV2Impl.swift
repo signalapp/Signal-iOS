@@ -1478,7 +1478,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    private let groupInviteLinkPreviewCache = NSCache<NSData, GroupInviteLinkPreview>()
+    private let groupInviteLinkPreviewCache = NSCache<NSData, GroupInviteLinkPreview>(countLimit: 5)
 
     private func groupInviteLinkPreviewCacheKey(groupSecretParamsData: Data) -> NSData {
         groupSecretParamsData as NSData

@@ -5,6 +5,7 @@
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self) {
         _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
         _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
-        _parsedPhoneNumberCache = [NSCache new];
+        _parsedPhoneNumberCache = [[NSCache alloc] initWithCountLimit:256];
     }
 
     return self;

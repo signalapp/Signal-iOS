@@ -43,7 +43,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
-@property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -66,10 +65,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-    _cnContactCache = [NSCache new];
-    _cnContactCache.countLimit = 50;
-    _cnContactAvatarCache = [NSCache new];
-    _cnContactAvatarCache.countLimit = 25;
+    _cnContactCache = [[NSCache alloc] initWithCountLimit:50];
 
     OWSSingletonAssert();
 
@@ -161,23 +157,18 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId
 {
-    OWSAssertDebug(self.cnContactCache);
-
     if (!contactId) {
         return nil;
     }
 
-    CNContact *_Nullable cnContact;
-    @synchronized(self.cnContactCache) {
-        cnContact = [self.cnContactCache objectForKey:contactId];
-        if (!cnContact) {
-            cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
-            if (cnContact) {
-                [self.cnContactCache setObject:cnContact forKey:contactId];
-            }
-        }
+    CNContact *_Nullable cnContact = [self.cnContactCache objectForKey:contactId];
+    if (cnContact != nil) {
+        return cnContact;
     }
-
+    cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
+    if (cnContact != nil) {
+        [self.cnContactCache setObject:cnContact forKey:contactId];
+    }
     return cnContact;
 }
 
@@ -190,26 +181,22 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
 {
-    OWSAssertDebug(self.cnContactAvatarCache);
-
-    if (!contactId) {
+    if (contactId == nil) {
         return nil;
     }
-
-    UIImage *_Nullable avatarImage;
-    @synchronized(self.cnContactAvatarCache) {
-        avatarImage = [self.cnContactAvatarCache objectForKey:contactId];
-        if (!avatarImage) {
-            NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
-            if (avatarData && [avatarData ows_isValidImage]) {
-                avatarImage = [UIImage imageWithData:avatarData];
-            }
-            if (avatarImage) {
-                [self.cnContactAvatarCache setObject:avatarImage forKey:contactId];
-            }
-        }
+    NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
+    if (avatarData == nil) {
+        return nil;
     }
-
+    if ([avatarData ows_isValidImage]) {
+        OWSLogWarn(@"Invalid image.");
+        return nil;
+    }
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:avatarData];
+    if (avatarImage == nil) {
+        OWSLogWarn(@"Could not load image.");
+        return nil;
+    }
     return avatarImage;
 }
 
@@ -507,7 +494,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             self.allContacts = sortedContacts;
             self.allContactsMap = [allContactsMap copy];
             [self.cnContactCache removeAllObjects];
-            [self.cnContactAvatarCache removeAllObjects];
 
             [[NSNotificationCenter defaultCenter]
                 postNotificationNameAsync:OWSContactsManagerContactsDidChangeNotification

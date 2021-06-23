@@ -214,7 +214,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
     private static let serialQueue = DispatchQueue(label: "org.signal.fts")
     // This should only be accessed on serialQueue.
-    private static let ftsCache: NSCache<NSString, NSString> = NSCache()
+    private static let ftsCache = NSCache<NSString, NSString>(countLimit: 128)
 
     private class func cacheKey(collection: String, uniqueId: String) -> String {
         return "\(collection).\(uniqueId)"

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 @objc
@@ -27,6 +27,8 @@ public class AnyLRUCache: NSObject {
         self.backingCache.clear()
     }
 }
+
+// MARK: -
 
 // A simple LRU cache bounded by the number of entries.
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
@@ -101,5 +103,18 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public func clear() {
         cacheMap.removeAll()
         cacheOrder.removeAll()
+    }
+}
+
+// MARK: -
+
+@objc
+public extension NSCache {
+    @objc(initWithCountLimit:)
+    public convenience init(countLimit: Int) {
+        self.init()
+
+        // TODO: We might set count limit to zero in NSE?
+        self.countLimit = countLimit
     }
 }
