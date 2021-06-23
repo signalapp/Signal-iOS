@@ -41,6 +41,7 @@ public struct CVScrollAction: Equatable, CustomStringConvertible {
         case scrollTo(interactionId: String, onScreenPercentage: CGFloat, alignment: ScrollAlignment)
         case bottomOfLoadWindow
         case initialPosition
+        case bottomForNewMessage
 
         // MARK: - CustomStringConvertible
 
@@ -54,6 +55,8 @@ public struct CVScrollAction: Equatable, CustomStringConvertible {
                 return "bottomOfLoadWindow"
             case .initialPosition:
                 return "initialPosition"
+            case .bottomForNewMessage:
+                return "bottomForNewMessage"
             }
         }
     }
@@ -94,7 +97,7 @@ extension ConversationViewController {
             } else {
                 owsFailDebug("Could not locate interaction.")
             }
-        case .bottomOfLoadWindow:
+        case .bottomOfLoadWindow, .bottomForNewMessage:
             scrollToBottomOfLoadWindow(animated: scrollAction.isAnimated)
         case .initialPosition:
             scrollToInitialPosition(animated: scrollAction.isAnimated)
@@ -554,10 +557,13 @@ extension ConversationViewController {
            scrollAction != .none {
             return true
         }
-        if let scrollAction = viewState.scrollActionForUpdate,
-           !scrollAction.isAnimated {
+        if let scrollAction = viewState.scrollActionForUpdate {
             switch scrollAction.action {
             case .bottomOfLoadWindow, .scrollTo:
+                if !scrollAction.isAnimated {
+                    return true
+                }
+            case .bottomForNewMessage:
                 return true
             default:
                 break
@@ -597,7 +603,7 @@ extension ConversationViewController {
         owsAssertDebug(!scrollAction.isAnimated)
 
         switch scrollAction.action {
-        case .bottomOfLoadWindow:
+        case .bottomOfLoadWindow, .bottomForNewMessage:
             let minContentOffsetY = -collectionView.safeAreaInsets.top
             var contentOffset = self.contentOffset(forLastKnownDistanceFromBottom: 0)
             contentOffset.y = max(minContentOffsetY, contentOffset.y)
