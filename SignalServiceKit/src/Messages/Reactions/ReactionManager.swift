@@ -66,7 +66,11 @@ public class ReactionManager: NSObject {
             throw OWSAssertionError("Cannot send to thread.")
         }
 
-        Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving)")
+        if DebugFlags.internalLogging {
+            Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving)")
+        } else {
+            Logger.info("Sending reaction, isRemoving: \(isRemoving)")
+        }
 
         guard let localAddress = tsAccountManager.localAddress else {
             throw OWSAssertionError("missing local address")
