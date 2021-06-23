@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSIdentityManager.h"
 #import "NSNotificationCenter+OWS.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -13,7 +14,6 @@
 #import <SignalServiceKit/NotificationsProtocol.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSOutgoingNullMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -603,7 +603,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 {
     OWSAssertIsOnMainThread();
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self syncQueuedVerificationStates]; });
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{ [self syncQueuedVerificationStates]; });
 }
 
 - (void)syncQueuedVerificationStates

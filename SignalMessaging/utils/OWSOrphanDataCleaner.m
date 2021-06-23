@@ -66,7 +66,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     OWSSingletonAssert();
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [OWSOrphanDataCleaner auditOnLaunchIfNecessary]; });
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{ [OWSOrphanDataCleaner auditOnLaunchIfNecessary]; });
 
     return self;
 }

@@ -2,12 +2,12 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSBlockingManager.h"
 #import "NSNotificationCenter+OWS.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSBlockedPhoneNumbersMessage.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
@@ -804,7 +804,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 {
     OWSAssertIsOnMainThread();
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         @synchronized(self)
         {
             [self syncBlockListIfNecessary];

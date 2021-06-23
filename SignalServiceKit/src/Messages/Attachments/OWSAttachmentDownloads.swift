@@ -101,7 +101,7 @@ public class OWSAttachmentDownloads: NSObject {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
     }
 
     @objc
@@ -132,7 +132,7 @@ public class OWSAttachmentDownloads: NSObject {
 
     @objc
     func applicationDidBecomeActive() {
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { self.startPendingNewMessageDownloads() }
     }
 
     // MARK: -
@@ -140,7 +140,7 @@ public class OWSAttachmentDownloads: NSObject {
     private static let pendingNewMessageDownloads = SDSKeyValueStore(collection: "PendingNewMessageDownloads")
 
     private func startPendingNewMessageDownloads() {
-        guard CurrentAppContext().isMainApp else { return }
+        owsAssertDebug(CurrentAppContext().isMainApp)
 
         let pendingNewMessageDownloads = databaseStorage.read { transaction in
             Self.pendingNewMessageDownloads.allUIntValuesMap(transaction: transaction)
