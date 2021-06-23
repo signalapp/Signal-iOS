@@ -91,6 +91,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // 110 retries will yield ~24 hours of retry.
     public static let maxRetries: UInt = 110
     public let requiresInternet: Bool = true
+    public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<MessageSenderOperation>()
 
     public var jobRecordLabel: String {

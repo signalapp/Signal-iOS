@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,6 +19,7 @@ class TestJobQueue: JobQueue {
     static var maxRetries: UInt = 1
     public var runningOperations = AtomicArray<TestDurableOperation>()
     var requiresInternet: Bool = false
+    let isEnabled: Bool = true
 
     func setup() {
         defaultSetup()
