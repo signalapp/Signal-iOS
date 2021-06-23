@@ -48,6 +48,7 @@ extension ConversationViewController {
                                                selector: #selector(profileWhitelistDidChange),
                                                name: .profileWhitelistDidChange,
                                                object: nil)
+        callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
     @objc
@@ -175,5 +176,15 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         startReadTimer()
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: CallServiceObserver {
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        AssertIsOnMainThread()
+        guard oldValue != newValue else { return }
+        updateBarButtonItems()
     }
 }
