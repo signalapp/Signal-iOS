@@ -1346,7 +1346,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dagen";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Door een tijdspanne in te stellen zullen berichten op zowel je eigen apparaat als op de apparaten van andere deelnemers aan het gesprek worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor ieder persoon pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. Deze instelling is alleen van toepassing op dit gesprek en alleen op berichten die zijn verzonden nadat je de tijdspanne hebt ingesteld.– Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Nieuwe berichten in dit gesprek zullen nadat ze zijn gezien en nadat de ingestelde tijd is verlopen voor iedereen worden gewist. – Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Momenteel verlopen nieuwe berichten na %@";
@@ -1364,7 +1364,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "seconden";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Door een tijdspanne in te stellen zullen berichten op zowel je eigen apparaat als op de apparaten van andere deelnemers aan het gesprek worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor ieder persoon pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. Deze instelling is van toepassing op alle gesprekken die jij hebt geïnitieerd nadat je de tijdspanne hebt ingesteld. – Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Voor alle nieuwe gesprekken die jij zelf begint zullen berichten nadat ze zijn gezien en nadat de ingestelde tijd is verlopen voor iedereen worden gewist. – Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "weken";
@@ -2977,8 +2977,14 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Dit bericht doorsturen";
 
+/* Label for button to open a group invite. */
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Verwijzing volgen";
+
+/* Label for button to open a sticker pack. */
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Bellen";
@@ -3000,6 +3006,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Media doorsturen";
+
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Stickerpakket";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Bericht";
@@ -3044,7 +3056,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Bezig met uploaden";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Weergegeven door";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Gezien door";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Ontvangen";
@@ -4964,7 +4976,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Verlopende berichten";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Stel een standaard-tijdspanne in voor verlopende berichten voor alle nieuwe gesprekken die jij initieert.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Stel in dat elk bericht in gesprekken die jij zelf begint een bepaalde tijd nadat het is gezien voor iedereen moet worden gewist.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Aan Signal doneren";
@@ -5963,7 +5975,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Je apparaat ondersteunt deze functie niet.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Je veiligheidsnummer met %@ is veranderd. Waarschijnlijk heeft hij of zij Signal opnieuw geïnstalleerd of is hij of zij op een nieuwe telefoon overgestapt. Als je echt zeker wilt weten dat je nog steeds met dezelfde persoon communiceert, tik dan op ‘Verifiëren’ om het veiligheidsnummer na te kijken. In de meeste gevallen is deze extra controle niet nodig.\n";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Je veiligheidsnummer met %@ is veranderd. Waarschijnlijk heeft hij of zij Signal opnieuw geïnstalleerd of is hij of zij op een nieuwe telefoon overgestapt. Als je echt zeker wilt weten dat je nog steeds met dezelfde persoon communiceert, tik dan op ‘Verifiëren’ om het veiligheidsnummer na te kijken. Voor de meeste personen is deze extra controle niet nodig.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verifiëren";

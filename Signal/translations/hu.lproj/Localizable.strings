@@ -2977,20 +2977,26 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Üzenet továbbítása";
 
+/* Label for button to open a group invite. */
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Link megnyitása";
+
+/* Label for button to open a sticker pack. */
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Hívás";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime hanghívás";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime videóhívás";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "SMS küldése";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Válasz";
@@ -3000,6 +3006,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Média megosztása";
+
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Matricsacsomag";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Üzenetek";

@@ -2977,8 +2977,14 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Diese Nachricht weiterleiten";
 
+/* Label for button to open a group invite. */
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Link öffnen";
+
+/* Label for button to open a sticker pack. */
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Anrufen";
@@ -3000,6 +3006,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Medieninhalte teilen";
+
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Sticker-Set";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Nachricht";
@@ -4964,7 +4976,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Lege eine Standardablaufzeit für verschwindende Nachrichten für alle von dir begonnenen neuen Unterhaltungen fest.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Lege eine Standardablaufzeit für verschwindende Nachrichten aller von dir begonnenen neuen Unterhaltungen fest.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "An Signal spenden";

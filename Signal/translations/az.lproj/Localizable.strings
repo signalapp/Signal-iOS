@@ -2977,8 +2977,14 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Bu ismarışı yönəlt";
 
+/* Label for button to open a group invite. */
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to open a sticker pack. */
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Zəng";
@@ -3000,6 +3006,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Medianı paylaş";
+
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Sticker Paketi";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesaj";

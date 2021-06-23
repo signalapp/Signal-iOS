@@ -2977,8 +2977,14 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "转发当前消息";
 
+/* Label for button to open a group invite. */
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+
+/* Label for button to open a sticker pack. */
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "呼叫";
@@ -3000,6 +3006,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "分享媒体文件";
+
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "表情包";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "消息";
@@ -3044,7 +3056,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "正在上传";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "已查看：";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "已接收";

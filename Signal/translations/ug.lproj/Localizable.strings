@@ -2977,20 +2977,26 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "بۇ ئۇچۇرنى ئۇلاپ يوللاڭ";
 
+/* Label for button to open a group invite. */
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "ئۇلانمىنى ئاچ";
+
+/* Label for button to open a sticker pack. */
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "چاقىر";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime ئۈن";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime سىن";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "تېكىست ئۇچۇر يوللا";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "بۇ ئۇچۇرغا جاۋاب";
@@ -3000,6 +3006,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "ۋاسىتە ھەمبەھىر";
+
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "چاپلاق بوغچىسى";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "ئۇچۇر";

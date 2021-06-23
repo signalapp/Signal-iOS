@@ -1850,7 +1850,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ と %2$@ が参加中";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "通話が切断されました。ネット接続を確認して再接続してください。";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "通話が切断されました。ネットワーク接続を確認して再度試してください。";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "あなた";
@@ -2977,20 +2977,26 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "このメッセージを転送";
 
+/* Label for button to open a group invite. */
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "リンクを開く";
+
+/* Label for button to open a sticker pack. */
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
 
 /* Label for button to call a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "発信する";
+"MESSAGE_ACTION_PHONE_NUMBER_CALL" = "発信";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime音声通話";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetimeビデオ通話";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "テキストメッセージを送信";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "このメッセージに返信";
@@ -3000,6 +3006,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "メディアを共有";
+
+/* Title for message actions for a group invite link. */
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+
+/* Title for message actions for a sticker pack. */
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "ステッカーパック";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "メッセージ";
@@ -3506,7 +3518,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "あなたの電話番号";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "不正な電話番号です。正しい電話番号を入力してください。";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "無効な電話番号です。正しい電話番号を入力してください。";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PINの試行回数が尽きましたが、新しいPINを作成すればSignalアカウントにアクセスすることはできます。ただし、プライバシーと安全性のため、アカウントに保存されたプロフィールや設定は復元されません。";
@@ -4427,7 +4439,7 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "正しい電話番号を入力してください。";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "不正な電話番号";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "無効な電話番号";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "登録する電話番号を入力してください。";
