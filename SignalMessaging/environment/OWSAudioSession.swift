@@ -65,7 +65,13 @@ public class OWSAudioSession: NSObject {
     }
 
     private func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: UIDevice.proximityStateDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(proximitySensorStateDidChange(notification:)),
+            name: UIDevice.proximityStateDidChangeNotification,
+            object: nil)
+
+        ensureAudioState()
     }
 
     // MARK: -
@@ -160,9 +166,9 @@ public class OWSAudioSession: NSObject {
         } else if aggregateBehaviors.contains(.playback) {
             try avAudioSession.setCategory(.playback)
         } else {
-            if avAudioSession.category != AVAudioSession.Category.soloAmbient {
-                Logger.debug("reverting to default audio category: soloAmbient")
-                try avAudioSession.setCategory(.soloAmbient)
+            if avAudioSession.category != AVAudioSession.Category.ambient {
+                Logger.debug("reverting to fallback audio category: ambient")
+                try avAudioSession.setCategory(.ambient)
             }
 
             ensureAudioSessionActivationState()

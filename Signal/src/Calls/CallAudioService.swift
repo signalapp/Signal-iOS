@@ -148,15 +148,15 @@ protocol CallAudioServiceDelegate: AnyObject {
         case .group(let call):
             ensureProperAudioSession(call: call)
         default:
-            // Revert to default audio
-            setAudioSession(category: .soloAmbient, mode: .default)
+            // Revert to ambient audio
+            setAudioSession(category: .ambient, mode: .default)
         }
     }
 
     private func ensureProperAudioSession(call: GroupCall?) {
         guard let call = call, call.localDeviceState.joinState != .notJoined else {
-            // Revert to default audio
-            setAudioSession(category: .soloAmbient, mode: .default)
+            // Revert to ambient audio
+            setAudioSession(category: .ambient, mode: .default)
             return
         }
 
@@ -171,8 +171,8 @@ protocol CallAudioServiceDelegate: AnyObject {
         AssertIsOnMainThread()
 
         guard let call = call, !call.isEnded else {
-            // Revert to default audio
-            setAudioSession(category: .soloAmbient,
+            // Revert to ambient audio
+            setAudioSession(category: .ambient,
                             mode: .default)
             return
         }
@@ -337,8 +337,8 @@ protocol CallAudioServiceDelegate: AnyObject {
             audioPlayer.stop()
         }
 
-        // Stop solo audio, revert to default.
-        setAudioSession(category: .soloAmbient)
+        // Stop solo audio, revert to ambient.
+        setAudioSession(category: .ambient)
     }
 
     // MARK: Playing Sounds
