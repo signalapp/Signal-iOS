@@ -61,7 +61,6 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
         case UserProfileWriter_Tests:
             return NO;
         case UserProfileWriter_SystemContactsFetch:
-            OWSCFailDebug(@"Invalid UserProfileWriter.");
             return YES;
         case UserProfileWriter_Unknown:
             OWSCFailDebug(@"Invalid UserProfileWriter.");

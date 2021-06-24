@@ -763,7 +763,8 @@ extension OWSContactsManager {
             // Clean up orphans.
             var signalAccountsToRemove = [SignalAccount]()
             for signalAccount in persistedSignalAccounts {
-                guard nil == signalAccountsToKeep[signalAccount.recipientAddress] else {
+                if let signalAccountToKeep = signalAccountsToKeep[signalAccount.recipientAddress],
+                   signalAccountToKeep.uniqueId == signalAccount.uniqueId {
                     // If the SignalAccount is going to be inserted or updated,
                     // it doesn't need to be cleaned up.
                     continue
@@ -814,6 +815,14 @@ extension OWSContactsManager {
                 Self.profileManager.addUsers(toProfileWhitelist: Array(seenAddresses),
                                              userProfileWriter: UserProfileWriter.systemContactsFetch,
                                              transaction: transaction)
+
+                #if DEBUG
+                let persistedAddresses = SignalAccount.anyFetchAll(transaction: transaction).map {
+                    $0.recipientAddress
+                }
+                let persistedAddressSet = Set(persistedAddresses)
+                owsAssertDebug(persistedAddresses.count == persistedAddressSet.count)
+                #endif
             }
 
             DispatchQueue.main.async {
