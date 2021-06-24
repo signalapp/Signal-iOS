@@ -135,7 +135,7 @@ public class SenderKeyStore: NSObject {
     }
 
     @objc
-    public func resetSenderKeyStore(writeTx: SDSAnyWriteTransaction) {
+    public func resetSenderKeyStore(transaction writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
             sendingDistributionIdCache = [:]
             keyCache = [:]

@@ -1372,15 +1372,6 @@ extension MessageSender {
             }
         }
 
-        // First, let's tell the SenderKeyStore to clear our sending key if it's invalid
-        // If it's still valid, great! This is the key that will be used for the rest of the send.
-        // If it went invalid, it will be cleared here. The rest of the send flow will automatically
-        // create a new key.
-        // If it's *about* to go invalid, that key will still be used for the rest of this send flow.
-        databaseStorage.write { writeTx in
-            senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: writeTx)
-        }
-
         // To ensure we don't accidentally throw an error early in our promise chain
         // Without calling the perRecipient failures, we declare this as a guarantee.
         // All errors must be caught and handled. If not, we may end up with sends that
@@ -1458,6 +1449,13 @@ extension MessageSender {
             guard let localAddress = self.tsAccountManager.localAddress else {
                 throw OWSAssertionError("Invalid account")
             }
+
+            // Let's expire the key if it went invalid.
+            // If it went invalid, we'll want to make sure we send an SKDM with the new key
+            // to every participant.
+            // If it's *about* to go invalid, that key will still be used for the rest of this send flow.
+            self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: writeTx)
+
             let recipientsNeedingSKDM = try self.senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
                 addresses: recipients,
