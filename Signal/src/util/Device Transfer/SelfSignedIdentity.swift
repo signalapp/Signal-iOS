@@ -88,22 +88,23 @@ struct SelfSignedIdentity {
             throw OWSAssertionError("failed to allocate a new EVP_PKEY")
         }
         defer { EVP_PKEY_free(pkey) }
-        
-        guard let rsa = RSA_new() else {
-            throw OWSAssertionError("failed to allocate a new RSA")
-        }
-        defer { RSA_free(rsa) }
-        
+
         guard let exponent = BN_new() else {
             throw OWSAssertionError("failed to allocate a new exponent")
         }
         defer { BN_free(exponent) }
-        
+
         guard BN_set_word(exponent, UInt(RSA_F4)) > 0 else {
             throw OWSAssertionError("failed to set exponent")
         }
-        
+
+        // rsa does not need to be freed later, as responsibility for rsa's memory is taken over by EVP_PKEY_assign
+        guard let rsa = RSA_new() else {
+            throw OWSAssertionError("failed to allocate a new RSA")
+        }
+
         guard RSA_generate_key_ex(rsa, 4096, exponent, nil) > 0 else {
+            RSA_free(rsa)
             throw OWSAssertionError("failed to generate RSA keypair")
         }
 
