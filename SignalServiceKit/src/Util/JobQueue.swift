@@ -99,7 +99,7 @@ public extension JobQueue {
     // MARK: Default Implementations
 
     func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
-        assert(jobRecord.status == .ready)
+        owsAssertDebug(jobRecord.status == .ready)
 
         jobRecord.anyInsert(transaction: transaction)
 
@@ -164,7 +164,7 @@ public extension JobQueue {
                 let durableOperation = try self.buildOperation(jobRecord: nextJob, transaction: transaction)
 
                 durableOperation.durableOperationDelegate = self as? Self.DurableOperationType.DurableOperationDelegateType
-                assert(durableOperation.durableOperationDelegate != nil)
+                owsAssertDebug(durableOperation.durableOperationDelegate != nil)
 
                 let remainingRetries = self.remainingRetries(durableOperation: durableOperation)
                 durableOperation.remainingRetries = remainingRetries
