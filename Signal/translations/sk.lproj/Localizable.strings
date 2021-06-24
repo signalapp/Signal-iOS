@@ -2978,13 +2978,13 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Preposlať túto správu";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Otvoriť pozvánku do skupiny";
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Otvoriť odkaz";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Zobraziť balík nálepiek";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Zavolať";
@@ -3008,7 +3008,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Zdieľať médiá";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Pozvánka do skupiny";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Balík nálepiek";
@@ -5711,7 +5711,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Prijaté nálepky";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Niektoré balíky s nálepkami sa nepodarilo načítať";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Niektoré balíky nálepiek sa nepodarilo načítať";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Nainštalované nálepky";
@@ -5735,7 +5735,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Balík nálepiek";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Balík s nálepkami sa nepodarilo načítať";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Balík nálepiek sa nepodarilo načítať";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Odinštalovať";
