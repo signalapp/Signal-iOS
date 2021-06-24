@@ -489,6 +489,9 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                         return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
                                                  comment: "Indicates that a payment failed due to insufficient funds.")
                     }
+                case .outgoingVerificationTakingTooLong:
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG",
+                                             comment: "Indicates that an outgoing payment could not be verified in a timely way.")
                 case .timeout,
                      .connectionFailure,
                      .serverRateLimited,
@@ -609,7 +612,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 return firstly(on: .global()) { () -> Promise<Void> in
                     Self.paymentsSwift.blockOnOutgoingVerification(paymentModel: paymentModel).asVoid()
                 }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {
-                    PaymentsError.timeout
+                    PaymentsError.outgoingVerificationTakingTooLong
                 }.recover(on: .global()) { (error: Error) -> Guarantee<()> in
                     Logger.warn("Could not verify outgoing payment: \(error).")
                     if let paymentsError = error as? PaymentsError,

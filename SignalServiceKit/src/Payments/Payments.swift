@@ -37,6 +37,7 @@ public enum PaymentsError: Error {
     case invalidPassphrase
     case invalidEntropy
     case killSwitch
+    case outgoingVerificationTakingTooLong
 }
 
 // MARK: -
