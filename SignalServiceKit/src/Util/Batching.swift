@@ -72,9 +72,17 @@ public class Batching: NSObject {
 // MARK: -
 
 extension Batching {
+    @objc(enumerateArray:batchSize:itemBlock:)
+    @available(swift, obsoleted: 1.0)
+    public static func enumerate(array: [AnyObject],
+                                 batchSize: UInt,
+                                 itemBlock: (AnyObject) -> Void) {
+        Self.enumerate(array, batchSize: batchSize, itemBlock: itemBlock)
+    }
+
     public static func enumerate<T>(_ array: [T],
                                     batchSize: UInt,
-                                    loopBlock: (T) throws -> Void) rethrows {
+                                    itemBlock: (T) throws -> Void) rethrows {
         var index: Int = 0
         try Self.loop(batchSize: batchSize) { stop in
             guard index < array.count else {
@@ -86,7 +94,7 @@ extension Batching {
                 stop.pointee = true
                 return
             }
-            try loopBlock(item)
+            try itemBlock(item)
             index = index + 1
         }
     }
