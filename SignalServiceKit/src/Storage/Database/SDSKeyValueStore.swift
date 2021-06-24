@@ -434,6 +434,33 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
+    public func allUIntValuesMap(transaction: SDSAnyReadTransaction) -> [String: UInt] {
+        let pairs = allPairs(transaction: transaction)
+        var result = [String: UInt]()
+        for pair in pairs {
+            guard let key = pair.key else {
+                owsFailDebug("missing key.")
+                continue
+            }
+            guard let value = pair.value else {
+                owsFailDebug("missing value.")
+                continue
+            }
+            guard let rawObject = parseArchivedValue(value) else {
+                owsFailDebug("Could not parse value.")
+                continue
+            }
+            guard let number: NSNumber = parseValueAs(key: key,
+                                                      rawObject: rawObject) else {
+                                                        owsFailDebug("Invalid value.")
+                                                        continue
+            }
+            result[key] = number.uintValue
+        }
+        return result
+    }
+
+    @objc
     public func anyDataValue(transaction: SDSAnyReadTransaction) -> Data? {
         let keys = allKeys(transaction: transaction).shuffled()
         guard let firstKey = keys.first else {

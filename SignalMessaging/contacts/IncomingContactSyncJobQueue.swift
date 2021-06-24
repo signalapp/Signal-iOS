@@ -20,6 +20,7 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = IncomingContactSyncOperation
     public let requiresInternet: Bool = true
+    public let isEnabled: Bool = true
     public static let maxRetries: UInt = 4
     @objc
     public static let jobRecordLabel: String = OWSIncomingContactSyncJobRecord.defaultLabel

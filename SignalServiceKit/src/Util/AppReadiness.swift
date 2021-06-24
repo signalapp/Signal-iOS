@@ -156,16 +156,10 @@ public class AppReadiness: NSObject {
                                                           function: String = #function,
                                                           line: Int = #line) {
         let label = Self.buildLabel(file: file, function: function, line: line)
-        let priority = Self.defaultPriority
-        DispatchMainThreadSafe {
-            shared.runNowOrWhenAppDidBecomeReadyAsync(block,
-                                                      label: label,
-                                                      priority: priority)
-        }
+        runNowOrWhenAppDidBecomeReadyAsync(block, label: label)
     }
 
     @objc
-    @available(swift, obsoleted: 1.0)
     static func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping BlockType,
                                                    label: String) {
         let priority = Self.defaultPriority
@@ -174,6 +168,30 @@ public class AppReadiness: NSObject {
                                                       label: label,
                                                       priority: priority)
         }
+    }
+
+    public static func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping BlockType,
+                                                              file: String = #file,
+                                                              function: String = #function,
+                                                              line: Int = #line) {
+        runNowOrWhenAppDidBecomeReadyAsync({
+                guard CurrentAppContext().isMainApp else { return }
+                block()
+            },
+            file: file,
+            function: function,
+            line: line
+        )
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    static func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping BlockType,
+                                                       label: String) {
+        runNowOrWhenAppDidBecomeReadyAsync({
+            guard CurrentAppContext().isMainApp else { return }
+            block()
+        }, label: label)
     }
 
     private func runNowOrWhenAppDidBecomeReadyAsync(_ block: @escaping BlockType,

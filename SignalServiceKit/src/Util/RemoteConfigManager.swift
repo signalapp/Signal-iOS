@@ -487,7 +487,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         // The fetched config won't take effect until the *next* launch.
         // That's not ideal, but we can't risk changing configs in the middle
         // of an app lifetime.
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             guard self.tsAccountManager.isRegistered else {
                 return
             }

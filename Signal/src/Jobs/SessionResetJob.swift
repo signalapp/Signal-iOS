@@ -25,6 +25,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     }
     public static let maxRetries: UInt = 10
     public let requiresInternet: Bool = true
+    public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SessionResetOperation>()
 
     @objc

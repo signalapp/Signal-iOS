@@ -40,6 +40,8 @@ public enum Wallpaper: String, CaseIterable {
     public static func warmCaches() {
         owsAssertDebug(!Thread.isMainThread)
 
+        guard CurrentAppContext().hasUI else { return }
+
         let photoURLs: [URL]
         do {
             photoURLs = try OWSFileSystem.recursiveFilesInDirectory(wallpaperDirectory.path).map { URL(fileURLWithPath: $0) }

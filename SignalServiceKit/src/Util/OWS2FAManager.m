@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWS2FAManager.h"
 #import "NSNotificationCenter+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -60,7 +60,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     OWSSingletonAssert();
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         if (self.mode == OWS2FAMode_V1) {
             OWSLogInfo(@"Migrating V1 reglock to V2 reglock");
 

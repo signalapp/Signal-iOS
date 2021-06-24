@@ -15,6 +15,7 @@ public class IncomingGroupSyncJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = IncomingGroupSyncOperation
     public let requiresInternet: Bool = true
+    public let isEnabled: Bool = true
     public static let maxRetries: UInt = 4
     @objc
     public static let jobRecordLabel: String = OWSIncomingGroupSyncJobRecord.defaultLabel

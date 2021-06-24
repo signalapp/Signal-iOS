@@ -63,7 +63,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     OWSSingletonAssert();
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         [self addObservers];
         
         if ([self.tsAccountManager isRegisteredAndReady]) {

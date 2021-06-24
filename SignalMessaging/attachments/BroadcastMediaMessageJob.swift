@@ -10,6 +10,7 @@ public class BroadcastMediaMessageJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = BroadcastMediaMessageOperation
     public let requiresInternet: Bool = true
+    public var isEnabled: Bool { !CurrentAppContext().isNSE }
     public static let maxRetries: UInt = 4
     @objc
     public static let jobRecordLabel: String = OWSBroadcastMediaMessageJobRecord.defaultLabel

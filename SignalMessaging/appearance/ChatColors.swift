@@ -59,6 +59,8 @@ public class ChatColors: NSObject, Dependencies {
     // The cache should contain all current values at all times.
     @objc
     private func warmCaches() {
+        guard CurrentAppContext().hasUI else { return }
+
         var valueCache = [String: ChatColor]()
 
         // Load built-in colors.

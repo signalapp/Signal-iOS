@@ -64,19 +64,6 @@ public protocol JobQueue: DurableOperationDelegate, Dependencies {
     typealias DurableOperationDelegateType = Self
     typealias JobRecordType = DurableOperationType.JobRecordType
 
-    // MARK: Dependencies
-
-    var finder: AnyJobRecordFinder<JobRecordType> { get }
-
-    // MARK: Default Implementations
-
-    func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
-    func restartOldJobs()
-    func workStep()
-    func defaultSetup()
-
-    // MARK: Required
-
     var runningOperations: AtomicArray<DurableOperationType> { get set }
     var jobRecordLabel: String { get }
 
@@ -95,6 +82,8 @@ public protocol JobQueue: DurableOperationDelegate, Dependencies {
     /// are back online.
     var requiresInternet: Bool { get }
     static var maxRetries: UInt { get }
+
+    var isEnabled: Bool { get }
 }
 
 // MARK: -
@@ -107,10 +96,10 @@ public extension JobQueue {
         return AnyJobRecordFinder<JobRecordType>()
     }
 
-    // MARK: -
+    // MARK: Default Implementations
 
     func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
-        assert(jobRecord.status == .ready)
+        owsAssertDebug(jobRecord.status == .ready)
 
         jobRecord.anyInsert(transaction: transaction)
 
@@ -124,6 +113,8 @@ public extension JobQueue {
     }
 
     func startWorkWhenAppIsReady() {
+        guard isEnabled else { return }
+
         guard !CurrentAppContext().isRunningTests else {
             DispatchQueue.global().async {
                 self.workStep()
@@ -143,6 +134,8 @@ public extension JobQueue {
 
     func workStep() {
         Logger.debug("")
+
+        guard isEnabled else { return }
 
         guard !DebugFlags.suppressBackgroundActivity else {
             // Don't process queues.
@@ -171,7 +164,7 @@ public extension JobQueue {
                 let durableOperation = try self.buildOperation(jobRecord: nextJob, transaction: transaction)
 
                 durableOperation.durableOperationDelegate = self as? Self.DurableOperationType.DurableOperationDelegateType
-                assert(durableOperation.durableOperationDelegate != nil)
+                owsAssertDebug(durableOperation.durableOperationDelegate != nil)
 
                 let remainingRetries = self.remainingRetries(durableOperation: durableOperation)
                 durableOperation.remainingRetries = remainingRetries
@@ -198,6 +191,8 @@ public extension JobQueue {
     }
 
     func restartOldJobs() {
+        guard isEnabled else { return }
+
         guard !DebugFlags.suppressBackgroundActivity else {
             // Don't process queues.
             return
@@ -227,6 +222,8 @@ public extension JobQueue {
     /// `setup` is called from objc, and default implementations from a protocol
     /// cannot be marked as @objc.
     func defaultSetup() {
+        guard isEnabled else { return }
+
         guard !isSetup.get() else {
             owsFailDebug("already ready already")
             return

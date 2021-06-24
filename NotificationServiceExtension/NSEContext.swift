@@ -9,6 +9,7 @@ import SignalMessaging
 class NSEContext: NSObject, AppContext {
     let isMainApp = false
     let isMainAppAndActive = false
+    let isNSE = true
 
     func isInBackground() -> Bool { true }
     func isAppForegroundAndActive() -> Bool { false }

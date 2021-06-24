@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-                           attachmentHandler:(void (^)(
-                                                 NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end

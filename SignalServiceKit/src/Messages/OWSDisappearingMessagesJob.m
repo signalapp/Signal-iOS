@@ -58,14 +58,12 @@ void AssertIsOnDisappearingMessagesQueue()
 
     // suspenders in case a deletion schedule is missed.
     NSTimeInterval kFallBackTimerInterval = 5 * kMinuteInterval;
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
-        if (CurrentAppContext().isMainApp) {
-            self.fallbackTimer = [NSTimer weakScheduledTimerWithTimeInterval:kFallBackTimerInterval
-                                                                      target:self
-                                                                    selector:@selector(fallbackTimerDidFire)
-                                                                    userInfo:nil
-                                                                     repeats:YES];
-        }
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
+        self.fallbackTimer = [NSTimer weakScheduledTimerWithTimeInterval:kFallBackTimerInterval
+                                                                  target:self
+                                                                selector:@selector(fallbackTimerDidFire)
+                                                                userInfo:nil
+                                                                 repeats:YES];
     });
 
     OWSSingletonAssert();
@@ -307,7 +305,7 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             NSUInteger deletedCount = [self runLoop];
 
