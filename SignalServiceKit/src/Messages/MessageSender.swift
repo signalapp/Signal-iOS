@@ -1383,7 +1383,11 @@ extension MessageSender {
                 udAccessMap: udAccessMap,
                 sendErrorBlock: wrappedSendErrorBlock)
         }.then { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
-            guard senderKeyRecipients.count > 0 else { return .init() }
+            guard senderKeyRecipients.count > 0 else {
+                // Something went wrong with the SKDM promise. Exit early.
+                owsAssertDebug(didHitAnyFailure.get())
+                return .init()
+            }
             return firstly {
                 // SenderKey TODO: PreKey fetch? Start sessions?
                 self.sendSenderKeyRequest(
