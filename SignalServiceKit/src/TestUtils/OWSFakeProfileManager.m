@@ -144,6 +144,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientWhitelist addObjectsFromArray:addresses];
 }
 
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+                 userProfileWriter:(UserProfileWriter)userProfileWriter
+                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.recipientWhitelist addObjectsFromArray:addresses];
+}
+
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
 {
     [self.recipientWhitelist removeObject:address];
