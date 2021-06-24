@@ -357,7 +357,11 @@ public class FullTextSearcher: NSObject {
                     // Ignore unregistered recipients.
                     return
                 }
-                let signalAccount = SignalAccount(signalRecipient: signalRecipient, contact: nil, multipleAccountLabelText: nil)
+                let signalAccount = SignalAccount(signalRecipient: signalRecipient,
+                                                  contact: nil,
+                                                  contactAvatarHash: nil,
+                                                  contactAvatarJpegData: nil,
+                                                  multipleAccountLabelText: nil)
                 let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
                 signalRecipentResults.append(searchResult)
             case let groupThread as TSGroupThread:
@@ -601,7 +605,11 @@ public class FullTextSearcher: NSObject {
             // Ignore unregistered recipients.
             guard recipient.devices.count > 0 else { return }
 
-            let account = SignalAccount(signalRecipient: recipient, contact: nil, multipleAccountLabelText: nil)
+            let account = SignalAccount(signalRecipient: recipient,
+                                        contact: nil,
+                                        contactAvatarHash: nil,
+                                        contactAvatarJpegData: nil,
+                                        multipleAccountLabelText: nil)
             appendSignalAccount(account)
         }
 

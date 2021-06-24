@@ -103,6 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContactsOutputStream *contactsOutputStream =
         [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
+    // TODO: Use batching.
     for (SignalAccount *signalAccount in signalAccounts) {
         OWSRecipientIdentity *_Nullable recipientIdentity =
             [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress transaction:transaction];

@@ -266,21 +266,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithFormat:@"%@: %@", self.fullName, self.userTextPhoneNumbers];
 }
 
-- (NSArray<SignalServiceAddress *> *)registeredAddresses
-{
-    __block NSMutableArray<SignalServiceAddress *> *addresses = [NSMutableArray array];
-
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        for (NSString *e164PhoneNumber in self.e164sForIntersection) {
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:e164PhoneNumber];
-            if ([SignalRecipient isRegisteredRecipient:address transaction:transaction]) {
-                [addresses addObject:address];
-            }
-        }
-    }];
-    return [addresses copy];
-}
-
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering {
     return ^NSComparisonResult(id obj1, id obj2) {
         Contact *contact1 = (Contact *)obj1;
@@ -300,9 +285,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)nameForAddress:(SignalServiceAddress *)address
+         registeredAddresses:(NSArray<SignalServiceAddress *> *)registeredAddresses
 {
     OWSAssertDebug(address.isValid);
-    OWSAssertDebug([self.registeredAddresses containsObject:address]);
+    OWSAssertDebug([registeredAddresses containsObject:address]);
 
     // We don't have contacts entries for addresses without phone numbers
     if (!address.phoneNumber) {

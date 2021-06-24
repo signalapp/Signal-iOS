@@ -571,3 +571,265 @@ extension OWSContactsManager {
         return nil
     }
 }
+
+// MARK: - Internals
+
+extension OWSContactsManager {
+    // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
+    @objc
+    static let intersectionQueue = DispatchQueue(label: "org.whispersystems.contacts.intersectionQueue")
+    @objc
+    var intersectionQueue: DispatchQueue { Self.intersectionQueue }
+
+    // TODO: Move to Contact class?
+    private static func accountLabel(forFetchedContact fetchedContact: FetchedContact,
+                                     address: SignalServiceAddress) -> String? {
+
+        owsAssertDebug(address.isValid)
+        let registeredAddresses = fetchedContact.registeredAddresses
+        owsAssertDebug(registeredAddresses.contains(address))
+        let contact = fetchedContact.contact
+
+        guard registeredAddresses.count > 1 else {
+            return nil
+        }
+
+        // 1. Find the address type of this account.
+        let addressLabel: String = contact.name(for: address,
+                                                registeredAddresses: registeredAddresses).filterStringForDisplay()
+
+        // 2. Find all addresses for this contact of the same type.
+        let addressesWithTheSameName = registeredAddresses.filter {
+            addressLabel == contact.name(for: $0,
+                                         registeredAddresses: registeredAddresses).filterStringForDisplay()
+        }.stableSort()
+
+        owsAssertDebug(addressesWithTheSameName.contains(address))
+        if addressesWithTheSameName.count > 1,
+           let index = addressesWithTheSameName.firstIndex(of: address) {
+            let format = NSLocalizedString("PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
+                                           comment: "Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}.")
+            return String(format: format,
+                          addressLabel,
+                          OWSFormat.formatUInt(UInt(index))).filterStringForDisplay()
+        } else {
+            return addressLabel
+        }
+    }
+
+    private struct ContactAvatarMetadata {
+        let contactAvatarHash: Data
+        let contactAvatarJpegData: Data
+    }
+
+    private static func buildContactAvatarMetadata(contact: Contact) -> ContactAvatarMetadata? {
+        guard let cnContactId: String = contact.cnContactId else {
+            owsFailDebug("Missing cnContactId.")
+            return nil
+        }
+        guard let contactAvatarData = Self.contactsManager.avatarData(forCNContactId: cnContactId) else {
+            return nil
+        }
+        guard let contactAvatarHash = Cryptography.computeSHA256Digest(contactAvatarData) else {
+            owsFailDebug("Could not digest contactAvatarData.")
+            return nil
+        }
+        guard let contactAvatarJpegData = UIImage.validJpegData(fromAvatarData: contactAvatarData) else { owsFailDebug("Could not convert avatar to JPEG.")
+            return nil
+        }
+        return ContactAvatarMetadata(contactAvatarHash: contactAvatarHash,
+                                     contactAvatarJpegData: contactAvatarJpegData)
+    }
+
+    private struct SystemContactsState {
+        let signalAccounts: [SignalAccount]
+        let seenAddresses: Set<SignalServiceAddress>
+    }
+
+    private struct FetchedContact {
+        let contact: Contact
+        let signalRecipients: [SignalRecipient]
+        let registeredAddresses: [SignalServiceAddress]
+    }
+
+    private static func buildSystemContactsState(forSystemContacts contacts: [Contact],
+                                                 transaction: SDSAnyReadTransaction) -> SystemContactsState {
+
+        let fetchedContacts: [FetchedContact] = contacts.map { contact in
+            let signalRecipients = contact.signalRecipients(transaction: transaction)
+            let registeredAddresses = contact.registeredAddresses(transaction: transaction)
+            return FetchedContact(contact: contact,
+                                  signalRecipients: signalRecipients,
+                                  registeredAddresses: registeredAddresses)
+        }
+        var seenAddresses = Set<SignalServiceAddress>()
+        var signalAccounts = [SignalAccount]()
+        for fetchedContact in fetchedContacts {
+            let contact = fetchedContact.contact
+
+            var signalRecipients = fetchedContact.signalRecipients
+            guard !signalRecipients.isEmpty else {
+                continue
+            }
+            // TODO: Confirm ordering.
+            signalRecipients.sort { $0.compare($1) == .orderedAscending }
+            // We use Batching since contact avatars could be large.
+            Batching.enumerate(signalRecipients, batchSize: 12) { signalRecipient in
+                if seenAddresses.contains(signalRecipient.address) {
+                    Logger.verbose("Ignoring duplicate contact: \(signalRecipient.address), \(contact.fullName)")
+                    return
+                }
+                seenAddresses.insert(signalRecipient.address)
+
+                var multipleAccountLabelText: String?
+                if signalRecipients.count > 1 {
+                    multipleAccountLabelText = Self.accountLabel(forFetchedContact: fetchedContact,
+                                                                 address: signalRecipient.address)
+                }
+                let contactAvatarMetadata = Self.buildContactAvatarMetadata(contact: contact)
+                let signalAccount = SignalAccount(signalRecipient: signalRecipient,
+                                                  contact: contact,
+                                                  contactAvatarHash: contactAvatarMetadata?.contactAvatarHash,
+                                                  contactAvatarJpegData: contactAvatarMetadata?.contactAvatarJpegData,
+                                                  multipleAccountLabelText: multipleAccountLabelText)
+                signalAccounts.append(signalAccount)
+            }
+        }
+        return SystemContactsState(signalAccounts: signalAccounts.stableSort(),
+                                   seenAddresses: seenAddresses)
+    }
+
+    @objc
+    static func buildSignalAccounts(forContacts contacts: [Contact],
+                                    shouldClearStaleCache: Bool,
+                                    completion: @escaping ([SignalAccount]) -> Void) {
+        intersectionQueue.async {
+            var systemContactsSignalAccounts = [SignalAccount]()
+            var seenAddresses = Set<SignalServiceAddress>()
+            var persistedSignalAccounts = [SignalAccount]()
+            var persistedSignalAccountMap = [SignalServiceAddress: SignalAccount]()
+            var signalAccountsToKeep = [SignalServiceAddress: SignalAccount]()
+            Self.databaseStorage.read { transaction in
+                let systemContactsState = buildSystemContactsState(forSystemContacts: contacts,
+                                                                   transaction: transaction)
+                systemContactsSignalAccounts = systemContactsState.signalAccounts
+                seenAddresses = systemContactsState.seenAddresses
+
+                SignalAccount.anyEnumerate(transaction: transaction) { (signalAccount, _) in
+                    persistedSignalAccountMap[signalAccount.recipientAddress] = signalAccount
+                    persistedSignalAccounts.append(signalAccount)
+
+                    // Retain signal accounts from contact syncs.
+                    if let contact = signalAccount.contact,
+                       contact.isFromContactSync {
+                        signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount
+                    }
+                }
+            }
+
+            var signalAccountsToUpsert = [SignalAccount]()
+            for signalAccount in systemContactsSignalAccounts {
+                // The user might have multiple system contacts with the same phone number.
+                if let otherSignalAccount = signalAccountsToKeep[signalAccount.recipientAddress],
+                   let contact = otherSignalAccount.contact,
+                   !contact.isFromContactSync {
+                    owsFailDebug("Ignoring redundant signal account: \(signalAccount.recipientAddress)")
+                    continue
+                }
+
+                guard let persistedSignalAccount = persistedSignalAccountMap[signalAccount.recipientAddress] else {
+                    // new Signal Account should be inserted.
+                    signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount
+                    signalAccountsToUpsert.append(signalAccount)
+                    continue
+                }
+
+                if persistedSignalAccount.hasSameContent(signalAccount) {
+                    // Same content, no need to update.
+                    signalAccountsToKeep[signalAccount.recipientAddress] = persistedSignalAccount
+                    continue
+                }
+
+                // The content has changed, we need to update this SignalAccount in the database.
+                if let contact = persistedSignalAccount.contact,
+                   contact.isFromContactSync {
+                    Logger.info("Replacing SignalAccount from synced contact with SignalAccount from system contacts.")
+                }
+
+                signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount
+                signalAccountsToUpsert.append(signalAccount)
+            }
+
+            // Clean up orphans.
+            var signalAccountsToRemove = [SignalAccount]()
+            for signalAccount in persistedSignalAccounts {
+                guard nil == signalAccountsToKeep[signalAccount.recipientAddress] else {
+                    // If the SignalAccount is going to be inserted or updated,
+                    // it doesn't need to be cleaned up.
+                    continue
+                }
+
+                // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
+                // However, as of iOS 11.2 CNContactStore occasionally gives us only a subset of the system contacts.
+                // Because of that, it's not safe to clear orphaned accounts.
+                // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
+                // their contacts we'll clear the cached ones.
+                // RADAR: https://bugreport.apple.com/web/?problemID=36082946
+                let isOrphan = signalAccountsToKeep[signalAccount.recipientAddress] == nil
+                if isOrphan && !shouldClearStaleCache {
+                    Logger.verbose("Ensuring old SignalAccount is not inadvertently lost: \(signalAccount.recipientAddress).")
+                    // Make note that we're retaining this orphan otherwise we could
+                    // retain multiple orphans for a given recipient.
+                    signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount
+                } else {
+                    // Clean up instances that have been replaced by another instance
+                    // or are no longer in the system contacts.
+                    signalAccountsToRemove.append(signalAccount)
+                }
+            }
+
+            // Update cached SignalAccounts on disk
+            Self.databaseStorage.write { transaction in
+                if !signalAccountsToRemove.isEmpty {
+                    Logger.info("Removing \(signalAccountsToRemove.count) old SignalAccounts.")
+                    for signalAccount in signalAccountsToRemove {
+                        Logger.verbose("Removing old SignalAccount: \(signalAccount.recipientAddress)")
+                        signalAccount.anyRemove(transaction: transaction)
+                    }
+                }
+
+                if signalAccountsToUpsert.count > 0 {
+                    Logger.info("Saving \(signalAccountsToUpsert.count) SignalAccounts.")
+                    for signalAccount in signalAccountsToUpsert {
+                        Logger.verbose("Saving SignalAccount: \(signalAccount.recipientAddress)")
+                        signalAccount.anyUpsert(transaction: transaction)
+                    }
+                }
+
+                let signalAccountCount = SignalAccount.anyCount(transaction: transaction)
+                Logger.info("SignalAccount cache size: \(signalAccountCount).")
+
+                // Add system contacts to the profile whitelist immediately
+                // so that they do not see the "message request" UI.
+                Self.profileManager.addUsers(toProfileWhitelist: Array(seenAddresses),
+                                             userProfileWriter: UserProfileWriter.systemContactsFetch,
+                                             transaction: transaction)
+            }
+
+            DispatchQueue.main.async {
+                completion(Array(signalAccountsToKeep.values))
+            }
+        }
+    }
+}
+
+// MARK: -
+
+public extension Array where Element == SignalAccount {
+    func stableSort() -> [SignalAccount] {
+        // Use an arbitrary sort but ensure the ordering is stable.
+        self.sorted { (left, right) in
+            left.recipientAddress.sortKey < right.recipientAddress.sortKey
+        }
+    }
+}

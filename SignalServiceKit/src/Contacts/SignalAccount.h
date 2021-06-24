@@ -69,13 +69,22 @@ NS_ASSUME_NONNULL_BEGIN
 // Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
                                 contact:(nullable Contact *)contact
+                      contactAvatarHash:(nullable NSData *)contactAvatarHash
+                  contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
                multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText;
 
 // Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(init(address:));
 
+// Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
                                      contact:(nullable Contact *)contact
+                    multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText;
+
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
+                                     contact:(nullable Contact *)contact
+                           contactAvatarHash:(nullable NSData *)contactAvatarHash
+                       contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
                     multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithContact:(nullable Contact *)contact
@@ -106,8 +115,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvat
 // --- CODE GENERATION MARKER
 
 - (BOOL)hasSameContent:(SignalAccount *)other;
-
-- (void)tryToCacheContactAvatarData;
 
 - (void)updateWithContact:(nullable Contact *)contact
               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(updateWithContact(_:transaction:));

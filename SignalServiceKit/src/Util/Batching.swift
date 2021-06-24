@@ -68,3 +68,26 @@ public class Batching: NSObject {
         }
     }
 }
+
+// MARK: -
+
+extension Batching {
+    public static func enumerate<T>(_ array: [T],
+                                    batchSize: UInt,
+                                    loopBlock: (T) throws -> Void) rethrows {
+        var index: Int = 0
+        try Self.loop(batchSize: batchSize) { stop in
+            guard index < array.count else {
+                stop.pointee = true
+                return
+            }
+            guard let item = array[safe: index] else {
+                owsFailDebug("Missing item.")
+                stop.pointee = true
+                return
+            }
+            try loopBlock(item)
+            index = index + 1
+        }
+    }
+}
