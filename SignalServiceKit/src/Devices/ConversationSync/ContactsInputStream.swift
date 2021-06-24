@@ -11,7 +11,6 @@ public struct ContactDetails {
     public let profileKey: Data?
     public let isBlocked: Bool
     public let expireTimer: UInt32
-    public let avatarData: Data?
     public let isArchived: Bool?
     public let inboxSortOrder: UInt32?
 }
@@ -41,15 +40,6 @@ public class ContactsInputStream {
 
         let contactDetails = try SSKProtoContactDetails(serializedData: contactData)
 
-        var avatarData: Data?
-        if let avatar = contactDetails.avatar {
-            var decodedData = Data()
-            try inputStream.decodeData(value: &decodedData, count: Int(avatar.length))
-            if decodedData.count > 0 {
-                avatarData = decodedData
-            }
-        }
-
         guard let address = contactDetails.contactAddress, address.isValid else {
             throw OWSAssertionError("address was unexpectedly invalid")
         }
@@ -60,7 +50,6 @@ public class ContactsInputStream {
                               profileKey: contactDetails.profileKey,
                               isBlocked: contactDetails.blocked,
                               expireTimer: contactDetails.expireTimer,
-                              avatarData: avatarData,
                               isArchived: contactDetails.hasArchived ? contactDetails.archived : nil,
                               inboxSortOrder: contactDetails.hasInboxPosition ? contactDetails.inboxPosition : nil)
     }

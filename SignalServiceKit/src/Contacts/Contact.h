@@ -46,8 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
             userTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
               phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
               parsedPhoneNumbers:(NSArray<PhoneNumber *> *)parsedPhoneNumbers
-                          emails:(NSArray<NSString *> *)emails
-                 imageDataToHash:(nullable NSData *)imageDataToHash NS_DESIGNATED_INITIALIZER;
+                          emails:(NSArray<NSString *> *)emails NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

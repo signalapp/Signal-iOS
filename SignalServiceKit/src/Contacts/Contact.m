@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
-@property (nonatomic, readonly) NSUInteger imageHash;
 
 @end
 
@@ -46,7 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
               phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
               parsedPhoneNumbers:(NSArray<PhoneNumber *> *)parsedPhoneNumbers
                           emails:(NSArray<NSString *> *)emails
-                 imageDataToHash:(nullable NSData *)imageDataToHash
 {
     self = [super init];
 
@@ -67,19 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
     _phoneNumberNameMap = [phoneNumberNameMap copy];
     _parsedPhoneNumbers = [parsedPhoneNumbers copy];
     _emails = [emails copy];
-
-    if (imageDataToHash != nil) {
-        NSUInteger hashValue = 0;
-        NSData *_Nullable hashData = [Cryptography computeSHA256Digest:imageDataToHash
-                                                      truncatedToBytes:sizeof(hashValue)];
-        if (!hashData) {
-            OWSFailDebug(@"could not compute hash for avatar.");
-        }
-        [hashData getBytes:&hashValue length:sizeof(hashValue)];
-        _imageHash = hashValue;
-    } else {
-        _imageHash = 0;
-    }
 
     return self;
 }
@@ -168,8 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
              userTextPhoneNumbers:userTextPhoneNumbers
                phoneNumberNameMap:phoneNumberNameMap
                parsedPhoneNumbers:parsedPhoneNumbers
-                           emails:emailAddresses
-                  imageDataToHash:[Contact avatarDataForCNContact:cnContact]];
+                           emails:emailAddresses];
 }
 
 - (NSString *)uniqueId
@@ -334,8 +318,6 @@ NS_ASSUME_NONNULL_BEGIN
     hash ^= self.fullName.hash;
 
     hash ^= self.nickname.hash;
-
-    hash ^= self.imageHash;
 
     for (NSString *phoneNumber in self.e164PhoneNumbers) {
         hash ^= phoneNumber.hash;

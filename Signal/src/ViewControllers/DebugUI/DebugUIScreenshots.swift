@@ -1005,8 +1005,7 @@ public extension DebugUIScreenshots {
                        userTextPhoneNumbers: userTextPhoneNumbers,
                        phoneNumberNameMap: phoneNumberNameMap,
                        parsedPhoneNumbers: parsedPhoneNumbers,
-                       emails: [],
-                       imageDataToHash: nil)
+                       emails: [])
     }
 
     private class func buildOutgoingMessage(thread: TSThread,
