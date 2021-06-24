@@ -162,7 +162,7 @@ public class FeatureFlags: BaseFlags {
     public static let paymentsInternalBeta = false
 
     @objc
-    public static let paymentsExternalBeta = build.includes(.beta)
+    public static let paymentsExternalBeta = true
 
     @objc
     public static let paymentsBeta = paymentsInternalBeta || paymentsExternalBeta
