@@ -31,6 +31,9 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
 @property (nonatomic, nullable) Contact *contact;
 
+// These fields are obsolete and should always be nil.
+@property (nonatomic, nullable, readonly) NSData *contactAvatarJpegData;
+
 @end
 
 #pragma mark -
@@ -45,13 +48,11 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
                                 contact:(nullable Contact *)contact
                       contactAvatarHash:(nullable NSData *)contactAvatarHash
-                  contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
                multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText
 {
     return [self initWithSignalServiceAddress:signalRecipient.address
                                       contact:contact
                             contactAvatarHash:contactAvatarHash
-                        contactAvatarJpegData:contactAvatarJpegData
                      multipleAccountLabelText:multipleAccountLabelText];
 }
 
@@ -67,14 +68,12 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
     return [self initWithSignalServiceAddress:serviceAddress
                                       contact:contact
                             contactAvatarHash:nil
-                        contactAvatarJpegData:nil
                      multipleAccountLabelText:multipleAccountLabelText];
 }
 
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
                                      contact:(nullable Contact *)contact
                            contactAvatarHash:(nullable NSData *)contactAvatarHash
-                       contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
                     multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText
 {
     OWSAssertDebug(serviceAddress.isValid);
@@ -84,7 +83,6 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
         _accountSchemaVersion = SignalAccountSchemaVersion;
         _contact = contact;
         _contactAvatarHash = contactAvatarHash;
-        _contactAvatarJpegData = contactAvatarJpegData;
         _multipleAccountLabelText = multipleAccountLabelText;
     }
     return self;
@@ -113,7 +111,6 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
 - (instancetype)initWithContact:(nullable Contact *)contact
               contactAvatarHash:(nullable NSData *)contactAvatarHash
-          contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
        multipleAccountLabelText:(NSString *)multipleAccountLabelText
            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                   recipientUUID:(nullable NSString *)recipientUUID
@@ -127,7 +124,6 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
     _contact = contact;
     _contactAvatarHash = contactAvatarHash;
-    _contactAvatarJpegData = contactAvatarJpegData;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;

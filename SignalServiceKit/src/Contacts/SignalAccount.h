@@ -31,23 +31,16 @@ NS_ASSUME_NONNULL_BEGIN
 // non-contact account.
 @property (nonatomic, nullable, readonly) Contact *contact;
 
-// We cache the contact avatar data on this class.
-//
 // contactAvatarHash is the hash of the original avatar
 // data (if any) from the system contact.  We use it for
 // change detection.
 //
-// contactAvatarJpegData contains the data we'll sync
-// to Desktop. We only want to send valid avatar images.
-// Converting the avatars to JPEGs isn't deterministic
-// and our contact sync de-bouncing logic is based
-// on the actual data sent over the wire, so we need
-// to cache this as well.
-//
 // This property is optional and will not be set for
 // non-contact account.
 @property (nonatomic, nullable, readonly) NSData *contactAvatarHash;
-@property (nonatomic, nullable, readonly) NSData *contactAvatarJpegData;
+
+// This property is obsolete.
+@property (nonatomic, nullable, readonly) NSData *contactAvatarJpegDataObsolete;
 
 // For contacts with more than one signal account,
 // this is a label for the account.
@@ -70,7 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
                                 contact:(nullable Contact *)contact
                       contactAvatarHash:(nullable NSData *)contactAvatarHash
-                  contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
                multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText;
 
 // Convenience initializer which is neither "designated" nor "unavailable".
@@ -84,12 +76,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
                                      contact:(nullable Contact *)contact
                            contactAvatarHash:(nullable NSData *)contactAvatarHash
-                       contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
                     multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithContact:(nullable Contact *)contact
               contactAvatarHash:(nullable NSData *)contactAvatarHash
-          contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
        multipleAccountLabelText:(NSString *)multipleAccountLabelText
            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                   recipientUUID:(nullable NSString *)recipientUUID NS_DESIGNATED_INITIALIZER;
