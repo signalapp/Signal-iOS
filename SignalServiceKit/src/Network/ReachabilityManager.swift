@@ -47,6 +47,10 @@ public extension SSKReachabilityManager {
 @objc
 public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
+    private let backgroundSession = OWSURLSession(
+        securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
+        configuration: .background(withIdentifier: "backgroundSession")
+    )
     private let reachability: Reachability
 
     public var observationContext: AnyObject {
@@ -100,6 +104,8 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         Logger.verbose("isReachable: \(isReachable)")
 
         NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: self.observationContext)
+
+        scheduleWakeupRequestIfNecessary()
     }
 
     private func startNotifier() {
@@ -112,6 +118,25 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
             return
         }
         Logger.debug("started notifier")
+
+        scheduleWakeupRequestIfNecessary()
+    }
+
+    private func scheduleWakeupRequestIfNecessary() {
+        // Start a background session to wake the app when the network
+        // becomes available. We start this immediately when we lose
+        // connectivity rather than waiting until the app is backgrounded,
+        // because if started while backgrounded when the app is woken up
+        // will be at the OSes discretion.
+        guard !isReachable else { return }
+
+        Logger.info("Scheduling wakeup request for pending message sends.")
+
+        backgroundSession.urlDownloadTaskPromise(TSConstants.textSecureServerURL, method: .get).done { _ in
+            Logger.info("Finished wakeup request.")
+        }.catch { error in
+            Logger.info("Failed wakeup request \(error)")
+        }
     }
 }
 

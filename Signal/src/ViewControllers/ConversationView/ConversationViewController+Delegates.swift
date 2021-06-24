@@ -488,7 +488,7 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
     private func scrollingAnimationCompletionTimerDidFire(_ timer: Timer) {
         AssertIsOnMainThread()
 
-        owsFailDebug("Scrolling animation did not complete in a timely way.")
+        Logger.warn("Scrolling animation did not complete in a timely way.")
 
         // scrollingAnimationCompletionTimer should already have been cleared,
         // but we need to ensure that it is cleared in a timely way.
