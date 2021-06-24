@@ -736,8 +736,9 @@ extension CallService {
 
             firstly {
                 self.fetchGroupMembershipProof(for: thread)
-            }.then(on: .main) { proof in
-                self.callManager.peekGroupCall(sfuUrl: TSConstants.sfuURL, membershipProof: proof, groupMembers: memberInfo)
+            }.then(on: .main) { (proof: Data) -> Promise<PeekInfo> in
+                let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+                return self.callManager.peekGroupCall(sfuUrl: sfuURL, membershipProof: proof, groupMembers: memberInfo)
             }.done(on: .main) { info in
                 // If we're expecting an eraId, the timestamp is only valid for PeekInfo with the same eraId.
                 // We may have a more appropriate timestamp waiting in the message processing queue.

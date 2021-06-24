@@ -500,6 +500,11 @@ public class DebugFlags: BaseFlags {
                                                title: LocalizationNotNeeded("Disable sealed sender"),
                                                details: LocalizationNotNeeded("Sealed sender will be disabled for all messages."))
 
+    @objc
+    public static let callingUseTestSFU = TestableFlag(false,
+                                                       title: LocalizationNotNeeded("Calling: Use Test SFU"),
+                                                       details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org."))
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)
