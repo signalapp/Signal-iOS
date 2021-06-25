@@ -125,7 +125,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     _blocklistCache = [OWSBlockListCache new];
     [_blocklistCache startObservingAndSyncStateWithDelegate:self];
-    _threadViewModelCache = [[AnyLRUCache alloc] initWithMaxSize:32];
+    _threadViewModelCache = [[AnyLRUCache alloc] initWithMaxSize:32 nseMaxSize:0];
     _threadMapping = [ThreadMapping new];
 }
 

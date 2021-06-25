@@ -81,7 +81,7 @@ const NSUInteger OWSCustomSoundShift = 16;
     }
 
     // Don't store too many sounds in memory. Most users will only use 1 or 2 sounds anyway.
-    _cachedSystemSounds = [[AnyLRUCache alloc] initWithMaxSize:4];
+    _cachedSystemSounds = [[AnyLRUCache alloc] initWithMaxSize:4 nseMaxSize:0];
 
     OWSSingletonAssert();
 
