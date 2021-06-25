@@ -40,6 +40,12 @@ public class ContactsInputStream {
 
         let contactDetails = try SSKProtoContactDetails(serializedData: contactData)
 
+        if let avatar = contactDetails.avatar {
+            // Consume but discard the incoming contact avatar.
+            var decodedData = Data()
+            try inputStream.decodeData(value: &decodedData, count: Int(avatar.length))
+        }
+
         guard let address = contactDetails.contactAddress, address.isValid else {
             throw OWSAssertionError("address was unexpectedly invalid")
         }
