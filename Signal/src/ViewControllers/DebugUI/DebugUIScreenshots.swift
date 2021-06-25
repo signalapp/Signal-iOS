@@ -946,7 +946,6 @@ public extension DebugUIScreenshots {
         } else {
             let newAccount = SignalAccount(contact: contact,
                                            contactAvatarHash: nil,
-                                           contactAvatarJpegData: nil,
                                            multipleAccountLabelText: "",
                                            recipientPhoneNumber: phoneNumber,
                                            recipientUUID: uuidString)

@@ -269,7 +269,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             let contact = try self.buildContact(contactDetails, transaction: transaction)
             let newAccount = SignalAccount(contact: contact,
                                            contactAvatarHash: nil,
-                                           contactAvatarJpegData: nil,
                                            multipleAccountLabelText: "",
                                            recipientPhoneNumber: contactDetails.address.phoneNumber,
                                            recipientUUID: contactDetails.address.uuidString)

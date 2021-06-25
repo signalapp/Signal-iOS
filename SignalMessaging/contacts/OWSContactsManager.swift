@@ -616,12 +616,7 @@ extension OWSContactsManager {
         }
     }
 
-    private struct ContactAvatarMetadata {
-        let contactAvatarHash: Data
-        let contactAvatarJpegData: Data
-    }
-
-    private static func buildContactAvatarMetadata(contact: Contact) -> ContactAvatarMetadata? {
+    private static func buildContactAvatarHash(contact: Contact) -> Data? {
         guard let cnContactId: String = contact.cnContactId else {
             owsFailDebug("Missing cnContactId.")
             return nil
@@ -633,11 +628,7 @@ extension OWSContactsManager {
             owsFailDebug("Could not digest contactAvatarData.")
             return nil
         }
-        guard let contactAvatarJpegData = UIImage.validJpegData(fromAvatarData: contactAvatarData) else { owsFailDebug("Could not convert avatar to JPEG.")
-            return nil
-        }
-        return ContactAvatarMetadata(contactAvatarHash: contactAvatarHash,
-                                     contactAvatarJpegData: contactAvatarJpegData)
+        return contactAvatarHash
     }
 
     private struct SystemContactsState {
@@ -685,11 +676,10 @@ extension OWSContactsManager {
                     multipleAccountLabelText = Self.accountLabel(forFetchedContact: fetchedContact,
                                                                  address: signalRecipient.address)
                 }
-                let contactAvatarMetadata = Self.buildContactAvatarMetadata(contact: contact)
+                let contactAvatarHash = Self.buildContactAvatarHash(contact: contact)
                 let signalAccount = SignalAccount(signalRecipient: signalRecipient,
                                                   contact: contact,
-                                                  contactAvatarHash: contactAvatarMetadata?.contactAvatarHash,
-                                                  contactAvatarJpegData: contactAvatarMetadata?.contactAvatarJpegData,
+                                                  contactAvatarHash: contactAvatarHash,
                                                   multipleAccountLabelText: multipleAccountLabelText)
                 signalAccounts.append(signalAccount)
             }

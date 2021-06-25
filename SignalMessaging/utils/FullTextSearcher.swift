@@ -789,7 +789,6 @@ extension SignalAccount {
         SignalAccount(signalRecipient: signalRecipient,
                       contact: nil,
                       contactAvatarHash: nil,
-                      contactAvatarJpegData: nil,
                       multipleAccountLabelText: nil)
     }
 }
