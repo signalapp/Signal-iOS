@@ -490,7 +490,8 @@ private class PaymentProcessingOperation: OWSOperation {
                      .defragmentationFailed,
                      .invalidPassphrase,
                      .invalidEntropy,
-                     .killSwitch:
+                     .killSwitch,
+                     .outgoingVerificationTakingTooLong:
                     owsFailDebugUnlessMCNetworkFailure(error)
                 case .authorizationFailure:
                     owsFailDebugUnlessMCNetworkFailure(error)
@@ -544,7 +545,8 @@ private class PaymentProcessingOperation: OWSOperation {
                  .defragmentationFailed,
                  .invalidPassphrase,
                  .invalidEntropy,
-                 .killSwitch:
+                 .killSwitch,
+                 .outgoingVerificationTakingTooLong:
                 // Do not retry these errors.
                 delegate?.endProcessing(paymentId: self.paymentId)
             case .serverRateLimited:

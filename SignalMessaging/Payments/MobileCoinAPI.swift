@@ -745,12 +745,13 @@ public extension PaymentsError {
              .killSwitch:
             return false
         case .connectionFailure,
-             .timeout:
+             .timeout,
+             .outgoingVerificationTakingTooLong:
             return true
         }
     }
 
-    var isExpected: Bool {
+    var isExpectedFromSDK: Bool {
         switch self {
         case .notEnabled,
              .userNotRegisteredOrAppNotReady,
@@ -780,7 +781,8 @@ public extension PaymentsError {
              .invalidEntropy,
              .killSwitch,
              .connectionFailure,
-             .timeout:
+             .timeout,
+             .outgoingVerificationTakingTooLong:
             return false
         case .tooOldToSubmit,
              .insufficientFunds:
@@ -802,7 +804,7 @@ public func owsFailDebugUnlessMCNetworkFailure(_ error: Error,
         if paymentsError.isPaymentsNetworkFailure {
             // Log but otherwise ignore network failures.
             Logger.warn("Error: \(error)", file: file, function: function, line: line)
-        } else if paymentsError.isExpected {
+        } else if paymentsError.isExpectedFromSDK {
             Logger.warn("Error: \(error)", file: file, function: function, line: line)
         } else {
             owsFailDebug("Error: \(error)", file: file, function: function, line: line)
