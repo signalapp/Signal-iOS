@@ -160,31 +160,29 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                 let inputStream = ChunkedInputStream(forReadingFrom: pointer, count: bufferPtr.count)
                 let groupStream = GroupsInputStream(inputStream: inputStream)
 
-                try databaseStorage.write { transaction in
-                    while try processBatch(groupStream: groupStream, transaction: transaction) {}
-                }
+                while try processBatch(groupStream: groupStream) {}
             }
         }
     }
 
-    // TODO: We could use a separate write transaction for each batch.
-    private func processBatch(groupStream: GroupsInputStream,
-                              transaction: SDSAnyWriteTransaction) throws -> Bool {
+    private func processBatch(groupStream: GroupsInputStream) throws -> Bool {
         try autoreleasepool {
             let maxBatchSize = 32
             var count: UInt = 0
-            while count < maxBatchSize,
-                  let nextGroup = try groupStream.decodeGroup() {
+            try databaseStorage.write { transaction in
+                while count < maxBatchSize,
+                      let nextGroup = try groupStream.decodeGroup() {
 
-                count += 1
+                    count += 1
 
-                do {
-                    try self.process(groupDetails: nextGroup, transaction: transaction)
-                } catch {
-                    if case GroupsV2Error.groupDowngradeNotAllowed = error {
-                        Logger.warn("Error: \(error)")
-                    } else {
-                        owsFailDebug("Error: \(error)")
+                    do {
+                        try self.process(groupDetails: nextGroup, transaction: transaction)
+                    } catch {
+                        if case GroupsV2Error.groupDowngradeNotAllowed = error {
+                            Logger.warn("Error: \(error)")
+                        } else {
+                            owsFailDebug("Error: \(error)")
+                        }
                     }
                 }
             }
