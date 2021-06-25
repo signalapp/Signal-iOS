@@ -468,8 +468,7 @@ public class AvatarBuilder: NSObject {
         return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
-    // TODO: Tune configuration of this NSCache.
-    private let requestToContentCache = NSCache<NSString, AvatarContent>(countLimit: 1024)
+    private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 1024)
 
     private func avatarContent(forRequest request: Request,
                                transaction: SDSAnyReadTransaction) -> AvatarContent {
@@ -487,8 +486,7 @@ public class AvatarBuilder: NSObject {
         return avatarContent
     }
 
-    // TODO: Tune configuration of this NSCache.
-    private let contentToImageCache = NSCache<NSString, UIImage>(countLimit: 128)
+    private let contentToImageCache = LRUCache<String, UIImage>(maxSize: 128)
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent) -> UIImage? {
         let cacheKey = avatarContent.cacheKey

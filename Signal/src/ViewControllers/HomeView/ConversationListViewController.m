@@ -65,7 +65,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic, readonly) ThreadMapping *threadMapping;
 @property (nonatomic) ConversationListMode conversationListMode;
-@property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
+@property (nonatomic, readonly) AnyLRUCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasEverAppeared;
@@ -125,7 +125,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     _blocklistCache = [OWSBlockListCache new];
     [_blocklistCache startObservingAndSyncStateWithDelegate:self];
-    _threadViewModelCache = [[NSCache alloc] initWithCountLimit:32];
+    _threadViewModelCache = [[AnyLRUCache alloc] initWithMaxSize:32];
     _threadMapping = [ThreadMapping new];
 }
 

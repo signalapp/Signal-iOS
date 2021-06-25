@@ -66,7 +66,7 @@ public extension GroupV2Params {
         return ciphertext
     }
 
-    private static let decryptedBlobCache = NSCache<NSData, NSData>(countLimit: 16)
+    private static let decryptedBlobCache = LRUCache<Data, NSData>(maxSize: 16)
     private static let decryptedBlobCacheMaxItemSize: UInt = 4 * 1024
 
     fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
@@ -90,7 +90,7 @@ public extension GroupV2Params {
         return try uuid(forUuidCiphertext: uuidCiphertext)
     }
 
-    private static let decryptedUuidCache = NSCache<NSData, NSUUID>(countLimit: 256)
+    private static let decryptedUuidCache = LRUCache<Data, NSUUID>(maxSize: 256)
 
     func uuid(forUuidCiphertext uuidCiphertext: UuidCiphertext) throws -> UUID {
         let cacheKey = (groupSecretParamsData + uuidCiphertext.serialize().asData) as NSData
@@ -117,7 +117,7 @@ public extension GroupV2Params {
         return userId
     }
 
-    private static let decryptedProfileKeyCache = NSCache<NSData, NSData>(countLimit: 256)
+    private static let decryptedProfileKeyCache = LRUCache<Data, NSData>(maxSize: 256)
 
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
                     uuid: UUID) throws -> Data {

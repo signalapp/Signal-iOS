@@ -42,7 +42,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
-@property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
+@property (nonatomic, readonly) AnyLRUCache<NSString *, CNContact *> *cnContactCache;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -65,7 +65,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-    _cnContactCache = [[NSCache alloc] initWithCountLimit:50];
+    _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50];
 
     OWSSingletonAssert();
 

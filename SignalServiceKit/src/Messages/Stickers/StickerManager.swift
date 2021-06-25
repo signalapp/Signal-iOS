@@ -873,7 +873,7 @@ public class StickerManager: NSObject {
 
     private static let cacheQueue = DispatchQueue(label: "stickerManager.cacheQueue")
     // This cache shoud only be accessed on cacheQueue.
-    private var suggestedStickersCache = NSCache<NSString, NSArray>(countLimit: 5)
+    private var suggestedStickersCache = LRUCache<String, [InstalledSticker]>(maxSize: 5)
 
     // We clear the cache every time we install or uninstall a sticker.
     private func clearSuggestedStickersCache() {
@@ -885,12 +885,12 @@ public class StickerManager: NSObject {
     @objc
     public func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
         return StickerManager.cacheQueue.sync {
-            if let suggestions = suggestedStickersCache.object(forKey: textInput as NSString) as? [InstalledSticker] {
+            if let suggestions = suggestedStickersCache.object(forKey: textInput) {
                 return suggestions
             }
 
             let suggestions = StickerManager.suggestedStickers(forTextInput: textInput)
-            suggestedStickersCache.setObject(suggestions as NSArray, forKey: textInput as NSString)
+            suggestedStickersCache.setObject(suggestions, forKey: textInput)
             return suggestions
         }
     }

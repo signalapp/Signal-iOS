@@ -235,7 +235,7 @@ public class StickerPackCollectionView: UICollectionView {
         return StickerView.stickerView(forStickerInfo: stickerInfo, dataSource: stickerPackDataSource)
     }
 
-    private let reusableStickerViewCache = NSCache<StickerInfo, StickerReusableView>(countLimit: 32)
+    private let reusableStickerViewCache = LRUCache<StickerInfo, StickerReusableView>(maxSize: 32)
     private func reusableStickerView(forStickerInfo stickerInfo: StickerInfo) -> StickerReusableView {
         let view: StickerReusableView = {
             if let view = reusableStickerViewCache.object(forKey: stickerInfo) { return view }

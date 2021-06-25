@@ -398,7 +398,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
     }
 
-    private let changeCache = NSCache<NSString, ChangeCacheItem>(countLimit: 5)
+    private let changeCache = LRUCache<String, ChangeCacheItem>(maxSize: 5)
 
     private class ChangeCacheItem: NSObject {
         let groupChanges: [GroupV2Change]

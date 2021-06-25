@@ -50,13 +50,13 @@ private class ModelCacheValueBox<ValueType: BaseModel> {
 
 // MARK: -
 
-private struct ModelCacheKey<KeyType: AnyObject> {
+private struct ModelCacheKey<KeyType: Hashable & Equatable> {
     let key: KeyType
 }
 
 // MARK: -
 
-private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
+private class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType: BaseModel> {
     func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
         notImplemented()
     }
@@ -78,7 +78,7 @@ private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseMo
     }
 
     func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                          nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                          cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
         notImplemented()
     }
 
@@ -94,7 +94,7 @@ private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseMo
 
 // MARK: -
 
-private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel>: UIDatabaseSnapshotDelegate, Dependencies {
+private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: UIDatabaseSnapshotDelegate, Dependencies {
 
     enum Mode {
         // * .uiRead caches are only accessed on the main thread.
@@ -132,11 +132,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     let cacheStats = ModelReadCacheStats()
     #endif
 
-    // TODO: We could tune the size of this cache.
-    //       NSCache's default behavior is opaque.
-    //       We're currently only using this to cache
-    //       small models, but that could change.
-    fileprivate let nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>
+    fileprivate let cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>
 
     private let adapter: ModelCacheAdapter<KeyType, ValueType>
 
@@ -154,7 +150,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     init(mode: Mode, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         self.mode = mode
         self.adapter = adapter
-        self.nsCache = NSCache(countLimit: adapter.cacheCountLimit)
+        self.cache = LRUCache(maxSize: adapter.cacheCountLimit)
 
         switch mode {
         case .read:
@@ -179,9 +175,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
     fileprivate func evacuateCache() {
         // This may execute on background threads. For now, this is OK
-        // because NSCache is thread safe, but if we ever do more work
+        // because LRUCache is thread safe, but if we ever do more work
         // here we should re-evaluate.
-        nsCache.removeAllObjects()
+        cache.removeAllObjects()
     }
 
     @objc
@@ -420,11 +416,11 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     // MARK: -
 
     private func writeToCache(cacheKey: ModelCacheKey<KeyType>, value: ValueType?) {
-        nsCache.setObject(ModelCacheValueBox(value: value), forKey: cacheKey.key)
+        cache.setObject(ModelCacheValueBox(value: value), forKey: cacheKey.key)
     }
 
     private func readFromCache(cacheKey: ModelCacheKey<KeyType>) -> ModelCacheValueBox<ValueType>? {
-        return nsCache.object(forKey: cacheKey.key)
+        cache.object(forKey: cacheKey.key)
     }
 
     // MARK: - Exclusion
@@ -542,7 +538,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         AssertIsOnMainThread()
         assert(mode == .uiRead)
 
-        adapter.uiReadEvacuation(databaseChanges: databaseChanges, nsCache: nsCache)
+        adapter.uiReadEvacuation(databaseChanges: databaseChanges, cache: cache)
     }
 
     func uiDatabaseSnapshotDidUpdateExternally() {
@@ -568,7 +564,7 @@ extension ModelReadCache: ModelCache {}
 
 // MARK: -
 
-private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
+private class ModelReadCacheWrapper<KeyType: Hashable & Equatable, ValueType: BaseModel> {
 
     private let uiReadCache: ModelReadCache<KeyType, ValueType>
     private let readCache: ModelReadCache<KeyType, ValueType>
@@ -645,9 +641,9 @@ public class UserProfileReadCache: NSObject {
         }
 
         override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                                       cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
             if databaseChanges.didUpdateModel(collection: OWSUserProfile.collection()) {
-                nsCache.removeAllObjects()
+                cache.removeAllObjects()
             }
         }
     }
@@ -714,9 +710,9 @@ public class SignalAccountReadCache: NSObject {
         }
 
         override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                                       cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
             if databaseChanges.didUpdateModel(collection: SignalAccount.collection()) {
-                nsCache.removeAllObjects()
+                cache.removeAllObjects()
             }
         }
     }
@@ -782,9 +778,9 @@ public class SignalRecipientReadCache: NSObject {
         }
 
         override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                                       cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
             if databaseChanges.didUpdateModel(collection: SignalRecipient.collection()) {
-                nsCache.removeAllObjects()
+                cache.removeAllObjects()
             }
         }
     }
@@ -823,18 +819,18 @@ public class SignalRecipientReadCache: NSObject {
 
 @objc
 public class ThreadReadCache: NSObject {
-    typealias KeyType = NSString
+    typealias KeyType = String
     typealias ValueType = TSThread
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
         override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            return TSThread.anyFetch(uniqueId: key as String,
+            return TSThread.anyFetch(uniqueId: key,
                                      transaction: transaction,
                                      ignoreCache: true)
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            value.uniqueId as NSString
+            value.uniqueId
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -846,10 +842,10 @@ public class ThreadReadCache: NSObject {
         }
 
         override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                                       cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
             // Only evacuate modified models.
             for uniqueId: String in databaseChanges.threadUniqueIds {
-                nsCache.removeObject(forKey: uniqueId as NSString)
+                cache.removeObject(forKey: uniqueId)
             }
         }
     }
@@ -864,16 +860,16 @@ public class ThreadReadCache: NSObject {
 
     @objc(getThreadForUniqueId:transaction:)
     public func getThread(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSThread? {
-        let cacheKey = adapter.cacheKey(forKey: uniqueId as NSString)
+        let cacheKey = adapter.cacheKey(forKey: uniqueId)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
     @objc(getThreadsIfInCacheForUniqueIds:transaction:)
     public func getThreadsIfInCache(forUniqueIds uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSThread] {
-        let keys: [NSString] = uniqueIds.map { $0 as NSString }
-        let result: [NSString: TSThread] = cache.getValuesIfInCache(for: keys, transaction: transaction)
+        let keys: [String] = uniqueIds.map { $0 }
+        let result: [String: TSThread] = cache.getValuesIfInCache(for: keys, transaction: transaction)
         return Dictionary(uniqueKeysWithValues: result.map({ (key, value) in
-            return (key as String, value)
+            return (key, value)
         }))
     }
 
@@ -897,18 +893,18 @@ public class ThreadReadCache: NSObject {
 
 @objc
 public class InteractionReadCache: NSObject {
-    typealias KeyType = NSString
+    typealias KeyType = String
     typealias ValueType = TSInteraction
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
         override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            return TSInteraction.anyFetch(uniqueId: key as String,
+            return TSInteraction.anyFetch(uniqueId: key,
                                           transaction: transaction,
                                           ignoreCache: true)
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            value.uniqueId as NSString
+            value.uniqueId
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -920,10 +916,10 @@ public class InteractionReadCache: NSObject {
         }
 
         override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                                       cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
             // Only evacuate modified models.
             for uniqueId: String in databaseChanges.interactionUniqueIds {
-                nsCache.removeObject(forKey: uniqueId as NSString)
+                cache.removeObject(forKey: uniqueId)
             }
         }
     }
@@ -938,16 +934,16 @@ public class InteractionReadCache: NSObject {
 
     @objc(getInteractionForUniqueId:transaction:)
     public func getInteraction(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSInteraction? {
-        let cacheKey = adapter.cacheKey(forKey: uniqueId as NSString)
+        let cacheKey = adapter.cacheKey(forKey: uniqueId)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
     @objc(getInteractionsIfInCacheForUniqueIds:transaction:)
     public func getInteractionsIfInCache(forUniqueIds uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSInteraction] {
-        let keys: [NSString] = uniqueIds.map { $0 as NSString }
-        let result: [NSString: TSInteraction] = cache.getValuesIfInCache(for: keys, transaction: transaction)
+        let keys: [String] = uniqueIds.map { $0 }
+        let result: [String: TSInteraction] = cache.getValuesIfInCache(for: keys, transaction: transaction)
         return Dictionary(uniqueKeysWithValues: result.map({ (key, value) in
-            return (key as String, value)
+            return (key, value)
         }))
     }
 
@@ -975,18 +971,18 @@ public class InteractionReadCache: NSObject {
 
 @objc
 public class AttachmentReadCache: NSObject {
-    typealias KeyType = NSString
+    typealias KeyType = String
     typealias ValueType = TSAttachment
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
         override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            return TSAttachment.anyFetch(uniqueId: key as String,
+            return TSAttachment.anyFetch(uniqueId: key,
                                          transaction: transaction,
                                          ignoreCache: true)
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            value.uniqueId as NSString
+            value.uniqueId
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -998,10 +994,10 @@ public class AttachmentReadCache: NSObject {
         }
 
         override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                                       cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
             // Only evacuate modified models.
             for uniqueId: String in databaseChanges.attachmentUniqueIds {
-                nsCache.removeObject(forKey: uniqueId as NSString)
+                cache.removeObject(forKey: uniqueId)
             }
         }
     }
@@ -1016,7 +1012,7 @@ public class AttachmentReadCache: NSObject {
 
     @objc(getAttachmentForUniqueId:transaction:)
     public func getAttachment(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSAttachment? {
-        let cacheKey = adapter.cacheKey(forKey: uniqueId as NSString)
+        let cacheKey = adapter.cacheKey(forKey: uniqueId)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
@@ -1040,18 +1036,18 @@ public class AttachmentReadCache: NSObject {
 
 @objc
 public class InstalledStickerCache: NSObject {
-    typealias KeyType = NSString
+    typealias KeyType = String
     typealias ValueType = InstalledSticker
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
         override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            return InstalledSticker.anyFetch(uniqueId: key as String,
+            return InstalledSticker.anyFetch(uniqueId: key,
                                              transaction: transaction,
                                              ignoreCache: true)
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            value.uniqueId as NSString
+            value.uniqueId
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
@@ -1063,9 +1059,9 @@ public class InstalledStickerCache: NSObject {
         }
 
         override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
-                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+                                       cache: LRUCache<KeyType, ModelCacheValueBox<ValueType>>) {
             if databaseChanges.didUpdateModel(collection: InstalledSticker.collection()) {
-                nsCache.removeAllObjects()
+                cache.removeAllObjects()
             }
         }
     }
@@ -1080,7 +1076,7 @@ public class InstalledStickerCache: NSObject {
 
     @objc(getInstalledStickerForUniqueId:transaction:)
     public func getInstalledSticker(uniqueId: String, transaction: SDSAnyReadTransaction) -> InstalledSticker? {
-        let cacheKey = adapter.cacheKey(forKey: uniqueId as NSString)
+        let cacheKey = adapter.cacheKey(forKey: uniqueId)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 

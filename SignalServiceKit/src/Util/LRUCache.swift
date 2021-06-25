@@ -8,8 +8,8 @@ public class AnyLRUCache: NSObject {
     private let backingCache: LRUCache<NSObject, NSObject>
 
     @objc
-    public init(maxSize: Int) {
-        backingCache = LRUCache(maxSize: maxSize)
+    public init(maxSize: Int, nseMaxSize: Int) {
+        backingCache = LRUCache(maxSize: maxSize, nseMaxSize: nseMaxSize)
     }
 
     @objc
@@ -23,8 +23,35 @@ public class AnyLRUCache: NSObject {
     }
 
     @objc
+    public func remove(key: NSObject) {
+        self.backingCache.remove(key: key)
+    }
+
+    @objc
     public func clear() {
         self.backingCache.clear()
+    }
+
+    // MARK: - NSCache Compatibility
+
+    @objc
+    public func setObject(_ value: NSObject, forKey key: NSObject) {
+        set(key: key, value: value)
+    }
+
+    @objc
+    public func object(forKey key: NSObject) -> NSObject? {
+        self.get(key: key)
+    }
+
+    @objc
+    public func removeObject(forKey key: NSObject) {
+        remove(key: key)
+    }
+
+    @objc
+    public func removeAllObjects() {
+        clear()
     }
 }
 
@@ -33,13 +60,13 @@ public class AnyLRUCache: NSObject {
 // A simple LRU cache bounded by the number of entries.
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
+    private let unfairLock = UnfairLock()
     private var cacheMap: [KeyType: ValueType] = [:]
     private var cacheOrder: [KeyType] = []
     private let maxSize: Int
 
-    @objc
-    public init(maxSize: Int) {
-        self.maxSize = maxSize
+    public init(maxSize: Int, nseMaxSize: Int = 0) {
+        self.maxSize = CurrentAppContext().isNSE ? nseMaxSize : maxSize
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didReceiveMemoryWarning),
@@ -67,54 +94,83 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
         clear()
     }
 
-    private func updateCacheOrder(key: KeyType) {
+    private func markKeyAsFirst(key: KeyType) {
         cacheOrder = cacheOrder.filter { $0 != key }
         cacheOrder.append(key)
     }
 
     public func get(key: KeyType) -> ValueType? {
-        guard let value = cacheMap[key] else {
-            // Miss
-            return nil
+        unfairLock.withLock {
+            guard let value = cacheMap[key] else {
+                // Miss
+                return nil
+            }
+
+            // Hit
+            markKeyAsFirst(key: key)
+
+            return value
         }
-
-        // Hit
-        updateCacheOrder(key: key)
-
-        return value
     }
 
     public func set(key: KeyType, value: ValueType) {
-        cacheMap[key] = value
-
-        updateCacheOrder(key: key)
-
-        while cacheOrder.count > maxSize {
-            guard let staleKey = cacheOrder.first else {
-                owsFailDebug("Cache ordering unexpectedly empty")
+        unfairLock.withLock {
+            guard maxSize > 0 else {
+                Logger.warn("Using disabled cache.")
                 return
             }
-            cacheOrder.removeFirst()
-            cacheMap.removeValue(forKey: staleKey)
+
+            cacheMap[key] = value
+
+            markKeyAsFirst(key: key)
+
+            while cacheOrder.count > maxSize {
+                guard let staleKey = cacheOrder.first else {
+                    owsFailDebug("Cache ordering unexpectedly empty")
+                    return
+                }
+                cacheOrder.removeFirst()
+                cacheMap.removeValue(forKey: staleKey)
+            }
+        }
+    }
+
+    public func remove(key: KeyType) {
+        unfairLock.withLock {
+            guard maxSize > 0 else {
+                Logger.warn("Using disabled cache.")
+                return
+            }
+
+            cacheMap.removeValue(forKey: key)
+
+            cacheOrder = cacheOrder.filter { $0 != key }
         }
     }
 
     @objc
     public func clear() {
-        cacheMap.removeAll()
-        cacheOrder.removeAll()
+        unfairLock.withLock {
+            cacheMap.removeAll()
+            cacheOrder.removeAll()
+        }
     }
-}
 
-// MARK: -
+    // MARK: - NSCache Compatibility
 
-@objc
-public extension NSCache {
-    @objc(initWithCountLimit:)
-    public convenience init(countLimit: Int) {
-        self.init()
+    public func setObject(_ value: ValueType, forKey key: KeyType) {
+        set(key: key, value: value)
+    }
 
-        // TODO: We might set count limit to zero in NSE?
-        self.countLimit = countLimit
+    public func object(forKey key: KeyType) -> ValueType? {
+        self.get(key: key)
+    }
+
+    public func removeObject(forKey key: KeyType) {
+        remove(key: key)
+    }
+
+    public func removeAllObjects() {
+        clear()
     }
 }

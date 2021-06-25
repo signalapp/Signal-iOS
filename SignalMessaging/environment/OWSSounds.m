@@ -92,6 +92,9 @@ const NSUInteger OWSCustomSoundShift = 16;
 
 + (void)cleanupOrphanedSounds
 {
+    if (CurrentAppContext().isNSE) {
+        return;
+    }
     NSSet<NSNumber *> *allCustomSounds = [NSSet setWithArray:[self allCustomNotificationSounds]];
     if (allCustomSounds.count == 0) {
         return;

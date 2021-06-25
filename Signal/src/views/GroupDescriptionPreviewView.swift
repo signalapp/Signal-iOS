@@ -69,7 +69,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     )
     private static let moreTextPlusPrefixLength = (moreTextPrefix + moreText).utf16.count
 
-    private let textThatFitsCache = NSCache<NSString, NSString>(countLimit: 128)
+    private let textThatFitsCache = LRUCache<String, NSString>(maxSize: 128)
 
     func truncateVisibleTextIfNecessary() {
         // When using autolayout, we need to initially set the text

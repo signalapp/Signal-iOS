@@ -1206,7 +1206,7 @@ fileprivate extension CVComponentState {
     //       I'm not sure if we still need this cache.
     //
     // Cache the results for up to 1,000 messages.
-    private static let displayableTextCache = NSCache<NSString, DisplayableText>(countLimit: 1000)
+    private static let displayableTextCache = LRUCache<String, DisplayableText>(maxSize: 1000)
 
     static func displayableText(cacheKey: String,
                                 mentionStyle: Mention.Style,

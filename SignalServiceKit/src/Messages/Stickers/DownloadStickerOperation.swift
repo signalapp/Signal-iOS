@@ -9,10 +9,10 @@ class DownloadStickerOperation: CDNDownloadOperation {
 
     // MARK: - Cache
 
-    private static let cache = NSCache<NSString, NSURL>(countLimit: 256)
+    private static let cache = LRUCache<String, NSURL>(maxSize: 256)
 
     public class func cachedUrl(for stickerInfo: StickerInfo) -> URL? {
-        guard let stickerUrl = cache.object(forKey: stickerInfo.asKey() as NSString) else {
+        guard let stickerUrl = cache.object(forKey: stickerInfo.asKey()) else {
             return nil
         }
         guard OWSFileSystem.fileOrFolderExists(url: stickerUrl as URL) else { return nil }
@@ -20,7 +20,7 @@ class DownloadStickerOperation: CDNDownloadOperation {
     }
 
     private class func setCachedUrl(_ url: URL, for stickerInfo: StickerInfo) {
-        cache.setObject(url as NSURL, forKey: stickerInfo.asKey() as NSString)
+        cache.setObject(url as NSURL, forKey: stickerInfo.asKey())
     }
 
     // MARK: -

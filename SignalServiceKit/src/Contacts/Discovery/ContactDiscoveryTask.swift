@@ -175,7 +175,8 @@ public extension ContactDiscoveryTask {
 public extension ContactDiscoveryTask {
 
     private static let unfairLock = UnfairLock()
-    private static let undiscoverableUserCache = NSCache<NSString, NSDate>(countLimit: 1024)
+    @nonobjc
+    private static let undiscoverableUserCache = LRUCache<String, NSDate>(maxSize: 1024)
 
     fileprivate static func markUsersAsRecentlyKnownToBeUndiscoverable(_ addresses: [SignalServiceAddress]) {
         guard !addresses.isEmpty else {
@@ -195,7 +196,7 @@ public extension ContactDiscoveryTask {
                     owsFailDebug("address unexpectedly had UUID")
                     continue
                 }
-                Self.undiscoverableUserCache.setObject(markAsUndiscoverableDate, forKey: phoneNumber as NSString)
+                Self.undiscoverableUserCache.setObject(markAsUndiscoverableDate, forKey: phoneNumber)
             }
         }
     }
@@ -221,7 +222,7 @@ public extension ContactDiscoveryTask {
                     owsFailDebug("address unexpectedly had UUID")
                     return false
                 }
-                guard let markAsUndiscoverableDate = Self.undiscoverableUserCache.object(forKey: phoneNumber as NSString) else {
+                guard let markAsUndiscoverableDate = Self.undiscoverableUserCache.object(forKey: phoneNumber) else {
                     // Not marked as undiscoverable.
                     return false
                 }

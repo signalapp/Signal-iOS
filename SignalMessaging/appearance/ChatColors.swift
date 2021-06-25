@@ -119,6 +119,8 @@ public class ChatColors: NSObject, Dependencies {
     private var valueCache = [String: ChatColor]()
 
     public func upsertCustomValue(_ value: ChatColor, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(CurrentAppContext().hasUI)
+
         Self.unfairLock.withLock {
             self.valueCache[value.id] = value
             do {
@@ -133,6 +135,8 @@ public class ChatColors: NSObject, Dependencies {
     }
 
     public func deleteCustomValue(_ value: ChatColor, transaction: SDSAnyWriteTransaction) {
+        owsAssertDebug(CurrentAppContext().hasUI)
+
         Self.unfairLock.withLock {
             self.valueCache.removeValue(forKey: value.id)
             Self.customColorsStore.removeValue(forKey: value.id, transaction: transaction)
@@ -193,13 +197,17 @@ public class ChatColors: NSObject, Dependencies {
     }
 
     private func value(forValueId valueId: String) -> ChatColor? {
-        Self.unfairLock.withLock {
+        owsAssertDebug(CurrentAppContext().hasUI)
+
+        return Self.unfairLock.withLock {
             self.valueCache[valueId]
         }
     }
 
     private var allValues: [ChatColor] {
-        Self.unfairLock.withLock {
+        owsAssertDebug(CurrentAppContext().hasUI)
+
+        return Self.unfairLock.withLock {
             Array(self.valueCache.values)
         }
     }

@@ -214,7 +214,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
     private static let serialQueue = DispatchQueue(label: "org.signal.fts")
     // This should only be accessed on serialQueue.
-    private static let ftsCache = NSCache<NSString, NSString>(countLimit: 128)
+    private static let ftsCache = LRUCache<String, String>(maxSize: 128)
 
     private class func cacheKey(collection: String, uniqueId: String) -> String {
         return "\(collection).\(uniqueId)"
@@ -258,7 +258,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
         serialQueue.sync {
             let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
-            ftsCache.setObject(ftsContent as NSString, forKey: cacheKey as NSString)
+            ftsCache.setObject(ftsContent, forKey: cacheKey)
         }
 
         executeUpdate(
@@ -287,11 +287,11 @@ class GRDBFullTextSearchFinder: NSObject {
                 return false
             }
             let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
-            if let cachedValue = ftsCache.object(forKey: cacheKey as NSString),
+            if let cachedValue = ftsCache.object(forKey: cacheKey),
                 (cachedValue as String) == ftsContent {
                 return true
             }
-            ftsCache.setObject(ftsContent as NSString, forKey: cacheKey as NSString)
+            ftsCache.setObject(ftsContent, forKey: cacheKey)
             return false
         }
         guard !shouldSkipUpdate else {
@@ -322,7 +322,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
         serialQueue.sync {
             let cacheKey = self.cacheKey(collection: collection, uniqueId: uniqueId)
-            ftsCache.removeObject(forKey: cacheKey as NSString)
+            ftsCache.removeObject(forKey: cacheKey)
         }
 
         executeUpdate(

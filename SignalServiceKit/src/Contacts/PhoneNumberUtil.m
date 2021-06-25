@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PhoneNumberUtil ()
 
 @property (nonatomic, readonly) NSMutableDictionary *countryCodesFromCallingCodeCache;
-@property (nonatomic, readonly) NSCache *parsedPhoneNumberCache;
+@property (nonatomic, readonly) AnyLRUCache *parsedPhoneNumberCache;
 
 @end
 
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self) {
         _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
         _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
-        _parsedPhoneNumberCache = [[NSCache alloc] initWithCountLimit:256];
+        _parsedPhoneNumberCache = [[AnyLRUCache alloc] initWithMaxSize:256];
     }
 
     return self;
