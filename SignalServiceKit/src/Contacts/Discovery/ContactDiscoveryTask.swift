@@ -176,7 +176,7 @@ public extension ContactDiscoveryTask {
 
     private static let unfairLock = UnfairLock()
     @nonobjc
-    private static let undiscoverableUserCache = LRUCache<String, NSDate>(maxSize: 1024)
+    private static let undiscoverableUserCache = LRUCache<String, Date>(maxSize: 1024)
 
     fileprivate static func markUsersAsRecentlyKnownToBeUndiscoverable(_ addresses: [SignalServiceAddress]) {
         guard !addresses.isEmpty else {
@@ -184,7 +184,7 @@ public extension ContactDiscoveryTask {
         }
         Logger.verbose("Marking users as known to be undiscoverable: \(addresses.count)")
 
-        let markAsUndiscoverableDate = Date() as NSDate
+        let markAsUndiscoverableDate = Date()
         unfairLock.withLock {
             for address in addresses {
                 guard let phoneNumber = address.phoneNumber else {

@@ -409,7 +409,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }
 
     private func addGroupChangesToCache(groupChanges: [GroupV2Change],
-                                        cacheKey: NSString) {
+                                        cacheKey: String) {
         guard !groupChanges.isEmpty else {
             Logger.verbose("No group changes.")
             changeCache.removeObject(forKey: cacheKey)
@@ -422,7 +422,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                               forKey: cacheKey)
     }
 
-    private func cachedGroupChanges(forCacheKey cacheKey: NSString,
+    private func cachedGroupChanges(forCacheKey cacheKey: String,
                                     groupSecretParamsData: Data,
                                     upToRevision: UInt32?) -> [GroupV2Change]? {
         guard let upToRevision = upToRevision else {
@@ -490,7 +490,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
         }()
 
-        let cacheKey = groupSecretParamsData.hexadecimalString as NSString
+        let cacheKey = groupSecretParamsData.hexadecimalString
 
         return DispatchQueue.global().async(.promise) { () -> [GroupV2Change]? in
             // Try to use group changes from the cache.

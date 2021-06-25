@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+// An @objc wrapper around LRUCache.
 @objc
 public class AnyLRUCache: NSObject {
 
@@ -14,22 +15,22 @@ public class AnyLRUCache: NSObject {
 
     @objc
     public func get(key: NSObject) -> NSObject? {
-        return self.backingCache.get(key: key)
+        backingCache.get(key: key)
     }
 
     @objc
     public func set(key: NSObject, value: NSObject) {
-        self.backingCache.set(key: key, value: value)
+        backingCache.set(key: key, value: value)
     }
 
     @objc
     public func remove(key: NSObject) {
-        self.backingCache.remove(key: key)
+        backingCache.remove(key: key)
     }
 
     @objc
     public func clear() {
-        self.backingCache.clear()
+        backingCache.clear()
     }
 
     // MARK: - NSCache Compatibility

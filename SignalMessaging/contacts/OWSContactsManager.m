@@ -42,7 +42,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
-@property (nonatomic, readonly) AnyLRUCache<NSString *, CNContact *> *cnContactCache;
+@property (nonatomic, readonly) AnyLRUCache *cnContactCache;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -150,7 +150,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    CNContact *_Nullable cnContact = [self.cnContactCache objectForKey:contactId];
+    CNContact *_Nullable cnContact = (CNContact *)[self.cnContactCache objectForKey:contactId];
     if (cnContact != nil) {
         return cnContact;
     }

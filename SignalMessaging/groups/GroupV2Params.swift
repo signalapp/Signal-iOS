@@ -59,20 +59,20 @@ public extension GroupV2Params {
         assert(ciphertext.count > 0)
 
         if plaintext.count <= Self.decryptedBlobCacheMaxItemSize {
-            let cacheKey = (groupSecretParamsData + ciphertext) as NSData
-            Self.decryptedBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+            let cacheKey = (groupSecretParamsData + ciphertext)
+            Self.decryptedBlobCache.setObject(plaintext, forKey: cacheKey)
         }
 
         return ciphertext
     }
 
-    private static let decryptedBlobCache = LRUCache<Data, NSData>(maxSize: 16)
+    private static let decryptedBlobCache = LRUCache<Data, Data>(maxSize: 16)
     private static let decryptedBlobCacheMaxItemSize: UInt = 4 * 1024
 
     fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
-        let cacheKey = (groupSecretParamsData + ciphertext) as NSData
+        let cacheKey = (groupSecretParamsData + ciphertext)
         if let plaintext = Self.decryptedBlobCache.object(forKey: cacheKey) {
-            return plaintext as Data
+            return plaintext
         }
 
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
@@ -80,7 +80,7 @@ public extension GroupV2Params {
         assert(ciphertext != plaintext)
 
         if plaintext.count <= Self.decryptedBlobCacheMaxItemSize {
-            Self.decryptedBlobCache.setObject(plaintext as NSData, forKey: cacheKey)
+            Self.decryptedBlobCache.setObject(plaintext, forKey: cacheKey)
         }
         return plaintext
     }
@@ -90,19 +90,19 @@ public extension GroupV2Params {
         return try uuid(forUuidCiphertext: uuidCiphertext)
     }
 
-    private static let decryptedUuidCache = LRUCache<Data, NSUUID>(maxSize: 256)
+    private static let decryptedUuidCache = LRUCache<Data, UUID>(maxSize: 256)
 
     func uuid(forUuidCiphertext uuidCiphertext: UuidCiphertext) throws -> UUID {
-        let cacheKey = (groupSecretParamsData + uuidCiphertext.serialize().asData) as NSData
+        let cacheKey = (groupSecretParamsData + uuidCiphertext.serialize().asData)
         if let plaintext = Self.decryptedUuidCache.object(forKey: cacheKey) {
-            return plaintext as UUID
+            return plaintext
         }
 
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
         let zkgUuid = try clientZkGroupCipher.decryptUuid(uuidCiphertext: uuidCiphertext)
         let uuid = zkgUuid.asUUID()
 
-        Self.decryptedUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
+        Self.decryptedUuidCache.setObject(uuid, forKey: cacheKey)
         return uuid
     }
 
@@ -111,21 +111,21 @@ public extension GroupV2Params {
         let uuidCiphertext = try clientZkGroupCipher.encryptUuid(uuid: try uuid.asZKGUuid())
         let userId = uuidCiphertext.serialize().asData
 
-        let cacheKey = (groupSecretParamsData + userId) as NSData
-        Self.decryptedUuidCache.setObject(uuid as NSUUID, forKey: cacheKey)
+        let cacheKey = (groupSecretParamsData + userId)
+        Self.decryptedUuidCache.setObject(uuid, forKey: cacheKey)
 
         return userId
     }
 
-    private static let decryptedProfileKeyCache = LRUCache<Data, NSData>(maxSize: 256)
+    private static let decryptedProfileKeyCache = LRUCache<Data, Data>(maxSize: 256)
 
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
                     uuid: UUID) throws -> Data {
         let zkgUuid = try uuid.asZKGUuid()
 
-        let cacheKey = (groupSecretParamsData + profileKeyCiphertext.serialize().asData + zkgUuid.serialize().asData) as NSData
+        let cacheKey = (groupSecretParamsData + profileKeyCiphertext.serialize().asData + zkgUuid.serialize().asData)
         if let plaintext = Self.decryptedProfileKeyCache.object(forKey: cacheKey) {
-            return plaintext as Data
+            return plaintext
         }
 
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
@@ -133,7 +133,7 @@ public extension GroupV2Params {
                                                                    uuid: zkgUuid)
         let plaintext = profileKey.serialize().asData
 
-        Self.decryptedProfileKeyCache.setObject(plaintext as NSData, forKey: cacheKey)
+        Self.decryptedProfileKeyCache.setObject(plaintext, forKey: cacheKey)
         return plaintext
     }
 }

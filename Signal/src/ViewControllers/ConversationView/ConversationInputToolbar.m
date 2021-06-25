@@ -70,7 +70,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
-@property (nonatomic, readonly) AnyLRUCache<StickerInfo *, StickerReusableView *> *suggestedStickerViewCache;
+@property (nonatomic, readonly) StickerViewCache *suggestedStickerViewCache;
 @property (nonatomic, readonly) UIStackView *outerStack;
 @property (nonatomic, readonly) UIStackView *mediaAndSendStack;
 

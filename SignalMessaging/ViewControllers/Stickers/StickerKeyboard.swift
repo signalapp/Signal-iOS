@@ -81,7 +81,7 @@ public class StickerKeyboard: CustomKeyboard {
         updatePageConstraints()
     }
 
-    private let reusableStickerViewCache = LRUCache<StickerInfo, StickerReusableView>(maxSize: 32)
+    private let reusableStickerViewCache = StickerViewCache(maxSize: 32)
     private func reloadStickers() {
         let oldStickerPacks = stickerPacks
 
@@ -502,5 +502,61 @@ extension StickerKeyboard: StickerPackCollectionViewDelegate {
 
     public func stickerPreviewHasOverlay() -> Bool {
         return true
+    }
+}
+
+// MARK: -
+
+@objc
+public class StickerViewCache: NSObject {
+
+    private let backingCache: LRUCache<StickerInfo, StickerReusableView>
+
+    @objc
+    public init(maxSize: Int) {
+        // Always use a nseMaxSize of zero.
+        backingCache = LRUCache(maxSize: maxSize, nseMaxSize: 0)
+    }
+
+    @objc
+    public func get(key: StickerInfo) -> StickerReusableView? {
+        return self.backingCache.get(key: key)
+    }
+
+    @objc
+    public func set(key: StickerInfo, value: StickerReusableView) {
+        self.backingCache.set(key: key, value: value)
+    }
+
+    @objc
+    public func remove(key: StickerInfo) {
+        self.backingCache.remove(key: key)
+    }
+
+    @objc
+    public func clear() {
+        self.backingCache.clear()
+    }
+
+    // MARK: - NSCache Compatibility
+
+    @objc
+    public func setObject(_ value: StickerReusableView, forKey key: StickerInfo) {
+        set(key: key, value: value)
+    }
+
+    @objc
+    public func object(forKey key: StickerInfo) -> StickerReusableView? {
+        self.get(key: key)
+    }
+
+    @objc
+    public func removeObject(forKey key: StickerInfo) {
+        remove(key: key)
+    }
+
+    @objc
+    public func removeAllObjects() {
+        clear()
     }
 }

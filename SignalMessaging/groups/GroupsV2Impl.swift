@@ -1480,8 +1480,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     private let groupInviteLinkPreviewCache = LRUCache<Data, GroupInviteLinkPreview>(maxSize: 5)
 
-    private func groupInviteLinkPreviewCacheKey(groupSecretParamsData: Data) -> NSData {
-        groupSecretParamsData as NSData
+    private func groupInviteLinkPreviewCacheKey(groupSecretParamsData: Data) -> Data {
+        groupSecretParamsData
     }
 
     public func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview? {

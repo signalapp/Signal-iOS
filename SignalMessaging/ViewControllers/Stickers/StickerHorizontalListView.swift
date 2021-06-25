@@ -19,13 +19,13 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
     private let stickerInfo: StickerInfo
     public let didSelectBlock: () -> Void
     public let isSelectedBlock: () -> Bool
-    private weak var cache: LRUCache<StickerInfo, StickerReusableView>?
+    private weak var cache: StickerViewCache?
 
     // This initializer can be used for cells which are never selected.
     @objc
     public convenience init(stickerInfo: StickerInfo,
                             didSelectBlock: @escaping () -> Void,
-                            cache: LRUCache<StickerInfo, StickerReusableView>? = nil) {
+                            cache: StickerViewCache? = nil) {
         self.init(stickerInfo: stickerInfo, didSelectBlock: didSelectBlock, isSelectedBlock: { false }, cache: cache)
     }
 
@@ -33,7 +33,7 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
     public init(stickerInfo: StickerInfo,
                 didSelectBlock: @escaping () -> Void,
                 isSelectedBlock: @escaping () -> Bool,
-                cache: LRUCache<StickerInfo, StickerReusableView>? = nil) {
+                cache: StickerViewCache? = nil) {
         self.stickerInfo = stickerInfo
         self.didSelectBlock = didSelectBlock
         self.isSelectedBlock = isSelectedBlock
