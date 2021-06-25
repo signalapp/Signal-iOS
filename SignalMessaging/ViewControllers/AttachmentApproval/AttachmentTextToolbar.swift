@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ import UIKit
 // Coincides with Android's max text message length
 let kMaxMessageBodyCharacterCount = 2000
 
-protocol AttachmentTextToolbarDelegate: AnyObject, MentionTextViewDelegate {
+protocol AttachmentTextToolbarDelegate: MentionTextViewDelegate {
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)

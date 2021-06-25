@@ -61,22 +61,12 @@ public class AnyLRUCache: NSObject {
 // A simple LRU cache bounded by the number of entries.
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
-    private let unfairLock = UnfairLock()
-    private var cacheMap: [KeyType: ValueType] = [:]
-    private var cacheOrder: [KeyType] = []
+    private let cache = NSCache<AnyObject, AnyObject>()
     private let maxSize: Int
 
     public init(maxSize: Int, nseMaxSize: Int = 0) {
         self.maxSize = CurrentAppContext().isNSE ? nseMaxSize : maxSize
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didReceiveMemoryWarning),
-                                               name: UIApplication.didReceiveMemoryWarningNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didEnterBackground),
-                                               name: .OWSApplicationDidEnterBackground,
-                                               object: nil)
+        self.cache.countLimit = maxSize
     }
 
     deinit {
@@ -95,66 +85,25 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
         clear()
     }
 
-    private func markKeyAsFirst(key: KeyType) {
-        cacheOrder = cacheOrder.filter { $0 != key }
-        cacheOrder.append(key)
-    }
-
     public func get(key: KeyType) -> ValueType? {
-        unfairLock.withLock {
-            guard let value = cacheMap[key] else {
-                // Miss
-                return nil
-            }
-
-            // Hit
-            markKeyAsFirst(key: key)
-
-            return value
-        }
+        return cache.object(forKey: key as AnyObject) as? ValueType
     }
 
     public func set(key: KeyType, value: ValueType) {
-        unfairLock.withLock {
-            guard maxSize > 0 else {
-                Logger.warn("Using disabled cache.")
-                return
-            }
-
-            cacheMap[key] = value
-
-            markKeyAsFirst(key: key)
-
-            while cacheOrder.count > maxSize {
-                guard let staleKey = cacheOrder.first else {
-                    owsFailDebug("Cache ordering unexpectedly empty")
-                    return
-                }
-                cacheOrder.removeFirst()
-                cacheMap.removeValue(forKey: staleKey)
-            }
+        guard maxSize > 0 else {
+            Logger.warn("Using disabled cache.")
+            return
         }
+        cache.setObject(value as AnyObject, forKey: key as AnyObject)
     }
 
     public func remove(key: KeyType) {
-        unfairLock.withLock {
-            guard maxSize > 0 else {
-                Logger.warn("Using disabled cache.")
-                return
-            }
-
-            cacheMap.removeValue(forKey: key)
-
-            cacheOrder = cacheOrder.filter { $0 != key }
-        }
+        cache.removeObject(forKey: key as AnyObject)
     }
 
     @objc
     public func clear() {
-        unfairLock.withLock {
-            cacheMap.removeAll()
-            cacheOrder.removeAll()
-        }
+        cache.removeAllObjects()
     }
 
     // MARK: - NSCache Compatibility
