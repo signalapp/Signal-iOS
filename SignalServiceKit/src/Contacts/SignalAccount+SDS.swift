@@ -188,7 +188,7 @@ extension SignalAccount: DeepCopyable {
                contact = nil
             }
             let contactAvatarHash: Data? = modelToCopy.contactAvatarHash
-            let contactAvatarJpegData: Data? = modelToCopy.contactAvatarJpegData
+            let contactAvatarJpegData: Data? = modelToCopy.contactAvatarJpegDataObsolete
             let multipleAccountLabelText: String = modelToCopy.multipleAccountLabelText
             let recipientPhoneNumber: String? = modelToCopy.recipientPhoneNumber
             let recipientUUID: String? = modelToCopy.recipientUUID
@@ -634,7 +634,7 @@ class SignalAccountSerializer: SDSSerializer {
         // Properties
         let contact: Data? = optionalArchive(model.contact)
         let contactAvatarHash: Data? = model.contactAvatarHash
-        let contactAvatarJpegData: Data? = model.contactAvatarJpegData
+        let contactAvatarJpegData: Data? = model.contactAvatarJpegDataObsolete
         let multipleAccountLabelText: String = model.multipleAccountLabelText
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID

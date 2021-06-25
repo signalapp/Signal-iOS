@@ -168,6 +168,11 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
 // --- CODE GENERATION MARKER
 
+- (void)sdsFinalizeSignalAccount
+{
+    _contactAvatarJpegDataObsolete = nil;
+}
+
 - (BOOL)shouldUseNicknames
 {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kSignalPreferNicknamesPreference];

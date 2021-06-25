@@ -563,9 +563,8 @@ extension OWSContactsManager {
                 return validData
             }
 
-            if let contactAvatarJpegData = signalAccount.contactAvatarJpegData,
-               let validData = validateIfNecessary(contactAvatarJpegData) {
-                return validData
+            if let contactAvatarData = signalAccount.buildContactAvatarJpegData() {
+                return contactAvatarData
             }
         }
         return nil
