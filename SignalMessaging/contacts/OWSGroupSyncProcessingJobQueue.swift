@@ -161,21 +161,34 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
                 let groupStream = GroupsInputStream(inputStream: inputStream)
 
                 try databaseStorage.write { transaction in
-                    while let nextGroup = try groupStream.decodeGroup() {
-                        autoreleasepool {
-                            do {
-                                try self.process(groupDetails: nextGroup, transaction: transaction)
-                            } catch {
-                                if case GroupsV2Error.groupDowngradeNotAllowed = error {
-                                    Logger.warn("Error: \(error)")
-                                } else {
-                                    owsFailDebug("Error: \(error)")
-                                }
-                            }
-                        }
+                    while try processBatch(groupStream: groupStream, transaction: transaction) {}
+                }
+            }
+        }
+    }
+
+    // TODO: We could use a separate write transaction for each batch.
+    private func processBatch(groupStream: GroupsInputStream,
+                              transaction: SDSAnyWriteTransaction) throws -> Bool {
+        try autoreleasepool {
+            let maxBatchSize = 32
+            var count: UInt = 0
+            while count < maxBatchSize,
+                  let nextGroup = try groupStream.decodeGroup() {
+
+                count += 1
+
+                do {
+                    try self.process(groupDetails: nextGroup, transaction: transaction)
+                } catch {
+                    if case GroupsV2Error.groupDowngradeNotAllowed = error {
+                        Logger.warn("Error: \(error)")
+                    } else {
+                        owsFailDebug("Error: \(error)")
                     }
                 }
             }
+            return count > 0
         }
     }
 
