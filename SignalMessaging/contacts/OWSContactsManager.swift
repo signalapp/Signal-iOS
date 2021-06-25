@@ -4,6 +4,7 @@
 
 import Foundation
 
+// TODO: Should we use these caches in NSE?
 fileprivate extension OWSContactsManager {
     static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
     static let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
