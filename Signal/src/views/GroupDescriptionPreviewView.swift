@@ -69,7 +69,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     )
     private static let moreTextPlusPrefixLength = (moreTextPrefix + moreText).utf16.count
 
-    private let textThatFitsCache = LRUCache<String, NSString>(maxSize: 128)
+    private let textThatFitsCache = LRUCache<String, String>(maxSize: 128)
 
     func truncateVisibleTextIfNecessary() {
         // When using autolayout, we need to initially set the text
@@ -82,12 +82,12 @@ class GroupDescriptionPreviewView: ManualLayoutView {
 
         guard let descriptionText = descriptionText else { return }
 
-        let cacheKey: NSString = "\(width)x\(height)-\(descriptionText)" as NSString
+        let cacheKey = "\(width)x\(height)-\(descriptionText)"
 
         // If we have already determine the attributed text for
         // this size + description, use it.
         if let cachedText = textThatFitsCache.object(forKey: cacheKey) {
-            return setTextThatFits(cachedText as String)
+            return setTextThatFits(cachedText)
         }
 
         var textThatFits = descriptionText
@@ -95,7 +95,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
             setTextThatFits(textThatFits)
 
             // Cache the text that fits for this size + description.
-            textThatFitsCache.setObject(textThatFits as NSString, forKey: cacheKey)
+            textThatFitsCache.setObject(textThatFits, forKey: cacheKey)
         }
 
         setTextThatFits(textThatFits)
@@ -108,9 +108,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
 
         // We might fit without further truncation, for example if the description
         // contains new line characters, so set the possible new text immediately.
-        textThatFits = (textThatFits as NSString).substring(
-            to: visibleCharacterRangeUpperBound
-        )
+        textThatFits = textThatFits.substring(to: visibleCharacterRangeUpperBound)
 
         setTextThatFits(textThatFits)
         visibleCharacterRangeUpperBound
@@ -123,7 +121,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
             let truncateToIndex = max(0, visibleCharacterRangeUpperBound)
             guard truncateToIndex > 0 else { break }
 
-            textThatFits = (textThatFits as NSString).substring(to: truncateToIndex)
+            textThatFits = textThatFits.substring(to: truncateToIndex)
 
             setTextThatFits(textThatFits)
             visibleCharacterRangeUpperBound

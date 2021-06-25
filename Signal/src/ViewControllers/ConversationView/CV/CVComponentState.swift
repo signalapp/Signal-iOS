@@ -1214,14 +1214,14 @@ fileprivate extension CVComponentState {
                                 messageBodyBlock: () -> MessageBody) -> DisplayableText {
         owsAssertDebug(!cacheKey.isEmpty)
 
-        if let displayableText = displayableTextCache.object(forKey: cacheKey as NSString) {
+        if let displayableText = displayableTextCache.object(forKey: cacheKey) {
             return displayableText
         }
         let messageBody = messageBodyBlock()
         let displayableText = DisplayableText.displayableText(withMessageBody: messageBody,
                                                               mentionStyle: mentionStyle,
                                                               transaction: transaction)
-        displayableTextCache.setObject(displayableText, forKey: cacheKey as NSString)
+        displayableTextCache.setObject(displayableText, forKey: cacheKey)
         return displayableText
     }
 }

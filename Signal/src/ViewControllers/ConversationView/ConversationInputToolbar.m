@@ -127,7 +127,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     _conversationStyle = conversationStyle;
     _receivedSafeAreaInsets = UIEdgeInsetsZero;
-    _suggestedStickerViewCache = [[AnyLRUCache alloc] initWithMaxSize:12 nseMaxSize:0];
+    _suggestedStickerViewCache = [[StickerViewCache alloc] initWithMaxSize:12];
 
     self.inputToolbarDelegate = inputToolbarDelegate;
 
