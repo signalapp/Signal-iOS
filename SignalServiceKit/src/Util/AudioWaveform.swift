@@ -20,7 +20,7 @@ public class AudioWaveformManager: NSObject {
 
     private typealias AttachmentId = String
 
-    private static var cache = [AttachmentId: Weak<AudioWaveform>]()
+    private static var cache = LRUCache<AttachmentId, Weak<AudioWaveform>>(maxSize: 12)
 
     private static var observerMap = [String: SamplingObserver]()
 
