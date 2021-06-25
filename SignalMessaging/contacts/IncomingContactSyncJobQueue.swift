@@ -226,7 +226,10 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             guard let contacts = try Self.buildBatch(contactStream: contactStream) else {
                 return false
             }
-            owsAssertDebug(!contacts.isEmpty)
+            guard !contacts.isEmpty else {
+                owsFailDebug("Empty batch.")
+                return false
+            }
             try databaseStorage.write { transaction in
                 for contact in contacts {
                     try self.process(contactDetails: contact, transaction: transaction)

@@ -20,10 +20,6 @@ extension SignalAccount {
         guard let contactAvatarData = Self.contactsManager.avatarData(forCNContactId: cnContactId) else {
             return nil
         }
-        guard contactAvatarData.ows_isValidImage else {
-            Logger.warn("Invalid contactAvatarData.")
-            return nil
-        }
         guard let contactAvatarJpegData = UIImage.validJpegData(fromAvatarData: contactAvatarData) else { owsFailDebug("Could not convert avatar to JPEG.")
             return nil
         }
