@@ -62,7 +62,7 @@ public class CVAudioPlayer: NSObject {
     //
     // Playback progress should be continuous even if the corresponding
     // cells are reloaded or scrolled offscreen and unloaded.
-    private var progressCache = [String: TimeInterval]()
+    private var progressCache = LRUCache<String, TimeInterval>(maxSize: 16)
 
     public func audioPlaybackState(forAttachmentId attachmentId: String) -> AudioPlaybackState {
         AssertIsOnMainThread()

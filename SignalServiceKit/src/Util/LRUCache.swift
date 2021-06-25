@@ -106,6 +106,19 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
         cache.removeAllObjects()
     }
 
+    public subscript(key: KeyType) -> ValueType? {
+        get {
+            get(key: key)
+        }
+        set(value) {
+            if let value = value {
+                set(key: key, value: value)
+            } else {
+                remove(key: key)
+            }
+        }
+    }
+
     // MARK: - NSCache Compatibility
 
     public func setObject(_ value: ValueType, forKey key: KeyType) {
