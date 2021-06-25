@@ -10,6 +10,9 @@ extension SignalAccount {
         guard let contact = self.contact else {
             return nil
         }
+        guard !contact.isFromContactSync else {
+            return nil
+        }
         guard let cnContactId: String = contact.cnContactId else {
             owsFailDebug("Missing cnContactId.")
             return nil

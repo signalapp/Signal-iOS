@@ -31,9 +31,6 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
 @property (nonatomic, nullable) Contact *contact;
 
-// These fields are obsolete and should always be nil.
-@property (nonatomic, nullable, readonly) NSData *contactAvatarJpegData;
-
 @end
 
 #pragma mark -
@@ -156,10 +153,12 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
     _contact = contact;
     _contactAvatarHash = contactAvatarHash;
-    _contactAvatarJpegData = contactAvatarJpegData;
+    _contactAvatarJpegDataObsolete = contactAvatarJpegData;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
+
+    [self sdsFinalizeSignalAccount];
 
     return self;
 }
