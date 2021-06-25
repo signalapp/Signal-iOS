@@ -312,28 +312,20 @@ extension MobileCoinAPI {
         static var signalMainNet: OWSAttestationConfig {
             // We need the old and new enclave values here.
             let mrEnclaveConsensus = [
-                // Old value
-                Data.data(fromHex: "e66db38b8a43a33f6c1610d335a361963bb2b31e056af0dc0a895ac6c857cab9")!,
-                // ~July 8, 2021
+                // ~June 23, 2021
                 Data.data(fromHex: "653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83")!
             ]
             let mrEnclaveFogView = [
-                // Old value
-                Data.data(fromHex: "ddd59da874fdf3239d5edb1ef251df07a8728c9ef63057dd0b50ade5a9ddb041")!,
-                // ~July 8, 2021
+                // ~June 23, 2021
                 Data.data(fromHex: "dd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a")!
             ]
             // Report aka Ingest.
             let mrEnclaveFogReport = [
-                // Old value
-                Data.data(fromHex: "709ab90621e3a8d9eb26ed9e2830e091beceebd55fb01c5d7c31d27e83b9b0d1")!,
-                // ~July 8, 2021
+                // ~June 23, 2021
                 Data.data(fromHex: "f3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499")!
             ]
             let mrEnclaveFogLedger = [
-                // Old value
-                Data.data(fromHex: "511eab36de691ded50eb08b173304194da8b9d86bfdd7102001fe6bb279c3666")!,
-                // ~July 8, 2021
+                // ~June 23, 2021
                 Data.data(fromHex: "89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd")!
             ]
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
@@ -342,7 +334,6 @@ extension MobileCoinAPI {
                                           mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
                                           mrEnclaveFogReport: mrEnclaveFogReport)
         }
-
         
         // consensus
         // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
