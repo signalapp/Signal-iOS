@@ -62,8 +62,6 @@ public class StickerManager: NSObject {
     public static let store = SDSKeyValueStore(collection: "recentStickers")
     public static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
 
-    private static let unfairLock = UnfairLock()
-
     @objc
     public enum InstallMode: Int {
         case doNotInstall
