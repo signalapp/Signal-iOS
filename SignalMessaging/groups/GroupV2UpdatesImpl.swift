@@ -19,20 +19,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     // MARK: -
 
-    private let serialQueue = DispatchQueue(label: "GroupV2UpdatesImpl")
-
-    // This property should only be accessed on serialQueue.
-    private var lastSuccessfulRefreshMap = [Data: Date]()
+    private var lastSuccessfulRefreshMap = LRUCache<Data, Date>(maxSize: 256)
 
     private func lastSuccessfulRefreshDate(forGroupId  groupId: Data) -> Date? {
-        assertOnQueue(serialQueue)
-
-        return lastSuccessfulRefreshMap[groupId]
+        lastSuccessfulRefreshMap[groupId]
     }
 
     private func groupRefreshDidSucceed(forGroupId groupId: Data) {
-        assertOnQueue(serialQueue)
-
         lastSuccessfulRefreshMap[groupId] = Date()
     }
 
@@ -99,7 +92,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                           groupUpdateMode: GroupUpdateMode,
                                           groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
 
-        let isThrottled = serialQueue.sync { () -> Bool in
+        let isThrottled = { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
                 return false
             }
@@ -109,7 +102,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             // Don't auto-refresh more often than once every N minutes.
             let refreshFrequency: TimeInterval = kMinuteInterval * 5
             return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
-        }
+        }()
 
         if let groupThread = (databaseStorage.read { transaction in
             TSGroupThread.fetch(groupId: groupId, transaction: transaction)
@@ -127,9 +120,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         operation.promise.done(on: .global()) { _ in
             Logger.verbose("Group refresh succeeded.")
 
-            self.serialQueue.sync {
-                self.groupRefreshDidSucceed(forGroupId: groupId)
-            }
+            self.groupRefreshDidSucceed(forGroupId: groupId)
         }.catch(on: .global()) { error in
             Logger.verbose("Group refresh failed: \(error).")
         }
