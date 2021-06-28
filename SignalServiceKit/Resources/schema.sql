@@ -114,6 +114,7 @@ CREATE
             ,"paymentNotification" BLOB
             ,"paymentRequest" BLOB
             ,"viewed" BOOLEAN
+            ,"serverGuid" TEXT
         )
 ;
 

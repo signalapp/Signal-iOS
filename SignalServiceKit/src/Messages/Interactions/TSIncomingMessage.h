@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
 @property (nonatomic, readonly) uint64_t serverDeliveryTimestamp;
+@property (nonatomic, readonly, nullable) NSString *serverGuid;
 
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 

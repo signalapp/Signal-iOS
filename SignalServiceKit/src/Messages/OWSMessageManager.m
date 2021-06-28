@@ -2070,6 +2070,12 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    NSString *_Nullable serverGuid = (envelope.hasServerGuid ? envelope.serverGuid : nil);
+    if (serverGuid != nil && [[NSUUID alloc] initWithUUIDString:serverGuid] == nil) {
+        OWSFailDebug(@"Invalid server guid.");
+        serverGuid = nil;
+    }
+
     [self updateDisappearingMessageConfigurationWithEnvelope:envelope
                                                  dataMessage:dataMessage
                                                       thread:thread
@@ -2148,6 +2154,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      messageSticker:messageSticker
                                     serverTimestamp:serverTimestamp
                             serverDeliveryTimestamp:serverDeliveryTimestamp
+                                         serverGuid:serverGuid
                                     wasReceivedByUD:wasReceivedByUD
                                   isViewOnceMessage:isViewOnceMessage];
     TSIncomingMessage *message = [incomingMessageBuilder build];

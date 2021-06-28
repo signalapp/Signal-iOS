@@ -105,6 +105,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createPendingViewedReceipts
         case addViewedToInteractions
         case createThreadAssociatedData
+        case addServerGuidToInteractions
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -146,7 +147,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 25
+    public static let grdbSchemaVersionLatest: UInt = 26
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1126,6 +1127,16 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.create(index: "index_thread_associated_data_on_threadUniqueId_and_isArchived",
                               on: "thread_associated_data",
                               columns: ["threadUniqueId", "isArchived"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addServerGuidToInteractions.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "serverGuid", .text)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }
