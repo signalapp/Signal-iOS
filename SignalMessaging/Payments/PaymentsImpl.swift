@@ -99,6 +99,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         guard FeatureFlags.paymentsEnabled else {
             return Promise(error: PaymentsError.notEnabled)
         }
+        guard !CurrentAppContext().isNSE else {
+            return Promise(error: OWSAssertionError("Payments disabled in NSE."))
+        }
         switch paymentsState {
         case .enabled(let paymentsEntropy):
             return getOrBuildCurrentApi(paymentsEntropy: paymentsEntropy)
@@ -383,6 +386,12 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         NotificationCenter.default.postNotificationNameAsync(Self.currentPaymentBalanceDidChange, object: nil)
     }
 
+    private var canUsePayments: Bool {
+        FeatureFlags.paymentsEnabled &&
+              arePaymentsEnabled &&
+            !CurrentAppContext().isNSE
+    }
+
     // We need to update our balance:
     //
     // * On launch.
@@ -390,8 +399,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // * After making or receiving payments.
     // * When user navigates into a view that displays the balance.
     public func updateCurrentPaymentBalance() {
-        guard FeatureFlags.paymentsEnabled,
-              arePaymentsEnabled else {
+        guard canUsePayments else {
             return
         }
         guard AppReadiness.isAppReady,
