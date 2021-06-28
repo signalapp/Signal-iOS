@@ -86,10 +86,22 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     }
 
     public func get(key: KeyType) -> ValueType? {
-        return cache.object(forKey: key as AnyObject) as? ValueType
+        // ValueType might be AnyObject, so we need to check
+        // rawValue for nil; value might be NSNull.
+        guard let rawValue = cache.object(forKey: key as AnyObject),
+              let value = rawValue as? ValueType else {
+            return nil
+        }
+        owsAssertDebug(!(value is NSNull))
+        return value
     }
 
     public func set(key: KeyType, value: ValueType) {
+        if value is NSNull {
+            owsFailDebug("Nil value.")
+            remove(key: key)
+            return
+        }
         guard maxSize > 0 else {
             Logger.warn("Using disabled cache.")
             return
