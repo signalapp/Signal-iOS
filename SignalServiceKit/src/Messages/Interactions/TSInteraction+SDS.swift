@@ -91,6 +91,7 @@ public struct InteractionRecord: SDSRecord {
     public let paymentNotification: Data?
     public let paymentRequest: Data?
     public let viewed: Bool?
+    public let serverGuid: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -159,6 +160,7 @@ public struct InteractionRecord: SDSRecord {
         case paymentNotification
         case paymentRequest
         case viewed
+        case serverGuid
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -248,6 +250,7 @@ public extension InteractionRecord {
         paymentNotification = row[63]
         paymentRequest = row[64]
         viewed = row[65]
+        serverGuid = row[66]
     }
 }
 
@@ -902,6 +905,7 @@ extension TSInteraction {
             let authorUUID: String? = record.authorUUID
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
+            let serverGuid: String? = record.serverGuid
             let serverTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.serverTimestamp, name: "serverTimestamp", conversion: { NSNumber(value: $0) })
             let sourceDeviceId: UInt32 = try SDSDeserialization.required(record.sourceDeviceId, name: "sourceDeviceId")
             let viewed: Bool = try SDSDeserialization.required(record.viewed, name: "viewed")
@@ -931,6 +935,7 @@ extension TSInteraction {
                                      authorUUID: authorUUID,
                                      read: read,
                                      serverDeliveryTimestamp: serverDeliveryTimestamp,
+                                     serverGuid: serverGuid,
                                      serverTimestamp: serverTimestamp,
                                      sourceDeviceId: sourceDeviceId,
                                      viewed: viewed,
@@ -2741,6 +2746,7 @@ extension TSInteraction: DeepCopyable {
             let authorUUID: String? = modelToCopy.authorUUID
             let read: Bool = modelToCopy.wasRead
             let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
+            let serverGuid: String? = modelToCopy.serverGuid
             let serverTimestamp: NSNumber? = modelToCopy.serverTimestamp
             let sourceDeviceId: UInt32 = modelToCopy.sourceDeviceId
             let viewed: Bool = modelToCopy.wasViewed
@@ -2770,6 +2776,7 @@ extension TSInteraction: DeepCopyable {
                                      authorUUID: authorUUID,
                                      read: read,
                                      serverDeliveryTimestamp: serverDeliveryTimestamp,
+                                     serverGuid: serverGuid,
                                      serverTimestamp: serverTimestamp,
                                      sourceDeviceId: sourceDeviceId,
                                      viewed: viewed,
@@ -3675,6 +3682,7 @@ extension TSInteractionSerializer {
     static let paymentNotificationColumn = SDSColumnMetadata(columnName: "paymentNotification", columnType: .blob, isOptional: true)
     static let paymentRequestColumn = SDSColumnMetadata(columnName: "paymentRequest", columnType: .blob, isOptional: true)
     static let viewedColumn = SDSColumnMetadata(columnName: "viewed", columnType: .int, isOptional: true)
+    static let serverGuidColumn = SDSColumnMetadata(columnName: "serverGuid", columnType: .unicodeString, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -3746,7 +3754,8 @@ extension TSInteractionSerializer {
         paymentCancellationColumn,
         paymentNotificationColumn,
         paymentRequestColumn,
-        viewedColumn
+        viewedColumn,
+        serverGuidColumn
         ])
 }
 
@@ -4219,8 +4228,9 @@ class TSInteractionSerializer: SDSSerializer {
         let paymentNotification: Data? = nil
         let paymentRequest: Data? = nil
         let viewed: Bool? = nil
+        let serverGuid: String? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid)
     }
 }
 

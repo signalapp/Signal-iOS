@@ -108,6 +108,7 @@
     "InteractionRecord.recipientAddressStates": 41, 
     "InteractionRecord.sender": 42, 
     "InteractionRecord.serverDeliveryTimestamp": 54, 
+    "InteractionRecord.serverGuid": 64, 
     "InteractionRecord.serverTimestamp": 43, 
     "InteractionRecord.sourceDeviceId": 44, 
     "InteractionRecord.storedMessageState": 45, 

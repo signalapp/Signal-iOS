@@ -103,6 +103,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                       authorUUID:(nullable NSString *)authorUUID
                             read:(BOOL)read
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                      serverGuid:(nullable NSString *)serverGuid
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
@@ -137,6 +138,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _authorUUID = authorUUID;
     _read = read;
     _serverDeliveryTimestamp = serverDeliveryTimestamp;
+    _serverGuid = serverGuid;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
     _viewed = viewed;
