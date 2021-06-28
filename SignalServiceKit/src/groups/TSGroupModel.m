@@ -259,6 +259,12 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     return [result copy];
 }
 
+// This method should only be used by the blocking manager.
+- (void)discardGroupAvatarForBlockingManager
+{
+    _groupAvatarData = nil;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
