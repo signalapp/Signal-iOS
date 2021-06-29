@@ -447,6 +447,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
     private enum DelegateScrollContinuityMode: Equatable {
         case disabled
         case enabled(lastKnownDistanceFromBottom: CGFloat?)
+        case enabledIOS12(token: CVScrollContinuityToken,
+                          isRelativeToTop: Bool,
+                          lastKnownDistanceFromBottom: CGFloat?)
     }
     private var delegateScrollContinuityMode: DelegateScrollContinuityMode = .disabled
 
@@ -484,10 +487,18 @@ public class ConversationViewLayout: UICollectionViewLayout {
         case .none:
             break
         case .contentRelativeToViewport(let token, let isRelativeToTop):
+        if #available(iOS 13, *) {
             if !applyContentOffsetAdjustmentIfNecessary(scrollContinuityToken: token,
                                                         isRelativeToTop: isRelativeToTop) {
                 delegateScrollContinuityMode = .enabled(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
             }
+        } else {
+            // On iOS 12, we can't safely invalidate the context before performBatchUpdates()
+            // begins, so we use a special .delegateScrollContinuity mode.
+            delegateScrollContinuityMode = .enabledIOS12(token: token,
+                                                         isRelativeToTop: isRelativeToTop,
+                                                         lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
+        }
         case .delegateScrollContinuity:
             delegateScrollContinuityMode = .enabled(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
         }
@@ -593,6 +604,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         isPerformingBatchUpdates = false
         delegateScrollContinuityMode = .disabled
+
+        if #available(iOS 13, *) {
+        } else {
+            // On iOS 12, we invalidate the layout immediately after performBatchUpdates()
+            // to ensure that targetContentOffset(forProposedContentOffset:) is applied in a timely way.
+            invalidateLayout()
+        }
     }
 
     @objc
@@ -756,9 +774,68 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                                                          lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
                 return targetContentOffset
             }
+        case .enabledIOS12(let token,
+                           let isRelativeToTop,
+                           let lastKnownDistanceFromBottom):
+
+            if let lastKnownDistanceFromBottom = lastKnownDistanceFromBottom,
+               abs(lastKnownDistanceFromBottom) < 5 {
+                // If the user was scrolled to the bottom, use the "delegate"
+                // scroll continuity mechanism.
+            } else {
+                let layoutInfoCurrent = ensureCurrentLayoutInfo()
+                if let targetContentOffset = Self.targetContentOffsetForUpdate(delegate: delegate,
+                                                                               token: token,
+                                                                               isRelativeToTop: isRelativeToTop,
+                                                                               layoutInfoAfterUpdate: layoutInfoCurrent) {
+                    return targetContentOffset
+                }
+            }
+            if let conversationViewController = delegate.conversationViewController {
+                let targetContentOffset = conversationViewController.targetContentOffset(forProposedContentOffset: proposedContentOffset,
+                                                                                         lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
+                return targetContentOffset
+            }
         }
 
         return proposedContentOffset
+    }
+
+    private static func targetContentOffsetForUpdate(delegate: ConversationViewLayoutDelegate,
+                                                     token: CVScrollContinuityToken,
+                                                     isRelativeToTop: Bool,
+                                                     layoutInfoAfterUpdate: LayoutInfo) -> CGPoint? {
+        let layoutInfoBeforeUpdate = token.layoutInfo
+        let contentOffsetBeforeUpdate = token.contentOffset
+
+        var beforeItemLayoutMap = [String: ItemLayout]()
+        for itemLayout in layoutInfoBeforeUpdate.itemLayouts {
+            beforeItemLayoutMap[itemLayout.interactionUniqueId] = itemLayout
+        }
+
+        // Honor the scroll continuity bias.
+        //
+        // If we prefer continuity with regard to the bottom
+        // of the conversation, start with the last items.
+        let afterItemLayouts = (isRelativeToTop
+                                    ? layoutInfoAfterUpdate.itemLayouts
+                                    : layoutInfoAfterUpdate.itemLayouts.reversed())
+
+        for afterItemLayout in afterItemLayouts {
+            guard let beforeItemLayout = beforeItemLayoutMap[afterItemLayout.interactionUniqueId] else {
+                continue
+            }
+            let frameBeforeUpdate = beforeItemLayout.layoutAttributes.frame
+            let frameAfterUpdate = afterItemLayout.layoutAttributes.frame
+            let offset = frameAfterUpdate.origin - frameBeforeUpdate.origin
+            let updatedContentOffset = CGPoint(x: 0,
+                                               y: (contentOffsetBeforeUpdate + offset).y)
+            return updatedContentOffset
+        }
+
+        Logger.verbose("No continuity match.")
+
+        return nil
     }
 
     @objc
