@@ -1319,7 +1319,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Yn Derbyn Data";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Yn cysylltu";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Yn cysylltu…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Lleoliwch y côd QR o fewn y cylch";
@@ -2012,7 +2012,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Ymuno";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Llwytho…";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Yn llwytho…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Hoffech ymuno â'r grŵp hwn a rhannu eich enw a llun gyda'i aelodau?";
@@ -2699,7 +2699,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Methwyd dewis atodiad.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Yn cysylltu";
+"IN_CALL_CONNECTING" = "Yn cysylltu…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Atebwyd ar ddyfais arall.";
@@ -2978,13 +2978,13 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Anfon y Neges Hon Ymlaen";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Agor Gwahoddiad Grŵp";
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Agor Dolen";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Gweld Pecyn Sticeri";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Galw";
@@ -3008,7 +3008,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Rhannu Cyfryngau";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Gwahoddiad Grŵp";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Pecyn Sticeri";
