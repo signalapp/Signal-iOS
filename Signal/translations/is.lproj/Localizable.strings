@@ -2744,7 +2744,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ er á Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
-"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Límmiðar";
+"INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Límmerki";
 
 /* accessibility hint for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Tvípikkaðu og haltu til að taka upp. Slepptu til að senda eða dragðu til vinstri til að hætta við. Tvípikkaðu og dragðu upp til að læsa upptöku.";
@@ -2978,13 +2978,13 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Áframsenda þessi skilaboð";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Opna boð í hóp";
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Opna tengil";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Skoða límmerkjapakka";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Símtal";
@@ -3008,10 +3008,10 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Deila myndefni";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Boð í hóp";
 
 /* Title for message actions for a sticker pack. */
-"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Límmiðapakki";
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "Límmerkjapakki";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Póstur";
@@ -5726,13 +5726,13 @@
 "STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Límmerki úr skilaboðum sem þú hefur fengið munu birtast hér";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Límmiðar";
+"STICKERS_MANAGE_VIEW_TITLE" = "Límmerki";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Límmiðapakki";
+"STICKERS_PACK_DEFAULT_TITLE" = "Límmerkjapakki";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Límmiðapakki";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Límmerkjapakki";
 
 /* Label indicating that the sticker pack failed to load. */
 "STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Mistókst að hlaða inn límmerkjapakka";

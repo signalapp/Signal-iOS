@@ -989,7 +989,7 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Zawsze wyciszone";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "Wyciszone";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "Wyciszono";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "do %@";
@@ -1103,10 +1103,10 @@
 "DATE_HOURS_AGO_FORMAT" = "%@g";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ godz";
+"DATE_HOURS_AGO_LONG_FORMAT" = "%@ godz.";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@min";
+"DATE_MINUTES_AGO_FORMAT" = "%@ min";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_LONG_FORMAT" = "%@ min";
@@ -5843,7 +5843,7 @@
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ godz";
+"TIME_AMOUNT_HOURS" = "%@ godz.";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@g";
@@ -5852,7 +5852,7 @@
 "TIME_AMOUNT_MINUTES" = "%@ min";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@min";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ min";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ sek";
@@ -5864,7 +5864,7 @@
 "TIME_AMOUNT_SINGLE_DAY" = "%@ dzień";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ godz";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ godz.";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ min";

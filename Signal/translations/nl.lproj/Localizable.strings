@@ -1298,7 +1298,7 @@
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Je Signal-instellingen overzetten naar een nieuw iOS apparaat. Zorg dat het nieuwe apparaat in de buurt is en aan staat.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Instellingen overzetten";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Alle Signal-gegevens overzetten";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal op je vorige apparaat, bren de apparaten bij elkaar in de buurt, en ga na dat zowel wifi als bluetooth op beide apparaten zijn ingeschakeld.";
@@ -1346,7 +1346,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dagen";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Nieuwe berichten in dit gesprek zullen nadat ze zijn gezien en nadat de ingestelde tijd is verlopen voor iedereen worden gewist. – Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Nieuwe berichten in dit gesprek zullen voor iedereen die ze heeft gezien nadat de ingestelde tijd is verlopen worden gewist. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Momenteel verlopen nieuwe berichten na %@";
@@ -1364,7 +1364,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "seconden";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Voor alle nieuwe gesprekken die jij zelf begint zullen berichten nadat ze zijn gezien en nadat de ingestelde tijd is verlopen voor iedereen worden gewist. – Gebruik verlopende berichten niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Voor alle nieuwe gesprekken die jij zelf begint zullen berichten voor iedereen die ze heeft gezien nadat de ingestelde tijd is verlopen worden gewist. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "weken";
@@ -1664,7 +1664,7 @@
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Kennissen uitnodigen";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "Nieuwe groep";
+"GET_STARTED_CARD_NEW_GROUP" = "Nieuwe groep aanmaken";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Ophalen van gevraagde GIF mislukt. Controleer of je wel online bent.";
@@ -2402,25 +2402,25 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "De naam van de groep is vanaf nu ‘%@’.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "Deze groep is omgezet in een nieuwe groep.";
+"GROUP_WAS_MIGRATED" = "Deze groep is omgezet in een nieuwe-stijl groep.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Een groepslid kon niet toegevoegd worden tot de nieuwe groep en is daarom verwijderd uit de groep.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Een groepslid kon niet toegevoegd worden tot de nieuwe-stijl groep en is daarom verwijderd uit de groep.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Je kon niet toegevoegd worden tot de nieuwe groep en je bent daarom verwijderd uit de groep.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Je kon niet toegevoegd worden tot de nieuwe-stijl groep en je bent daarom verwijderd uit de groep.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ groepsleden konden niet toegevoegd worden tot de nieuwe groep en zijn daarom verwijderd uit de groep.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ groepsleden konden niet toegevoegd worden tot de nieuwe-stijl groep en zijn daarom verwijderd uit de groep.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Een lid kon niet direct toegevoegd worden tot de nieuwe groep en heeft daarom een uitnodiging gekregen om opnieuw lid te worden.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Een lid kon niet direct toegevoegd worden tot de nieuwe-stijl groep en heeft daarom een uitnodiging gekregen om opnieuw lid te worden.";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Je kon niet toegevoegd worden aan de nieuwe groep en je hebt daarom een uitnodiging gekregen om opnieuw lid te worden.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Je kon niet toegevoegd worden aan de nieuwe-stijl groep en je hebt daarom een uitnodiging gekregen om opnieuw lid te worden.";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ groepsleden konden niet direct toegevoegd worden tot de nieuwe groep en hebben daarom een uitnodiging gekregen om opnieuw lid te worden.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ groepsleden konden niet direct toegevoegd worden tot de nieuwe-stijl groep en hebben daarom een uitnodiging gekregen om opnieuw lid te worden.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Je hebt de groep verlaten.";
@@ -2450,76 +2450,76 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Verouderde groepen zijn groepen waarin je geen gebruik kunt maken van nieuwe functionaliteiten zoals beheerders en meer gedetailleerde meldingen.";
 
 /* Title for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Wat zijn oude groepen?";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Wat zijn verouderde groepen?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Verouderde groepen kunnen niet worden omgezet in nieuwe groepen, maar je kunt wel een nieuwe groep aanmaken met dezelfde leden mits ze allemaal de meeste recente versie van Signal gebruiken.\n\nSignal zal in de toekomst een manier aanbieden om verouderde groepen om te zetten in nieuwe groepen.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Verouderde groepen kunnen niet worden omgezet in nieuwe-stijl groepen, maar je kunt wel een nieuwe-stijl groep aanmaken met dezelfde leden mits ze allemaal de meeste recente versie van Signal gebruiken.\n\nSignal zal in de toekomst een manier aanbieden om verouderde groepen om te zetten in nieuwe-stijl groepen.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kan ik een verouderde groep omzetten in een nieuwe groep?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Om een nieuwe groep aan te maken moeten alle leden hun Signal app bijwerken naar de meest recente versie.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Om een nieuwe-stijl groep aan te maken moeten alle leden hun Signal app bijwerken naar de meest recente versie.";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Verouderde groepen tegenover nieuwe groepen";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Verouderde groepen tegenover nieuwe-stijl groepen";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Zet deze groep om om nieuwe functionaliteiten te kunnen gebruiken zoals  @vermeldingen en beheerders. Groepsleden die hun profielnaam, -foto en -omschrijving niet voor deze groep zichtbaar hebben gemaakt, zullen worden uitgenodigd om tot deze groep toe te treden. %@. ";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Zet deze groep om naar een nieuwe-stijl groep om nieuwe functionaliteiten te kunnen gebruiken zoals  @vermeldingen en beheerders. Groepsleden die hun profielnaam, -foto en -omschrijving niet voor deze groep zichtbaar hebben gemaakt, zullen worden uitgenodigd om tot deze groep toe te treden. %@. ";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Kan niet worden omgezet naar een nieuwe groep";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Kan niet worden omgezet naar een nieuwe-stijl groep";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Deze groep kan niet omgezet worden naar een nieuwe groep omdat er te veel groepsleden zijn. De maximale groepsgrootte die omgezet kan worden is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Deze groep kan niet omgezet worden naar een nieuwe-stijl groep omdat er te veel groepsleden zijn. De maximale groepsgrootte die omgezet kan worden is %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Als alle groepsleden een versie van Signal gebruiken waarmee ze kunnen toetreden tot nieuwe groepen, dan zal deze groep worden omgezet in een nieuwe groep.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Als alle groepsleden een versie van Signal gebruiken waarmee ze kunnen toetreden tot nieuwe-stijl groepen, dan zal deze groep worden omgezet in een nieuwe-stijl groep.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Alle gespreksgeschiedenis en media van voor het omzetten zullen behouden blijven.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Deze groep kan niet worden aangemaakt omdat één lid een oude versie van Signal gebruikt. Je kunt een nieuwe groep aanmaken met hem of haar als lid nadat hij of zij Signal heeft bijgewerkt, of je kunt hem of haar voordat je de groep aanmaakt verwijderen.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Deze groep kan niet worden aangemaakt omdat één lid een oude versie van Signal gebruikt. Je kunt een nieuwe-stijl groep aanmaken met hem of haar als lid nadat hij of zij Signal heeft bijgewerkt, of je kunt hem of haar voordat je de groep aanmaakt verwijderen.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Deze groep kan niet worden aangemaakt omdat %@ leden een oude versie van Signal gebruiken. Je kunt een nieuwe groep aanmaken met hen als lid nadat ze Signal hebben bijgewerkt, of je kunt hen voordat je de groep aanmaakt verwijderen.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Deze groep kan niet worden aangemaakt omdat %@ leden een oude versie van Signal gebruiken. Je kunt een nieuwe-stijl groep aanmaken met hen als lid nadat ze Signal hebben bijgewerkt, of je kunt hen voordat je de groep aanmaakt verwijderen.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Deze groep kan niet worden aangemaakt omdat één lid een oude versie van Signal gebruikt. Je kunt een nieuwe groep aanmaken met hem of haar als lid nadat hij of zij Signal heeft bijgewerkt, of je kunt hem of haar voordat je de groep aanmaakt verwijderen. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Deze groep kan niet worden aangemaakt omdat één lid een oude versie van Signal gebruikt. Je kunt een nieuwe-stijl groep aanmaken met hem of haar als lid nadat hij of zij Signal heeft bijgewerkt, of je kunt hem of haar voordat je de groep aanmaakt verwijderen. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Deze groep kan niet worden aangemaakt omdat %1$@ leden een oude versie van Signal gebruiken. Je kunt een nieuwe groep aanmaken met hen als lid nadat ze Signal hebben bijgewerkt, of je kunt hen voordat je de groep aanmaakt verwijderen. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Deze groep kan niet worden aangemaakt omdat %1$@ leden een oude versie van Signal gebruiken. Je kunt een nieuwe-stijl groep aanmaken met hen als lid nadat ze Signal hebben bijgewerkt, of je kunt hen voordat je de groep aanmaakt verwijderen. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Er zal een oude groep aangemaakt worden omdat één lid een oude versie van Signal gebruikt. Je kunt een nieuwe-stijl groep aanmaken met hem/haar als lid nadat hij/zij Signal bijgewerkt heeft of verwijder hem/haar voordat je de groep aanmaakt.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Er zal een verouderde groep aangemaakt worden omdat één lid een oude versie van Signal gebruikt. Je kunt een nieuwe-stijl groep aanmaken met hem/haar als lid nadat hij/zij Signal heeft bijgewerkt of verwijder hem/haar voordat je de groep aanmaakt.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Er zal een oude groep aangemaakt worden omdat %@ leden een oude versie van Signal gebruiken. Je kunt een groep nieuwe stijl aanmaken met hen als lid nadat ze Signal bijgewerkt hebben, of hen verwijderen voordat je de groep aanmaakt.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Er zal een verouderde groep aangemaakt worden omdat %@ leden een oude versie van Signal gebruiken. Je kunt een nieuwe-stijl groep aanmaken met hen als lid nadat ze Signal hebben bijgewerkt, of hen verwijderen voordat je de groep aanmaakt.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "Eén lid ondersteunt geen nieuwe groepen daarom zal dit een oude groep zijn. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "Eén lid ondersteunt geen nieuwe-stijl groepen daarom zal dit een verouderde groep zijn. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ groepsleden ondersteunen geen nieuwe groepen, dus deze groep wordt een oude groep. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ groepsleden ondersteunen geen nieuwe-stijl groepen, dus deze groep wordt een verouderde groep. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dit is een verouderde groep. Om nieuwe functionaliteiten zoals groepsbeheer te kunnen gebruiken moet je een nieuwe groep aanmaken. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dit is een verouderde groep. Om nieuwe functionaliteiten zoals groepsbeheer te kunnen gebruiken moet je een nieuwe-stijl groep aanmaken. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Deze verouderde groep is nog niet klaar om omgezet te worden naar een nieuwe groep. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Deze verouderde groep is nog niet klaar om te worden omgezet naar een nieuwe-stijl groep. %@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Deze verouderde groep kan niet worden omgezet naar een nieuwe groep omdat deze te groot is. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Deze verouderde groep kan niet worden omgezet naar een nieuwe-stijl groep omdat hij te groot is. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Dit is een verouderde groep om nieuwe functionaliteiten te kunnen gebruiken zoals @vermeldigen en beheerders, %@.";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 groepslid kon niet worden toegevoegd tot de nieuwe groep. Wil je hem/haar nu toevoegen?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 groepslid kon niet worden toegevoegd tot de nieuwe-stijl groep. Wil je hem/haar nu toevoegen?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ groepsleden konden niet worden toegevoegd tot de nieuwe groep. Wil je ze nu toevoegen?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ groepsleden konden niet worden toegevoegd tot de nieuwe-stijl groep. Wil je ze nu toevoegen?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Verouderde groep";
@@ -2531,19 +2531,19 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Groep omzetten";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Om nieuwe functionaliteiten zoals @vermeldigen en beheerders te kunnen gebruiken, moet je deze groep omzetten in een nieuwe groep.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Om nieuwe functionaliteiten zoals @vermeldigen en beheerders te kunnen gebruiken, moet je deze groep omzetten in een nieuwe-stijl groep.";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Wat zijn ‘nieuwe’ groepen?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Wat zijn ‘nieuwe-stijl’ groepen?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Alle gespreksgeschiedenis en media van voor het omzetten zijn behouden gebleven.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nieuwe groepen hebben functionaliteiten waaronder @vermeldingen en groepsbeheer en in de toekomst zullen er meer functionaliteiten aan worden toegevoegd.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nieuwe-stijl groepen hebben functionaliteiten waaronder @vermeldingen en groepsbeheer en in de toekomst zullen er meer functionaliteiten aan worden toegevoegd.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Nieuwe groepen";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Nieuwe-stijl groepen";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Groepsleden toevoegen";
@@ -2558,10 +2558,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Groepsleden toevoegen";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Dit groepslid kon bij het omzetten van een groep in een nieuwe groep niet automatisch worden toegevoegd:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "Dit groepslid kon bij het omzetten van een groep in een nieuwe-stijl groep niet automatisch worden toegevoegd:";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Deze groepsleden konden bij het omzetten van een groep in een nieuwe groep niet automatisch worden toegevoegd:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Deze groepsleden konden bij het omzetten van een groep in een nieuwe-stijl groep niet automatisch worden toegevoegd:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Alle gespreksgeschiedenis en media van voor het omzetten zijn behouden gebleven.";
@@ -2579,28 +2579,28 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Deze groepsleden zullen opnieuw een uitnodiging ontvangen om tot de groep toe te treden en ze zullen geen berichten ontvangen zolang ze deze niet geaccepteerd hebben:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Dit groepslid is niet in staat om tot nieuwe groepen toe te treden en wordt daarom verwijderd uit de groep:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Dit groepslid is niet in staat om tot nieuwe-stijl groepen toe te treden en wordt daarom verwijderd uit de groep:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Deze groepsleden zijn niet in staat om tot nieuwe groepen toe te treden en worden daarom verwijderd uit de groep:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Deze groepsleden zijn niet in staat om tot nieuwe-stijl groepen toe te treden en worden daarom verwijderd uit de groep:";
 
 /* Title for the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Omzetten naar nieuwe groep";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Omzetten naar nieuwe-stijl groep";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Deze groep omzetten";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Deze groep kan op dit moment niet worden omgezet naar een nieuwe groep.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Deze groep kan op dit moment niet worden omgezet naar een nieuwe-stijl groep.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Deze groep kan niet worden omgezet naar een nieuwe groep omdat je niet verbonden bent met het internet. Probeer later opnieuw.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Deze groep kan niet worden omgezet naar een nieuwe-stijl groep omdat je niet verbonden bent met het internet. Probeer later opnieuw.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Groep omzetten mislukt";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Omgezet in een nieuwe groep.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Omgezet in een nieuwe-stijl groep.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "deze groep omzetten";
@@ -2882,13 +2882,13 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Open op beide apparaten de Instellingen app";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Schakel “Locaal netwerk” in";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Schakel “Lokaal netwerk” in";
 
 /* Second step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Zoek Signal in de lijst";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Schakel “Toegang tot locaal netwerk” in";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Schakel “Toegang tot lokaal netwerk” in";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Zoek op naam of adres";
@@ -3296,7 +3296,7 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Groepsfoto instellen";
 
 /* Label for the 'create new group' button. */
-"NEW_GROUP_BUTTON" = "Nieuwe groep";
+"NEW_GROUP_BUTTON" = "Nieuwe groep aanmaken";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Aanmaken";
@@ -3308,7 +3308,7 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Een nieuwe groep kon niet worden aangemaakt. Ga na dat je internet verbinding werkt, en probeer het opnieuw.";
 
 /* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ondersteunt nieuwe groepen niet";
+"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ondersteunt nieuwe-stijl groepen niet";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Een groepsnaam is vereist.";
@@ -4076,7 +4076,7 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Pincode verifiëren ";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Signal zal je af te toe vragen om je pincode opnieuw in te voeren, om te controleren of je hem goed onthouden hebt.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Signal zal je af te toe vragen om je pincode opnieuw in te voeren, om te controleren of je hem goed hebt onthouden.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Signal zal je er binnen een aantal dagen opnieuw aan herinneren dat je je pincode nog moet verifiëren.";
@@ -5330,7 +5330,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Herstel-zin plakken";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "De herstel-zin is voor iedereen uniek en bestaat uit 12 woorden. Je kunt deze zin gebruiken om je krediet te herstellen als je toegang verloren hebt.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "De herstel-zin is voor iedereen uniek en bestaat uit 12 woorden. Je kunt deze zin gebruiken om je krediet te herstellen als je toegang hebt verloren.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Vul je herstel-zin in";
@@ -5687,7 +5687,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Groepen waar je nu al lid van bent zullen deze nieuwe functionaliteiten ook krijgen in de komende weken.";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nieuwe groep";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nieuwe-stijl groep";
 
 /* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
@@ -6083,7 +6083,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om er voor te zorgen dat dit bericht wordt gewist nadat het is gezien.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-media worden onmiddellijk gewist zodra ze zijn verzonden. Je kunt je eigen media dus niet terugzien. – Gebruik eenmaligeweergave-berichten niet ter beveiliging, want Signal kan niet garanderen dat een bericht op het apparaat van een ander daadwerkelijk wordt gewist.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-media worden onmiddellijk gewist zodra ze zijn verzonden. Je kunt je eigen media dus niet terugzien. — Gebruik eenmaligeweergave-berichten niet ter beveiliging, want Signal kan niet garanderen dat een bericht op het apparaat van een ander daadwerkelijk wordt gewist.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Veeg om te annuleren";

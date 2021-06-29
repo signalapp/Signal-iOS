@@ -1,3 +1,4 @@
 • Fixed a bug that wouldn't let you send larger images. Panorama-tastic.
+• Fixed a crash for users on iOS 12
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

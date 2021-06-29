@@ -1,3 +1,3 @@
-• Fixed a bug that wouldn't let you send larger images. Panorama-tastic.
+• Foi corrigido um erro que impedia o envio de fotografias grandes, como as panorâmicas.
 
 Interessado em ajudar a melhorar o Signal? Estamos contratando. Visite https://signal.org/workworkwork para saber mais.

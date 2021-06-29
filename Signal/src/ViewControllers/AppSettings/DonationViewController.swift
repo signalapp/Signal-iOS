@@ -723,7 +723,7 @@ private class CustomValueTextField: UIView {
     }
 
     var decimalNumber: NSDecimalNumber? {
-        let number = NSDecimalNumber(string: valueString(for: text))
+        let number = NSDecimalNumber(string: valueString(for: text), locale: Locale.current)
         guard number != NSDecimalNumber.notANumber else { return nil }
         return number
     }
