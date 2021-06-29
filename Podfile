@@ -28,7 +28,7 @@ pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-ma
 
 pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
-pod 'ZKGroup', git: 'https://github.com/signalapp/signal-zkgroup-swift', testspecs: ["Tests"]
+pod 'ZKGroup', git: 'https://github.com/signalapp/zkgroup', testspecs: ["Tests"]
 
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'SignalArgon2', path: '../Argon2', testspecs: ["Tests"]
