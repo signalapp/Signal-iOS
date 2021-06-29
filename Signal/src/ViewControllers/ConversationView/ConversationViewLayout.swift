@@ -604,6 +604,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         isPerformingBatchUpdates = false
         delegateScrollContinuityMode = .disabled
+
+        if #available(iOS 13, *) {
+        } else {
+            // On iOS 12, we invalidate the layout immediately after performBatchUpdates()
+            // to ensure that targetContentOffset(forProposedContentOffset:) is applied in a timely way.
+            invalidateLayout()
+        }
     }
 
     @objc
@@ -770,12 +777,19 @@ public class ConversationViewLayout: UICollectionViewLayout {
         case .enabledIOS12(let token,
                            let isRelativeToTop,
                            let lastKnownDistanceFromBottom):
-            let layoutInfoCurrent = ensureCurrentLayoutInfo()
-            if let targetContentOffset = Self.targetContentOffsetForUpdate(delegate: delegate,
-                                                                           token: token,
-                                                                           isRelativeToTop: isRelativeToTop,
-                                                                           layoutInfoAfterUpdate: layoutInfoCurrent) {
-                   return targetContentOffset
+
+            if let lastKnownDistanceFromBottom = lastKnownDistanceFromBottom,
+               abs(lastKnownDistanceFromBottom) < 5 {
+                // If the user was scrolled to the bottom, use the "delegate"
+                // scroll continuity mechanism.
+            } else {
+                let layoutInfoCurrent = ensureCurrentLayoutInfo()
+                if let targetContentOffset = Self.targetContentOffsetForUpdate(delegate: delegate,
+                                                                               token: token,
+                                                                               isRelativeToTop: isRelativeToTop,
+                                                                               layoutInfoAfterUpdate: layoutInfoCurrent) {
+                    return targetContentOffset
+                }
             }
             if let conversationViewController = delegate.conversationViewController {
                 let targetContentOffset = conversationViewController.targetContentOffset(forProposedContentOffset: proposedContentOffset,
