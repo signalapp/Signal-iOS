@@ -402,7 +402,7 @@ extension SignalServiceAddress {
 
 public extension Array where Element == SignalServiceAddress {
     func stableSort() -> [SignalServiceAddress] {
-        // Use an arbitrary sort to ensure the output is deterministic.
+        // Use an arbitrary sort but ensure the ordering is stable.
         self.sorted { (left, right) in
             left.sortKey < right.sortKey
         }

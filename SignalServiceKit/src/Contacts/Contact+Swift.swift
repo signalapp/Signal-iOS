@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,5 +33,22 @@ public extension Contact {
         }
 
         return phoneNumbers.orderedMembers
+    }
+
+    public func registeredAddresses() -> [SignalServiceAddress] {
+        databaseStorage.read { transaction in
+            registeredAddresses(transaction: transaction)
+        }
+    }
+
+    public func registeredAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        e164sForIntersection.compactMap { e164 in
+            let address = SignalServiceAddress(phoneNumber: e164)
+            if SignalRecipient.isRegisteredRecipient(address, transaction: transaction) {
+                return address
+            } else {
+                return nil
+            }
+        }
     }
 }

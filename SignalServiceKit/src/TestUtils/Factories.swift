@@ -610,8 +610,7 @@ public class ContactFactory {
                        userTextPhoneNumbers: userTextPhoneNumbers,
                        phoneNumberNameMap: phoneNumberNameMap,
                        parsedPhoneNumbers: parsedPhoneNumbers,
-                       emails: emailsBuilder(),
-                       imageDataToHash: imageDataToHashBuilder())
+                       emails: emailsBuilder())
     }
 
     public var localClientPhonenumber: String = "+13235551234"
@@ -646,10 +645,6 @@ public class ContactFactory {
 
     public var emailsBuilder: () -> [String] = {
         return [CommonGenerator.email()]
-    }
-
-    public var imageDataToHashBuilder: () -> Data? = {
-        return nil
     }
 }
 

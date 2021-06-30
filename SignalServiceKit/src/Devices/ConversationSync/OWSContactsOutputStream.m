@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
         contactBuilder.verified = verified;
     }
 
-    NSData *_Nullable avatarJpegData = signalAccount.contactAvatarJpegData;
+    NSData *_Nullable avatarJpegData = [signalAccount buildContactAvatarJpegData];
     if (avatarJpegData != nil) {
         SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
         [avatarBuilder setContentType:OWSMimeTypeImageJpeg];

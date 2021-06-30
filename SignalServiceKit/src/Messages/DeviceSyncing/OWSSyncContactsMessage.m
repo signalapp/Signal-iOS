@@ -103,38 +103,47 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContactsOutputStream *contactsOutputStream =
         [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
-    for (SignalAccount *signalAccount in signalAccounts) {
-        OWSRecipientIdentity *_Nullable recipientIdentity =
-            [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress transaction:transaction];
-        NSData *_Nullable profileKeyData =
-            [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress transaction:transaction];
+    // We use batching to place an upper bound on memory
+    // usage.
+    [Batching enumerateArray:signalAccounts
+                   batchSize:12
+                   itemBlock:^(SignalAccount *signalAccount) {
+                       OWSRecipientIdentity *_Nullable recipientIdentity =
+                           [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress
+                                                                 transaction:transaction];
+                       NSData *_Nullable profileKeyData =
+                           [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress
+                                                             transaction:transaction];
 
-        OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
+                       OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
 
-        TSContactThread *_Nullable contactThread =
-            [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress transaction:transaction];
-        ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:contactThread
-                                                                               ignoreMissing:contactThread == nil
-                                                                                 transaction:transaction];
+                       TSContactThread *_Nullable contactThread =
+                           [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress
+                                                            transaction:transaction];
+                       ThreadAssociatedData *associatedData =
+                           [ThreadAssociatedData fetchOrDefaultForThread:contactThread
+                                                           ignoreMissing:contactThread == nil
+                                                             transaction:transaction];
 
-        NSNumber *_Nullable isArchived;
-        NSNumber *_Nullable inboxPosition;
-        if (contactThread) {
-            isArchived = [NSNumber numberWithBool:associatedData.isArchived];
-            inboxPosition = [[AnyThreadFinder new] sortIndexObjcWithThread:contactThread transaction:transaction];
-            disappearingMessagesConfiguration =
-                [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
-        }
+                       NSNumber *_Nullable isArchived;
+                       NSNumber *_Nullable inboxPosition;
+                       if (contactThread) {
+                           isArchived = [NSNumber numberWithBool:associatedData.isArchived];
+                           inboxPosition = [[AnyThreadFinder new] sortIndexObjcWithThread:contactThread
+                                                                              transaction:transaction];
+                           disappearingMessagesConfiguration =
+                               [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
+                       }
 
-        [contactsOutputStream writeSignalAccount:signalAccount
-                               recipientIdentity:recipientIdentity
-                                  profileKeyData:profileKeyData
-                                 contactsManager:self.contactsManager
-               disappearingMessagesConfiguration:disappearingMessagesConfiguration
-                                      isArchived:isArchived
-                                   inboxPosition:inboxPosition];
-    }
-    
+                       [contactsOutputStream writeSignalAccount:signalAccount
+                                              recipientIdentity:recipientIdentity
+                                                 profileKeyData:profileKeyData
+                                                contactsManager:self.contactsManager
+                              disappearingMessagesConfiguration:disappearingMessagesConfiguration
+                                                     isArchived:isArchived
+                                                  inboxPosition:inboxPosition];
+                   }];
+
     [dataOutputStream close];
 
     if (contactsOutputStream.hasError) {

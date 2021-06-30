@@ -946,7 +946,6 @@ public extension DebugUIScreenshots {
         } else {
             let newAccount = SignalAccount(contact: contact,
                                            contactAvatarHash: nil,
-                                           contactAvatarJpegData: nil,
                                            multipleAccountLabelText: "",
                                            recipientPhoneNumber: phoneNumber,
                                            recipientUUID: uuidString)
@@ -1005,8 +1004,7 @@ public extension DebugUIScreenshots {
                        userTextPhoneNumbers: userTextPhoneNumbers,
                        phoneNumberNameMap: phoneNumberNameMap,
                        parsedPhoneNumbers: parsedPhoneNumbers,
-                       emails: [],
-                       imageDataToHash: nil)
+                       emails: [])
     }
 
     private class func buildOutgoingMessage(thread: TSThread,

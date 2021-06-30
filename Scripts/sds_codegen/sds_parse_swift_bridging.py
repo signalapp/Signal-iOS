@@ -86,6 +86,8 @@ def process_file(file_path, namespace, intermediates):
     filename = os.path.basename(file_path)
     if not filename.endswith('.swift'):
         return
+    if filename == 'EmojiWithSkinTones+String.swift':
+        return
 
     command = [
         'which',

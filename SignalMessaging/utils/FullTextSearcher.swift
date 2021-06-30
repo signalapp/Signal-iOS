@@ -357,7 +357,7 @@ public class FullTextSearcher: NSObject {
                     // Ignore unregistered recipients.
                     return
                 }
-                let signalAccount = SignalAccount(signalRecipient: signalRecipient, contact: nil, multipleAccountLabelText: nil)
+                let signalAccount = SignalAccount.transientSignalAccount(forSignalRecipient: signalRecipient)
                 let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
                 signalRecipentResults.append(searchResult)
             case let groupThread as TSGroupThread:
@@ -601,7 +601,7 @@ public class FullTextSearcher: NSObject {
             // Ignore unregistered recipients.
             guard recipient.devices.count > 0 else { return }
 
-            let account = SignalAccount(signalRecipient: recipient, contact: nil, multipleAccountLabelText: nil)
+            let account = SignalAccount.transientSignalAccount(forSignalRecipient: recipient)
             appendSignalAccount(account)
         }
 
@@ -779,5 +779,16 @@ public class FullTextSearcher: NSObject {
         let displayName = contactsManager.displayName(for: address, transaction: transaction)
 
         return "\(address.phoneNumber ?? "") \(displayName)"
+    }
+}
+
+// MARK: -
+
+extension SignalAccount {
+    public static func transientSignalAccount(forSignalRecipient signalRecipient: SignalRecipient) -> SignalAccount {
+        SignalAccount(signalRecipient: signalRecipient,
+                      contact: nil,
+                      contactAvatarHash: nil,
+                      multipleAccountLabelText: nil)
     }
 }

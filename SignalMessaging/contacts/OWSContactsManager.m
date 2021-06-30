@@ -92,17 +92,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:NO];
 }
 
-- (dispatch_queue_t)intersectionQueue
-{
-    static dispatch_queue_t _serialQueue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _serialQueue = dispatch_queue_create("org.whispersystems.contacts.intersectionQueue", DISPATCH_QUEUE_SERIAL);
-    });
-
-    return _serialQueue;
-}
-
 #pragma mark - System Contact Fetching
 
 // Request contacts access if you haven't asked recently.
@@ -502,157 +491,18 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             [self intersectContacts:allContacts
                     isUserRequested:isUserRequested
                          completion:^(NSError *_Nullable error) {
-                             // TODO: Should we do this on error?
-                             [self buildSignalAccountsAndClearStaleCache:shouldClearStaleCache didLoad:didLoad];
+                             if (error != nil) {
+                                 OWSFailDebug(@"Error: %@", error);
+                                 return;
+                             }
+                             [OWSContactsManager
+                                 buildSignalAccountsForContacts:sortedContacts
+                                          shouldClearStaleCache:shouldClearStaleCache
+                                                     completion:^(NSArray<SignalAccount *> *signalAccounts) {
+                                                         [self updateSignalAccounts:signalAccounts
+                                                             shouldSetHasLoadedContacts:didLoad];
+                                                     }];
                          }];
-        });
-    });
-}
-
-- (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache didLoad:(BOOL)didLoad
-{
-    dispatch_async(self.intersectionQueue, ^{
-        NSMutableArray<SignalAccount *> *systemContactsSignalAccounts = [NSMutableArray new];
-        NSArray<Contact *> *contacts = self.allContacts;
-
-        // We use a transaction only to load the SignalRecipients for each contact,
-        // in order to avoid database deadlock.
-        NSMutableDictionary<NSString *, NSArray<SignalRecipient *> *> *contactIdToSignalRecipientsMap =
-            [NSMutableDictionary new];
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            for (Contact *contact in contacts) {
-                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-                contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;
-            }
-        }];
-
-        NSMutableSet<SignalServiceAddress *> *seenAddresses = [NSMutableSet new];
-        for (Contact *contact in contacts) {
-            NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
-            for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector((compare:))]) {
-                if ([seenAddresses containsObject:signalRecipient.address]) {
-                    OWSLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.address, contact.fullName);
-                    continue;
-                }
-                [seenAddresses addObject:signalRecipient.address];
-
-                NSString *_Nullable multipleAccountLabelText = nil;
-                if (signalRecipients.count > 1) {
-                    multipleAccountLabelText = [[self class] accountLabelForContact:contact
-                                                                            address:signalRecipient.address];
-                }
-                SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient
-                                                                                      contact:contact
-                                                                     multipleAccountLabelText:multipleAccountLabelText];
-                [signalAccount tryToCacheContactAvatarData];
-                [systemContactsSignalAccounts addObject:signalAccount];
-            }
-        }
-
-        NSMutableArray<SignalAccount *> *persistedSignalAccounts = [NSMutableArray new];
-        NSMutableDictionary<SignalServiceAddress *, SignalAccount *> *persistedSignalAccountMap =
-            [NSMutableDictionary new];
-        NSMutableDictionary<SignalServiceAddress *, SignalAccount *> *signalAccountsToKeep = [NSMutableDictionary new];
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [SignalAccount
-                anyEnumerateWithTransaction:transaction
-                                      block:^(SignalAccount *signalAccount, BOOL *stop) {
-                                          persistedSignalAccountMap[signalAccount.recipientAddress] = signalAccount;
-                                          [persistedSignalAccounts addObject:signalAccount];
-                                          if (signalAccount.contact.isFromContactSync) {
-                                              signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount;
-                                          }
-                                      }];
-        }];
-
-        NSMutableArray<SignalAccount *> *signalAccountsToUpsert = [NSMutableArray new];
-        for (SignalAccount *signalAccount in systemContactsSignalAccounts) {
-            if (signalAccountsToKeep[signalAccount.recipientAddress] != nil
-                && !signalAccountsToKeep[signalAccount.recipientAddress].contact.isFromContactSync) {
-                OWSFailDebug(@"Ignoring redundant signal account: %@", signalAccount.recipientAddress);
-                continue;
-            }
-
-            SignalAccount *_Nullable persistedSignalAccount = persistedSignalAccountMap[signalAccount.recipientAddress];
-
-            if (persistedSignalAccount == nil) {
-                // new Signal Account
-                signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount;
-                [signalAccountsToUpsert addObject:signalAccount];
-                continue;
-            }
-
-            if ([persistedSignalAccount hasSameContent:signalAccount]) {
-                // Same value, no need to save.
-                signalAccountsToKeep[signalAccount.recipientAddress] = persistedSignalAccount;
-                continue;
-            }
-
-            // value changed, save account
-
-            if (persistedSignalAccount.contact.isFromContactSync) {
-                OWSLogInfo(@"replacing SignalAccount from synced contact with SignalAccount from system contacts");
-            }
-
-            signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount;
-            [signalAccountsToUpsert addObject:signalAccount];
-        }
-
-        // Clean up orphans.
-        NSMutableArray<SignalAccount *> *signalAccountsToRemove = [NSMutableArray new];
-        for (SignalAccount *signalAccount in persistedSignalAccounts) {
-            if (signalAccount == signalAccountsToKeep[signalAccount.recipientAddress]) {
-                continue;
-            }
-
-            // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
-            // However, as of iOS 11.2 CNContactStore occasionally gives us only a subset of the system contacts.
-            // Because of that, it's not safe to clear orphaned accounts.
-            // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
-            // their contacts we'll clear the cached ones.
-            // RADAR: https://bugreport.apple.com/web/?problemID=36082946
-            BOOL isOrphan = signalAccountsToKeep[signalAccount.recipientAddress] == nil;
-            if (isOrphan && !shouldClearStaleCache) {
-                OWSLogVerbose(@"Ensuring old SignalAccount is not inadvertently lost: %@", signalAccount);
-                // Make note that we're retaining this orphan; otherwise we could
-                // retain multiple orphans for a given recipient.
-                signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount;
-                continue;
-            } else {
-                // Always cleanup instances that have been replaced by another instance.
-            }
-
-            [signalAccountsToRemove addObject:signalAccount];
-        }
-
-        // Update cached SignalAccounts on disk
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            if (signalAccountsToRemove.count > 0) {
-                OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)signalAccountsToRemove.count);
-                for (SignalAccount *signalAccount in signalAccountsToRemove) {
-                    OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount.recipientAddress);
-                    [signalAccount anyRemoveWithTransaction:transaction];
-                }
-            }
-
-            if (signalAccountsToUpsert.count > 0) {
-                OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
-                for (SignalAccount *signalAccount in signalAccountsToUpsert) {
-                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount.recipientAddress);
-                    [signalAccount anyUpsertWithTransaction:transaction];
-                }
-            }
-
-            OWSLogInfo(
-                @"SignalAccount cache size: %lu.", (unsigned long)[SignalAccount anyCountWithTransaction:transaction]);
-        });
-
-        // Add system contacts to the profile whitelist immediately
-        // so that they do not see the "message request" UI.
-        [self.profileManager addUsersToProfileWhitelist:seenAddresses.allObjects];
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateSignalAccounts:signalAccountsToKeep.allValues shouldSetHasLoadedContacts:didLoad];
         });
     });
 }
@@ -825,44 +675,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 #pragma mark - View Helpers
-
-// TODO move into Contact class.
-+ (NSString *)accountLabelForContact:(Contact *)contact address:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(contact);
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug([contact.registeredAddresses containsObject:address]);
-
-    if (contact.registeredAddresses.count <= 1) {
-        return nil;
-    }
-
-    // 1. Find the address type of this account.
-    NSString *addressLabel = [contact nameForAddress:address];
-
-    // 2. Find all addresses for this contact of the same type.
-    NSMutableArray<SignalServiceAddress *> *addressesWithTheSameName = [NSMutableArray new];
-    for (SignalServiceAddress *registeredAddress in contact.registeredAddresses) {
-        if ([addressLabel isEqualToString:[contact nameForAddress:registeredAddress]]) {
-            [addressesWithTheSameName addObject:registeredAddress];
-        }
-    }
-
-    OWSAssertDebug([addressesWithTheSameName containsObject:address]);
-    if (addressesWithTheSameName.count > 1) {
-        NSUInteger index =
-            [[addressesWithTheSameName sortedArrayUsingSelector:@selector((compare:))] indexOfObject:address];
-        NSString *indexText = [OWSFormat formatUInt:index + 1];
-        addressLabel =
-            [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
-                                           @"Format for phone number label with an index. Embeds {{Phone number label "
-                                           @"(e.g. 'home')}} and {{index, e.g. 2}}."),
-                      addressLabel,
-                      indexText];
-    }
-
-    return addressLabel.filterStringForDisplay;
-}
 
 - (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2
 {

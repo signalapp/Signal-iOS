@@ -192,8 +192,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                        userTextPhoneNumbers: userTextPhoneNumbers,
                        phoneNumberNameMap: phoneNumberNameMap,
                        parsedPhoneNumbers: parsedPhoneNumbers,
-                       emails: [],
-                       imageDataToHash: contactDetails.avatarData)
+                       emails: [])
     }
 
     private func process(attachmentStream: TSAttachmentStream) throws {
@@ -206,16 +205,9 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 let inputStream = ChunkedInputStream(forReadingFrom: pointer, count: bufferPtr.count)
                 let contactStream = ContactsInputStream(inputStream: inputStream)
 
-                // We use batching to avoid long-running write transactions.
-                while let contacts = try Self.buildBatch(contactStream: contactStream) {
-                    try databaseStorage.write { transaction in
-                        try autoreleasepool {
-                            for contact in contacts {
-                                try self.process(contactDetails: contact, transaction: transaction)
-                            }
-                        }
-                    }
-                }
+                // We use batching to avoid long-running write transactions
+                // and to place an upper bound on memory usage.
+                while try processBatch(contactStream: contactStream) {}
 
                 databaseStorage.write { transaction in
                     // Always fire just one identity change notification, rather than potentially
@@ -224,6 +216,26 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                     self.identityManager.fireIdentityStateChangeNotification(after: transaction)
                 }
             }
+        }
+    }
+
+    // Returns false when there are no more contacts to process.
+    private func processBatch(contactStream: ContactsInputStream) throws -> Bool {
+        try autoreleasepool {
+            // We use batching to avoid long-running write transactions.
+            guard let contacts = try Self.buildBatch(contactStream: contactStream) else {
+                return false
+            }
+            guard !contacts.isEmpty else {
+                owsFailDebug("Empty batch.")
+                return false
+            }
+            try databaseStorage.write { transaction in
+                for contact in contacts {
+                    try self.process(contactDetails: contact, transaction: transaction)
+                }
+            }
+            return true
         }
     }
 
@@ -246,16 +258,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         // Mark as registered, since we trust the contact information sent from our other devices.
         SignalRecipient.mark(asRegisteredAndGet: contactDetails.address, trustLevel: .high, transaction: transaction)
 
-        let contactAvatarHash: Data?
-        let contactAvatarJpegData: Data?
-        if let avatarData = contactDetails.avatarData {
-            contactAvatarHash = Cryptography.computeSHA256Digest(avatarData)
-            contactAvatarJpegData = UIImage.validJpegData(fromAvatarData: avatarData)
-        } else {
-            contactAvatarHash = nil
-            contactAvatarJpegData = nil
-        }
-
         if let existingAccount = self.contactsManagerImpl.fetchSignalAccount(for: contactDetails.address,
                                                                              transaction: transaction) {
             if existingAccount.contact == nil {
@@ -269,8 +271,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         } else {
             let contact = try self.buildContact(contactDetails, transaction: transaction)
             let newAccount = SignalAccount(contact: contact,
-                                           contactAvatarHash: contactAvatarHash,
-                                           contactAvatarJpegData: contactAvatarJpegData,
+                                           contactAvatarHash: nil,
                                            multipleAccountLabelText: "",
                                            recipientPhoneNumber: contactDetails.address.phoneNumber,
                                            recipientUUID: contactDetails.address.uuidString)

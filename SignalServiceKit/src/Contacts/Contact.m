@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
-@property (nonatomic, readonly) NSUInteger imageHash;
 
 @end
 
@@ -46,7 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
               phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
               parsedPhoneNumbers:(NSArray<PhoneNumber *> *)parsedPhoneNumbers
                           emails:(NSArray<NSString *> *)emails
-                 imageDataToHash:(nullable NSData *)imageDataToHash
 {
     self = [super init];
 
@@ -67,19 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
     _phoneNumberNameMap = [phoneNumberNameMap copy];
     _parsedPhoneNumbers = [parsedPhoneNumbers copy];
     _emails = [emails copy];
-
-    if (imageDataToHash != nil) {
-        NSUInteger hashValue = 0;
-        NSData *_Nullable hashData = [Cryptography computeSHA256Digest:imageDataToHash
-                                                      truncatedToBytes:sizeof(hashValue)];
-        if (!hashData) {
-            OWSFailDebug(@"could not compute hash for avatar.");
-        }
-        [hashData getBytes:&hashValue length:sizeof(hashValue)];
-        _imageHash = hashValue;
-    } else {
-        _imageHash = 0;
-    }
 
     return self;
 }
@@ -168,8 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
              userTextPhoneNumbers:userTextPhoneNumbers
                phoneNumberNameMap:phoneNumberNameMap
                parsedPhoneNumbers:parsedPhoneNumbers
-                           emails:emailAddresses
-                  imageDataToHash:[Contact avatarDataForCNContact:cnContact]];
+                           emails:emailAddresses];
 }
 
 - (NSString *)uniqueId
@@ -266,21 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithFormat:@"%@: %@", self.fullName, self.userTextPhoneNumbers];
 }
 
-- (NSArray<SignalServiceAddress *> *)registeredAddresses
-{
-    __block NSMutableArray<SignalServiceAddress *> *addresses = [NSMutableArray array];
-
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        for (NSString *e164PhoneNumber in self.e164sForIntersection) {
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:e164PhoneNumber];
-            if ([SignalRecipient isRegisteredRecipient:address transaction:transaction]) {
-                [addresses addObject:address];
-            }
-        }
-    }];
-    return [addresses copy];
-}
-
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering {
     return ^NSComparisonResult(id obj1, id obj2) {
         Contact *contact1 = (Contact *)obj1;
@@ -300,9 +269,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)nameForAddress:(SignalServiceAddress *)address
+         registeredAddresses:(NSArray<SignalServiceAddress *> *)registeredAddresses
 {
     OWSAssertDebug(address.isValid);
-    OWSAssertDebug([self.registeredAddresses containsObject:address]);
+    OWSAssertDebug([registeredAddresses containsObject:address]);
 
     // We don't have contacts entries for addresses without phone numbers
     if (!address.phoneNumber) {
@@ -348,8 +318,6 @@ NS_ASSUME_NONNULL_BEGIN
     hash ^= self.fullName.hash;
 
     hash ^= self.nickname.hash;
-
-    hash ^= self.imageHash;
 
     for (NSString *phoneNumber in self.e164PhoneNumbers) {
         hash ^= phoneNumber.hash;

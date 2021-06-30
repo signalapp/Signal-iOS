@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
     UserProfileWriter_Debugging,
     UserProfileWriter_Tests,
     UserProfileWriter_Unknown,
+    UserProfileWriter_SystemContactsFetch,
 };
 
 #pragma mark -
@@ -93,6 +94,9 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses;
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+                 userProfileWriter:(UserProfileWriter)userProfileWriter
+                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address;
 - (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address

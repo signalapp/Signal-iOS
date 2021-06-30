@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSGroupsOutputStream.h>
-#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
@@ -65,24 +65,23 @@ NS_ASSUME_NONNULL_BEGIN
     [dataOutputStream open];
     OWSGroupsOutputStream *groupsOutputStream = [[OWSGroupsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
-    [TSGroupThread
-        anyEnumerateWithTransaction:transaction
-                            batched:YES
-                              block:^(TSThread *thread, BOOL *stop) {
-                                  if (![thread isKindOfClass:[TSGroupThread class]]) {
-                                      if (![thread isKindOfClass:[TSContactThread class]]) {
-                                          OWSLogWarn(@"Ignoring non group thread in thread collection: %@", thread);
-                                      }
-                                      return;
-                                  }
-                                  TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                  // We only sync v1 groups via group sync messages.
-                                  if (groupThread.isGroupV2Thread) {
-                                      return;
-                                  }
-
-                                  [groupsOutputStream writeGroup:groupThread transaction:transaction];
-                              }];
+    [TSGroupThread anyEnumerateWithTransaction:transaction
+                                       batched:YES
+                                         block:^(TSThread *thread, BOOL *stop) {
+        if (![thread isKindOfClass:[TSGroupThread class]]) {
+            if (![thread isKindOfClass:[TSContactThread class]]) {
+                OWSLogWarn(@"Ignoring non group thread in thread collection: %@", thread);
+            }
+            return;
+        }
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        // We only sync v1 groups via group sync messages.
+        if (groupThread.isGroupV2Thread) {
+            return;
+        }
+        
+        [groupsOutputStream writeGroup:groupThread transaction:transaction];
+    }];
 
     [dataOutputStream close];
 

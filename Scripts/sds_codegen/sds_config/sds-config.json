@@ -123,7 +123,8 @@
 		"TSThread.isArchivedObsolete": "isArchived",
 		"TSThread.isMarkedUnreadObsolete": "isMarkedUnread",
 		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp",
-		"TSThread.conversationColorNameObsolete": "conversationColorName"
+		"TSThread.conversationColorNameObsolete": "conversationColorName",
+		"SignalAccount.contactAvatarJpegDataObsolete": "contactAvatarJpegData"
 	},
 	"renamed_column_names": {
 		"TSThread.lastVisibleSortIdObsolete": "lastVisibleSortId",
@@ -132,6 +133,7 @@
 		"TSThread.isArchivedObsolete": "isArchived",
 		"TSThread.isMarkedUnreadObsolete": "isMarkedUnread",
 		"TSThread.mutedUntilTimestampObsolete": "mutedUntilTimestamp",
-		"TSThread.conversationColorNameObsolete": "conversationColorName"
+		"TSThread.conversationColorNameObsolete": "conversationColorName",
+		"SignalAccount.contactAvatarJpegDataObsolete": "contactAvatarJpegData"
 	}
 }

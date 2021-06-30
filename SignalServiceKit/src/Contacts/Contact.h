@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -33,9 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *cnContactId;
 @property (nonatomic, readonly) BOOL isFromContactSync;
 
-// TODO: Remove this method.
-- (NSArray<SignalServiceAddress *> *)registeredAddresses;
-
 #if TARGET_OS_IOS
 
 - (instancetype)initWithSystemContact:(CNContact *)cnContact;
@@ -49,8 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
             userTextPhoneNumbers:(NSArray<NSString *> *)userTextPhoneNumbers
               phoneNumberNameMap:(NSDictionary<NSString *, NSString *> *)phoneNumberNameMap
               parsedPhoneNumbers:(NSArray<PhoneNumber *> *)parsedPhoneNumbers
-                          emails:(NSArray<NSString *> *)emails
-                 imageDataToHash:(nullable NSData *)imageDataToHash NS_DESIGNATED_INITIALIZER;
+                          emails:(NSArray<NSString *> *)emails NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -58,7 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
-- (NSString *)nameForAddress:(SignalServiceAddress *)address;
+- (NSString *)nameForAddress:(SignalServiceAddress *)address
+         registeredAddresses:(NSArray<SignalServiceAddress *> *)registeredAddresses;
 
 #endif // TARGET_OS_IOS
 

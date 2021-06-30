@@ -188,7 +188,7 @@
     "RecipientReadReceiptRecord.sentTimestamp": 2, 
     "SignalAccountRecord.contact": 1, 
     "SignalAccountRecord.contactAvatarHash": 2, 
-    "SignalAccountRecord.contactAvatarJpegData": 3, 
+    "SignalAccountRecord.contactAvatarJpegDataObsolete": 3, 
     "SignalAccountRecord.multipleAccountLabelText": 4, 
     "SignalAccountRecord.recipientPhoneNumber": 5, 
     "SignalAccountRecord.recipientUUID": 6, 
