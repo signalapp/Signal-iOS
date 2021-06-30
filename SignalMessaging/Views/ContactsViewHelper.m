@@ -75,6 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setup
 {
+    if (CurrentAppContext().isNSE) {
+        return;
+    }
     [self.blockListCache startObservingAndSyncStateWithDelegate:self];
     [self updateContacts];
     [self observeNotifications];
@@ -133,6 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(address);
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     SignalAccount *_Nullable signalAccount;
 
@@ -150,6 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address);
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
     return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
@@ -157,17 +162,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalAccount *> *)allSignalAccounts
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     return self.signalAccounts;
 }
 
 - (SignalServiceAddress *)localAddress
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     return TSAccountManager.localAddress;
 }
 
 - (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     return [self.blockListCache isAddressBlocked:address];
 }
@@ -175,12 +185,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     return [self.blockListCache isGroupIdBlocked:groupId];
 }
 
 - (BOOL)isThreadBlocked:(TSThread *)thread
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         return [self isSignalServiceAddressBlocked:contactThread.contactAddress];
@@ -195,12 +208,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasUpdatedContactsAtLeastOnce
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     return self.contactsManagerImpl.hasLoadedContacts;
 }
 
 - (void)updateContacts
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
     NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
@@ -249,6 +265,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     return [[[searchText ows_stripped]
         componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable searchTerm,
@@ -260,6 +278,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
                                                      transaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
     SignalAccount *selfAccount = [[SignalAccount alloc] initWithSignalServiceAddress:self.localAddress];
@@ -273,6 +293,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(contact);
     OWSAssertDebug(searchTerm.length > 0);
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     if ([contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
         return YES;
@@ -294,6 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(contact);
     OWSAssertDebug(searchTerms.count > 0);
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     for (NSString *searchTerm in searchTerms) {
         if (![self doesContact:contact matchSearchTerm:searchTerm]) {
@@ -306,6 +328,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     NSArray<NSString *> *searchTerms = [self searchTermsForSearchString:searchText];
 
     if (searchTerms.count < 1) {
@@ -321,6 +345,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)warmNonSignalContactsCacheAsync
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     if (self.nonSignalContacts != nil) {
         return;
     }
@@ -347,6 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSArray<Contact *> *)nonSignalContacts
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
@@ -371,11 +398,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     [ContactsViewHelper presentMissingContactAccessAlertControllerFromViewController:viewController];
 }
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     ActionSheetController *alert = [[ActionSheetController alloc]
         initWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
                                         : @"Alert title for when the user has just tried to edit a "
@@ -405,6 +436,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
                                                       editImmediately:(BOOL)shouldEditImmediately
 {
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     return [self contactViewControllerForAddress:address
                                  editImmediately:shouldEditImmediately
                           addToExistingCnContact:nil
@@ -418,6 +451,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     (nullable NSPersonNameComponents *)updatedNameComponents
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
 
     SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
 
@@ -524,6 +558,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)blockListCacheDidUpdate:(OWSBlockListCache *)blocklistCache
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
     [self updateContacts];
 }
 
