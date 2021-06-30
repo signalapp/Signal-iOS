@@ -53,9 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageManager () <UIDatabaseSnapshotDelegate>
 
-// This should only be accessed while synchronized on self.
-@property (nonatomic, readonly) NSMutableSet<NSString *> *groupInfoRequestSet;
-
 @end
 
 #pragma mark -
@@ -69,8 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-
-    _groupInfoRequestSet = [NSMutableSet new];
 
     OWSSingletonAssert();
 
@@ -663,11 +658,11 @@ NS_ASSUME_NONNULL_BEGIN
                     // members, title, and avatar.
                     if (groupThread.groupModel.groupName == nil && groupThread.groupModel.groupAvatarData == nil
                         && groupThread.groupModel.nonLocalGroupMembers.count == 0) {
-                        [self sendGroupInfoRequestWithGroupId:groupId envelope:envelope transaction:transaction];
+                        OWSFailDebug(@"Empty v1 group.");
                     }
                     return groupThread;
                 case SSKProtoGroupContextTypeRequestInfo:
-                    [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
+                    OWSFailDebug(@"Ignoring group info request.");
                     return nil;
                 default:
                     OWSFailDebug(@"Unknown group context type.");
@@ -679,7 +674,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Unexpected group context type.");
                 return nil;
             } else if (groupContextType == SSKProtoGroupContextTypeDeliver) {
-                [self sendGroupInfoRequestWithGroupId:groupId envelope:envelope transaction:transaction];
+                OWSFailDebug(@"Unknown v1 group.");
                 return nil;
             } else {
                 OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceAddress);
@@ -813,58 +808,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                     disappearingMessageToken:disappearingMessageToken
                                                     groupUpdateSourceAddress:authorAddress
                                                                  transaction:transaction];
-}
-
-- (void)sendGroupInfoRequestWithGroupId:(NSData *)groupId
-                               envelope:(SSKProtoEnvelope *)envelope
-                            transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    if (groupId.length < 1) {
-        OWSFailDebug(@"Invalid groupId.");
-        return;
-    }
-
-    // We don't want to send more than one "group info request"
-    // to a given user if we receive multiple messages in an
-    // unknown group from that user.
-    //
-    // We use groupInfoRequestSet to de-bounce.
-    NSString *requestKey =
-        [NSString stringWithFormat:@"%@.%@", groupId.hexadecimalString, envelope.sourceAddress.stringForDisplay];
-    @synchronized(self) {
-        BOOL shouldSkipRequest = [self.groupInfoRequestSet containsObject:requestKey];
-        if (shouldSkipRequest) {
-            OWSLogInfo(@"Skipping group info request for: %@", envelope.sourceAddress.stringForDisplay);
-            return;
-        }
-        [self.groupInfoRequestSet addObject:requestKey];
-    }
-
-    // Once we've drained the queue we can reset groupInfoRequestSet.
-    [MessageProcessor.shared fetchingAndProcessingCompletePromise].thenInBackground(^{
-        @synchronized(self) {
-            [self.groupInfoRequestSet removeAllObjects];
-        }
-    });
-
-    // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
-    OWSLogInfo(@"Sending group info request: %@", envelopeAddress(envelope));
-
-    TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
-                                                                transaction:transaction];
-
-    OWSGroupInfoRequestMessage *groupInfoRequestMessage = [[OWSGroupInfoRequestMessage alloc] initWithThread:thread
-                                                                                                     groupId:groupId];
-
-    [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer transaction:transaction];
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -1839,106 +1782,6 @@ NS_ASSUME_NONNULL_BEGIN
                  wasReceivedByUD:wasReceivedByUD
          serverDeliveryTimestamp:serverDeliveryTimestamp
                      transaction:transaction];
-}
-
-- (void)handleGroupInfoRequest:(SSKProtoEnvelope *)envelope
-                   dataMessage:(SSKProtoDataMessage *)dataMessage
-                   transaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (!envelope) {
-        OWSFailDebug(@"Missing envelope.");
-        return;
-    }
-    if (!dataMessage) {
-        OWSFailDebug(@"Missing dataMessage.");
-        return;
-    }
-    if (!transaction) {
-        OWSFail(@"Missing transaction.");
-        return;
-    }
-    if (!dataMessage.group.hasType) {
-        OWSFailDebug(@"Missing group message type.");
-        return;
-    }
-    if (dataMessage.group.unwrappedType != SSKProtoGroupContextTypeRequestInfo) {
-        OWSFailDebug(@"Unexpected group message type.");
-        return;
-    }
-
-    NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
-    if (!groupId) {
-        OWSFailDebug(@"Group info request is missing group id.");
-        return;
-    }
-
-    OWSLogInfo(@"Received 'Group Info Request' message for group: %@ from: %@", groupId, envelope.sourceAddress);
-
-    TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-    if (!groupThread) {
-        OWSLogWarn(@"Unknown group: %@", groupThread);
-        return;
-    }
-    // Check whether this group has been migrated.
-    if (!groupThread.isGroupV1Thread) {
-        if (groupThread.isGroupV2Thread) {
-            [self sendV2UpdateForGroupThread:groupThread envelope:envelope transaction:transaction];
-        } else {
-            OWSFailDebug(@"Invalid group.");
-        }
-        return;
-    }
-    if (groupThread.groupModel.groupsVersion != GroupsVersionV1) {
-        OWSFailDebug(@"Invalid group version: %@", groupId);
-        return;
-    }
-
-    // Ensure sender is in the group.
-    if (![groupThread.groupModel.groupMembers containsObject:envelope.sourceAddress]) {
-        OWSLogWarn(@"Ignoring 'Group Info Request' message for non-member of group. %@ not in %@",
-            envelope.sourceAddress,
-            groupThread.groupModel.groupMembers);
-        return;
-    }
-
-    // Ensure we are in the group.
-    if (!groupThread.isLocalUserFullOrInvitedMember) {
-        OWSLogWarn(@"Ignoring 'Group Info Request' message for group we no longer belong to.");
-        return;
-    }
-
-    uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:groupThread
-                                                           groupMetaMessage:TSGroupMetaMessageUpdate
-                                                           expiresInSeconds:expiresInSeconds];
-
-    // Only send this group update to the requester.
-    [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress transaction:transaction];
-
-    NSData *_Nullable groupAvatarData;
-    if (groupThread.groupModel.groupAvatarData) {
-        groupAvatarData = groupThread.groupModel.groupAvatarData;
-        OWSAssertDebug(groupAvatarData.length > 0);
-    }
-    ImageFormat format = [groupAvatarData imageMetadataWithPath:nil mimeType:nil].imageFormat;
-    NSString *mimeType = (format == ImageFormat_Png) ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg;
-    NSString *extension = (format == ImageFormat_Png) ? @"png" : @"jpg";
-
-    _Nullable id<DataSource> groupAvatarDataSource;
-    if (groupAvatarData.length > 0) {
-        groupAvatarDataSource = [DataSourceValue dataSourceWithData:groupAvatarData fileExtension:extension];
-    }
-    if (groupAvatarDataSource != nil) {
-        [self.messageSenderJobQueue addMediaMessage:message
-                                         dataSource:groupAvatarDataSource
-                                        contentType:mimeType
-                                     sourceFilename:nil
-                                            caption:nil
-                                     albumMessageId:nil
-                              isTemporaryAttachment:YES];
-    } else {
-        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    }
 }
 
 - (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope

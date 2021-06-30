@@ -67,6 +67,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupModelComparisonMode) {
 
 + (NSData *)generateRandomV1GroupId;
 
+// This method should only be used by the blocking manager.
+- (void)discardGroupAvatarForBlockingManager;
+
 @end
 
 NS_ASSUME_NONNULL_END

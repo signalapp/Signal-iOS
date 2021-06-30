@@ -33,7 +33,8 @@ public class BulkUUIDLookup: NSObject {
     }
 
     // This property should only be accessed on serialQueue.
-    private var lastOutcomeMap = [String: UpdateOutcome]()
+    private var lastOutcomeMap = LRUCache<String, UpdateOutcome>(maxSize: 16 * 1000,
+                                                                 nseMaxSize: 4 * 1000)
 
     // This property should only be accessed on serialQueue.
     // Next CDS fetch may be performed on or after this date

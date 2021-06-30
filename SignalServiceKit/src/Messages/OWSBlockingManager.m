@@ -680,6 +680,17 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     _blockedUUIDSet = [[NSMutableSet alloc] initWithArray:(blockedUUIDs ?: @[])];
 
     if ([storedBlockedGroupMap isKindOfClass:[NSDictionary class]]) {
+        if (!CurrentAppContext().hasUI) {
+            for (NSData *groupId in _blockedGroupMap.allKeys) {
+                TSGroupModel *_Nullable groupModel = _blockedGroupMap[groupId];
+                if (![groupModel isKindOfClass:[TSGroupModel class]]) {
+                    OWSFailDebug(@"Missing or invalid group model.");
+                    continue;
+                }
+                // Reduce memory usage by discarding group avatars.
+                [groupModel discardGroupAvatarForBlockingManager];
+            }
+        }
         _blockedGroupMap = [storedBlockedGroupMap mutableCopy];
     } else {
         _blockedGroupMap = [NSMutableDictionary new];

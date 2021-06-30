@@ -34,9 +34,10 @@ public class EarlyMessageManager: NSObject {
         }
     }
 
-    private static let maxQueuedPerMessage = 100
-    private static let maxQueuedMessages = 100
-    private static let maxEarlyEnvelopeSize = 1024
+    // TODO: Should we reduce these values in the NSE?
+    private static let maxQueuedPerMessage: Int = 100
+    private static let maxQueuedMessages: Int = 100
+    private static let maxEarlyEnvelopeSize: Int = 1024
 
     private let serialQueue = DispatchQueue(label: "EarlyMessageManager")
     private var pendingEnvelopes = OrderedDictionary<MessageIdentifier, [EarlyEnvelope]>()

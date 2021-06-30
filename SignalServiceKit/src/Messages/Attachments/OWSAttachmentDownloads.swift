@@ -78,8 +78,7 @@ public class OWSAttachmentDownloads: NSObject {
     private var activeJobMap = [AttachmentId: Job]()
     // This property should only be accessed with unfairLock.
     private var jobQueue = [Job]()
-    // This property should only be accessed with unfairLock.
-    private var completeAttachmentMap = Set<AttachmentId>()
+    private var completeAttachmentMap = LRUCache<AttachmentId, Bool>(maxSize: 256)
 
     @objc
     public override init() {
@@ -173,7 +172,7 @@ public class OWSAttachmentDownloads: NSObject {
             if let job = activeJobMap[attachmentId] {
                 return job.progress
             }
-            if completeAttachmentMap.contains(attachmentId) {
+            if nil != completeAttachmentMap[attachmentId] {
                 return 1.0
             }
             return nil
@@ -220,8 +219,8 @@ public class OWSAttachmentDownloads: NSObject {
             cancellationRequestMap[attachmentId] = nil
 
             if isAttachmentDownloaded {
-                owsAssertDebug(!completeAttachmentMap.contains(attachmentId))
-                completeAttachmentMap.insert(attachmentId)
+                owsAssertDebug(nil == completeAttachmentMap[attachmentId])
+                completeAttachmentMap[attachmentId] = true
             }
         }
         tryToStartNextDownload()
@@ -269,8 +268,8 @@ public class OWSAttachmentDownloads: NSObject {
                 owsFailDebug("Attachment already downloaded: \(job.category).")
 
                 Self.unfairLock.withLock {
-                    owsAssertDebug(!self.completeAttachmentMap.contains(job.attachmentId))
-                    self.completeAttachmentMap.insert(job.attachmentId)
+                    owsAssertDebug(nil == completeAttachmentMap[job.attachmentId])
+                    completeAttachmentMap[job.attachmentId] = true
                 }
 
                 return nil

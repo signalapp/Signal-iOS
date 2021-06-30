@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/TSNetworkManager.h>
 #import "NSError+OWSOperation.h"
 #import "NSURLSessionDataTask+OWS_HTTP.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
@@ -15,7 +16,6 @@
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSRequest.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -285,7 +285,7 @@ dispatch_queue_t NetworkManagerQueue()
     AssertOnDispatchQueue(NetworkManagerQueue());
 
     OWSAssertDebug(sessionManager);
-    const NSUInteger kMaxPoolSize = 32;
+    const NSUInteger kMaxPoolSize = CurrentAppContext().isNSE ? 3 : 32;
     if (self.pool.count >= kMaxPoolSize || [self shouldDiscardSessionManager:sessionManager]) {
         // Discard.
         return;

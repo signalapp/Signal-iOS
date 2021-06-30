@@ -100,7 +100,10 @@ public class MobileCoinAPI: Dependencies {
     }
 
     public static func buildPromise(paymentsEntropy: Data) -> Promise<MobileCoinAPI> {
-        firstly(on: .global()) { () -> Promise<TSNetworkManager.Response> in
+        guard !CurrentAppContext().isNSE else {
+            return Promise(error: OWSAssertionError("Payments disabled in NSE."))
+        }
+        return firstly(on: .global()) { () -> Promise<TSNetworkManager.Response> in
             let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
             return Self.networkManager.makePromise(request: request)
         }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> OWSAuthorization in

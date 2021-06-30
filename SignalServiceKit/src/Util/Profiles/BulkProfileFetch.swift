@@ -36,7 +36,8 @@ public class BulkProfileFetch: NSObject {
     }
 
     // This property should only be accessed on serialQueue.
-    private var lastOutcomeMap = [UUID: UpdateOutcome]()
+    private var lastOutcomeMap = LRUCache<UUID, UpdateOutcome>(maxSize: 16 * 1000,
+                                                               nseMaxSize: 4 * 1000)
 
     // This property should only be accessed on serialQueue.
     private var lastRateLimitErrorDate: Date?
