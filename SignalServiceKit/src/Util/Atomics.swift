@@ -108,6 +108,12 @@ public class AtomicUInt: NSObject {
     public func decrementOrZero() -> UInt {
         return value.map { max($0, 1) - 1 }
     }
+
+    @discardableResult
+    @objc
+    public func add(_ delta: UInt) -> UInt {
+        return value.map { $0 + delta }
+    }
 }
 
 // MARK: -
@@ -231,7 +237,7 @@ public class AtomicArray<T> {
 
     public func get() -> [T] {
         Atomics.perform {
-            return self.values
+            values
         }
     }
 
@@ -243,14 +249,24 @@ public class AtomicArray<T> {
 
     public func append(_ value: T) {
         Atomics.perform {
-            return self.values.append(value)
+            values.append(value)
         }
     }
 
     public var first: T? {
         Atomics.perform {
-            return self.values.first
+            values.first
         }
+    }
+
+    public var popHead: T? {
+        Atomics.perform {
+            values.removeFirst()
+        }
+    }
+
+    public func pushTail(_ value: T) {
+        append(value)
     }
 }
 

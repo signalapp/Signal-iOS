@@ -227,7 +227,7 @@ public class MessageFetcherJob: NSObject {
         Logger.info("Fetching messages via REST.")
 
         firstly {
-            fetchMessagesViaRest()
+            fetchMessagesViaRestWhenReady()
         }.done {
             resolver.fulfill(())
         }.catch { error in
@@ -238,35 +238,174 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
-    private class func fetchMessagesViaRest() -> Promise<Void> {
-        Logger.debug("")
+//    private let ackOperationQueue: OperationQueue = {
+//        let operationQueue = OperationQueue()
+//        operationQueue.name = "MessageFetcherJob.ackOperationQueue"
+//        operationQueue.maxConcurrentOperationCount = 1
+//        return operationQueue
+//    }()
 
-        return firstly {
+    private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
+        let operation = MessageAckOperation(envelopeInfo: envelopeInfo)
+        operationQueue.addOperation(operation)
+    }
+
+    // MARK: -
+
+    typealias EnvelopeJob = MessageProcessor.EnvelopeJob
+
+    private class func fetchMessagesViaRest() -> Promise<Void> {
+//        Logger.debug("")
+
+        Logger.verbose("----- fetching.")
+
+        return firstly(on: .global()) {
             fetchBatchViaRest()
-        }.then { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
+        }.map(on: .global()) { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> ([EnvelopeJob], UInt64, Bool) in
+            let envelopeJobs: [EnvelopeJob] = envelopes.compactMap { envelope in
+                let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
+                do {
+                    let envelopeData = try envelope.serializedData()
+                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
+                        Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    }
+                } catch {
+                    owsFailDebug("failed to serialize envelope")
+                    Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    return nil
+                }
+            }
+            return (envelopeJobs: envelopeJobs, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more)
+        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
+//            Logger.verbose("----- fetched: \(envelopeJobs.count), more: \(more).")
+//        }.then(on: .global()) { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
+//            // TODO:
+////            let envelopes = envelopes.prefix(10)
+//            Logger.verbose("----- envelopes: \(envelopes.count).")
+//
+//            return firstly(on: .global()) { () -> Promise<[EnvelopeJob]> in
+//                var envelopeJobs = [EnvelopeJob]()
+//                var envelopeInfosToAck = [EnvelopeInfo]()
+//                for envelope in envelopes {
+//                    let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
+//                    do {
+//                        let envelopeData = try envelope.serializedData()
+//                        let envelopeJob = EnvelopeJob(encryptedEnvelopeData: envelopeData,
+//                                                      encryptedEnvelope: envelope) {_ in
+//                            self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
+//                        }
+//                        envelopeJobs.append(envelopeJob)
+//                    } catch {
+//                        owsFailDebug("failed to serialize envelope")
+//                        envelopeInfosToAck.append(envelopeInfo)
+////                        self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
+////                        return nil
+//                    }
+//                }
+//                return Promise.value(envelopeJobs)
+//
+//                if CurrentAppContext().isNSE {
+//                    return Self.buildJobsOrAckNSE(envelopes: envelopes)
+//                } else {
+//                    return Self.buildJobsOrAckNonNSE(envelopes: envelopes)
+//                }
+//            }.then(on: .global()) { envelopeJobs -> Promise<Void> in
+            let fetchCount = fetchCounter.add(UInt(envelopeJobs.count))
+            Logger.verbose("----- fetched: \(envelopeJobs.count) -> \(fetchCount), more: \(more).")
+
+            if fetchCount >= 500 {
+                Logger.verbose("------ !!!!")
+                Logger.flush()
+            }
 
             Self.messageProcessor.processEncryptedEnvelopes(
-                envelopes: envelopes.compactMap { envelope in
-                    do {
-                        let envelopeData = try envelope.serializedData()
-                        return (envelopeData, envelope, { _ in self.acknowledgeDelivery(envelope: envelope) })
-                    } catch {
-                        owsFailDebug("failed to serialize envelope")
-                        self.acknowledgeDelivery(envelope: envelope)
-                        return nil
-                    }
-                },
+                envelopeJobs: envelopeJobs,
                 serverDeliveryTimestamp: serverDeliveryTimestamp
             )
 
             if more {
                 Logger.info("fetching more messages.")
 
-                return self.fetchMessagesViaRest()
+                return self.fetchMessagesViaRestWhenReady()
             } else {
                 // All finished
                 return Promise.value(())
             }
+        }
+    }
+
+//    private class func buildJobsOrAckNonNSE(envelopes: [SSKProtoEnvelope]) -> Promise<[EnvelopeJob]> {
+//        let envelopeJobs: [EnvelopeJob] = envelopes.compactMap { envelope in
+//            let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
+//            do {
+//                let envelopeData = try envelope.serializedData()
+//                return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
+//                    self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
+//                }
+//            } catch {
+//                owsFailDebug("failed to serialize envelope")
+//                self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
+//                return nil
+//            }
+//        }
+//        return Promise.value(envelopeJobs)
+//    }
+//
+//    private class func buildJobsOrAckNSE(envelopes: [SSKProtoEnvelope],
+//                                         envelopeJobs: [EnvelopeJob] = []) -> Promise<[EnvelopeJob]> {
+//        firstly(on: .global()) { () -> Promise<[EnvelopeJob]> in
+//            guard let envelope = envelopes.first else {
+//                // No more envelopes to process.
+//                return Promise.value(envelopeJobs)
+//            }
+//            let envelopes = Array(envelopes.suffix(from: 1))
+//            let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
+//            do {
+//                let envelopeData = try envelope.serializedData()
+//                let envelopeJob = EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
+//                    self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
+//                }
+//                var envelopeJobs = envelopeJobs
+//                envelopeJobs.append(envelopeJob)
+//                return Self.buildJobsOrAckNSE(envelopes: envelopes, envelopeJobs: envelopeJobs)
+//            } catch {
+//                owsFailDebug("failed to serialize envelope")
+//
+//                return firstly(on: .global()) { () -> Promise<Void> in
+//                    let (promise, resolver) = Promise<Void>.pending()
+//                    self.acknowledgeDelivery(envelopeInfo: envelopeInfo) {
+//                        resolver.fulfill(())
+//                    }
+//                    return promise
+//                }.then(on: .global()) {
+//                    return Self.buildJobsOrAckNSE(envelopes: envelopes, envelopeJobs: envelopeJobs)
+//                }
+//            }
+//        }
+//    }
+
+    private static let fetchCounter = AtomicUInt(0)
+
+    private class func fetchMessagesViaRestWhenReady() -> Promise<Void> {
+        guard CurrentAppContext().isNSE else {
+            // If not NSE, fetch more immediately.
+            return self.fetchMessagesViaRest()
+        }
+        // In NSE, if messageProcessor queue has enough content,
+        // wait before fetching more envelopes.
+        // We need to bound peak memory usage in the NSE when processing
+        // lots of incoming message.
+        if Self.messageProcessor.hasLotsOfQueuedContent {
+            Logger.verbose("----- waiting, processor queue has content.")
+            return firstly(on: .global()) { () -> Guarantee<Void> in
+                // Try again in N seconds.
+                after(seconds: 0.01)
+            }.then(on: .global()) { () -> Promise<Void> in
+                Self.fetchMessagesViaRestWhenReady()
+            }
+        } else {
+            // Fetch more immediately.
+            return self.fetchMessagesViaRest()
         }
     }
 
@@ -398,24 +537,16 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private class func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
-        let request: TSRequest
-        if let serverGuid = envelope.serverGuid, serverGuid.count > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
-        } else if let sourceAddress = envelope.sourceAddress, sourceAddress.isValid, envelope.timestamp > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelope.timestamp)
-        } else {
-            owsFailDebug("Cannot ACK message which has neither source, nor server GUID and timestamp.")
-            return
-        }
+    fileprivate struct EnvelopeInfo {
+        let sourceAddress: SignalServiceAddress?
+        let serverGuid: String?
+        let timestamp: UInt64
+    }
 
-        self.networkManager.makeRequest(request,
-                                        success: { (_: URLSessionDataTask?, _: Any?) -> Void in
-                                            Logger.debug("acknowledged delivery for message at timestamp: \(envelope.timestamp)")
-        },
-                                        failure: { (_: URLSessionDataTask?, error: Error?) in
-                                            Logger.debug("acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(String(describing: error))")
-        })
+    private class func buildEnvelopeInfo(envelope: SSKProtoEnvelope) -> EnvelopeInfo {
+        EnvelopeInfo(sourceAddress: envelope.sourceAddress,
+                     serverGuid: envelope.serverGuid,
+                     timestamp: envelope.timestamp)
     }
 }
 
@@ -433,6 +564,9 @@ private class MessageFetchOperation: OWSOperation {
         self.resolver = resolver
         super.init()
         self.remainingRetries = 3
+
+        // MessageAckOperation must have a higher priority than MessageFetchOperation.
+        self.queuePriority = .normal
     }
 
     public override func run() {
@@ -443,5 +577,60 @@ private class MessageFetchOperation: OWSOperation {
         _ = promise.ensure {
             self.reportSuccess()
         }
+    }
+}
+
+// MARK: -
+
+private class MessageAckOperation: OWSOperation {
+
+    fileprivate typealias EnvelopeInfo = MessageFetcherJob.EnvelopeInfo
+
+    private let envelopeInfo: EnvelopeInfo
+
+    fileprivate required init(envelopeInfo: EnvelopeInfo) {
+        self.envelopeInfo = envelopeInfo
+
+        super.init()
+
+        self.remainingRetries = 3
+
+        // MessageAckOperation must have a higher priority than MessageFetchOperation.
+        self.queuePriority = .high
+    }
+
+    public override func run() {
+        Logger.debug("")
+
+        let request: TSRequest
+        if let serverGuid = envelopeInfo.serverGuid, serverGuid.count > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
+        } else if let sourceAddress = envelopeInfo.sourceAddress, sourceAddress.isValid, envelopeInfo.timestamp > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelopeInfo.timestamp)
+        } else {
+            let error = OWSAssertionError("Cannot ACK message which has neither source, nor server GUID and timestamp.")
+            reportError(error.asUnretryableError)
+            return
+        }
+
+        let envelopeInfo = self.envelopeInfo
+        self.networkManager.makeRequest(request,
+                                        success: { (_: URLSessionDataTask?, _: Any?) -> Void in
+                                            Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp)")
+                                            self.reportSuccess()
+                                        },
+                                        failure: { (_: URLSessionDataTask?, error: Error?) in
+                                            Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp) " + "failed with error: \(String(describing: error))")
+                                            if let error = error {
+                                                if IsNetworkConnectivityFailure(error) {
+                                                    self.reportError(error.asRetryableError)
+                                                } else {
+                                                    self.reportError(error.asUnretryableError)
+                                                }
+                                            } else {
+                                                let error = OWSAssertionError("Unknown error while acknowledging delivery for message.")
+                                                self.reportError(error.asUnretryableError)
+                                            }
+                                        })
     }
 }

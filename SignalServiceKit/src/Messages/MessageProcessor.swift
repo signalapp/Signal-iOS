@@ -117,6 +117,26 @@ public class MessageProcessor: NSObject {
         }
     }
 
+    public struct EnvelopeJob {
+        let encryptedEnvelopeData: Data
+        let encryptedEnvelope: SSKProtoEnvelope?
+        let completion: (Error?) -> Void
+    }
+
+    public func processEncryptedEnvelopes(
+        envelopeJobs: [EnvelopeJob],
+        serverDeliveryTimestamp: UInt64
+    ) {
+        for envelopeJob in envelopeJobs {
+            processEncryptedEnvelopeData(
+                envelopeJob.encryptedEnvelopeData,
+                encryptedEnvelope: envelopeJob.encryptedEnvelope,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                completion: envelopeJob.completion
+            )
+        }
+    }
+
     public func processEncryptedEnvelopes(
         envelopes: [(encryptedEnvelopeData: Data, encryptedEnvelope: SSKProtoEnvelope?, completion: (Error?) -> Void)],
         serverDeliveryTimestamp: UInt64
@@ -130,6 +150,8 @@ public class MessageProcessor: NSObject {
             )
         }
     }
+
+    private static let queueCounter = AtomicUInt(0)
 
     @objc
     public func processEncryptedEnvelopeData(
@@ -176,6 +198,8 @@ public class MessageProcessor: NSObject {
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 completion: completion
             ))
+
+            Logger.verbose("------- Enqueue: \(Self.queueCounter.increment()) -> \(pendingEnvelopes.count)")
         }
 
         drainPendingEnvelopes()
@@ -202,9 +226,18 @@ public class MessageProcessor: NSObject {
         drainPendingEnvelopes()
     }
 
+    public var hasLotsOfQueuedContent: Bool {
+        pendingEnvelopesLock.withLock {
+            Logger.verbose("----- pendingEnvelopes.count: \(pendingEnvelopes.count)")
+            return pendingEnvelopes.count > 0
+//            pendingEnvelopes.count >= 25
+        }
+    }
+
     private static let maxEnvelopeByteCount = 250 * 1024
     public static let largeEnvelopeWarningByteCount = 25 * 1024
-    private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue")
+    private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue",
+                                            autoreleaseFrequency: .workItem)
 
     private let pendingEnvelopesLock = UnfairLock()
     private var pendingEnvelopes = [PendingEnvelope]()
@@ -221,9 +254,13 @@ public class MessageProcessor: NSObject {
         serialQueue.async {
             guard !self.isDrainingPendingEnvelopes else { return }
             self.isDrainingPendingEnvelopes = true
-            self.drainNextBatch()
+            autoreleasepool {
+                self.drainNextBatch()
+            }
         }
     }
+
+    private static let counter = AtomicUInt(0)
 
     private func drainNextBatch() {
         assertOnQueue(serialQueue)
@@ -245,6 +282,9 @@ public class MessageProcessor: NSObject {
             return
         }
 
+        let total = Self.counter.add(UInt(batchEnvelopes.count))
+
+        Logger.info("------- Process count: \(total)")
         Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
 
         SDSDatabaseStorage.shared.write { transaction in
@@ -260,7 +300,12 @@ public class MessageProcessor: NSObject {
             pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
         }
 
-        drainNextBatch()
+        // Dispatch async to drain the autoreleasepool.
+        serialQueue.async {
+            autoreleasepool {
+                self.drainNextBatch()
+            }
+        }
     }
 
     private func processEnvelope(_ pendingEnvelope: PendingEnvelope, transaction: SDSAnyWriteTransaction) {

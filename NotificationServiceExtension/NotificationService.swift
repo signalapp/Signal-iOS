@@ -39,6 +39,7 @@ class NotificationService: UNNotificationServiceExtension {
         let content = UNMutableNotificationContent()
         content.badge = NSNumber(value: databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) })
         contentHandler?(content)
+        contentHandler = nil
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {

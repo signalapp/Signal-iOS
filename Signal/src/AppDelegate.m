@@ -1263,9 +1263,14 @@ void uncaughtExceptionHandler(NSException *exception)
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
     OWSLogInfo(@"");
+    OWSLogVerbose(@"--------");
+    // Capture just userInfo; we don't want to retain notification.
+    NSDictionary *userInfo = notification.request.content.userInfo;
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+        OWSLogVerbose(@"--------");
         UNNotificationPresentationOptions options = 0;
-        BOOL isSilent = [self handleSilentPushContent:notification.request.content.userInfo];
+        BOOL isSilent = [self handleSilentPushContent:userInfo];
+        //        BOOL isSilent = [self handleSilentPushContent:notification.request.content.userInfo];
 
         if (!isSilent) {
             // We need to respect the in-app notification sound preference. This method, which is called
