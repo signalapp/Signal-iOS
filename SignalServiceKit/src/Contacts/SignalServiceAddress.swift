@@ -326,7 +326,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     private var mappingObserver = AtomicOptional<AddressMappingObserver>(nil)
 
     private static let unfairLock = UnfairLock()
-    // TODO: Can we use an LRUCache<UUID, Weak<AddressMappingObserver>> instead?
     private static let mappingObserverCache = NSMapTable<NSUUID, AddressMappingObserver>(keyOptions: .strongMemory,
                                                                                          valueOptions: .weakMemory)
 
