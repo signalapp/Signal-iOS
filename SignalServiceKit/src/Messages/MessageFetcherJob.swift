@@ -55,15 +55,15 @@ public class MessageFetcherJob: NSObject {
 
     // This operation queue ensures that only one fetch operation is
     // running at a given time.
-    private let operationQueue: OperationQueue = {
+    private let fetchOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "MessageFetcherJob.operationQueue"
+        operationQueue.name = "MessageFetcherJob.fetchOperationQueue"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
 
     fileprivate var activeOperationCount: Int {
-        return operationQueue.operationCount
+        return fetchOperationQueue.operationCount
     }
 
     private let serialQueue = DispatchQueue(label: "org.signal.messageFetcherJob.serialQueue")
@@ -85,18 +85,29 @@ public class MessageFetcherJob: NSObject {
 
         // Use an operation queue to ensure that only one fetch cycle is done
         // at a time.
-        let operation = MessageFetchOperation()
-        let promise = operation.promise
+        let fetchOperation = MessageFetchOperation()
+        let promise = fetchOperation.promise
         let fetchCycle = MessageFetchCycle(promise: promise)
 
         _ = self.serialQueue.sync {
             activeFetchCycles.insert(fetchCycle.uuid)
         }
 
-        operationQueue.addOperation(operation)
+        // We don't want to re-fetch any messages that have
+        // already been processed, so fetch operations should
+        // block on "message ack" operations.  We accomplish
+        // this by having our message fetch operations depend
+        // on a no-op operation that flushes the "message ack"
+        // operation queue.
+        let flushAckOperation = Operation()
+        flushAckOperation.queuePriority = .normal
+        ackOperationQueue.addOperation(flushAckOperation)
+
+        fetchOperation.addDependency(flushAckOperation)
+        fetchOperationQueue.addOperation(fetchOperation)
 
         completionQueue.async {
-            self.operationQueue.waitUntilAllOperationsAreFinished()
+            self.fetchOperationQueue.waitUntilAllOperationsAreFinished()
 
             self.serialQueue.sync {
                 self.activeFetchCycles.remove(fetchCycle.uuid)
@@ -238,12 +249,18 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
+    // This operation queue ensures that only one fetch operation is
+    // running at a given time.
+    private let ackOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "MessageFetcherJob.ackOperationQueue"
+        operationQueue.maxConcurrentOperationCount = 3
+        return operationQueue
+    }()
+
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
-        // Message ACKs and message fetches are performed in a single
-        // queue. Message ACKs have a higher priority.  This avoids
-        // fetches messages which are enqueued to be ACK'd.
-        let operation = MessageAckOperation(envelopeInfo: envelopeInfo)
-        operationQueue.addOperation(operation)
+        let ackOperation = MessageAckOperation(envelopeInfo: envelopeInfo)
+        ackOperationQueue.addOperation(ackOperation)
     }
 
     // MARK: -
@@ -465,9 +482,6 @@ private class MessageFetchOperation: OWSOperation {
         self.resolver = resolver
         super.init()
         self.remainingRetries = 3
-
-        // MessageAckOperation must have a higher priority than MessageFetchOperation.
-        self.queuePriority = .normal
     }
 
     public override func run() {
@@ -496,7 +510,8 @@ private class MessageAckOperation: OWSOperation {
 
         self.remainingRetries = 3
 
-        // MessageAckOperation must have a higher priority than MessageFetchOperation.
+        // MessageAckOperation must have a higher priority than than the
+        // operations used to flush the ack operation queue.
         self.queuePriority = .high
     }
 

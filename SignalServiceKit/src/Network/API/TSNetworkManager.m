@@ -285,7 +285,7 @@ dispatch_queue_t NetworkManagerQueue()
     AssertOnDispatchQueue(NetworkManagerQueue());
 
     OWSAssertDebug(sessionManager);
-    const NSUInteger kMaxPoolSize = CurrentAppContext().isNSE ? 3 : 32;
+    const NSUInteger kMaxPoolSize = CurrentAppContext().isNSE ? 5 : 32;
     if (self.pool.count >= kMaxPoolSize || [self shouldDiscardSessionManager:sessionManager]) {
         // Discard.
         return;

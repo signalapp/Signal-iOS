@@ -239,7 +239,7 @@ public class MessageProcessor: NSObject {
     // perf affects fetch, CPU perf affects processing).
     public var hasSomeQueuedContent: Bool {
         pendingEnvelopesLock.withLock {
-            return pendingEnvelopes.count >= 50
+            return pendingEnvelopes.count >= 25
         }
     }
 
