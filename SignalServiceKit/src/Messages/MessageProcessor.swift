@@ -229,7 +229,8 @@ public class MessageProcessor: NSObject {
     public var hasLotsOfQueuedContent: Bool {
         pendingEnvelopesLock.withLock {
             Logger.verbose("----- pendingEnvelopes.count: \(pendingEnvelopes.count)")
-            return pendingEnvelopes.count > 0
+//            return pendingEnvelopes.count > 0
+            return pendingEnvelopes.count >= 50
 //            pendingEnvelopes.count >= 25
         }
     }
@@ -254,9 +255,7 @@ public class MessageProcessor: NSObject {
         serialQueue.async {
             guard !self.isDrainingPendingEnvelopes else { return }
             self.isDrainingPendingEnvelopes = true
-            autoreleasepool {
-                self.drainNextBatch()
-            }
+            self.drainNextBatch()
         }
     }
 
@@ -302,9 +301,7 @@ public class MessageProcessor: NSObject {
 
         // Dispatch async to drain the autoreleasepool.
         serialQueue.async {
-            autoreleasepool {
-                self.drainNextBatch()
-            }
+            self.drainNextBatch()
         }
     }
 
