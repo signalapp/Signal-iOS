@@ -238,14 +238,10 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
-//    private let ackOperationQueue: OperationQueue = {
-//        let operationQueue = OperationQueue()
-//        operationQueue.name = "MessageFetcherJob.ackOperationQueue"
-//        operationQueue.maxConcurrentOperationCount = 1
-//        return operationQueue
-//    }()
-
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
+        // Message ACKs and message fetches are performed in a single
+        // queue. Message ACKs have a higher priority.  This avoids
+        // fetches messages which are enqueued to be ACK'd.
         let operation = MessageAckOperation(envelopeInfo: envelopeInfo)
         operationQueue.addOperation(operation)
     }
@@ -255,9 +251,7 @@ public class MessageFetcherJob: NSObject {
     typealias EnvelopeJob = MessageProcessor.EnvelopeJob
 
     private class func fetchMessagesViaRest() -> Promise<Void> {
-//        Logger.debug("")
-
-        Logger.verbose("----- fetching.")
+        Logger.debug("")
 
         return firstly(on: .global()) {
             fetchBatchViaRest()
@@ -277,47 +271,6 @@ public class MessageFetcherJob: NSObject {
             }
             return (envelopeJobs: envelopeJobs, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more)
         }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
-//            Logger.verbose("----- fetched: \(envelopeJobs.count), more: \(more).")
-//        }.then(on: .global()) { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
-//            // TODO:
-////            let envelopes = envelopes.prefix(10)
-//            Logger.verbose("----- envelopes: \(envelopes.count).")
-//
-//            return firstly(on: .global()) { () -> Promise<[EnvelopeJob]> in
-//                var envelopeJobs = [EnvelopeJob]()
-//                var envelopeInfosToAck = [EnvelopeInfo]()
-//                for envelope in envelopes {
-//                    let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
-//                    do {
-//                        let envelopeData = try envelope.serializedData()
-//                        let envelopeJob = EnvelopeJob(encryptedEnvelopeData: envelopeData,
-//                                                      encryptedEnvelope: envelope) {_ in
-//                            self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
-//                        }
-//                        envelopeJobs.append(envelopeJob)
-//                    } catch {
-//                        owsFailDebug("failed to serialize envelope")
-//                        envelopeInfosToAck.append(envelopeInfo)
-////                        self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
-////                        return nil
-//                    }
-//                }
-//                return Promise.value(envelopeJobs)
-//
-//                if CurrentAppContext().isNSE {
-//                    return Self.buildJobsOrAckNSE(envelopes: envelopes)
-//                } else {
-//                    return Self.buildJobsOrAckNonNSE(envelopes: envelopes)
-//                }
-//            }.then(on: .global()) { envelopeJobs -> Promise<Void> in
-            let fetchCount = fetchCounter.add(UInt(envelopeJobs.count))
-            Logger.verbose("----- fetched: \(envelopeJobs.count) -> \(fetchCount), more: \(more).")
-
-            if fetchCount >= 500 {
-                Logger.verbose("------ !!!!")
-                Logger.flush()
-            }
-
             Self.messageProcessor.processEncryptedEnvelopes(
                 envelopeJobs: envelopeJobs,
                 serverDeliveryTimestamp: serverDeliveryTimestamp
@@ -334,58 +287,6 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-//    private class func buildJobsOrAckNonNSE(envelopes: [SSKProtoEnvelope]) -> Promise<[EnvelopeJob]> {
-//        let envelopeJobs: [EnvelopeJob] = envelopes.compactMap { envelope in
-//            let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
-//            do {
-//                let envelopeData = try envelope.serializedData()
-//                return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
-//                    self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
-//                }
-//            } catch {
-//                owsFailDebug("failed to serialize envelope")
-//                self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
-//                return nil
-//            }
-//        }
-//        return Promise.value(envelopeJobs)
-//    }
-//
-//    private class func buildJobsOrAckNSE(envelopes: [SSKProtoEnvelope],
-//                                         envelopeJobs: [EnvelopeJob] = []) -> Promise<[EnvelopeJob]> {
-//        firstly(on: .global()) { () -> Promise<[EnvelopeJob]> in
-//            guard let envelope = envelopes.first else {
-//                // No more envelopes to process.
-//                return Promise.value(envelopeJobs)
-//            }
-//            let envelopes = Array(envelopes.suffix(from: 1))
-//            let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
-//            do {
-//                let envelopeData = try envelope.serializedData()
-//                let envelopeJob = EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
-//                    self.acknowledgeDelivery(envelopeInfo: envelopeInfo, completion: nil)
-//                }
-//                var envelopeJobs = envelopeJobs
-//                envelopeJobs.append(envelopeJob)
-//                return Self.buildJobsOrAckNSE(envelopes: envelopes, envelopeJobs: envelopeJobs)
-//            } catch {
-//                owsFailDebug("failed to serialize envelope")
-//
-//                return firstly(on: .global()) { () -> Promise<Void> in
-//                    let (promise, resolver) = Promise<Void>.pending()
-//                    self.acknowledgeDelivery(envelopeInfo: envelopeInfo) {
-//                        resolver.fulfill(())
-//                    }
-//                    return promise
-//                }.then(on: .global()) {
-//                    return Self.buildJobsOrAckNSE(envelopes: envelopes, envelopeJobs: envelopeJobs)
-//                }
-//            }
-//        }
-//    }
-
-    private static let fetchCounter = AtomicUInt(0)
-
     private class func fetchMessagesViaRestWhenReady() -> Promise<Void> {
         guard CurrentAppContext().isNSE else {
             // If not NSE, fetch more immediately.
@@ -395,10 +296,10 @@ public class MessageFetcherJob: NSObject {
         // wait before fetching more envelopes.
         // We need to bound peak memory usage in the NSE when processing
         // lots of incoming message.
-        if Self.messageProcessor.hasLotsOfQueuedContent {
-            Logger.verbose("----- waiting, processor queue has content.")
+        if Self.messageProcessor.hasSomeQueuedContent {
             return firstly(on: .global()) { () -> Guarantee<Void> in
                 // Try again in N seconds.
+                // We use a fairly tight loop here to avoid introducing latency.
                 after(seconds: 0.01)
             }.then(on: .global()) { () -> Promise<Void> in
                 Self.fetchMessagesViaRestWhenReady()

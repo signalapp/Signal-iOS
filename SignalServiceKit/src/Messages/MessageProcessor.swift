@@ -151,8 +151,6 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    private static let queueCounter = AtomicUInt(0)
-
     @objc
     public func processEncryptedEnvelopeData(
         _ encryptedEnvelopeData: Data,
@@ -198,8 +196,6 @@ public class MessageProcessor: NSObject {
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 completion: completion
             ))
-
-            Logger.verbose("------- Enqueue: \(Self.queueCounter.increment()) -> \(pendingEnvelopes.count)")
         }
 
         drainPendingEnvelopes()
@@ -226,12 +222,24 @@ public class MessageProcessor: NSObject {
         drainPendingEnvelopes()
     }
 
-    public var hasLotsOfQueuedContent: Bool {
+    // The NSE has tight memory constraints.
+    // For perf reasons, MessageProcessor keeps its queue in memory.
+    // It is not safe for the NSE to fetch more messages
+    // and cause this queue to grow in an unbounded way.
+    // Therefore, the NSE should wait to fetch more messages if
+    // the queue has "some/enough" content.
+    // However, the NSE needs to process messages with high
+    // throughput.
+    // Therfore we need to identify a constant N small enough to
+    // place an acceptable upper bound on memory usage of the processor
+    // (N + next fetched batch size, fetch size in practice is 100),
+    // large enough to avoid introducing latency (e.g. the next fetch
+    // will complete before the queue is empty).
+    // This is tricky since there are multiple variables (e.g. network
+    // perf affects fetch, CPU perf affects processing).
+    public var hasSomeQueuedContent: Bool {
         pendingEnvelopesLock.withLock {
-            Logger.verbose("----- pendingEnvelopes.count: \(pendingEnvelopes.count)")
-//            return pendingEnvelopes.count > 0
             return pendingEnvelopes.count >= 50
-//            pendingEnvelopes.count >= 25
         }
     }
 
@@ -259,8 +267,6 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    private static let counter = AtomicUInt(0)
-
     private func drainNextBatch() {
         assertOnQueue(serialQueue)
 
@@ -281,9 +287,6 @@ public class MessageProcessor: NSObject {
             return
         }
 
-        let total = Self.counter.add(UInt(batchEnvelopes.count))
-
-        Logger.info("------- Process count: \(total)")
         Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
 
         SDSDatabaseStorage.shared.write { transaction in
