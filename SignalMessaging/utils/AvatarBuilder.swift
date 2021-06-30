@@ -242,6 +242,7 @@ public class AvatarBuilder: NSObject {
         let avatarContentType: AvatarContentType = .groupDefault(backgroundColor: backgroundColor.asOWSColor)
         let avatarContent = AvatarContent(request: request,
                                           contentType: avatarContentType,
+                                          failoverContentType: nil,
                                           diameterPixels: request.diameterPixels,
                                           isDarkThemeEnabled: request.isDarkThemeEnabled,
                                           shouldBlurAvatar: request.shouldBlurAvatar)
@@ -263,6 +264,7 @@ public class AvatarBuilder: NSObject {
         let avatarContentType: AvatarContentType = .contactDefaultIcon(backgroundColor: backgroundColor)
         let avatarContent = AvatarContent(request: request,
                                           contentType: avatarContentType,
+                                          failoverContentType: nil,
                                           diameterPixels: request.diameterPixels,
                                           isDarkThemeEnabled: request.isDarkThemeEnabled,
                                           shouldBlurAvatar: request.shouldBlurAvatar)
@@ -275,7 +277,7 @@ public class AvatarBuilder: NSObject {
         case contactAddress(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode)
         case contactInitials(initials: String, backgroundColor: OWSColor)
         case contactDefaultIcon(backgroundColor: OWSColor)
-        case group(avatarData: Data, digestString: String)
+        case group(groupId: Data, avatarData: Data, digestString: String)
         case groupDefault(groupId: Data)
 
         fileprivate var cacheKey: String? {
@@ -290,8 +292,8 @@ public class AvatarBuilder: NSObject {
                 return "contactInitials.\(initials).\(backgroundColor)"
             case .contactDefaultIcon(let backgroundColor):
                 return "contactDefaultIcon.\(backgroundColor)"
-            case .group(_, let digestString):
-                return "group.\(digestString)"
+            case .group(let groupId, _, let digestString):
+                return "group.\(groupId.hexadecimalString).\(digestString)"
             case .groupDefault(let groupId):
                 return "groupDefault.\(groupId.hexadecimalString)"
             }
@@ -355,7 +357,7 @@ public class AvatarBuilder: NSObject {
             if let avatarData = groupThread.groupModel.groupAvatarData,
                avatarData.ows_isValidImage {
                 let digestString = avatarData.sha1Base64DigestString
-                return .group(avatarData: avatarData, digestString: digestString)
+                return .group(groupId: groupThread.groupId, avatarData: avatarData, digestString: digestString)
             } else {
                 return .groupDefault(groupId: groupThread.groupId)
             }
@@ -425,17 +427,20 @@ public class AvatarBuilder: NSObject {
         let request: Request
 
         let contentType: AvatarContentType
+        let failoverContentType: AvatarContentType?
         let diameterPixels: CGFloat
         let isDarkThemeEnabled: Bool
         let shouldBlurAvatar: Bool
 
         init(request: Request,
              contentType: AvatarContentType,
+             failoverContentType: AvatarContentType?,
              diameterPixels: CGFloat,
              isDarkThemeEnabled: Bool,
              shouldBlurAvatar: Bool) {
             self.request = request
             self.contentType = contentType
+            self.failoverContentType = failoverContentType
             self.diameterPixels = diameterPixels
             self.isDarkThemeEnabled = isDarkThemeEnabled
             self.shouldBlurAvatar = shouldBlurAvatar
@@ -458,10 +463,8 @@ public class AvatarBuilder: NSObject {
 
     private func avatarImage(forRequest request: Request,
                              transaction: SDSAnyReadTransaction) -> UIImage? {
-        guard let avatarContent = avatarContent(forRequest: request,
-                                                transaction: transaction) else {
-            return nil
-        }
+        let avatarContent = avatarContent(forRequest: request,
+                                          transaction: transaction)
         return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
@@ -469,16 +472,14 @@ public class AvatarBuilder: NSObject {
     private let requestToContentCache = NSCache<NSString, AvatarContent>(countLimit: 1024)
 
     private func avatarContent(forRequest request: Request,
-                               transaction: SDSAnyReadTransaction) -> AvatarContent? {
+                               transaction: SDSAnyReadTransaction) -> AvatarContent {
         if let cacheKey = request.cacheKey,
            let avatarContent = requestToContentCache.object(forKey: cacheKey as NSString) {
             return avatarContent
         }
 
-        guard let avatarContent = Self.buildAvatarContent(forRequest: request,
-                                                          transaction: transaction) else {
-            return nil
-        }
+        let avatarContent = Self.buildAvatarContent(forRequest: request,
+                                                    transaction: transaction)
 
         if let cacheKey = request.cacheKey {
             requestToContentCache.setObject(avatarContent, forKey: cacheKey as NSString)
@@ -519,47 +520,67 @@ public class AvatarBuilder: NSObject {
     // MARK: - Building Content
 
     private static func buildAvatarContent(forRequest request: Request,
-                                           transaction: SDSAnyReadTransaction) -> AvatarContent? {
-        func buildAvatarContentType() -> AvatarContentType? {
+                                           transaction: SDSAnyReadTransaction) -> AvatarContent {
+        struct AvatarContentTypes {
+            let contentType: AvatarContentType
+            let failoverContentType: AvatarContentType?
+        }
+        func buildAvatarContentTypes() -> AvatarContentTypes {
             switch request.requestType {
             case .contactAddress(let address, let localUserDisplayMode):
                 guard address.isValid else {
                     owsFailDebug("Invalid address.")
-                    return nil
+                    let backgroundColor = ChatColors.defaultAvatarColor.asOWSColor
+                    return AvatarContentTypes(contentType: .contactDefaultIcon(backgroundColor: backgroundColor),
+                                              failoverContentType: nil)
                 }
 
                 let backgroundColor = ChatColors.avatarColor(forAddress: address).asOWSColor
 
                 if address.isLocalAddress,
                    localUserDisplayMode == .noteToSelf {
-                    return .noteToSelf(backgroundColor: backgroundColor)
+                    return AvatarContentTypes(contentType: .noteToSelf(backgroundColor: backgroundColor),
+                                              failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
                 } else if let imageData = Self.contactsManagerImpl.avatarImageData(forAddress: address,
                                                                                    shouldValidate: true,
                                                                                    transaction: transaction) {
                     let digestString = imageData.sha1Base64DigestString
-                    return .data(imageData: imageData, digestString: digestString, shouldValidate: false)
+                    return AvatarContentTypes(contentType: .data(imageData: imageData,
+                                                                 digestString: digestString,
+                                                                 shouldValidate: false),
+                                              failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
                 } else if let nameComponents = Self.contactsManager.nameComponents(for: address, transaction: transaction),
                           let contactInitials = Self.contactInitials(forPersonNameComponents: nameComponents) {
-                    return .contactInitials(initials: contactInitials, backgroundColor: backgroundColor)
+                    return AvatarContentTypes(contentType: .contactInitials(initials: contactInitials,
+                                                                            backgroundColor: backgroundColor),
+                                              failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
                 } else {
-                    return .contactDefaultIcon(backgroundColor: backgroundColor)
+                    return AvatarContentTypes(contentType: .contactDefaultIcon(backgroundColor: backgroundColor),
+                                              failoverContentType: nil)
                 }
             case .contactInitials(let initials, let backgroundColor):
-                return .contactInitials(initials: initials, backgroundColor: backgroundColor)
+                return AvatarContentTypes(contentType: .contactInitials(initials: initials,
+                                                                        backgroundColor: backgroundColor),
+                                          failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
             case .contactDefaultIcon(let backgroundColor):
-                return .contactDefaultIcon(backgroundColor: backgroundColor)
-            case .group(let avatarData, let digestString):
-                return .data(imageData: avatarData, digestString: digestString, shouldValidate: false)
+                return AvatarContentTypes(contentType: .contactDefaultIcon(backgroundColor: backgroundColor),
+                                          failoverContentType: nil)
+            case .group(let groupId, let avatarData, let digestString):
+                let backgroundColor = ChatColors.avatarColor(forGroupId: groupId).asOWSColor
+                return AvatarContentTypes(contentType: .data(imageData: avatarData,
+                                                             digestString: digestString,
+                                                             shouldValidate: false),
+                                          failoverContentType: .groupDefault(backgroundColor: backgroundColor))
             case .groupDefault(let groupId):
-                let backgroundColor = ChatColors.avatarColor(forGroupId: groupId)
-                return .groupDefault(backgroundColor: backgroundColor.asOWSColor)
+                let backgroundColor = ChatColors.avatarColor(forGroupId: groupId).asOWSColor
+                return AvatarContentTypes(contentType: .groupDefault(backgroundColor: backgroundColor),
+                                          failoverContentType: nil)
             }
         }
-        guard let avatarContentType = buildAvatarContentType() else {
-            return nil
-        }
+        let contentTypes = buildAvatarContentTypes()
         return AvatarContent(request: request,
-                             contentType: avatarContentType,
+                             contentType: contentTypes.contentType,
+                             failoverContentType: contentTypes.failoverContentType,
                              diameterPixels: request.diameterPixels,
                              isDarkThemeEnabled: request.isDarkThemeEnabled,
                              shouldBlurAvatar: request.shouldBlurAvatar)
@@ -567,9 +588,11 @@ public class AvatarBuilder: NSObject {
 
     // MARK: - Building Images
 
+    // TODO: We could modify this method to always return some kind of
+    //       default avatar.
     private static func buildOrLoadImage(forAvatarContent avatarContent: AvatarContent) -> UIImage? {
-        func buildOrLoad() -> UIImage? {
-            switch avatarContent.contentType {
+        func buildOrLoadWithContentType(_ contentType: AvatarContentType) -> UIImage? {
+            switch contentType {
             case .file(let fileUrl, let shouldValidate):
                 return Self.loadAndResizeAvatarFile(avatarContent: avatarContent,
                                                     fileUrl: fileUrl,
@@ -592,6 +615,17 @@ public class AvatarBuilder: NSObject {
                 return Self.buildAvatarDefaultGroup(avatarContent: avatarContent,
                                                     backgroundColor: backgroundColor.asUIColor)
             }
+        }
+        func buildOrLoad() -> UIImage? {
+            if let image = buildOrLoadWithContentType(avatarContent.contentType) {
+                return image
+            }
+            if let failoverContentType = avatarContent.failoverContentType,
+               let image = buildOrLoadWithContentType(failoverContentType) {
+                return image
+            }
+            owsFailDebug("Could not build avatar.")
+            return nil
         }
         // Ensure image scale matches main screen scale.
         guard let image = normalizeImageScale(buildOrLoad()) else {
