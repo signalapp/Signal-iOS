@@ -149,27 +149,27 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                avatarFileName:(nullable NSString *)avatarFileName
-                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-                           bio:(nullable NSString *)bio
-                      bioEmoji:(nullable NSString *)bioEmoji
-                    familyName:(nullable NSString *)familyName
-                 isUuidCapable:(BOOL)isUuidCapable
-                 lastFetchDate:(nullable NSDate *)lastFetchDate
-             lastMessagingDate:(nullable NSDate *)lastMessagingDate
-                    profileKey:(nullable OWSAES256Key *)profileKey
-                   profileName:(nullable NSString *)profileName
-          recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
-                 recipientUUID:(nullable NSString *)recipientUUID
-                      username:(nullable NSString *)username
+                  avatarFileName:(nullable NSString *)avatarFileName
+                   avatarUrlPath:(nullable NSString *)avatarUrlPath
+                             bio:(nullable NSString *)bio
+                        bioEmoji:(nullable NSString *)bioEmoji
+                      familyName:(nullable NSString *)familyName
+                   isUuidCapable:(BOOL)isUuidCapable
+                   lastFetchDate:(nullable NSDate *)lastFetchDate
+               lastMessagingDate:(nullable NSDate *)lastMessagingDate
+                      profileKey:(nullable OWSAES256Key *)profileKey
+                     profileName:(nullable NSString *)profileName
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
+                        username:(nullable NSString *)username
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
-    
+
     if (!self) {
         return self;
     }
-    
+
     _avatarFileName = avatarFileName;
     _avatarUrlPath = avatarUrlPath;
     _bio = bio;
@@ -183,7 +183,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
     _username = username;
-    
+
     return self;
 }
 

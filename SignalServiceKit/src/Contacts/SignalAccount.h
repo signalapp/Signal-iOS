@@ -94,11 +94,11 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
                contactAvatarHash:(nullable NSData *)contactAvatarHash
-           contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
+   contactAvatarJpegDataObsolete:(nullable NSData *)contactAvatarJpegDataObsolete
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarHash:contactAvatarJpegData:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarHash:contactAvatarJpegDataObsolete:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

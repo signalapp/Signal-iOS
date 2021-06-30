@@ -72,19 +72,19 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                avatarFileName:(nullable NSString *)avatarFileName
-                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-                           bio:(nullable NSString *)bio
-                      bioEmoji:(nullable NSString *)bioEmoji
-                    familyName:(nullable NSString *)familyName
-                 isUuidCapable:(BOOL)isUuidCapable
-                 lastFetchDate:(nullable NSDate *)lastFetchDate
-             lastMessagingDate:(nullable NSDate *)lastMessagingDate
-                    profileKey:(nullable OWSAES256Key *)profileKey
-                   profileName:(nullable NSString *)profileName
-          recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
-                 recipientUUID:(nullable NSString *)recipientUUID
-                      username:(nullable NSString *)username
+                  avatarFileName:(nullable NSString *)avatarFileName
+                   avatarUrlPath:(nullable NSString *)avatarUrlPath
+                             bio:(nullable NSString *)bio
+                        bioEmoji:(nullable NSString *)bioEmoji
+                      familyName:(nullable NSString *)familyName
+                   isUuidCapable:(BOOL)isUuidCapable
+                   lastFetchDate:(nullable NSDate *)lastFetchDate
+               lastMessagingDate:(nullable NSDate *)lastMessagingDate
+                      profileKey:(nullable OWSAES256Key *)profileKey
+                     profileName:(nullable NSString *)profileName
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
+                        username:(nullable NSString *)username
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:familyName:isUuidCapable:lastFetchDate:lastMessagingDate:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on

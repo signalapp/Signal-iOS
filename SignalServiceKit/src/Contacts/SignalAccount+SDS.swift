@@ -111,7 +111,7 @@ extension SignalAccount {
             let contactSerialized: Data? = record.contact
             let contact: Contact? = try SDSDeserialization.optionalUnarchive(contactSerialized, name: "contact")
             let contactAvatarHash: Data? = SDSDeserialization.optionalData(record.contactAvatarHash, name: "contactAvatarHash")
-            let contactAvatarJpegData: Data? = SDSDeserialization.optionalData(record.contactAvatarJpegData, name: "contactAvatarJpegData")
+            let contactAvatarJpegDataObsolete: Data? = SDSDeserialization.optionalData(record.contactAvatarJpegData, name: "contactAvatarJpegDataObsolete")
             let multipleAccountLabelText: String = record.multipleAccountLabelText
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
@@ -120,7 +120,7 @@ extension SignalAccount {
                                  uniqueId: uniqueId,
                                  contact: contact,
                                  contactAvatarHash: contactAvatarHash,
-                                 contactAvatarJpegData: contactAvatarJpegData,
+                                 contactAvatarJpegDataObsolete: contactAvatarJpegDataObsolete,
                                  multipleAccountLabelText: multipleAccountLabelText,
                                  recipientPhoneNumber: recipientPhoneNumber,
                                  recipientUUID: recipientUUID)
@@ -188,7 +188,7 @@ extension SignalAccount: DeepCopyable {
                contact = nil
             }
             let contactAvatarHash: Data? = modelToCopy.contactAvatarHash
-            let contactAvatarJpegData: Data? = modelToCopy.contactAvatarJpegDataObsolete
+            let contactAvatarJpegDataObsolete: Data? = modelToCopy.contactAvatarJpegDataObsolete
             let multipleAccountLabelText: String = modelToCopy.multipleAccountLabelText
             let recipientPhoneNumber: String? = modelToCopy.recipientPhoneNumber
             let recipientUUID: String? = modelToCopy.recipientUUID
@@ -197,7 +197,7 @@ extension SignalAccount: DeepCopyable {
                                  uniqueId: uniqueId,
                                  contact: contact,
                                  contactAvatarHash: contactAvatarHash,
-                                 contactAvatarJpegData: contactAvatarJpegData,
+                                 contactAvatarJpegDataObsolete: contactAvatarJpegDataObsolete,
                                  multipleAccountLabelText: multipleAccountLabelText,
                                  recipientPhoneNumber: recipientPhoneNumber,
                                  recipientUUID: recipientUUID)
@@ -218,7 +218,7 @@ extension SignalAccountSerializer {
     // Properties
     static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true)
     static let contactAvatarHashColumn = SDSColumnMetadata(columnName: "contactAvatarHash", columnType: .blob, isOptional: true)
-    static let contactAvatarJpegDataColumn = SDSColumnMetadata(columnName: "contactAvatarJpegData", columnType: .blob, isOptional: true)
+    static let contactAvatarJpegDataObsoleteColumn = SDSColumnMetadata(columnName: "contactAvatarJpegDataObsolete", columnType: .blob, isOptional: true)
     static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString)
     static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true)
     static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true)
@@ -233,7 +233,7 @@ extension SignalAccountSerializer {
         uniqueIdColumn,
         contactColumn,
         contactAvatarHashColumn,
-        contactAvatarJpegDataColumn,
+        contactAvatarJpegDataObsoleteColumn,
         multipleAccountLabelTextColumn,
         recipientPhoneNumberColumn,
         recipientUUIDColumn

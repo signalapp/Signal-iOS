@@ -139,7 +139,7 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
                       uniqueId:(NSString *)uniqueId
                          contact:(nullable Contact *)contact
                contactAvatarHash:(nullable NSData *)contactAvatarHash
-           contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
+   contactAvatarJpegDataObsolete:(nullable NSData *)contactAvatarJpegDataObsolete
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
@@ -153,7 +153,7 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
     _contact = contact;
     _contactAvatarHash = contactAvatarHash;
-    _contactAvatarJpegDataObsolete = contactAvatarJpegData;
+    _contactAvatarJpegDataObsolete = contactAvatarJpegDataObsolete;
     _multipleAccountLabelText = multipleAccountLabelText;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
