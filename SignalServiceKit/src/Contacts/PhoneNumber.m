@@ -124,7 +124,10 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
     static AnyLRUCache *cache = nil;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{ cache = [[AnyLRUCache alloc] initWithMaxSize:256 nseMaxSize:0]; });
+    dispatch_once(
+        &onceToken, ^{ cache = [[AnyLRUCache alloc] initWithMaxSize:256
+                                                         nseMaxSize:0
+                                         shouldEvacuateInBackground:NO]; });
 
     @synchronized(cache) {
         NSString *cacheKey = [[input stringByAppendingString:@"@"] stringByAppendingString:regionCode];

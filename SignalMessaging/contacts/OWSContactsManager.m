@@ -65,7 +65,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-    _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50 nseMaxSize:0];
+    _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50
+                                                nseMaxSize:0
+                                shouldEvacuateInBackground:YES];
 
     OWSSingletonAssert();
 

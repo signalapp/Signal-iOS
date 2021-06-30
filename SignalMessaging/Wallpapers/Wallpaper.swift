@@ -300,7 +300,8 @@ extension Wallpaper {
 fileprivate extension Wallpaper {
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     static let wallpaperDirectory = URL(fileURLWithPath: "Wallpapers", isDirectory: true, relativeTo: appSharedDataDirectory)
-    static let cache = LRUCache<String, UIImage>(maxSize: 3)
+    static let cache = LRUCache<String, UIImage>(maxSize: 3,
+                                                 shouldEvacuateInBackground: true)
 
     static func ensureWallpaperDirectory() throws {
         guard OWSFileSystem.ensureDirectoryExists(wallpaperDirectory.path) else {

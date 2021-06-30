@@ -515,7 +515,9 @@ public class StickerViewCache: NSObject {
     @objc
     public init(maxSize: Int) {
         // Always use a nseMaxSize of zero.
-        backingCache = LRUCache(maxSize: maxSize, nseMaxSize: 0)
+        backingCache = LRUCache(maxSize: maxSize,
+                                nseMaxSize: 0,
+                                shouldEvacuateInBackground: true)
     }
 
     @objc

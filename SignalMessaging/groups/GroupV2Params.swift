@@ -66,7 +66,8 @@ public extension GroupV2Params {
         return ciphertext
     }
 
-    private static let decryptedBlobCache = LRUCache<Data, Data>(maxSize: 16)
+    private static let decryptedBlobCache = LRUCache<Data, Data>(maxSize: 16,
+                                                                 shouldEvacuateInBackground: true)
     private static let decryptedBlobCacheMaxItemSize: UInt = 4 * 1024
 
     fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {

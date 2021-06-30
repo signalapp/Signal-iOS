@@ -329,7 +329,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
         }
     }
 
-    private let reusableCoverViewCache = LRUCache<Data, StickerReusableView>(maxSize: 16)
+    private let reusableCoverViewCache = LRUCache<Data, StickerReusableView>(maxSize: 16,
+                                                                             shouldEvacuateInBackground: true)
     private func reusableCoverView(forDataSource dataSource: StickerPackDataSource) -> StickerReusableView? {
         guard let packId = dataSource.info?.packId else { return nil }
 
