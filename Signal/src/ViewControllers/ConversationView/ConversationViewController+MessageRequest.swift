@@ -4,6 +4,7 @@
 
 import Foundation
 import SafariServices
+import PromiseKit
 
 @objc
 extension ConversationViewController: MessageRequestDelegate {
@@ -86,6 +87,76 @@ extension ConversationViewController: MessageRequestDelegate {
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
                                                           responseType: .blockAndDelete)
         leaveAndSoftDeleteThread()
+    }
+
+    func blockThreadAndReportSpam() {
+        blockingManager.addBlockedThread(thread, blockMode: .localShouldNotLeaveGroups)
+        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .block)
+        reportSpam()
+
+        presentToast(
+            text: NSLocalizedString(
+                "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED",
+                comment: "String indicating that spam has been reported and the chat has been blocked."
+            ),
+            extraVInset: bottomBar.height
+        )
+    }
+
+    func reportSpam() {
+        guard let contactThread = thread as? TSContactThread else {
+            return owsFailDebug("Unexpected thread type for reporting spam \(type(of: thread))")
+        }
+
+        guard let senderPhoneNumber = contactThread.contactAddress.phoneNumber else {
+            return owsFailDebug("Missing phone number for reporting spam from \(contactThread.contactAddress)")
+        }
+
+        // We only report a selection of the N most recent messages
+        // in the conversation.
+        let maxMessagesToReport = 3
+
+        let guidsToReport: [String] = databaseStorage.read { transaction in
+            var guidsToReport = [String]()
+            do {
+                try InteractionFinder(
+                    threadUniqueId: self.thread.uniqueId
+                ).enumerateRecentInteractions(
+                    transaction: transaction
+                ) { interaction, stop in
+                    guard let incomingMessage = interaction as? TSIncomingMessage else { return }
+                    if let serverGuid = incomingMessage.serverGuid {
+                        guidsToReport.append(serverGuid)
+                    }
+                    guard guidsToReport.count < maxMessagesToReport else {
+                        stop.pointee = true
+                        return
+                    }
+                }
+            } catch {
+                owsFailDebug("Failed to lookup guids to report \(error)")
+            }
+            return guidsToReport
+        }
+
+        guard !guidsToReport.isEmpty else {
+            Logger.warn("No messages with serverGuids to report.")
+            return
+        }
+
+        Logger.info("Reporting \(guidsToReport.count) message(s) from \(senderPhoneNumber) as spam.")
+
+        var promises = [Promise<Void>]()
+        for guid in guidsToReport {
+            let request = OWSRequestFactory.reportSpam(fromPhoneNumber: senderPhoneNumber, withServerGuid: guid)
+            promises.append(networkManager.makePromise(request: request).asVoid())
+        }
+
+        when(fulfilled: promises).done {
+            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(senderPhoneNumber) as spam.")
+        }.catch { error in
+            owsFailDebug("Failed to report message(s) from \(senderPhoneNumber) as spam with error: \(error)")
+        }
     }
 
     func blockUserAndDelete(_ address: SignalServiceAddress) {
@@ -256,15 +327,25 @@ extension ConversationViewController: NameCollisionResolutionDelegate {
                                                  comment: "Action sheet action to confirm blocking a thread via a message request.")
         let blockAndDeleteActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
                                                           comment: "Action sheet action to confirm blocking and deleting a thread via a message request.")
+        let blockAndReportSpamActionTitle = NSLocalizedString("MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION",
+                                                              comment: "Action sheet action to confirm blocking and report spam for a thread via a message request.")
 
         actionSheet.addAction(ActionSheetAction(title: blockActionTitle) { [weak self] _ in
             self?.blockThread()
             sheetCompletion?(true)
         })
-        actionSheet.addAction(ActionSheetAction(title: blockAndDeleteActionTitle) { [weak self] _ in
-            self?.blockThreadAndDelete()
-            sheetCompletion?(true)
-        })
+        if thread.isGroupThread {
+            actionSheet.addAction(ActionSheetAction(title: blockAndDeleteActionTitle) { [weak self] _ in
+                self?.blockThreadAndDelete()
+                sheetCompletion?(true)
+            })
+        } else {
+            actionSheet.addAction(ActionSheetAction(title: blockAndReportSpamActionTitle) { [weak self] _ in
+                self?.blockThreadAndReportSpam()
+                sheetCompletion?(true)
+            })
+        }
+
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel, handler: { _ in
             sheetCompletion?(false)
         }))

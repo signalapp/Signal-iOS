@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSIncomingMessage.h"
 #import "NSNotificationCenter+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -11,7 +12,6 @@
 #import <SignalServiceKit/TSAttachmentPointer.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -65,6 +65,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _read = NO;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;
     _serverDeliveryTimestamp = incomingMessageBuilder.serverDeliveryTimestamp;
+    _serverGuid = incomingMessageBuilder.serverGuid;
     _wasReceivedByUD = incomingMessageBuilder.wasReceivedByUD;
 
     _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
@@ -102,6 +103,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                       authorUUID:(nullable NSString *)authorUUID
                             read:(BOOL)read
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                      serverGuid:(nullable NSString *)serverGuid
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
@@ -136,6 +138,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _authorUUID = authorUUID;
     _read = read;
     _serverDeliveryTimestamp = serverDeliveryTimestamp;
+    _serverGuid = serverGuid;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
     _viewed = viewed;

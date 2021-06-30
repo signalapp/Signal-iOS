@@ -284,6 +284,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        messageSticker: messageStickerBuilder(),
                                                        serverTimestamp: serverTimestampBuilder(),
                                                        serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
+                                                       serverGuid: serverGuidBuilder(),
                                                        wasReceivedByUD: wasReceivedByUDBuilder(),
                                                        isViewOnceMessage: isViewOnceMessageBuilder())
         let item = builder.build()
@@ -372,6 +373,11 @@ public class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var serverDeliveryTimestampBuilder: () -> UInt64 = {
         return 0
+    }
+
+    @objc
+    public var serverGuidBuilder: () -> String? = {
+        return nil
     }
 
     @objc
