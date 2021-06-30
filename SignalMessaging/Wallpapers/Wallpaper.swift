@@ -300,7 +300,7 @@ extension Wallpaper {
 fileprivate extension Wallpaper {
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     static let wallpaperDirectory = URL(fileURLWithPath: "Wallpapers", isDirectory: true, relativeTo: appSharedDataDirectory)
-    static let cache = NSCache<NSString, UIImage>(countLimit: 3)
+    static let cache = LRUCache<String, UIImage>(maxSize: 3)
 
     static func ensureWallpaperDirectory() throws {
         guard OWSFileSystem.ensureDirectoryExists(wallpaperDirectory.path) else {
@@ -311,7 +311,7 @@ fileprivate extension Wallpaper {
     static func setPhoto(_ photo: UIImage, for thread: TSThread?) throws {
         owsAssertDebug(!Thread.isMainThread)
 
-        cache.setObject(photo, forKey: key(for: thread) as NSString)
+        cache.setObject(photo, forKey: key(for: thread))
 
         guard let data = photo.jpegData(compressionQuality: 0.8) else {
             throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
@@ -327,7 +327,7 @@ fileprivate extension Wallpaper {
 
     @discardableResult
     static func photo(for key: String) throws -> UIImage? {
-        if let photo = cache.object(forKey: key as NSString) { return photo }
+        if let photo = cache.object(forKey: key) { return photo }
 
         guard OWSFileSystem.fileOrFolderExists(url: try photoURL(for: key)) else { return nil }
 
@@ -339,7 +339,7 @@ fileprivate extension Wallpaper {
             return nil
         }
 
-        cache.setObject(photo, forKey: key as NSString)
+        cache.setObject(photo, forKey: key)
 
         return photo
     }
@@ -351,7 +351,7 @@ fileprivate extension Wallpaper {
     static func cleanupPhotoIfNecessary(for key: String) throws {
         owsAssertDebug(!Thread.isMainThread)
 
-        cache.removeObject(forKey: key as NSString)
+        cache.removeObject(forKey: key)
         try OWSFileSystem.deleteFileIfExists(url: try photoURL(for: key))
     }
 

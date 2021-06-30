@@ -70,7 +70,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
-@property (nonatomic, readonly) NSCache<StickerInfo *, StickerReusableView *> *suggestedStickerViewCache;
+@property (nonatomic, readonly) StickerViewCache *suggestedStickerViewCache;
 @property (nonatomic, readonly) UIStackView *outerStack;
 @property (nonatomic, readonly) UIStackView *mediaAndSendStack;
 
@@ -127,7 +127,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     _conversationStyle = conversationStyle;
     _receivedSafeAreaInsets = UIEdgeInsetsZero;
-    _suggestedStickerViewCache = [[NSCache alloc] initWithCountLimit:12];
+    _suggestedStickerViewCache = [[StickerViewCache alloc] initWithMaxSize:12];
 
     self.inputToolbarDelegate = inputToolbarDelegate;
 

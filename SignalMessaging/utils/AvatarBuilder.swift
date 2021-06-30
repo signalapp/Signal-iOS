@@ -468,13 +468,12 @@ public class AvatarBuilder: NSObject {
         return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
-    // TODO: Tune configuration of this NSCache.
-    private let requestToContentCache = NSCache<NSString, AvatarContent>(countLimit: 1024)
+    private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 128)
 
     private func avatarContent(forRequest request: Request,
                                transaction: SDSAnyReadTransaction) -> AvatarContent {
         if let cacheKey = request.cacheKey,
-           let avatarContent = requestToContentCache.object(forKey: cacheKey as NSString) {
+           let avatarContent = requestToContentCache.object(forKey: cacheKey) {
             return avatarContent
         }
 
@@ -482,18 +481,17 @@ public class AvatarBuilder: NSObject {
                                                     transaction: transaction)
 
         if let cacheKey = request.cacheKey {
-            requestToContentCache.setObject(avatarContent, forKey: cacheKey as NSString)
+            requestToContentCache.setObject(avatarContent, forKey: cacheKey)
         }
         return avatarContent
     }
 
-    // TODO: Tune configuration of this NSCache.
-    private let contentToImageCache = NSCache<NSString, UIImage>(countLimit: 128)
+    private let contentToImageCache = LRUCache<String, UIImage>(maxSize: 128)
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent) -> UIImage? {
         let cacheKey = avatarContent.cacheKey
 
-        if let image = contentToImageCache.object(forKey: cacheKey as NSString) {
+        if let image = contentToImageCache.object(forKey: cacheKey) {
             Logger.verbose("---- Cache hit.")
             return image
         }
@@ -511,7 +509,7 @@ public class AvatarBuilder: NSObject {
             image.pixelHeight <= maxCacheSizePixels)
 
         if canCacheAvatarImage {
-            contentToImageCache.setObject(image, forKey: cacheKey as NSString)
+            contentToImageCache.setObject(image, forKey: cacheKey)
         }
 
         return image
@@ -917,7 +915,7 @@ public class AvatarBuilder: NSObject {
             .foregroundColor: textColor
         ]
         let options: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
-        let textSizeUnscaled = (initials as NSString).boundingRect(with: frame.size,
+        let textSizeUnscaled = (initials).boundingRect(with: frame.size,
                                                                    options: options,
                                                                    attributes: textAttributesForMeasurement,
                                                                    context: nil).size
@@ -941,12 +939,12 @@ public class AvatarBuilder: NSObject {
             .font: font,
             .foregroundColor: textColor
         ]
-        let textSizeScaled = (initials as NSString).boundingRect(with: frame.size,
+        let textSizeScaled = (initials).boundingRect(with: frame.size,
                                                                  options: options,
                                                                  attributes: textAttributesForDrawing,
                                                                  context: nil).size
         let locationPixels = (frame.size.asPoint - textSizeScaled.asPoint) * 0.5
-        (initials as NSString).draw(at: locationPixels, withAttributes: textAttributesForDrawing)
+        (initials).draw(at: locationPixels, withAttributes: textAttributesForDrawing)
     }
 
     private static func drawIconInAvatar(icon: UIImage,

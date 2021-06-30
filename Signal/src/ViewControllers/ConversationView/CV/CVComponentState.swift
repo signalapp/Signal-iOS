@@ -1206,7 +1206,7 @@ fileprivate extension CVComponentState {
     //       I'm not sure if we still need this cache.
     //
     // Cache the results for up to 1,000 messages.
-    private static let displayableTextCache = NSCache<NSString, DisplayableText>(countLimit: 1000)
+    private static let displayableTextCache = LRUCache<String, DisplayableText>(maxSize: 1000)
 
     static func displayableText(cacheKey: String,
                                 mentionStyle: Mention.Style,
@@ -1214,14 +1214,14 @@ fileprivate extension CVComponentState {
                                 messageBodyBlock: () -> MessageBody) -> DisplayableText {
         owsAssertDebug(!cacheKey.isEmpty)
 
-        if let displayableText = displayableTextCache.object(forKey: cacheKey as NSString) {
+        if let displayableText = displayableTextCache.object(forKey: cacheKey) {
             return displayableText
         }
         let messageBody = messageBodyBlock()
         let displayableText = DisplayableText.displayableText(withMessageBody: messageBody,
                                                               mentionStyle: mentionStyle,
                                                               transaction: transaction)
-        displayableTextCache.setObject(displayableText, forKey: cacheKey as NSString)
+        displayableTextCache.setObject(displayableText, forKey: cacheKey)
         return displayableText
     }
 }

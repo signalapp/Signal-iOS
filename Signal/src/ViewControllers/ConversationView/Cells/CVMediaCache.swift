@@ -7,8 +7,8 @@ import Foundation
 @objc
 public class CVMediaCache: NSObject {
 
-    private let stillMediaCache = NSCache<NSString, AnyObject>(countLimit: 16)
-    private let animatedMediaCache = NSCache<NSString, AnyObject>(countLimit: 8)
+    private let stillMediaCache = LRUCache<String, AnyObject>(maxSize: 16)
+    private let animatedMediaCache = LRUCache<String, AnyObject>(maxSize: 8)
 
     private let stillMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 12)
     private let animatedMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 6)
@@ -30,13 +30,13 @@ public class CVMediaCache: NSObject {
     @objc
     public func getMedia(_ key: String, isAnimated: Bool) -> AnyObject? {
         let cache = isAnimated ? animatedMediaCache : stillMediaCache
-        return cache.object(forKey: key as NSString)
+        return cache.get(key: key)
     }
 
     @objc
     public func setMedia(_ value: AnyObject, forKey key: String, isAnimated: Bool) {
         let cache = isAnimated ? animatedMediaCache : stillMediaCache
-        cache.setObject(value, forKey: key as NSString)
+        cache.set(key: key, value: value)
     }
 
     @objc

@@ -39,6 +39,7 @@ public class LaunchJobs: NSObject {
     // completion will be invoked async on the main thread.
     private func startLaunchJobs(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
+        owsAssertDebug(!CurrentAppContext().isNSE)
 
         state = .inFlight
 

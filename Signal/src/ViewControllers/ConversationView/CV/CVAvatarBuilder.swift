@@ -17,6 +17,9 @@ public class CVAvatarBuilder: Dependencies {
 
     private let transaction: SDSAnyReadTransaction
 
+    // We _DO NOT_ want to use LRUCache here; we need to gather
+    // all of the avatars for this load and retain them for the
+    // duration of the load.
     private var cache = [String: UIImage]()
 
     required init(transaction: SDSAnyReadTransaction) {
