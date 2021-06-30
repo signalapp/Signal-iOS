@@ -64,7 +64,6 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
-            XCTAssertNil(contact.avatarData)
             XCTAssertEqual(false, contact.isArchived)
             XCTAssertNil(contact.inboxSortOrder)
         }
@@ -78,7 +77,6 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
-            XCTAssertNil(contact.avatarData)
             XCTAssertEqual(false, contact.isArchived)
             XCTAssertNil(contact.inboxSortOrder)
         }
@@ -92,7 +90,6 @@ class GroupAndContactStreamTest: SignalBaseTest {
             XCTAssertNil(contact.profileKey)
             XCTAssertEqual(false, contact.isBlocked)
             XCTAssertEqual(0, contact.expireTimer)
-            XCTAssertNil(contact.avatarData)
             XCTAssertEqual(false, contact.isArchived)
             XCTAssertNil(contact.inboxSortOrder)
         }
