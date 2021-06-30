@@ -65,14 +65,6 @@ public extension NSObject {
         AppEnvironment.shared.sessionResetJobQueueRef
     }
 
-    final var userNotificationActionHandler: UserNotificationActionHandler {
-        AppEnvironment.shared.userNotificationActionHandlerRef
-    }
-
-    static var userNotificationActionHandler: UserNotificationActionHandler {
-        AppEnvironment.shared.userNotificationActionHandlerRef
-    }
-
     final var cvAudioPlayer: CVAudioPlayer {
         AppEnvironment.shared.cvAudioPlayerRef
     }
@@ -155,14 +147,6 @@ public extension Dependencies {
 
     static var sessionResetJobQueue: SessionResetJobQueue {
         AppEnvironment.shared.sessionResetJobQueueRef
-    }
-
-    var userNotificationActionHandler: UserNotificationActionHandler {
-        AppEnvironment.shared.userNotificationActionHandlerRef
-    }
-
-    static var userNotificationActionHandler: UserNotificationActionHandler {
-        AppEnvironment.shared.userNotificationActionHandlerRef
     }
 
     var cvAudioPlayer: CVAudioPlayer {

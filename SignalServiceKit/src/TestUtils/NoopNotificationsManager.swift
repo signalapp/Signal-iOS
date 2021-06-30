@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 @objc
@@ -35,9 +35,5 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
     public func cancelNotifications(reactionId: String) {
         Logger.warn("cancelNotifications for reactionId: \(reactionId)")
-    }
-
-    public func notifyUserForGRDBMigration() {
-        Logger.warn("notifyUserForGRDBMigration")
     }
 }

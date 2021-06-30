@@ -5,11 +5,75 @@
 import Foundation
 import PromiseKit
 
-class NotificationActionHandler: Dependencies {
+@objc
+public class NotificationActionHandler: NSObject {
 
-    static let shared: NotificationActionHandler = NotificationActionHandler()
+    @objc
+    class func handleNotificationResponse( _ response: UNNotificationResponse, completionHandler: @escaping () -> Void) {
+        AssertIsOnMainThread()
+        firstly {
+            try handleNotificationResponse(response)
+        }.done {
+            completionHandler()
+        }.catch { error in
+            owsFailDebug("error: \(error)")
+            completionHandler()
+        }
+    }
 
-    func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func handleNotificationResponse( _ response: UNNotificationResponse) throws -> Promise<Void> {
+        AssertIsOnMainThread()
+        assert(AppReadiness.isAppReady)
+
+        let userInfo = response.notification.request.content.userInfo
+
+        let action: AppNotificationAction
+
+        switch response.actionIdentifier {
+        case UNNotificationDefaultActionIdentifier:
+            Logger.debug("default action")
+            let defaultActionString = userInfo[AppNotificationUserInfoKey.defaultAction] as? String
+            let defaultAction = defaultActionString.flatMap { AppNotificationAction(rawValue: $0) }
+            action = defaultAction ?? .showThread
+        case UNNotificationDismissActionIdentifier:
+            // TODO - mark as read?
+            Logger.debug("dismissed notification")
+            return Promise.value(())
+        default:
+            if let responseAction = UserNotificationConfig.action(identifier: response.actionIdentifier) {
+                action = responseAction
+            } else {
+                throw OWSAssertionError("unable to find action for actionIdentifier: \(response.actionIdentifier)")
+            }
+        }
+
+        switch action {
+        case .answerCall:
+            return try answerCall(userInfo: userInfo)
+        case .callBack:
+            return try callBack(userInfo: userInfo)
+        case .declineCall:
+            return try declineCall(userInfo: userInfo)
+        case .markAsRead:
+            return try markAsRead(userInfo: userInfo)
+        case .reply:
+            guard let textInputResponse = response as? UNTextInputNotificationResponse else {
+                throw OWSAssertionError("response had unexpected type: \(response)")
+            }
+
+            return try reply(userInfo: userInfo, replyText: textInputResponse.userText)
+        case .showThread:
+            return try showThread(userInfo: userInfo)
+        case .reactWithThumbsUp:
+            return try reactWithThumbsUp(userInfo: userInfo)
+        case .showCallLobby:
+            return try showCallLobby(userInfo: userInfo)
+        }
+    }
+
+    // MARK: -
+
+    private class func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
             throw OWSAssertionError("localCallIdString was unexpectedly nil")
         }
@@ -22,7 +86,7 @@ class NotificationActionHandler: Dependencies {
         return Promise.value(())
     }
 
-    func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         let uuidString = userInfo[AppNotificationUserInfoKey.callBackUuid] as? String
         let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
         let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
@@ -34,7 +98,7 @@ class NotificationActionHandler: Dependencies {
         return Promise.value(())
     }
 
-    func declineCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func declineCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
             throw OWSAssertionError("localCallIdString was unexpectedly nil")
         }
@@ -47,7 +111,7 @@ class NotificationActionHandler: Dependencies {
         return Promise.value(())
     }
 
-    func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly {
             self.notificationMessage(forUserInfo: userInfo)
         }.then(on: .global()) { (notificationMessage: NotificationMessage) in
@@ -55,7 +119,7 @@ class NotificationActionHandler: Dependencies {
         }
     }
 
-    func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
+    private class func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
         }.then(on: .global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
@@ -65,11 +129,13 @@ class NotificationActionHandler: Dependencies {
                 throw OWSAssertionError("Unexpected interaction type.")
             }
 
-            return firstly(on: .global()) { () -> Promise<Void> in
-                self.databaseStorage.write { transaction in
-                    ThreadUtil.sendMessageNonDurablyPromise(body: MessageBody(text: replyText, ranges: .empty),
-                                                            thread: thread,
-                                                            transaction: transaction)
+            return firstly(on: .main) { () -> Promise<Void> in
+                self.databaseStorage.read { transaction in
+                    ThreadUtil.sendMessageNonDurablyPromise(
+                        body: MessageBody(text: replyText, ranges: .empty),
+                        thread: thread,
+                        transaction: transaction
+                    )
                 }
             }.recover(on: .global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
@@ -81,7 +147,7 @@ class NotificationActionHandler: Dependencies {
         }
     }
 
-    func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
         }.done(on: .main) { notificationMessage in
@@ -89,7 +155,7 @@ class NotificationActionHandler: Dependencies {
         }
     }
 
-    private func showThread(notificationMessage: NotificationMessage) {
+    private class func showThread(notificationMessage: NotificationMessage) {
         // If this happens when the the app is not, visible we skip the animation so the thread
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
@@ -99,7 +165,7 @@ class NotificationActionHandler: Dependencies {
         )
     }
 
-    func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
         }.then(on: .global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
@@ -111,7 +177,12 @@ class NotificationActionHandler: Dependencies {
 
             return firstly(on: .global()) { () -> Promise<Void> in
                 self.databaseStorage.write { transaction in
-                    ReactionManager.localUserReactedWithNonDurableSend(to: incomingMessage, emoji: "👍", isRemoving: false, transaction: transaction)
+                    ReactionManager.localUserReactedWithNonDurableSend(
+                        to: incomingMessage,
+                        emoji: "👍",
+                        isRemoving: false,
+                        transaction: transaction
+                    )
                 }
             }.recover(on: .global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
@@ -123,7 +194,7 @@ class NotificationActionHandler: Dependencies {
         }
     }
 
-    func showCallLobby(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func showCallLobby(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
         }.done(on: .main) { notificationMessage in
@@ -148,7 +219,7 @@ class NotificationActionHandler: Dependencies {
         let hasPendingMessageRequest: Bool
     }
 
-    private func notificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
+    private class func notificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
         firstly(on: .global()) { () throws -> NotificationMessage in
             guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
                 throw OWSAssertionError("threadId was unexpectedly nil")
@@ -178,15 +249,17 @@ class NotificationActionHandler: Dependencies {
         }
     }
 
-    private func markMessageAsRead(notificationMessage: NotificationMessage) -> Promise<Void> {
+    private class func markMessageAsRead(notificationMessage: NotificationMessage) -> Promise<Void> {
         guard let interaction = notificationMessage.interaction else {
             return Promise(error: OWSAssertionError("missing interaction"))
         }
         let (promise, resolver) = Promise<Void>.pending()
-        self.receiptManager.markAsReadLocally(beforeSortId: interaction.sortId,
-                                                  thread: notificationMessage.thread,
-                                                  hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest) {
-                                                    resolver.fulfill(())
+        self.receiptManager.markAsReadLocally(
+            beforeSortId: interaction.sortId,
+            thread: notificationMessage.thread,
+            hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest
+        ) {
+            resolver.fulfill(())
         }
         return promise
     }

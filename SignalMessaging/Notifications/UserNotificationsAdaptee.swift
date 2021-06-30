@@ -73,7 +73,6 @@ public class UserNotificationConfig {
 class UserNotificationPresenterAdaptee: NSObject {
 
     private let notificationCenter: UNUserNotificationCenter
-    private var notifications: [String: UNNotificationRequest] = [:]
 
     override init() {
         self.notificationCenter = UNUserNotificationCenter.current()
@@ -170,21 +169,11 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
                 owsFailDebug("Error: \(error)")
                 return
             }
-
-            guard notificationIdentifier != UserNotificationPresenterAdaptee.kMigrationNotificationId else {
-                return
-            }
-            DispatchQueue.main.async {
-                // If we show any other notification, we can clear the "GRDB migration" notification.
-                self.clearNotificationForGRDBMigration()
-            }
         }
-        notifications[notificationIdentifier] = request
     }
 
     func cancelNotification(identifier: String) {
         AssertIsOnMainThread()
-        notifications.removeValue(forKey: identifier)
         notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
     }
@@ -196,47 +185,50 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
     }
 
     func cancelNotifications(threadId: String) {
-        AssertIsOnMainThread()
-        for notification in notifications.values {
-            guard let notificationThreadId = notification.content.userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-                continue
-            }
+        getNotificationRequests().done(on: .main) { requests in
+            for request in requests {
+                guard let notificationThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String else {
+                    continue
+                }
 
-            guard notificationThreadId == threadId else {
-                continue
-            }
+                guard notificationThreadId == threadId else {
+                    continue
+                }
 
-            cancelNotification(notification)
+                self.cancelNotification(request)
+            }
         }
     }
 
     func cancelNotifications(messageId: String) {
-        AssertIsOnMainThread()
-        for notification in notifications.values {
-            guard let notificationMessageId = notification.content.userInfo[AppNotificationUserInfoKey.messageId] as? String else {
-                continue
-            }
+        getNotificationRequests().done(on: .main) { requests in
+            for request in requests {
+                guard let notificationMessageId = request.content.userInfo[AppNotificationUserInfoKey.messageId] as? String else {
+                    continue
+                }
 
-            guard notificationMessageId == messageId else {
-                continue
-            }
+                guard notificationMessageId == messageId else {
+                    continue
+                }
 
-            cancelNotification(notification)
+                self.cancelNotification(request)
+            }
         }
     }
 
     func cancelNotifications(reactionId: String) {
-        AssertIsOnMainThread()
-        for notification in notifications.values {
-            guard let notificationReactionId = notification.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String else {
-                continue
-            }
+        getNotificationRequests().done(on: .main) { requests in
+            for request in requests {
+                guard let notificationReactionId = request.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String else {
+                    continue
+                }
 
-            guard notificationReactionId == reactionId else {
-                continue
-            }
+                guard notificationReactionId == reactionId else {
+                    continue
+                }
 
-            cancelNotification(notification)
+                self.cancelNotification(request)
+            }
         }
     }
 
@@ -245,28 +237,6 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
-    }
-
-    private static let kMigrationNotificationId = "kMigrationNotificationId"
-
-    func notifyUserForGRDBMigration() {
-        AssertIsOnMainThread()
-
-        let title = NSLocalizedString("GRDB_MIGRATION_NOTIFICATION_TITLE",
-                                      comment: "Title of notification shown during GRDB migration indicating that user may need to open app to view their content.")
-        let body = NSLocalizedString("GRDB_MIGRATION_NOTIFICATION_BODY",
-                                      comment: "Body message of notification shown during GRDB migration indicating that user may need to open app to view their content.")
-        // By re-using the same identifier, we ensure that we never
-        // show this notification more than once at a time.
-        let identifier = UserNotificationPresenterAdaptee.kMigrationNotificationId
-        notify(category: .grdbMigration, title: title, body: body, threadIdentifier: nil, userInfo: [:], sound: nil, replacingIdentifier: identifier)
-    }
-
-    private func clearNotificationForGRDBMigration() {
-        AssertIsOnMainThread()
-
-        let identifier = UserNotificationPresenterAdaptee.kMigrationNotificationId
-        cancelNotification(identifier: identifier)
     }
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
@@ -293,9 +263,6 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
              .missedCallFromNoLongerVerifiedIdentity:
             // Always show these notifications whenever the app is in the foreground.
             return true
-        case .grdbMigration:
-            // Never show these notifications if the app is in the foreground.
-            return false
         }
 
         guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
@@ -309,6 +276,26 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
         // Show notifications for any *other* thread than the currently selected thread
         return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
+    }
+
+    func getNotificationRequests() -> Guarantee<[UNNotificationRequest]> {
+        return getDeliveredNotifications().then { delivered in
+            self.getPendingNotificationRequests().map { pending in
+                pending + delivered.map { $0.request }
+            }
+        }
+    }
+
+    func getDeliveredNotifications() -> Guarantee<[UNNotification]> {
+        return Guarantee { resolver in
+            self.notificationCenter.getDeliveredNotifications { resolver($0) }
+        }
+    }
+
+    func getPendingNotificationRequests() -> Guarantee<[UNNotificationRequest]> {
+        return Guarantee { resolver in
+            self.notificationCenter.getPendingNotificationRequests { resolver($0) }
+        }
     }
 }
 
