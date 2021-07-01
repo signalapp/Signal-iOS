@@ -117,8 +117,14 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         startMeasuring()
 
+        let envelopeJobs: [MessageProcessor.EnvelopeJob] = envelopeDatas.map {
+            MessageProcessor.EnvelopeJob(encryptedEnvelopeData: $0,
+                                         encryptedEnvelope: nil,
+                                         completion: { XCTAssertNil($0) })
+        }
+
         messageProcessor.processEncryptedEnvelopes(
-            envelopes: envelopeDatas.map { ($0, nil, { XCTAssertNil($0) }) },
+            envelopeJobs: envelopeJobs,
             serverDeliveryTimestamp: 0
         )
 

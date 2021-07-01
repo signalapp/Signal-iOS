@@ -137,20 +137,6 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    public func processEncryptedEnvelopes(
-        envelopes: [(encryptedEnvelopeData: Data, encryptedEnvelope: SSKProtoEnvelope?, completion: (Error?) -> Void)],
-        serverDeliveryTimestamp: UInt64
-    ) {
-        for envelope in envelopes {
-            processEncryptedEnvelopeData(
-                envelope.encryptedEnvelopeData,
-                encryptedEnvelope: envelope.encryptedEnvelope,
-                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                completion: envelope.completion
-            )
-        }
-    }
-
     @objc
     public func processEncryptedEnvelopeData(
         _ encryptedEnvelopeData: Data,
