@@ -44,8 +44,23 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     // MARK: - Tests
 
     func testPerf_messageProcessing() {
-        measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
-            processIncomingMessages()
+        if #available(iOS 13, *) {
+            let options = XCTMeasureOptions()
+            options.invocationOptions = [.manuallyStart, .manuallyStop]
+            options.iterationCount = 16
+            self.measure(options: options) {
+                autoreleasepool {
+                    processIncomingMessages()
+                }
+            }
+        } else {
+            // If we ever need to measure on older versions, we can't disable this owsFailDebug().
+            owsFailDebug("Invalid iOS version.")
+            measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
+                autoreleasepool {
+                    processIncomingMessages()
+                }
+            }
         }
     }
 
@@ -102,8 +117,14 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         startMeasuring()
 
+        let envelopeJobs: [MessageProcessor.EnvelopeJob] = envelopeDatas.map {
+            MessageProcessor.EnvelopeJob(encryptedEnvelopeData: $0,
+                                         encryptedEnvelope: nil,
+                                         completion: { XCTAssertNil($0) })
+        }
+
         messageProcessor.processEncryptedEnvelopes(
-            envelopes: envelopeDatas.map { ($0, nil, { XCTAssertNil($0) }) },
+            envelopeJobs: envelopeJobs,
             serverDeliveryTimestamp: 0
         )
 

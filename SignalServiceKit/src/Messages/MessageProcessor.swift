@@ -117,16 +117,22 @@ public class MessageProcessor: NSObject {
         }
     }
 
+    public struct EnvelopeJob {
+        let encryptedEnvelopeData: Data
+        let encryptedEnvelope: SSKProtoEnvelope?
+        let completion: (Error?) -> Void
+    }
+
     public func processEncryptedEnvelopes(
-        envelopes: [(encryptedEnvelopeData: Data, encryptedEnvelope: SSKProtoEnvelope?, completion: (Error?) -> Void)],
+        envelopeJobs: [EnvelopeJob],
         serverDeliveryTimestamp: UInt64
     ) {
-        for envelope in envelopes {
+        for envelopeJob in envelopeJobs {
             processEncryptedEnvelopeData(
-                envelope.encryptedEnvelopeData,
-                encryptedEnvelope: envelope.encryptedEnvelope,
+                envelopeJob.encryptedEnvelopeData,
+                encryptedEnvelope: envelopeJob.encryptedEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
-                completion: envelope.completion
+                completion: envelopeJob.completion
             )
         }
     }
@@ -202,9 +208,31 @@ public class MessageProcessor: NSObject {
         drainPendingEnvelopes()
     }
 
+    // The NSE has tight memory constraints.
+    // For perf reasons, MessageProcessor keeps its queue in memory.
+    // It is not safe for the NSE to fetch more messages
+    // and cause this queue to grow in an unbounded way.
+    // Therefore, the NSE should wait to fetch more messages if
+    // the queue has "some/enough" content.
+    // However, the NSE needs to process messages with high
+    // throughput.
+    // Therfore we need to identify a constant N small enough to
+    // place an acceptable upper bound on memory usage of the processor
+    // (N + next fetched batch size, fetch size in practice is 100),
+    // large enough to avoid introducing latency (e.g. the next fetch
+    // will complete before the queue is empty).
+    // This is tricky since there are multiple variables (e.g. network
+    // perf affects fetch, CPU perf affects processing).
+    public var hasSomeQueuedContent: Bool {
+        pendingEnvelopesLock.withLock {
+            return pendingEnvelopes.count >= 25
+        }
+    }
+
     private static let maxEnvelopeByteCount = 250 * 1024
     public static let largeEnvelopeWarningByteCount = 25 * 1024
-    private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue")
+    private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue",
+                                            autoreleaseFrequency: .workItem)
 
     private let pendingEnvelopesLock = UnfairLock()
     private var pendingEnvelopes = [PendingEnvelope]()
@@ -228,39 +256,45 @@ public class MessageProcessor: NSObject {
     private func drainNextBatch() {
         assertOnQueue(serialQueue)
 
-        // We want a value that is just high enough to yield perf benefits.
-        let kIncomingMessageBatchSize = 16
-        // If the app is in the background, use batch size of 1.
-        // This reduces the risk of us never being able to drain any
-        // messages from the queue. We should fine tune this number
-        // to yield the best perf we can get.
-        let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
-        let batchEnvelopes = pendingEnvelopesLock.withLock {
-            pendingEnvelopes.prefix(batchSize)
-        }
-
-        guard !batchEnvelopes.isEmpty else {
-            isDrainingPendingEnvelopes = false
-            NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
-            return
-        }
-
-        Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
-
-        SDSDatabaseStorage.shared.write { transaction in
-            batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }
-        }
-
-        // Remove the processed envelopes from the pending list.
-        pendingEnvelopesLock.withLock {
-            guard pendingEnvelopes.count > batchEnvelopes.count else {
-                pendingEnvelopes = []
-                return
+        let shouldContinue: Bool = autoreleasepool {
+            // We want a value that is just high enough to yield perf benefits.
+            let kIncomingMessageBatchSize = 16
+            // If the app is in the background, use batch size of 1.
+            // This reduces the risk of us never being able to drain any
+            // messages from the queue. We should fine tune this number
+            // to yield the best perf we can get.
+            let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
+            let batchEnvelopes = pendingEnvelopesLock.withLock {
+                pendingEnvelopes.prefix(batchSize)
             }
-            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+
+            guard !batchEnvelopes.isEmpty else {
+                isDrainingPendingEnvelopes = false
+                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
+                return false
+            }
+
+            Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
+
+            SDSDatabaseStorage.shared.write { transaction in
+                batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }
+            }
+
+            // Remove the processed envelopes from the pending list.
+            pendingEnvelopesLock.withLock {
+                guard pendingEnvelopes.count > batchEnvelopes.count else {
+                    pendingEnvelopes = []
+                    return
+                }
+                pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+            }
+
+            return true
         }
 
-        drainNextBatch()
+        if shouldContinue {
+            self.drainNextBatch()
+        }
     }
 
     private func processEnvelope(_ pendingEnvelope: PendingEnvelope, transaction: SDSAnyWriteTransaction) {

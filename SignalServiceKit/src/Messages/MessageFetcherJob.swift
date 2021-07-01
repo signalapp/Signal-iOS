@@ -55,15 +55,15 @@ public class MessageFetcherJob: NSObject {
 
     // This operation queue ensures that only one fetch operation is
     // running at a given time.
-    private let operationQueue: OperationQueue = {
+    private let fetchOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "MessageFetcherJob.operationQueue"
+        operationQueue.name = "MessageFetcherJob.fetchOperationQueue"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
 
     fileprivate var activeOperationCount: Int {
-        return operationQueue.operationCount
+        return fetchOperationQueue.operationCount
     }
 
     private let serialQueue = DispatchQueue(label: "org.signal.messageFetcherJob.serialQueue")
@@ -85,18 +85,29 @@ public class MessageFetcherJob: NSObject {
 
         // Use an operation queue to ensure that only one fetch cycle is done
         // at a time.
-        let operation = MessageFetchOperation()
-        let promise = operation.promise
+        let fetchOperation = MessageFetchOperation()
+        let promise = fetchOperation.promise
         let fetchCycle = MessageFetchCycle(promise: promise)
 
         _ = self.serialQueue.sync {
             activeFetchCycles.insert(fetchCycle.uuid)
         }
 
-        operationQueue.addOperation(operation)
+        // We don't want to re-fetch any messages that have
+        // already been processed, so fetch operations should
+        // block on "message ack" operations.  We accomplish
+        // this by having our message fetch operations depend
+        // on a no-op operation that flushes the "message ack"
+        // operation queue.
+        let flushAckOperation = Operation()
+        flushAckOperation.queuePriority = .normal
+        ackOperationQueue.addOperation(flushAckOperation)
+
+        fetchOperation.addDependency(flushAckOperation)
+        fetchOperationQueue.addOperation(fetchOperation)
 
         completionQueue.async {
-            self.operationQueue.waitUntilAllOperationsAreFinished()
+            self.fetchOperationQueue.waitUntilAllOperationsAreFinished()
 
             self.serialQueue.sync {
                 self.activeFetchCycles.remove(fetchCycle.uuid)
@@ -227,7 +238,7 @@ public class MessageFetcherJob: NSObject {
         Logger.info("Fetching messages via REST.")
 
         firstly {
-            fetchMessagesViaRest()
+            fetchMessagesViaRestWhenReady()
         }.done {
             resolver.fulfill(())
         }.catch { error in
@@ -238,36 +249,77 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
+    // This operation queue ensures that only one fetch operation is
+    // running at a given time.
+    private let ackOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "MessageFetcherJob.ackOperationQueue"
+        operationQueue.maxConcurrentOperationCount = 3
+        return operationQueue
+    }()
+
+    private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
+        let ackOperation = MessageAckOperation(envelopeInfo: envelopeInfo)
+        ackOperationQueue.addOperation(ackOperation)
+    }
+
+    // MARK: -
+
+    typealias EnvelopeJob = MessageProcessor.EnvelopeJob
+
     private class func fetchMessagesViaRest() -> Promise<Void> {
         Logger.debug("")
 
-        return firstly {
+        return firstly(on: .global()) {
             fetchBatchViaRest()
-        }.then { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
-
-            Self.messageProcessor.processEncryptedEnvelopes(
-                envelopes: envelopes.compactMap { envelope in
-                    do {
-                        let envelopeData = try envelope.serializedData()
-                        return (envelopeData, envelope, { _ in self.acknowledgeDelivery(envelope: envelope) })
-                    } catch {
-                        owsFailDebug("failed to serialize envelope")
-                        self.acknowledgeDelivery(envelope: envelope)
-                        return nil
+        }.map(on: .global()) { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> ([EnvelopeJob], UInt64, Bool) in
+            let envelopeJobs: [EnvelopeJob] = envelopes.compactMap { envelope in
+                let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
+                do {
+                    let envelopeData = try envelope.serializedData()
+                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
+                        Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
                     }
-                },
+                } catch {
+                    owsFailDebug("failed to serialize envelope")
+                    Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    return nil
+                }
+            }
+            return (envelopeJobs: envelopeJobs, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more)
+        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
+            Self.messageProcessor.processEncryptedEnvelopes(
+                envelopeJobs: envelopeJobs,
                 serverDeliveryTimestamp: serverDeliveryTimestamp
             )
 
             if more {
                 Logger.info("fetching more messages.")
 
-                return self.fetchMessagesViaRest()
+                return self.fetchMessagesViaRestWhenReady()
             } else {
                 // All finished
                 return Promise.value(())
             }
         }
+    }
+
+    private class func fetchMessagesViaRestWhenReady() -> Promise<Void> {
+        Promise<Void>.waitUntil {
+            Self.isReadyToFetchMessagesViaRest
+        }
+    }
+
+    private class var isReadyToFetchMessagesViaRest: Bool {
+        guard CurrentAppContext().isNSE else {
+            // If not NSE, fetch more immediately.
+            return true
+        }
+        // In NSE, if messageProcessor queue has enough content,
+        // wait before fetching more envelopes.
+        // We need to bound peak memory usage in the NSE when processing
+        // lots of incoming message.
+        return !Self.messageProcessor.hasSomeQueuedContent
     }
 
     // MARK: - Run Loop
@@ -398,24 +450,16 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private class func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
-        let request: TSRequest
-        if let serverGuid = envelope.serverGuid, serverGuid.count > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
-        } else if let sourceAddress = envelope.sourceAddress, sourceAddress.isValid, envelope.timestamp > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelope.timestamp)
-        } else {
-            owsFailDebug("Cannot ACK message which has neither source, nor server GUID and timestamp.")
-            return
-        }
+    fileprivate struct EnvelopeInfo {
+        let sourceAddress: SignalServiceAddress?
+        let serverGuid: String?
+        let timestamp: UInt64
+    }
 
-        self.networkManager.makeRequest(request,
-                                        success: { (_: URLSessionDataTask?, _: Any?) -> Void in
-                                            Logger.debug("acknowledged delivery for message at timestamp: \(envelope.timestamp)")
-        },
-                                        failure: { (_: URLSessionDataTask?, error: Error?) in
-                                            Logger.debug("acknowledging delivery for message at timestamp: \(envelope.timestamp) failed with error: \(String(describing: error))")
-        })
+    private class func buildEnvelopeInfo(envelope: SSKProtoEnvelope) -> EnvelopeInfo {
+        EnvelopeInfo(sourceAddress: envelope.sourceAddress,
+                     serverGuid: envelope.serverGuid,
+                     timestamp: envelope.timestamp)
     }
 }
 
@@ -442,6 +486,94 @@ private class MessageFetchOperation: OWSOperation {
 
         _ = promise.ensure {
             self.reportSuccess()
+        }
+    }
+}
+
+// MARK: -
+
+private class MessageAckOperation: OWSOperation {
+
+    fileprivate typealias EnvelopeInfo = MessageFetcherJob.EnvelopeInfo
+
+    private let envelopeInfo: EnvelopeInfo
+
+    fileprivate required init(envelopeInfo: EnvelopeInfo) {
+        self.envelopeInfo = envelopeInfo
+
+        super.init()
+
+        self.remainingRetries = 3
+
+        // MessageAckOperation must have a higher priority than than the
+        // operations used to flush the ack operation queue.
+        self.queuePriority = .high
+    }
+
+    public override func run() {
+        Logger.debug("")
+
+        let request: TSRequest
+        if let serverGuid = envelopeInfo.serverGuid, serverGuid.count > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
+        } else if let sourceAddress = envelopeInfo.sourceAddress, sourceAddress.isValid, envelopeInfo.timestamp > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelopeInfo.timestamp)
+        } else {
+            let error = OWSAssertionError("Cannot ACK message which has neither source, nor server GUID and timestamp.")
+            reportError(error.asUnretryableError)
+            return
+        }
+
+        let envelopeInfo = self.envelopeInfo
+        self.networkManager.makeRequest(request,
+                                        success: { (_: URLSessionDataTask?, _: Any?) -> Void in
+                                            Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp)")
+                                            self.reportSuccess()
+                                        },
+                                        failure: { (_: URLSessionDataTask?, error: Error?) in
+                                            Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp) " + "failed with error: \(String(describing: error))")
+                                            if let error = error {
+                                                if IsNetworkConnectivityFailure(error) {
+                                                    self.reportError(error.asRetryableError)
+                                                } else {
+                                                    self.reportError(error.asUnretryableError)
+                                                }
+                                            } else {
+                                                let error = OWSAssertionError("Unknown error while acknowledging delivery for message.")
+                                                self.reportError(error.asUnretryableError)
+                                            }
+                                        })
+    }
+}
+
+// MARK: -
+
+extension Promise {
+    public static func waitUntil(checkFrequency: TimeInterval = 0.01,
+                                 dispatchQueue: DispatchQueue = .global(),
+                                 conditionBlock: @escaping () -> Bool) -> Promise<Void> {
+
+        let (promise, resolver) = Promise<Void>.pending()
+        fulfillWaitUntil(resolver: resolver,
+                         checkFrequency: checkFrequency,
+                         dispatchQueue: dispatchQueue,
+                         conditionBlock: conditionBlock)
+        return promise
+    }
+
+    private static func fulfillWaitUntil(resolver: Resolver<Void>,
+                                         checkFrequency: TimeInterval,
+                                         dispatchQueue: DispatchQueue,
+                                         conditionBlock: @escaping () -> Bool) {
+        if conditionBlock() {
+            resolver.fulfill(())
+            return
+        }
+        dispatchQueue.asyncAfter(deadline: .now() + checkFrequency) {
+            fulfillWaitUntil(resolver: resolver,
+                             checkFrequency: checkFrequency,
+                             dispatchQueue: dispatchQueue,
+                             conditionBlock: conditionBlock)
         }
     }
 }
