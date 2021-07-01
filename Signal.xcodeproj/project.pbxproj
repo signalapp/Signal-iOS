@@ -837,8 +837,7 @@
 		88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */; };
 		88D23D0B23CEBF4400B0E74B /* UserNotificationsAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0923CEBF4400B0E74B /* UserNotificationsAdaptee.swift */; };
 		88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */; };
-		88D23D1023CEBF7F00B0E74B /* NotificationActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D0F23CEBF7F00B0E74B /* NotificationActionHandler.swift */; };
-		88D23D1223CEBFB200B0E74B /* UserNotificationActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1123CEBFB200B0E74B /* UserNotificationActionHandler.swift */; };
+		88D23D1223CEBFB200B0E74B /* NotificationActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */; };
 		88D23D2023CEC0C700B0E74B /* IndividualCallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1423CEC0C700B0E74B /* IndividualCallService.swift */; };
 		88D23D2223CEC0C700B0E74B /* OutboundIndividualCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1623CEC0C700B0E74B /* OutboundIndividualCallInitiator.swift */; };
 		88D23D2323CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D23D1823CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift */; };
@@ -2006,8 +2005,7 @@
 		88D23D0923CEBF4400B0E74B /* UserNotificationsAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserNotificationsAdaptee.swift; sourceTree = "<group>"; };
 		88D23D0A23CEBF4400B0E74B /* AppNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppNotifications.swift; sourceTree = "<group>"; };
 		88D23D0D23CEBF6000B0E74B /* IndividualCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCall.swift; sourceTree = "<group>"; };
-		88D23D0F23CEBF7F00B0E74B /* NotificationActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationActionHandler.swift; sourceTree = "<group>"; };
-		88D23D1123CEBFB200B0E74B /* UserNotificationActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotificationActionHandler.swift; sourceTree = "<group>"; };
+		88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationActionHandler.swift; sourceTree = "<group>"; };
 		88D23D1423CEC0C700B0E74B /* IndividualCallService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallService.swift; sourceTree = "<group>"; };
 		88D23D1623CEC0C700B0E74B /* OutboundIndividualCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundIndividualCallInitiator.swift; sourceTree = "<group>"; };
 		88D23D1823CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonCallKitCallUIAdaptee.swift; sourceTree = "<group>"; };
@@ -3134,8 +3132,6 @@
 			children = (
 				4CC613352227A00400E21A3A /* ConversationSearch.swift */,
 				88A505F523DBA0C70005C012 /* Experience Upgrades */,
-				88D23D0F23CEBF7F00B0E74B /* NotificationActionHandler.swift */,
-				88D23D1123CEBFB200B0E74B /* UserNotificationActionHandler.swift */,
 				34B3F8331E8DF1700035BE1A /* ViewControllers */,
 				76EB052B18170B33006006FC /* Views */,
 			);
@@ -3424,6 +3420,7 @@
 				887889AE247F2E72001B5FCF /* Emoji */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
+				88D23D1123CEBFB200B0E74B /* NotificationActionHandler.swift */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
 				D044E6A32495A4A90087A0C2 /* OWSCellAccessibilityCustomAction.swift */,
 				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
@@ -5452,7 +5449,6 @@
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
 				88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */,
-				88D23D1023CEBF7F00B0E74B /* NotificationActionHandler.swift in Sources */,
 				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */,
 				347C3841252CE6C900F3D941 /* CVComponentSticker.swift in Sources */,
@@ -5625,7 +5621,7 @@
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
-				88D23D1223CEBFB200B0E74B /* UserNotificationActionHandler.swift in Sources */,
+				88D23D1223CEBFB200B0E74B /* NotificationActionHandler.swift in Sources */,
 				880C2E02262A19DE006650B6 /* InteractiveSheetViewController.swift in Sources */,
 				347C3844252CE6C900F3D941 /* CVComponentFooter.swift in Sources */,
 				88238EB824F20F1600F28079 /* EmojiWithSkinTones.swift in Sources */,

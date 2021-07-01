@@ -1289,9 +1289,8 @@ void uncaughtExceptionHandler(NSException *exception)
              withCompletionHandler:(void (^)(void))completionHandler
 {
     OWSLogInfo(@"");
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        [self.userNotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler];
-    });
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(
+        ^{ [NotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler]; });
 }
 
 - (void)setupNSEInteroperation

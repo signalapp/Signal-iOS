@@ -48,9 +48,6 @@ public class AppEnvironment: NSObject {
     public var sessionResetJobQueueRef: SessionResetJobQueue
 
     @objc
-    public var userNotificationActionHandlerRef: UserNotificationActionHandler
-
-    @objc
     let deviceTransferServiceRef = DeviceTransferService()
 
     @objc
@@ -64,7 +61,6 @@ public class AppEnvironment: NSObject {
         self.notificationPresenterRef = NotificationPresenter()
         self.pushRegistrationManagerRef = PushRegistrationManager()
         self.sessionResetJobQueueRef = SessionResetJobQueue()
-        self.userNotificationActionHandlerRef = UserNotificationActionHandler()
 
         super.init()
 
