@@ -305,26 +305,21 @@ public class MessageFetcherJob: NSObject {
     }
 
     private class func fetchMessagesViaRestWhenReady() -> Promise<Void> {
+        Promise<Void>.waitUntil {
+            Self.isReadyToFetchMessagesViaRest
+        }
+    }
+
+    private class var isReadyToFetchMessagesViaRest: Bool {
         guard CurrentAppContext().isNSE else {
             // If not NSE, fetch more immediately.
-            return self.fetchMessagesViaRest()
+            return true
         }
         // In NSE, if messageProcessor queue has enough content,
         // wait before fetching more envelopes.
         // We need to bound peak memory usage in the NSE when processing
         // lots of incoming message.
-        if Self.messageProcessor.hasSomeQueuedContent {
-            return firstly(on: .global()) { () -> Guarantee<Void> in
-                // Try again in N seconds.
-                // We use a fairly tight loop here to avoid introducing latency.
-                after(seconds: 0.01)
-            }.then(on: .global()) { () -> Promise<Void> in
-                Self.fetchMessagesViaRestWhenReady()
-            }
-        } else {
-            // Fetch more immediately.
-            return self.fetchMessagesViaRest()
-        }
+        return !Self.messageProcessor.hasSomeQueuedContent
     }
 
     // MARK: - Run Loop
@@ -548,5 +543,37 @@ private class MessageAckOperation: OWSOperation {
                                                 self.reportError(error.asUnretryableError)
                                             }
                                         })
+    }
+}
+
+// MARK: -
+
+extension Promise {
+    public static func waitUntil(checkFrequency: TimeInterval = 0.01,
+                                 dispatchQueue: DispatchQueue = .global(),
+                                 conditionBlock: @escaping () -> Bool) -> Promise<Void> {
+
+        let (promise, resolver) = Promise<Void>.pending()
+        fulfillWaitUntil(resolver: resolver,
+                         checkFrequency: checkFrequency,
+                         dispatchQueue: dispatchQueue,
+                         conditionBlock: conditionBlock)
+        return promise
+    }
+
+    private static func fulfillWaitUntil(resolver: Resolver<Void>,
+                                         checkFrequency: TimeInterval,
+                                         dispatchQueue: DispatchQueue,
+                                         conditionBlock: @escaping () -> Bool) {
+        if conditionBlock() {
+            resolver.fulfill(())
+            return
+        }
+        dispatchQueue.asyncAfter(deadline: .now() + checkFrequency) {
+            fulfillWaitUntil(resolver: resolver,
+                             checkFrequency: checkFrequency,
+                             dispatchQueue: dispatchQueue,
+                             conditionBlock: conditionBlock)
+        }
     }
 }

@@ -270,40 +270,43 @@ public class MessageProcessor: NSObject {
     private func drainNextBatch() {
         assertOnQueue(serialQueue)
 
-        // We want a value that is just high enough to yield perf benefits.
-        let kIncomingMessageBatchSize = 16
-        // If the app is in the background, use batch size of 1.
-        // This reduces the risk of us never being able to drain any
-        // messages from the queue. We should fine tune this number
-        // to yield the best perf we can get.
-        let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
-        let batchEnvelopes = pendingEnvelopesLock.withLock {
-            pendingEnvelopes.prefix(batchSize)
-        }
-
-        guard !batchEnvelopes.isEmpty else {
-            isDrainingPendingEnvelopes = false
-            NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
-            return
-        }
-
-        Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
-
-        SDSDatabaseStorage.shared.write { transaction in
-            batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }
-        }
-
-        // Remove the processed envelopes from the pending list.
-        pendingEnvelopesLock.withLock {
-            guard pendingEnvelopes.count > batchEnvelopes.count else {
-                pendingEnvelopes = []
-                return
+        let shouldContinue: Bool = autoreleasepool {
+            // We want a value that is just high enough to yield perf benefits.
+            let kIncomingMessageBatchSize = 16
+            // If the app is in the background, use batch size of 1.
+            // This reduces the risk of us never being able to drain any
+            // messages from the queue. We should fine tune this number
+            // to yield the best perf we can get.
+            let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
+            let batchEnvelopes = pendingEnvelopesLock.withLock {
+                pendingEnvelopes.prefix(batchSize)
             }
-            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+
+            guard !batchEnvelopes.isEmpty else {
+                isDrainingPendingEnvelopes = false
+                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
+                return false
+            }
+
+            Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
+
+            SDSDatabaseStorage.shared.write { transaction in
+                batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }
+            }
+
+            // Remove the processed envelopes from the pending list.
+            pendingEnvelopesLock.withLock {
+                guard pendingEnvelopes.count > batchEnvelopes.count else {
+                    pendingEnvelopes = []
+                    return
+                }
+                pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+            }
+
+            return true
         }
 
-        // Dispatch async to drain the autoreleasepool.
-        serialQueue.async {
+        if shouldContinue {
             self.drainNextBatch()
         }
     }
