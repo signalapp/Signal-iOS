@@ -472,7 +472,11 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             let sign: CGFloat = -1
             let x = (damping * (sqrt(abs(translationX)) / sqrt(damping))) * sign
             viewsToMove.forEach { $0.transform = CGAffineTransform(translationX: x, y: 0) }
-            replyButton.alpha = abs(translationX) / VisibleMessageCell.maxBubbleTranslationX
+            if timerView.isHidden {
+                replyButton.alpha = abs(translationX) / VisibleMessageCell.maxBubbleTranslationX
+            } else {
+                replyButton.alpha = 0 // Always hide the reply button if the timer view is showing, otherwise they can overlap
+            }
             if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold && abs(previousX) < VisibleMessageCell.swipeToReplyThreshold {
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred() // Let the user know when they've hit the swipe to reply threshold
             }

@@ -61,7 +61,7 @@ final class ScrollToBottomButton : UIView {
     }
 }
 
-    protocol ScrollToBottomButtonDelegate : class {
+protocol ScrollToBottomButtonDelegate : class {
     
     func handleScrollToBottomButtonTapped()
 }

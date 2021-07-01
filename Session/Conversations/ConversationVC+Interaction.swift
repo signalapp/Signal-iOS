@@ -295,7 +295,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         if !newText.isEmpty {
             let lastCharacterIndex = newText.index(before: newText.endIndex)
             let lastCharacter = newText[lastCharacterIndex]
-            // Check if there is a whitespace before the '@' or the '@' is the first character
+            // Check if there is whitespace before the '@' or the '@' is the first character
             let isCharacterBeforeLastWhiteSpaceOrStartOfLine: Bool
             if newText.count == 1 {
                 isCharacterBeforeLastWhiteSpaceOrStartOfLine = true // Start of line
