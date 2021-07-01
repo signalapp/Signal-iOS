@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSOutgoingMessage.h"
 #import "NSError+OWSOperation.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
@@ -17,7 +18,6 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -459,6 +459,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     [super anyWillInsertWithTransaction:transaction];
 
     _storedMessageState = self.messageState;
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    if (self.persistenceCompletionHandler != nil) {
+        self.persistenceCompletionHandler();
+        self.persistenceCompletionHandler = nil;
+    }
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction

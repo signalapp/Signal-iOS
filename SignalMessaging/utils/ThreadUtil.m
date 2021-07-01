@@ -48,6 +48,23 @@ NS_ASSUME_NONNULL_BEGIN
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
+    return [[self class] enqueueMessageWithBody:messageBody
+                               mediaAttachments:mediaAttachments
+                                         thread:thread
+                               quotedReplyModel:quotedReplyModel
+                               linkPreviewDraft:linkPreviewDraft
+                   persistenceCompletionHandler:nil
+                                    transaction:transaction];
+}
+
++ (TSOutgoingMessage *)enqueueMessageWithBody:(nullable MessageBody *)messageBody
+                             mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
+                                       thread:(TSThread *)thread
+                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                 persistenceCompletionHandler:(void (^__nullable)(void))completion
+                                  transaction:(SDSAnyReadTransaction *)transaction
+{
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
 
@@ -57,6 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                       thread:thread
                                             quotedReplyModel:quotedReplyModel
                                                  transaction:transaction];
+    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
+    message.persistenceCompletionHandler = completion;
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
                                 block:^(void (^benchmarkCompletion)(void)) {
@@ -72,7 +91,6 @@ NS_ASSUME_NONNULL_BEGIN
                                         });
                                 }];
 
-    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
     if (message.hasRenderableContent) {
         [thread donateSendMessageIntentWithTransaction:transaction];
     }
