@@ -7,8 +7,10 @@ import Foundation
 @objc
 public class CVMediaCache: NSObject {
 
-    private let stillMediaCache = LRUCache<String, AnyObject>(maxSize: 16)
-    private let animatedMediaCache = LRUCache<String, AnyObject>(maxSize: 8)
+    private let stillMediaCache = LRUCache<String, AnyObject>(maxSize: 16,
+                                                              shouldEvacuateInBackground: true)
+    private let animatedMediaCache = LRUCache<String, AnyObject>(maxSize: 8,
+                                                                 shouldEvacuateInBackground: true)
 
     private let stillMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 12)
     private let animatedMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 6)
@@ -84,7 +86,8 @@ private class MediaInnerCache<KeyType: Hashable, ValueType> {
     public required init(maxSize: Int = 0) {
         AssertIsOnMainThread()
 
-        cache = LRUCache<KeyType, ValueType>(maxSize: maxSize)
+        cache = LRUCache<KeyType, ValueType>(maxSize: maxSize,
+                                             shouldEvacuateInBackground: true)
     }
 
     // MARK: - API

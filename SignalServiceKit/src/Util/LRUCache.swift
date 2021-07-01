@@ -9,8 +9,10 @@ public class AnyLRUCache: NSObject {
     private let backingCache: LRUCache<NSObject, NSObject>
 
     @objc
-    public init(maxSize: Int, nseMaxSize: Int) {
-        backingCache = LRUCache(maxSize: maxSize, nseMaxSize: nseMaxSize)
+    public init(maxSize: Int, nseMaxSize: Int, shouldEvacuateInBackground: Bool) {
+        backingCache = LRUCache(maxSize: maxSize,
+                                nseMaxSize: nseMaxSize,
+                                shouldEvacuateInBackground: shouldEvacuateInBackground)
     }
 
     @objc
@@ -64,22 +66,23 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     private let cache = NSCache<AnyObject, AnyObject>()
     private let maxSize: Int
 
-    public init(maxSize: Int, nseMaxSize: Int = 0) {
+    public init(maxSize: Int,
+                nseMaxSize: Int = 0,
+                shouldEvacuateInBackground: Bool = false) {
         self.maxSize = CurrentAppContext().isNSE ? nseMaxSize : maxSize
         self.cache.countLimit = maxSize
+
+        if CurrentAppContext().isMainApp,
+           shouldEvacuateInBackground {
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(didEnterBackground),
+                                                   name: .OWSApplicationDidEnterBackground,
+                                                   object: nil)
+        }
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    @objc func didEnterBackground() {
-        AssertIsOnMainThread()
-
-        clear()
-    }
-
-    @objc func didReceiveMemoryWarning() {
+    @objc
+    private func didEnterBackground() {
         AssertIsOnMainThread()
 
         clear()

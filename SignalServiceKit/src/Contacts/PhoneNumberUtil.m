@@ -38,7 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (self) {
         _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
         _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
-        _parsedPhoneNumberCache = [[AnyLRUCache alloc] initWithMaxSize:256 nseMaxSize:8];
+        _parsedPhoneNumberCache = [[AnyLRUCache alloc] initWithMaxSize:256
+                                                            nseMaxSize:8
+                                            shouldEvacuateInBackground:NO];
     }
 
     return self;
