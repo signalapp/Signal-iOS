@@ -23,7 +23,7 @@ public class NotificationActionHandler: NSObject {
 
     private class func handleNotificationResponse( _ response: UNNotificationResponse) throws -> Promise<Void> {
         AssertIsOnMainThread()
-        assert(AppReadiness.isAppReady)
+        owsAssertDebug(AppReadiness.isAppReady)
 
         let userInfo = response.notification.request.content.userInfo
 

@@ -238,7 +238,7 @@ public class DebugFlags: BaseFlags {
     //
     // Set this flag to true to be able to download messages even when the app is in the background.
     @objc
-    public static let keepWebSocketOpenInBackground = false
+    public static let keepWebSocketOpenInBackground = true //false
 
     @objc
     public static let audibleErrorLogging = build.includes(.qa)
