@@ -134,7 +134,7 @@ public class FeatureFlags: BaseFlags {
         // The CallKit APIs for the NSE are only available
         // from iOS 14.5 and on.
         guard #available(iOS 14.5, *) else { return false }
-        return build.includes(.dev)
+        return build.includes(.qa)
     }
 
     @objc
@@ -238,7 +238,7 @@ public class DebugFlags: BaseFlags {
     //
     // Set this flag to true to be able to download messages even when the app is in the background.
     @objc
-    public static let keepWebSocketOpenInBackground = true //false
+    public static let keepWebSocketOpenInBackground = false
 
     @objc
     public static let audibleErrorLogging = build.includes(.qa)
