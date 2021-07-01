@@ -468,8 +468,7 @@ public class AvatarBuilder: NSObject {
         return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
-    private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 128,
-                                                                        shouldEvacuateInBackground: true)
+    private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 128, nseMaxSize: 16)
 
     private func avatarContent(forRequest request: Request,
                                transaction: SDSAnyReadTransaction) -> AvatarContent {
@@ -487,8 +486,7 @@ public class AvatarBuilder: NSObject {
         return avatarContent
     }
 
-    private let contentToImageCache = LRUCache<String, UIImage>(maxSize: 128,
-                                                                shouldEvacuateInBackground: true)
+    private let contentToImageCache = LRUCache<String, UIImage>(maxSize: 128, nseMaxSize: 16)
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent) -> UIImage? {
         let cacheKey = avatarContent.cacheKey
