@@ -57,8 +57,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMetaMessageRequestInfo,
 };
 
-typedef void (^TSOutgoingMessagePersistenceCompletionHandler)(void);
-
 @class SDSAnyWriteTransaction;
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
@@ -234,8 +232,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // The states for all recipients.
 @property (atomic, nullable, readonly)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
-
-@property (nonatomic, copy, nullable) TSOutgoingMessagePersistenceCompletionHandler persistenceCompletionHandler;
 
 // All recipients of this message who we are currently trying to send to (pending, queued, uploading or during send).
 - (NSArray<SignalServiceAddress *> *)sendingRecipientAddresses;

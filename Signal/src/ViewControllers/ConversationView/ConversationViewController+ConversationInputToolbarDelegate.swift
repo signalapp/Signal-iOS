@@ -111,10 +111,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                                       quotedReplyModel: inputToolbar.quotedReply,
                                       linkPreviewDraft: inputToolbar.linkPreviewDraft,
                                       persistenceCompletionHandler: {
-                                        () -> Void in
-                                        DispatchQueue.main.async {
+                                            AssertIsOnMainThread()
                                             self.loadCoordinator.enqueueReload()
-                                        }
                                       },
                                       transaction: transaction)
         }
@@ -331,6 +329,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                                           thread: self.thread,
                                           quotedReplyModel: inputToolbar.quotedReply,
                                           linkPreviewDraft: nil,
+                                          persistenceCompletionHandler: {
+                                                AssertIsOnMainThread()
+                                                self.loadCoordinator.enqueueReload()
+                                            },
                                           transaction: transaction)
             }
 
@@ -611,6 +613,10 @@ extension ConversationViewController: LocationPickerDelegate {
                                           thread: self.thread,
                                           quotedReplyModel: nil,
                                           linkPreviewDraft: nil,
+                                          persistenceCompletionHandler: {
+                                                AssertIsOnMainThread()
+                                                self.loadCoordinator.enqueueReload()
+                                          },
                                           transaction: transaction)
             }
 
