@@ -100,6 +100,12 @@ extension PaymentsQRScanViewController: QRCodeScanDelegate {
                                qrCodeString: String?) -> QRCodeScanOutcome {
         AssertIsOnMainThread()
 
+        // Prefer qrCodeString to qrCodeData.  The only valid payload
+        // is a public address encoded as either b58 and/or URL.
+        // Either way, the payload will be a utf8 string that iOS
+        // can decode.  iOS supports many more QR code modes and
+        // configurations than QRCodePayload, so the qrCodeString is
+        // more reliable than qrCodeData.
         if let qrCodeString = qrCodeString {
             if nil != PaymentsImpl.parse(publicAddressBase58: qrCodeString) {
                 delegate?.didScanPaymentAddressQRCode(publicAddressBase58: qrCodeString)
