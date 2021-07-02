@@ -105,14 +105,6 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
-    // Block which will be called after all pending (committed) db changes
-    // have been flushed.
-    func add(snapshotFlushBlock: @escaping ObservedDatabaseChanges.CompletionBlock) {
-        UIDatabaseObserver.serializedSync {
-            pendingChanges.add(completionBlock: snapshotFlushBlock)
-        }
-    }
-
     #if TESTABLE_BUILD
     private var _databaseWriteDelegates: [Weak<DatabaseWriteDelegate>] = []
     private var databaseWriteDelegates: [DatabaseWriteDelegate] {
@@ -179,6 +171,8 @@ public class UIDatabaseObserver: NSObject {
 
         guard CurrentAppContext().hasUI else {
             // The NSE never does uiReads, we can skip the display link.
+            //
+            // TODO: Review.
             return
         }
 
@@ -369,7 +363,6 @@ extension UIDatabaseObserver: TransactionObserver {
                 let interactionDeletedUniqueIds = pendingChangesToCommit.interactionDeletedUniqueIds
                 let attachmentDeletedUniqueIds = pendingChangesToCommit.attachmentDeletedUniqueIds
                 let collections = pendingChangesToCommit.collections
-                let completionBlocks = pendingChangesToCommit.completionBlocks
 
                 DispatchQueue.main.async {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
@@ -378,7 +371,6 @@ extension UIDatabaseObserver: TransactionObserver {
                     self.committedChanges.append(interactionDeletedUniqueIds: interactionDeletedUniqueIds)
                     self.committedChanges.append(attachmentDeletedUniqueIds: attachmentDeletedUniqueIds)
                     self.committedChanges.append(collections: collections)
-                    self.committedChanges.append(completionBlocks: completionBlocks)
                 }
             } catch {
                 DispatchQueue.main.async {

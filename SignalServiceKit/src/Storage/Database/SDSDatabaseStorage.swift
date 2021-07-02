@@ -193,21 +193,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         uiDatabaseObserver.appendSnapshotDelegate(snapshotDelegate)
     }
 
-    // MARK: - UI Database Snapshot Completion
-
-    @objc
-    public func add(uiDatabaseSnapshotFlushBlock: @escaping () -> Void) {
-        guard AppReadiness.isAppReady else {
-            owsFailDebug("App not ready.")
-            return
-        }
-        guard let uiDatabaseObserver = grdbStorage.uiDatabaseObserver else {
-            owsFailDebug("Missing uiDatabaseObserver")
-            return
-        }
-        uiDatabaseObserver.add(snapshotFlushBlock: uiDatabaseSnapshotFlushBlock)
-    }
-
     // MARK: - Id Mapping
 
     @objc

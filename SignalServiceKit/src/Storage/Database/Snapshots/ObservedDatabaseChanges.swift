@@ -77,26 +77,6 @@ class ObservedDatabaseChanges: NSObject {
         self.concurrencyMode = concurrencyMode
     }
 
-    // MARK: - Completion Blocks
-
-    public typealias CompletionBlock = () -> Void
-    public var completionBlocks = [CompletionBlock]()
-
-    func add(completionBlock: @escaping CompletionBlock) {
-        completionBlocks.append(completionBlock)
-
-    }
-
-    func append(completionBlocks: [CompletionBlock]) {
-        self.completionBlocks += completionBlocks
-    }
-
-    func fireCompletionBlocks() {
-        for completionBlock in completionBlocks {
-            completionBlock()
-        }
-    }
-
     // MARK: - Collections
 
     private var _collections: Set<String> = Set()
