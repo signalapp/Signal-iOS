@@ -37,7 +37,7 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     }
     private var transactionState: TransactionState = .open
 
-    init(database: Database) {
+    override init(database: Database) {
         super.init(database: database)
     }
 

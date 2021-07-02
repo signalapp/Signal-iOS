@@ -539,10 +539,6 @@ extension UIDatabaseObserver: TransactionObserver {
                 delegate.uiDatabaseSnapshotDidUpdate(databaseChanges: committedChanges)
             }
         }
-
-        for completionBlock in committedChanges.completionBlocks {
-            completionBlock()
-        }
     }
 
     public func databaseDidRollback(_ db: Database) {
