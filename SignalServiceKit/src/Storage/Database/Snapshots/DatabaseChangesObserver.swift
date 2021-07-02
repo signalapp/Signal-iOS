@@ -5,7 +5,6 @@
 import Foundation
 import GRDB
 
-// TODO:
 @objc
 public protocol DatabaseChangesDelegate: AnyObject {
     func databaseChangesWillUpdate()

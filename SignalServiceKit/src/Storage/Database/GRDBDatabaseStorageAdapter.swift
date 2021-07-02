@@ -127,7 +127,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     @objc
     public private(set) var databaseChangesObserver: DatabaseChangesObserver?
 
-    // TODO:
     @objc
     public func setupDatabaseChangesObserver() throws {
         owsAssertDebug(self.databaseChangesObserver == nil)
