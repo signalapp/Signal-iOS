@@ -9,9 +9,11 @@ import Vision
 
 @objc
 protocol QRCodeScanDelegate: AnyObject {
+    // Should return true IFF the qrCode was accepted.
     func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
                                qrCodeData value: Data,
-                               qrCodeString value: String?)
+                               qrCodeString value: String?) -> Bool
+
     func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController)
 }
 
@@ -249,17 +251,22 @@ class QRCodeScanViewController: OWSViewController {
             if let payloadStringValue = barcode.payloadStringValue {
                 Logger.verbose("payloadStringValue: \(payloadStringValue)")
             }
+            if let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor {
+                Logger.verbose("errorCorrectedPayload: \(barcodeDescriptor.errorCorrectedPayload.base64EncodedString()), symbolVersion: \(barcodeDescriptor.symbolVersion)")
+            }
             if let barcodeDescriptor = barcode.barcodeDescriptor {
                 Logger.verbose("barcodeDescriptor: \(barcodeDescriptor)")
             }
         }
-        if let barcode = barcodes.first,
+        if false,
+           let barcode = barcodes.first,
+//        if let barcode = barcodes.first,
            let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor {
             Logger.info("Scanned QR Code.")
 
             let qrCodeData = barcodeDescriptor.errorCorrectedPayload
             let qrCodeString = barcode.payloadStringValue
-            
+
             Logger.verbose("----- qrCodeData: \(qrCodeData.count), \(qrCodeData.hexadecimalString)")
             Logger.verbose("----- qrCodeString: \(qrCodeString?.count), \(qrCodeString)")
 
@@ -268,25 +275,258 @@ class QRCodeScanViewController: OWSViewController {
                       let delegate = self.delegate else {
                     return
                 }
-                self.stopScanning()
 
-                // Vibrate
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                let accepted = delegate.qrCodeScanViewScanned(self, qrCodeData: qrCodeData, qrCodeString: qrCodeString)
+                if accepted {
+                    self.stopScanning()
 
-                delegate.qrCodeScanViewScanned(self, qrCodeData: qrCodeData, qrCodeString: qrCodeString)
+                    // Vibrate
+                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                }
             }
         }
     }
-    
-//    private static func parseQRCode(codewords: Data) -> Data {
-//        // Endianness doesn't matter.
-//        let byteParser = ByteParser(data: codewords, littleEndian: false)
-//        
-//        // CIQRCodeDescriptor codewords (mode + character count + data + terminator + padding)
-//       let byteEncodingMode: UInt = 4
-//        byteParser.nex
+}
+
+// MARK: -
+
+private enum QRCodeError: Error {
+    case invalidCodewords
+    case unknownMode
+    case unsupportedConfiguration
+    case invalidLength
+}
+
+// MARK: -
+
+// fileprivate class QRCodeBitParser {
+//    private let codewords: Data
 //
+//    private var codewordIndex: UInt = 0
+//    private var consumedCodewordBitCount: UInt = 0
+//    private var availableBitsAtCurrentCodeword: UInt {
+//        guard codewordIndex < codewords.count else {
+//            return 0
+//        }
+//        owsAssertDebug(consumedCodewordBitCount <= 8)
+//        return 8 - consumedCodewordBitCount
 //    }
+//    // Does not include the current codeword.
+//    private var remainingCodewordCount: UInt {
+//        let processedCodewords = codewordIndex + 1
+//        guard codewords.count >= processedCodewords else {
+//            return 0
+//        }
+//        return UInt(codewords.count) - processedCodewords
+//    }
+//    private var availableBitsTotal: UInt {
+//        availableBitsAtCurrentCodeword + (remainingCodewordCount * 8)
+//    }
+//
+//    required init(codewords: Data) {
+//        self.codewords = codewords
+//    }
+//
+//    private struct Bits {
+//        let bits: UInt
+//        let count: UInt
+//    }
+//
+//    private func readBits(count: UInt) throws -> Bits {
+//        var bitsToReadCount = count
+//        var bits: UInt = 0
+//        while bitsToReadCount > 0 {
+//            let availableBitsAtCurrentCodeword = self.availableBitsAtCurrentCodeword
+//            guard availableBitsAtCurrentCodeword > 0 else {
+//                throw QRCodeError.invalidCodewords
+//            }
+//            if availableBitsAtCurrentCodeword > bitsToReadCount {
+//
+//            }
+//        }
+//    }
+// }
+
+// MARK: -
+
+// This isn't an efficient way to parse the codewords, but
+// correctness matters and perf doesn't, since QR code payloads
+// are inherently small.
+public class QRCodePayload {
+    let version: Int
+    let mode: Mode
+    let bytes: [UInt8]
+
+    var data: Data {
+        Data(bytes)
+    }
+    var asString: String? {
+        String(data: data, encoding: .utf8)
+    }
+
+    init(version: Int, mode: Mode, bytes: [UInt8]) {
+        self.version = version
+        self.mode = mode
+        self.bytes = bytes
+    }
+
+    public enum Mode: UInt {
+        case numeric = 1
+        case alphaNumeric = 2
+        case bytes = 4
+        case kanji = 8
+    }
+//    // CIQRCodeDescriptor codewords (mode + character count + data + terminator + padding)
+//    public static var byteEncodingMode: UInt {  mode.bytes.rawValue }
+
+    public static func parse(codewords: Data,
+                             qrCodeVersion version: Int,
+                             ignoreUnknownMode: Bool = false) -> QRCodePayload? {
+        // QR Code Standard
+        // ISO/IEC 18004:2015
+        // https://www.iso.org/standard/62021.html
+        //
+        //
+        do {
+            let bitstream = QRCodeBitStream(codewords: codewords)
+
+            let modeLength: UInt = 4
+            let modeBits = try bitstream.readUInt8(bitCount: modeLength)
+            guard let mode = Mode(rawValue: UInt(modeBits)) else {
+                if ignoreUnknownMode {
+                    owsAssertDebug(CurrentAppContext().isRunningTests)
+                    Logger.error("Invalid mode: \(modeBits)")
+                    return nil
+                } else {
+                    owsFailDebug("Invalid mode: \(modeBits)")
+                }
+                throw QRCodeError.unknownMode
+            }
+            // TODO: We currently only support .byte mode.
+            guard mode == .bytes else {
+                Logger.warn("Unsupported mode: \(mode)")
+                throw QRCodeError.unsupportedConfiguration
+            }
+
+            let characterCountLength = try characterCountIndicatorLengthBits(version: version,
+                                                                             mode: mode)
+            let characterCount = try bitstream.readUInt32(bitCount: characterCountLength)
+            guard characterCount > 0 else {
+                Logger.error("Invalid length: \(characterCount)")
+                throw QRCodeError.invalidLength
+            }
+            // TODO: We currently only support .byte mode.
+            var bytes = [UInt8]()
+            for _ in 0..<characterCount {
+                let byte = try bitstream.readUInt8(bitCount: 8)
+                bytes.append(byte)
+            }
+            // TODO:
+            return QRCodePayload(version: version, mode: mode, bytes: bytes)
+        } catch {
+//            if ignoreUnknownMode,
+//               let error = error as? QRCodeError,
+//               case .unknownMode = error {
+//                owsAssertDebug(CurrentAppContext().isRunningTests)
+//                Logger.error("Error: \(error)")
+//            } else {
+            owsFailDebug("Error: \(error)")
+//            }
+            return nil
+        }
+    }
+
+    private static func characterCountIndicatorLengthBits(version: Int,
+                                                          mode: Mode) throws -> UInt {
+        if version >= 1, version <= 9 {
+            switch mode {
+            case .numeric:
+                return 10
+            case .alphaNumeric:
+                return 9
+            case .bytes:
+                return 8
+            case .kanji:
+                return 8
+            }
+        } else if version >= 10, version <= 26 {
+            switch mode {
+            case .numeric:
+                return 12
+            case .alphaNumeric:
+                return 11
+            case .bytes:
+                return 16
+            case .kanji:
+                return 10
+            }
+        } else if version >= 27, version <= 40 {
+            switch mode {
+            case .numeric:
+                return 14
+            case .alphaNumeric:
+                return 13
+            case .bytes:
+                return 16
+            case .kanji:
+                return 12
+            }
+        }
+        throw QRCodeError.unsupportedConfiguration
+    }
+}
+
+// MARK: -
+
+// This isn't an efficient way to parse the codewords, but
+// correctness matters and perf doesn't, since QR code payloads
+// are inherently small.
+private class QRCodeBitStream {
+    private var bits: [UInt8]
+
+    required init(codewords: Data) {
+        var bits = [UInt8]()
+        for codeword in codewords {
+            var codeword: UInt8 = codeword
+            var codewordBits = [UInt8]()
+            for _ in 0..<8 {
+                let bit = codeword & 1
+                codeword = codeword >> 1
+                codewordBits.append(UInt8(bit))
+            }
+            owsAssertDebug(codeword == 0)
+            // We reverse; we want to stream bits in "most significant-to-least-significant"
+            // order.
+            bits.append(contentsOf: codewordBits.reversed())
+        }
+        self.bits = bits
+    }
+
+    private func readBit() throws -> UInt8 {
+        guard !bits.isEmpty else {
+            throw QRCodeError.invalidCodewords
+        }
+        return bits.removeFirst()
+    }
+
+    fileprivate func readUInt8(bitCount: UInt) throws -> UInt8 {
+        owsAssertDebug(bitCount > 0)
+        owsAssertDebug(bitCount <= 8)
+
+        return UInt8(try readUInt32(bitCount: bitCount))
+    }
+
+    fileprivate func readUInt32(bitCount: UInt) throws -> UInt32 {
+        owsAssertDebug(bitCount > 0)
+        owsAssertDebug(bitCount <= 32)
+
+        var result: UInt32 = 0
+        for _ in 0..<bitCount {
+            let bit = try readBit()
+            result = (result << 1) | UInt32(bit)
+        }
+        return result
+    }
 }
 
 // MARK: -
