@@ -5,6 +5,7 @@
 import Foundation
 import GRDB
 
+// TODO:
 @objc
 public protocol UIDatabaseSnapshotDelegate: AnyObject {
     func uiDatabaseSnapshotWillUpdate()

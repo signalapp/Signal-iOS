@@ -172,7 +172,7 @@ private class BannerView: UIView {
             backgroundColor = .ows_blackAlpha40
         }
 
-        let displayNames = databaseStorage.uiRead { transaction in
+        let displayNames = databaseStorage.read { transaction in
             return addresses.map { address in
                 return (
                     displayName: self.contactsManager.displayName(for: address, transaction: transaction),

@@ -362,17 +362,6 @@ public class SDSDatabaseStorage: SDSTransactable {
     // MARK: - SDSTransactable
 
     @objc
-    public func uiRead(block: (SDSAnyReadTransaction) -> Void) {
-        do {
-            try grdbStorage.uiRead { transaction in
-                block(transaction.asAnyRead)
-            }
-        } catch {
-            owsFail("error: \(error.grdbErrorForLogging)")
-        }
-    }
-
-    @objc
     public override func read(block: (SDSAnyReadTransaction) -> Void) {
         do {
             try grdbStorage.read { transaction in
@@ -408,22 +397,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         crossProcess.notifyChangedAsync()
     }
 
-    public func uiReadThrows(block: (SDSAnyReadTransaction) throws -> Void) throws {
-        try grdbStorage.uiReadThrows { transaction in
-            try autoreleasepool {
-                try block(transaction.asAnyRead)
-            }
-        }
-    }
-
-    public func uiRead<T>(block: (SDSAnyReadTransaction) -> T) -> T {
-        var value: T!
-        uiRead { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
-
     public static func owsFormatLogMessage(file: String = #file,
                                            function: String = #function,
                                            line: Int = #line) -> String {
@@ -455,7 +428,6 @@ extension SDSDatabaseStorage {
 protocol SDSDatabaseStorageAdapter {
     associatedtype ReadTransaction
     associatedtype WriteTransaction
-    func uiRead(block: (ReadTransaction) -> Void) throws
     func read(block: (ReadTransaction) -> Void) throws
     func write(block: (WriteTransaction) -> Void) throws
 }

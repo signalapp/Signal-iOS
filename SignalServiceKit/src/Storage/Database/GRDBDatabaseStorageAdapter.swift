@@ -5,6 +5,7 @@
 import Foundation
 import GRDB
 
+// TODO:
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
 
@@ -302,31 +303,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     }
     #endif
 
-    // TODO readThrows/writeThrows flavors
-    public func uiReadThrows(block: (GRDBReadTransaction) throws -> Void) rethrows {
-
-        #if TESTABLE_BUILD
-        owsAssertDebug(Self.canOpenTransaction)
-        // Check for nested tractions.
-        if Self.detectNestedTransactions {
-            // Check for nested tractions.
-            Self.setCanOpenTransaction(false)
-        }
-        defer {
-            if Self.detectNestedTransactions {
-                Self.setCanOpenTransaction(true)
-            }
-        }
-        #endif
-
-        AssertIsOnMainThread()
-        try latestSnapshot.read { database in
-            try autoreleasepool {
-                try block(GRDBReadTransaction(database: database, isUIRead: true))
-            }
-        }
-    }
-
     @discardableResult
     public func read<T>(block: (GRDBReadTransaction) throws -> T) throws -> T {
 
@@ -367,36 +343,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             throw error.grdbErrorForLogging
         }
         return value
-    }
-
-    @objc
-    public func uiRead(block: (GRDBReadTransaction) -> Void) throws {
-        AssertIsOnMainThread()
-
-        #if TESTABLE_BUILD
-        owsAssertDebug(Self.canOpenTransaction)
-        // Check for nested tractions.
-        if Self.detectNestedTransactions {
-            // Check for nested tractions.
-            Self.setCanOpenTransaction(false)
-        }
-        defer {
-            if Self.detectNestedTransactions {
-                Self.setCanOpenTransaction(true)
-            }
-        }
-        #endif
-
-        guard CurrentAppContext().hasUI else {
-            // Never do uiReads in the NSE.
-            return try read(block: block)
-        }
-
-        latestSnapshot.read { database in
-            autoreleasepool {
-                block(GRDBReadTransaction(database: database, isUIRead: true))
-            }
-        }
     }
 
     @objc

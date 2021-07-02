@@ -13,13 +13,10 @@ public class GRDBReadTransaction: NSObject {
 
     public let database: Database
 
-    public let isUIRead: Bool
-
     public let startDate = Date()
 
-    init(database: Database, isUIRead: Bool) {
+    init(database: Database) {
         self.database = database
-        self.isUIRead = isUIRead
     }
 
     @objc
@@ -41,7 +38,7 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     private var transactionState: TransactionState = .open
 
     init(database: Database) {
-        super.init(database: database, isUIRead: false)
+        super.init(database: database)
     }
 
     deinit {
@@ -156,13 +153,6 @@ public class SDSAnyReadTransaction: NSObject {
 
     init(_ readTransaction: ReadTransactionType) {
         self.readTransaction = readTransaction
-    }
-
-    public var isUIRead: Bool {
-        switch readTransaction {
-        case .grdbRead(let grdbRead):
-            return grdbRead.isUIRead
-        }
     }
 }
 
