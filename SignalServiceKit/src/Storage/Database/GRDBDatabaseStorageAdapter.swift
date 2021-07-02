@@ -122,13 +122,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         MediaGalleryRecord.self
     ]
 
-    // MARK: - Database Snapshot
-
-    // TODO:
+    // MARK: - UIDatabaseObserver
 
     @objc
     public private(set) var uiDatabaseObserver: UIDatabaseObserver?
 
+    // TODO:
     @objc
     public func setupUIDatabase() throws {
         owsAssertDebug(self.uiDatabaseObserver == nil)
@@ -147,8 +146,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // NOTE: This should only be used in exceptional circumstances,
     // e.g. after reloading the database due to a device transfer.
-    func forceUpdateSnapshot() {
-        uiDatabaseObserver?.forceUpdateSnapshot()
+    func forceUpdate() {
+        uiDatabaseObserver?.forceUpdate()
     }
 
     func testing_tearDownUIDatabase() {

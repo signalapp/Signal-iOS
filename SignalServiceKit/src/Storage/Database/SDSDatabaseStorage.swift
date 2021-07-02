@@ -152,7 +152,9 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         reopenGRDBStorage(directoryMode: directoryMode) {
             _ = GRDBSchemaMigrator().runSchemaMigrations()
-            self.grdbStorage.forceUpdateSnapshot()
+
+            // TODO: Is this still necessary?
+            self.grdbStorage.forceUpdate()
 
             // We need to do this _before_ warmCaches().
             NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)

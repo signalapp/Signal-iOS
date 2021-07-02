@@ -52,10 +52,10 @@ public class UIDatabaseObserver: NSObject {
     // which would break GRDB's SchedulingWatchDog, we use objc_sync
     //
     // Longer version:
-    // Our snapshot observers manage state, which must not be accessed concurrently.
+    // Our database change observers manage state, which must not be accessed concurrently.
     // Using a serial DispatchQueue would seem straight forward, but...
     //
-    // Some of our snapshot observers read from the database *while* accessing this
+    // Some of our database change observers read from the database *while* accessing this
     // state. Note that reading from the db must be done on GRDB's DispatchQueue.
     private static var _hasUIDatabaseObserverLock = AtomicBool(false)
 
@@ -116,8 +116,8 @@ public class UIDatabaseObserver: NSObject {
     private let pool: DatabasePool
     private let checkpointingQueue: DatabaseQueue?
 
-    private let hasPendingSnapshotUpdate = AtomicBool(false)
-    private var lastSnapshotUpdateDate: Date?
+    private let hasPendingUpdate = AtomicBool(false)
+    private var lastUpdateDate: Date?
 
     // This property should only be accessed on the main thread.
     private var lastCheckpointDate: Date?
@@ -173,7 +173,7 @@ public class UIDatabaseObserver: NSObject {
             guard !CurrentAppContext().isInBackground() else {
                 return false
             }
-            guard self.hasPendingSnapshotUpdate.get() else {
+            guard self.hasPendingUpdate.get() else {
                 return false
             }
             return true
@@ -200,7 +200,7 @@ public class UIDatabaseObserver: NSObject {
 
         recentDisplayLinkDates.append(Date())
 
-        updateSnapshotIfNecessary()
+        updateIfNecessary()
     }
 
     @objc
@@ -385,40 +385,39 @@ extension UIDatabaseObserver: TransactionObserver {
                 return
             }
             // Enqueue the update.
-            self.hasPendingSnapshotUpdate.set(true)
+            self.hasPendingUpdate.set(true)
             self.ensureDisplayLink()
             // Try to update immediately.
-            self.updateSnapshotIfNecessary()
+            self.updateIfNecessary()
         }
     }
 
     // See comment on databaseDidChange.
-    private func updateSnapshotIfNecessary() {
+    private func updateIfNecessary() {
         AssertIsOnMainThread()
 
         guard !tsAccountManager.isTransferInProgress else {
-            Logger.info("Skipping snapshot update; transfer in progress.")
+            Logger.info("Skipping update; transfer in progress.")
             return
         }
 
-        if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
-            let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
+        if let lastUpdateDate = self.lastUpdateDate {
+            let secondsSinceLastUpdate = abs(lastUpdateDate.timeIntervalSinceNow)
             // Don't update UI more often than Nx/second.
             guard secondsSinceLastUpdate >= targetUpdateInterval else {
-                // Don't update the snapshot yet; we've updated the snapshot recently.
+                // Don't update yet; we've updated recently.
                 return
             }
         }
 
-        // We only want to update the snapshot if the flag is set.
-        guard hasPendingSnapshotUpdate.tryToClearFlag() else {
-            // If there's no new database changes, we don't need to update the snapshot.
+        // We only want to update if the flag is set.
+        guard hasPendingUpdate.tryToClearFlag() else {
+            // If there's no new database changes, we don't need to update.
             return
         }
         ensureDisplayLink()
 
-        // Update the snapshot now.
-        updateSnapshot()
+        updateNow()
     }
 
     private var targetUpdateInterval: Double {
@@ -476,21 +475,25 @@ extension UIDatabaseObserver: TransactionObserver {
 
     // NOTE: This should only be used in exceptional circumstances,
     // e.g. after reloading the database due to a device transfer.
-    func forceUpdateSnapshot() {
+    func forceUpdate() {
         AssertIsOnMainThread()
 
         Logger.info("")
 
-        updateSnapshot(canCheckpoint: false)
+        updateNow(canCheckpoint: false)
     }
 
+    // "Updating" entails:
+    //
+    // * Publishing pending database changes to database change observers.
+    // * Trying to checkpoint if necessary.
     // See comment on databaseDidChange.
-    private func updateSnapshot(canCheckpoint: Bool = true) {
+    private func updateNow(canCheckpoint: Bool = true) {
         AssertIsOnMainThread()
 
-        lastSnapshotUpdateDate = Date()
+        lastUpdateDate = Date()
 
-        Logger.verbose("databaseSnapshotWillUpdate")
+        Logger.verbose("databaseChangesWillUpdate")
         for delegate in databaseChangesDelegates {
             delegate.databaseChangesWillUpdate()
         }
@@ -504,7 +507,7 @@ extension UIDatabaseObserver: TransactionObserver {
             committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
         }
 
-        Logger.verbose("databaseSnapshotDidUpdate")
+        Logger.verbose("databaseChangesDidUpdate")
 
         if let lastError = committedChanges.lastError {
             switch lastError {
@@ -526,7 +529,6 @@ extension UIDatabaseObserver: TransactionObserver {
 
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("TODO: test this if we ever use it.")
-        // TODO: Make sure snapshot flush blocks work correctly in this case.
 
         UIDatabaseObserver.serializedSync {
             pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
