@@ -485,18 +485,17 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
         self.exclusionCountMap[key] = value - 1
     }
 
-    private let unfairLock = UnfairLock()
-
-    // We can't use a serial queue due to GRDB's scheduling watchdog.
-    //
     // Never open a transaction within performSync() to avoid deadlock.
     @discardableResult
     private func performSync<T>(_ block: () -> T) -> T {
         switch mode {
         case .read:
-            return unfairLock.withLock {
-                block()
-            }
+            // We can't use a serial queue due to GRDB's scheduling watchdog.
+            // Additionally, our locking mechanism needs to be re-entrant.
+            objc_sync_enter(self)
+            let value = block()
+            objc_sync_exit(self)
+            return value
         }
     }
 }
