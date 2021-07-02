@@ -181,9 +181,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            NotificationCenter.default.addObserver(self, selector: #selector(self.handleMessageRead), name: .incomingMessageMarkedAsRead, object: nil)
-        }
         SwiftSingletons.register(self)
     }
 
@@ -193,23 +190,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     var shouldShowActions: Bool {
         return previewType == .namePreview
-    }
-
-    // MARK: -
-
-    @objc
-    public func handleMessageRead(notification: Notification) {
-        AssertIsOnMainThread()
-
-        switch notification.object {
-        case let incomingMessage as TSIncomingMessage:
-            if !DebugFlags.reduceLogChatter {
-                Logger.debug("canceled notification for message: \(incomingMessage)")
-            }
-            cancelNotifications(messageId: incomingMessage.uniqueId)
-        default:
-            break
-        }
     }
 
     // MARK: - Presenting Notifications
