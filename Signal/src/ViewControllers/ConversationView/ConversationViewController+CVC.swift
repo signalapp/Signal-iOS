@@ -264,6 +264,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             viewState.selectionAnimationState = .animating
         case .animating, .idle:
             viewState.selectionAnimationState = .idle
+            ensureBottomViewType()
         }
 
         self.loadCoordinator.loadDidLand()

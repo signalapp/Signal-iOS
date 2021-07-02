@@ -43,6 +43,10 @@ public extension ConversationViewController {
     func ensureBottomViewType() {
         AssertIsOnMainThread()
 
+        guard viewState.selectionAnimationState == .idle else {
+            return
+        }
+
         bottomViewType = { () -> CVCBottomViewType in
             // The ordering of this method determines
             // precendence of the bottom views.
@@ -301,6 +305,11 @@ public extension ConversationViewController {
             owsFailDebug("InputToolbar not yet ready.")
             return
         }
+
+        guard viewState.selectionAnimationState == .idle else {
+            return
+        }
+
         guard let inputToolbar = inputToolbar else {
             owsFailDebug("Missing inputToolbar.")
             return
