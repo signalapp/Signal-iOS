@@ -192,8 +192,6 @@ class QRCodeScanViewController: OWSViewController {
             if granted {
                 self.startScanning()
             } else {
-                // TODO: Maybe we should show an error alert
-                // directing users to the system settings?
                 self.delegate?.qrCodeScanViewDismiss(self)
             }
         }

@@ -753,8 +753,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewDidAppear:animated];
 
     self.hasEverAppeared = YES;
-
-    [self scanQRCode];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
