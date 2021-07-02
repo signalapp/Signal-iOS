@@ -5,7 +5,6 @@
 import Foundation
 import GRDB
 
-// TODO:
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
 
@@ -460,6 +459,7 @@ private struct GRDBStorage {
 
     let pool: DatabasePool
 
+    // TODO: Can we eliminate this?
     let checkpointingQueue: DatabaseQueue?
 
     private let dbURL: URL
