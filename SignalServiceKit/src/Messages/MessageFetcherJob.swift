@@ -306,7 +306,9 @@ public class MessageFetcherJob: NSObject {
 
     private class func fetchMessagesViaRestWhenReady() -> Promise<Void> {
         Promise<Void>.waitUntil {
-            Self.isReadyToFetchMessagesViaRest
+            isReadyToFetchMessagesViaRest
+        }.then {
+            fetchMessagesViaRest()
         }
     }
 
