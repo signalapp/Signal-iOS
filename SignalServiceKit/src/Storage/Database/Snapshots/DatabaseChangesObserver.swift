@@ -32,14 +32,14 @@ enum DatabaseObserverError: Error {
 
 // MARK: -
 
-func AssertHasUIDatabaseObserverLock() {
-    assert(UIDatabaseObserver.hasUIDatabaseObserverLock)
+func AssertHasDatabaseChangesObserverLock() {
+    assert(DatabaseChangesObserver.hasDatabaseChangesObserverLock)
 }
 
 // MARK: -
 
 @objc
-public class UIDatabaseObserver: NSObject {
+public class DatabaseChangesObserver: NSObject {
 
     @objc
     public static let databaseDidCommitInteractionChangeNotification = Notification.Name("databaseDidCommitInteractionChangeNotification")
@@ -48,7 +48,7 @@ public class UIDatabaseObserver: NSObject {
 
     private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName, PendingReadReceiptRecord.databaseTableName])
 
-    // tldr; Instead, of protecting UIDatabaseObserver state with a nested DispatchQueue,
+    // tldr; Instead, of protecting DatabaseChangesObserver state with a nested DispatchQueue,
     // which would break GRDB's SchedulingWatchDog, we use objc_sync
     //
     // Longer version:
@@ -57,25 +57,25 @@ public class UIDatabaseObserver: NSObject {
     //
     // Some of our database change observers read from the database *while* accessing this
     // state. Note that reading from the db must be done on GRDB's DispatchQueue.
-    private static var _hasUIDatabaseObserverLock = AtomicBool(false)
+    private static var _hasDatabaseChangesObserverLock = AtomicBool(false)
 
-    static var hasUIDatabaseObserverLock: Bool {
-        _hasUIDatabaseObserverLock.get()
+    static var hasDatabaseChangesObserverLock: Bool {
+        _hasDatabaseChangesObserverLock.get()
     }
 
     // Toggle to skip expensive observations resulting
     // from a `touch`. Useful for large migrations.
-    // Should only be accessed within UIDatabaseObserver.serializedSync
+    // Should only be accessed within DatabaseChangesObserver.serializedSync
     public static var skipTouchObservations: Bool = false
 
-    private static let uiDatabaseObserverLock = UnfairLock()
+    private static let databaseChangesObserverLock = UnfairLock()
 
     public class func serializedSync(block: () -> Void) {
-        uiDatabaseObserverLock.withLock {
-            assert(!_hasUIDatabaseObserverLock.get())
-            _hasUIDatabaseObserverLock.set(true)
+        databaseChangesObserverLock.withLock {
+            assert(!_hasDatabaseChangesObserverLock.get())
+            _hasDatabaseChangesObserverLock.set(true)
             block()
-            _hasUIDatabaseObserverLock.set(false)
+            _hasDatabaseChangesObserverLock.set(false)
         }
     }
 
@@ -126,7 +126,7 @@ public class UIDatabaseObserver: NSObject {
     private let displayLinkPreferredFramesPerSecond: Int = 20
     private var recentDisplayLinkDates = [Date]()
 
-    fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+    fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangesObserverSerialQueue)
     fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
 
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
@@ -221,7 +221,7 @@ public class UIDatabaseObserver: NSObject {
     }
 }
 
-extension UIDatabaseObserver: TransactionObserver {
+extension DatabaseChangesObserver: TransactionObserver {
 
     public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
         guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
@@ -239,7 +239,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
     // This should only be called by DatabaseStorage.
     func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction) {
-        AssertHasUIDatabaseObserverLock()
+        AssertHasDatabaseChangesObserverLock()
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
@@ -247,7 +247,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
     // This should only be called by DatabaseStorage.
     func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
-        AssertHasUIDatabaseObserverLock()
+        AssertHasDatabaseChangesObserverLock()
 
         pendingChanges.append(interaction: interaction)
         pendingChanges.append(tableName: TSInteraction.table.tableName)
@@ -255,7 +255,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
     // This should only be called by DatabaseStorage.
     func updateIdMapping(attachment: TSAttachment, transaction: GRDBWriteTransaction) {
-        AssertHasUIDatabaseObserverLock()
+        AssertHasDatabaseChangesObserverLock()
 
         pendingChanges.append(attachment: attachment)
         pendingChanges.append(tableName: TSAttachment.table.tableName)
@@ -263,7 +263,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
     // internal - should only be called by DatabaseStorage
     func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
-        AssertHasUIDatabaseObserverLock()
+        AssertHasDatabaseChangesObserverLock()
 
         pendingChanges.append(interaction: interaction)
         pendingChanges.append(tableName: TSInteraction.table.tableName)
@@ -283,7 +283,7 @@ extension UIDatabaseObserver: TransactionObserver {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
-        AssertHasUIDatabaseObserverLock()
+        AssertHasDatabaseChangesObserverLock()
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
@@ -291,25 +291,27 @@ extension UIDatabaseObserver: TransactionObserver {
 
     // Database observation operates like so:
     //
-    // * This class (UIDatabaseObserver) works closely with its "snapshot delegates"
-    //   (per-view snapshots/observers) to update the views in controlled, consistent way.
-    // * UIDatabaseObserver observes all database _changes_ and _commits_.
-    // * When a _change_ occurs:
-    //   * This is done off the main thread.
-    //   * UIDatabaseObserver informs all "snapshot delegates" of changes using snapshotTransactionDidChange.
-    //   * The "snapshot delegates" aggregate the changes.
+    // * This class (DatabaseChangesObserver) observes writes to the database
+    //   and publishes them to its "database changes delegates" (usually
+    //   per-view observers) to update the views in controlled,
+    //   consistent way.
+    // * DatabaseChangesObserver observes all database _changes_ and _commits_.
+    // * When a _change_ (modification of database content in a write transaction) occurs:
+    //   * This might occur on any thread.
+    //   * The changes are aggregated in pendingChanges.
     // * When a _commit_ occurs:
-    //   * This is done off the main thread.
-    //   * UIDatabaseObserver informs all "snapshot delegates" to commit their _changes_ using snapshotTransactionDidCommit.
-    //     The "snapshot delegates" commit changes internally using DispatchQueue.main.async().
-    //   * UIDatabaseObserver enqueues a "snapshot update" using DispatchQueue.main.async().
-    // * When a "snapshot update" is performed:
+    //   * This might occur on any thread.
+    //   * The changes are integrated from pendingChanges into committedChanges
+    //   * An "update" is enqueued. Updating views is expensive, so we throttle
+    //     updates so that if many writes occur, views only receive a single
+    //     "database did change" event, at the expense of some latency.
+    // * When a "update" is performed:
     //   * This is done on the main thread.
-    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotWillUpdate.
-    //   * UIDatabaseObserver updates the database snapshot.
-    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotDidUpdate.
+    //   * All "database change delegates" receive databaseChangesWillUpdate.
+    //   * The database might be checkpointed.
+    //   * All "database change delegates" receive databaseChangesDidUpdate with the changes.
     public func databaseDidChange(with event: DatabaseEvent) {
-        UIDatabaseObserver.serializedSync {
+        DatabaseChangesObserver.serializedSync {
 
             pendingChanges.append(tableName: event.tableName)
 
@@ -338,9 +340,9 @@ extension UIDatabaseObserver: TransactionObserver {
 
     // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
-        UIDatabaseObserver.serializedSync {
+        DatabaseChangesObserver.serializedSync {
             let pendingChangesToCommit = self.pendingChanges
-            self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+            self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangesObserverSerialQueue)
 
             do {
                 // finalizePublishedState() finalizes the state we're about to
@@ -423,15 +425,15 @@ extension UIDatabaseObserver: TransactionObserver {
     private var targetUpdateInterval: Double {
         AssertIsOnMainThread()
         #if TESTABLE_BUILD
-        // Don't wait before updating snapshots in tests
-        // because some tests checks snapshots immediately
+        // Don't wait to update in tests
+        // because some tests read immediately.
         if CurrentAppContext().isRunningTests { return 0 }
         #endif
         // We want the UI to feel snappy and responsive, which means
         // low latency in view updates.
         //
-        // This means updating the database snapshot (and hence the
-        // views) as frequently as possible.
+        // This means updating (and hence the views) as frequently
+        // as possible.
         //
         // However, when the app is under heavy load, constantly
         // updating the views is expensive and causes CPU contention,
@@ -439,8 +441,7 @@ extension UIDatabaseObserver: TransactionObserver {
         // feels less responsive.
         //
         // Therefore, the app should "back off" and slow the rate at
-        // which it updates database snapshots when it is under
-        // heavy load.
+        // which it updates when it is under heavy load.
         //
         // We measure load using a heuristics: Can the display link
         // maintain its preferred frame rate?
@@ -530,8 +531,8 @@ extension UIDatabaseObserver: TransactionObserver {
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("TODO: test this if we ever use it.")
 
-        UIDatabaseObserver.serializedSync {
-            pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+        DatabaseChangesObserver.serializedSync {
+            pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangesObserverSerialQueue)
 
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
@@ -592,6 +593,8 @@ extension UIDatabaseObserver: TransactionObserver {
         //
         // See: https://www.sqlite.org/c3ref/wal_checkpoint_v2.html
         // See: https://www.sqlite.org/wal.html
+        //
+        // TODO: Revisit checkpointing.
         let shouldTryToCheckpoint = { () -> Bool in
             guard !tsAccountManager.isTransferInProgress else {
                 return false

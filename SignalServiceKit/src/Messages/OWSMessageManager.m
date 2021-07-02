@@ -82,10 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.databaseStorage appendDatabaseChangesDelegate:self];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(databaseDidCommitInteractionChange)
-                                                 name:UIDatabaseObserver.databaseDidCommitInteractionChangeNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(databaseDidCommitInteractionChange)
+               name:DatabaseChangesObserver.databaseDidCommitInteractionChangeNotification
+             object:nil];
 }
 
 - (void)databaseDidCommitInteractionChange

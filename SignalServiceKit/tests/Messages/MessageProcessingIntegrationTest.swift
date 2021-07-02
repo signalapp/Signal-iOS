@@ -89,7 +89,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 }
             }
         }
-        guard let observer = databaseStorage.grdbStorage.uiDatabaseObserver else {
+        guard let observer = databaseStorage.grdbStorage.databaseChangesObserver else {
             owsFailDebug("observer was unexpectedly nil")
             return
         }
@@ -149,7 +149,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 }
             }
         }
-        guard let observer = databaseStorage.grdbStorage.uiDatabaseObserver else {
+        guard let observer = databaseStorage.grdbStorage.databaseChangesObserver else {
             owsFailDebug("observer was unexpectedly nil")
             return
         }

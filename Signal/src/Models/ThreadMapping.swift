@@ -265,7 +265,7 @@ class ThreadMapping: NSObject {
         //
         // NOTE: There's an upper bound on how long SQL queries should be.
         //       We use kMaxIncrementalRowChanges to limit query size.
-        guard threadsToLoad.count <= UIDatabaseObserver.kMaxIncrementalRowChanges else {
+        guard threadsToLoad.count <= DatabaseChangesObserver.kMaxIncrementalRowChanges else {
             try loadWithoutCache()
             return
         }

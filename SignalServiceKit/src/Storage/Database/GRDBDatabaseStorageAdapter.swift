@@ -122,39 +122,39 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         MediaGalleryRecord.self
     ]
 
-    // MARK: - UIDatabaseObserver
+    // MARK: - DatabaseChangesObserver
 
     @objc
-    public private(set) var uiDatabaseObserver: UIDatabaseObserver?
+    public private(set) var databaseChangesObserver: DatabaseChangesObserver?
 
     // TODO:
     @objc
     public func setupUIDatabase() throws {
-        owsAssertDebug(self.uiDatabaseObserver == nil)
+        owsAssertDebug(self.databaseChangesObserver == nil)
 
-        // UIDatabaseObserver is a general purpose observer, whose delegates
+        // DatabaseChangesObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        let uiDatabaseObserver = try UIDatabaseObserver(pool: pool,
+        let databaseChangesObserver = try DatabaseChangesObserver(pool: pool,
                                                         checkpointingQueue: storage.checkpointingQueue)
-        self.uiDatabaseObserver = uiDatabaseObserver
+        self.databaseChangesObserver = databaseChangesObserver
 
         try pool.write { db in
-            db.add(transactionObserver: uiDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: databaseChangesObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
     }
 
     // NOTE: This should only be used in exceptional circumstances,
     // e.g. after reloading the database due to a device transfer.
     func forceUpdate() {
-        uiDatabaseObserver?.forceUpdate()
+        databaseChangesObserver?.forceUpdate()
     }
 
     func testing_tearDownUIDatabase() {
-        // UIDatabaseObserver is a general purpose observer, whose delegates
+        // DatabaseChangesObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        self.uiDatabaseObserver = nil
+        self.databaseChangesObserver = nil
     }
 
     func setup() throws {

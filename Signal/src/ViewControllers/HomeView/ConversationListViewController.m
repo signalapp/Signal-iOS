@@ -2132,7 +2132,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-#pragma mark - DatabaseSnapshotDelegate
+#pragma mark - DatabaseChangesDelegate
 
 - (void)databaseChangesWillUpdate
 {

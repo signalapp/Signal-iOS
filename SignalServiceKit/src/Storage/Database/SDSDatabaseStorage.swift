@@ -188,11 +188,11 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     @objc
     public func appendDatabaseChangesDelegate(_ databaseChangesDelegate: DatabaseChangesDelegate) {
-        guard let uiDatabaseObserver = grdbStorage.uiDatabaseObserver else {
-            owsFailDebug("Missing uiDatabaseObserver.")
+        guard let databaseChangesObserver = grdbStorage.databaseChangesObserver else {
+            owsFailDebug("Missing databaseChangesObserver.")
             return
         }
-        uiDatabaseObserver.appendDatabaseChangesDelegate(databaseChangesDelegate)
+        databaseChangesObserver.appendDatabaseChangesDelegate(databaseChangesDelegate)
     }
 
     // MARK: - Id Mapping
@@ -201,11 +201,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.updateIdMapping(thread: thread, transaction: grdb)
+            DatabaseChangesObserver.serializedSync {
+                if let databaseChangesObserver = grdbStorage.databaseChangesObserver {
+                    databaseChangesObserver.updateIdMapping(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangesObserver was unexpectedly nil")
                 }
             }
         }
@@ -215,11 +215,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.updateIdMapping(interaction: interaction, transaction: grdb)
+            DatabaseChangesObserver.serializedSync {
+                if let databaseChangesObserver = grdbStorage.databaseChangesObserver {
+                    databaseChangesObserver.updateIdMapping(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangesObserver was unexpectedly nil")
                 }
             }
         }
@@ -229,11 +229,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.updateIdMapping(attachment: attachment, transaction: grdb)
+            DatabaseChangesObserver.serializedSync {
+                if let databaseChangesObserver = grdbStorage.databaseChangesObserver {
+                    databaseChangesObserver.updateIdMapping(attachment: attachment, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangesObserver was unexpectedly nil")
                 }
             }
         }
@@ -245,15 +245,15 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func touch(interaction: TSInteraction, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                guard !UIDatabaseObserver.skipTouchObservations else {
+            DatabaseChangesObserver.serializedSync {
+                guard !DatabaseChangesObserver.skipTouchObservations else {
                     return
                 }
 
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
+                if let databaseChangesObserver = grdbStorage.databaseChangesObserver {
+                    databaseChangesObserver.didTouch(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangesObserver was unexpectedly nil")
                 }
                 if shouldReindex {
                     GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
@@ -266,16 +266,16 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func touch(thread: TSThread, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                guard !UIDatabaseObserver.skipTouchObservations else {
+            DatabaseChangesObserver.serializedSync {
+                guard !DatabaseChangesObserver.skipTouchObservations else {
                     return
                 }
 
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.didTouch(thread: thread, transaction: grdb)
+                if let databaseChangesObserver = grdbStorage.databaseChangesObserver {
+                    databaseChangesObserver.didTouch(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady {
                     // This can race with observation setup when app becomes ready.
-                    Logger.warn("uiDatabaseObserver was unexpectedly nil")
+                    Logger.warn("databaseChangesObserver was unexpectedly nil")
                 }
                 if shouldReindex {
                     GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
