@@ -106,11 +106,19 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let message = Self.databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(with: messageBody,
+                                      mediaAttachments: [],
                                       thread: self.thread,
                                       quotedReplyModel: inputToolbar.quotedReply,
                                       linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                                      persistenceCompletionHandler: {
+                                        () -> Void in
+                                        DispatchQueue.main.async {
+                                            self.loadCoordinator.enqueueReload()
+                                        }
+                                      },
                                       transaction: transaction)
         }
+
         loadCoordinator.clearUnreadMessagesIndicator()
         // TODO: Audit optimistic insertion.
         loadCoordinator.appendUnsavedOutgoingTextMessage(message)

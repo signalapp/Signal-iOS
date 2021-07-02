@@ -40,6 +40,14 @@ NS_ASSUME_NONNULL_BEGIN
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
++ (TSOutgoingMessage *)enqueueMessageWithBody:(nullable MessageBody *)messageBody
+                             mediaAttachments:(NSArray<SignalAttachment *> *)attachments
+                                       thread:(TSThread *)thread
+                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                 persistenceCompletionHandler:(void (^__nullable)(void))completion
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+
 + (nullable TSOutgoingMessage *)createUnsentMessageWithBody:(nullable MessageBody *)messageBody
                                            mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                                      thread:(TSThread *)thread
