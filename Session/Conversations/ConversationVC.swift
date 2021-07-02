@@ -296,9 +296,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             baselineKeyboardHeight = newHeight
             self.messagesTableView.keyboardHeight = newHeight
         }
-        if (newHeight >= self.messagesTableView.keyboardHeight) {
-            scrollButtonConstraint?.constant = -(newHeight + 16)
-        }
+        scrollButtonConstraint?.constant = -(newHeight + 16)
         let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
         self.messagesTableView.contentOffset.y = newContentOffsetY
         self.messagesTableView.keyboardHeight = newHeight
