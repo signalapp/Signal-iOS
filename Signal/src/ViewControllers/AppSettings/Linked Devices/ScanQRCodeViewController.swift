@@ -17,10 +17,36 @@ public enum QRCodeScanOutcome: UInt {
 
 @objc
 protocol QRCodeScanDelegate: AnyObject {
+    // A QR code scan might yield a String payload, Data payload or both.
+    //
+    // * Traditional QR code payloads are Strings, but that's not true of
+    //   payloads like our safety numbers/fingerprints.  In that case,
+    //   a Data payload will be present but not a String payload.
+    // * iOS tries to parse QR code payloads as Strings but doesn't
+    //   expose the underlying Data payload, only the "codewords" (an
+    //   encoded form of the Data payload).
+    //   We use QRCodePayload to parse the Data payload from the
+    //   "codewords". QRCodePayload only supports a narrow set of "modes"
+    //   & "configurations".  iOS supports presumably the entire QR code
+    //   standard.  If a QR code contains Kanji, for example, a String
+    //   payload will be present (parsed by iOS) but not a Data payload.
+    //
+    // In some scenarios, we require a Data payload.  If a Data payload
+    // cannot be parsed, qrCodeScanViewScanned should presumably exit
+    // and return .continueScanning to ignore the scanned QR code. Or
+    // an error alert might be presented.
+    //
+    // In other scenarios, we require a String payload, e.g. when we
+    // expect a URL.  Similarly, if a String payload is required and
+    // not present, we probably want to ignore the scanned QR code and
+    // continue scanning.
     func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
                                qrCodeData: Data?,
                                qrCodeString: String?) -> QRCodeScanOutcome
 
+    // QRCodeScanViewController DRYs up asking for camera permissions, etc.
+    // If scanning cannot be performed (e.g. a user declined to grant camera
+    // permissions), the delegate will be asked to dismiss.
     func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController)
 }
 
@@ -28,10 +54,42 @@ protocol QRCodeScanDelegate: AnyObject {
 
 @objc
 class QRCodeScanViewController: OWSViewController {
+
+    @objc(QRCodeScanViewAppearance)
+    public enum Appearance: UInt {
+        case normal
+        case unadorned
+
+        fileprivate var backgroundColor: UIColor {
+            switch self {
+            case .normal:
+                return .ows_black
+            case .unadorned:
+                return .clear
+            }
+        }
+
+        fileprivate var shouldMaskView: Bool {
+            switch self {
+            case .normal:
+                return true
+            case .unadorned:
+                return false
+            }
+        }
+    }
+
+    private let appearance: Appearance
+
     @objc
     weak var delegate: QRCodeScanDelegate?
 
     private var scanner: QRCodeScanner?
+
+    @objc
+    public required init(appearance: Appearance) {
+        self.appearance = appearance
+    }
 
     deinit {
         stopScanning()
@@ -57,7 +115,7 @@ class QRCodeScanViewController: OWSViewController {
 
         super.viewDidLoad()
 
-        view.backgroundColor = .ows_black
+        view.backgroundColor = appearance.backgroundColor
 
         addObservers()
     }
@@ -134,6 +192,8 @@ class QRCodeScanViewController: OWSViewController {
             if granted {
                 self.startScanning()
             } else {
+                // TODO: Maybe we should show an error alert
+                // directing users to the system settings?
                 self.delegate?.qrCodeScanViewDismiss(self)
             }
         }
@@ -155,29 +215,31 @@ class QRCodeScanViewController: OWSViewController {
         view.addSubview(previewView)
         previewView.autoPinEdgesToSuperviewEdges()
 
-        let maskingView = OWSBezierPathView()
-        maskingView.configureShapeLayerBlock = { (layer, bounds) in
-            // Add a circular mask
-            let path = UIBezierPath(rect: bounds)
-            let margin = ScaleFromIPhone5To7Plus(8, 16)
+        if appearance.shouldMaskView {
+            let maskingView = OWSBezierPathView()
+            maskingView.configureShapeLayerBlock = { (layer, bounds) in
+                // Add a circular mask
+                let path = UIBezierPath(rect: bounds)
+                let margin = ScaleFromIPhone5To7Plus(8, 16)
 
-            // Center the circle's bounding rectangle
-            let circleDiameter = bounds.size.smallerAxis - margin * 2
-            let circleSize = CGSize.square(circleDiameter)
-            let circleRect = CGRect(origin: (bounds.size - circleSize).asPoint * 0.5,
-                                    size: circleSize)
-            let circlePath = UIBezierPath(roundedRect: circleRect,
-                                          cornerRadius: circleDiameter / 2)
-            path.append(circlePath)
-            path.usesEvenOddFillRule = true
+                // Center the circle's bounding rectangle
+                let circleDiameter = bounds.size.smallerAxis - margin * 2
+                let circleSize = CGSize.square(circleDiameter)
+                let circleRect = CGRect(origin: (bounds.size - circleSize).asPoint * 0.5,
+                                        size: circleSize)
+                let circlePath = UIBezierPath(roundedRect: circleRect,
+                                              cornerRadius: circleDiameter / 2)
+                path.append(circlePath)
+                path.usesEvenOddFillRule = true
 
-            layer.path = path.cgPath
-            layer.fillRule = .evenOdd
-            layer.fillColor = UIColor.gray.cgColor
-            layer.opacity = 0.5
+                layer.path = path.cgPath
+                layer.fillRule = .evenOdd
+                layer.fillColor = UIColor.gray.cgColor
+                layer.opacity = 0.5
+            }
+            self.view.addSubview(maskingView)
+            maskingView.autoPinEdgesToSuperviewEdges()
         }
-        self.view.addSubview(maskingView)
-        maskingView.autoPinEdgesToSuperviewEdges()
 
         firstly {
             scanner.startVideoCapture()
@@ -285,19 +347,6 @@ class QRCodeScanViewController: OWSViewController {
 
         Logger.info("Scanned QR Code.")
 
-        let qrCodeCodewords = qrCode.qrCodeCodewords
-        Logger.verbose("----- qrCodeCodewords: \(qrCodeCodewords.count), \(qrCodeCodewords.hexadecimalString), \(qrCodeCodewords.base64EncodedString())")
-
-        let qrCodeVersion = qrCode.qrCodeVersion
-        Logger.verbose("----- qrCodeVersion: \(qrCodeVersion)")
-
-        if let qrCodeString = qrCode.qrCodeString {
-            Logger.verbose("----- qrCodeString: \(qrCodeString.count), \(qrCodeString)")
-        }
-        if let qrCodeData = qrCode.qrCodeData {
-            Logger.verbose("----- qrCodeData: \(qrCodeData.count), \(qrCodeData.hexadecimalString)")
-        }
-
         DispatchQueue.main.async { [weak self] in
             guard let self = self,
                   let delegate = self.delegate else {
@@ -331,9 +380,19 @@ private enum QRCodeError: Error {
 
 // MARK: -
 
+// iOS tries to parse QR code payloads as Strings but doesn't
+// expose the underlying Data payload, only the "codewords" (an
+// encoded form of the Data payload).
+//
+// QRCodePayload can parse some Data payloads from the "codewords".
+// QRCodePayload only supports a narrow set of "modes"
+// & "configurations", but this is sufficient for the cases where
+// we need it: safety number fingerprints.
+//
 // This isn't an efficient way to parse the codewords, but
 // correctness matters and perf doesn't, since QR code payloads
-// are inherently small.
+// are inherently small. Therefore, this approach favors simplicity
+// over efficiency.
 public class QRCodePayload {
     let version: Int
     let mode: Mode

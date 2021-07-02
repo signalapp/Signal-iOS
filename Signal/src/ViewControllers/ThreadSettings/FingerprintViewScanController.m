@@ -66,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.view.backgroundColor = UIColor.blackColor;
 
-    self.qrCodeScanViewController = [QRCodeScanViewController new];
+    self.qrCodeScanViewController =
+        [[QRCodeScanViewController alloc] initWithAppearance:QRCodeScanViewAppearanceNormal];
     self.qrCodeScanViewController.delegate = self;
     [self.view addSubview:self.qrCodeScanViewController.view];
     [self.qrCodeScanViewController.view autoPinWidthToSuperview];

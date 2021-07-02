@@ -49,6 +49,8 @@ class QRCodeParserTest: SignalBaseTest {
                          symbolVersion: 6,
                          expectedMode: 4,
                          expectedString: "http://itunes.apple.com/us/app/encyclopaedia-britannica/id"),
+            // QRCodePayload current only supports mode 4, .byte.
+            // This QR code will fail to parse.
             SampleQRCode(qrCodeBase64: "caQVaHR0cHM6Ly9jcnVuY2hpZnkuY29tAOw=",
                          symbolVersion: 3,
                          expectedMode: 7,
@@ -65,6 +67,8 @@ class QRCodeParserTest: SignalBaseTest {
                          symbolVersion: 2,
                          expectedMode: 4,
                          expectedString: "http://memorynotfound.com"),
+            // QRCodePayload current only supports mode 4, .byte.
+            // This QR code will fail to parse.
             SampleQRCode(qrCodeBase64: "caQVaHR0cDovL2NydW5jaGlmeS5jb20vAOwR7BHsEewR7A==",
                          symbolVersion: 2,
                          expectedMode: 7,
