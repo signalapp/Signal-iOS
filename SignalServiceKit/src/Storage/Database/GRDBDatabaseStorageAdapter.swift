@@ -124,9 +124,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // MARK: - Database Snapshot
 
-    private var latestSnapshot: DatabaseSnapshot! {
-        return uiDatabaseObserver!.latestSnapshot
-    }
+    // TODO:
 
     @objc
     public private(set) var uiDatabaseObserver: UIDatabaseObserver?

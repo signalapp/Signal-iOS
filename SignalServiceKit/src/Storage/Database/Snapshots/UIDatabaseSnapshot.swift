@@ -119,12 +119,6 @@ public class UIDatabaseObserver: NSObject {
     private let pool: DatabasePool
     private let checkpointingQueue: DatabaseQueue?
 
-    internal var latestSnapshot: DatabaseSnapshot {
-        didSet {
-            AssertIsOnMainThread()
-        }
-    }
-
     private let hasPendingSnapshotUpdate = AtomicBool(false)
     private var lastSnapshotUpdateDate: Date?
 
@@ -141,7 +135,6 @@ public class UIDatabaseObserver: NSObject {
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
         self.pool = pool
         self.checkpointingQueue = checkpointingQueue
-        self.latestSnapshot = try pool.makeSnapshot()
 
         super.init()
 
@@ -505,12 +498,9 @@ extension UIDatabaseObserver: TransactionObserver {
             delegate.uiDatabaseSnapshotWillUpdate()
         }
 
-        latestSnapshot.read { db in
-            do {
-                try self.fastForwardDatabaseSnapshot(db: db, canCheckpoint: canCheckpoint)
-            } catch {
-                owsFailDebug("\(error)")
-            }
+        // Checkpoint the WAL
+        if canCheckpoint {
+            checkpointIfNecessary()
         }
 
         // We post this notification sync so that the read model caches
@@ -554,27 +544,6 @@ extension UIDatabaseObserver: TransactionObserver {
             }
             #endif
         }
-    }
-
-    // Currently GRDB offers no built in way to fast-forward a
-    // database snapshot.
-    // See: https://github.com/groue/GRDB.swift/issues/619
-    func fastForwardDatabaseSnapshot(db: Database, canCheckpoint: Bool = true) throws {
-        AssertIsOnMainThread()
-
-        // [1] end the old transaction from the old db state
-        try db.commit()
-
-        // [2] Checkpoint the WAL
-        if canCheckpoint {
-            checkpointIfNecessary()
-        }
-
-        // [3] open a new transaction from the current db state
-        try db.beginTransaction(.deferred)
-
-        // [4] do *any* read to acquire non-deferred read lock
-        _ = try Row.fetchCursor(db, sql: "SELECT rootpage FROM sqlite_master LIMIT 1").next()
     }
 
     private func checkpointIfNecessary() {
