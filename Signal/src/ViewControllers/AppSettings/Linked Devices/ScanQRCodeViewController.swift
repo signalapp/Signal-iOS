@@ -11,7 +11,7 @@ import Vision
 protocol QRCodeScanDelegate: AnyObject {
     // Should return true IFF the qrCode was accepted.
     func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
-                               qrCodeData value: Data,
+                               qrCodeData value: Data?,
                                qrCodeString value: String?) -> Bool
 
     func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController)
@@ -238,51 +238,73 @@ class QRCodeScanViewController: OWSViewController {
                 return true
             }
         }
-        let barcodes = filterBarcodes().sorted { (left, right) in
+        let barcodes: [VNBarcodeObservation] = filterBarcodes().sorted { (left, right) in
             // If multiple bardcodes found, prefer barcode with higher confidence.
+            // In practice, all QR codes have confidence of 1.0.
             left.confidence > right.confidence
         }
-        guard !barcodes.isEmpty else {
+
+        struct QRCode {
+            let qrCodeCodewords: Data
+            let qrCodeVersion: Int
+            // One or both will be non-nil.
+            let qrCodeString: String?
+            let qrCodeData: Data?
+        }
+        let qrCodes: [QRCode] = barcodes.compactMap { barcode in
+            guard let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor else {
+                return nil
+            }
+            let qrCodeCodewords = barcodeDescriptor.errorCorrectedPayload
+            let qrCodeVersion = barcodeDescriptor.symbolVersion
+            let qrCodeString: String? = barcode.payloadStringValue
+            let qrCodeData: Data? = QRCodePayload.parse(codewords: qrCodeCodewords,
+                                                        qrCodeVersion: qrCodeVersion)?.data
+            guard qrCodeString != nil || qrCodeData != nil else {
+                return nil
+            }
+            return QRCode(qrCodeCodewords: qrCodeCodewords,
+                          qrCodeVersion: qrCodeVersion,
+                          qrCodeString: qrCodeString,
+                          qrCodeData: qrCodeData)
+        }
+
+        guard !qrCodes.isEmpty else {
             return
         }
-        Logger.verbose("---")
-        for barcode in barcodes {
-            Logger.verbose("barcode.confidence: \(barcode.confidence)")
-            if let payloadStringValue = barcode.payloadStringValue {
-                Logger.verbose("payloadStringValue: \(payloadStringValue)")
-            }
-            if let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor {
-                Logger.verbose("errorCorrectedPayload: \(barcodeDescriptor.errorCorrectedPayload.base64EncodedString()), symbolVersion: \(barcodeDescriptor.symbolVersion)")
-            }
-            if let barcodeDescriptor = barcode.barcodeDescriptor {
-                Logger.verbose("barcodeDescriptor: \(barcodeDescriptor)")
-            }
+        guard let qrCode = qrCodes.first else {
+            return
         }
-        if false,
-           let barcode = barcodes.first,
-//        if let barcode = barcodes.first,
-           let barcodeDescriptor = barcode.barcodeDescriptor as? CIQRCodeDescriptor {
-            Logger.info("Scanned QR Code.")
 
-            let qrCodeData = barcodeDescriptor.errorCorrectedPayload
-            let qrCodeString = barcode.payloadStringValue
+        Logger.info("Scanned QR Code.")
 
+        let qrCodeCodewords = qrCode.qrCodeCodewords
+        Logger.verbose("----- qrCodeCodewords: \(qrCodeCodewords.count), \(qrCodeCodewords.hexadecimalString), \(qrCodeCodewords.base64EncodedString())")
+
+        let qrCodeVersion = qrCode.qrCodeVersion
+        Logger.verbose("----- qrCodeVersion: \(qrCodeVersion)")
+
+        if let qrCodeString = qrCode.qrCodeString {
+            Logger.verbose("----- qrCodeString: \(qrCodeString.count), \(qrCodeString)")
+        }
+        if let qrCodeData = qrCode.qrCodeData {
             Logger.verbose("----- qrCodeData: \(qrCodeData.count), \(qrCodeData.hexadecimalString)")
-            Logger.verbose("----- qrCodeString: \(qrCodeString?.count), \(qrCodeString)")
+        }
 
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self,
-                      let delegate = self.delegate else {
-                    return
-                }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self,
+                  let delegate = self.delegate else {
+                return
+            }
 
-                let accepted = delegate.qrCodeScanViewScanned(self, qrCodeData: qrCodeData, qrCodeString: qrCodeString)
-                if accepted {
-                    self.stopScanning()
+            let accepted = delegate.qrCodeScanViewScanned(self,
+                                                          qrCodeData: qrCode.qrCodeData,
+                                                          qrCodeString: qrCode.qrCodeString)
+            if accepted {
+                self.stopScanning()
 
-                    // Vibrate
-                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                }
+                // Vibrate
+                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
             }
         }
     }
@@ -296,56 +318,6 @@ private enum QRCodeError: Error {
     case unsupportedConfiguration
     case invalidLength
 }
-
-// MARK: -
-
-// fileprivate class QRCodeBitParser {
-//    private let codewords: Data
-//
-//    private var codewordIndex: UInt = 0
-//    private var consumedCodewordBitCount: UInt = 0
-//    private var availableBitsAtCurrentCodeword: UInt {
-//        guard codewordIndex < codewords.count else {
-//            return 0
-//        }
-//        owsAssertDebug(consumedCodewordBitCount <= 8)
-//        return 8 - consumedCodewordBitCount
-//    }
-//    // Does not include the current codeword.
-//    private var remainingCodewordCount: UInt {
-//        let processedCodewords = codewordIndex + 1
-//        guard codewords.count >= processedCodewords else {
-//            return 0
-//        }
-//        return UInt(codewords.count) - processedCodewords
-//    }
-//    private var availableBitsTotal: UInt {
-//        availableBitsAtCurrentCodeword + (remainingCodewordCount * 8)
-//    }
-//
-//    required init(codewords: Data) {
-//        self.codewords = codewords
-//    }
-//
-//    private struct Bits {
-//        let bits: UInt
-//        let count: UInt
-//    }
-//
-//    private func readBits(count: UInt) throws -> Bits {
-//        var bitsToReadCount = count
-//        var bits: UInt = 0
-//        while bitsToReadCount > 0 {
-//            let availableBitsAtCurrentCodeword = self.availableBitsAtCurrentCodeword
-//            guard availableBitsAtCurrentCodeword > 0 else {
-//                throw QRCodeError.invalidCodewords
-//            }
-//            if availableBitsAtCurrentCodeword > bitsToReadCount {
-//
-//            }
-//        }
-//    }
-// }
 
 // MARK: -
 
@@ -370,14 +342,16 @@ public class QRCodePayload {
         self.bytes = bytes
     }
 
+    // There are even more modes, but it'll improve logging a bit 
+    // to identify these modes even though we don't support them.
+    //
+    // TODO: We currently only support .byte mode.
     public enum Mode: UInt {
         case numeric = 1
         case alphaNumeric = 2
         case bytes = 4
         case kanji = 8
     }
-//    // CIQRCodeDescriptor codewords (mode + character count + data + terminator + padding)
-//    public static var byteEncodingMode: UInt {  mode.bytes.rawValue }
 
     public static func parse(codewords: Data,
                              qrCodeVersion version: Int,
@@ -385,8 +359,6 @@ public class QRCodePayload {
         // QR Code Standard
         // ISO/IEC 18004:2015
         // https://www.iso.org/standard/62021.html
-        //
-        //
         do {
             let bitstream = QRCodeBitStream(codewords: codewords)
 
@@ -421,17 +393,9 @@ public class QRCodePayload {
                 let byte = try bitstream.readUInt8(bitCount: 8)
                 bytes.append(byte)
             }
-            // TODO:
             return QRCodePayload(version: version, mode: mode, bytes: bytes)
         } catch {
-//            if ignoreUnknownMode,
-//               let error = error as? QRCodeError,
-//               case .unknownMode = error {
-//                owsAssertDebug(CurrentAppContext().isRunningTests)
-//                Logger.error("Error: \(error)")
-//            } else {
             owsFailDebug("Error: \(error)")
-//            }
             return nil
         }
     }
@@ -548,80 +512,6 @@ extension QRCodeScanViewController: AVCaptureVideoDataOutputSampleBufferDelegate
         }
     }
 }
-
-// MARK: -
-
-// extension QRCodeScanViewController: PhotoCaptureDelegate {
-//
-//    // MARK: - Photo
-//
-//    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
-//        let captureFeedbackView = UIView()
-//        captureFeedbackView.backgroundColor = .black
-//        view.insertSubview(captureFeedbackView, aboveSubview: previewView)
-//        captureFeedbackView.autoPinEdgesToSuperviewEdges()
-//
-//        // Ensure the capture feedback is laid out before we remove it,
-//        // depending on where we're coming from a layout pass might not
-//        // trigger in 0.05 seconds otherwise.
-//        view.setNeedsLayout()
-//        view.layoutIfNeeded()
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-//            captureFeedbackView.removeFromSuperview()
-//        }
-//    }
-//
-//    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment) {
-//        delegate?.photoCaptureViewController(self, didFinishProcessingAttachment: attachment)
-//    }
-//
-//    func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
-//        showFailureUI(error: error)
-//    }
-//
-//    func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool {
-//        guard let delegate = delegate else { return false }
-//        return delegate.photoCaptureViewControllerCanCaptureMoreItems(self)
-//    }
-//
-//    func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture) {
-//        delegate?.photoCaptureViewControllerDidTryToCaptureTooMany(self)
-//    }
-//
-//
-//
-//    //    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//    //        super.viewWillTransition(to: size, with: coordinator)
-//    //
-//    //        if UIDevice.current.isIPad {
-//    //            // Since we support iPad multitasking, we cannot *disable* rotation of our views.
-//    //            // Rotating the preview layer is really distracting, so we fade out the preview layer
-//    //            // while the rotation occurs.
-//    //            self.previewView.alpha = 0
-//    //            coordinator.animate(alongsideTransition: { _ in }) { _ in
-//    //                UIView.animate(withDuration: 0.1) {
-//    //                    self.previewView.alpha = 1
-//    //                }
-//    //            }
-//    //        }
-//    //    }
-//    //
-//    //    override func viewSafeAreaInsetsDidChange() {
-//    //        super.viewSafeAreaInsetsDidChange()
-//    //        if !UIDevice.current.isIPad {
-//    //            // we pin to a constant rather than margin, because on notched devices the
-//    //            // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
-//    //            // is locked to portrait.
-//    //            // Only grab this once -- otherwise when we swipe to dismiss this is updated and the top bar jumps to having zero offset
-//    //            if topBarOffset.constant == 0 {
-//    //                topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
-//    //            }
-//    //        }
-//    //    }
-//    //
-//    //
-// }
 
 // MARK: -
 
@@ -746,36 +636,9 @@ private class QRCodeScanner {
         assertOnQueue(sessionQueue)
     }
 
-    //    public func switchCamera() -> Promise<Void> {
-    //        AssertIsOnMainThread()
-    //        let newPosition: AVCaptureDevice.Position
-    //        switch desiredPosition {
-    //        case .front:
-    //            newPosition = .back
-    //        case .back:
-    //            newPosition = .front
-    //        case .unspecified:
-    //            newPosition = .front
-    //        @unknown default:
-    //            owsFailDebug("Unexpected enum value.")
-    //            newPosition = .front
-    //            break
-    //        }
-    //        desiredPosition = newPosition
-    //
-    //        return sessionQueue.async(.promise) { [weak self] in
-    //            guard let self = self else { return }
-    //
-    //            self.session.beginConfiguration()
-    //            defer { self.session.commitConfiguration() }
-    //            try self.setCurrentInput(position: newPosition)
-    //        }
-    //    }
-
     // This method should be called on the serial queue,
     // and between calls to session.beginConfiguration/commitConfiguration
     public func setCurrentInput(position: AVCaptureDevice.Position) throws {
-//        owsAssertDebug(currentCaptureInput == nil)
         assertIsOnSessionQueue()
 
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera,
@@ -802,13 +665,7 @@ private class QRCodeScanner {
 
         let newInput = try AVCaptureDeviceInput(device: device)
 
-//        if let oldInput = self.currentCaptureInput {
-//            session.removeInput(oldInput)
-//        }
         session.addInput(newInput)
-//        currentCaptureInput = newInput
-
-//        resetFocusAndExposure()
     }
 }
 
@@ -873,12 +730,7 @@ private class QRCodeScanPreviewView: UIView {
 
 private class QRCodeScanOutput {
 
-//    let imageOutput: ImageCaptureOutput
-
     let videoDataOutput = AVCaptureVideoDataOutput()
-
-    //    let movieRecordingQueue = DispatchQueue(label: "CaptureOutput.movieRecordingQueue", qos: .userInitiated)
-    //    var movieRecording: MovieRecording?
 
     // MARK: - Init
 
@@ -888,130 +740,5 @@ private class QRCodeScanOutput {
         videoDataOutput.setSampleBufferDelegate(
             sampleBufferDelegate,
             queue: DispatchQueue.global(qos: DispatchQoS.QoSClass.default))
-
-//        imageOutput = PhotoCaptureOutputAdaptee()
-
-//        super.init()
-
-//        videoDataOutput.setSampleBufferDelegate(self, queue: movieRecordingQueue)
     }
-
-//    var photoOutput: AVCaptureOutput? {
-//        return imageOutput.avOutput
-//    }
-
-//    var flashMode: AVCaptureDevice.FlashMode {
-//        get {  imageOutput.flashMode }
-//        set { imageOutput.flashMode = newValue }
-//    }
-
-//    func videoDevice(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
-//        return imageOutput.videoDevice(position: position)
-//    }
-
-//    func takePhoto(delegate: CaptureOutputDelegate, captureRect: CGRect) {
-//        delegate.assertIsOnSessionQueue()
-//
-//        guard let photoOutput = photoOutput else {
-//            owsFailDebug("photoOutput was unexpectedly nil")
-//            return
-//        }
-//
-//        guard let photoVideoConnection = photoOutput.connection(with: .video) else {
-//            owsFailDebug("photoVideoConnection was unexpectedly nil")
-//            return
-//        }
-//
-//        ImpactHapticFeedback.impactOccured(style: .medium)
-//
-//        let videoOrientation = delegate.captureOrientation
-//        photoVideoConnection.videoOrientation = videoOrientation
-//        Logger.verbose("videoOrientation: \(videoOrientation), deviceOrientation: \(UIDevice.current.orientation)")
-//
-//        return imageOutput.takePhoto(delegate: delegate, captureRect: captureRect)
-//    }
-
-    //    // MARK: - Movie Output
-    //
-    //    func beginMovie(delegate: CaptureOutputDelegate, aspectRatio: CGFloat) throws -> MovieRecording {
-    //        delegate.assertIsOnSessionQueue()
-    //
-    //        guard let videoConnection = videoDataOutput.connection(with: .video) else {
-    //            throw OWSAssertionError("videoConnection was unexpectedly nil")
-    //        }
-    //        let videoOrientation = delegate.captureOrientation
-    //        videoConnection.videoOrientation = videoOrientation
-    //
-    //        assert(movieRecording == nil)
-    //        let outputURL = OWSFileSystem.temporaryFileUrl(fileExtension: "mp4")
-    //        let assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: .mp4)
-    //
-    //        guard let recommendedSettings = self.videoDataOutput.recommendedVideoSettingsForAssetWriter(writingTo: .mp4) else {
-    //            throw OWSAssertionError("videoSettings was unexpectedly nil")
-    //        }
-    //        guard let capturedWidth: CGFloat = recommendedSettings[AVVideoWidthKey] as? CGFloat else {
-    //            throw OWSAssertionError("capturedWidth was unexpectedly nil")
-    //        }
-    //        guard let capturedHeight: CGFloat = recommendedSettings[AVVideoHeightKey] as? CGFloat else {
-    //            throw OWSAssertionError("capturedHeight was unexpectedly nil")
-    //        }
-    //        let capturedSize = CGSize(width: capturedWidth, height: capturedHeight)
-    //
-    //        // video specs from Signal-Android: 2Mbps video 192K audio, 720P 30 FPS
-    //        let maxDimension: CGFloat = 1280 // 720p
-    //
-    //        let aspectSize = capturedSize.cropped(toAspectRatio: aspectRatio)
-    //        let outputSize = aspectSize.scaledToFit(max: maxDimension)
-    //
-    //        // See AVVideoSettings.h
-    //        let videoSettings: [String: Any] = [
-    //            AVVideoWidthKey: outputSize.width,
-    //            AVVideoHeightKey: outputSize.height,
-    //            AVVideoScalingModeKey: AVVideoScalingModeResizeAspectFill,
-    //            AVVideoCodecKey: AVVideoCodecH264,
-    //            AVVideoCompressionPropertiesKey: [
-    //                AVVideoAverageBitRateKey: 2000000,
-    //                AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline41,
-    //                AVVideoMaxKeyFrameIntervalKey: 90
-    //            ]
-    //        ]
-    //
-    //        Logger.info("videoOrientation: \(videoOrientation), captured: \(capturedWidth)x\(capturedHeight), output: \(outputSize.width)x\(outputSize.height), aspectRatio: \(aspectRatio)")
-    //
-    //        let videoInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
-    //        videoInput.expectsMediaDataInRealTime = true
-    //        assetWriter.add(videoInput)
-    //
-    //        let audioSettings: [String: Any]? =  self.audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4) as? [String: Any]
-    //        let audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
-    //        audioInput.expectsMediaDataInRealTime = true
-    //        if audioSettings != nil {
-    //            assetWriter.add(audioInput)
-    //        } else {
-    //            owsFailDebug("audioSettings was unexpectedly nil")
-    //        }
-    //
-    //        return MovieRecording(assetWriter: assetWriter, videoInput: videoInput, audioInput: audioInput)
-    //    }
-    //
-    //    func completeMovie(delegate: CaptureOutputDelegate) {
-    //        firstly { () -> Promise<URL> in
-    //            assertOnQueue(movieRecordingQueue)
-    //            guard let movieRecording = self.movieRecording else {
-    //                throw OWSAssertionError("movie recording was unexpectedly nil")
-    //            }
-    //            self.movieRecording = nil
-    //            return movieRecording.finish()
-    //        }.done { outputUrl in
-    //            delegate.captureOutputDidCapture(movieUrl: .success(outputUrl))
-    //        }.catch { error in
-    //            delegate.captureOutputDidCapture(movieUrl: .failure(error))
-    //        }
-    //    }
-    //
-    //    func cancelVideo(delegate: CaptureOutputDelegate) {
-    //        delegate.assertIsOnSessionQueue()
-    //        // There's currently no user-visible way to cancel, if so, we may need to do some cleanup here.
-    //        owsFailDebug("video was unexpectedly canceled.")
-    //    }
 }

@@ -105,13 +105,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)qrCodeScanViewScanned:(QRCodeScanViewController *)qrCodeScanViewController
-                   qrCodeData:(NSData *)qrCodeData
+- (BOOL)qrCodeScanViewScanned:(QRCodeScanViewController *)qrCodeScanViewController
+                   qrCodeData:(nullable NSData *)qrCodeData
                  qrCodeString:(nullable NSString *)qrCodeString
 {
     OWSAssertIsOnMainThread();
 
+    if (qrCodeData == nil) {
+        // Only accept QR codes with a valid data (not string) payload.
+        return NO;
+    }
+
     [self verifyCombinedFingerprintData:qrCodeData];
+
+    // Accept the QR code even if verification failed.
+    return YES;
 }
 
 - (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
