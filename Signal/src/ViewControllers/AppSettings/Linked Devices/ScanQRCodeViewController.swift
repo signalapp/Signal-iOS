@@ -359,7 +359,8 @@ class QRCodeScanViewController: OWSViewController {
                 self.stopScanning()
 
                 // Vibrate
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                ImpactHapticFeedback.impactOccured(style: .medium)
+
             case .continueScanning:
                 break
             }
@@ -598,8 +599,6 @@ private class QRCodeScanner {
     private let session = AVCaptureSession()
     private let output: QRCodeScanOutput
 
-    private(set) var desiredPosition: AVCaptureDevice.Position = .back
-
     private var _captureOrientation: AVCaptureVideoOrientation = .portrait
     var captureOrientation: AVCaptureVideoOrientation {
         get {
@@ -671,7 +670,7 @@ private class QRCodeScanner {
             self.captureOrientation = initialCaptureOrientation
             self.session.sessionPreset = .high
 
-            try self.setCurrentInput(position: .back)
+            try self.setCurrentInput()
 
             let videoDataOutput = self.output.videoDataOutput
             guard self.session.canAddOutput(videoDataOutput) else {
@@ -704,14 +703,12 @@ private class QRCodeScanner {
 
     // This method should be called on the serial queue,
     // and between calls to session.beginConfiguration/commitConfiguration
-    public func setCurrentInput(position: AVCaptureDevice.Position) throws {
+    public func setCurrentInput() throws {
         assertIsOnSessionQueue()
 
-        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                                   for: .video,
-                                                   position: position) else {
-            throw QRCodeScanError.assertionError(description: "Missing videoDevice.")
-        }
+        let device = try selectCaptureDevice()
+
+        Logger.verbose("device: \(device.deviceType), position: \(device.position)")
 
         try device.lockForConfiguration()
 
@@ -732,6 +729,51 @@ private class QRCodeScanner {
         let newInput = try AVCaptureDeviceInput(device: device)
 
         session.addInput(newInput)
+    }
+
+    private func selectCaptureDevice() throws -> AVCaptureDevice {
+        assertIsOnSessionQueue()
+
+        // Camera types in descending order of preference.
+        var deviceTypes = [AVCaptureDevice.DeviceType]()
+        deviceTypes.append(.builtInWideAngleCamera)
+        if #available(iOS 13, *) {
+            deviceTypes.append(.builtInUltraWideCamera)
+            deviceTypes.append(.builtInDualWideCamera)
+            deviceTypes.append(.builtInTripleCamera)
+        }
+        deviceTypes.append(.builtInDualCamera)
+        deviceTypes.append(.builtInTelephotoCamera)
+
+        func selectDevice(session: AVCaptureDevice.DiscoverySession) -> AVCaptureDevice? {
+            var deviceMap = [AVCaptureDevice.DeviceType: AVCaptureDevice]()
+            for device in session.devices {
+                deviceMap[device.deviceType] = device
+            }
+            for deviceType in deviceTypes {
+                if let device = deviceMap[deviceType] {
+                    return device
+                }
+            }
+            return nil
+        }
+
+        // Prefer a back-facing camera.
+        let backSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
+                                                           mediaType: .video,
+                                                           position: .back)
+        if let device = selectDevice(session: backSession) {
+            return device
+        }
+        // Failover to a front-facing camera.
+        let frontSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
+                                                           mediaType: .video,
+                                                           position: .front)
+        if let device = selectDevice(session: frontSession) {
+            return device
+        }
+
+        throw QRCodeScanError.assertionError(description: "Missing videoDevice.")
     }
 }
 
