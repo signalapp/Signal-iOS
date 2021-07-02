@@ -98,7 +98,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         defer { super.viewWillAppear(animated) }
 
         if mediaGallery.sections.isEmpty {
-            databaseStorage.uiRead { transaction in
+            databaseStorage.read { transaction in
                 _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize, transaction: transaction)
             }
             if mediaGallery.sections.isEmpty {
@@ -706,7 +706,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         UIView.performWithoutAnimation {
             collectionView.performBatchUpdates({
-                databaseStorage.uiRead { transaction in
+                databaseStorage.read { transaction in
                     let newSections: Range<Int>
                     switch direction {
                     case .before:

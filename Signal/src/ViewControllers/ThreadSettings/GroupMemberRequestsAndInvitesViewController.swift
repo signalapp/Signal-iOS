@@ -129,7 +129,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let canApproveMemberRequests = groupViewHelper.canApproveMemberRequests
 
         let groupMembership = groupModel.groupMembership
-        let requestingMembersSorted = databaseStorage.uiRead { transaction in
+        let requestingMembersSorted = databaseStorage.read { transaction in
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.requestingMembers),
                                                                 transaction: transaction)
         }
@@ -240,7 +240,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
 
         let groupMembership = groupModel.groupMembership
-        let allPendingMembersSorted = databaseStorage.uiRead { transaction in
+        let allPendingMembersSorted = databaseStorage.read { transaction in
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(groupMembership.invitedMembers),
                                                                 transaction: transaction)
         }
@@ -304,7 +304,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                                                           comment: "Footer for the 'invites by other group members' section of the 'member requests and invites' view.")
 
         if membersInvitedByOtherUsers.count > 0 {
-            let inviterAddresses = databaseStorage.uiRead { transaction in
+            let inviterAddresses = databaseStorage.read { transaction in
                 self.contactsManagerImpl.sortSignalServiceAddresses(Array(membersInvitedByOtherUsers.keys),
                                                                     transaction: transaction)
             }

@@ -60,7 +60,7 @@ class MessageRequestView: UIStackView {
     init(threadViewModel: ThreadViewModel) {
         let thread = threadViewModel.threadRecord
         self.thread = thread
-        self.messageRequestType = Self.databaseStorage.uiRead { transaction in
+        self.messageRequestType = Self.databaseStorage.read { transaction in
             Self.messageRequestType(forThread: thread, transaction: transaction)
         }
 
@@ -198,7 +198,7 @@ class MessageRequestView: UIStackView {
                 )
             }
 
-            let shortName = databaseStorage.uiRead { transaction in
+            let shortName = databaseStorage.read { transaction in
                 return self.contactsManager.shortDisplayName(for: thread.contactAddress, transaction: transaction)
             }
 

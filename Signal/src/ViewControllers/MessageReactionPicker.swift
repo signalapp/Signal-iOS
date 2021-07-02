@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -57,7 +57,7 @@ class MessageReactionPicker: UIStackView {
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
 
-        var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.uiRead { transaction in
+        var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.read { transaction in
             return ReactionManager.emojiSet.compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
         }
         owsAssertDebug(emojiSet.count == ReactionManager.emojiSet.count)

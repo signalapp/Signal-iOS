@@ -50,7 +50,7 @@ public class ContactShareViewModel: NSObject {
 
     @objc
     public func getAvatarImageWithSneakyTransaction(diameter: CGFloat) -> UIImage? {
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             self.getAvatarImage(diameter: diameter, transaction: transaction)
         }
     }

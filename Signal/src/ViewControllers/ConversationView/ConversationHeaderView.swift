@@ -149,7 +149,7 @@ public class ConversationHeaderView: UIStackView {
 
     @objc
     public func updateAvatar() {
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             self.avatarView.updateImage(transaction: transaction)
         }
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -101,7 +101,7 @@ open class MentionTextView: OWSTextView {
             return owsFailDebug("Can't replace characters without delegate")
         }
 
-        let attributedBody = SDSDatabaseStorage.shared.uiRead { transaction in
+        let attributedBody = SDSDatabaseStorage.shared.read { transaction in
             messageBody.attributedBody(
                 style: mentionDelegate.textViewMentionStyle(self),
                 attributes: self.defaultAttributes,

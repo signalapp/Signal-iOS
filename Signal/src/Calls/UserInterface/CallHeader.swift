@@ -168,7 +168,7 @@ class CallHeader: UIView {
             )
         } else {
             var isFirstMemberPresenting = false
-            let memberNames: [String] = databaseStorage.uiRead { transaction in
+            let memberNames: [String] = databaseStorage.read { transaction in
                 if self.call.groupCall.localDeviceState.joinState == .joined {
                     let sortedDeviceStates = self.call.groupCall.remoteDeviceStates.sortedByAddedTime
                     isFirstMemberPresenting = sortedDeviceStates.first?.presenting == true

@@ -32,8 +32,8 @@ public class Mention: NSObject {
     public var length: Int { (text as NSString).length }
 
     public class func withSneakyTransaction(address: SignalServiceAddress, style: Style) -> Mention {
-        return SDSDatabaseStorage.shared.uiRead { transaction in
-            return Mention(address: address, style: style, transaction: transaction.unwrapGrdbRead)
+        databaseStorage.read { transaction in
+            Mention(address: address, style: style, transaction: transaction.unwrapGrdbRead)
         }
     }
 

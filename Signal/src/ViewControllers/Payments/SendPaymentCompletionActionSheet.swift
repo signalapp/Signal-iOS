@@ -462,7 +462,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         let otherUserName: String
         switch recipient {
         case .address(let recipientAddress):
-            otherUserName = databaseStorage.uiRead { transaction in
+            otherUserName = databaseStorage.read { transaction in
                 self.contactsManager.displayName(for: recipientAddress, transaction: transaction)
             }
         case .publicAddress(let recipientPublicAddress):

@@ -54,7 +54,7 @@ public class LongTextViewController: OWSViewController {
         let uniqueId = itemViewModel.interaction.uniqueId
 
         do {
-            try databaseStorage.uiReadThrows { transaction in
+            try databaseStorage.readThrows { transaction in
                 guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                     Logger.error("Message was deleted")
                     throw LongTextViewError.messageWasDeleted

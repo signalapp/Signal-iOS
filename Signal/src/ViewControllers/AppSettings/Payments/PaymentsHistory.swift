@@ -117,7 +117,7 @@ class PaymentsHistoryDataSource: Dependencies {
     }
 
     private func loadAllPaymentsHistoryItems(delegate: PaymentsHistoryDataSourceDelegate) -> [PaymentsHistoryItem] {
-        Self.databaseStorage.uiRead { transaction in
+        Self.databaseStorage.read { transaction in
             // PAYMENTS TODO: Should we using paging, etc?
             // PAYMENTS TODO: Sort in query?
             var paymentModels: [TSPaymentModel] = TSPaymentModel.anyFetchAll(transaction: transaction)

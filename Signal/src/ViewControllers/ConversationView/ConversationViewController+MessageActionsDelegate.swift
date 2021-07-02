@@ -70,7 +70,7 @@ extension ConversationViewController: MessageActionsDelegate {
         self.uiMode = .normal
 
         let load = {
-            Self.databaseStorage.uiRead { transaction in
+            Self.databaseStorage.read { transaction in
                 OWSQuotedReplyModel.quotedReplyForSending(withItem: itemViewModel, transaction: transaction)
             }
         }

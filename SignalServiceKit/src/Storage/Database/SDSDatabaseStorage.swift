@@ -208,18 +208,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         uiDatabaseObserver.add(snapshotFlushBlock: uiDatabaseSnapshotFlushBlock)
     }
 
-    public func uiDatabaseSnapshotFlushPromise() -> Promise<Void> {
-        let (promise, resolver) = Promise<Void>.pending()
-
-        add(uiDatabaseSnapshotFlushBlock: {
-            resolver.fulfill(())
-        })
-
-        return firstly {
-            promise
-        }.timeout(seconds: 30)
-    }
-
     // MARK: - Id Mapping
 
     @objc

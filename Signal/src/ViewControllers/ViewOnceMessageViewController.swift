@@ -396,7 +396,7 @@ class ViewOnceMessageViewController: OWSViewController {
     private func dismissIfRemoved() {
         AssertIsOnMainThread()
 
-        let shouldDismiss: Bool = databaseStorage.uiRead { transaction in
+        let shouldDismiss: Bool = databaseStorage.read { transaction in
             let uniqueId = self.content.messageId
             guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                 return true

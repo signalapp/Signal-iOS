@@ -119,7 +119,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
         let nameAndAvatarSection = OWSTableSection()
 
-        let members = databaseStorage.uiRead { transaction in
+        let members = databaseStorage.read { transaction in
             BaseGroupMemberViewController.orderedMembers(recipientSet: self.recipientSet,
                                                          shouldSort: true,
                                                          transaction: transaction)
@@ -539,7 +539,7 @@ class NewLegacyGroupView: UIView {
         }
         headerLabel.textAlignment = .center
 
-        let members = databaseStorage.uiRead { transaction in
+        let members = databaseStorage.read { transaction in
             BaseGroupMemberViewController.orderedMembers(recipientSet: OrderedSet(self.v1Members),
                                                          shouldSort: true,
                                                          transaction: transaction)

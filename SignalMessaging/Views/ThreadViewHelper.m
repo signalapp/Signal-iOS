@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     NSMutableArray<TSThread *> *threads = [NSMutableArray new];
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         AnyThreadFinder *threadFinder = [AnyThreadFinder new];
         NSError *_Nullable error;
         [threadFinder enumerateVisibleThreadsWithIsArchived:NO

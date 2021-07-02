@@ -247,7 +247,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         DispatchQueue.main.async {
             let benchSteps = BenchSteps()
-            Self.databaseStorage.uiRead { transaction in
+            Self.databaseStorage.read { transaction in
                 self.reloadReactionsDetailSheet(transaction: transaction)
                 self.updateUnreadMessageFlag(transaction: transaction)
             }

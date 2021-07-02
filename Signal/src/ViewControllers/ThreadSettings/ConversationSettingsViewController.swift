@@ -819,7 +819,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
     private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread)
     func updateRecentAttachments() {
-        let recentAttachments = databaseStorage.uiRead { transaction in
+        let recentAttachments = databaseStorage.read { transaction in
             mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, transaction: transaction.unwrapGrdbRead)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
@@ -846,7 +846,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
     func updateMutualGroupThreads() {
         guard let contactThread = thread as? TSContactThread else { return }
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             self.hasGroupThreads = GRDBThreadFinder.existsGroupThread(transaction: transaction.unwrapGrdbRead)
             self.mutualGroupThreads = TSGroupThread.groupThreads(
                 with: contactThread.contactAddress,

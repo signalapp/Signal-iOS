@@ -129,7 +129,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     }
 
     public func buildRenderItem(interactionId: String) -> CVRenderItem? {
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             guard let interaction = TSInteraction.anyFetch(
                 uniqueId: interactionId,
                 transaction: transaction
@@ -708,7 +708,7 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
         }
 
         do {
-            try databaseStorage.uiReadThrows { transaction in
+            try databaseStorage.readThrows { transaction in
                 let uniqueId = self.message.uniqueId
                 guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId,
                                                               transaction: transaction) as? TSMessage else {

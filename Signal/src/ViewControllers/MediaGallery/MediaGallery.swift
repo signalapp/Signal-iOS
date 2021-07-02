@@ -272,7 +272,7 @@ class MediaGallery: Dependencies {
 
         var sectionsNeedingUpdate = IndexSet()
 
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             for attachmentId in newAttachmentIds {
                 let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
                 guard let attachmentStream = attachment as? TSAttachmentStream else {
@@ -483,7 +483,7 @@ class MediaGallery: Dependencies {
         var numNewlyLoadedLaterSections: Int = 0
 
         Bench(title: "fetching gallery items") {
-            self.databaseStorage.uiRead { transaction in
+            self.databaseStorage.read { transaction in
                 // Figure out the earliest section this request will cross.
                 var currentSectionIndex = sectionIndex
                 var requestRange = NSRange(naiveRequestRange)
@@ -594,7 +594,7 @@ class MediaGallery: Dependencies {
     }
 
     internal func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
-        let newItem: MediaGalleryItem? = databaseStorage.uiRead { transaction in
+        let newItem: MediaGalleryItem? = databaseStorage.read { transaction in
             guard let focusedItem = buildGalleryItem(attachment: focusedAttachment, transaction: transaction) else {
                 return nil
             }
@@ -979,7 +979,7 @@ class MediaGallery: Dependencies {
     }
 
     internal var galleryItemCount: Int {
-        return databaseStorage.uiRead { transaction in
+        return databaseStorage.read { transaction in
             return Int(mediaGalleryFinder.mediaCount(excluding: deletedAttachmentIds,
                                                      transaction: transaction.unwrapGrdbRead))
         }

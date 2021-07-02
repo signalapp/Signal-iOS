@@ -287,7 +287,7 @@ extension ConversationViewController {
         if quotedReply.isRemotelySourced {
             return
         }
-        let quotedMessage = databaseStorage.uiRead { transaction in
+        let quotedMessage = databaseStorage.read { transaction in
             InteractionFinder.findMessage(withTimestamp: quotedReply.timestamp,
                                           threadId: self.thread.uniqueId,
                                           author: quotedReply.authorAddress,

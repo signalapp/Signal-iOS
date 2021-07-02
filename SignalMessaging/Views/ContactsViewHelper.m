@@ -225,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SignalAccount *> *accountsToProcess = [self.contactsManager.signalAccounts mutableCopy];
 
     __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         whitelistedAddresses = [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
     }];
 
@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (Contact *contact in self.contactsManagerImpl.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
@@ -533,7 +533,7 @@ NS_ASSUME_NONNULL_BEGIN
             newContact.phoneNumbers = @[ labeledPhoneNumber ];
         }
 
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             newContact.givenName = [self.profileManagerImpl givenNameForAddress:address transaction:transaction];
             newContact.familyName = [self.profileManagerImpl familyNameForAddress:address transaction:transaction];
             newContact.imageData = UIImagePNGRepresentation(
