@@ -8,11 +8,18 @@ import PromiseKit
 import Vision
 
 @objc
+public enum QRCodeScanOutcome: UInt {
+    case stopScanning
+    case continueScanning
+}
+
+// MARK: -
+
+@objc
 protocol QRCodeScanDelegate: AnyObject {
-    // Should return true IFF the qrCode was accepted.
     func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
-                               qrCodeData value: Data?,
-                               qrCodeString value: String?) -> Bool
+                               qrCodeData: Data?,
+                               qrCodeString: String?) -> QRCodeScanOutcome
 
     func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController)
 }
@@ -297,14 +304,17 @@ class QRCodeScanViewController: OWSViewController {
                 return
             }
 
-            let accepted = delegate.qrCodeScanViewScanned(self,
+            let outcome = delegate.qrCodeScanViewScanned(self,
                                                           qrCodeData: qrCode.qrCodeData,
                                                           qrCodeString: qrCode.qrCodeString)
-            if accepted {
+            switch outcome {
+            case .stopScanning:
                 self.stopScanning()
 
                 // Vibrate
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+            case .continueScanning:
+                break
             }
         }
     }

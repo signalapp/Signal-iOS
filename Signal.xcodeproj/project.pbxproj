@@ -71,7 +71,6 @@
 		340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
-		340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */; };
 		340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */; };
 		340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
 		34123C5E239AA3E900782788 /* TooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34123C5D239AA3E900782788 /* TooltipView.swift */; };
@@ -1090,11 +1089,9 @@
 		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
 		340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
 		340FC887204DAC8C007AEB0F /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
-		340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQRCodeScanningViewController.h; sourceTree = "<group>"; };
 		340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DomainFrontingCountryViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
-		340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQRCodeScanningViewController.m; sourceTree = "<group>"; };
 		340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
 		340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewScanController.m; sourceTree = "<group>"; };
 		340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FingerprintViewController.m; sourceTree = "<group>"; };
@@ -3690,8 +3687,6 @@
 				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
 				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
 				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
-				340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */,
-				340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */,
 				345779402682464700732869 /* ScanQRCodeViewController.swift */,
 			);
 			path = "Linked Devices";
@@ -5807,7 +5802,6 @@
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
 				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
-				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
 				346EFC40260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift in Sources */,
 				8841584C252F9F1C0078903D /* SignalCall.swift in Sources */,

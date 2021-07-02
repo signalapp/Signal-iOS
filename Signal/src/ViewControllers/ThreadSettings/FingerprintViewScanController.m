@@ -71,7 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.qrCodeScanViewController.view];
     [self.qrCodeScanViewController.view autoPinWidthToSuperview];
     [self.qrCodeScanViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [self.qrCodeScanViewController.view addRedBorder];
     [self addChildViewController:self.qrCodeScanViewController];
 
     UIView *footer = [UIView new];
@@ -105,21 +104,21 @@ NS_ASSUME_NONNULL_BEGIN
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (BOOL)qrCodeScanViewScanned:(QRCodeScanViewController *)qrCodeScanViewController
-                   qrCodeData:(nullable NSData *)qrCodeData
-                 qrCodeString:(nullable NSString *)qrCodeString
+- (QRCodeScanOutcome)qrCodeScanViewScanned:(QRCodeScanViewController *)qrCodeScanViewController
+                                qrCodeData:(nullable NSData *)qrCodeData
+                              qrCodeString:(nullable NSString *)qrCodeString
 {
     OWSAssertIsOnMainThread();
 
     if (qrCodeData == nil) {
         // Only accept QR codes with a valid data (not string) payload.
-        return NO;
+        return QRCodeScanOutcomeContinueScanning;
     }
 
     [self verifyCombinedFingerprintData:qrCodeData];
 
-    // Accept the QR code even if verification failed.
-    return YES;
+    // Stop scanning even if verification failed.
+    return QRCodeScanOutcomeStopScanning;
 }
 
 - (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
