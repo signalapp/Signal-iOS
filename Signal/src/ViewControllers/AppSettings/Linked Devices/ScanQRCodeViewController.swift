@@ -364,8 +364,7 @@ public class QRCodePayload {
     }
 
     public static func parse(codewords: Data,
-                             qrCodeVersion version: Int,
-                             ignoreUnknownMode: Bool = false) -> QRCodePayload? {
+                             qrCodeVersion version: Int) -> QRCodePayload? {
         // QR Code Standard
         // ISO/IEC 18004:2015
         // https://www.iso.org/standard/62021.html
@@ -375,8 +374,8 @@ public class QRCodePayload {
             let modeLength: UInt = 4
             let modeBits = try bitstream.readUInt8(bitCount: modeLength)
             guard let mode = Mode(rawValue: UInt(modeBits)) else {
+                let ignoreUnknownMode = CurrentAppContext().isRunningTests
                 if ignoreUnknownMode {
-                    owsAssertDebug(CurrentAppContext().isRunningTests)
                     Logger.error("Invalid mode: \(modeBits)")
                     return nil
                 } else {

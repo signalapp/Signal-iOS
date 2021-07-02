@@ -118,8 +118,7 @@ class QRCodeParserTest: SignalBaseTest {
             Logger.verbose("qrCodeData: \(qrCodeData.hexadecimalString)")
             guard let payload = QRCodePayload.parse(
                     codewords: qrCodeData,
-                    qrCodeVersion: symbolVersion,
-                    ignoreUnknownMode: true) else {
+                    qrCodeVersion: symbolVersion) else {
                 if expectedMode != 4 {
                     Logger.warn("Could not parse payload; expected for non-.byte mode.")
                 } else {
