@@ -26,8 +26,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
-        // use the uiDatabase to be notified of DB writes so we can verify the expected
-        // changes occur
+        // Use DatabaseChangesObserver to be notified of DB writes so we
+        // can verify the expected changes occur.
         try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
 
         // ensure local client has necessary "registered" state

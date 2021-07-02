@@ -29,6 +29,8 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
 
+        // Use DatabaseChangesObserver to be notified of DB writes so we
+        // can verify the expected changes occur.
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
         databaseStorage.appendDatabaseChangesDelegate(dbObserver)
@@ -69,8 +71,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         identityManager.generateNewIdentityKey()
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
-        // use the uiDatabase to be notified of DB writes so we can verify the expected
-        // changes occur
         bobClient = FakeSignalClient.generate(uuid: bobUUID)
 
         write { transaction in
