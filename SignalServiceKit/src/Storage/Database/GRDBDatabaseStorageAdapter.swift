@@ -317,7 +317,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
         return try pool.read { database in
             try autoreleasepool {
-                return try block(GRDBReadTransaction(database: database))
+                try block(GRDBReadTransaction(database: database))
             }
         }
     }
@@ -341,7 +341,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
         return try pool.read { database in
             try autoreleasepool {
-                return try block(GRDBReadTransaction(database: database))
+                try block(GRDBReadTransaction(database: database))
             }
         }
     }
