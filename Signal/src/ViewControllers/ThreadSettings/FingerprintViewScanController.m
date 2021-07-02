@@ -3,7 +3,6 @@
 //
 
 #import "FingerprintViewScanController.h"
-#import "OWSQRCodeScanningViewController.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -18,13 +17,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FingerprintViewScanController () <OWSQRScannerDelegate>
+@interface FingerprintViewScanController () <QRCodeScanDelegate>
 
 @property (nonatomic) SignalServiceAddress *recipientAddress;
 @property (nonatomic) NSData *identityKey;
 @property (nonatomic) OWSFingerprint *fingerprint;
 @property (nonatomic) NSString *contactName;
-@property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+@property (nonatomic) QRCodeScanViewController *qrCodeScanViewController;
 
 @end
 
@@ -67,18 +66,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.view.backgroundColor = UIColor.blackColor;
 
-    self.qrScanningController = [OWSQRCodeScanningViewController new];
-    self.qrScanningController.scanDelegate = self;
-    [self.view addSubview:self.qrScanningController.view];
-    [self.qrScanningController.view autoPinWidthToSuperview];
-    [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    self.qrCodeScanViewController =
+        [[QRCodeScanViewController alloc] initWithAppearance:QRCodeScanViewAppearanceNormal];
+    self.qrCodeScanViewController.delegate = self;
+    [self.view addSubview:self.qrCodeScanViewController.view];
+    [self.qrCodeScanViewController.view autoPinWidthToSuperview];
+    [self.qrCodeScanViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self addChildViewController:self.qrCodeScanViewController];
 
     UIView *footer = [UIView new];
     footer.backgroundColor = [UIColor colorWithWhite:0.25f alpha:1.f];
     [self.view addSubview:footer];
     [footer autoPinWidthToSuperview];
     [footer autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [footer autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.qrScanningController.view];
+    [footer autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.qrCodeScanViewController.view];
 
     UILabel *cameraInstructionLabel = [UILabel new];
     cameraInstructionLabel.text
@@ -95,36 +96,36 @@ NS_ASSUME_NONNULL_BEGIN
     [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:instructionsVMargin];
 }
 
-#pragma mark - Action
+#pragma mark - QRCodeScanDelegate
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)qrCodeScanViewDismiss:(QRCodeScanViewController *)qrCodeScanViewController
 {
-    [super viewDidAppear:animated];
+    OWSAssertIsOnMainThread();
 
-    [self ows_askForCameraPermissions:^(BOOL granted) {
-        if (granted) {
-            // Camera stops capturing when "sharing" while in capture mode.
-            // Also, it's less obvious whats being "shared" at this point,
-            // so just disable sharing when in capture mode.
-
-            OWSLogInfo(@"Showing Scanner");
-
-            [self.qrScanningController startCapture];
-        } else {
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-    }];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark - OWSQRScannerDelegate
-
-- (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithData:(NSData *)data
+- (QRCodeScanOutcome)qrCodeScanViewScanned:(QRCodeScanViewController *)qrCodeScanViewController
+                                qrCodeData:(nullable NSData *)qrCodeData
+                              qrCodeString:(nullable NSString *)qrCodeString
 {
-    [self verifyCombinedFingerprintData:data];
+    OWSAssertIsOnMainThread();
+
+    if (qrCodeData == nil) {
+        // Only accept QR codes with a valid data (not string) payload.
+        return QRCodeScanOutcomeContinueScanning;
+    }
+
+    [self verifyCombinedFingerprintData:qrCodeData];
+
+    // Stop scanning even if verification failed.
+    return QRCodeScanOutcomeStopScanning;
 }
 
 - (void)verifyCombinedFingerprintData:(NSData *)combinedFingerprintData
 {
+    OWSAssertIsOnMainThread();
+    
     NSError *error;
     if ([self.fingerprint matchesLogicalFingerprintsData:combinedFingerprintData error:&error]) {
         [self showVerificationSucceeded];
@@ -135,6 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showVerificationSucceeded
 {
+    OWSAssertIsOnMainThread();
+    
     [self.class showVerificationSucceeded:self
                               identityKey:self.identityKey
                          recipientAddress:self.recipientAddress
@@ -144,15 +147,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showVerificationFailedWithError:(NSError *)error
 {
-
+    OWSAssertIsOnMainThread();
+    
     [self.class showVerificationFailedWithError:error
         viewController:self
-        retryBlock:^{
-            [self.qrScanningController startCapture];
-        }
-        cancelBlock:^{
-            [self.navigationController popViewControllerAnimated:YES];
-        }
+        retryBlock:^{ [self.qrCodeScanViewController tryToStartScanning]; }
+        cancelBlock:^{ [self.navigationController popViewControllerAnimated:YES]; }
         tag:self.logTag];
 }
 
@@ -162,6 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
                       contactName:(NSString *)contactName
                               tag:(NSString *)tag
 {
+    OWSAssertIsOnMainThread();    
     OWSAssertDebug(viewController);
     OWSAssertDebug(identityKey.length > 0);
     OWSAssertDebug(address.isValid);
@@ -235,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dismissViewControllerAnimated:(BOOL)animated completion:(nullable void (^)(void))completion
 {
-    self.qrScanningController.view.hidden = YES;
+    self.qrCodeScanViewController.view.hidden = YES;
 
     [super dismissViewControllerAnimated:animated completion:completion];
 }

@@ -14,7 +14,7 @@ public class PaymentsQRScanViewController: OWSViewController {
 
     private weak var delegate: PaymentsQRScanDelegate?
 
-    private let qrScanningController = OWSQRCodeScanningViewController()
+    private let qrCodeScanViewController = QRCodeScanViewController(appearance: .normal)
 
     public required init(delegate: PaymentsQRScanDelegate) {
         self.delegate = delegate
@@ -44,29 +44,14 @@ public class PaymentsQRScanViewController: OWSViewController {
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        self.ows_askForCameraPermissions { [weak self] granted in
-            guard let self = self else {
-                return
-            }
-            if granted {
-            // Camera stops capturing when "sharing" while in capture mode.
-            // Also, it's less obvious whats being "shared" at this point,
-            // so just disable sharing when in capture mode.
-
-                Logger.info("Showing Scanner")
-                self.qrScanningController.startCapture()
-            } else {
-                self.didTapCancel()
-            }
-        }
     }
 
     private func createViews() {
         view.backgroundColor = .ows_black
 
-        qrScanningController.scanDelegate = self
-        let qrView = qrScanningController.view!
+        qrCodeScanViewController.delegate = self
+        addChild(qrCodeScanViewController)
+        let qrView = qrCodeScanViewController.view!
         view.addSubview(qrView)
         qrView.autoPinWidthToSuperview()
         qrView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
@@ -102,34 +87,40 @@ public class PaymentsQRScanViewController: OWSViewController {
 
 // MARK: -
 
-extension PaymentsQRScanViewController: OWSQRScannerDelegate {
-    public func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith data: Data) {
-        if let dataString = String(data: data, encoding: .utf8) {
-            if nil != PaymentsImpl.parse(publicAddressBase58: dataString) {
-                delegate?.didScanPaymentAddressQRCode(publicAddressBase58: dataString)
+extension PaymentsQRScanViewController: QRCodeScanDelegate {
+
+    func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController) {
+        AssertIsOnMainThread()
+
+        navigationController?.popViewController(animated: true)
+    }
+
+    func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
+                               qrCodeData: Data?,
+                               qrCodeString: String?) -> QRCodeScanOutcome {
+        AssertIsOnMainThread()
+
+        // Prefer qrCodeString to qrCodeData.  The only valid payload
+        // is a public address encoded as either b58 and/or URL.
+        // Either way, the payload will be a utf8 string that iOS
+        // can decode.  iOS supports many more QR code modes and
+        // configurations than QRCodePayload, so the qrCodeString is
+        // more reliable than qrCodeData.
+        if let qrCodeString = qrCodeString {
+            if nil != PaymentsImpl.parse(publicAddressBase58: qrCodeString) {
+                delegate?.didScanPaymentAddressQRCode(publicAddressBase58: qrCodeString)
                 navigationController?.popViewController(animated: true)
-                return
-            } else if let publicAddressUrl = URL(string: dataString),
+                return .stopScanning
+            } else if let publicAddressUrl = URL(string: qrCodeString),
                       let publicAddress = PaymentsImpl.parseAsPublicAddress(url: publicAddressUrl) {
                 let publicAddressBase58 = PaymentsImpl.formatAsBase58(publicAddress: publicAddress)
                 delegate?.didScanPaymentAddressQRCode(publicAddressBase58: publicAddressBase58)
                 navigationController?.popViewController(animated: true)
-                return
+                return .stopScanning
             }
         }
         OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS",
                                                                   comment: "Error indicating that a QR code does not contain a valid MobileCoin public address."))
-    }
-
-    public func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
-        guard let publicAddressUrl = URL(string: string),
-              let publicAddress = PaymentsImpl.parseAsPublicAddress(url: publicAddressUrl) else {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL",
-                                                                      comment: "Error indicating that a QR code does not contain a valid MobileCoin public address URL."))
-            return
-        }
-        let publicAddressBase58 = PaymentsImpl.formatAsBase58(publicAddress: publicAddress)
-        delegate?.didScanPaymentAddressQRCode(publicAddressBase58: publicAddressBase58)
-        navigationController?.popViewController(animated: true)
-    }
+        return .continueScanning
+   }
 }
