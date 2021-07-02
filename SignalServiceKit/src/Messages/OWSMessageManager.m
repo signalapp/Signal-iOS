@@ -874,7 +874,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self.earlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptMessage.unwrappedType
                                                                         sender:envelope.sourceAddress
                                                                      timestamp:envelope.timestamp
-                                                    associatedMessageTimestamp:earlyTimestamp];
+                                                    associatedMessageTimestamp:earlyTimestamp
+                                                                   transaction:transaction];
     }
 }
 
@@ -1511,7 +1512,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                   wasReceivedByUD:wasReceivedByUD
                                           serverDeliveryTimestamp:serverDeliveryTimestamp
                                        associatedMessageTimestamp:dataMessage.reaction.timestamp
-                                          associatedMessageAuthor:dataMessage.reaction.authorAddress];
+                                          associatedMessageAuthor:dataMessage.reaction.authorAddress
+                                                      transaction:transaction];
                     break;
             }
         } else if (dataMessage.delete != nil) {
@@ -1547,7 +1549,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                   wasReceivedByUD:wasReceivedByUD
                                           serverDeliveryTimestamp:serverDeliveryTimestamp
                                        associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                          associatedMessageAuthor:envelope.sourceAddress];
+                                          associatedMessageAuthor:envelope.sourceAddress
+                                                      transaction:transaction];
                     break;
             }
         } else if (dataMessage.groupCallUpdate != nil) {
@@ -1616,10 +1619,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                             readTimestamp:envelope.timestamp
                                                               transaction:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
-            [self.earlyMessageManager
-                recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
-                                         associatedMessageTimestamp:readReceiptProto.timestamp
-                                            associatedMessageAuthor:readReceiptProto.senderAddress];
+            [self.earlyMessageManager recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
+                                                               associatedMessageTimestamp:readReceiptProto.timestamp
+                                                                  associatedMessageAuthor:readReceiptProto.senderAddress
+                                                                              transaction:transaction];
         }
     } else if (syncMessage.viewed.count > 0) {
         OWSLogInfo(@"Received %lu viewed receipt(s)", (unsigned long)syncMessage.viewed.count);
@@ -1631,7 +1634,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self.earlyMessageManager
                 recordEarlyViewedReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
                                            associatedMessageTimestamp:viewedReceiptProto.timestamp
-                                              associatedMessageAuthor:viewedReceiptProto.senderAddress];
+                                              associatedMessageAuthor:viewedReceiptProto.senderAddress
+                                                          transaction:transaction];
         }
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
@@ -1660,7 +1664,8 @@ NS_ASSUME_NONNULL_BEGIN
                                               wasReceivedByUD:wasReceivedByUD
                                       serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:syncMessage.viewOnceOpen.timestamp
-                                      associatedMessageAuthor:syncMessage.viewOnceOpen.senderAddress];
+                                      associatedMessageAuthor:syncMessage.viewOnceOpen.senderAddress
+                                                  transaction:transaction];
                 break;
         }
     } else if (syncMessage.configuration) {
@@ -1857,7 +1862,8 @@ NS_ASSUME_NONNULL_BEGIN
                                               wasReceivedByUD:wasReceivedByUD
                                       serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:dataMessage.reaction.timestamp
-                                      associatedMessageAuthor:dataMessage.reaction.authorAddress];
+                                      associatedMessageAuthor:dataMessage.reaction.authorAddress
+                                                  transaction:transaction];
                 break;
         }
 
@@ -1884,7 +1890,8 @@ NS_ASSUME_NONNULL_BEGIN
                                               wasReceivedByUD:wasReceivedByUD
                                       serverDeliveryTimestamp:serverDeliveryTimestamp
                                    associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                      associatedMessageAuthor:envelope.sourceAddress];
+                                      associatedMessageAuthor:envelope.sourceAddress
+                                                  transaction:transaction];
                 break;
         }
         return nil;
