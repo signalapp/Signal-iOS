@@ -185,12 +185,12 @@ public class SDSDatabaseStorage: SDSTransactable {
     // MARK: - Observation
 
     @objc
-    public func appendUIDatabaseSnapshotDelegate(_ snapshotDelegate: UIDatabaseSnapshotDelegate) {
+    public func appendDatabaseChangesDelegate(_ databaseChangesDelegate: DatabaseChangesDelegate) {
         guard let uiDatabaseObserver = grdbStorage.uiDatabaseObserver else {
             owsFailDebug("Missing uiDatabaseObserver.")
             return
         }
-        uiDatabaseObserver.appendSnapshotDelegate(snapshotDelegate)
+        uiDatabaseObserver.appendDatabaseChangesDelegate(databaseChangesDelegate)
     }
 
     // MARK: - Id Mapping

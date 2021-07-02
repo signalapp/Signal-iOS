@@ -7,11 +7,11 @@ import GRDB
 
 // TODO:
 @objc
-public protocol UIDatabaseSnapshotDelegate: AnyObject {
-    func uiDatabaseSnapshotWillUpdate()
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges)
-    func uiDatabaseSnapshotDidUpdateExternally()
-    func uiDatabaseSnapshotDidReset()
+public protocol DatabaseChangesDelegate: AnyObject {
+    func databaseChangesWillUpdate()
+    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges)
+    func databaseChangesDidUpdateExternally()
+    func databaseChangesDidReset()
 }
 
 // MARK: -
@@ -42,9 +42,6 @@ func AssertHasUIDatabaseObserverLock() {
 public class UIDatabaseObserver: NSObject {
 
     @objc
-    public static let didUpdateUIDatabaseSnapshotNotification = Notification.Name("didUpdateUIDatabaseSnapshot")
-
-    @objc
     public static let databaseDidCommitInteractionChangeNotification = Notification.Name("databaseDidCommitInteractionChangeNotification")
 
     public static let kMaxIncrementalRowChanges = 200
@@ -63,7 +60,7 @@ public class UIDatabaseObserver: NSObject {
     private static var _hasUIDatabaseObserverLock = AtomicBool(false)
 
     static var hasUIDatabaseObserverLock: Bool {
-        return _hasUIDatabaseObserverLock.get()
+        _hasUIDatabaseObserverLock.get()
     }
 
     // Toggle to skip expensive observations resulting
@@ -82,17 +79,17 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
-    private var _snapshotDelegates: [Weak<UIDatabaseSnapshotDelegate>] = []
-    private var snapshotDelegates: [UIDatabaseSnapshotDelegate] {
-        return _snapshotDelegates.compactMap { $0.value }
+    private var _databaseChangesDelegates: [Weak<DatabaseChangesDelegate>] = []
+    private var databaseChangesDelegates: [DatabaseChangesDelegate] {
+        return _databaseChangesDelegates.compactMap { $0.value }
     }
 
-    func appendSnapshotDelegate(_ snapshotDelegate: UIDatabaseSnapshotDelegate) {
+    func appendDatabaseChangesDelegate(_ databaseChangesDelegate: DatabaseChangesDelegate) {
         let append = { [weak self] in
             guard let self = self else {
                 return
             }
-            self._snapshotDelegates = self._snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
+            self._databaseChangesDelegates = self._databaseChangesDelegates.filter { $0.value != nil} + [Weak(value: databaseChangesDelegate)]
         }
         if CurrentAppContext().isRunningTests {
             append()
@@ -218,8 +215,8 @@ public class UIDatabaseObserver: NSObject {
         AssertIsOnMainThread()
         Logger.verbose("")
 
-        for delegate in snapshotDelegates {
-            delegate.uiDatabaseSnapshotDidUpdateExternally()
+        for delegate in databaseChangesDelegates {
+            delegate.databaseChangesDidUpdateExternally()
         }
     }
 }
@@ -494,18 +491,14 @@ extension UIDatabaseObserver: TransactionObserver {
         lastSnapshotUpdateDate = Date()
 
         Logger.verbose("databaseSnapshotWillUpdate")
-        for delegate in snapshotDelegates {
-            delegate.uiDatabaseSnapshotWillUpdate()
+        for delegate in databaseChangesDelegates {
+            delegate.databaseChangesWillUpdate()
         }
 
         // Checkpoint the WAL
         if canCheckpoint {
             checkpointIfNecessary()
         }
-
-        // We post this notification sync so that the read model caches
-        // can discard their contents.
-        NotificationCenter.default.post(name: Self.didUpdateUIDatabaseSnapshotNotification, object: nil)
 
         defer {
             committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
@@ -521,12 +514,12 @@ extension UIDatabaseObserver: TransactionObserver {
             default:
                 owsFailDebug("unknown error: \(lastError)")
             }
-            for delegate in self.snapshotDelegates {
-                delegate.uiDatabaseSnapshotDidReset()
+            for delegate in self.databaseChangesDelegates {
+                delegate.databaseChangesDidReset()
             }
         } else {
-            for delegate in snapshotDelegates {
-                delegate.uiDatabaseSnapshotDidUpdate(databaseChanges: committedChanges)
+            for delegate in databaseChangesDelegates {
+                delegate.databaseChangesDidUpdate(databaseChanges: committedChanges)
             }
         }
     }

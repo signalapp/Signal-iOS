@@ -371,7 +371,7 @@ class ViewOnceMessageViewController: OWSViewController {
     var videoPlayer: OWSVideoPlayer?
 
     func setupDatabaseObservation() {
-        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        databaseStorage.appendDatabaseChangesDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),
@@ -430,24 +430,24 @@ class ViewOnceMessageViewController: OWSViewController {
 
 // MARK: -
 
-extension ViewOnceMessageViewController: UIDatabaseSnapshotDelegate {
-    func uiDatabaseSnapshotWillUpdate() {
+extension ViewOnceMessageViewController: DatabaseChangesDelegate {
+    func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
-        AssertIsOnMainThread()
-
-        dismissIfRemoved()
-    }
-
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
 
         dismissIfRemoved()
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        dismissIfRemoved()
+    }
+
+    func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         dismissIfRemoved()

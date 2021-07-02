@@ -77,7 +77,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         super.init()
 
         callService.addObserver(observer: self, syncStateImmediately: false)
-        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        databaseStorage.appendDatabaseChangesDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
     }
@@ -1020,10 +1020,10 @@ extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {
     }
 }
 
-extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
-    public func uiDatabaseSnapshotWillUpdate() {}
+extension ConversationSettingsViewController: DatabaseChangesDelegate {
+    public func databaseChangesWillUpdate() {}
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
 
         var didUpdate = false
@@ -1043,7 +1043,7 @@ extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
         }
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         updateRecentAttachments()
@@ -1051,7 +1051,7 @@ extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
         updateTableContents()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         updateRecentAttachments()

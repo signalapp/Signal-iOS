@@ -32,7 +32,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     }
 
     private func addObservers() {
-        Self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        Self.databaseStorage.appendDatabaseChangesDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateSucceeded),
@@ -303,14 +303,14 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension LinkedDevicesTableViewController: UIDatabaseSnapshotDelegate {
+extension LinkedDevicesTableViewController: DatabaseChangesDelegate {
 
-    func uiDatabaseSnapshotWillUpdate() {
+    func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
@@ -321,14 +321,14 @@ extension LinkedDevicesTableViewController: UIDatabaseSnapshotDelegate {
         updateDeviceList()
     }
 
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
         updateDeviceList()
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidReset() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 

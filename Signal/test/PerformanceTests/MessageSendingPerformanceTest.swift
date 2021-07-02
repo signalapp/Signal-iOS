@@ -43,7 +43,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
         // Observe DB changes so we can know when all the async processing is done
         let dbObserver = BlockObserver(block: { self.dbObserverBlock?() })
         self.dbObserver = dbObserver
-        databaseStorage.appendUIDatabaseSnapshotDelegate(dbObserver)
+        databaseStorage.appendDatabaseChangesDelegate(dbObserver)
     }
 
     override func tearDown() {
@@ -183,25 +183,25 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
     }
 }
 
-private class BlockObserver: UIDatabaseSnapshotDelegate {
+private class BlockObserver: DatabaseChangesDelegate {
     let block: () -> Void
     init(block: @escaping () -> Void) {
         self.block = block
     }
 
-    func uiDatabaseSnapshotWillUpdate() {
+    func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         block()
     }
 
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         block()
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidReset() {
         block()
     }
 }

@@ -226,7 +226,7 @@ class MediaGallery: Dependencies {
             owsFailDebug("Invalid data store.")
             return
         }
-        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        databaseStorage.appendDatabaseChangesDelegate(self)
     }
 
     // MARK: - 
@@ -986,24 +986,24 @@ class MediaGallery: Dependencies {
     }
 }
 
-extension MediaGallery: UIDatabaseSnapshotDelegate {
+extension MediaGallery: DatabaseChangesDelegate {
 
-    func uiDatabaseSnapshotWillUpdate() {
+    func databaseChangesWillUpdate() {
         // no-op
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         // Process deletions before insertions,
         // because we can modify our existing model for deletions but have to reset with insertions.
         process(deletedAttachmentIds: databaseChanges.attachmentDeletedUniqueIds)
         process(newAttachmentIds: databaseChanges.attachmentUniqueIds)
     }
 
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         // no-op
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidReset() {
         // no-op
     }
 }

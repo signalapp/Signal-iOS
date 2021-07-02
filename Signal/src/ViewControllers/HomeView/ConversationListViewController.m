@@ -52,7 +52,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
-    UIDatabaseSnapshotDelegate,
+    DatabaseChangesDelegate,
     OWSBlockListCacheDelegate,
     CameraFirstCaptureDelegate,
     OWSGetStartedBannerViewControllerDelegate>
@@ -152,7 +152,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
-    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
+    [self.databaseStorage appendDatabaseChangesDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -2134,13 +2134,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - DatabaseSnapshotDelegate
 
-- (void)uiDatabaseSnapshotWillUpdate
+- (void)databaseChangesWillUpdate
 {
     OWSAssertIsOnMainThread();
     [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
 }
 
-- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
@@ -2185,7 +2185,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateReminderViews];
 }
 
-- (void)uiDatabaseSnapshotDidUpdateExternally
+- (void)databaseChangesDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
 
@@ -2202,7 +2202,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-- (void)uiDatabaseSnapshotDidReset
+- (void)databaseChangesDidReset
 {
     OWSAssertIsOnMainThread();
     if (self.shouldObserveDBModifications) {

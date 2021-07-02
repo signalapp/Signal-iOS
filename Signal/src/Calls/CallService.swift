@@ -140,7 +140,7 @@ public final class CallService: NSObject {
             object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
+            SDSDatabaseStorage.shared.appendDatabaseChangesDelegate(self)
         }
     }
 
@@ -829,10 +829,10 @@ extension CallService {
     }
 }
 
-extension CallService: UIDatabaseSnapshotDelegate {
-    public func uiDatabaseSnapshotWillUpdate() {}
+extension CallService: DatabaseChangesDelegate {
+    public func databaseChangesWillUpdate() {}
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
@@ -843,14 +843,14 @@ extension CallService: UIDatabaseSnapshotDelegate {
         updateGroupMembersForCurrentCallIfNecessary()
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 

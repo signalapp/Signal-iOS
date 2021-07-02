@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/TSAccountManager.h>
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+OWS_HTTP.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
@@ -16,7 +17,6 @@
 #import <SignalServiceKit/RemoteAttestation.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -194,7 +194,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 //   _Never_ open a transaction within a @synchronized(self) block.
 // * If you update any account state in the database, reload the cache
 //   immediately.
-@interface TSAccountManager () <UIDatabaseSnapshotDelegate>
+@interface TSAccountManager () <DatabaseChangesDelegate>
 
 // This property should only be accessed while @synchronized on self.
 //
@@ -227,7 +227,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         if (!CurrentAppContext().isMainApp) {
-            [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
+            [self.databaseStorage appendDatabaseChangesDelegate:self];
         }
     });
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self updateAccountAttributesIfNecessary]; });
@@ -1038,15 +1038,15 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                                                            userInfo:nil];
 }
 
-#pragma mark - UIDatabaseSnapshotDelegate
+#pragma mark - DatabaseChangesDelegate
 
-- (void)uiDatabaseSnapshotWillUpdate
+- (void)databaseChangesWillUpdate
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 }
 
-- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -1054,7 +1054,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     // Do nothing.
 }
 
-- (void)uiDatabaseSnapshotDidUpdateExternally
+- (void)databaseChangesDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -1067,7 +1067,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     [self loadAccountStateWithSneakyTransaction];
 }
 
-- (void)uiDatabaseSnapshotDidReset
+- (void)databaseChangesDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

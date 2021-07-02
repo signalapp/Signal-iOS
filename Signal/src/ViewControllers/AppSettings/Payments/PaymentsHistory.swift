@@ -103,7 +103,7 @@ class PaymentsHistoryDataSource: Dependencies {
     }
 
     public init() {
-        Self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        Self.databaseStorage.appendDatabaseChangesDelegate(self)
 
         updateContent()
     }
@@ -181,10 +181,10 @@ class PaymentsHistoryDataSource: Dependencies {
 
 // MARK: -
 
-extension PaymentsHistoryDataSource: UIDatabaseSnapshotDelegate {
-    public func uiDatabaseSnapshotWillUpdate() {}
+extension PaymentsHistoryDataSource: DatabaseChangesDelegate {
+    public func databaseChangesWillUpdate() {}
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) else {
@@ -194,13 +194,13 @@ extension PaymentsHistoryDataSource: UIDatabaseSnapshotDelegate {
         updateContent()
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         updateContent()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         updateContent()

@@ -17,7 +17,7 @@ class MockObserver {
     init() {
         AssertIsOnMainThread()
 
-        SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
+        SDSDatabaseStorage.shared.appendDatabaseChangesDelegate(self)
     }
 
     func set(expectation: XCTestExpectation) {
@@ -36,13 +36,13 @@ class MockObserver {
 
 // MARK: -
 
-extension MockObserver: UIDatabaseSnapshotDelegate {
+extension MockObserver: DatabaseChangesDelegate {
 
-    func uiDatabaseSnapshotWillUpdate() {
+    func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
 
         updateCount += 1
@@ -52,7 +52,7 @@ extension MockObserver: UIDatabaseSnapshotDelegate {
         expectation = nil
     }
 
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
@@ -63,7 +63,7 @@ extension MockObserver: UIDatabaseSnapshotDelegate {
         expectation = nil
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         Logger.verbose("")

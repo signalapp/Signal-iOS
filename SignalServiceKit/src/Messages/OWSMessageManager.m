@@ -51,7 +51,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageManager () <UIDatabaseSnapshotDelegate>
+@interface OWSMessageManager () <DatabaseChangesDelegate>
 
 @end
 
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startObserving
 {
-    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
+    [self.databaseStorage appendDatabaseChangesDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(databaseDidCommitInteractionChange)
@@ -103,15 +103,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - UIDatabaseSnapshotDelegate
+#pragma mark - DatabaseChangesDelegate
 
-- (void)uiDatabaseSnapshotWillUpdate
+- (void)databaseChangesWillUpdate
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 }
 
-- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
-- (void)uiDatabaseSnapshotDidUpdateExternally
+- (void)databaseChangesDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
-- (void)uiDatabaseSnapshotDidReset
+- (void)databaseChangesDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
