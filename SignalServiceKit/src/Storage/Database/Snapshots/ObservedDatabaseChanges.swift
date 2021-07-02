@@ -6,7 +6,7 @@ import Foundation
 import GRDB
 
 @objc
-public protocol UIDatabaseChanges: AnyObject {
+public protocol DatabaseChanges: AnyObject {
     typealias UniqueId = String
 
     var threadUniqueIds: Set<UniqueId> { get }
@@ -380,7 +380,7 @@ private struct ObservedModelChanges {
 
 // MARK: - Published state
 
-extension ObservedDatabaseChanges: UIDatabaseChanges {
+extension ObservedDatabaseChanges: DatabaseChanges {
 
     var threadUniqueIds: Set<UniqueId> {
         get {
@@ -477,7 +477,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
     func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool {
         // GRDB: SDSKeyValueStore.dataStoreCollection
         return (didUpdate(collection: keyValueStore.collection) ||
-            didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
+                    didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
     }
 
     @objc(didUpdateInteraction:)
@@ -499,7 +499,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                                            uniqueIds: threads.uniqueIds,
                                                            rowIdToUniqueIdMap: threads.rowIdToUniqueIdMap,
                                                            tableName: "\(ThreadRecord.databaseTableName)",
-            uniqueIdColumnName: "\(threadColumn: .uniqueId)"))
+                                                           uniqueIdColumnName: "\(threadColumn: .uniqueId)"))
 
         // We need to convert all interaction "row ids" to "unique ids".
         interactions.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
@@ -507,7 +507,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                                                 uniqueIds: interactions.uniqueIds,
                                                                 rowIdToUniqueIdMap: interactions.rowIdToUniqueIdMap,
                                                                 tableName: "\(InteractionRecord.databaseTableName)",
-            uniqueIdColumnName: "\(interactionColumn: .uniqueId)"))
+                                                                uniqueIdColumnName: "\(interactionColumn: .uniqueId)"))
 
         // We need to convert all attachment "row ids" to "unique ids".
         attachments.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
@@ -515,7 +515,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                                                uniqueIds: attachments.uniqueIds,
                                                                rowIdToUniqueIdMap: attachments.rowIdToUniqueIdMap,
                                                                tableName: "\(AttachmentRecord.databaseTableName)",
-            uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
+                                                               uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
 
         // We need to convert _deleted_ attachment "row ids" to "unique ids".
         attachments.append(deletedUniqueIds: try mapRowIdsToUniqueIds(db: db,

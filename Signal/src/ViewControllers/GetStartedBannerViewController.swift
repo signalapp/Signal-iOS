@@ -309,7 +309,7 @@ extension GetStartedBannerViewController {
 extension GetStartedBannerViewController: DatabaseChangesDelegate {
     public func databaseChangesWillUpdate() {}
 
-    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
         if databaseChanges.didUpdateThreads {

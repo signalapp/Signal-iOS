@@ -55,20 +55,20 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     func testPerf_messageSending_contactThread() {
         // This is an example of a performance test case.
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             sendMessages_contactThread()
         }
-        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangesObserver()
     }
 
     func testPerf_messageSending_groupThread() {
         // This is an example of a performance test case.
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             sendMessages_groupThread()
         }
-        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangesObserver()
     }
 
     func sendMessages_groupThread() {
@@ -193,7 +193,7 @@ private class BlockObserver: DatabaseChangesDelegate {
         AssertIsOnMainThread()
     }
 
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         block()
     }
 

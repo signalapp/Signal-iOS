@@ -9,7 +9,7 @@ import GRDB
 @objc
 public protocol DatabaseChangesDelegate: AnyObject {
     func databaseChangesWillUpdate()
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges)
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)
     func databaseChangesDidUpdateExternally()
     func databaseChangesDidReset()
 }

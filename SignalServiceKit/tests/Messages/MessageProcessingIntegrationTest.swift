@@ -28,7 +28,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         // use the uiDatabase to be notified of DB writes so we can verify the expected
         // changes occur
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
 
         // ensure local client has necessary "registered" state
         identityManager.generateNewIdentityKey()
@@ -39,7 +39,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     }
 
     override func tearDown() {
-        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangesObserver()
 
         super.tearDown()
     }

@@ -588,7 +588,7 @@ extension ConversationSearchViewController: DatabaseChangesDelegate {
         AssertIsOnMainThread()
     }
 
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdateThreads || databaseChanges.didUpdateInteractions else {

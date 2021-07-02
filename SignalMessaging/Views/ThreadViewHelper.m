@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(AppReadiness.isAppReady);
 }
 
-- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

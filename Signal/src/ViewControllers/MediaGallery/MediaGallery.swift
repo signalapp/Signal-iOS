@@ -992,7 +992,7 @@ extension MediaGallery: DatabaseChangesDelegate {
         // no-op
     }
 
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         // Process deletions before insertions,
         // because we can modify our existing model for deletions but have to reset with insertions.
         process(deletedAttachmentIds: databaseChanges.attachmentDeletedUniqueIds)

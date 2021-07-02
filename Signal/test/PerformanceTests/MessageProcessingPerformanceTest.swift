@@ -27,7 +27,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
 
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
@@ -38,7 +38,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         super.tearDown()
 
         self.dbObserver = nil
-        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangesObserver()
     }
 
     // MARK: - Tests
@@ -153,7 +153,7 @@ private class BlockObserver: DatabaseChangesDelegate {
         AssertIsOnMainThread()
     }
 
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         block()
     }
 

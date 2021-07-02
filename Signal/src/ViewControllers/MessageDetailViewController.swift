@@ -657,7 +657,7 @@ extension MessageDetailViewController: DatabaseChangesDelegate {
         AssertIsOnMainThread()
     }
 
-    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdate(interaction: self.message) else {

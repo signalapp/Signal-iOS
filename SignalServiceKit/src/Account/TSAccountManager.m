@@ -1046,7 +1046,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     OWSAssertDebug(AppReadiness.isAppReady);
 }
 
-- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

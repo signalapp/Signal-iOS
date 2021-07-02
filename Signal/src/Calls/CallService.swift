@@ -832,7 +832,7 @@ extension CallService {
 extension CallService: DatabaseChangesDelegate {
     public func databaseChangesWillUpdate() {}
 
-    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 

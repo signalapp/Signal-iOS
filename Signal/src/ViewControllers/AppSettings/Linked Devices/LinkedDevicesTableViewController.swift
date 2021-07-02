@@ -310,7 +310,7 @@ extension LinkedDevicesTableViewController: DatabaseChangesDelegate {
         owsAssertDebug(AppReadiness.isAppReady)
     }
 
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 

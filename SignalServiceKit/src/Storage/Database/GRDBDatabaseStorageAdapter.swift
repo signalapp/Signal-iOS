@@ -129,14 +129,14 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // TODO:
     @objc
-    public func setupUIDatabase() throws {
+    public func setupDatabaseChangesObserver() throws {
         owsAssertDebug(self.databaseChangesObserver == nil)
 
         // DatabaseChangesObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
         let databaseChangesObserver = try DatabaseChangesObserver(pool: pool,
-                                                        checkpointingQueue: storage.checkpointingQueue)
+                                                                  checkpointingQueue: storage.checkpointingQueue)
         self.databaseChangesObserver = databaseChangesObserver
 
         try pool.write { db in
@@ -150,7 +150,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         databaseChangesObserver?.forceUpdate()
     }
 
-    func testing_tearDownUIDatabase() {
+    func testing_tearDownDatabaseChangesObserver() {
         // DatabaseChangesObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
@@ -159,7 +159,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     func setup() throws {
         MediaGalleryManager.setup(storage: self)
-        try setupUIDatabase()
+        try setupDatabaseChangesObserver()
     }
 
     // MARK: -
@@ -469,7 +469,7 @@ private struct GRDBStorage {
         self.dbURL = dbURL
 
         poolConfiguration = Self.buildConfiguration(keyspec: keyspec,
-                                               isForCheckpointingQueue: false)
+                                                    isForCheckpointingQueue: false)
         checkpointingQueueConfiguration = Self.buildConfiguration(keyspec: keyspec,
                                                                   isForCheckpointingQueue: true)
 
@@ -497,8 +497,8 @@ private struct GRDBStorage {
         }
         // Useful when your app opens multiple databases
         configuration.label = (isForCheckpointingQueue
-            ? "GRDB Checkpointing"
-            : "GRDB Storage")
+                                ? "GRDB Checkpointing"
+                                : "GRDB Storage")
         configuration.maximumReaderCount = 10   // The default is 5
         configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
             // sleep N milliseconds

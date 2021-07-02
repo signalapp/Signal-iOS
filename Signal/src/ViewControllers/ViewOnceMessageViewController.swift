@@ -435,7 +435,7 @@ extension ViewOnceMessageViewController: DatabaseChangesDelegate {
         AssertIsOnMainThread()
     }
 
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         dismissIfRemoved()

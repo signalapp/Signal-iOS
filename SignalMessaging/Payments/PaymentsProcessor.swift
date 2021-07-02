@@ -258,7 +258,7 @@ extension PaymentsProcessor: DatabaseChangesDelegate {
         owsAssertDebug(AppReadiness.isAppReady)
     }
 
-    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 

@@ -177,7 +177,7 @@ extension LongTextViewController: DatabaseChangesDelegate {
         AssertIsOnMainThread()
     }
 
-    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdate(interaction: itemViewModel.interaction) else {

@@ -10,7 +10,7 @@ class MockObserver {
     var updateCount: UInt = 0
     var externalUpdateCount: UInt = 0
     var resetCount: UInt = 0
-    var lastChange: UIDatabaseChanges?
+    var lastChange: DatabaseChanges?
 
     private var expectation: XCTestExpectation?
 
@@ -42,7 +42,7 @@ extension MockObserver: DatabaseChangesDelegate {
         AssertIsOnMainThread()
     }
 
-    func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         updateCount += 1
@@ -83,7 +83,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBSyncWrite() {
 
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?
@@ -260,7 +260,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBAsyncWrite() {
 
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?

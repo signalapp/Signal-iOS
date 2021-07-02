@@ -511,7 +511,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 extension PaymentsDetailViewController: DatabaseChangesDelegate {
     public func databaseChangesWillUpdate() {}
 
-    public func databaseChangesDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) else {
