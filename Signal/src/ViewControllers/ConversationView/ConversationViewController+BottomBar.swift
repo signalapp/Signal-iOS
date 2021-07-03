@@ -43,6 +43,10 @@ public extension ConversationViewController {
     func ensureBottomViewType() {
         AssertIsOnMainThread()
 
+        guard viewState.selectionAnimationState == .idle else {
+            return
+        }
+
         bottomViewType = { () -> CVCBottomViewType in
             // The ordering of this method determines
             // precendence of the bottom views.
@@ -156,7 +160,7 @@ public extension ConversationViewController {
             messageDraft = oldInputToolbar.messageBody()
             voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {
-            Self.databaseStorage.uiRead { transaction in
+            Self.databaseStorage.read { transaction in
                 messageDraft = self.thread.currentDraft(with: transaction)
                 if VoiceMessageModel.hasDraft(for: self.thread, transaction: transaction) {
                     voiceMemoDraft = VoiceMessageModel(thread: self.thread)
@@ -179,7 +183,7 @@ public extension ConversationViewController {
     func reloadDraft() {
         AssertIsOnMainThread()
 
-        guard let messageDraft = (Self.databaseStorage.uiRead { transaction in
+        guard let messageDraft = (Self.databaseStorage.read { transaction in
             self.thread.currentDraft(with: transaction)
         }) else {
             return
@@ -301,6 +305,11 @@ public extension ConversationViewController {
             owsFailDebug("InputToolbar not yet ready.")
             return
         }
+
+        guard viewState.selectionAnimationState == .idle else {
+            return
+        }
+
         guard let inputToolbar = inputToolbar else {
             owsFailDebug("Missing inputToolbar.")
             return

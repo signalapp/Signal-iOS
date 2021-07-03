@@ -51,7 +51,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageManager () <UIDatabaseSnapshotDelegate>
+@interface OWSMessageManager () <DatabaseChangeDelegate>
 
 @end
 
@@ -80,12 +80,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startObserving
 {
-    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
+    [self.databaseStorage appendDatabaseChangeDelegate:self];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(databaseDidCommitInteractionChange)
-                                                 name:UIDatabaseObserver.databaseDidCommitInteractionChangeNotification
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(databaseDidCommitInteractionChange)
+               name:DatabaseChangeObserver.databaseDidCommitInteractionChangeNotification
+             object:nil];
 }
 
 - (void)databaseDidCommitInteractionChange
@@ -103,15 +104,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - UIDatabaseSnapshotDelegate
+#pragma mark - DatabaseChangeDelegate
 
-- (void)uiDatabaseSnapshotWillUpdate
+- (void)databaseChangesWillUpdate
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 }
 
-- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -123,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
-- (void)uiDatabaseSnapshotDidUpdateExternally
+- (void)databaseChangesDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -131,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSMessageUtils.shared updateApplicationBadgeCount];
 }
 
-- (void)uiDatabaseSnapshotDidReset
+- (void)databaseChangesDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

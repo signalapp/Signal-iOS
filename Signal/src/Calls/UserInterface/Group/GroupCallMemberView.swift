@@ -305,7 +305,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         hasBeenConfigured = true
         deferredReconfigTimer?.invalidate()
 
-        let profileImage = databaseStorage.uiRead { transaction -> UIImage? in
+        let profileImage = databaseStorage.read { transaction -> UIImage? in
             avatarView.configure(address: device.address,
                                  diameterPoints: avatarDiameter,
                                  localUserDisplayMode: .asUser,

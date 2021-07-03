@@ -52,7 +52,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
-    UIDatabaseSnapshotDelegate,
+    DatabaseChangeDelegate,
     OWSBlockListCacheDelegate,
     CameraFirstCaptureDelegate,
     OWSGetStartedBannerViewControllerDelegate>
@@ -152,7 +152,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
-    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
+    [self.databaseStorage appendDatabaseChangeDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -599,7 +599,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     } else if (self.unreadPaymentNotificationsCount == 1 && self.firstUnreadPaymentModel != nil) {
         self.paymentsReminderView.hidden = NO;
 
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self configureUnreadPaymentsBannerSingle:self.paymentsReminderView
                                          paymentModel:self.firstUnreadPaymentModel
                                           transaction:transaction];
@@ -957,7 +957,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     __block ThreadAssociatedData *threadAssociatedData;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         threadAssociatedData = [ThreadAssociatedData fetchOrDefaultForThread:selectedThread transaction:transaction];
     }];
 
@@ -986,7 +986,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     __block ThreadAssociatedData *threadAssociatedData;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         threadAssociatedData = [ThreadAssociatedData fetchOrDefaultForThread:selectedThread transaction:transaction];
     }];
 
@@ -1115,7 +1115,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [BenchManager benchWithTitle:@"ConversationListViewController#resetMappings"
                            block:^{
-                               [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                               [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                                    [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
                                                                                       transaction:transaction];
                                }];
@@ -1208,7 +1208,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     __block ThreadViewModel *_Nullable newThreadViewModel;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord
                                                  forConversationList:YES
                                                          transaction:transaction];
@@ -2132,15 +2132,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-#pragma mark - DatabaseSnapshotDelegate
+#pragma mark - DatabaseChangeDelegate
 
-- (void)uiDatabaseSnapshotWillUpdate
+- (void)databaseChangesWillUpdate
 {
     OWSAssertIsOnMainThread();
     [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
 }
 
-- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
@@ -2169,7 +2169,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     __block NSUInteger unreadPaymentNotificationsCount;
     __block TSPaymentModel *_Nullable firstUnreadPaymentModel;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         unreadPaymentNotificationsCount = [PaymentFinder unreadCountWithTransaction:transaction];
         firstUnreadPaymentModel = [PaymentFinder firstUnreadPaymentModelWithTransaction:transaction];
     }];
@@ -2185,7 +2185,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateReminderViews];
 }
 
-- (void)uiDatabaseSnapshotDidUpdateExternally
+- (void)databaseChangesDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
 
@@ -2202,7 +2202,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-- (void)uiDatabaseSnapshotDidReset
+- (void)databaseChangesDidReset
 {
     OWSAssertIsOnMainThread();
     if (self.shouldObserveDBModifications) {
@@ -2225,7 +2225,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     __block ThreadMappingDiff *_Nullable mappingDiff;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         mappingDiff =
             [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
                                                                             updatedItemIds:updatedItemIds
@@ -2315,7 +2315,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
 
     __block NSString *_Nullable changedThreadId;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         if (address.isValid) {
             changedThreadId = [TSContactThread getThreadWithContactAddress:address transaction:transaction].uniqueId;
         } else if (groupId.length > 0) {
@@ -2357,7 +2357,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (BOOL)shouldShowFirstConversationCue
 {
     __block BOOL hasSavedThread;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasSavedThread = [SSKPreferences hasSavedThreadWithTransaction:transaction];
     }];
 

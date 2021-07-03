@@ -371,7 +371,7 @@ class ViewOnceMessageViewController: OWSViewController {
     var videoPlayer: OWSVideoPlayer?
 
     func setupDatabaseObservation() {
-        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),
@@ -396,7 +396,7 @@ class ViewOnceMessageViewController: OWSViewController {
     private func dismissIfRemoved() {
         AssertIsOnMainThread()
 
-        let shouldDismiss: Bool = databaseStorage.uiRead { transaction in
+        let shouldDismiss: Bool = databaseStorage.read { transaction in
             let uniqueId = self.content.messageId
             guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                 return true
@@ -430,24 +430,24 @@ class ViewOnceMessageViewController: OWSViewController {
 
 // MARK: -
 
-extension ViewOnceMessageViewController: UIDatabaseSnapshotDelegate {
-    func uiDatabaseSnapshotWillUpdate() {
+extension ViewOnceMessageViewController: DatabaseChangeDelegate {
+    func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
-        AssertIsOnMainThread()
-
-        dismissIfRemoved()
-    }
-
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         dismissIfRemoved()
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        dismissIfRemoved()
+    }
+
+    func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         dismissIfRemoved()

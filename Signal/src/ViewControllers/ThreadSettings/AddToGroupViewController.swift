@@ -143,7 +143,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
     }
 
     private func didSelectGroup(_ groupThread: TSGroupThread) {
-        let shortName = databaseStorage.uiRead { transaction in
+        let shortName = databaseStorage.read { transaction in
             return Self.contactsManager.shortDisplayName(for: self.address, transaction: transaction)
         }
 

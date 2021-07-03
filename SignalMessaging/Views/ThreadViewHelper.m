@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ThreadViewHelper () <UIDatabaseSnapshotDelegate>
+@interface ThreadViewHelper () <DatabaseChangeDelegate>
 
 @property (nonatomic) BOOL shouldObserveDBModifications;
 
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
+    [self.databaseStorage appendDatabaseChangeDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     NSMutableArray<TSThread *> *threads = [NSMutableArray new];
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         AnyThreadFinder *threadFinder = [AnyThreadFinder new];
         NSError *_Nullable error;
         [threadFinder enumerateVisibleThreadsWithIsArchived:NO
@@ -111,15 +111,15 @@ NS_ASSUME_NONNULL_BEGIN
     _threads = [threads copy];
 }
 
-#pragma mark - UIDatabaseSnapshotDelegate
+#pragma mark - DatabaseChangeDelegate
 
-- (void)uiDatabaseSnapshotWillUpdate
+- (void)databaseChangesWillUpdate
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 }
 
-- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateThreads];
 }
 
-- (void)uiDatabaseSnapshotDidUpdateExternally
+- (void)databaseChangesDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateThreads];
 }
 
-- (void)uiDatabaseSnapshotDidReset
+- (void)databaseChangesDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

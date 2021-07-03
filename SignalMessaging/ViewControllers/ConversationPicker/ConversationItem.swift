@@ -115,7 +115,7 @@ struct GroupConversationItem: Dependencies {
     // We don't want to keep this in memory, because the group model
     // can be very large.
     var groupThread: TSGroupThread? {
-        return databaseStorage.uiRead { transaction in
+        return databaseStorage.read { transaction in
             return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
         }
     }

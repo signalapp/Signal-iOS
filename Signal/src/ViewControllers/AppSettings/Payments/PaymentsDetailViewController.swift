@@ -38,7 +38,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         updateTableContents()
 
-        Self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        Self.databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -508,10 +508,10 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension PaymentsDetailViewController: UIDatabaseSnapshotDelegate {
-    public func uiDatabaseSnapshotWillUpdate() {}
+extension PaymentsDetailViewController: DatabaseChangeDelegate {
+    public func databaseChangesWillUpdate() {}
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) else {
@@ -521,13 +521,13 @@ extension PaymentsDetailViewController: UIDatabaseSnapshotDelegate {
         updateItem()
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         updateItem()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         updateItem()

@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        thread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                 persistenceCompletionHandler:(void (^__nullable)(void))completion
+                 persistenceCompletionHandler:(void (^__nullable)(void))persistenceCompletion
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
@@ -74,8 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                       thread:thread
                                             quotedReplyModel:quotedReplyModel
                                                  transaction:transaction];
-    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
-    message.persistenceCompletionHandler = completion;
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
                                 block:^(void (^benchmarkCompletion)(void)) {
@@ -87,10 +85,14 @@ NS_ASSUME_NONNULL_BEGIN
                                             [self.messageSenderJobQueue addMessage:outgoingMessagePreparer
                                                                        transaction:writeTransaction];
 
-                                            [writeTransaction addAsyncCompletion:benchmarkCompletion];
+                                            [writeTransaction addAsyncCompletion:^{
+                                                benchmarkCompletion();
+                                                persistenceCompletion();
+                                            }];
                                         });
                                 }];
 
+    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
     if (message.hasRenderableContent) {
         [thread donateSendMessageIntentWithTransaction:transaction];
     }

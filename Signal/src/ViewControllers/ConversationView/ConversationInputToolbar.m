@@ -1193,7 +1193,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
 
     __block BOOL hasInstalledStickerPacks;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasInstalledStickerPacks = [StickerManager installedStickerPacksWithTransaction:transaction].count > 0;
     }];
     if (!hasInstalledStickerPacks) {

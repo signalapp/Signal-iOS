@@ -204,7 +204,7 @@ public class BaseGroupMemberViewController: OWSViewController {
     }
 
     private func updateMemberBar() {
-        memberBar.setMembers(databaseStorage.uiRead { transaction in
+        memberBar.setMembers(databaseStorage.read { transaction in
             self.orderedMembers(shouldSort: false, transaction: transaction)
         })
     }

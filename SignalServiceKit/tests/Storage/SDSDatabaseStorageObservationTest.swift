@@ -10,14 +10,14 @@ class MockObserver {
     var updateCount: UInt = 0
     var externalUpdateCount: UInt = 0
     var resetCount: UInt = 0
-    var lastChange: UIDatabaseChanges?
+    var lastChange: DatabaseChanges?
 
     private var expectation: XCTestExpectation?
 
     init() {
         AssertIsOnMainThread()
 
-        SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
+        SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
     }
 
     func set(expectation: XCTestExpectation) {
@@ -36,13 +36,13 @@ class MockObserver {
 
 // MARK: -
 
-extension MockObserver: UIDatabaseSnapshotDelegate {
+extension MockObserver: DatabaseChangeDelegate {
 
-    func uiDatabaseSnapshotWillUpdate() {
+    func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         updateCount += 1
@@ -52,7 +52,7 @@ extension MockObserver: UIDatabaseSnapshotDelegate {
         expectation = nil
     }
 
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
@@ -63,7 +63,7 @@ extension MockObserver: UIDatabaseSnapshotDelegate {
         expectation = nil
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
@@ -83,7 +83,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBSyncWrite() {
 
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?
@@ -260,7 +260,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBAsyncWrite() {
 
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?

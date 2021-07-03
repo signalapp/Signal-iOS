@@ -669,7 +669,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                         @"Table section header for contact listing when composing a new message")];
 
     OWSAssertIsOnMainThread();
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         for (SignalAccount *signalAccount in filteredSignalAccounts) {
             hasSearchResults = YES;
 

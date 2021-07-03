@@ -152,7 +152,8 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         reopenGRDBStorage(directoryMode: directoryMode) {
             _ = GRDBSchemaMigrator().runSchemaMigrations()
-            self.grdbStorage.forceUpdateSnapshot()
+
+            self.grdbStorage.publishUpdatesImmediately()
 
             // We need to do this _before_ warmCaches().
             NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
@@ -185,39 +186,12 @@ public class SDSDatabaseStorage: SDSTransactable {
     // MARK: - Observation
 
     @objc
-    public func appendUIDatabaseSnapshotDelegate(_ snapshotDelegate: UIDatabaseSnapshotDelegate) {
-        guard let uiDatabaseObserver = grdbStorage.uiDatabaseObserver else {
-            owsFailDebug("Missing uiDatabaseObserver.")
+    public func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate) {
+        guard let databaseChangeObserver = grdbStorage.databaseChangeObserver else {
+            owsFailDebug("Missing databaseChangeObserver.")
             return
         }
-        uiDatabaseObserver.appendSnapshotDelegate(snapshotDelegate)
-    }
-
-    // MARK: - UI Database Snapshot Completion
-
-    @objc
-    public func add(uiDatabaseSnapshotFlushBlock: @escaping () -> Void) {
-        guard AppReadiness.isAppReady else {
-            owsFailDebug("App not ready.")
-            return
-        }
-        guard let uiDatabaseObserver = grdbStorage.uiDatabaseObserver else {
-            owsFailDebug("Missing uiDatabaseObserver")
-            return
-        }
-        uiDatabaseObserver.add(snapshotFlushBlock: uiDatabaseSnapshotFlushBlock)
-    }
-
-    public func uiDatabaseSnapshotFlushPromise() -> Promise<Void> {
-        let (promise, resolver) = Promise<Void>.pending()
-
-        add(uiDatabaseSnapshotFlushBlock: {
-            resolver.fulfill(())
-        })
-
-        return firstly {
-            promise
-        }.timeout(seconds: 30)
+        databaseChangeObserver.appendDatabaseChangeDelegate(databaseChangeDelegate)
     }
 
     // MARK: - Id Mapping
@@ -226,11 +200,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.updateIdMapping(thread: thread, transaction: grdb)
+            DatabaseChangeObserver.serializedSync {
+                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
+                    databaseChangeObserver.updateIdMapping(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }
         }
@@ -240,11 +214,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.updateIdMapping(interaction: interaction, transaction: grdb)
+            DatabaseChangeObserver.serializedSync {
+                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
+                    databaseChangeObserver.updateIdMapping(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }
         }
@@ -254,11 +228,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func updateIdMapping(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.updateIdMapping(attachment: attachment, transaction: grdb)
+            DatabaseChangeObserver.serializedSync {
+                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
+                    databaseChangeObserver.updateIdMapping(attachment: attachment, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
             }
         }
@@ -270,15 +244,15 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func touch(interaction: TSInteraction, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                guard !UIDatabaseObserver.skipTouchObservations else {
+            DatabaseChangeObserver.serializedSync {
+                guard !DatabaseChangeObserver.skipTouchObservations else {
                     return
                 }
 
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
+                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
+                    databaseChangeObserver.didTouch(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady {
-                    owsFailDebug("uiDatabaseObserver was unexpectedly nil")
+                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
                 if shouldReindex {
                     GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
@@ -291,16 +265,16 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func touch(thread: TSThread, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
-            UIDatabaseObserver.serializedSync {
-                guard !UIDatabaseObserver.skipTouchObservations else {
+            DatabaseChangeObserver.serializedSync {
+                guard !DatabaseChangeObserver.skipTouchObservations else {
                     return
                 }
 
-                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
-                    uiDatabaseObserver.didTouch(thread: thread, transaction: grdb)
+                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
+                    databaseChangeObserver.didTouch(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady {
                     // This can race with observation setup when app becomes ready.
-                    Logger.warn("uiDatabaseObserver was unexpectedly nil")
+                    Logger.warn("databaseChangeObserver was unexpectedly nil")
                 }
                 if shouldReindex {
                     GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
@@ -362,17 +336,6 @@ public class SDSDatabaseStorage: SDSTransactable {
     // MARK: - SDSTransactable
 
     @objc
-    public func uiRead(block: (SDSAnyReadTransaction) -> Void) {
-        do {
-            try grdbStorage.uiRead { transaction in
-                block(transaction.asAnyRead)
-            }
-        } catch {
-            owsFail("error: \(error.grdbErrorForLogging)")
-        }
-    }
-
-    @objc
     public override func read(block: (SDSAnyReadTransaction) -> Void) {
         do {
             try grdbStorage.read { transaction in
@@ -408,20 +371,12 @@ public class SDSDatabaseStorage: SDSTransactable {
         crossProcess.notifyChangedAsync()
     }
 
-    public func uiReadThrows(block: (SDSAnyReadTransaction) throws -> Void) throws {
-        try grdbStorage.uiReadThrows { transaction in
+    public func readThrows(block: (SDSAnyReadTransaction) throws -> Void) throws {
+        try grdbStorage.readThrows { transaction in
             try autoreleasepool {
                 try block(transaction.asAnyRead)
             }
         }
-    }
-
-    public func uiRead<T>(block: (SDSAnyReadTransaction) -> T) -> T {
-        var value: T!
-        uiRead { (transaction) in
-            value = block(transaction)
-        }
-        return value
     }
 
     public static func owsFormatLogMessage(file: String = #file,
@@ -455,7 +410,6 @@ extension SDSDatabaseStorage {
 protocol SDSDatabaseStorageAdapter {
     associatedtype ReadTransaction
     associatedtype WriteTransaction
-    func uiRead(block: (ReadTransaction) -> Void) throws
     func read(block: (ReadTransaction) -> Void) throws
     func write(block: (WriteTransaction) -> Void) throws
 }

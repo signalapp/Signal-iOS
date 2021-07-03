@@ -975,7 +975,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         needPermissionStack.addArrangedSubview(contactAvatarContainerView)
         contactAvatarContainerView.autoSetDimension(.height, toSize: 200)
 
-        let shortName = SDSDatabaseStorage.shared.uiRead {
+        let shortName = SDSDatabaseStorage.shared.read {
             return self.contactsManager.shortDisplayName(
                 for: self.thread.contactAddress,
                 transaction: $0

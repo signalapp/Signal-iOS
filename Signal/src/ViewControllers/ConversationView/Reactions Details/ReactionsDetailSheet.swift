@@ -109,7 +109,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     private var selectedEmoji: Emoji?
 
     func setSelectedEmoji(_ emoji: Emoji?) {
-        SDSDatabaseStorage.shared.uiRead { self.setSelectedEmoji(emoji, transaction: $0) }
+        SDSDatabaseStorage.shared.read { self.setSelectedEmoji(emoji, transaction: $0) }
     }
 
     func setSelectedEmoji(_ emoji: Emoji?, transaction: SDSAnyReadTransaction) {

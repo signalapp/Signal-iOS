@@ -461,16 +461,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _storedMessageState = self.messageState;
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidInsertWithTransaction:transaction];
-
-    if (self.persistenceCompletionHandler != nil) {
-        self.persistenceCompletionHandler();
-        self.persistenceCompletionHandler = nil;
-    }
-}
-
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];

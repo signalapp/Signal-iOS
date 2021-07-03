@@ -77,7 +77,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         super.init()
 
         callService.addObserver(observer: self, syncStateImmediately: false)
-        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
     }
@@ -819,7 +819,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
     private lazy var mediaGalleryFinder = MediaGalleryFinder(thread: thread)
     func updateRecentAttachments() {
-        let recentAttachments = databaseStorage.uiRead { transaction in
+        let recentAttachments = databaseStorage.read { transaction in
             mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, transaction: transaction.unwrapGrdbRead)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
@@ -846,7 +846,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
     func updateMutualGroupThreads() {
         guard let contactThread = thread as? TSContactThread else { return }
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             self.hasGroupThreads = GRDBThreadFinder.existsGroupThread(transaction: transaction.unwrapGrdbRead)
             self.mutualGroupThreads = TSGroupThread.groupThreads(
                 with: contactThread.contactAddress,
@@ -1020,10 +1020,10 @@ extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {
     }
 }
 
-extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
-    public func uiDatabaseSnapshotWillUpdate() {}
+extension ConversationSettingsViewController: DatabaseChangeDelegate {
+    public func databaseChangesWillUpdate() {}
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         var didUpdate = false
@@ -1043,7 +1043,7 @@ extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
         }
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         updateRecentAttachments()
@@ -1051,7 +1051,7 @@ extension ConversationSettingsViewController: UIDatabaseSnapshotDelegate {
         updateTableContents()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         updateRecentAttachments()

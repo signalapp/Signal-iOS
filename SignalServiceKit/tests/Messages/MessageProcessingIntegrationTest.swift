@@ -26,9 +26,9 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
-        // use the uiDatabase to be notified of DB writes so we can verify the expected
-        // changes occur
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        // Use DatabaseChangeObserver to be notified of DB writes so we
+        // can verify the expected changes occur.
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // ensure local client has necessary "registered" state
         identityManager.generateNewIdentityKey()
@@ -39,7 +39,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     }
 
     override func tearDown() {
-        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangeObserver()
 
         super.tearDown()
     }
@@ -89,7 +89,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 }
             }
         }
-        guard let observer = databaseStorage.grdbStorage.uiDatabaseObserver else {
+        guard let observer = databaseStorage.grdbStorage.databaseChangeObserver else {
             owsFailDebug("observer was unexpectedly nil")
             return
         }
@@ -149,7 +149,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 }
             }
         }
-        guard let observer = databaseStorage.grdbStorage.uiDatabaseObserver else {
+        guard let observer = databaseStorage.grdbStorage.databaseChangeObserver else {
             owsFailDebug("observer was unexpectedly nil")
             return
         }

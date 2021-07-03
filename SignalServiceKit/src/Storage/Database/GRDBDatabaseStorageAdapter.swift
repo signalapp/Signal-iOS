@@ -122,47 +122,43 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         MediaGalleryRecord.self
     ]
 
-    // MARK: - Database Snapshot
-
-    private var latestSnapshot: DatabaseSnapshot! {
-        return uiDatabaseObserver!.latestSnapshot
-    }
+    // MARK: - DatabaseChangeObserver
 
     @objc
-    public private(set) var uiDatabaseObserver: UIDatabaseObserver?
+    public private(set) var databaseChangeObserver: DatabaseChangeObserver?
 
     @objc
-    public func setupUIDatabase() throws {
-        owsAssertDebug(self.uiDatabaseObserver == nil)
+    public func setupDatabaseChangeObserver() throws {
+        owsAssertDebug(self.databaseChangeObserver == nil)
 
-        // UIDatabaseObserver is a general purpose observer, whose delegates
+        // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        let uiDatabaseObserver = try UIDatabaseObserver(pool: pool,
-                                                        checkpointingQueue: storage.checkpointingQueue)
-        self.uiDatabaseObserver = uiDatabaseObserver
+        let databaseChangeObserver = try DatabaseChangeObserver(pool: pool,
+                                                                  checkpointingQueue: storage.checkpointingQueue)
+        self.databaseChangeObserver = databaseChangeObserver
 
         try pool.write { db in
-            db.add(transactionObserver: uiDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: databaseChangeObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
     }
 
     // NOTE: This should only be used in exceptional circumstances,
     // e.g. after reloading the database due to a device transfer.
-    func forceUpdateSnapshot() {
-        uiDatabaseObserver?.forceUpdateSnapshot()
+    func publishUpdatesImmediately() {
+        databaseChangeObserver?.publishUpdatesImmediately()
     }
 
-    func testing_tearDownUIDatabase() {
-        // UIDatabaseObserver is a general purpose observer, whose delegates
+    func testing_tearDownDatabaseChangeObserver() {
+        // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        self.uiDatabaseObserver = nil
+        self.databaseChangeObserver = nil
     }
 
     func setup() throws {
         MediaGalleryManager.setup(storage: self)
-        try setupUIDatabase()
+        try setupDatabaseChangeObserver()
     }
 
     // MARK: -
@@ -302,8 +298,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     }
     #endif
 
-    // TODO readThrows/writeThrows flavors
-    public func uiReadThrows(block: (GRDBReadTransaction) throws -> Void) rethrows {
+    // TODO writeThrows flavors
+    public func readThrows(block: (GRDBReadTransaction) throws -> Void) throws {
 
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
@@ -319,10 +315,9 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
         #endif
 
-        AssertIsOnMainThread()
-        try latestSnapshot.read { database in
+        return try pool.read { database in
             try autoreleasepool {
-                try block(GRDBReadTransaction(database: database, isUIRead: true))
+                try block(GRDBReadTransaction(database: database))
             }
         }
     }
@@ -346,7 +341,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
         return try pool.read { database in
             try autoreleasepool {
-                return try block(GRDBReadTransaction(database: database, isUIRead: false))
+                try block(GRDBReadTransaction(database: database))
             }
         }
     }
@@ -370,36 +365,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     }
 
     @objc
-    public func uiRead(block: (GRDBReadTransaction) -> Void) throws {
-        AssertIsOnMainThread()
-
-        #if TESTABLE_BUILD
-        owsAssertDebug(Self.canOpenTransaction)
-        // Check for nested tractions.
-        if Self.detectNestedTransactions {
-            // Check for nested tractions.
-            Self.setCanOpenTransaction(false)
-        }
-        defer {
-            if Self.detectNestedTransactions {
-                Self.setCanOpenTransaction(true)
-            }
-        }
-        #endif
-
-        guard CurrentAppContext().hasUI else {
-            // Never do uiReads in the NSE.
-            return try read(block: block)
-        }
-
-        latestSnapshot.read { database in
-            autoreleasepool {
-                block(GRDBReadTransaction(database: database, isUIRead: true))
-            }
-        }
-    }
-
-    @objc
     public func read(block: (GRDBReadTransaction) -> Void) throws {
 
         #if TESTABLE_BUILD
@@ -417,7 +382,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
         try pool.read { database in
             autoreleasepool {
-                block(GRDBReadTransaction(database: database, isUIRead: false))
+                block(GRDBReadTransaction(database: database))
             }
         }
     }
@@ -490,6 +455,7 @@ private struct GRDBStorage {
 
     let pool: DatabasePool
 
+    // TODO: Can we eliminate this?
     let checkpointingQueue: DatabaseQueue?
 
     private let dbURL: URL
@@ -502,7 +468,7 @@ private struct GRDBStorage {
         self.dbURL = dbURL
 
         poolConfiguration = Self.buildConfiguration(keyspec: keyspec,
-                                               isForCheckpointingQueue: false)
+                                                    isForCheckpointingQueue: false)
         checkpointingQueueConfiguration = Self.buildConfiguration(keyspec: keyspec,
                                                                   isForCheckpointingQueue: true)
 
@@ -530,8 +496,8 @@ private struct GRDBStorage {
         }
         // Useful when your app opens multiple databases
         configuration.label = (isForCheckpointingQueue
-            ? "GRDB Checkpointing"
-            : "GRDB Storage")
+                                ? "GRDB Checkpointing"
+                                : "GRDB Storage")
         configuration.maximumReaderCount = 10   // The default is 5
         configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
             // sleep N milliseconds

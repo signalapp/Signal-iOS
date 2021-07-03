@@ -119,7 +119,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
         let nameAndAvatarSection = OWSTableSection()
 
-        let members = databaseStorage.uiRead { transaction in
+        let members = databaseStorage.read { transaction in
             BaseGroupMemberViewController.orderedMembers(recipientSet: self.recipientSet,
                                                          shouldSort: true,
                                                          transaction: transaction)
@@ -319,17 +319,8 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                                                                                              newGroupSeed: newGroupSeed,
                                                                                              shouldSendMessage: true)
                                                         }.done { groupThread in
-                                                            Self.databaseStorage.write { transaction in
-                                                                Self.databaseStorage.touch(thread: groupThread,
-                                                                                           shouldReindex: false,
-                                                                                           transaction: transaction)
-                                                                Self.databaseStorage.add(uiDatabaseSnapshotFlushBlock: {
-                                                                    DispatchQueue.main.async {
-                                                                        self.groupWasCreated(groupThread: groupThread,
-                                                                                             modalActivityIndicator: modalActivityIndicator)
-                                                                    }
-                                                                })
-                                                            }
+                                                            self.groupWasCreated(groupThread: groupThread,
+                                                                                 modalActivityIndicator: modalActivityIndicator)
                                                         }.catch { error in
                                                             owsFailDebug("Could not create group: \(error)")
 
@@ -539,7 +530,7 @@ class NewLegacyGroupView: UIView {
         }
         headerLabel.textAlignment = .center
 
-        let members = databaseStorage.uiRead { transaction in
+        let members = databaseStorage.read { transaction in
             BaseGroupMemberViewController.orderedMembers(recipientSet: OrderedSet(self.v1Members),
                                                          shouldSort: true,
                                                          transaction: transaction)

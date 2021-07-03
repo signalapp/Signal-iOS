@@ -14,7 +14,7 @@ public class PaymentsProcessor: NSObject {
         super.init()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            Self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+            Self.databaseStorage.appendDatabaseChangeDelegate(self)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()
@@ -251,14 +251,14 @@ public class PaymentsProcessor: NSObject {
 
 // MARK: -
 
-extension PaymentsProcessor: UIDatabaseSnapshotDelegate {
+extension PaymentsProcessor: DatabaseChangeDelegate {
 
-    public func uiDatabaseSnapshotWillUpdate() {
+    public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
     }
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
@@ -269,14 +269,14 @@ extension PaymentsProcessor: UIDatabaseSnapshotDelegate {
         process()
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
         process()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 

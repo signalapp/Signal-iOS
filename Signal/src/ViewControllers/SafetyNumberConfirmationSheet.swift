@@ -46,7 +46,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
         modalPresentationStyle = .custom
         transitioningDelegate = self
 
-        SDSDatabaseStorage.shared.uiRead { transaction in
+        SDSDatabaseStorage.shared.read { transaction in
             self.items = addresses.map {
                 return Item(
                     address: $0,

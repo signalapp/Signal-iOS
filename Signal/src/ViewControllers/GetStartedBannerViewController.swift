@@ -71,7 +71,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         updateContent()
         applyTheme()
 
-        SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
+        SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applyTheme),
@@ -306,10 +306,10 @@ extension GetStartedBannerViewController {
 
 // MARK: - Database Observation
 
-extension GetStartedBannerViewController: UIDatabaseSnapshotDelegate {
-    public func uiDatabaseSnapshotWillUpdate() {}
+extension GetStartedBannerViewController: DatabaseChangeDelegate {
+    public func databaseChangesWillUpdate() {}
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
         if databaseChanges.didUpdateThreads {
@@ -317,13 +317,13 @@ extension GetStartedBannerViewController: UIDatabaseSnapshotDelegate {
         }
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
         updateContent()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
         updateContent()

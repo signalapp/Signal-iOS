@@ -23,7 +23,7 @@ class MentionPicker: UIView {
     let selectedAddressCallback: (SignalServiceAddress) -> Void
 
     required init(mentionableAddresses: [SignalServiceAddress], style: Mention.Style, selectedAddressCallback: @escaping (SignalServiceAddress) -> Void) {
-        mentionableUsers = Self.databaseStorage.uiRead { transaction in
+        mentionableUsers = Self.databaseStorage.read { transaction in
             let sortedAddresses = Self.contactsManagerImpl.sortSignalServiceAddresses(
                 mentionableAddresses,
                 transaction: transaction

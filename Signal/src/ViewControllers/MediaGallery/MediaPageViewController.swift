@@ -622,7 +622,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     private func buildRenderItem(forGalleryItem galleryItem: MediaGalleryItem) -> CVRenderItem? {
 
-        return databaseStorage.uiRead { transaction in
+        return databaseStorage.read { transaction in
             let interactionId = galleryItem.message.uniqueId
             guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
                                                            transaction: transaction) else {

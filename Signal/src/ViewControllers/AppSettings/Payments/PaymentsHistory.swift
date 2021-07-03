@@ -103,7 +103,7 @@ class PaymentsHistoryDataSource: Dependencies {
     }
 
     public init() {
-        Self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        Self.databaseStorage.appendDatabaseChangeDelegate(self)
 
         updateContent()
     }
@@ -117,7 +117,7 @@ class PaymentsHistoryDataSource: Dependencies {
     }
 
     private func loadAllPaymentsHistoryItems(delegate: PaymentsHistoryDataSourceDelegate) -> [PaymentsHistoryItem] {
-        Self.databaseStorage.uiRead { transaction in
+        Self.databaseStorage.read { transaction in
             // PAYMENTS TODO: Should we using paging, etc?
             // PAYMENTS TODO: Sort in query?
             var paymentModels: [TSPaymentModel] = TSPaymentModel.anyFetchAll(transaction: transaction)
@@ -181,10 +181,10 @@ class PaymentsHistoryDataSource: Dependencies {
 
 // MARK: -
 
-extension PaymentsHistoryDataSource: UIDatabaseSnapshotDelegate {
-    public func uiDatabaseSnapshotWillUpdate() {}
+extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
+    public func databaseChangesWillUpdate() {}
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) else {
@@ -194,13 +194,13 @@ extension PaymentsHistoryDataSource: UIDatabaseSnapshotDelegate {
         updateContent()
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         updateContent()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         updateContent()

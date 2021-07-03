@@ -624,7 +624,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
         guard selectedConversationsForConversationPicker.count == 1,
               case .group(let groupThreadId) = selectedConversationsForConversationPicker.first?.messageRecipient,
-              let groupThread = databaseStorage.uiRead(block: { transaction in
+              let groupThread = databaseStorage.read(block: { transaction in
                 return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
               }),
               Mention.threadAllowsMentionSend(groupThread) else { return [] }

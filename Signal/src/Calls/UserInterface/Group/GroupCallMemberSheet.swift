@@ -64,7 +64,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
     private var sortedMembers = [JoinedMember]()
     func updateMembers() {
-        let unsortedMembers: [JoinedMember] = databaseStorage.uiRead { transaction in
+        let unsortedMembers: [JoinedMember] = databaseStorage.read { transaction in
             var members = [JoinedMember]()
 
             if self.call.groupCall.localDeviceState.joinState == .joined {

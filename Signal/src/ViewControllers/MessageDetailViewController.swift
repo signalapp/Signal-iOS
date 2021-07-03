@@ -87,7 +87,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             comment: "Title for the 'message metadata' view."
         )
 
-        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
 
         // Use our own swipe back animation, since the message
         // details are presented as a "drawer" type view.
@@ -129,7 +129,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     }
 
     public func buildRenderItem(interactionId: String) -> CVRenderItem? {
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             guard let interaction = TSInteraction.anyFetch(
                 uniqueId: interactionId,
                 transaction: transaction
@@ -651,13 +651,13 @@ extension MediaPresentationContext {
 
 // MARK: -
 
-extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
+extension MessageDetailViewController: DatabaseChangeDelegate {
 
-    public func uiDatabaseSnapshotWillUpdate() {
+    public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdate(interaction: self.message) else {
@@ -667,13 +667,13 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
         refreshContentForDatabaseUpdate()
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         refreshContentForDatabaseUpdate()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         refreshContentForDatabaseUpdate()
@@ -708,7 +708,7 @@ extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
         }
 
         do {
-            try databaseStorage.uiReadThrows { transaction in
+            try databaseStorage.readThrows { transaction in
                 let uniqueId = self.message.uniqueId
                 guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId,
                                                               transaction: transaction) as? TSMessage else {

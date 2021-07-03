@@ -27,18 +27,20 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        try! databaseStorage.grdbStorage.setupUIDatabase()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
+        // Use DatabaseChangeObserver to be notified of DB writes so we
+        // can verify the expected changes occur.
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
-        databaseStorage.appendUIDatabaseSnapshotDelegate(dbObserver)
+        databaseStorage.appendDatabaseChangeDelegate(dbObserver)
     }
 
     override func tearDown() {
         super.tearDown()
 
         self.dbObserver = nil
-        databaseStorage.grdbStorage.testing_tearDownUIDatabase()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangeObserver()
     }
 
     // MARK: - Tests
@@ -69,8 +71,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         identityManager.generateNewIdentityKey()
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
-        // use the uiDatabase to be notified of DB writes so we can verify the expected
-        // changes occur
         bobClient = FakeSignalClient.generate(uuid: bobUUID)
 
         write { transaction in
@@ -143,25 +143,25 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     }
 }
 
-private class BlockObserver: UIDatabaseSnapshotDelegate {
+private class BlockObserver: DatabaseChangeDelegate {
     let block: () -> Void
     init(block: @escaping () -> Void) {
         self.block = block
     }
 
-    func uiDatabaseSnapshotWillUpdate() {
+    func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         block()
     }
 
-    func uiDatabaseSnapshotDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         block()
     }
 
-    func uiDatabaseSnapshotDidReset() {
+    func databaseChangesDidReset() {
         block()
     }
 }

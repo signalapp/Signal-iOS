@@ -225,21 +225,14 @@ extension SendMessageFlow {
 
         firstly { () -> Promise<[TSThread]> in
             self.threads(for: conversations)
-        }.then(on: .global()) { (threads: [TSThread]) -> Promise<TSThread> in
+        }.map(on: .global()) { (threads: [TSThread]) -> TSThread in
             guard threads.count == 1,
                 let thread = threads.first else {
                     throw OWSAssertionError("Unexpected thread state.")
             }
-            return self.databaseStorage.write { transaction -> Promise<TSThread> in
+            return self.databaseStorage.write { transaction -> TSThread in
                 thread.update(withDraft: messageBody, transaction: transaction)
-
-                // We need to call uiDatabaseSnapshotFlushPromise() before the
-                // transaction is committed.
-                return firstly {
-                    self.databaseStorage.uiDatabaseSnapshotFlushPromise()
-                }.map {
-                    return thread
-                }
+                return thread
             }
         }.done { (thread: TSThread) in
             Logger.info("Transitioning to single thread.")
@@ -591,7 +584,7 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
         guard selectedConversations.count == 1,
               case .group(let groupThreadId) = selectedConversations.first?.messageRecipient,
-              let groupThread = databaseStorage.uiRead(block: { transaction in
+              let groupThread = databaseStorage.read(block: { transaction in
                 return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
               }),
               Mention.threadAllowsMentionSend(groupThread) else { return [] }

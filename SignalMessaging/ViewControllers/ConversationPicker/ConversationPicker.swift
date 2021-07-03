@@ -170,7 +170,7 @@ open class ConversationPickerViewController: OWSViewController {
     }
 
     func buildConversationCollection() -> ConversationCollection {
-        return self.databaseStorage.uiRead { transaction in
+        return self.databaseStorage.read { transaction in
             var pinnedItemsByThreadId: [String: RecentConversationItem] = [:]
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
@@ -418,7 +418,7 @@ extension ConversationPickerViewController: UITableViewDataSource {
             owsFail("cell was unexpectedly nil for indexPath: \(indexPath)")
         }
 
-        databaseStorage.uiRead { transaction in
+        databaseStorage.read { transaction in
             cell.configure(conversationItem: conversationItem, transaction: transaction)
         }
 

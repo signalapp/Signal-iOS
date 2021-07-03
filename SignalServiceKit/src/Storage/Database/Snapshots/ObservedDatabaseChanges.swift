@@ -6,7 +6,7 @@ import Foundation
 import GRDB
 
 @objc
-public protocol UIDatabaseChanges: AnyObject {
+public protocol DatabaseChanges: AnyObject {
     typealias UniqueId = String
 
     var threadUniqueIds: Set<UniqueId> { get }
@@ -58,7 +58,7 @@ class ObservedDatabaseChanges: NSObject {
 
     enum ConcurrencyMode {
         case mainThread
-        case uiDatabaseObserverSerialQueue
+        case databaseChangeObserverSerialQueue
     }
     private let concurrencyMode: ConcurrencyMode
 
@@ -67,34 +67,14 @@ class ObservedDatabaseChanges: NSObject {
         switch concurrencyMode {
         case .mainThread:
             AssertIsOnMainThread()
-        case .uiDatabaseObserverSerialQueue:
-            AssertHasUIDatabaseObserverLock()
+        case .databaseChangeObserverSerialQueue:
+            AssertHasDatabaseChangeObserverLock()
         }
     }
     #endif
 
     init(concurrencyMode: ConcurrencyMode) {
         self.concurrencyMode = concurrencyMode
-    }
-
-    // MARK: - Completion Blocks
-
-    public typealias CompletionBlock = () -> Void
-    public var completionBlocks = [CompletionBlock]()
-
-    func add(completionBlock: @escaping CompletionBlock) {
-        completionBlocks.append(completionBlock)
-
-    }
-
-    func append(completionBlocks: [CompletionBlock]) {
-        self.completionBlocks += completionBlocks
-    }
-
-    func fireCompletionBlocks() {
-        for completionBlock in completionBlocks {
-            completionBlock()
-        }
     }
 
     // MARK: - Collections
@@ -400,7 +380,7 @@ private struct ObservedModelChanges {
 
 // MARK: - Published state
 
-extension ObservedDatabaseChanges: UIDatabaseChanges {
+extension ObservedDatabaseChanges: DatabaseChanges {
 
     var threadUniqueIds: Set<UniqueId> {
         get {
@@ -497,7 +477,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
     func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool {
         // GRDB: SDSKeyValueStore.dataStoreCollection
         return (didUpdate(collection: keyValueStore.collection) ||
-            didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
+                    didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
     }
 
     @objc(didUpdateInteraction:)
@@ -519,7 +499,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                                            uniqueIds: threads.uniqueIds,
                                                            rowIdToUniqueIdMap: threads.rowIdToUniqueIdMap,
                                                            tableName: "\(ThreadRecord.databaseTableName)",
-            uniqueIdColumnName: "\(threadColumn: .uniqueId)"))
+                                                           uniqueIdColumnName: "\(threadColumn: .uniqueId)"))
 
         // We need to convert all interaction "row ids" to "unique ids".
         interactions.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
@@ -527,7 +507,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                                                 uniqueIds: interactions.uniqueIds,
                                                                 rowIdToUniqueIdMap: interactions.rowIdToUniqueIdMap,
                                                                 tableName: "\(InteractionRecord.databaseTableName)",
-            uniqueIdColumnName: "\(interactionColumn: .uniqueId)"))
+                                                                uniqueIdColumnName: "\(interactionColumn: .uniqueId)"))
 
         // We need to convert all attachment "row ids" to "unique ids".
         attachments.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
@@ -535,7 +515,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                                                uniqueIds: attachments.uniqueIds,
                                                                rowIdToUniqueIdMap: attachments.rowIdToUniqueIdMap,
                                                                tableName: "\(AttachmentRecord.databaseTableName)",
-            uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
+                                                               uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
 
         // We need to convert _deleted_ attachment "row ids" to "unique ids".
         attachments.append(deletedUniqueIds: try mapRowIdsToUniqueIds(db: db,
@@ -563,7 +543,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                                       rowIdToUniqueIdMap: [RowId: UniqueId],
                                       tableName: String,
                                       uniqueIdColumnName: String) throws -> Set<String> {
-        AssertHasUIDatabaseObserverLock()
+        AssertHasDatabaseChangeObserverLock()
 
         // We try to avoid the query below by leveraging the
         // fact that we know the uniqueId and rowId for
@@ -581,10 +561,10 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
             }
         }
 
-        guard allUniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+        guard allUniqueIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
-        guard unresolvedRowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+        guard unresolvedRowIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 
@@ -602,7 +582,7 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
         let fetchedUniqueIds = try String.fetchAll(db, sql: mappingSql)
         allUniqueIds.formUnion(fetchedUniqueIds)
 
-        guard allUniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+        guard allUniqueIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 

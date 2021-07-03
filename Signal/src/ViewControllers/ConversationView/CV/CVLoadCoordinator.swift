@@ -105,7 +105,7 @@ public class CVLoadCoordinator: NSObject {
         self.delegate = delegate
         self.componentDelegate = componentDelegate
 
-        Self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+        Self.databaseStorage.appendDatabaseChangeDelegate(self)
 
         // Kick off async load.
         loadInitialMapping(focusMessageIdOnOpen: focusMessageIdOnOpen)
@@ -653,14 +653,14 @@ public class CVLoadCoordinator: NSObject {
 
 // MARK: -
 
-extension CVLoadCoordinator: UIDatabaseSnapshotDelegate {
+extension CVLoadCoordinator: DatabaseChangeDelegate {
 
-    public func uiDatabaseSnapshotWillUpdate() {
+    public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
     }
 
-    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
@@ -671,14 +671,14 @@ extension CVLoadCoordinator: UIDatabaseSnapshotDelegate {
                       deletedInteractionIds: databaseChanges.interactionDeletedUniqueIds)
     }
 
-    public func uiDatabaseSnapshotDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
         enqueueReloadWithoutCaches()
     }
 
-    public func uiDatabaseSnapshotDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 

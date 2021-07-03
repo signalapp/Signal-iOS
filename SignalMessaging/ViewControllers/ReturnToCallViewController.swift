@@ -53,7 +53,7 @@ public class ReturnToCallViewController: UIViewController {
         callViewController.localVideoViewReference.layer.cornerRadius = 6
         updateLocalVideoFrame()
 
-        let profileImage = databaseStorage.uiRead { transaction -> UIImage? in
+        let profileImage = databaseStorage.read { transaction -> UIImage? in
             avatarView.configure(address: callViewController.remoteVideoAddress, transaction: transaction)
 
             return self.profileManagerImpl.profileAvatar(for: callViewController.remoteVideoAddress,

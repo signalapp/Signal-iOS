@@ -182,49 +182,50 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         case reactionId(String)
     }
 
-    private var isDrainingCancelations = false
     private func drainCancelations() {
         AssertIsOnMainThread()
 
-        guard !isDrainingCancelations, !pendingCancelations.isEmpty else { return }
-        isDrainingCancelations = true
+        guard !pendingCancelations.isEmpty else { return }
 
-        getNotificationRequests().done(on: .main) { requests in
-            requestLoop:
-            for request in requests {
-                for cancelation in self.pendingCancelations {
-                    switch cancelation {
-                    case .threadId(let threadId):
-                        let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String
-                        if threadId == requestThreadId {
-                            self.cancelNotification(request)
-                            self.pendingCancelations.remove(cancelation)
-                            continue requestLoop
-                        }
-                    case .messageId(let messageId):
-                        let requestMessageId = request.content.userInfo[AppNotificationUserInfoKey.messageId] as? String
-                        if messageId == requestMessageId {
-                            self.cancelNotification(request)
-                            self.pendingCancelations.remove(cancelation)
-                            continue requestLoop
-                        }
-                    case .reactionId(let reactionId):
-                        let requestReactionId = request.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String
-                        if reactionId == requestReactionId {
-                            self.cancelNotification(request)
-                            self.pendingCancelations.remove(cancelation)
-                            continue requestLoop
-                        }
+        let requests = getNotificationRequests().wait()
+
+        var identifiersToCancel = [String]()
+
+        requestLoop:
+        for request in requests {
+            for cancelation in self.pendingCancelations {
+                switch cancelation {
+                case .threadId(let threadId):
+                    let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String
+                    if threadId == requestThreadId {
+                        identifiersToCancel.append(request.identifier)
+                        pendingCancelations.remove(cancelation)
+                        continue requestLoop
+                    }
+                case .messageId(let messageId):
+                    let requestMessageId = request.content.userInfo[AppNotificationUserInfoKey.messageId] as? String
+                    if messageId == requestMessageId {
+                        identifiersToCancel.append(request.identifier)
+                        pendingCancelations.remove(cancelation)
+                        continue requestLoop
+                    }
+                case .reactionId(let reactionId):
+                    let requestReactionId = request.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String
+                    if reactionId == requestReactionId {
+                        identifiersToCancel.append(request.identifier)
+                        pendingCancelations.remove(cancelation)
+                        continue requestLoop
                     }
                 }
             }
-
-            self.isDrainingCancelations = false
-
-            // Remove anything lingering that didn't match a request,
-            // we've checked all the requests.
-            self.pendingCancelations.removeAll()
         }
+
+        notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
+        notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+
+        // Remove anything lingering that didn't match a request,
+        // we've checked all the requests.
+        pendingCancelations.removeAll()
     }
 
     func cancelNotification(identifier: String) {
@@ -305,8 +306,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     }
 
     func getNotificationRequests() -> Guarantee<[UNNotificationRequest]> {
-        return getDeliveredNotifications().then { delivered in
-            self.getPendingNotificationRequests().map { pending in
+        return getDeliveredNotifications().then(on: .global()) { delivered in
+            self.getPendingNotificationRequests().map(on: .global()) { pending in
                 pending + delivered.map { $0.request }
             }
         }
