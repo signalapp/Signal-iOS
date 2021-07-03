@@ -145,8 +145,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     // NOTE: This should only be used in exceptional circumstances,
     // e.g. after reloading the database due to a device transfer.
-    func forceUpdate() {
-        databaseChangeObserver?.forceUpdate()
+    func publishUpdatesImmediately() {
+        databaseChangeObserver?.publishUpdatesImmediately()
     }
 
     func testing_tearDownDatabaseChangeObserver() {

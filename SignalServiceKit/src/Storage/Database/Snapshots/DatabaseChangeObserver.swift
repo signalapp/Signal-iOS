@@ -115,8 +115,8 @@ public class DatabaseChangeObserver: NSObject {
     private let pool: DatabasePool
     private let checkpointingQueue: DatabaseQueue?
 
-    private let hasPendingUpdate = AtomicBool(false)
-    private var lastUpdateDate: Date?
+    private let hasPendingUpdates = AtomicBool(false)
+    private var lastPublishUpdatesDate: Date?
 
     // This property should only be accessed on the main thread.
     private var lastCheckpointDate: Date?
@@ -172,7 +172,7 @@ public class DatabaseChangeObserver: NSObject {
             guard !CurrentAppContext().isInBackground() else {
                 return false
             }
-            guard self.hasPendingUpdate.get() else {
+            guard self.hasPendingUpdates.get() else {
                 return false
             }
             return true
@@ -199,7 +199,7 @@ public class DatabaseChangeObserver: NSObject {
 
         recentDisplayLinkDates.append(Date())
 
-        updateIfNecessary()
+        publishUpdatesIfNecessary()
     }
 
     @objc
@@ -292,7 +292,7 @@ extension DatabaseChangeObserver: TransactionObserver {
     //
     // * This class (DatabaseChangeObserver) observes writes to the database
     //   and publishes them to its "database changes delegates" (usually
-    //   per-view observers) to update the views in controlled,
+    //   per-view observers) updating the views in a controlled,
     //   consistent way.
     // * DatabaseChangeObserver observes all database _changes_ and _commits_.
     // * When a _change_ (modification of database content in a write transaction) occurs:
@@ -301,10 +301,10 @@ extension DatabaseChangeObserver: TransactionObserver {
     // * When a _commit_ occurs:
     //   * This might occur on any thread.
     //   * The changes are integrated from pendingChanges into committedChanges
-    //   * An "update" is enqueued. Updating views is expensive, so we throttle
-    //     updates so that if many writes occur, views only receive a single
+    //   * An "publish updates" is enqueued. Updating views is expensive, so we throttle
+    //     publishing of updates so that if many writes occur, views only receive a single
     //     "database did change" event, at the expense of some latency.
-    // * When a "update" is performed:
+    // * When we "publish updates":
     //   * This is done on the main thread.
     //   * All "database change delegates" receive databaseChangesWillUpdate.
     //   * The database might be checkpointed.
@@ -386,45 +386,45 @@ extension DatabaseChangeObserver: TransactionObserver {
                 return
             }
             // Enqueue the update.
-            self.hasPendingUpdate.set(true)
+            self.hasPendingUpdates.set(true)
             self.ensureDisplayLink()
-            // Try to update immediately.
-            self.updateIfNecessary()
+            // Try to publish updates immediately.
+            self.publishUpdatesIfNecessary()
         }
     }
 
     // See comment on databaseDidChange.
-    private func updateIfNecessary() {
+    private func publishUpdatesIfNecessary() {
         AssertIsOnMainThread()
 
         guard !tsAccountManager.isTransferInProgress else {
-            Logger.info("Skipping update; transfer in progress.")
+            Logger.info("Skipping publishing of updates; transfer in progress.")
             return
         }
 
-        if let lastUpdateDate = self.lastUpdateDate {
-            let secondsSinceLastUpdate = abs(lastUpdateDate.timeIntervalSinceNow)
+        if let lastPublishUpdatesDate = self.lastPublishUpdatesDate {
+            let secondsSinceLastUpdate = abs(lastPublishUpdatesDate.timeIntervalSinceNow)
             // Don't update UI more often than Nx/second.
-            guard secondsSinceLastUpdate >= targetUpdateInterval else {
-                // Don't update yet; we've updated recently.
+            guard secondsSinceLastUpdate >= targetPublishingOfUpdatesInterval else {
+                // Don't publish updates yet; we've published recently.
                 return
             }
         }
 
-        // We only want to update if the flag is set.
-        guard hasPendingUpdate.tryToClearFlag() else {
-            // If there's no new database changes, we don't need to update.
+        // We only want to publish updates if the flag is set.
+        guard hasPendingUpdates.tryToClearFlag() else {
+            // If there's no new database changes, we don't need to publish updates.
             return
         }
         ensureDisplayLink()
 
-        updateNow()
+        publishUpdates()
     }
 
-    private var targetUpdateInterval: Double {
+    private var targetPublishingOfUpdatesInterval: Double {
         AssertIsOnMainThread()
         #if TESTABLE_BUILD
-        // Don't wait to update in tests
+        // Don't wait to publish updates in tests
         // because some tests read immediately.
         if CurrentAppContext().isRunningTests { return 0 }
         #endif
@@ -464,23 +464,23 @@ extension DatabaseChangeObserver: TransactionObserver {
         // Select the alpha of our chosen heuristic.
         let alpha: Double = displayLinkAlpha
 
-        // These intervals control update frequency.
+        // These intervals control publishing of updates frequency.
         let fastUpdateInterval: TimeInterval = 1 / TimeInterval(5)
         let slowUpdateInterval: TimeInterval = 1 / TimeInterval(1)
         // Under light load, we want the fastest update frequency.
         // Under heavy load, we want the slowest update frequency.
-        let targetUpdateInterval = alpha.lerp(fastUpdateInterval, slowUpdateInterval)
-        return targetUpdateInterval
+        let targetPublishingOfUpdatesInterval = alpha.lerp(fastUpdateInterval, slowUpdateInterval)
+        return targetPublishingOfUpdatesInterval
     }
 
     // NOTE: This should only be used in exceptional circumstances,
     // e.g. after reloading the database due to a device transfer.
-    func forceUpdate() {
+    func publishUpdatesImmediately() {
         AssertIsOnMainThread()
 
         Logger.info("")
 
-        updateNow(canCheckpoint: false)
+        publishUpdates(canCheckpoint: false)
     }
 
     // "Updating" entails:
@@ -488,10 +488,10 @@ extension DatabaseChangeObserver: TransactionObserver {
     // * Publishing pending database changes to database change observers.
     // * Trying to checkpoint if necessary.
     // See comment on databaseDidChange.
-    private func updateNow(canCheckpoint: Bool = true) {
+    private func publishUpdates(canCheckpoint: Bool = true) {
         AssertIsOnMainThread()
 
-        lastUpdateDate = Date()
+        lastPublishUpdatesDate = Date()
 
         Logger.verbose("databaseChangesWillUpdate")
         for delegate in databaseChangeDelegates {
