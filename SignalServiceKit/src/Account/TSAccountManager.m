@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSAccountManager.h>
+#import "TSAccountManager.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+OWS_HTTP.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
