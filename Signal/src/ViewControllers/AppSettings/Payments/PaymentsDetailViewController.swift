@@ -38,7 +38,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         updateTableContents()
 
-        Self.databaseStorage.appendDatabaseChangesDelegate(self)
+        Self.databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -508,7 +508,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension PaymentsDetailViewController: DatabaseChangesDelegate {
+extension PaymentsDetailViewController: DatabaseChangeDelegate {
     public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {

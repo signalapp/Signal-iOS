@@ -122,43 +122,43 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         MediaGalleryRecord.self
     ]
 
-    // MARK: - DatabaseChangesObserver
+    // MARK: - DatabaseChangeObserver
 
     @objc
-    public private(set) var databaseChangesObserver: DatabaseChangesObserver?
+    public private(set) var databaseChangeObserver: DatabaseChangeObserver?
 
     @objc
-    public func setupDatabaseChangesObserver() throws {
-        owsAssertDebug(self.databaseChangesObserver == nil)
+    public func setupDatabaseChangeObserver() throws {
+        owsAssertDebug(self.databaseChangeObserver == nil)
 
-        // DatabaseChangesObserver is a general purpose observer, whose delegates
+        // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        let databaseChangesObserver = try DatabaseChangesObserver(pool: pool,
+        let databaseChangeObserver = try DatabaseChangeObserver(pool: pool,
                                                                   checkpointingQueue: storage.checkpointingQueue)
-        self.databaseChangesObserver = databaseChangesObserver
+        self.databaseChangeObserver = databaseChangeObserver
 
         try pool.write { db in
-            db.add(transactionObserver: databaseChangesObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: databaseChangeObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
     }
 
     // NOTE: This should only be used in exceptional circumstances,
     // e.g. after reloading the database due to a device transfer.
     func forceUpdate() {
-        databaseChangesObserver?.forceUpdate()
+        databaseChangeObserver?.forceUpdate()
     }
 
-    func testing_tearDownDatabaseChangesObserver() {
-        // DatabaseChangesObserver is a general purpose observer, whose delegates
+    func testing_tearDownDatabaseChangeObserver() {
+        // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        self.databaseChangesObserver = nil
+        self.databaseChangeObserver = nil
     }
 
     func setup() throws {
         MediaGalleryManager.setup(storage: self)
-        try setupDatabaseChangesObserver()
+        try setupDatabaseChangeObserver()
     }
 
     // MARK: -

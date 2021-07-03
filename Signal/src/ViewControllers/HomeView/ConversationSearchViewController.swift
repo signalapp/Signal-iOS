@@ -89,7 +89,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.reuseIdentifier)
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
-        databaseStorage.appendDatabaseChangesDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
@@ -582,7 +582,7 @@ class EmptySearchResultCell: UITableViewCell {
 
 // MARK: -
 
-extension ConversationSearchViewController: DatabaseChangesDelegate {
+extension ConversationSearchViewController: DatabaseChangeDelegate {
 
     func databaseChangesWillUpdate() {
         AssertIsOnMainThread()

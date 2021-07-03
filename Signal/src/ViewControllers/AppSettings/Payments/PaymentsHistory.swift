@@ -103,7 +103,7 @@ class PaymentsHistoryDataSource: Dependencies {
     }
 
     public init() {
-        Self.databaseStorage.appendDatabaseChangesDelegate(self)
+        Self.databaseStorage.appendDatabaseChangeDelegate(self)
 
         updateContent()
     }
@@ -181,7 +181,7 @@ class PaymentsHistoryDataSource: Dependencies {
 
 // MARK: -
 
-extension PaymentsHistoryDataSource: DatabaseChangesDelegate {
+extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
     public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {

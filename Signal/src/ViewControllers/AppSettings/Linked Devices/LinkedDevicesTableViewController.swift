@@ -32,7 +32,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     }
 
     private func addObservers() {
-        Self.databaseStorage.appendDatabaseChangesDelegate(self)
+        Self.databaseStorage.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateSucceeded),
@@ -303,7 +303,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension LinkedDevicesTableViewController: DatabaseChangesDelegate {
+extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
 
     func databaseChangesWillUpdate() {
         AssertIsOnMainThread()

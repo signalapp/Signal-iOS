@@ -140,7 +140,7 @@ public final class CallService: NSObject {
             object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            SDSDatabaseStorage.shared.appendDatabaseChangesDelegate(self)
+            SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
         }
     }
 
@@ -829,7 +829,7 @@ extension CallService {
     }
 }
 
-extension CallService: DatabaseChangesDelegate {
+extension CallService: DatabaseChangeDelegate {
     public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {

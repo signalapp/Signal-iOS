@@ -194,7 +194,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 //   _Never_ open a transaction within a @synchronized(self) block.
 // * If you update any account state in the database, reload the cache
 //   immediately.
-@interface TSAccountManager () <DatabaseChangesDelegate>
+@interface TSAccountManager () <DatabaseChangeDelegate>
 
 // This property should only be accessed while @synchronized on self.
 //
@@ -227,7 +227,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         if (!CurrentAppContext().isMainApp) {
-            [self.databaseStorage appendDatabaseChangesDelegate:self];
+            [self.databaseStorage appendDatabaseChangeDelegate:self];
         }
     });
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self updateAccountAttributesIfNecessary]; });
@@ -1038,7 +1038,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                                                            userInfo:nil];
 }
 
-#pragma mark - DatabaseChangesDelegate
+#pragma mark - DatabaseChangeDelegate
 
 - (void)databaseChangesWillUpdate
 {

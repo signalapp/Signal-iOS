@@ -105,7 +105,7 @@ public class CVLoadCoordinator: NSObject {
         self.delegate = delegate
         self.componentDelegate = componentDelegate
 
-        Self.databaseStorage.appendDatabaseChangesDelegate(self)
+        Self.databaseStorage.appendDatabaseChangeDelegate(self)
 
         // Kick off async load.
         loadInitialMapping(focusMessageIdOnOpen: focusMessageIdOnOpen)
@@ -653,7 +653,7 @@ public class CVLoadCoordinator: NSObject {
 
 // MARK: -
 
-extension CVLoadCoordinator: DatabaseChangesDelegate {
+extension CVLoadCoordinator: DatabaseChangeDelegate {
 
     public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()

@@ -71,7 +71,7 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         updateContent()
         applyTheme()
 
-        SDSDatabaseStorage.shared.appendDatabaseChangesDelegate(self)
+        SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applyTheme),
@@ -306,7 +306,7 @@ extension GetStartedBannerViewController {
 
 // MARK: - Database Observation
 
-extension GetStartedBannerViewController: DatabaseChangesDelegate {
+extension GetStartedBannerViewController: DatabaseChangeDelegate {
     public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {

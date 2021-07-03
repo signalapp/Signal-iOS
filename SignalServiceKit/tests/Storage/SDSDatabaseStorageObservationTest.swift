@@ -17,7 +17,7 @@ class MockObserver {
     init() {
         AssertIsOnMainThread()
 
-        SDSDatabaseStorage.shared.appendDatabaseChangesDelegate(self)
+        SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
     }
 
     func set(expectation: XCTestExpectation) {
@@ -36,7 +36,7 @@ class MockObserver {
 
 // MARK: -
 
-extension MockObserver: DatabaseChangesDelegate {
+extension MockObserver: DatabaseChangeDelegate {
 
     func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
@@ -83,7 +83,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBSyncWrite() {
 
-        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?
@@ -260,7 +260,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBAsyncWrite() {
 
-        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?

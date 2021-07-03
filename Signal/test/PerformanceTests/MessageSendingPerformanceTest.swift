@@ -43,7 +43,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
         // Observe DB changes so we can know when all the async processing is done
         let dbObserver = BlockObserver(block: { self.dbObserverBlock?() })
         self.dbObserver = dbObserver
-        databaseStorage.appendDatabaseChangesDelegate(dbObserver)
+        databaseStorage.appendDatabaseChangeDelegate(dbObserver)
     }
 
     override func tearDown() {
@@ -55,20 +55,20 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     func testPerf_messageSending_contactThread() {
         // This is an example of a performance test case.
-        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             sendMessages_contactThread()
         }
-        databaseStorage.grdbStorage.testing_tearDownDatabaseChangesObserver()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangeObserver()
     }
 
     func testPerf_messageSending_groupThread() {
         // This is an example of a performance test case.
-        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
         measureMetrics(XCTestCase.defaultPerformanceMetrics, automaticallyStartMeasuring: false) {
             sendMessages_groupThread()
         }
-        databaseStorage.grdbStorage.testing_tearDownDatabaseChangesObserver()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangeObserver()
     }
 
     func sendMessages_groupThread() {
@@ -183,7 +183,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
     }
 }
 
-private class BlockObserver: DatabaseChangesDelegate {
+private class BlockObserver: DatabaseChangeDelegate {
     let block: () -> Void
     init(block: @escaping () -> Void) {
         self.block = block

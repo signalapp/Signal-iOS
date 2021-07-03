@@ -371,7 +371,7 @@ class ViewOnceMessageViewController: OWSViewController {
     var videoPlayer: OWSVideoPlayer?
 
     func setupDatabaseObservation() {
-        databaseStorage.appendDatabaseChangesDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),
@@ -430,7 +430,7 @@ class ViewOnceMessageViewController: OWSViewController {
 
 // MARK: -
 
-extension ViewOnceMessageViewController: DatabaseChangesDelegate {
+extension ViewOnceMessageViewController: DatabaseChangeDelegate {
     func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }

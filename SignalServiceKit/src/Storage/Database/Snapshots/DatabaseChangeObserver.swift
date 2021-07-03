@@ -6,7 +6,7 @@ import Foundation
 import GRDB
 
 @objc
-public protocol DatabaseChangesDelegate: AnyObject {
+public protocol DatabaseChangeDelegate: AnyObject {
     func databaseChangesWillUpdate()
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)
     func databaseChangesDidUpdateExternally()
@@ -31,14 +31,14 @@ enum DatabaseObserverError: Error {
 
 // MARK: -
 
-func AssertHasDatabaseChangesObserverLock() {
-    assert(DatabaseChangesObserver.hasDatabaseChangesObserverLock)
+func AssertHasDatabaseChangeObserverLock() {
+    assert(DatabaseChangeObserver.hasDatabaseChangeObserverLock)
 }
 
 // MARK: -
 
 @objc
-public class DatabaseChangesObserver: NSObject {
+public class DatabaseChangeObserver: NSObject {
 
     @objc
     public static let databaseDidCommitInteractionChangeNotification = Notification.Name("databaseDidCommitInteractionChangeNotification")
@@ -47,7 +47,7 @@ public class DatabaseChangesObserver: NSObject {
 
     private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName, PendingReadReceiptRecord.databaseTableName])
 
-    // tldr; Instead, of protecting DatabaseChangesObserver state with a nested DispatchQueue,
+    // tldr; Instead, of protecting DatabaseChangeObserver state with a nested DispatchQueue,
     // which would break GRDB's SchedulingWatchDog, we use objc_sync
     //
     // Longer version:
@@ -56,39 +56,39 @@ public class DatabaseChangesObserver: NSObject {
     //
     // Some of our database change observers read from the database *while* accessing this
     // state. Note that reading from the db must be done on GRDB's DispatchQueue.
-    private static var _hasDatabaseChangesObserverLock = AtomicBool(false)
+    private static var _hasDatabaseChangeObserverLock = AtomicBool(false)
 
-    static var hasDatabaseChangesObserverLock: Bool {
-        _hasDatabaseChangesObserverLock.get()
+    static var hasDatabaseChangeObserverLock: Bool {
+        _hasDatabaseChangeObserverLock.get()
     }
 
     // Toggle to skip expensive observations resulting
     // from a `touch`. Useful for large migrations.
-    // Should only be accessed within DatabaseChangesObserver.serializedSync
+    // Should only be accessed within DatabaseChangeObserver.serializedSync
     public static var skipTouchObservations: Bool = false
 
-    private static let databaseChangesObserverLock = UnfairLock()
+    private static let databaseChangeObserverLock = UnfairLock()
 
     public class func serializedSync(block: () -> Void) {
-        databaseChangesObserverLock.withLock {
-            assert(!_hasDatabaseChangesObserverLock.get())
-            _hasDatabaseChangesObserverLock.set(true)
+        databaseChangeObserverLock.withLock {
+            assert(!_hasDatabaseChangeObserverLock.get())
+            _hasDatabaseChangeObserverLock.set(true)
             block()
-            _hasDatabaseChangesObserverLock.set(false)
+            _hasDatabaseChangeObserverLock.set(false)
         }
     }
 
-    private var _databaseChangesDelegates: [Weak<DatabaseChangesDelegate>] = []
-    private var databaseChangesDelegates: [DatabaseChangesDelegate] {
-        return _databaseChangesDelegates.compactMap { $0.value }
+    private var _databaseChangeDelegates: [Weak<DatabaseChangeDelegate>] = []
+    private var databaseChangeDelegates: [DatabaseChangeDelegate] {
+        return _databaseChangeDelegates.compactMap { $0.value }
     }
 
-    func appendDatabaseChangesDelegate(_ databaseChangesDelegate: DatabaseChangesDelegate) {
+    func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate) {
         let append = { [weak self] in
             guard let self = self else {
                 return
             }
-            self._databaseChangesDelegates = self._databaseChangesDelegates.filter { $0.value != nil} + [Weak(value: databaseChangesDelegate)]
+            self._databaseChangeDelegates = self._databaseChangeDelegates.filter { $0.value != nil} + [Weak(value: databaseChangeDelegate)]
         }
         if CurrentAppContext().isRunningTests {
             append()
@@ -125,7 +125,7 @@ public class DatabaseChangesObserver: NSObject {
     private let displayLinkPreferredFramesPerSecond: Int = 20
     private var recentDisplayLinkDates = [Date]()
 
-    fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangesObserverSerialQueue)
+    fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
     fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
 
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
@@ -214,13 +214,13 @@ public class DatabaseChangesObserver: NSObject {
         AssertIsOnMainThread()
         Logger.verbose("")
 
-        for delegate in databaseChangesDelegates {
+        for delegate in databaseChangeDelegates {
             delegate.databaseChangesDidUpdateExternally()
         }
     }
 }
 
-extension DatabaseChangesObserver: TransactionObserver {
+extension DatabaseChangeObserver: TransactionObserver {
 
     public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
         guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
@@ -238,7 +238,7 @@ extension DatabaseChangesObserver: TransactionObserver {
 
     // This should only be called by DatabaseStorage.
     func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction) {
-        AssertHasDatabaseChangesObserverLock()
+        AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
@@ -246,7 +246,7 @@ extension DatabaseChangesObserver: TransactionObserver {
 
     // This should only be called by DatabaseStorage.
     func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
-        AssertHasDatabaseChangesObserverLock()
+        AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.append(interaction: interaction)
         pendingChanges.append(tableName: TSInteraction.table.tableName)
@@ -254,7 +254,7 @@ extension DatabaseChangesObserver: TransactionObserver {
 
     // This should only be called by DatabaseStorage.
     func updateIdMapping(attachment: TSAttachment, transaction: GRDBWriteTransaction) {
-        AssertHasDatabaseChangesObserverLock()
+        AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.append(attachment: attachment)
         pendingChanges.append(tableName: TSAttachment.table.tableName)
@@ -262,7 +262,7 @@ extension DatabaseChangesObserver: TransactionObserver {
 
     // internal - should only be called by DatabaseStorage
     func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
-        AssertHasDatabaseChangesObserverLock()
+        AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.append(interaction: interaction)
         pendingChanges.append(tableName: TSInteraction.table.tableName)
@@ -282,7 +282,7 @@ extension DatabaseChangesObserver: TransactionObserver {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
-        AssertHasDatabaseChangesObserverLock()
+        AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
@@ -290,11 +290,11 @@ extension DatabaseChangesObserver: TransactionObserver {
 
     // Database observation operates like so:
     //
-    // * This class (DatabaseChangesObserver) observes writes to the database
+    // * This class (DatabaseChangeObserver) observes writes to the database
     //   and publishes them to its "database changes delegates" (usually
     //   per-view observers) to update the views in controlled,
     //   consistent way.
-    // * DatabaseChangesObserver observes all database _changes_ and _commits_.
+    // * DatabaseChangeObserver observes all database _changes_ and _commits_.
     // * When a _change_ (modification of database content in a write transaction) occurs:
     //   * This might occur on any thread.
     //   * The changes are aggregated in pendingChanges.
@@ -310,7 +310,7 @@ extension DatabaseChangesObserver: TransactionObserver {
     //   * The database might be checkpointed.
     //   * All "database change delegates" receive databaseChangesDidUpdate with the changes.
     public func databaseDidChange(with event: DatabaseEvent) {
-        DatabaseChangesObserver.serializedSync {
+        DatabaseChangeObserver.serializedSync {
 
             pendingChanges.append(tableName: event.tableName)
 
@@ -339,9 +339,9 @@ extension DatabaseChangesObserver: TransactionObserver {
 
     // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
-        DatabaseChangesObserver.serializedSync {
+        DatabaseChangeObserver.serializedSync {
             let pendingChangesToCommit = self.pendingChanges
-            self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangesObserverSerialQueue)
+            self.pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
 
             do {
                 // finalizePublishedState() finalizes the state we're about to
@@ -494,7 +494,7 @@ extension DatabaseChangesObserver: TransactionObserver {
         lastUpdateDate = Date()
 
         Logger.verbose("databaseChangesWillUpdate")
-        for delegate in databaseChangesDelegates {
+        for delegate in databaseChangeDelegates {
             delegate.databaseChangesWillUpdate()
         }
 
@@ -517,11 +517,11 @@ extension DatabaseChangesObserver: TransactionObserver {
             default:
                 owsFailDebug("unknown error: \(lastError)")
             }
-            for delegate in self.databaseChangesDelegates {
+            for delegate in self.databaseChangeDelegates {
                 delegate.databaseChangesDidReset()
             }
         } else {
-            for delegate in databaseChangesDelegates {
+            for delegate in databaseChangeDelegates {
                 delegate.databaseChangesDidUpdate(databaseChanges: committedChanges)
             }
         }
@@ -530,8 +530,8 @@ extension DatabaseChangesObserver: TransactionObserver {
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("TODO: test this if we ever use it.")
 
-        DatabaseChangesObserver.serializedSync {
-            pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangesObserverSerialQueue)
+        DatabaseChangeObserver.serializedSync {
+            pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
 
             #if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {

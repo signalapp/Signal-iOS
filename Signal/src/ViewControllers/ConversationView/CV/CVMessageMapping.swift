@@ -528,7 +528,7 @@ public class CVMessageMapping: NSObject {
         //
         // NOTE: There's an upper bound on how long SQL queries should be.
         //       We use kMaxIncrementalRowChanges to limit query size.
-        guard unloadedInteractionIds.count <= DatabaseChangesObserver.kMaxIncrementalRowChanges else {
+        guard unloadedInteractionIds.count <= DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             return try loadWithoutCache()
         }
         if !unloadedInteractionIds.isEmpty {

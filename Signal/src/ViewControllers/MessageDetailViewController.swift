@@ -87,7 +87,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             comment: "Title for the 'message metadata' view."
         )
 
-        databaseStorage.appendDatabaseChangesDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
 
         // Use our own swipe back animation, since the message
         // details are presented as a "drawer" type view.
@@ -651,7 +651,7 @@ extension MediaPresentationContext {
 
 // MARK: -
 
-extension MessageDetailViewController: DatabaseChangesDelegate {
+extension MessageDetailViewController: DatabaseChangeDelegate {
 
     public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()

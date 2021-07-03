@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ThreadViewHelper () <DatabaseChangesDelegate>
+@interface ThreadViewHelper () <DatabaseChangeDelegate>
 
 @property (nonatomic) BOOL shouldObserveDBModifications;
 
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [self.databaseStorage appendDatabaseChangesDelegate:self];
+    [self.databaseStorage appendDatabaseChangeDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     _threads = [threads copy];
 }
 
-#pragma mark - DatabaseChangesDelegate
+#pragma mark - DatabaseChangeDelegate
 
 - (void)databaseChangesWillUpdate
 {

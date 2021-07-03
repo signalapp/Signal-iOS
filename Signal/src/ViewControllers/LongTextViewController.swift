@@ -43,7 +43,7 @@ public class LongTextViewController: OWSViewController {
 
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
 
-        databaseStorage.appendDatabaseChangesDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
     // MARK: -
@@ -171,7 +171,7 @@ public class LongTextViewController: OWSViewController {
 
 // MARK: -
 
-extension LongTextViewController: DatabaseChangesDelegate {
+extension LongTextViewController: DatabaseChangeDelegate {
 
     public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()

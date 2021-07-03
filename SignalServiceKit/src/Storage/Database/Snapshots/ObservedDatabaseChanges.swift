@@ -58,7 +58,7 @@ class ObservedDatabaseChanges: NSObject {
 
     enum ConcurrencyMode {
         case mainThread
-        case databaseChangesObserverSerialQueue
+        case databaseChangeObserverSerialQueue
     }
     private let concurrencyMode: ConcurrencyMode
 
@@ -67,8 +67,8 @@ class ObservedDatabaseChanges: NSObject {
         switch concurrencyMode {
         case .mainThread:
             AssertIsOnMainThread()
-        case .databaseChangesObserverSerialQueue:
-            AssertHasDatabaseChangesObserverLock()
+        case .databaseChangeObserverSerialQueue:
+            AssertHasDatabaseChangeObserverLock()
         }
     }
     #endif
@@ -543,7 +543,7 @@ extension ObservedDatabaseChanges: DatabaseChanges {
                                       rowIdToUniqueIdMap: [RowId: UniqueId],
                                       tableName: String,
                                       uniqueIdColumnName: String) throws -> Set<String> {
-        AssertHasDatabaseChangesObserverLock()
+        AssertHasDatabaseChangeObserverLock()
 
         // We try to avoid the query below by leveraging the
         // fact that we know the uniqueId and rowId for
@@ -561,10 +561,10 @@ extension ObservedDatabaseChanges: DatabaseChanges {
             }
         }
 
-        guard allUniqueIds.count < DatabaseChangesObserver.kMaxIncrementalRowChanges else {
+        guard allUniqueIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
-        guard unresolvedRowIds.count < DatabaseChangesObserver.kMaxIncrementalRowChanges else {
+        guard unresolvedRowIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 
@@ -582,7 +582,7 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         let fetchedUniqueIds = try String.fetchAll(db, sql: mappingSql)
         allUniqueIds.formUnion(fetchedUniqueIds)
 
-        guard allUniqueIds.count < DatabaseChangesObserver.kMaxIncrementalRowChanges else {
+        guard allUniqueIds.count < DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 

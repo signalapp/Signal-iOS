@@ -14,7 +14,7 @@ public class PaymentsProcessor: NSObject {
         super.init()
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            Self.databaseStorage.appendDatabaseChangesDelegate(self)
+            Self.databaseStorage.appendDatabaseChangeDelegate(self)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.process()
@@ -251,7 +251,7 @@ public class PaymentsProcessor: NSObject {
 
 // MARK: -
 
-extension PaymentsProcessor: DatabaseChangesDelegate {
+extension PaymentsProcessor: DatabaseChangeDelegate {
 
     public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()

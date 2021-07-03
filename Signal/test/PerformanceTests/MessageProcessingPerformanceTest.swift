@@ -27,20 +27,20 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     override func setUp() {
         super.setUp()
 
-        try! databaseStorage.grdbStorage.setupDatabaseChangesObserver()
+        try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
-        // Use DatabaseChangesObserver to be notified of DB writes so we
+        // Use DatabaseChangeObserver to be notified of DB writes so we
         // can verify the expected changes occur.
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
-        databaseStorage.appendDatabaseChangesDelegate(dbObserver)
+        databaseStorage.appendDatabaseChangeDelegate(dbObserver)
     }
 
     override func tearDown() {
         super.tearDown()
 
         self.dbObserver = nil
-        databaseStorage.grdbStorage.testing_tearDownDatabaseChangesObserver()
+        databaseStorage.grdbStorage.testing_tearDownDatabaseChangeObserver()
     }
 
     // MARK: - Tests
@@ -143,7 +143,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     }
 }
 
-private class BlockObserver: DatabaseChangesDelegate {
+private class BlockObserver: DatabaseChangeDelegate {
     let block: () -> Void
     init(block: @escaping () -> Void) {
         self.block = block

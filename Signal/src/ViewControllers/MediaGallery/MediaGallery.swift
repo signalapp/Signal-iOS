@@ -226,7 +226,7 @@ class MediaGallery: Dependencies {
             owsFailDebug("Invalid data store.")
             return
         }
-        databaseStorage.appendDatabaseChangesDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
     // MARK: - 
@@ -986,7 +986,7 @@ class MediaGallery: Dependencies {
     }
 }
 
-extension MediaGallery: DatabaseChangesDelegate {
+extension MediaGallery: DatabaseChangeDelegate {
 
     func databaseChangesWillUpdate() {
         // no-op

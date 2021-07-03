@@ -77,7 +77,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         super.init()
 
         callService.addObserver(observer: self, syncStateImmediately: false)
-        databaseStorage.appendDatabaseChangesDelegate(self)
+        databaseStorage.appendDatabaseChangeDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
     }
@@ -1020,7 +1020,7 @@ extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {
     }
 }
 
-extension ConversationSettingsViewController: DatabaseChangesDelegate {
+extension ConversationSettingsViewController: DatabaseChangeDelegate {
     public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {

@@ -51,7 +51,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageManager () <DatabaseChangesDelegate>
+@interface OWSMessageManager () <DatabaseChangeDelegate>
 
 @end
 
@@ -80,12 +80,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startObserving
 {
-    [self.databaseStorage appendDatabaseChangesDelegate:self];
+    [self.databaseStorage appendDatabaseChangeDelegate:self];
 
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(databaseDidCommitInteractionChange)
-               name:DatabaseChangesObserver.databaseDidCommitInteractionChangeNotification
+               name:DatabaseChangeObserver.databaseDidCommitInteractionChangeNotification
              object:nil];
 }
 
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - DatabaseChangesDelegate
+#pragma mark - DatabaseChangeDelegate
 
 - (void)databaseChangesWillUpdate
 {
