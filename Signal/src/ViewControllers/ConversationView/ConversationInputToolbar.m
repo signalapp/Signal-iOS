@@ -50,6 +50,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
 #pragma mark -
 
+
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
     LinkPreviewViewDraftDelegate,
@@ -107,6 +108,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic, readonly) StickerKeyboard *stickerKeyboard;
 @property (nonatomic, readonly) AttachmentKeyboard *attachmentKeyboard;
 @property (nonatomic) BOOL hasMeasuredKeyboardHeight;
+
+#pragma mark - Quoted replies
+@property (nonatomic, assign, readwrite) BOOL isAnimatingQuotedReply;
 
 @end
 
@@ -554,20 +558,40 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self.inputTextView reloadInputViews];
 }
 
++ (NSTimeInterval)quotedReplyAnimationDuration
+{
+    return 0.2;
+}
+
 - (void)setQuotedReply:(nullable OWSQuotedReplyModel *)quotedReply
 {
     if (quotedReply == _quotedReply) {
         return;
     }
 
-    [self clearQuotedMessagePreview];
-
+    void (^cleanupSubviewsBlock)(void) = ^{
+        for (UIView *subview in self.quotedReplyWrapper.subviews) {
+            [subview removeFromSuperview];
+        }
+    };
     _quotedReply = quotedReply;
 
+    [self.layer removeAllAnimations];
+
     if (!quotedReply) {
+        self.isAnimatingQuotedReply = YES;
+        [UIView animateWithDuration:[[self class] quotedReplyAnimationDuration]
+            animations:^{ self.quotedReplyWrapper.hidden = YES; }
+            completion:^(BOOL finished) {
+                self.isAnimatingQuotedReply = NO;
+                cleanupSubviewsBlock();
+                [self layoutIfNeeded];
+            }];
         [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
         return;
     }
+
+    cleanupSubviewsBlock();
 
     QuotedReplyPreview *quotedMessagePreview =
         [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
@@ -575,7 +599,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [quotedMessagePreview setContentHuggingHorizontalLow];
     [quotedMessagePreview setCompressionResistanceHorizontalLow];
 
-    self.quotedReplyWrapper.hidden = NO;
     self.quotedReplyWrapper.layoutMargins = UIEdgeInsetsZero;
     [self.quotedReplyWrapper addSubview:quotedMessagePreview];
     [quotedMessagePreview autoPinEdgesToSuperviewMargins];
@@ -584,6 +607,12 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     // hasAsymmetricalRounding may have changed.
     [self clearLinkPreviewView];
     [self updateInputLinkPreview];
+    if (self.quotedReplyWrapper.isHidden) {
+        self.isAnimatingQuotedReply = YES;
+        [UIView animateWithDuration:[[self class] quotedReplyAnimationDuration]
+            animations:^{ self.quotedReplyWrapper.hidden = NO; }
+            completion:^(BOOL finished) { self.isAnimatingQuotedReply = NO; }];
+    }
 
     [self clearDesiredKeyboard];
 }
@@ -591,14 +620,6 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (CGFloat)quotedMessageTopMargin
 {
     return 5.f;
-}
-
-- (void)clearQuotedMessagePreview
-{
-    self.quotedReplyWrapper.hidden = YES;
-    for (UIView *subview in self.quotedReplyWrapper.subviews) {
-        [subview removeFromSuperview];
-    }
 }
 
 - (void)beginEditingMessage
@@ -1313,6 +1334,15 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     BOOL didChange = bounds.size.height != self.bounds.size.height;
 
     [super setBounds:bounds];
+
+    // Compensate for autolayout frame/bounds changes when animating in/out the quoted reply view.
+    // This logic ensures the input toolbar stays pinned to the keyboard visually
+    if (didChange && self.isAnimatingQuotedReply && self.inputTextView.isFirstResponder) {
+        CGRect frame = self.frame;
+        frame.origin.y = 0;
+        // In this conditional, bounds change is captured in an animation block, which we don't want here.
+        [UIView performWithoutAnimation:^{ [self setFrame:frame]; }];
+    }
 
     if (didChange) {
         [self.inputToolbarDelegate updateToolbarHeight];

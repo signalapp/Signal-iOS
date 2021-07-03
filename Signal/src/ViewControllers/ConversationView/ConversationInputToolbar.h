@@ -130,6 +130,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
+@property (nonatomic, assign, readonly) BOOL isAnimatingQuotedReply;
++ (NSTimeInterval)quotedReplyAnimationDuration;
 
 @property (nonatomic, nullable, readonly) OWSLinkPreviewDraft *linkPreviewDraft;
 
