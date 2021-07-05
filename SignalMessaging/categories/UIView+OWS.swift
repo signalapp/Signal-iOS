@@ -1188,3 +1188,11 @@ public extension CGFloat {
         self * self
     }
 }
+
+// MARK: -
+
+public extension NSTextAlignment {
+    static var trailing: NSTextAlignment {
+        CurrentAppContext().isRTL ? .left : .right
+    }
+}

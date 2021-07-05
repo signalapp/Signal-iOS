@@ -21,7 +21,7 @@ open class ManualLayoutViewWithLayer: ManualLayoutView {
 // MARK: -
 
 @objc
-open class ManualLayoutView: UIView {
+open class ManualLayoutView: UIView, CVView {
 
     public typealias LayoutBlock = (UIView) -> Void
 

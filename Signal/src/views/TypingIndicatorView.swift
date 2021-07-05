@@ -53,8 +53,8 @@ class TypingIndicatorView: ManualStackView {
                        measurement: measurement,
                        subviews: [ dot1, dot2, dot3 ])
         // Conversation list view cells use iOS auto layout.
-        self.shouldDeactivateConstraints = false
-        self.translatesAutoresizingMaskIntoConstraints = true
+//        self.shouldDeactivateConstraints = false
+//        self.translatesAutoresizingMaskIntoConstraints = true
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -83,7 +83,7 @@ class TypingIndicatorView: ManualStackView {
 
     private static let measurementKey_stack = "TypingIndicatorView.measurementKey_stack"
 
-    private static func measurement() -> ManualStackView.Measurement {
+    static func measurement() -> ManualStackView.Measurement {
         let dotSize = CGSize.square(kMaxRadiusPt)
         let subviewInfos = [
             dotSize.asManualSubviewInfo(hasFixedSize: true),

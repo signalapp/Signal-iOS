@@ -35,23 +35,37 @@ public class CVUtils {
 
 // MARK: -
 
+public protocol CVView: UIView {
+    func reset()
+}
+
+// MARK: -
+
 @objc
-open class CVLabel: UILabel {
+open class CVLabel: UILabel, CVView {
     public override func updateConstraints() {
         super.updateConstraints()
 
         deactivateAllConstraints()
+    }
+
+    public func reset() {
+        self.text = nil
     }
 }
 
 // MARK: -
 
 @objc
-open class CVImageView: UIImageView {
+open class CVImageView: UIImageView, CVView {
     public override func updateConstraints() {
         super.updateConstraints()
 
         deactivateAllConstraints()
+    }
+
+    public func reset() {
+        self.image = nil
     }
 
     // MARK: - Layout
@@ -121,10 +135,14 @@ open class CVImageView: UIImageView {
 // MARK: -
 
 @objc
-open class CVAnimatedImageView: YYAnimatedImageView {
+open class CVAnimatedImageView: YYAnimatedImageView, CVView {
     public override func updateConstraints() {
         super.updateConstraints()
 
         deactivateAllConstraints()
+    }
+
+    public func reset() {
+        self.image = nil
     }
 }

@@ -270,6 +270,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             }
             cell.configure(.init(
                 thread: searchResult.thread,
+                tableWidth: tableView.width,
                 shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                 isBlocked: isBlocked(thread: searchResult.thread)
             ))
@@ -287,6 +288,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
             cell.configure(.init(
                 thread: searchResult.thread,
+                tableWidth: tableView.width,
                 shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
@@ -339,6 +341,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
             cell.configure(.init(
                 thread: searchResult.thread,
+                tableWidth: tableView.width,
                 shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,

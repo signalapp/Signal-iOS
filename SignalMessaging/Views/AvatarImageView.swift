@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-open class AvatarImageView: UIImageView {
+open class AvatarImageView: UIImageView, CVView {
 
     @objc
     public var shouldDeactivateConstraints = false
@@ -57,6 +57,10 @@ open class AvatarImageView: UIImageView {
         if shouldDeactivateConstraints {
             deactivateAllConstraints()
         }
+    }
+
+    public func reset() {
+        self.image = nil
     }
 }
 
