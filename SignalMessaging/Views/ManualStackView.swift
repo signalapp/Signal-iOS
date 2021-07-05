@@ -634,29 +634,52 @@ fileprivate extension CGRect {
 
 // MARK: -
 
+// Analogous to UIView.compressionResistence and .contentHugging.
+//
+// If a stack's contents do not fit within the stack's bounds, they "overflow".
+// If a stack's contents are smaller than the stack's bounds, they "underflow".
+public enum ManualFlowBehavior {
+    case fixed
+    case canExpand
+    case canCompress
+    case canExpandAndCompress
+
+    var canExpand: Bool {
+        switch self {
+        case .fixed, .canCompress:
+            return false
+        case .canExpand, .canExpandAndCompress:
+            return true
+        }
+    }
+
+    var canCompress: Bool {
+        switch self {
+        case .fixed, .canExpand:
+            return false
+        case .canCompress, .canExpandAndCompress:
+            return true
+        }
+    }
+}
+
+// MARK: -
+
 public struct ManualStackSubviewInfo: Equatable {
     let measuredSize: CGSize
 
-    // If a stack's contents do not fit within the stack's bounds, they "overflow".
-    // If a stack's contents are smaller than the stack's bounds, they "underflow".
-    let canWidthExpand: Bool
-    let canWidthCompress: Bool
-    let canHeightExpand: Bool
-    let canHeightCompress: Bool
+    let horizontalFlowBehavior: ManualFlowBehavior
+    let verticalFlowBehavior: ManualFlowBehavior
 
     let locationOffset: CGPoint
 
     public init(measuredSize: CGSize,
-                canWidthExpand: Bool,
-                canWidthCompress: Bool,
-                canHeightExpand: Bool,
-                canHeightCompress: Bool,
+                horizontalFlowBehavior: ManualFlowBehavior,
+                verticalFlowBehavior: ManualFlowBehavior,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.canWidthExpand = canWidthExpand
-        self.canWidthCompress = canWidthCompress
-        self.canHeightExpand = canHeightExpand
-        self.canHeightCompress = canHeightCompress
+        self.horizontalFlowBehavior = horizontalFlowBehavior
+        self.verticalFlowBehavior = verticalFlowBehavior
         self.locationOffset = locationOffset
     }
 
@@ -665,10 +688,8 @@ public struct ManualStackSubviewInfo: Equatable {
                 hasFixedHeight: Bool = false,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.canWidthExpand = !hasFixedWidth
-        self.canWidthCompress = !hasFixedWidth
-        self.canHeightExpand = !hasFixedHeight
-        self.canHeightCompress = !hasFixedHeight
+        self.horizontalFlowBehavior = hasFixedWidth ? .fixed : .canExpandAndCompress
+        self.verticalFlowBehavior = hasFixedHeight ? .fixed : .canExpandAndCompress
         self.locationOffset = locationOffset
     }
 
@@ -676,10 +697,8 @@ public struct ManualStackSubviewInfo: Equatable {
                 hasFixedSize: Bool,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.canWidthExpand = !hasFixedSize
-        self.canWidthCompress = !hasFixedSize
-        self.canHeightExpand = !hasFixedSize
-        self.canHeightCompress = !hasFixedSize
+        self.horizontalFlowBehavior = hasFixedSize ? .fixed : .canExpandAndCompress
+        self.verticalFlowBehavior = hasFixedSize ? .fixed : .canExpandAndCompress
         self.locationOffset = locationOffset
     }
 
@@ -688,10 +707,8 @@ public struct ManualStackSubviewInfo: Equatable {
 
         let hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
         let hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
-        self.canWidthExpand = !hasFixedWidth
-        self.canWidthCompress = !hasFixedWidth
-        self.canHeightExpand = !hasFixedHeight
-        self.canHeightCompress = !hasFixedHeight
+        self.horizontalFlowBehavior = hasFixedWidth ? .fixed : .canExpandAndCompress
+        self.verticalFlowBehavior = hasFixedHeight ? .fixed : .canExpandAndCompress
 
         self.locationOffset = .zero
     }
@@ -708,19 +725,19 @@ public struct ManualStackSubviewInfo: Equatable {
     }
 
     func canExpandOnAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? canWidthExpand : canHeightExpand
+        (isHorizontalLayout ? horizontalFlowBehavior : verticalFlowBehavior).canExpand
     }
 
     func canCompressOnAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? canWidthCompress : canHeightCompress
+        (isHorizontalLayout ? horizontalFlowBehavior : verticalFlowBehavior).canCompress
     }
 
     func canExpandOffAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? canHeightExpand : canWidthExpand
+        (isHorizontalLayout ? verticalFlowBehavior : horizontalFlowBehavior).canExpand
     }
 
     func canCompressOffAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? canHeightCompress : canWidthCompress
+        (isHorizontalLayout ? verticalFlowBehavior : horizontalFlowBehavior).canCompress
     }
 }
 
@@ -747,16 +764,12 @@ public extension CGSize {
                                locationOffset: locationOffset)
     }
 
-    func asManualSubviewInfo(canWidthExpand: Bool = true,
-                             canWidthCompress: Bool = true,
-                             canHeightExpand: Bool = true,
-                             canHeightCompress: Bool = true,
+    func asManualSubviewInfo(horizontalFlowBehavior: ManualFlowBehavior,
+                             verticalFlowBehavior: ManualFlowBehavior,
                              locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
         ManualStackSubviewInfo(measuredSize: self,
-                               canWidthExpand: canWidthExpand,
-                               canWidthCompress: canWidthCompress,
-                               canHeightExpand: canHeightExpand,
-                               canHeightCompress: canHeightCompress,
+                               horizontalFlowBehavior: horizontalFlowBehavior,
+                               verticalFlowBehavior: verticalFlowBehavior,
                                locationOffset: locationOffset)
     }
 }

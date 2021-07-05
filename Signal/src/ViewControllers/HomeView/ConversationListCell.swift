@@ -509,8 +509,6 @@ public class ConversationListCell: UITableViewCell {
                                                                 dateLabelSize.width +
                                                                 topRowStackConfig.spacing))
 
-        // The "top row stack" layout was a lot easier to express in iOS Auto Layout
-        // (thanks to compression resistence and content hugging priorities).
         // The top row contains:
         //
         // * Name label
@@ -525,17 +523,7 @@ public class ConversationListCell: UITableViewCell {
         // before the date/time label.
         //
         // The catch is that mute icon should "hug" the name label, so the
-        // name label can't always handle any underflow in the layout.
-        //
-        // Solution:
-        //
-        // If there's no mute icon, the name label can always handle overflow
-        // and underflow.
-        //
-        // If there is a mute icon, the name label aligns "leading/natural" and
-        // the date/time label aligns "trailing". If there's enough space to
-        // to render the name, the name has fixed width and the date/time does
-        // not.  And vice versa.
+        // name label can't expand to occupt any underflow in the layout.
         let topRowStackSubviews: [UIView]
         let topRowStackSubviewInfos: [ManualStackSubviewInfo]
         if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
@@ -547,15 +535,11 @@ public class ConversationListCell: UITableViewCell {
 
             topRowStackSubviews = [ nameLabel, muteIconView, dateTimeLabel ]
             topRowStackSubviewInfos = [
-                nameLabelSize.asManualSubviewInfo(canWidthExpand: false,
-                                                  canWidthCompress: true,
-                                                  canHeightExpand: false,
-                                                  canHeightCompress: false),
+                nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
+                                                  verticalFlowBehavior: .fixed),
                 CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true),
-                dateLabelSize.asManualSubviewInfo(canWidthExpand: true,
-                                                  canWidthCompress: false,
-                                                  canHeightExpand: false,
-                                                  canHeightCompress: false)
+                dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
+                                                  verticalFlowBehavior: .fixed)
             ]
         } else {
             let nameLabelSize = CVText.measureLabel(config: nameLabelConfig, maxWidth: nameLabelMaxWidth)
