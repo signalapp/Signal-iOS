@@ -105,7 +105,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         let didAddToProfileWhitelist = ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
 
         let message = Self.databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(with: messageBody,
+            ThreadUtil.enqueueMessage(body: messageBody,
                                       mediaAttachments: [],
                                       thread: self.thread,
                                       quotedReplyModel: inputToolbar.quotedReply,
@@ -324,7 +324,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             let didAddToProfileWhitelist = ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: self.thread)
 
             let message = Self.databaseStorage.read { transaction in
-                ThreadUtil.enqueueMessage(with: messageBody,
+                ThreadUtil.enqueueMessage(body: messageBody,
                                           mediaAttachments: attachments,
                                           thread: self.thread,
                                           quotedReplyModel: inputToolbar.quotedReply,
@@ -607,7 +607,7 @@ extension ConversationViewController: LocationPickerDelegate {
             let didAddToProfileWhitelist = ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: self.thread)
 
             let message = Self.databaseStorage.read { transaction in
-                ThreadUtil.enqueueMessage(with: MessageBody(text: location.messageText,
+                ThreadUtil.enqueueMessage(body: MessageBody(text: location.messageText,
                                                             ranges: .empty),
                                           mediaAttachments: [ attachment ],
                                           thread: self.thread,

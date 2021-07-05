@@ -57,48 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
                                     transaction:transaction];
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithBody:(nullable MessageBody *)messageBody
-                             mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
-                                       thread:(TSThread *)thread
-                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                 persistenceCompletionHandler:(void (^__nullable)(void))persistenceCompletion
-                                  transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(thread);
-
-    OutgoingMessagePreparer *outgoingMessagePreparer =
-        [[OutgoingMessagePreparer alloc] initWithMessageBody:messageBody
-                                            mediaAttachments:mediaAttachments
-                                                      thread:thread
-                                            quotedReplyModel:quotedReplyModel
-                                                 transaction:transaction];
-
-    [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
-                                block:^(void (^benchmarkCompletion)(void)) {
-                                    DatabaseStorageAsyncWrite(
-                                        SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *writeTransaction) {
-                                            [outgoingMessagePreparer
-                                                insertMessageWithLinkPreviewDraft:linkPreviewDraft
-                                                                      transaction:writeTransaction];
-                                            [self.messageSenderJobQueue addMessage:outgoingMessagePreparer
-                                                                       transaction:writeTransaction];
-
-                                            [writeTransaction addAsyncCompletion:^{
-                                                benchmarkCompletion();
-                                                persistenceCompletion();
-                                            }];
-                                        });
-                                }];
-
-    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
-    if (message.hasRenderableContent) {
-        [thread donateSendMessageIntentWithTransaction:transaction];
-    }
-    return message;
-}
-
 + (nullable TSOutgoingMessage *)createUnsentMessageWithBody:(nullable MessageBody *)messageBody
                                            mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                                      thread:(TSThread *)thread
