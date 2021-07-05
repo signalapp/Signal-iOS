@@ -547,15 +547,15 @@ public class ConversationListCell: UITableViewCell {
 
             topRowStackSubviews = [ nameLabel, muteIconView, dateTimeLabel ]
             topRowStackSubviewInfos = [
-                nameLabelSize.asManualSubviewInfo(hasFixedWidthForUnderflow: true,
-                                                  hasFixedWidthForOverflow: false,
-                                                  hasFixedHeightForUnderflow: true,
-                                                  hasFixedHeightForOverflow: true),
+                nameLabelSize.asManualSubviewInfo(canWidthExpand: false,
+                                                  canWidthCompress: true,
+                                                  canHeightExpand: false,
+                                                  canHeightCompress: false),
                 CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true),
-                dateLabelSize.asManualSubviewInfo(hasFixedWidthForUnderflow: false,
-                                                  hasFixedWidthForOverflow: true,
-                                                  hasFixedHeightForUnderflow: true,
-                                                  hasFixedHeightForOverflow: true)
+                dateLabelSize.asManualSubviewInfo(canWidthExpand: true,
+                                                  canWidthCompress: false,
+                                                  canHeightExpand: false,
+                                                  canHeightCompress: false)
             ]
         } else {
             let nameLabelSize = CVText.measureLabel(config: nameLabelConfig, maxWidth: nameLabelMaxWidth)

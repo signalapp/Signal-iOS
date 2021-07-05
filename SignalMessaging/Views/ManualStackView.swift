@@ -359,7 +359,7 @@ open class ManualStackView: ManualLayoutView {
 
             // TODO: We could weight re-distribution by contentHuggingPriority.
             var underflowLayoutItems = layoutItems.filter {
-                !$0.subviewInfo.hasFixedSizeOnAxisForUnderflow(isHorizontalLayout: isHorizontal)
+                $0.subviewInfo.canExpandOnAxis(isHorizontalLayout: isHorizontal)
             }
             if underflowLayoutItems.isEmpty {
                 owsFailDebug("\(name): No underflowLayoutItems.")
@@ -381,7 +381,7 @@ open class ManualStackView: ManualLayoutView {
 
             // TODO: We could weight re-distribution by compressionResistence.
             var overflowLayoutItems = layoutItems.filter {
-                !$0.subviewInfo.hasFixedSizeOnAxisForOverflow(isHorizontalLayout: isHorizontal)
+                $0.subviewInfo.canCompressOnAxis(isHorizontalLayout: isHorizontal)
             }
             if overflowLayoutItems.isEmpty {
                 owsFailDebug("\(name): No overflowLayoutItems.")
@@ -408,7 +408,7 @@ open class ManualStackView: ManualLayoutView {
             }
             var offAxisSize: CGFloat = min(layoutItem.offAxisMeasuredSize, offAxisMaxSize)
             if offAxisAlignment == .fill,
-               !layoutItem.subviewInfo.hasFixedSizeOffAxisForUnderflow(isHorizontalLayout: isHorizontal) {
+               layoutItem.subviewInfo.canExpandOffAxis(isHorizontalLayout: isHorizontal) {
                 offAxisSize = offAxisMaxSize
             }
             layoutItem.offAxisSize = offAxisSize
@@ -639,24 +639,24 @@ public struct ManualStackSubviewInfo: Equatable {
 
     // If a stack's contents do not fit within the stack's bounds, they "overflow".
     // If a stack's contents are smaller than the stack's bounds, they "underflow".
-    let hasFixedWidthForUnderflow: Bool
-    let hasFixedWidthForOverflow: Bool
-    let hasFixedHeightForUnderflow: Bool
-    let hasFixedHeightForOverflow: Bool
+    let canWidthExpand: Bool
+    let canWidthCompress: Bool
+    let canHeightExpand: Bool
+    let canHeightCompress: Bool
 
     let locationOffset: CGPoint
 
     public init(measuredSize: CGSize,
-                hasFixedWidthForUnderflow: Bool,
-                hasFixedWidthForOverflow: Bool,
-                hasFixedHeightForUnderflow: Bool,
-                hasFixedHeightForOverflow: Bool,
+                canWidthExpand: Bool,
+                canWidthCompress: Bool,
+                canHeightExpand: Bool,
+                canHeightCompress: Bool,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.hasFixedWidthForUnderflow = hasFixedWidthForUnderflow
-        self.hasFixedWidthForOverflow = hasFixedWidthForOverflow
-        self.hasFixedHeightForUnderflow = hasFixedHeightForUnderflow
-        self.hasFixedHeightForOverflow = hasFixedHeightForOverflow
+        self.canWidthExpand = canWidthExpand
+        self.canWidthCompress = canWidthCompress
+        self.canHeightExpand = canHeightExpand
+        self.canHeightCompress = canHeightCompress
         self.locationOffset = locationOffset
     }
 
@@ -665,10 +665,10 @@ public struct ManualStackSubviewInfo: Equatable {
                 hasFixedHeight: Bool = false,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.hasFixedWidthForUnderflow = hasFixedWidth
-        self.hasFixedWidthForOverflow = hasFixedWidth
-        self.hasFixedHeightForUnderflow = hasFixedHeight
-        self.hasFixedHeightForOverflow = hasFixedHeight
+        self.canWidthExpand = !hasFixedWidth
+        self.canWidthCompress = !hasFixedWidth
+        self.canHeightExpand = !hasFixedHeight
+        self.canHeightCompress = !hasFixedHeight
         self.locationOffset = locationOffset
     }
 
@@ -676,10 +676,10 @@ public struct ManualStackSubviewInfo: Equatable {
                 hasFixedSize: Bool,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.hasFixedWidthForUnderflow = hasFixedSize
-        self.hasFixedWidthForOverflow = hasFixedSize
-        self.hasFixedHeightForUnderflow = hasFixedSize
-        self.hasFixedHeightForOverflow = hasFixedSize
+        self.canWidthExpand = !hasFixedSize
+        self.canWidthCompress = !hasFixedSize
+        self.canHeightExpand = !hasFixedSize
+        self.canHeightCompress = !hasFixedSize
         self.locationOffset = locationOffset
     }
 
@@ -688,10 +688,10 @@ public struct ManualStackSubviewInfo: Equatable {
 
         let hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
         let hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
-        self.hasFixedWidthForUnderflow = hasFixedWidth
-        self.hasFixedWidthForOverflow = hasFixedWidth
-        self.hasFixedHeightForUnderflow = hasFixedHeight
-        self.hasFixedHeightForOverflow = hasFixedHeight
+        self.canWidthExpand = !hasFixedWidth
+        self.canWidthCompress = !hasFixedWidth
+        self.canHeightExpand = !hasFixedHeight
+        self.canHeightCompress = !hasFixedHeight
 
         self.locationOffset = .zero
     }
@@ -707,20 +707,20 @@ public struct ManualStackSubviewInfo: Equatable {
         ManualStackSubviewInfo(measuredSize: .zero)
     }
 
-    func hasFixedSizeOnAxisForUnderflow(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedWidthForUnderflow : hasFixedHeightForUnderflow
+    func canExpandOnAxis(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? canWidthExpand : canHeightExpand
     }
 
-    func hasFixedSizeOnAxisForOverflow(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedWidthForOverflow : hasFixedHeightForOverflow
+    func canCompressOnAxis(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? canWidthCompress : canHeightCompress
     }
 
-    func hasFixedSizeOffAxisForUnderflow(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedHeightForUnderflow : hasFixedWidthForUnderflow
+    func canExpandOffAxis(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? canHeightExpand : canWidthExpand
     }
 
-    func hasFixedSizeOffAxisForOverflow(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedHeightForOverflow : hasFixedWidthForOverflow
+    func canCompressOffAxis(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? canHeightCompress : canWidthCompress
     }
 }
 
@@ -747,16 +747,16 @@ public extension CGSize {
                                locationOffset: locationOffset)
     }
 
-    func asManualSubviewInfo(hasFixedWidthForUnderflow: Bool = false,
-                             hasFixedWidthForOverflow: Bool = false,
-                             hasFixedHeightForUnderflow: Bool = false,
-                             hasFixedHeightForOverflow: Bool = false,
+    func asManualSubviewInfo(canWidthExpand: Bool = true,
+                             canWidthCompress: Bool = true,
+                             canHeightExpand: Bool = true,
+                             canHeightCompress: Bool = true,
                              locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
         ManualStackSubviewInfo(measuredSize: self,
-                               hasFixedWidthForUnderflow: hasFixedWidthForUnderflow,
-                               hasFixedWidthForOverflow: hasFixedWidthForOverflow,
-                               hasFixedHeightForUnderflow: hasFixedHeightForUnderflow,
-                               hasFixedHeightForOverflow: hasFixedHeightForOverflow,
+                               canWidthExpand: canWidthExpand,
+                               canWidthCompress: canWidthCompress,
+                               canHeightExpand: canHeightExpand,
+                               canHeightCompress: canHeightCompress,
                                locationOffset: locationOffset)
     }
 }
