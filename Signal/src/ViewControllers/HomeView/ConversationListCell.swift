@@ -596,7 +596,12 @@ public class ConversationListCell: UITableViewCell {
         if let statusIndicator = prepareStatusIndicatorView(thread: thread,
                                                             shouldHideStatusIndicator: shouldHideStatusIndicator) {
             bottomRowStackSubviews.append(statusIndicator.view)
-            bottomRowStackSubviewInfos.append(statusIndicator.size.asManualSubviewInfo(hasFixedSize: true))
+            // The status indicator should vertically align with the
+            // first line of the snippet.
+            let locationOffset = CGPoint(x: 0,
+                                         y: snippetLineHeight * -0.5)
+            bottomRowStackSubviewInfos.append(statusIndicator.size.asManualSubviewInfo(hasFixedSize: true,
+                                                                                       locationOffset: locationOffset))
         }
         let bottomRowStackSize = bottomRowStack.configure(config: bottomRowStackConfig,
                                                           subviews: bottomRowStackSubviews,

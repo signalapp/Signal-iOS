@@ -416,10 +416,10 @@ open class ManualStackView: ManualLayoutView {
             }
         }
 
-        // Apply layoutMargins.
+        // Apply layoutMargins and locationOffset.
         for layoutItem in layoutItems {
-            layoutItem.frame.x += layoutMargins.left
-            layoutItem.frame.y += layoutMargins.top
+            layoutItem.frame.x += layoutMargins.left + layoutItem.subviewInfo.locationOffset.x
+            layoutItem.frame.y += layoutMargins.top + layoutItem.subviewInfo.locationOffset.y
         }
 
         let arrangementItems = layoutItems.map { $0.asArrangementItem }
@@ -631,26 +631,25 @@ public struct ManualStackSubviewInfo: Equatable {
     let measuredSize: CGSize
     let hasFixedWidth: Bool
     let hasFixedHeight: Bool
+    let locationOffset: CGPoint
 
     public init(measuredSize: CGSize,
                 hasFixedWidth: Bool = false,
-                hasFixedHeight: Bool = false) {
+                hasFixedHeight: Bool = false,
+                locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
         self.hasFixedWidth = hasFixedWidth
         self.hasFixedHeight = hasFixedHeight
+        self.locationOffset = locationOffset
     }
 
-    public init(measuredSize: CGSize, hasFixedSize: Bool) {
+    public init(measuredSize: CGSize,
+                hasFixedSize: Bool,
+                locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
         self.hasFixedWidth = hasFixedSize
         self.hasFixedHeight = hasFixedSize
-    }
-
-    private static func setSubviewFrame(subview: UIView, frame: CGRect) {
-        guard subview.frame != frame else {
-            return
-        }
-        subview.frame = frame
+        self.locationOffset = locationOffset
     }
 
     public init(measuredSize: CGSize, subview: UIView) {
@@ -658,6 +657,14 @@ public struct ManualStackSubviewInfo: Equatable {
 
         self.hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
         self.hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
+        self.locationOffset = .zero
+    }
+
+    private static func setSubviewFrame(subview: UIView, frame: CGRect) {
+        guard subview.frame != frame else {
+            return
+        }
+        subview.frame = frame
     }
 
     public static var empty: ManualStackSubviewInfo {
@@ -681,14 +688,19 @@ public extension CGSize {
     }
 
     func asManualSubviewInfo(hasFixedWidth: Bool = false,
-                             hasFixedHeight: Bool = false) -> ManualStackSubviewInfo {
+                             hasFixedHeight: Bool = false,
+                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
         ManualStackSubviewInfo(measuredSize: self,
                                hasFixedWidth: hasFixedWidth,
-                               hasFixedHeight: hasFixedHeight)
+                               hasFixedHeight: hasFixedHeight,
+                               locationOffset: locationOffset)
     }
 
-    func asManualSubviewInfo(hasFixedSize: Bool) -> ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self, hasFixedSize: hasFixedSize)
+    func asManualSubviewInfo(hasFixedSize: Bool,
+                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self,
+                               hasFixedSize: hasFixedSize,
+                               locationOffset: locationOffset)
     }
 }
 
