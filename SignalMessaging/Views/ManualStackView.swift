@@ -342,10 +342,15 @@ open class ManualStackView: ManualLayoutView {
         }
 
         // Handle underflow and overflow.
+        //
+        // If a stack's contents do not fit within the stack's bounds, they "overflow".
+        // If a stack's contents are smaller than the stack's bounds, they "underflow".
         let fuzzyTolerance: CGFloat = 0.001
         if abs(onAxisSizeTotal - onAxisMaxSize) < fuzzyTolerance {
-            // Exact match.
+            // Exact match; no adjustments necessary.
         } else if onAxisSizeTotal < onAxisMaxSize {
+            // Underflow case
+            //
             // Underflow is expected; a stack view is often larger than
             // the minimum size of its contents.  The stack view will
             // expand the layout of its contents to take advantage of
@@ -354,7 +359,7 @@ open class ManualStackView: ManualLayoutView {
 
             // TODO: We could weight re-distribution by contentHuggingPriority.
             var underflowLayoutItems = layoutItems.filter {
-                !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
+                !$0.subviewInfo.hasFixedSizeOnAxisForUnderflow(isHorizontalLayout: isHorizontal)
             }
             if underflowLayoutItems.isEmpty {
                 owsFailDebug("\(name): No underflowLayoutItems.")
@@ -366,6 +371,8 @@ open class ManualStackView: ManualLayoutView {
                 layoutItem.onAxisSize = max(0, layoutItem.onAxisSize + adjustment)
             }
         } else if onAxisSizeTotal > onAxisMaxSize {
+            // Overflow case
+            //
             // Overflow should be rare, at least in the conversation view cells.
             // It is expected in some cases, e.g. when animating an orientation
             // change when the new layout hasn't landed yet.
@@ -374,7 +381,7 @@ open class ManualStackView: ManualLayoutView {
 
             // TODO: We could weight re-distribution by compressionResistence.
             var overflowLayoutItems = layoutItems.filter {
-                !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
+                !$0.subviewInfo.hasFixedSizeOnAxisForOverflow(isHorizontalLayout: isHorizontal)
             }
             if overflowLayoutItems.isEmpty {
                 owsFailDebug("\(name): No overflowLayoutItems.")
@@ -401,7 +408,7 @@ open class ManualStackView: ManualLayoutView {
             }
             var offAxisSize: CGFloat = min(layoutItem.offAxisMeasuredSize, offAxisMaxSize)
             if offAxisAlignment == .fill,
-               !layoutItem.subviewInfo.hasFixedSizeOffAxis(isHorizontalLayout: isHorizontal) {
+               !layoutItem.subviewInfo.hasFixedSizeOffAxisForUnderflow(isHorizontalLayout: isHorizontal) {
                 offAxisSize = offAxisMaxSize
             }
             layoutItem.offAxisSize = offAxisSize
@@ -629,17 +636,39 @@ fileprivate extension CGRect {
 
 public struct ManualStackSubviewInfo: Equatable {
     let measuredSize: CGSize
-    let hasFixedWidth: Bool
-    let hasFixedHeight: Bool
+
+    // If a stack's contents do not fit within the stack's bounds, they "overflow".
+    // If a stack's contents are smaller than the stack's bounds, they "underflow".
+    let hasFixedWidthForUnderflow: Bool
+    let hasFixedWidthForOverflow: Bool
+    let hasFixedHeightForUnderflow: Bool
+    let hasFixedHeightForOverflow: Bool
+
     let locationOffset: CGPoint
+
+    public init(measuredSize: CGSize,
+                hasFixedWidthForUnderflow: Bool,
+                hasFixedWidthForOverflow: Bool,
+                hasFixedHeightForUnderflow: Bool,
+                hasFixedHeightForOverflow: Bool,
+                locationOffset: CGPoint = .zero) {
+        self.measuredSize = measuredSize
+        self.hasFixedWidthForUnderflow = hasFixedWidthForUnderflow
+        self.hasFixedWidthForOverflow = hasFixedWidthForOverflow
+        self.hasFixedHeightForUnderflow = hasFixedHeightForUnderflow
+        self.hasFixedHeightForOverflow = hasFixedHeightForOverflow
+        self.locationOffset = locationOffset
+    }
 
     public init(measuredSize: CGSize,
                 hasFixedWidth: Bool = false,
                 hasFixedHeight: Bool = false,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.hasFixedWidth = hasFixedWidth
-        self.hasFixedHeight = hasFixedHeight
+        self.hasFixedWidthForUnderflow = hasFixedWidth
+        self.hasFixedWidthForOverflow = hasFixedWidth
+        self.hasFixedHeightForUnderflow = hasFixedHeight
+        self.hasFixedHeightForOverflow = hasFixedHeight
         self.locationOffset = locationOffset
     }
 
@@ -647,16 +676,23 @@ public struct ManualStackSubviewInfo: Equatable {
                 hasFixedSize: Bool,
                 locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.hasFixedWidth = hasFixedSize
-        self.hasFixedHeight = hasFixedSize
+        self.hasFixedWidthForUnderflow = hasFixedSize
+        self.hasFixedWidthForOverflow = hasFixedSize
+        self.hasFixedHeightForUnderflow = hasFixedSize
+        self.hasFixedHeightForOverflow = hasFixedSize
         self.locationOffset = locationOffset
     }
 
     public init(measuredSize: CGSize, subview: UIView) {
         self.measuredSize = measuredSize
 
-        self.hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
-        self.hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
+        let hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
+        let hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
+        self.hasFixedWidthForUnderflow = hasFixedWidth
+        self.hasFixedWidthForOverflow = hasFixedWidth
+        self.hasFixedHeightForUnderflow = hasFixedHeight
+        self.hasFixedHeightForOverflow = hasFixedHeight
+
         self.locationOffset = .zero
     }
 
@@ -671,12 +707,20 @@ public struct ManualStackSubviewInfo: Equatable {
         ManualStackSubviewInfo(measuredSize: .zero)
     }
 
-    func hasFixedSizeOnAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedWidth : hasFixedHeight
+    func hasFixedSizeOnAxisForUnderflow(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? hasFixedWidthForUnderflow : hasFixedHeightForUnderflow
     }
 
-    func hasFixedSizeOffAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedHeight : hasFixedWidth
+    func hasFixedSizeOnAxisForOverflow(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? hasFixedWidthForOverflow : hasFixedHeightForOverflow
+    }
+
+    func hasFixedSizeOffAxisForUnderflow(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? hasFixedHeightForUnderflow : hasFixedWidthForUnderflow
+    }
+
+    func hasFixedSizeOffAxisForOverflow(isHorizontalLayout: Bool) -> Bool {
+        isHorizontalLayout ? hasFixedHeightForOverflow : hasFixedWidthForOverflow
     }
 }
 
@@ -700,6 +744,19 @@ public extension CGSize {
                              locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
         ManualStackSubviewInfo(measuredSize: self,
                                hasFixedSize: hasFixedSize,
+                               locationOffset: locationOffset)
+    }
+
+    func asManualSubviewInfo(hasFixedWidthForUnderflow: Bool = false,
+                             hasFixedWidthForOverflow: Bool = false,
+                             hasFixedHeightForUnderflow: Bool = false,
+                             hasFixedHeightForOverflow: Bool = false,
+                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self,
+                               hasFixedWidthForUnderflow: hasFixedWidthForUnderflow,
+                               hasFixedWidthForOverflow: hasFixedWidthForOverflow,
+                               hasFixedHeightForUnderflow: hasFixedHeightForUnderflow,
+                               hasFixedHeightForOverflow: hasFixedHeightForOverflow,
                                locationOffset: locationOffset)
     }
 }
