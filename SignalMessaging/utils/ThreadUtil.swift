@@ -8,6 +8,44 @@ import PromiseKit
 @objc
 public extension ThreadUtil {
 
+    typealias PersistenceCompletion = () -> Void
+
+    @discardableResult
+    class func enqueueMessage(body messageBody: MessageBody?,
+                              mediaAttachments: [SignalAttachment],
+                              thread: TSThread,
+                              quotedReplyModel: OWSQuotedReplyModel?,
+                              linkPreviewDraft: OWSLinkPreviewDraft?,
+                              persistenceCompletionHandler persistenceCompletion: PersistenceCompletion?,
+                              transaction readTransaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
+        AssertIsOnMainThread()
+
+        let outgoingMessagePreparer = OutgoingMessagePreparer(messageBody: messageBody,
+                                                              mediaAttachments: mediaAttachments,
+                                                              thread: thread,
+                                                              quotedReplyModel: quotedReplyModel,
+                                                              transaction: readTransaction)
+        let message: TSOutgoingMessage = outgoingMessagePreparer.unpreparedMessage
+
+        BenchManager.benchAsync(title: "Saving outgoing message") { benchmarkCompletion in
+            Self.databaseStorage.asyncWrite { writeTransaction in
+                outgoingMessagePreparer.insertMessage(linkPreviewDraft: linkPreviewDraft,
+                                                      transaction: writeTransaction)
+                Self.messageSenderJobQueue.add(message: outgoingMessagePreparer,
+                                               transaction: writeTransaction)
+                writeTransaction.addAsyncCompletion {
+                    benchmarkCompletion()
+                    persistenceCompletion?()
+                }
+            }
+        }
+
+        if message.hasRenderableContent() {
+            thread.donateSendMessageIntent(transaction: readTransaction)
+        }
+        return message
+    }
+
     @discardableResult
     class func enqueueMessage(withContactShare contactShare: OWSContact,
                               thread: TSThread) -> TSOutgoingMessage {
