@@ -52,9 +52,6 @@ class TypingIndicatorView: ManualStackView {
         self.configure(config: Self.stackConfig,
                        measurement: measurement,
                        subviews: [ dot1, dot2, dot3 ])
-        // Conversation list view cells use iOS auto layout.
-//        self.shouldDeactivateConstraints = false
-//        self.translatesAutoresizingMaskIntoConstraints = true
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),

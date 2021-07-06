@@ -238,14 +238,6 @@ public class ConversationListCell: UITableViewCell {
         }
         applyUnreadIndicator()
 
-        let dateTimeLabelConfig = self.dateTimeLabelConfig(configuration: configuration)
-        dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
-        let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
-                                                maxWidth: CGFloat.greatestFiniteMagnitude)
-
-        let nameLabelConfig = self.nameLabelConfig(configuration: configuration)
-        nameLabelConfig.applyForRendering(label: nameLabel)
-
         // The top row contains:
         //
         // * Name label
@@ -261,34 +253,33 @@ public class ConversationListCell: UITableViewCell {
         //
         // The catch is that mute icon should "hug" the name label, so the
         // name label can't expand to occupt any underflow in the layout.
-        let topRowStackSubviews: [UIView]
-        let topRowStackSubviewInfos: [ManualStackSubviewInfo]
+        var topRowStackSubviews = [UIView]()
+        var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
+
+        let nameLabelConfig = self.nameLabelConfig(configuration: configuration)
+        nameLabelConfig.applyForRendering(label: nameLabel)
+        let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
+                                                maxWidth: .greatestFiniteMagnitude)
+        topRowStackSubviews.append(nameLabel)
+        topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
+                                                                         verticalFlowBehavior: .fixed))
+
         if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
             muteIconView.setTemplateImageName("bell-disabled-outline-24",
                                               tintColor: Theme.primaryTextColor)
             muteIconView.tintColor = snippetColor
-
             let muteIconSize: CGFloat = 16
-            let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
-                                                    maxWidth: .greatestFiniteMagnitude)
-
-            topRowStackSubviews = [ nameLabel, muteIconView, dateTimeLabel ]
-            topRowStackSubviewInfos = [
-                nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
-                                                  verticalFlowBehavior: .fixed),
-                CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true),
-                dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
-                                                  verticalFlowBehavior: .fixed)
-            ]
-        } else {
-            let nameLabelSize = CVText.measureLabel(config: nameLabelConfig, maxWidth: .greatestFiniteMagnitude)
-
-            topRowStackSubviews = [ nameLabel, dateTimeLabel ]
-            topRowStackSubviewInfos = [
-                nameLabelSize.asManualSubviewInfo(hasFixedHeight: true),
-                dateLabelSize.asManualSubviewInfo(hasFixedSize: true)
-            ]
+            topRowStackSubviews.append(muteIconView)
+            topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
         }
+
+        let dateTimeLabelConfig = self.dateTimeLabelConfig(configuration: configuration)
+        dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
+        let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
+                                                maxWidth: CGFloat.greatestFiniteMagnitude)
+        topRowStackSubviews.append(dateTimeLabel)
+        topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
+                                                                         verticalFlowBehavior: .fixed))
 
         let topRowStackSize = topRowStack.configure(config: topRowStackConfig,
                                                     subviews: topRowStackSubviews,
