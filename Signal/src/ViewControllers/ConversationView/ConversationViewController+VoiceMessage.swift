@@ -5,7 +5,6 @@
 import Foundation
 
 extension ConversationViewController {
-    @objc
     func checkPermissionsAndStartRecordingVoiceMessage() {
         AssertIsOnMainThread()
 
@@ -55,7 +54,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     func cancelRecordingVoiceMessage() {
         AssertIsOnMainThread()
 
@@ -101,7 +99,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     func sendVoiceMessageModel(_ voiceMessageModel: VoiceMessageModel) {
         inputToolbar?.hideVoiceMemoUI(true)
         configureScrollDownButtons()

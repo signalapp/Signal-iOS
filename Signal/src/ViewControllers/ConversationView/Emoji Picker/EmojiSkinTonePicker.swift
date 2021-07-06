@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -68,7 +68,6 @@ class EmojiSkinTonePicker: UIView {
         return picker
     }
 
-    @objc
     func dismiss() {
         UIView.animate(withDuration: 0.12, animations: { self.alpha = 0 }) { _ in
             self.removeFromSuperview()

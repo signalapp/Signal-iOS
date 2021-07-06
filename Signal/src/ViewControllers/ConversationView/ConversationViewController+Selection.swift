@@ -43,34 +43,28 @@ public class CVCellSelection {
 
 extension ConversationViewController {
 
-    @objc
     public func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool {
         isMessageSelected(interaction)
     }
 
-    @objc
     public func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {
         didSelectMessage(itemViewModel)
     }
 
-    @objc
     public func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {
         didDeselectMessage(itemViewModel)
     }
 
-    @objc
     public func addToSelection(_ interactionId: String) {
         cellSelection.add(interactionId)
         // TODO: Update cells/selection view?
     }
 
-    @objc
     public func removeFromSelection(_ interactionId: String) {
         cellSelection.remove(interactionId)
         // TODO: Update cells/selection view?
     }
 
-    @objc
     public func isMessageSelected(_ interaction: TSInteraction) -> Bool {
         cellSelection.isSelected(interaction.uniqueId)
     }
@@ -96,7 +90,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     public func buildSelectionToolbar() -> MessageActionsToolbar {
         let deleteSelectedMessages = MessageAction(
             .delete,
@@ -159,7 +152,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     public func updateSelectionButtons() {
         guard let selectionToolbar = self.selectionToolbar else {
             owsFailDebug("Missing selectionToolbar.")
@@ -172,7 +164,6 @@ extension ConversationViewController {
         deleteButton.isEnabled = selectedInteractionIds.count > 0
     }
 
-    @objc
     public func ensureSelectionViewState() {
         guard isShowingSelectionUI else {
             return
@@ -194,7 +185,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     public func didSelectMessage(_ message: CVItemViewModel) {
         AssertIsOnMainThread()
         owsAssertDebug(isShowingSelectionUI)
@@ -214,7 +204,6 @@ extension ConversationViewController {
         updateSelectionButtons()
     }
 
-    @objc
     public func didDeselectMessage(_ message: CVItemViewModel) {
         AssertIsOnMainThread()
         owsAssertDebug(isShowingSelectionUI)
@@ -236,12 +225,10 @@ extension ConversationViewController {
 
 extension ConversationViewController {
 
-    @objc
     var cancelSelectionBarButtonItem: UIBarButtonItem {
         UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancelSelection))
     }
 
-    @objc
     var deleteAllBarButtonItem: UIBarButtonItem {
         let title = NSLocalizedString("CONVERSATION_VIEW_DELETE_ALL_MESSAGES", comment: "button text to delete all items in the current conversation")
         return UIBarButtonItem(title: title, style: .plain, target: self, action: #selector(didTapDeleteAll))

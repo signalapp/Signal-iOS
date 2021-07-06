@@ -22,7 +22,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
     fileprivate var wallpaperView: WallpaperView?
 
-    @objc
     public weak var delegate: CVBackgroundContainerDelegate?
 
     public init() {
@@ -35,7 +34,6 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(name: String) {
         notImplemented()
     }
@@ -88,7 +86,6 @@ extension CVBackgroundContainer: WallpaperBlurProvider {
 
 extension ConversationViewController: CVBackgroundContainerDelegate {
 
-    @objc
     public func updateScrollingContent() {
         AssertIsOnMainThread()
 

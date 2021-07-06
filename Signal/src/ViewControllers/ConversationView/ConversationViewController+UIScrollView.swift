@@ -16,17 +16,14 @@ extension ConversationViewController {
         get { viewState.isHidingScrollToNextMentionButton }
         set { viewState.isHidingScrollToNextMentionButton = newValue }
     }
-    @objc
     public var scrollUpdateTimer: Timer? {
         get { viewState.scrollUpdateTimer }
         set { viewState.scrollUpdateTimer = newValue }
     }
-    @objc
     public var isWaitingForDeceleration: Bool {
         get { viewState.isWaitingForDeceleration }
         set { viewState.isWaitingForDeceleration = newValue }
     }
-    @objc
     public var userHasScrolled: Bool {
         get { viewState.userHasScrolled }
         set {
@@ -40,7 +37,6 @@ extension ConversationViewController {
 
     // MARK: -
 
-    @objc
     public func configureScrollDownButtons() {
         AssertIsOnMainThread()
 
@@ -143,7 +139,6 @@ extension ConversationViewController {
 // MARK: -
 
 extension ConversationViewController: UIScrollViewDelegate {
-    @objc
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
@@ -196,7 +191,6 @@ extension ConversationViewController: UIScrollViewDelegate {
         }
     }
 
-    @objc
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
@@ -205,7 +199,6 @@ extension ConversationViewController: UIScrollViewDelegate {
         scrollingAnimationDidStart()
     }
 
-    @objc
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate: Bool) {
         AssertIsOnMainThread()
 
@@ -226,7 +219,6 @@ extension ConversationViewController: UIScrollViewDelegate {
         }
     }
 
-    @objc
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
@@ -241,7 +233,6 @@ extension ConversationViewController: UIScrollViewDelegate {
         scheduleScrollUpdateTimer()
     }
 
-    @objc
     public func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         AssertIsOnMainThread()
 
@@ -267,14 +258,12 @@ extension ConversationViewController: UIScrollViewDelegate {
         }
     }
 
-    @objc
     public func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
         scrollingAnimationDidComplete()
     }
 
-    @objc
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
@@ -285,7 +274,6 @@ extension ConversationViewController: UIScrollViewDelegate {
 // MARK: - Scroll Down Button
 
 extension ConversationViewController {
-    @objc
     public func createConversationScrollButtons() {
         AssertIsOnMainThread()
 

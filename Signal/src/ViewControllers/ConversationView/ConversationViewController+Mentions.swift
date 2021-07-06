@@ -5,7 +5,6 @@
 import Foundation
 
 extension ConversationViewController: MentionTextViewDelegate {
-    @objc
     var supportsMentions: Bool { Mention.threadAllowsMentionSend(thread) }
 
     public func textViewDidBeginTypingMention(_ textView: MentionTextView) {}

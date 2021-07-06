@@ -52,15 +52,12 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
         inputToolbar.setMessageBody(newMessageBody, animated: false)
     }
 
-    @objc
     public var attachmentApprovalTextInputContextIdentifier: String? { textInputContextIdentifier }
 
-    @objc
     public var attachmentApprovalRecipientNames: [String] {
         [ Self.contactsManager.displayNameWithSneakyTransaction(thread: thread) ]
     }
 
-    @objc
     public var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
         supportsMentions ? thread.recipientAddresses : []
     }
@@ -70,7 +67,6 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
 
 extension ConversationViewController: ContactsPickerDelegate {
 
-    @objc
     public func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
         AssertIsOnMainThread()
 
@@ -79,7 +75,6 @@ extension ConversationViewController: ContactsPickerDelegate {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
     public func contactsPickerDidCancel(_: ContactsPicker) {
         AssertIsOnMainThread()
 
@@ -88,7 +83,6 @@ extension ConversationViewController: ContactsPickerDelegate {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
     public func contactsPicker(_ contactsPicker: ContactsPicker, didSelectContact contact: Contact) {
         AssertIsOnMainThread()
         owsAssertDebug(contact.cnContactId != nil)
@@ -130,7 +124,6 @@ extension ConversationViewController: ContactsPickerDelegate {
         navigationController.pushViewController(approveContactShare, animated: true)
     }
 
-    @objc
     public func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
         AssertIsOnMainThread()
 
@@ -139,7 +132,6 @@ extension ConversationViewController: ContactsPickerDelegate {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
     public func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
         AssertIsOnMainThread()
 
@@ -152,7 +144,6 @@ extension ConversationViewController: ContactsPickerDelegate {
 
 extension ConversationViewController: ContactShareApprovalViewControllerDelegate {
 
-    @objc
     public func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                                     didApproveContactShare contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
@@ -191,7 +182,6 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
         }
     }
 
-    @objc
     public func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                                     didCancelContactShare contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
@@ -201,14 +191,12 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
         dismiss(animated: true, completion: nil)
     }
 
-    @objc
     public func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String? {
         AssertIsOnMainThread()
 
         return nil
     }
 
-    @objc
     public func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
         AssertIsOnMainThread()
 
@@ -219,7 +207,6 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
         }
     }
 
-    @objc
     public func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode {
         AssertIsOnMainThread()
 
@@ -230,7 +217,6 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
 // MARK: -
 
 extension ConversationViewController: ContactShareViewHelperDelegate {
-    @objc
     public func didCreateOrEditContact() {
         AssertIsOnMainThread()
 
@@ -243,7 +229,6 @@ extension ConversationViewController: ContactShareViewHelperDelegate {
 // MARK: -
 
 extension ConversationViewController: ConversationHeaderViewDelegate {
-    @objc
     public func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView) {
         AssertIsOnMainThread()
 
@@ -254,7 +239,6 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
 // MARK: -
 
 extension ConversationViewController: ConversationInputTextViewDelegate {
-    @objc
     public func didPasteAttachment(_ attachment: SignalAttachment?) {
         AssertIsOnMainThread()
 
@@ -272,14 +256,12 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
         }
     }
 
-    @objc
     public func inputTextViewSendMessagePressed() {
         AssertIsOnMainThread()
 
         sendButtonPressed()
     }
 
-    @objc
     public func textViewDidChange(_ textView: UITextView) {
         AssertIsOnMainThread()
 
@@ -292,7 +274,6 @@ extension ConversationViewController: ConversationInputTextViewDelegate {
 // MARK: -
 
 extension ConversationViewController: ConversationSearchControllerDelegate {
-    @objc
     public func didDismissSearchController(_ searchController: UISearchController) {
         AssertIsOnMainThread()
 
@@ -308,7 +289,6 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
         }
     }
 
-    @objc
     public func conversationSearchController(_ conversationSearchController: ConversationSearchController,
                                              didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?) {
         AssertIsOnMainThread()
@@ -323,7 +303,6 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
         }
     }
 
-    @objc
     public func conversationSearchController(_ conversationSearchController: ConversationSearchController,
                                              didSelectMessageId messageId: String) {
         AssertIsOnMainThread()
@@ -341,7 +320,6 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
 // MARK: -
 
 extension ConversationViewController: UIDocumentMenuDelegate {
-    @objc
     public func documentMenu(_ documentMenu: UIDocumentMenuViewController,
                              didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
         AssertIsOnMainThread()
@@ -355,7 +333,6 @@ extension ConversationViewController: UIDocumentMenuDelegate {
 // MARK: -
 
 extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
-    @objc
     public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval,
                                                               animationCurve: UIView.AnimationCurve) {
         AssertIsOnMainThread()
@@ -364,7 +341,6 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
                                   animationCurve: animationCurve)
     }
 
-    @objc
     public func inputAccessoryPlaceholderKeyboardDidPresent() {
         AssertIsOnMainThread()
 
@@ -372,7 +348,6 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         updateContentInsets(animated: false)
     }
 
-    @objc
     public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval,
                                                               animationCurve: UIView.AnimationCurve) {
         AssertIsOnMainThread()
@@ -381,7 +356,6 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
                                   animationCurve: animationCurve)
     }
 
-    @objc
     public func inputAccessoryPlaceholderKeyboardDidDismiss() {
         AssertIsOnMainThread()
 
@@ -389,7 +363,6 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         updateContentInsets(animated: false)
     }
 
-    @objc
     public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
         AssertIsOnMainThread()
 
@@ -444,14 +417,12 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
 // MARK: -
 
 extension ConversationViewController: ConversationCollectionViewDelegate {
-    @objc
     public func collectionViewWillChangeSize(from oldSize: CGSize, to newSize: CGSize) {
         AssertIsOnMainThread()
 
         // Do nothing.
     }
 
-    @objc
     public func collectionViewDidChangeSize(from oldSize: CGSize, to newSize: CGSize) {
         AssertIsOnMainThread()
 
@@ -462,14 +433,12 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
         updateScrollingContent()
     }
 
-    @objc
     public func collectionViewWillAnimate() {
         AssertIsOnMainThread()
 
         scrollingAnimationDidStart()
     }
 
-    @objc
     public func scrollingAnimationDidStart() {
         AssertIsOnMainThread()
 

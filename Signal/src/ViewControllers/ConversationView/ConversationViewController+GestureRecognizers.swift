@@ -5,7 +5,6 @@
 import Foundation
 
 extension ConversationViewController: UIGestureRecognizerDelegate {
-    @objc
     func createGestureRecognizers() {
         collectionViewTapGestureRecognizer.addTarget(self, action: #selector(handleTapGesture))
         collectionViewTapGestureRecognizer.delegate = self

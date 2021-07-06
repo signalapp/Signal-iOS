@@ -6,36 +6,28 @@ import Foundation
 
 extension ConversationViewController {
 
-    @objc
     public var isGroupConversation: Bool { thread.isGroupThread }
 
-    @objc
     public static var messageSection: Int { CVLoadCoordinator.messageSection }
 
-    @objc
     public var hasRenderState: Bool { !renderState.isEmptyInitialState }
 
-    @objc
     public var hasAppearedAndHasAppliedFirstLoad: Bool {
         (hasRenderState &&
             hasViewDidAppearEverBegun &&
             !loadCoordinator.shouldHideCollectionViewContent)
     }
 
-    @objc
     public var lastReloadDate: Date { renderState.loadDate }
 
-    @objc
     public func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {
         loadCoordinator.indexPath(forInteractionUniqueId: interactionUniqueId)
     }
 
-    @objc
     public func indexPath(forItemViewModel itemViewModel: CVItemViewModelImpl) -> IndexPath? {
         indexPath(forInteractionUniqueId: itemViewModel.interaction.uniqueId)
     }
 
-    @objc
     public func interaction(forIndexPath indexPath: IndexPath) -> TSInteraction? {
         guard let renderItem = self.renderItem(forIndex: indexPath.row) else {
             return nil
@@ -43,37 +35,30 @@ extension ConversationViewController {
         return renderItem.interaction
     }
 
-    @objc
     var indexPathOfUnreadMessagesIndicator: IndexPath? {
         loadCoordinator.indexPathOfUnreadIndicator
     }
 
-    @objc
     public var canLoadOlderItems: Bool {
         loadCoordinator.canLoadOlderItems
     }
 
-    @objc
     public var canLoadNewerItems: Bool {
         loadCoordinator.canLoadNewerItems
     }
 
-    @objc
     public var currentRenderStateDebugDescription: String {
         renderState.debugDescription
     }
 
-    @objc
     public var isLayoutApplyingUpdate: Bool {
         layout.isPerformBatchUpdatesOrReloadDataBeingAppliedOrSettling
     }
 
-    @objc
     public var areCellsAnimating: Bool {
         viewState.activeCellAnimations.count > 0
     }
 
-    @objc
     public var isShowingSelectionUI: Bool {
         viewState.isShowingSelectionUI
     }
@@ -275,12 +260,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
     //
     // This means performing much of the work we do when we land
     // the first load.
-    @objc
     public func viewWillAppearForLoad() {
         updateShouldHideCollectionViewContent(reloadIfClearingFlag: true)
     }
 
-    @objc
     public func viewSafeAreaInsetsDidChangeForLoad() {
         updateShouldHideCollectionViewContent(reloadIfClearingFlag: true)
     }
@@ -692,7 +675,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         return isScrolledToBottom(tolerancePoints: scrolledToEdgeTolerancePoints)
     }
 
-    @objc
     public func registerReuseIdentifiers() {
         CVCell.registerReuseIdentifiers(collectionView: self.collectionView)
         collectionView.register(LoadMoreMessagesView.self,
@@ -703,7 +685,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                 withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier)
     }
 
-    @objc
     public static func buildInitialConversationStyle(threadViewModel: ThreadViewModel) -> ConversationStyle {
         ConversationStyle(type: .initial,
                           thread: threadViewModel.threadRecord,
@@ -797,7 +778,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
     }
 
-    @objc
     @discardableResult
     public func updateConversationStyle() -> Bool {
         AssertIsOnMainThread()
@@ -846,7 +826,6 @@ extension ConversationViewController: CVViewStateDelegate {
 // MARK: - Load More
 
 extension ConversationViewController {
-    @objc
     public func autoLoadMoreIfNecessary() -> Bool {
         AssertIsOnMainThread()
 
@@ -898,9 +877,7 @@ extension ConversationViewController {
         return false
     }
 
-    @objc
     public var showLoadOlderHeader: Bool { loadCoordinator.showLoadOlderHeader }
 
-    @objc
     public var showLoadNewerHeader: Bool { loadCoordinator.showLoadNewerHeader }
 }

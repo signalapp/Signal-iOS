@@ -60,12 +60,10 @@ public class CVLoadCoordinator: NSObject {
     // CVC is perf-sensitive during its initial load and
     // presentation. We can use this flag to skip any expensive
     // work before the first load is complete.
-    @objc
     public var hasRenderState: Bool {
         !renderState.isEmptyInitialState
     }
 
-    @objc
     public var shouldHideCollectionViewContent = true {
         didSet {
             owsAssertDebug(!shouldHideCollectionViewContent)
@@ -113,7 +111,6 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: -
 
-    @objc
     public func viewDidLoad() {
         addNotificationListeners()
     }
@@ -284,7 +281,6 @@ public class CVLoadCoordinator: NSObject {
         delegate?.chatColorDidChange()
     }
 
-    @objc
     func appendUnsavedOutgoingTextMessage(_ message: TSOutgoingMessage) {
         AssertIsOnMainThread()
         // TODO:
@@ -302,12 +298,10 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: -
 
-    @objc
     public var canLoadOlderItems: Bool {
         renderState.canLoadOlderItems
     }
 
-    @objc
     public var canLoadNewerItems: Bool {
         renderState.canLoadNewerItems
     }
@@ -321,13 +315,11 @@ public class CVLoadCoordinator: NSObject {
     // in flight at a time. Entities like the MessageMapping
     // are not thread-safe.
     private let isLoading = AtomicBool(false)
-    @objc
     public var hasLoadInFlight: Bool { isLoading.get() }
 
     private let autoLoadMoreThreshold: TimeInterval = 2 * kSecondInterval
 
     private var lastLoadOlderDate: Date?
-    @objc
     public var didLoadOlderRecently: Bool {
         AssertIsOnMainThread()
 
@@ -338,7 +330,6 @@ public class CVLoadCoordinator: NSObject {
     }
 
     private var lastLoadNewerDate: Date?
-    @objc
     public var didLoadNewerRecently: Bool {
         AssertIsOnMainThread()
 
@@ -353,7 +344,6 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func loadOlderItems() {
         guard !renderState.isEmptyInitialState else {
             return
@@ -362,7 +352,6 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func loadNewerItems() {
         guard !renderState.isEmptyInitialState else {
             return
@@ -371,13 +360,11 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func loadAndScrollToNewestItems(isAnimated: Bool) {
         loadRequestBuilder.loadAndScrollToNewestItems(isAnimated: isAnimated)
         loadIfNecessary()
     }
 
-    @objc
     public func enqueueReload() {
         loadRequestBuilder.reload()
         loadIfNecessary()
@@ -388,7 +375,6 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func enqueueReload(updatedInteractionIds: Set<String>,
                               deletedInteractionIds: Set<String>) {
         AssertIsOnMainThread()
@@ -398,7 +384,6 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func enqueueLoadAndScrollToInteraction(interactionId: String,
                                                   onScreenPercentage: CGFloat,
                                                   alignment: ScrollAlignment,
@@ -412,7 +397,6 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func enqueueReloadWithoutCaches() {
         AssertIsOnMainThread()
 
@@ -420,7 +404,6 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    @objc
     public func enqueueReload(canReuseInteractionModels: Bool,
                               canReuseComponentStates: Bool) {
         AssertIsOnMainThread()
@@ -444,7 +427,6 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: - Unread Indicator
 
-    @objc
     func clearUnreadMessagesIndicator() {
         AssertIsOnMainThread()
 
@@ -462,7 +444,6 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: -
 
-    @objc
     func resetClearedUnreadMessagesIndicator() {
         AssertIsOnMainThread()
 
@@ -475,7 +456,6 @@ public class CVLoadCoordinator: NSObject {
     // MARK: -
 
     #if TESTABLE_BUILD
-    @objc
     public let blockLoads = AtomicBool(false)
     #endif
 

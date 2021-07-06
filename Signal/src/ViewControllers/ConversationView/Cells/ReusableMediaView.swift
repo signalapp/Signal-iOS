@@ -57,7 +57,6 @@ public class ReusableMediaView: NSObject {
     private let mediaViewAdapter: MediaViewAdapterSwift
     private let mediaCache: CVMediaCache
 
-    @objc
     public var mediaView: UIView {
         mediaViewAdapter.mediaView
     }
@@ -86,12 +85,10 @@ public class ReusableMediaView: NSObject {
 
     // MARK: - Ownership
 
-    @objc
     public weak var owner: NSObject?
 
     // MARK: - Initializers
 
-    @objc
     public required init(mediaViewAdapter: MediaViewAdapter,
                          mediaCache: CVMediaCache) {
         self.mediaViewAdapter = mediaViewAdapter as! MediaViewAdapterSwift
@@ -106,7 +103,6 @@ public class ReusableMediaView: NSObject {
 
     // MARK: - Initializers
 
-    @objc
     public func load() {
         AssertIsOnMainThread()
 
@@ -120,7 +116,6 @@ public class ReusableMediaView: NSObject {
         }
     }
 
-    @objc
     public func unload() {
         AssertIsOnMainThread()
 
@@ -484,7 +479,6 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
     let attachmentStream: TSAttachmentStream
     let imageView: UIImageView
 
-    @objc
     public init(attachmentStream: TSAttachmentStream) {
         self.shouldBeRenderedByYY = attachmentStream.shouldBeRenderedByYY
         self.attachmentStream = attachmentStream

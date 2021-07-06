@@ -20,7 +20,6 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
 
     // MARK: -
 
-    @objc
     public var interaction: TSInteraction {
         AssertIsOnMainThread()
 

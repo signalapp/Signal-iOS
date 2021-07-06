@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -12,10 +12,8 @@ class MemberRequestView: UIStackView {
 
     private weak var fromViewController: UIViewController?
 
-    @objc
     weak var delegate: MessageRequestDelegate?
 
-    @objc
     init(threadViewModel: ThreadViewModel, fromViewController: UIViewController) {
         let thread = threadViewModel.threadRecord
         self.thread = thread

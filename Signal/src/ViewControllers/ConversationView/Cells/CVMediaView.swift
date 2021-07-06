@@ -50,7 +50,6 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(name: String) {
         notImplemented()
     }
@@ -274,7 +273,6 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         addSubviewToCenterOnSuperview(iconView, size: icon.size)
     }
 
-    @objc
     public func loadMedia() {
         AssertIsOnMainThread()
 

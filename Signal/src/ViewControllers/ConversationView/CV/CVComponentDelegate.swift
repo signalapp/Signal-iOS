@@ -16,69 +16,52 @@ public protocol CVComponentDelegate {
 
     // MARK: - Body Text Items
 
-    @objc
     func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject)
 
-    @objc
     func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject)
 
     // MARK: - Long Press
 
-    @objc
     func cvc_didLongPressTextViewItem(_ cell: CVCell,
                                       itemViewModel: CVItemViewModelImpl,
                                       shouldAllowReply: Bool)
 
-    @objc
     func cvc_didLongPressMediaViewItem(_ cell: CVCell,
                                        itemViewModel: CVItemViewModelImpl,
                                        shouldAllowReply: Bool)
 
-    @objc
     func cvc_didLongPressQuote(_ cell: CVCell,
                                itemViewModel: CVItemViewModelImpl,
                                shouldAllowReply: Bool)
 
-    @objc
     func cvc_didLongPressSystemMessage(_ cell: CVCell,
                                        itemViewModel: CVItemViewModelImpl)
 
-    @objc
     func cvc_didLongPressSticker(_ cell: CVCell,
                                  itemViewModel: CVItemViewModelImpl,
                                  shouldAllowReply: Bool)
 
-    @objc
     func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl)
 
-    @objc
     func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl)
 
-    @objc
     func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl)
 
     // MARK: -
 
-    @objc
     func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl)
 
-    @objc
     func cvc_didTapSenderAvatar(_ interaction: TSInteraction)
 
-    @objc
     func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool
 
-    @objc
     func cvc_didTapReactions(reactionState: InteractionReactionState,
                              message: TSMessage)
 
-    @objc
     var cvc_hasPendingMessageRequest: Bool { get }
 
-    @objc
     func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl)
 
-    @objc
     func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage)
 
     // MARK: - Messages
@@ -112,7 +95,6 @@ public protocol CVComponentDelegate {
     typealias EndCellAnimation = () -> Void
     func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation
 
-    @objc
     var view: UIView { get }
 
     var isConversationPreview: Bool { get }
@@ -121,87 +103,61 @@ public protocol CVComponentDelegate {
 
     // MARK: - Selection
 
-    @objc
     var isShowingSelectionUI: Bool { get }
 
-    @objc
     func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool
 
-    @objc
     func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl)
 
-    @objc
     func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl)
 
     // MARK: - System Cell
 
-    @objc
     func cvc_didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress)
 
-    @objc
     func cvc_didTapUnverifiedIdentityChange(_ address: SignalServiceAddress)
 
-    @objc
     func cvc_didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage)
 
-    @objc
     func cvc_didTapCorruptedMessage(_ message: TSErrorMessage)
 
-    @objc
     func cvc_didTapSessionRefreshMessage(_ message: TSErrorMessage)
 
     // See: resendGroupUpdate
-    @objc
     func cvc_didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage)
 
-    @objc
     func cvc_didTapShowFingerprint(_ address: SignalServiceAddress)
 
-    @objc
     func cvc_didTapIndividualCall(_ call: TSCall)
 
-    @objc
     func cvc_didTapGroupCall()
 
-    @objc
     func cvc_didTapPendingOutgoingMessage(_ message: TSOutgoingMessage)
 
-    @objc
     func cvc_didTapFailedOutgoingMessage(_ message: TSOutgoingMessage)
 
-    @objc
     func cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
                                                           oldGroupModel: TSGroupModel,
                                                           newGroupModel: TSGroupModel)
 
-    @objc
     func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel)
 
-    @objc
     func cvc_didTapViewGroupDescription(groupModel: TSGroupModel?)
 
-    @objc
     func cvc_didTapShowConversationSettings()
 
-    @objc
     func cvc_didTapShowConversationSettingsAndShowMemberRequests()
 
-    @objc
     func cvc_didTapShowUpgradeAppUI()
 
-    @objc
     func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,
                                        newNameComponents: PersonNameComponents)
 
-    @objc
     func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction)
 
-    @objc
     func cvc_didTapViewOnceExpired(_ interaction: TSInteraction)
 
-    @objc
     func cvc_didTapUnknownThreadWarningGroup()
-    @objc
     func cvc_didTapUnknownThreadWarningContact()
 }
 

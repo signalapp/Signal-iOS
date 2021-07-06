@@ -70,7 +70,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(name: String) {
         notImplemented()
     }
@@ -166,8 +165,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
         }
 
         @available(*, unavailable, message: "use other constructor instead.")
-        @objc
-        public required init(name: String) {
+            public required init(name: String) {
             notImplemented()
         }
 

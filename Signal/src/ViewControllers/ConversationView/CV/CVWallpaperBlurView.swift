@@ -134,7 +134,6 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
 
     // MARK: - CALayerDelegate
 
-    @objc
     public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // Disable all implicit CALayer animations.
         NSNull()

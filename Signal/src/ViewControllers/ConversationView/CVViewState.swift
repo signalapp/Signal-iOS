@@ -17,54 +17,33 @@ public protocol CVViewStateDelegate: AnyObject {
 // These properties should only be accessed on the main thread.
 @objc
 public class CVViewState: NSObject {
-    @objc
     public weak var delegate: CVViewStateDelegate?
 
-    @objc
     public var threadViewModel: ThreadViewModel
-    @objc
     public var conversationStyle: ConversationStyle
-    @objc
     public var inputToolbar: ConversationInputToolbar?
-    @objc
     public let headerView = ConversationHeaderView()
 
-    @objc
     public var hasTriedToMigrateGroup = false
 
-    @objc
     public let inputAccessoryPlaceholder = InputAccessoryViewPlaceholder()
-    @objc
     public var bottomBar = UIView.container()
-    @objc
     public var bottomBarBottomConstraint: NSLayoutConstraint?
-    @objc
     public var requestView: UIView?
-    @objc
     public var bannerView: UIView?
     public var groupNameCollisionFinder: GroupMembershipNameCollisionFinder?
 
-    @objc
     public var isDismissingInteractively = false
 
-    @objc
     public var isViewCompletelyAppeared = false
-    @objc
     public var isViewVisible = false
-    @objc
     public var shouldAnimateKeyboardChanges = false
-    @objc
     public var isInPreviewPlatter = false
-    @objc
     public let viewCreationDate = Date()
-    @objc
     public var hasAppliedFirstLoad = false
 
-    @objc
     public var isUserScrolling = false
-    @objc
     public var scrollingAnimationCompletionTimer: Timer?
-    @objc
     public var hasScrollingAnimation: Bool {
         AssertIsOnMainThread()
 
@@ -73,25 +52,20 @@ public class CVViewState: NSObject {
     public var scrollActionForSizeTransition: CVScrollAction?
     public var scrollActionForUpdate: CVScrollAction?
     public var lastKnownDistanceFromBottom: CGFloat?
-    @objc
     public var lastSearchedText: String?
 
-    @objc
     public var activeCellAnimations = Set<UUID>()
 
-    @objc
     public func beginCellAnimation(identifier: UUID) {
         activeCellAnimations.insert(identifier)
     }
 
-    @objc
     public func endCellAnimation(identifier: UUID) {
         activeCellAnimations.remove(identifier)
     }
 
     var bottomViewType: CVCBottomViewType = .none
 
-    @objc
     public var uiMode: ConversationUIMode = .normal {
         didSet {
             let didChange = uiMode != oldValue
@@ -101,7 +75,6 @@ public class CVViewState: NSObject {
             }
         }
     }
-    @objc
     public var isShowingSelectionUI: Bool { uiMode == .selection }
     public var wasShowingSelectionUI: Bool = false
 
@@ -133,7 +106,6 @@ public class CVViewState: NSObject {
     public var isHidingScrollDownButton = false
     public let scrollToNextMentionButton = ConversationScrollButton(iconName: "mention-24")
     public var isHidingScrollToNextMentionButton = false
-    @objc
     public var scrollUpdateTimer: Timer?
     public var isWaitingForDeceleration = false
 
@@ -161,7 +133,6 @@ public class CVViewState: NSObject {
 
     var initialScrollState: CVInitialScrollState?
 
-    @objc
     public var presentationStatus: CVPresentationStatus = .notYetPresented
 
     // MARK: - Message Actions
@@ -172,28 +143,22 @@ public class CVViewState: NSObject {
     public var messageActionsOriginalFocusY: CGFloat = 0
 
     #if TESTABLE_BUILD
-    @objc
     public let initialLoadBenchSteps = BenchSteps(title: "initialLoadBenchSteps")
-    @objc
     public let presentationStatusBenchSteps = BenchSteps(title: "presentationStatusBenchSteps")
     #endif
 
-    @objc
     public let backgroundContainer = CVBackgroundContainer()
 
     weak var reactionsDetailSheet: ReactionsDetailSheet?
 
     // MARK: - Voice Messages
 
-    @objc
     public var currentVoiceMessageModel: VoiceMessageModel?
 
-    @objc
     public var lastKeyboardAnimationDate: Date?
 
     // MARK: - 
 
-    @objc
     public required init(threadViewModel: ThreadViewModel,
                          conversationStyle: ConversationStyle) {
         self.threadViewModel = threadViewModel
@@ -406,25 +371,21 @@ public extension CVViewState {
 
     var threadUniqueId: String { threadViewModel.threadRecord.uniqueId }
 
-    @objc
     var isPendingMemberRequestsBannerHidden: Bool {
         get { Self.isPendingMemberRequestsBannerHiding.isHidden(threadUniqueId) }
         set { Self.isPendingMemberRequestsBannerHiding.setIsHidden(threadUniqueId) }
     }
 
-    @objc
     var isMigrateGroupBannerHidden: Bool {
         get { Self.isMigrateGroupBannerHiding.isHidden(threadUniqueId) }
         set { Self.isMigrateGroupBannerHiding.setIsHidden(threadUniqueId) }
     }
 
-    @objc
     var isDroppedGroupMembersBannerHidden: Bool {
         get { Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId) }
         set { Self.isDroppedGroupMembersBannerHiding.setIsHidden(threadUniqueId) }
     }
 
-    @objc
     var isMessageRequestNameCollisionBannerHidden: Bool {
         get { Self.isMessageRequestNameCollisionBannerHiding.isHidden(threadUniqueId) }
         set { Self.isMessageRequestNameCollisionBannerHiding.setIsHidden(threadUniqueId) }

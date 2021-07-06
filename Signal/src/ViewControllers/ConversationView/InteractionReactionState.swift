@@ -6,7 +6,6 @@ import Foundation
 
 @objc
 public class InteractionReactionState: NSObject {
-    @objc
     var hasReactions: Bool { return !emojiCounts.isEmpty }
 
     struct EmojiCount {
@@ -19,7 +18,6 @@ public class InteractionReactionState: NSObject {
     let emojiCounts: [EmojiCount]
     let localUserEmoji: String?
 
-    @objc
     init?(interaction: TSInteraction, transaction: SDSAnyReadTransaction) {
         // No reactions on non-message interactions
         guard let message = interaction as? TSMessage else { return nil }

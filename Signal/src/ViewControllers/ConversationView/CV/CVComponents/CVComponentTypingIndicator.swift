@@ -144,7 +144,6 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewTypingIndicator: NSObject, CVComponentView {
 
         fileprivate let outerStackView = ManualStackView(name: "Typing indicator outer")

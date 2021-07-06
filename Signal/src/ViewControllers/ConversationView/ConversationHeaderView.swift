@@ -12,10 +12,8 @@ public protocol ConversationHeaderViewDelegate {
 @objc
 public class ConversationHeaderView: UIStackView {
 
-    @objc
     public weak var delegate: ConversationHeaderViewDelegate?
 
-    @objc
     public var attributedTitle: NSAttributedString? {
         get {
             return self.titleLabel.attributedText
@@ -25,7 +23,6 @@ public class ConversationHeaderView: UIStackView {
         }
     }
 
-    @objc
     public var titleIcon: UIImage? {
         get {
             return self.titleIconView.image
@@ -37,7 +34,6 @@ public class ConversationHeaderView: UIStackView {
         }
     }
 
-    @objc
     public var attributedSubtitle: NSAttributedString? {
         get {
             return self.subtitleLabel.attributedText
@@ -57,11 +53,8 @@ public class ConversationHeaderView: UIStackView {
         }
     }
 
-    @objc
     public let titlePrimaryFont: UIFont =  UIFont.ows_semiboldFont(withSize: 17)
-    @objc
     public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
-    @objc
     public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
 
     private let titleLabel: UILabel
@@ -70,7 +63,6 @@ public class ConversationHeaderView: UIStackView {
     private let avatarView = ConversationAvatarView(diameterPoints: 36,
                                                     localUserDisplayMode: .noteToSelf)
 
-    @objc
     public required init() {
         // remove default border on avatarView
         avatarView.layer.borderWidth = 0
@@ -131,7 +123,6 @@ public class ConversationHeaderView: UIStackView {
         notImplemented()
     }
 
-    @objc
     public func configure(thread: TSThread) {
         avatarView.configureWithSneakyTransaction(thread: thread)
     }
@@ -147,7 +138,6 @@ public class ConversationHeaderView: UIStackView {
         subtitleLabel.textColor = Theme.navbarTitleColor
     }
 
-    @objc
     public func updateAvatar() {
         databaseStorage.read { transaction in
             self.avatarView.updateImage(transaction: transaction)

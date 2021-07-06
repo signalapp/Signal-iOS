@@ -5,7 +5,6 @@
 import Foundation
 
 extension ConversationViewController {
-    @objc
     public func updateNavigationTitle() {
         AssertIsOnMainThread()
 
@@ -47,7 +46,6 @@ extension ConversationViewController {
         headerView.attributedTitle = attributedName
     }
 
-    @objc
     public func createHeaderViews() {
         AssertIsOnMainThread()
 
@@ -77,10 +75,8 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     public var unreadCountViewDiameter: CGFloat { 16 }
 
-    @objc
     public func updateBarButtonItems() {
         AssertIsOnMainThread()
 
@@ -177,7 +173,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     public func updateNavigationBarSubtitleLabel() {
         AssertIsOnMainThread()
 
@@ -247,7 +242,6 @@ extension ConversationViewController {
         headerView.attributedSubtitle = subtitleText
     }
 
-    @objc
     public var safeContentHeight: CGFloat {
         // Don't use self.collectionView.contentSize.height as the collection view's
         // content size might not be set yet.
@@ -257,7 +251,6 @@ extension ConversationViewController {
         collectionView.collectionViewLayout.collectionViewContentSize.height
     }
 
-    @objc
     public func buildInputToolbar(conversationStyle: ConversationStyle,
                                   messageDraft: MessageBody?,
                                   voiceMemoDraft: VoiceMessageModel?) -> ConversationInputToolbar {

@@ -13,7 +13,6 @@ public class AudioAttachment: NSObject {
     }
     public let state: State
 
-    @objc
     public var attachment: TSAttachment {
         switch state {
         case .attachmentStream(let attachmentStream, _):
@@ -23,7 +22,6 @@ public class AudioAttachment: NSObject {
         }
     }
 
-    @objc
     public var attachmentStream: TSAttachmentStream? {
         switch state {
         case .attachmentStream(let attachmentStream, _):
@@ -33,7 +31,6 @@ public class AudioAttachment: NSObject {
         }
     }
 
-    @objc
     public var attachmentPointer: TSAttachmentPointer? {
         switch state {
         case .attachmentStream:
@@ -43,10 +40,8 @@ public class AudioAttachment: NSObject {
         }
     }
 
-    @objc
     public let owningMessage: TSMessage?
 
-    @objc
     public var durationSeconds: TimeInterval {
         switch state {
         case .attachmentStream(_, let audioDurationSeconds):
@@ -56,7 +51,6 @@ public class AudioAttachment: NSObject {
         }
     }
 
-    @objc
     public required init?(attachment: TSAttachment, owningMessage: TSMessage?) {
         if let attachmentStream = attachment as? TSAttachmentStream {
             let audioDurationSeconds = attachmentStream.audioDurationSeconds()
@@ -74,7 +68,6 @@ public class AudioAttachment: NSObject {
         self.owningMessage = owningMessage
     }
 
-    @objc
     public func markOwningMessageAsViewed() -> Bool {
         AssertIsOnMainThread()
         guard let incomingMessage = owningMessage as? TSIncomingMessage, !incomingMessage.wasViewed else { return false }

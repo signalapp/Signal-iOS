@@ -396,7 +396,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewBodyMedia: NSObject, CVComponentView {
 
         fileprivate let stackView = CVComponentViewBodyMediaRootView(name: "stackView")

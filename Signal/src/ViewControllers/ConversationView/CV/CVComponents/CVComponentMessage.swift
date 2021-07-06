@@ -6,7 +6,6 @@ import Foundation
 
 @objc
 public class CVComponentMessage: CVComponentBase, CVRootComponent {
-    @objc
     public static let selectionAnimationDuration: TimeInterval = 0.2
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
@@ -1231,7 +1230,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewMessage: NSObject, CVComponentView {
 
         // Contains the cell contents which are arranged horizontally:
@@ -2049,7 +2047,6 @@ class SwipeToReplyWrapper: ManualLayoutView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(name: String) {
         notImplemented()
     }

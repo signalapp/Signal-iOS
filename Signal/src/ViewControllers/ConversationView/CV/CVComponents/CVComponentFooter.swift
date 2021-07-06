@@ -372,7 +372,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewFooter: NSObject, CVComponentView {
 
         fileprivate let outerStack = ManualStackView(name: "footer.outerStack")

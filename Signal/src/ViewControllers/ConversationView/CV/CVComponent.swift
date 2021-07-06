@@ -90,7 +90,6 @@ public protocol CVAccessibilityComponent: CVComponent {
 
 @objc
 public class CVComponentBase: NSObject {
-    @objc
     public let itemModel: CVItemModel
 
     init(itemModel: CVItemModel) {

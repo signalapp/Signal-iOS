@@ -25,7 +25,6 @@ import MessageUI
 //   * long press - show email adress + new email message / facetime audio / facetime video / send message / add to contacts / copy email.
 extension ConversationViewController {
 
-    @objc
     public func didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
         AssertIsOnMainThread()
 
@@ -68,7 +67,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     public func didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
         AssertIsOnMainThread()
 

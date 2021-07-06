@@ -57,7 +57,6 @@ class AudioMessageView: ManualStackView {
         updateContents(animated: animated)
     }
 
-    @objc
     init(audioAttachment: AudioAttachment, isIncoming: Bool, componentDelegate: CVComponentDelegate) {
         self.audioAttachment = audioAttachment
         self.isIncoming = isIncoming
@@ -347,7 +346,6 @@ class AudioMessageView: ManualStackView {
 
     @objc var isScrubbing = false
 
-    @objc
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {
         // If we have a waveform but aren't done sampling it, don't allow scrubbing yet.
         if let waveform = attachmentStream?.audioWaveform(), !waveform.isSamplingComplete {
@@ -358,7 +356,6 @@ class AudioMessageView: ManualStackView {
         return locationInSlider.x >= 0 && locationInSlider.x <= waveformProgress.width
     }
 
-    @objc
     func progressForLocation(_ point: CGPoint) -> CGFloat {
         let sliderContainer = convert(waveformProgress.frame, from: waveformProgress.superview)
         var newRatio = CGFloatInverseLerp(point.x, sliderContainer.minX, sliderContainer.maxX).clamp01()
@@ -371,7 +368,6 @@ class AudioMessageView: ManualStackView {
         return newRatio.clamp01()
     }
 
-    @objc
     func scrubToLocation(_ point: CGPoint) -> TimeInterval {
         let newRatio = progressForLocation(point)
 
