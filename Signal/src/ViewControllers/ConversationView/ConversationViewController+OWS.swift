@@ -458,7 +458,6 @@ extension ConversationViewController: MediaPresentationContextProvider {
 
 // MARK: -
 
-@objc
 public extension ConversationViewController {
     func showManualMigrationAlert(groupThread: TSGroupThread,
                                   migrationInfo: GroupsV2MigrationInfo) {

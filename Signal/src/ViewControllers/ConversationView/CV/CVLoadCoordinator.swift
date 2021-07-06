@@ -42,7 +42,6 @@ struct CVUpdateToken {
     let lastKnownDistanceFromBottom: CGFloat?
 }
 
-@objc
 public class CVLoadCoordinator: NSObject {
 
     private weak var delegate: CVLoadCoordinatorDelegate?

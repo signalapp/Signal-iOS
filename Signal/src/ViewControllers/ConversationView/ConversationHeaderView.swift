@@ -9,7 +9,6 @@ public protocol ConversationHeaderViewDelegate {
     func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView)
 }
 
-@objc
 public class ConversationHeaderView: UIStackView {
 
     public weak var delegate: ConversationHeaderViewDelegate?

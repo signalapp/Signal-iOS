@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentFooter: CVComponentBase, CVComponent {
 
     struct StatusIndicator: Equatable {

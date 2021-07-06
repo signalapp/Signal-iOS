@@ -5,7 +5,6 @@
 import Foundation
 import PromiseKit
 
-@objc
 public protocol CVViewStateDelegate: AnyObject {
     func viewStateUIModeDidChange(oldValue: ConversationUIMode)
 }
@@ -15,7 +14,6 @@ public protocol CVViewStateDelegate: AnyObject {
 // This can be a simple place to hang CVC's mutable view state.
 //
 // These properties should only be accessed on the main thread.
-@objc
 public class CVViewState: NSObject {
     public weak var delegate: CVViewStateDelegate?
 
@@ -168,11 +166,11 @@ public class CVViewState: NSObject {
 
 // MARK: -
 
-@objc
 public extension ConversationViewController {
 
     var threadViewModel: ThreadViewModel { renderState.threadViewModel }
 
+    @objc
     var thread: TSThread { threadViewModel.threadRecord }
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration { threadViewModel.disappearingMessagesConfiguration }
@@ -516,7 +514,6 @@ struct CVInitialScrollState {
 
 // Records whether or not the conversation view
 // has ever reached these milestones of its lifecycle.
-@objc
 public enum CVPresentationStatus: UInt, CustomStringConvertible {
     case notYetPresented = 0
     case firstViewWillAppearHasBegun
@@ -545,7 +542,6 @@ public enum CVPresentationStatus: UInt, CustomStringConvertible {
 
 // MARK: -
 
-@objc
 public extension ConversationViewController {
 
     var presentationStatus: CVPresentationStatus { viewState.presentationStatus }

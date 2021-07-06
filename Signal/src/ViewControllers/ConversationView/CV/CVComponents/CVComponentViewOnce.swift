@@ -19,7 +19,6 @@ enum ViewOnceState: Equatable {
 
 // MARK: -
 
-@objc
 public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
     private enum ViewOnceMessageType: Equatable {

@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {

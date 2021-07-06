@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentContactShare: CVComponentBase, CVComponent {
 
     private let contactShareState: CVComponentState.ContactShare

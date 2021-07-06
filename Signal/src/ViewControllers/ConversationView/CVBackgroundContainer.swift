@@ -4,14 +4,12 @@
 
 import Foundation
 
-@objc
 public protocol CVBackgroundContainerDelegate: AnyObject {
     func updateScrollingContent()
 }
 
 // MARK: -
 
-@objc
 public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
     private enum ZPositioning: CGFloat {

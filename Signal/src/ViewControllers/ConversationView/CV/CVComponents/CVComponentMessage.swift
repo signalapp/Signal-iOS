@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentMessage: CVComponentBase, CVRootComponent {
     public static let selectionAnimationDuration: TimeInterval = 0.2
 

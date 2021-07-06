@@ -415,7 +415,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
 // MARK: -
 
-@objc
 public extension ConversationViewController {
 
     func showErrorAlert(forAttachment attachment: SignalAttachment?) {
@@ -553,7 +552,6 @@ fileprivate extension ConversationViewController {
 
 // MARK: - Attachment Picking: GIFs
 
-@objc
 public extension ConversationViewController {
     func showGifPicker() {
         let gifModal = GifPickerNavigationViewController()

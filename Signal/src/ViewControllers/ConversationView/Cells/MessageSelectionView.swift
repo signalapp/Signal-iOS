@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class MessageSelectionView: ManualLayoutView {
 
     public var isSelected: Bool = false {

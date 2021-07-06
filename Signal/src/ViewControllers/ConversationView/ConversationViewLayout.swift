@@ -71,7 +71,6 @@ public protocol ConversationViewLayoutDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class ConversationViewLayout: UICollectionViewLayout {
 
     public weak var delegate: ConversationViewLayoutDelegate?
@@ -829,7 +828,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 // MARK: -
 
 // TODO: This might not have to be @objc after the CVC port.
-@objc
 public class CVScrollContinuityToken: NSObject {
     fileprivate let layoutInfo: ConversationViewLayout.LayoutInfo
     fileprivate let contentOffset: CGPoint

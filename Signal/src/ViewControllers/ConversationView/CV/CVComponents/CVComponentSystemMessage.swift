@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {

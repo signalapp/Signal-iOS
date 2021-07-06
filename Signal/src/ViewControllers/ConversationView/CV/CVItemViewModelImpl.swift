@@ -5,7 +5,6 @@
 import Foundation
 
 // This class should only be accessed on the main thread.
-@objc
 public class CVItemViewModelImpl: NSObject, CVItemViewModel {
 
     public let renderItem: CVRenderItem

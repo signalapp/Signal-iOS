@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
 
     private var isPreview = false

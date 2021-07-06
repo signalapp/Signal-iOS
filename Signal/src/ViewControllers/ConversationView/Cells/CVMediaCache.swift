@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVMediaCache: NSObject {
 
     private let stillMediaCache = LRUCache<String, AnyObject>(maxSize: 16,

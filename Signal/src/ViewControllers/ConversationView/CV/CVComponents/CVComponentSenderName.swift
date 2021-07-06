@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentSenderName: CVComponentBase, CVComponent {
 
     private let state: CVComponentState.SenderName

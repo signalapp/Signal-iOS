@@ -26,7 +26,6 @@ protocol CVAudioPlayerListener {
 // * Ensure thread safety.
 //
 // It's lifetime matches CVC.
-@objc
 public class CVAudioPlayer: NSObject {
 
     // The currently playing audio, if any.

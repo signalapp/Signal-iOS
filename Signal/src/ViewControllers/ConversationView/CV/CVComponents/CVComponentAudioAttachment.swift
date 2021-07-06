@@ -5,7 +5,6 @@
 import Foundation
 import SignalMessaging
 
-@objc
 public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     private let audioAttachment: AudioAttachment

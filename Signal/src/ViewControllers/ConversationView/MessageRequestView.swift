@@ -4,7 +4,6 @@
 
 import UIKit
 
-@objc
 protocol MessageRequestDelegate: AnyObject {
     func messageRequestViewDidTapBlock(mode: MessageRequestMode)
     func messageRequestViewDidTapDelete()

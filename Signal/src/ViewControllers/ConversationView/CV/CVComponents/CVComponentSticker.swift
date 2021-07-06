@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentSticker: CVComponentBase, CVComponent {
 
     private let sticker: CVComponentState.Sticker

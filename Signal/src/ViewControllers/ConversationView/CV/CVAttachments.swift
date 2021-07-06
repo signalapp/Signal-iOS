@@ -5,7 +5,6 @@
 import Foundation
 
 // Represents a _playable_ audio attachment.
-@objc
 public class AudioAttachment: NSObject {
     public enum State {
         case attachmentStream(attachmentStream: TSAttachmentStream, audioDurationSeconds: TimeInterval)

@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public extension ConversationViewController {
 
     static func createBanner(title: String,
@@ -342,7 +341,6 @@ fileprivate extension ConversationViewController {
 // MARK: -
 
 // A convenience view that allows block-based gesture handling.
-@objc
 public class GestureView: UIView {
     public required init() {
         super.init(frame: .zero)

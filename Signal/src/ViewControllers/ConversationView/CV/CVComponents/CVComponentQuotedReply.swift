@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
     private let quotedReply: CVComponentState.QuotedReply

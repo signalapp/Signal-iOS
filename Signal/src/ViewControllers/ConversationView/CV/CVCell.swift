@@ -32,7 +32,6 @@ public protocol CVItemCell {
 
 // MARK: -
 
-@objc
 public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {
@@ -177,7 +176,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 // This view hosts the cell contents.
 // This allows us to display message cells outside of
 // UICollectionView, e.g. in the message details view.
-@objc
 public class CVCellView: UIView, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {

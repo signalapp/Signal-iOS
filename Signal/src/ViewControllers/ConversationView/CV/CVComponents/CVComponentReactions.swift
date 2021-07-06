@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentReactions: CVComponentBase, CVComponent {
 
     private let reactions: CVComponentState.Reactions

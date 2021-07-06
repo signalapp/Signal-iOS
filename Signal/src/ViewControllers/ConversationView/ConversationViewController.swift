@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public enum ConversationUIMode: UInt {
     case normal
     case search
@@ -13,7 +12,6 @@ public enum ConversationUIMode: UInt {
 
 // MARK: -
 
-@objc
 public class ConversationViewController: OWSViewController {
 
     public let viewState: CVViewState

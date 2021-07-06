@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     private let linkPreviewState: CVComponentState.LinkPreview

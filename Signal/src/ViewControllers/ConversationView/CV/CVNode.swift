@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case unknown
 
@@ -55,7 +54,6 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
 
 // Represents some _renderable_ portion of an Conversation View item.
 // It could be the entire item or some part thereof.
-@objc
 public protocol CVNode {
     var thread: TSThread { get }
     var interaction: TSInteraction { get }

@@ -6,7 +6,6 @@ import Foundation
 import PromiseKit
 
 // This entity performs a single load.
-@objc
 public class CVLoader: NSObject {
 
     private let threadUniqueId: String

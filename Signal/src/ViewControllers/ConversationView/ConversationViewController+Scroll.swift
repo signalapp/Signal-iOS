@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public enum ScrollAlignment: Int {
     case top
     case bottom

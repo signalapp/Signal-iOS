@@ -6,7 +6,6 @@ import Foundation
 import Lottie
 
 // A view for presenting attachment upload/download/failure/pending state.
-@objc
 public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum Direction {

@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class LoadMoreMessagesView: UICollectionReusableView {
 
     public static let reuseIdentifier = "LoadMoreMessagesView"

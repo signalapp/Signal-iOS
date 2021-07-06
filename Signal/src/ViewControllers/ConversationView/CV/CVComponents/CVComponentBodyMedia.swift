@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     private let bodyMedia: CVComponentState.BodyMedia

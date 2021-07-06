@@ -25,7 +25,6 @@ private enum LoadState {
 
 // MARK: -
 
-@objc
 public protocol MediaViewAdapter {
     var mediaView: UIView { get }
     var isLoaded: Bool { get }
@@ -51,7 +50,6 @@ public enum ReusableMediaError: Error {
 
 // MARK: -
 
-@objc
 public class ReusableMediaView: NSObject {
 
     private let mediaViewAdapter: MediaViewAdapterSwift
@@ -472,7 +470,6 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
 
 // MARK: -
 
-@objc
 public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY: Bool

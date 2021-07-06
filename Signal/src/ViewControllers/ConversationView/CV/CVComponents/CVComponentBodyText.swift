@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     struct State: Equatable {

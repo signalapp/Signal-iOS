@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public extension ConversationViewController {
 
     var isCurrentCallForThread: Bool {
@@ -19,6 +18,7 @@ public extension ConversationViewController {
         ConversationViewController.canCall(threadViewModel: threadViewModel)
     }
 
+    @objc
     func showGroupLobbyOrActiveCall() {
         if isCurrentCallForThread {
             OWSWindowManager.shared.returnToCallView()
@@ -43,10 +43,12 @@ public extension ConversationViewController {
         GroupCallViewController.presentLobby(thread: groupThread)
     }
 
+    @objc
     func startIndividualAudioCall() {
         startIndividualCall(withVideo: false)
     }
 
+    @objc
     func startIndividualVideoCall() {
         startIndividualCall(withVideo: true)
     }

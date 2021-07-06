@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {

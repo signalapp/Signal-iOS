@@ -5,7 +5,6 @@
 import Foundation
 import ContactsUI
 
-@objc
 public extension ConversationViewController {
 
     func updateV2GroupIfNecessary() {
@@ -363,7 +362,6 @@ extension ConversationViewController: CNContactViewControllerDelegate {
 
 // MARK: - Preview / 3D Touch / UIContextMenu Methods
 
-@objc
 public extension ConversationViewController {
     var isInPreviewPlatter: Bool {
         get { viewState.isInPreviewPlatter }
@@ -379,6 +377,7 @@ public extension ConversationViewController {
         }
     }
 
+    @objc
     func previewSetup() {
         isInPreviewPlatter = true
         actionOnOpen = .none
@@ -387,7 +386,6 @@ public extension ConversationViewController {
 
 // MARK: - Unread Counts
 
-@objc
 public extension ConversationViewController {
     var unreadMessageCount: UInt {
         get { viewState.unreadMessageCount }
