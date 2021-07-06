@@ -132,3 +132,8 @@ extension OrderedDictionary: RandomAccessCollection {
         return (key: key, value: value)
     }
 }
+
+// MARK: -
+
+extension OrderedDictionary: Encodable where KeyType: Encodable, ValueType: Encodable {}
+extension OrderedDictionary: Decodable where KeyType: Decodable, ValueType: Decodable {}
