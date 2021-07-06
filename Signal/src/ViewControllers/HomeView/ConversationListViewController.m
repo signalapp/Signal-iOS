@@ -1216,7 +1216,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         && (self.lastReloadDate == nil || fabs(self.lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval));
     BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
     [cell configure:[[ConversationListCellConfiguration alloc] initWithThread:thread
-                                                                   tableWidth:tableView.width
                                                         shouldLoadAvatarAsync:shouldLoadAvatarAsync
                                                                     isBlocked:isBlocked
                                                               overrideSnippet:nil

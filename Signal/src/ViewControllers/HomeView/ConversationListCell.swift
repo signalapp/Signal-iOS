@@ -55,7 +55,6 @@ public class ConversationListCell: UITableViewCell {
     @objc(ConversationListCellConfiguration)
     public class Configuration: NSObject {
         let thread: ThreadViewModel
-        let tableWidth: CGFloat
         let shouldLoadAvatarAsync: Bool
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
@@ -63,13 +62,11 @@ public class ConversationListCell: UITableViewCell {
 
         @objc
         public init(thread: ThreadViewModel,
-                    tableWidth: CGFloat,
                     shouldLoadAvatarAsync: Bool,
                     isBlocked: Bool,
                     overrideSnippet: NSAttributedString? = nil,
                     overrideDate: Date? = nil) {
             self.thread = thread
-            self.tableWidth = tableWidth
             self.shouldLoadAvatarAsync = shouldLoadAvatarAsync
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
@@ -154,16 +151,11 @@ public class ConversationListCell: UITableViewCell {
         self.configuration = configuration
 
         let thread = configuration.thread
-        let tableWidth = configuration.tableWidth
         let isBlocked = configuration.isBlocked
         let topRowStackConfig = self.topRowStackConfig
         let bottomRowStackConfig = self.bottomRowStackConfig
         let vStackConfig = self.vStackConfig
         let outerHStackConfig = self.outerHStackConfig
-
-        guard tableWidth > 0 else {
-            return
-        }
 
         snippetLabelConfig(configuration: configuration).applyForRendering(label: snippetLabel)
         let snippetLineHeight = CGFloat(ceil(1.1 * snippetFont.ows_semibold.lineHeight))
@@ -253,13 +245,6 @@ public class ConversationListCell: UITableViewCell {
 
         let nameLabelConfig = self.nameLabelConfig(configuration: configuration)
         nameLabelConfig.applyForRendering(label: nameLabel)
-        var nameLabelMaxWidth = max(0, tableWidth - CGFloat(avatarStackSize.width +
-                                                                outerHStackConfig.spacing +
-                                                                topRowStackConfig.layoutMargins.totalWidth +
-                                                                vStackConfig.layoutMargins.totalWidth +
-                                                                outerHStackConfig.layoutMargins.totalWidth +
-                                                                dateLabelSize.width +
-                                                                topRowStackConfig.spacing))
 
         // The top row contains:
         //
@@ -284,9 +269,8 @@ public class ConversationListCell: UITableViewCell {
             muteIconView.tintColor = snippetColor
 
             let muteIconSize: CGFloat = 16
-            nameLabelMaxWidth -= muteIconSize + topRowStackConfig.spacing
             let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
-                                                    maxWidth: CGFloat.greatestFiniteMagnitude)
+                                                    maxWidth: .greatestFiniteMagnitude)
 
             topRowStackSubviews = [ nameLabel, muteIconView, dateTimeLabel ]
             topRowStackSubviewInfos = [
@@ -297,7 +281,7 @@ public class ConversationListCell: UITableViewCell {
                                                   verticalFlowBehavior: .fixed)
             ]
         } else {
-            let nameLabelSize = CVText.measureLabel(config: nameLabelConfig, maxWidth: nameLabelMaxWidth)
+            let nameLabelSize = CVText.measureLabel(config: nameLabelConfig, maxWidth: .greatestFiniteMagnitude)
 
             topRowStackSubviews = [ nameLabel, dateTimeLabel ]
             topRowStackSubviewInfos = [
