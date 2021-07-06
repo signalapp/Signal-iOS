@@ -1,3 +1,5 @@
-Opravena chyba, která neumožňovala odesílat větší obrázky. Panorama-tastické.
+• We’ve spruced up with the app with new animations when sending and receiving messages, selecting messages in the chat view, and replying to messages.
+• Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly. Please report any issues you see with notification reliability. 
+• Receive an unwanted message? You can now report it as spam when you tap block.
 
 Chcete pomoci vylepšit Signal? Nabíráme. Další informace najdete na adrese https://signal.org/workworkwork.

@@ -1,3 +1,5 @@
-• Fixed a bug that wouldn't let you send larger images. Panorama-tastic.
+• We’ve spruced up with the app with new animations when sending and receiving messages, selecting messages in the chat view, and replying to messages.
+• Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly. Please report any issues you see with notification reliability. 
+• Receive an unwanted message? You can now report it as spam when you tap block.
 
 ¿Te gustaría ayudarnos a mejorar Signal? ¡Estamos contratando! Infórmate en: https://signal.org/workworkwork 
