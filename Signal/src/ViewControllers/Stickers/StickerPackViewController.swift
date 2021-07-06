@@ -337,7 +337,7 @@ public class StickerPackViewController: OWSViewController {
                                                             StickerManager.installStickerPack(stickerPack: stickerPack,
                                                                                               wasLocallyInitiated: true,
                                                                                               transaction: transaction)
-                                                            transaction.addAsyncCompletion {
+                                                            transaction.addAsyncCompletionOnMain {
                                                                 modal.dismiss {
                                                                     self.dismiss(animated: true)
                                                                 }
@@ -363,7 +363,7 @@ public class StickerPackViewController: OWSViewController {
                                                             StickerManager.uninstallStickerPack(stickerPackInfo: stickerPackInfo,
                                                                                                 wasLocallyInitiated: true,
                                                                                                 transaction: transaction)
-                                                            transaction.addAsyncCompletion {
+                                                            transaction.addAsyncCompletionOnMain {
                                                                 modal.dismiss {
                                                                     self.dismiss(animated: true)
                                                                 }

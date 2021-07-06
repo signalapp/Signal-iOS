@@ -218,7 +218,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         Logger.info("Sending null message to reset session after undecryptable message from: \(senderId)")
         store.setDate(Date(), key: senderId, transaction: transaction)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread)
             Self.messageSender.sendMessage(nullMessage.asPreparer, success: {
                 Logger.info("Successfully sent null message after session reset " +
@@ -262,7 +262,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             transaction: transaction
         )
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread)
             Self.messageSender.sendMessage(profileKeyMessage.asPreparer, success: {
                 Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")

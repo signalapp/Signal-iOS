@@ -434,7 +434,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
 - (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [transaction addAsyncCompletion:^{
+    [transaction addAsyncCompletionOnMain:^{
         [[NSNotificationCenter defaultCenter] postNotificationName:kNSNotificationNameIdentityStateDidChange
                                                             object:nil];
     }];

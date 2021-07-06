@@ -27,8 +27,6 @@ public class SSKReachability: NSObject {
 @objc
 public protocol SSKReachabilityManager {
 
-    var observationContext: AnyObject { get }
-
     var isReachable: Bool { get }
 
     func isReachable(via reachabilityType: ReachabilityType) -> Bool
@@ -53,15 +51,15 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     )
     private let reachability: Reachability
 
-    public var observationContext: AnyObject {
-        return self.reachability
-    }
-
     public var isReachable: Bool {
+        AssertIsOnMainThread()
+
         return isReachable(via: .any)
     }
 
     public func isReachable(via reachabilityType: ReachabilityType) -> Bool {
+        AssertIsOnMainThread()
+
         switch reachabilityType {
         case .any:
             return reachability.isReachable()
@@ -74,6 +72,8 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
     @objc
     override public init() {
+        AssertIsOnMainThread()
+
         self.reachability = Reachability.forInternetConnection()
 
         super.init()
@@ -84,10 +84,12 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     }
 
     private func configure() {
+        AssertIsOnMainThread()
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
                                                name: .reachabilityChanged,
-                                               object: self.observationContext)
+                                               object: nil)
 
         startNotifier()
     }
@@ -103,12 +105,14 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
         Logger.verbose("isReachable: \(isReachable)")
 
-        NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: self.observationContext)
+        NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: nil)
 
         scheduleWakeupRequestIfNecessary()
     }
 
     private func startNotifier() {
+        AssertIsOnMainThread()
+
         guard AppReadiness.isAppReady else {
             owsFailDebug("App is unexpectedly not ready.")
             return
@@ -123,6 +127,8 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
     }
 
     private func scheduleWakeupRequestIfNecessary() {
+        AssertIsOnMainThread()
+
         // Start a background session to wake the app when the network
         // becomes available. We start this immediately when we lose
         // connectivity rather than waiting until the app is backgrounded,

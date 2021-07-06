@@ -595,7 +595,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self loadAccountStateWithTransaction:transaction];
     }
 
-    [transaction addAsyncCompletion:^{
+    [transaction addAsyncCompletionOffMain:^{
         [self updateAccountAttributes];
 
         if (updateStorageService) {

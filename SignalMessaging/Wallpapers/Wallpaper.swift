@@ -96,7 +96,7 @@ public enum Wallpaper: String, CaseIterable {
         dimmingStore.removeValue(forKey: key(for: thread), transaction: transaction)
         try OWSFileSystem.deleteFileIfExists(url: photoURL(for: thread))
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
         }
     }
@@ -108,7 +108,7 @@ public enum Wallpaper: String, CaseIterable {
         dimmingStore.removeAll(transaction: transaction)
         try OWSFileSystem.deleteFileIfExists(url: wallpaperDirectory)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: nil)
         }
     }
@@ -256,7 +256,7 @@ fileprivate extension Wallpaper {
 
         enumStore.setString(wallpaper?.rawValue, key: key(for: thread), transaction: transaction)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
         }
     }
@@ -285,7 +285,7 @@ extension Wallpaper {
     public static func setDimInDarkMode(_ dimInDarkMode: Bool, for thread: TSThread?, transaction: SDSAnyWriteTransaction) throws {
         dimmingStore.setBool(dimInDarkMode, key: key(for: thread), transaction: transaction)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: wallpaperDidChangeNotification, object: thread?.uniqueId)
         }
     }

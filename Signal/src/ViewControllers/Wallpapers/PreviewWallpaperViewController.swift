@@ -133,7 +133,7 @@ class PreviewWallpaperViewController: UIViewController {
                 owsFailDebug("Failed to set wallpaper \(error)")
             }
 
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOnMain {
                 self.delegate?.previewWallpaperDidComplete(self)
             }
         }

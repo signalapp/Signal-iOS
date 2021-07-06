@@ -249,7 +249,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOnMain {
                 AssertIsOnMainThread()
 
                 self.updateTableContents()
@@ -270,7 +270,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOnMain {
                 AssertIsOnMainThread()
 
                 self.updateTableContents()
@@ -329,7 +329,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             } else {
                 ChatColors.setDefaultChatColorSetting(nil, transaction: transaction)
             }
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOnMain {
                 AssertIsOnMainThread()
 
                 self.updateTableContents()
@@ -341,7 +341,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         databaseStorage.asyncWrite { transaction in
             ChatColors.resetAllSettings(transaction: transaction)
 
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOnMain {
                 AssertIsOnMainThread()
 
                 self.updateTableContents()

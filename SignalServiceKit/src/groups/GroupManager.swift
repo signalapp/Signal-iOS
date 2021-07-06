@@ -1207,7 +1207,7 @@ public class GroupManager: NSObject {
             return
         }
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             firstly {
                 self.localLeaveGroupOrDeclineInvite(groupThread: groupThread).asVoid()
             }.done { _ in

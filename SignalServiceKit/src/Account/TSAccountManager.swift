@@ -98,7 +98,7 @@ public extension TSAccountManager {
         self.keyValueStore.setDate(Date(),
                                    key: Self.needsAccountAttributesUpdateKey,
                                    transaction: transaction)
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             self.updateAccountAttributesIfNecessary()
         }
     }

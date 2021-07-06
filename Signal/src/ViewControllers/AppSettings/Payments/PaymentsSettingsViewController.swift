@@ -916,7 +916,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         databaseStorage.asyncWrite { transaction in
             Self.paymentsSwift.enablePayments(transaction: transaction)
 
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOnMain {
                 self.showPaymentsActivatedToast()
             }
         }

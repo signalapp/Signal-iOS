@@ -194,7 +194,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             break;
         case OWSReceiptCircumstanceOnThisDevice: {
             [self enqueueLinkedDeviceReadReceiptForMessage:message transaction:transaction];
-            [transaction addAsyncCompletion:^{ [self scheduleProcessing]; }];
+            [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
             if (message.authorAddress.isLocalAddress) {
                 OWSFailDebug(@"We don't support incoming messages from self.");
@@ -238,7 +238,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             break;
         case OWSReceiptCircumstanceOnThisDevice: {
             [self enqueueLinkedDeviceViewedReceiptForMessage:message transaction:transaction];
-            [transaction addAsyncCompletion:^{ [self scheduleProcessing]; }];
+            [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
             if (message.authorAddress.isLocalAddress) {
                 OWSFailDebug(@"We don't support incoming messages from self.");
