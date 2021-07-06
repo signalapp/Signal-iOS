@@ -7,42 +7,67 @@ import Foundation
 @objc
 public class CallMessageRelay: NSObject {
     private static let callMessagePayloadKey = "CallMessageRelayPayload"
+    private static let pendingCallMessageStore = SDSKeyValueStore(collection: "PendingCallMessageStore")
 
     @objc
     public static func handleVoipPayload(_ payload: [AnyHashable: Any]) -> Bool {
-        guard let payloadData = payload[callMessagePayloadKey] as? Data else { return false }
+        guard let payload = payload[callMessagePayloadKey] as? Bool, payload == true else { return false }
 
-        do {
-            let payload = try JSONDecoder().decode(Payload.self, from: payloadData)
-            messageProcessor.processEncryptedEnvelopeData(
-                payload.encryptedEnvelopeData,
-                serverDeliveryTimestamp: payload.serverDeliveryTimestamp
-            ) { error in
-                if let error = error {
-                    owsFailDebug("Failed to process relayed call message \(error)")
+        // Process all the pending call messages from the NSE in 1 batch.
+        // This should almost always be a batch of one.
+        databaseStorage.asyncWrite { transaction in
+            defer { pendingCallMessageStore.removeAll(transaction: transaction) }
+            let pendingPayloads: [Payload]
+
+            do {
+                pendingPayloads = try pendingCallMessageStore.allCodableValues(transaction: transaction).sorted {
+                    $0.envelope.timestamp < $1.envelope.timestamp
                 }
+            } catch {
+                owsFailDebug("Failed to read pending call messages \(error)")
+                return
             }
-        } catch {
-            owsFailDebug("Failed to decode relay voip payload \(error)")
+
+            Logger.info("Processing \(pendingPayloads.count) call messages relayed from the NSE.")
+            owsAssertDebug(pendingPayloads.count == 1, "Unexpectedly processing multiple messages from the NSE at once")
+
+            for payload in pendingPayloads {
+                messageManager.processEnvelope(
+                    payload.envelope,
+                    plaintextData: payload.plaintextData,
+                    wasReceivedByUD: payload.wasReceivedByUD,
+                    serverDeliveryTimestamp: payload.serverDeliveryTimestamp,
+                    transaction: transaction
+                )
+            }
         }
 
         return true
     }
 
-    public static func voipPayload(
+    public static func enqueueCallMessageForMainApp(
         envelope: SSKProtoEnvelope,
-        serverDeliveryTimestamp: UInt64
-    ) throws -> [AnyHashable: Any] {
+        plaintextData: Data,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> [String: Any] {
         let payload = Payload(
-            encryptedEnvelopeData: try envelope.serializedData(),
+            envelope: envelope,
+            plaintextData: plaintextData,
+            wasReceivedByUD: wasReceivedByUD,
             serverDeliveryTimestamp: serverDeliveryTimestamp
         )
 
-        return [callMessagePayloadKey: try JSONEncoder().encode(payload)]
+        try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction)
+
+        return [callMessagePayloadKey: true]
     }
 
     private struct Payload: Codable {
-        let encryptedEnvelopeData: Data
+        let envelope: SSKProtoEnvelope
+        let plaintextData: Data
+        let wasReceivedByUD: Bool
         let serverDeliveryTimestamp: UInt64
     }
 }

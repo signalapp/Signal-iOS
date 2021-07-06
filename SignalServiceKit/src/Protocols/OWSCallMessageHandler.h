@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class SSKProtoCallMessageAnswer;
 @class SSKProtoCallMessageBusy;
 @class SSKProtoCallMessageHangup;
@@ -54,8 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
         NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:));
 
 - (BOOL)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
+                                  plaintextData:(NSData *)plaintextData
+                                wasReceivedByUD:(BOOL)wasReceivedByUD
                         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-    NS_SWIFT_NAME(externallyHandleCallMessage(envelope:serverDeliveryTimestamp:));
+                                    transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(externallyHandleCallMessage(envelope:plaintextData:wasReceivedByUD:serverDeliveryTimestamp:transaction:));
 
 @end
 

@@ -22,12 +22,18 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func externallyHandleCallMessage(
         envelope: SSKProtoEnvelope,
-        serverDeliveryTimestamp: UInt64
+        plaintextData: Data,
+        wasReceivedByUD: Bool,
+        serverDeliveryTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
     ) -> Bool {
         do {
-            let payload = try CallMessageRelay.voipPayload(
+            let payload = try CallMessageRelay.enqueueCallMessageForMainApp(
                 envelope: envelope,
-                serverDeliveryTimestamp: serverDeliveryTimestamp
+                plaintextData: plaintextData,
+                wasReceivedByUD: wasReceivedByUD,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                transaction: transaction
             )
             CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
                 if let error = error {
