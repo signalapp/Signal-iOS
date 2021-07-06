@@ -139,16 +139,17 @@ def get_versions(plist_file_path):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Precommit cleanup script.')
     parser.add_argument('--version', help='used for starting a new version.')
-    parser.add_argument('--internal', action='store_true', help='used to indicate throwaway builds.')
-    parser.add_argument('--nightly', action='store_true', help='used to indicate nightly builds.')
+
+    type_group = parser.add_mutually_exclusive_group()
+    type_group.add_argument('--internal', action='store_true', help='used to indicate throwaway builds.')
+    type_group.add_argument('--nightly', action='store_true', help='used to indicate nightly builds.')
+    type_group.add_argument('--beta', action='store_true', help='used to indicate beta builds.')
 
     args = parser.parse_args()
 
     is_internal = args.internal
     is_nightly = args.nightly
-
-    if is_nightly and is_internal:
-        fail('The --nightly flag and the --internal flag cannot be used together')
+    is_beta = args.beta
 
     project_root_path = find_project_root()
     # print 'project_root_path', project_root_path
@@ -222,6 +223,8 @@ if __name__ == '__main__':
 
     if is_internal:
         commit_message = '"Bump build to %s." (Internal)' % new_build_version
+    elif is_beta:
+        commit_message = '"Bump build to %s." (Beta)' % new_build_version
     elif is_nightly:
         commit_message = '"Bump build to %s." (nightly-%s)' % ( new_build_version, date.today().strftime("%m-%d-%Y") )
     else:
@@ -234,6 +237,9 @@ if __name__ == '__main__':
         tag_name += "-internal"
     elif is_nightly:
         tag_name += "-nightly"
+    elif is_beta:
+        tag_name += "-beta"
+
     command = ['git', 'tag', tag_name]
     execute_command(command)
 
