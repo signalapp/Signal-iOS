@@ -37,6 +37,22 @@ typedef NS_ENUM(NSInteger, ConversationListViewControllerSection) {
 
 @property (nonatomic) TSThread *lastViewedThread;
 
+// For use by Swift extension.
+- (void)updateBarButtonItems;
+- (void)updateReminderViews;
+- (void)updateViewState;
+- (void)updateShouldObserveDBModifications;
+- (void)reloadTableViewData;
+- (void)updateFirstConversationLabel;
+- (void)presentGetStartedBannerIfNecessary;
+- (void)updateAvatars;
+- (void)resetMappings;
+- (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction;
+- (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds;
+
+@property (nonatomic) BOOL shouldObserveDBModifications;
+@property (nonatomic) UIView *firstConversationCueView;
+
 @end
 
 NS_ASSUME_NONNULL_END

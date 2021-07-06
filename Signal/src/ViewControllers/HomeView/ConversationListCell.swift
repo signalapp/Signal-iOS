@@ -246,48 +246,12 @@ public class ConversationListCell: UITableViewCell {
         }
         applyUnreadIndicator()
 
-        let dateTimeLabelConfig: CVLabelConfig = {
-            var text: String = ""
-            if let labelDate = configuration.overrideDate ?? thread.conversationListInfo?.lastMessageDate {
-                text = DateUtil.formatDateShort(labelDate)
-            }
-            if hasUnreadStyle {
-                return CVLabelConfig(text: text,
-                                     font: dateTimeFont.ows_semibold,
-                                     textColor: Theme.primaryTextColor,
-                                     textAlignment: .trailing)
-            } else {
-                return CVLabelConfig(text: text,
-                                     font: dateTimeFont,
-                                     textColor: snippetColor,
-                                     textAlignment: .trailing)
-            }
-        }()
+        let dateTimeLabelConfig = self.dateTimeLabelConfig(configuration: configuration)
         dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
         let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
                                                 maxWidth: CGFloat.greatestFiniteMagnitude)
 
-        let nameLabelConfig: CVLabelConfig = {
-            let text: String = {
-                if thread.threadRecord is TSContactThread {
-                    if thread.threadRecord.isNoteToSelf {
-                        return MessageStrings.noteToSelf
-                    } else {
-                        return thread.name
-                    }
-                } else {
-                    if let name: String = thread.name.nilIfEmpty {
-                        return name
-                    } else {
-                        return MessageStrings.newGroupDefaultTitle
-                    }
-                }
-            }()
-            return CVLabelConfig(text: text,
-                                 font: nameFont,
-                                 textColor: Theme.primaryTextColor,
-                                 lineBreakMode: .byTruncatingTail)
-        }()
+        let nameLabelConfig = self.nameLabelConfig(configuration: configuration)
         nameLabelConfig.applyForRendering(label: nameLabel)
         var nameLabelMaxWidth = max(0, tableWidth - CGFloat(avatarStackSize.width +
                                                                 outerHStackConfig.spacing +
@@ -389,14 +353,14 @@ public class ConversationListCell: UITableViewCell {
                                             bottomRowStackSize.asManualSubviewInfo
                                           ]).measuredSize
 
-        let outerHStackSize = outerHStack.configure(config: outerHStackConfig,
-                                                    subviews: [ avatarStack, vStack ],
-                                                    subviewInfos: [
-                                                        avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
-                                                        vStackSize.asManualSubviewInfo
-                                                    ]).measuredSize
+        _ = outerHStack.configure(config: outerHStackConfig,
+                                  subviews: [ avatarStack, vStack ],
+                                  subviewInfos: [
+                                    avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
+                                    vStackSize.asManualSubviewInfo
+                                  ]).measuredSize
 
-        updatePreview()
+        updateTypingIndicatorState()
     }
 
     private var topRowStackConfig: ManualStackView.Config {
@@ -611,12 +575,58 @@ public class ConversationListCell: UITableViewCell {
         !hasOverrideSnippet && !isBlocked && !thread.hasPendingMessageRequest && thread.isMuted
     }
 
+    private func dateTimeLabelConfig(configuration: Configuration) -> CVLabelConfig {
+        let thread = configuration.thread
+        var text: String = ""
+        if let labelDate = configuration.overrideDate ?? thread.conversationListInfo?.lastMessageDate {
+            text = DateUtil.formatDateShort(labelDate)
+        }
+        if hasUnreadStyle {
+            return CVLabelConfig(text: text,
+                                 font: dateTimeFont.ows_semibold,
+                                 textColor: Theme.primaryTextColor,
+                                 textAlignment: .trailing)
+        } else {
+            return CVLabelConfig(text: text,
+                                 font: dateTimeFont,
+                                 textColor: snippetColor,
+                                 textAlignment: .trailing)
+        }
+    }
+
+    private func nameLabelConfig(configuration: Configuration) -> CVLabelConfig {
+        let thread = configuration.thread
+        let text: String = {
+            if thread.threadRecord is TSContactThread {
+                if thread.threadRecord.isNoteToSelf {
+                    return MessageStrings.noteToSelf
+                } else {
+                    return thread.name
+                }
+            } else {
+                if let name: String = thread.name.nilIfEmpty {
+                    return name
+                } else {
+                    return MessageStrings.newGroupDefaultTitle
+                }
+            }
+        }()
+        return CVLabelConfig(text: text,
+                             font: nameFont,
+                             textColor: Theme.primaryTextColor,
+                             lineBreakMode: .byTruncatingTail)
+    }
+
     // MARK: - Reuse
 
     @objc
     public override func prepareForReuse() {
         super.prepareForReuse()
 
+        reset()
+    }
+
+    private func reset() {
         for cvview in cvviews {
             cvview.reset()
         }
@@ -641,8 +651,11 @@ public class ConversationListCell: UITableViewCell {
               contactThread.contactAddress == address else {
             return
         }
-        // TODO:
-        //        updateNameLabel()
+        guard let configuration = configuration else {
+            return
+        }
+        reset()
+        configure(configuration)
     }
 
     @objc
@@ -655,7 +668,7 @@ public class ConversationListCell: UITableViewCell {
             return
         }
 
-        updatePreview()
+        updateTypingIndicatorState()
     }
 
     // MARK: - Typing Indicators
@@ -693,7 +706,7 @@ public class ConversationListCell: UITableViewCell {
                              lineBreakMode: .byWordWrapping)
     }
 
-    private func updatePreview() {
+    private func updateTypingIndicatorState() {
         AssertIsOnMainThread()
 
         // We use "override snippets" to show "message" search results.
