@@ -3076,6 +3076,9 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Rhwystro a Dileu";
 
+/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Adrodd ar Sothach a'i Rwystro";
+
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Ni fydd pobl sydd wedi'u rhwystro yn gallu eich ffonio nac anfon negeseuon atoch.";
 
@@ -3126,6 +3129,9 @@
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Adolygu Ceisiadau";
+
+/* String indicating that spam has been reported and the chat has been blocked. */
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Adroddwyd fel sbam a'i rwystro.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Derbyn";
@@ -3676,6 +3682,9 @@
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Diweddaru Signal i ddefnyddio taliadau.";
 
+/* Indicates that an outgoing payment could not be verified in a timely way. */
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Methwyd â chwblhau'r taliad. Gwiriwch eich cysylltiad a rhoi cynnig arall arni.";
 
@@ -4088,10 +4097,10 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Byddwn yn eich atgoffa eto yfory.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Byddwn yn eich atgoffa ymhen pythefthnos.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Byddwn yn eich atgoffa eto ymhen pythefnos.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Byddwn yn eich atgoffa ymhen wythnos.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Byddwn yn eich atgoffa eto ymhen wythnos.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "PIN annilys. Rhowch gynnig arall arni.";
@@ -5465,7 +5474,7 @@
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Gweld Fy Rhif Ffôn";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Diffodd Atgofiadau";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Diffodd Atgoffwyr";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Gwnewch yn siŵr eich bod yn cofio neu'n cadw eich PIN yn ddiogel gan nad oes modd ei adfer. Os fyddwch yn anghofio eich PIN, efallai y byddwch yn colli data wrth ailgofrestru eich cyfrif Signal.";
@@ -5474,7 +5483,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Cadarnhewch eich PIN Signal";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Atgofiadau PIN";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Atgoffwyr PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "Mae PIN yn cadw gwybodaeth wedi'i storio gyda Signal wedi'i hamgryptio felly dim ond chi sy'n cael mynediad ati. Ni allwch adfer y PIN. Bydd eich proffil, gosodiadau, a chysylltiadau yn cael eu hadfer pan fyddwch yn ailosod Signal.";

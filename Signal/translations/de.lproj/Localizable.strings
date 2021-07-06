@@ -596,7 +596,7 @@
 "CHAT_COLORS_MEGAPHONE_ACTION" = "Darstellung";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Jetzt kannst du die Unterhaltungsfarben ändern, z.B. mit Farbverlauf und vielem mehr.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "Du kannst jetzt die Unterhaltungsfarben ändern, z. B. mit Farbverläufen und vielem mehr.";
 
 /* Title for chat colors megaphone */
 "CHAT_COLORS_MEGAPHONE_TITLE" = "Personalisierte Unterhaltungsfarben";
@@ -1091,7 +1091,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Personalisierte Farbe";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Zieh, um die Richtung des Farbverlaufs zu ändern";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Ziehen, um die Richtung des Farbverlaufs zu ändern";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dies kann einige Minuten dauern.";
@@ -1823,7 +1823,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Jemand mit einer geänderten Sicherheitsnummer ist diesem Anruf beigetreten.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Wische nach oben, um Bildschirmfreigabe anzuzeigen";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Nach oben wischen, um die Bildschirmfreigabe anzuzeigen";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Jemand hat einen Gruppenanruf gestartet";
@@ -3076,6 +3076,9 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blockieren und löschen";
 
+/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Spam melden und blockieren";
+
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blockierte Personen werden dich nicht anrufen oder dir Nachrichten senden können.";
 
@@ -3126,6 +3129,9 @@
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Anfrage prüfen";
+
+/* String indicating that spam has been reported and the chat has been blocked. */
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Als Spam gemeldet und blockiert.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Annehmen";
@@ -3675,6 +3681,9 @@
 
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Aktualisiere Signal, um Zahlungen verwenden zu können.";
+
+/* Indicates that an outgoing payment could not be verified in a timely way. */
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Zahlung konnte nicht abgeschlossen werden. Überprüfe deine Internetverbindung und versuche es erneut.";
@@ -5165,7 +5174,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PIN aktualisieren";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Bei einem hohen Kontostand sollest du eventuell auf eine alphanumerische PIN wechseln, um den Schutz deines Kontos zu erhöhen.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Bei einem hohen Kontostand sollest du zum erhöhten Schutz deines Kontos eventuell zu einer alphanumerischen PIN wechseln.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Aktualisiere deine PIN";
@@ -5213,7 +5222,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Neu: Zahlungen (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Dein Kontostand wird beim erneuten Installieren von Signal automatisch wiederhergestellt, falls du deine Signal-PIN bestätigst. Weiterhin kannst du deinen Kontostand durch Verwenden einer Wiederherstellungsphrase wiederherstellen; einer aus 24 Wörtern bestehenden, einzigartigen Phrase. Notiere sie und bewahre sie an einem sicheren Ort auf.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Dein Kontostand wird beim erneuten Installieren von Signal automatisch wiederhergestellt, falls du deine Signal-PIN bestätigst. Weiterhin kannst du deinen Kontostand durch Verwenden einer Wiederherstellungsphrase wiederherstellen, einer aus 24 Wörtern bestehenden, einzigartigen Phrase. Notiere sie und bewahre sie an einem sicheren Ort auf.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Guthaben hinzufügen";
@@ -5330,7 +5339,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Wiederherstellungsphrase einfügen";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Deine Wiederherstellungsphrase ist ein nur für dich geltender Satz mit 12 Wörtern. Verwende sie, um dein Zahlungskonto wiederherzustellen.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Deine Wiederherstellungsphrase ist ein einzigartiger Satz mit 12 Wörtern. Verwende sie, um dein Zahlungskonto wiederherzustellen.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Wiederherstellungsphrase eingeben";
@@ -5378,7 +5387,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Du kannst nicht an die Adresse deines eigenen Signal-Wallets überweisen. Gib die Wallet-Adresse deines Kontos bei einer unterstützen Handelsplattform ein.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Du kannst MobileCoin übertragen, indem du eine Überweisung an die von der Handelsplattform angegebene Wallet-Adresse ausführst. Die Wallet-Adresse ist eine Folge von Zahlen und Buchstaben, die sich gewöhnlicherweise unterhalb des QR-Codes befindet.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Du kannst MobileCoin übertragen, indem du eine Überweisung an die von der Handelsplattform angegebene Wallet-Adresse ausführst. Die Wallet-Adresse ist eine Folge von Zahlen und Buchstaben, die sich meistens unterhalb des QR-Codes befindet.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Überprüfe die Wallet-Adresse, an die du überweisen möchtest, und versuche es erneut. ";
@@ -5402,7 +5411,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Bestätigen";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Gebe die Wörter %1$@ und %2$@ deiner Wiederherstellungsphrase ein.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Gib die Wörter %1$@ und %2$@ deiner Wiederherstellungsphrase ein.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Ein Wort ist falsch. Versuche es bitte erneut.";
@@ -5441,7 +5450,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Notiere die folgenden 24 Wörter in der angegebenen Reihenfolge, und bewahre deine Liste an einem sicheren Ort auf.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Mache keine Screenshots oder versende diese nicht per E-Mail.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Keine Bildschirmfotos machen und nicht per E-Mail versenden.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Wiederherstellungsphrase";
@@ -5675,7 +5684,7 @@
 "SPAM_CAPTCHA_SHEET_BODY" = "Bitte hilf dabei, Spam auf Signal zu verhindern, und schließe die Verifikation ab.\n\nNach abgeschlossener Verifikation kannst du wieder kommunizieren. Alle pausierten Nachrichten werden dann automatisch versendet.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verifizieren, um weiterhin zu kommunizieren";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Verifizieren zum Senden weiterer Nachrichten";
 
 /* Action to skip verification */
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Verifikation überspringen";

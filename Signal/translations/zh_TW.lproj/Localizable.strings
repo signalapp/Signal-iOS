@@ -3076,6 +3076,9 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "封鎖及刪除";
 
+/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "回報為垃圾並封鎖";
+
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "已被封鎖的人們將無法撥電話給你或傳訊息給你。";
 
@@ -3126,6 +3129,9 @@
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "審查要求";
+
+/* String indicating that spam has been reported and the chat has been blocked. */
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "已檢舉垃圾訊息並封鎖。";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "接受";
@@ -3675,6 +3681,9 @@
 
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "更新Signal以使用付款功能。";
+
+/* Indicates that an outgoing payment could not be verified in a timely way. */
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "無法完成付款。 檢查你的連線，然後重試。";

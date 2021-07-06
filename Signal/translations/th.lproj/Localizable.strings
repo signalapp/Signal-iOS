@@ -3076,6 +3076,9 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ปิดกั้นและลบ";
 
+/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ผู้คนที่ถูกปิดกั้นจะไม่สามารถจะไม่สามารถโทรหรือส่งข้อความหาคุณได้";
 
@@ -3126,6 +3129,9 @@
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "พิจารณาคำขอ";
+
+/* String indicating that spam has been reported and the chat has been blocked. */
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "ถูกรายงานว่าเป็นสแปมและถูกปิดกั้นแล้ว";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ตอบรับ";
@@ -3675,6 +3681,9 @@
 
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "ปรับรุ่น Signal เพื่อใช้การจ่ายเงิน";
+
+/* Indicates that an outgoing payment could not be verified in a timely way. */
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "ไม่สามารถชำระเงินได้สำเร็จ กรุณาตรวจสอบการเชื่อมต่อของคุณและลองอีกครั้ง";

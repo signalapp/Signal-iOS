@@ -3076,6 +3076,9 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "屏蔽并删除";
 
+/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "举报垃圾与屏蔽";
+
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "被屏蔽的用户无法向你发起通话或给你发送消息。";
 
@@ -3126,6 +3129,9 @@
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "审查请求";
+
+/* String indicating that spam has been reported and the chat has been blocked. */
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "已举报为垃圾消息并屏蔽。";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "接受";
@@ -3676,6 +3682,9 @@
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "请更新 Signal 以进行付款。";
 
+/* Indicates that an outgoing payment could not be verified in a timely way. */
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "无法完成付款，请检查您的连接并重试。";
 
@@ -4004,10 +4013,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "创建纯数字 PIN 码";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "禁用 PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "禁用 PIN 码";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "若禁用 PIN，您在重新注册 Signal 后只能通过迁移其它 iOS 设备数据恢复账户数据，否则您将丢失所有数据。PIN 禁用时，无法启用注册锁定。";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "若禁用 PIN 码，您在重新注册 Signal 后只能通过迁移其它 iOS 设备数据恢复账户数据，否则您将丢失所有数据。PIN 禁用时，无法启用注册锁定。";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "警告";
@@ -4052,7 +4061,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "关闭注册锁定？";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "禁用 PIN";
+"PIN_CREATION_SKIP" = "禁用 PIN 码";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "创建您的 PIN";
@@ -4868,7 +4877,7 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "高级 PIN 设置";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "禁用 PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "禁用 PIN 码";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "启用 PIN";
@@ -5801,7 +5810,7 @@
 "SWITCH_OFF" = "关";
 
 /* Label for 'on' state of a switch control. */
-"SWITCH_ON" = "开";
+"SWITCH_ON" = "开启";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "验证";
@@ -6002,7 +6011,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "隆重推出“PIN”功能";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "禁用 PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "禁用 PIN 码";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal 很快将需要 iOS 11 或更高版本。请通过设置 >> 通用 >> 软件更新，进行升级。";

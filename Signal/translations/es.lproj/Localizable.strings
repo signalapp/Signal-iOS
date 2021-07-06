@@ -1379,7 +1379,7 @@
 "DONATION_MEGAPHONE_ACTION" = "Donar";
 
 /* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal se mantiene gracias a ti. ¡Muestra tu apoyo hoy!";
+"DONATION_MEGAPHONE_BODY" = "Signal depende de ti. ¡Muestra tu apoyo hoy!";
 
 /* Cancel text for donation megaphone */
 "DONATION_MEGAPHONE_CANCEL" = "No, gracias";
@@ -1412,10 +1412,10 @@
 "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "¡Gracias por tu apoyo!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal se mantiene gracias a gente como tú.";
+"DONATION_VIEW_TITLE" = "Signal depende de gente como tú.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "El equipo de Signal está comprometido con la misión de desarrollar tecnología privada de código abierto que protege la libre expresión y habilita comunicaciones globales seguras. Tu contribución alimenta esta causa. Sin anuncios. Sin rastreadores. Sin bromas.\n\nTu donación ayuda a costear el desarrollo, servidores y ancho de banda de una aplicación usada por millones de personas en todo el mundo para comunicarse de manera privada e instantánea.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "El equipo de Signal está comprometido con la misión de desarrollar tecnología de código abierto que protege la libre expresión y habilita comunicaciones globales seguras y privadas. Tu contribución alimenta esta causa. Sin anuncios. Sin rastreadores. Sin bromas.\n\nTu donación ayuda a costear el desarrollo, servidores y ancho de banda de una aplicación usada por millones de personas en todo el mundo para comunicarse de manera privada e instantánea.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "¿Por qué donar?";
@@ -3076,6 +3076,9 @@
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Bloquear y eliminar";
 
+/* Action sheet action to confirm blocking and report spam for a thread via a message request. */
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Denunciar como spam y bloquear";
+
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Las personas bloqueadas no podrán llamarte o enviarte mensajes.";
 
@@ -3126,6 +3129,9 @@
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Revisar solicitud";
+
+/* String indicating that spam has been reported and the chat has been blocked. */
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Denunciado como spam y bloqueado.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aceptar";
@@ -3675,6 +3681,9 @@
 
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualiza Signal para realizar pagos.";
+
+/* Indicates that an outgoing payment could not be verified in a timely way. */
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Fallo al completar el pago. Comprueba tu conexión e inténtalo de nuevo.";
