@@ -165,8 +165,8 @@ public class ConversationListCell: UITableViewCell {
             return
         }
 
-        snippetLabel.numberOfLines = 2
-        snippetLabel.lineBreakMode = .byWordWrapping
+        snippetLabelConfig(configuration: configuration).applyForRendering(label: snippetLabel)
+        let snippetLineHeight = CGFloat(ceil(1.1 * snippetFont.ows_semibold.lineHeight))
 
         avatarView.shouldLoadAsync = configuration.shouldLoadAvatarAsync
         avatarView.configureWithSneakyTransaction(thread: thread.threadRecord)
@@ -181,15 +181,6 @@ public class ConversationListCell: UITableViewCell {
                                                selector: #selector(typingIndicatorStateDidChange),
                                                name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
                                                object: nil)
-
-        // We update the fonts every time this cell is configured to ensure that
-        // changes to the dynamic type settings are reflected.
-        snippetLabel.font = snippetFont
-        snippetLabel.textColor = snippetColor
-
-        let snippetLineHeight = CGFloat(ceil(1.1 * snippetFont.ows_semibold.lineHeight))
-
-        updatePreview()
 
         // Avatar
 
@@ -206,7 +197,6 @@ public class ConversationListCell: UITableViewCell {
         // If there are unread messages, show the "unread badge."
         var shouldHideStatusIndicator = false
         func applyUnreadIndicator() {
-            // TODO:
             guard !hasOverrideSnippet else {
                 // If we're using the conversation list cell to render search results,
                 // don't show "unread badge" or "message status" indicator.
@@ -228,7 +218,6 @@ public class ConversationListCell: UITableViewCell {
             unreadLabel.textAlignment = .center
             unreadLabel.font = unreadFont
             unreadLabel.removeFromSuperview()
-            // TODO: Use CVText?
             let unreadLabelSize = unreadLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
 
             let unreadBadge = self.unreadBadge
@@ -238,7 +227,6 @@ public class ConversationListCell: UITableViewCell {
                 unreadLabel.frame = CGRect(origin: (view.frame.size - unreadLabelSize).asPoint * 0.5,
                                            size: unreadLabelSize)
             }
-            unreadLabel.autoCenterInSuperview()
 
             let unreadBadgeHeight = ceil(unreadLabel.font.lineHeight * 1.5)
             unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2
@@ -354,7 +342,6 @@ public class ConversationListCell: UITableViewCell {
             ]
         }
 
-        // TODO: topRowView.alignment = .lastBaseline
         let topRowStackSize = topRowStack.configure(config: topRowStackConfig,
                                                     subviews: topRowStackSubviews,
                                                     subviewInfos: topRowStackSubviewInfos).measuredSize
@@ -409,8 +396,7 @@ public class ConversationListCell: UITableViewCell {
                                                         vStackSize.asManualSubviewInfo
                                                     ]).measuredSize
 
-        Logger.verbose("outerHStackSize.height: \(outerHStackSize.height)")
-
+        updatePreview()
     }
 
     private var topRowStackConfig: ManualStackView.Config {
@@ -683,21 +669,7 @@ public class ConversationListCell: UITableViewCell {
         return false
     }
 
-    private func updatePreview() {
-        AssertIsOnMainThread()
-
-        guard let configuration = self.configuration else {
-            return
-        }
-
-        // TODO:
-        //
-        // We want to be able to show/hide the typing indicators without
-        // any "jitter" in the cell layout.
-        //
-        // Therefore we do not hide the snippet label, but use it to
-        // display two lines of non-rendering text so that it retains its
-        // full height.
+    private func snippetLabelConfig(configuration: Configuration) -> CVLabelConfig {
         var attributedText: NSAttributedString = {
             if let overrideSnippet = self.overrideSnippet {
                 return overrideSnippet
@@ -714,7 +686,15 @@ public class ConversationListCell: UITableViewCell {
                                                                 attributes: [
                                                                     .font: snippetFont
                                                                 ])
-        snippetLabel.attributedText = attributedText
+        return CVLabelConfig(attributedText: attributedText,
+                             font: snippetFont,
+                             textColor: snippetColor,
+                             numberOfLines: 2,
+                             lineBreakMode: .byWordWrapping)
+    }
+
+    private func updatePreview() {
+        AssertIsOnMainThread()
 
         // We use "override snippets" to show "message" search results.
         // We don't want to show typing indicators in that case.
@@ -727,8 +707,6 @@ public class ConversationListCell: UITableViewCell {
             typingIndicatorView.isHidden = true
             typingIndicatorView.stopAnimation()
         }
-
-        muteIconView.tintColor = snippetColor
     }
 }
 
