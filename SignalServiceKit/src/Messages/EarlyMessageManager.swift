@@ -10,7 +10,7 @@ public class EarlyMessageManager: NSObject {
         let timestamp: UInt64
         let author: SignalServiceAddress
 
-        var rawValue: String {
+        var key: String {
             guard let authorUuid = author.uuidString else {
                 owsFail("Unexpectedly missing author uuid \(author)")
             }
@@ -122,12 +122,10 @@ public class EarlyMessageManager: NSObject {
         }
     }
 
-    private static let maxQueuedPerMessage: Int = 100
-    private static let maxQueuedMessages: Int = 100
     private static let maxEarlyEnvelopeSize: Int = 1024
 
-    private var pendingEnvelopeStore = SDSOrderedKeyValueStore<[EarlyEnvelope]>(collection: "EarlyEnvelopesStore")
-    private var pendingReceiptStore =  SDSOrderedKeyValueStore<[EarlyReceipt]>(collection: "EarlyReceiptsStore")
+    private var pendingEnvelopeStore = SDSKeyValueStore(collection: "EarlyEnvelopesStore")
+    private var pendingReceiptStore =  SDSKeyValueStore(collection: "EarlyReceiptsStore")
 
     public override init() {
         super.init()
@@ -157,11 +155,12 @@ public class EarlyMessageManager: NSObject {
 
         Logger.info("Recording early envelope \(OWSMessageManager.description(for: envelope)) for message \(identifier)")
 
-        var envelopes = pendingEnvelopeStore.fetch(key: identifier.rawValue, transaction: transaction) ?? []
-
-        while envelopes.count >= Self.maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
-            envelopes.remove(at: 0)
-            owsFailDebug("Dropping early envelope \(droppedEarlyEnvelope.envelope.timestamp) for message \(identifier) due to excessive early envelopes.")
+        var envelopes: [EarlyEnvelope]
+        do {
+            envelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction) ?? []
+        } catch {
+            owsFailDebug("Failed to decode existing early envelopes for message \(identifier) with error \(error)")
+            envelopes = []
         }
 
         envelopes.append(EarlyEnvelope(
@@ -170,12 +169,11 @@ public class EarlyMessageManager: NSObject {
             wasReceivedByUD: wasReceivedByUD,
             serverDeliveryTimestamp: serverDeliveryTimestamp
         ))
-        pendingEnvelopeStore.appendByReplacingIfNeeded(key: identifier.rawValue, value: envelopes, transaction: transaction)
 
-        while pendingEnvelopeStore.count(transaction: transaction) >= Self.maxQueuedMessages,
-              let droppedEarlyIdentifier = pendingEnvelopeStore.firstKey(transaction: transaction) {
-            pendingEnvelopeStore.remove(key: droppedEarlyIdentifier, transaction: transaction)
-            owsFailDebug("Dropping all early envelopes for message \(droppedEarlyIdentifier) due to excessive early messages.")
+        do {
+            try pendingEnvelopeStore.setCodable(envelopes, key: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to persist early envelope \(OWSMessageManager.description(for: envelope)) for message \(identifier) with error \(error)")
         }
     }
 
@@ -243,20 +241,20 @@ public class EarlyMessageManager: NSObject {
         identifier: MessageIdentifier,
         transaction: SDSAnyWriteTransaction
     ) {
-        var receipts = pendingReceiptStore.fetch(key: identifier.rawValue, transaction: transaction) ?? []
-
-        while receipts.count >= Self.maxQueuedPerMessage, let droppedEarlyReceipt = receipts.first {
-            receipts.remove(at: 0)
-            owsFailDebug("Dropping early receipt \(droppedEarlyReceipt) for message \(identifier) due to excessive early receipts.")
+        var receipts: [EarlyReceipt]
+        do {
+            receipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction) ?? []
+        } catch {
+            owsFailDebug("Failed to decode existing early receipts for message \(identifier) with error \(error)")
+            receipts = []
         }
 
         receipts.append(earlyReceipt)
-        pendingReceiptStore.appendByReplacingIfNeeded(key: identifier.rawValue, value: receipts, transaction: transaction)
 
-        while pendingReceiptStore.count(transaction: transaction) >= Self.maxQueuedMessages,
-              let droppedEarlyIdentifier = pendingReceiptStore.firstKey(transaction: transaction) {
-            pendingReceiptStore.remove(key: droppedEarlyIdentifier, transaction: transaction)
-            owsFailDebug("Dropping all early envelopes for message \(droppedEarlyIdentifier) due to excessive early messages.")
+        do {
+            try pendingReceiptStore.setCodable(receipts, key: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to persist early receipt for message \(identifier) with error \(error)")
         }
     }
 
@@ -275,7 +273,15 @@ public class EarlyMessageManager: NSObject {
             return owsFailDebug("attempted to apply pending messages for unsupported message type \(message.interactionType())")
         }
 
-        let earlyReceipts = pendingReceiptStore.remove(key: identifier.rawValue, transaction: transaction)
+        let earlyReceipts: [EarlyReceipt]?
+        do {
+            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
+            earlyReceipts = nil
+        }
+
+        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
 
         // Apply any early receipts for this message
         for earlyReceipt in earlyReceipts ?? [] {
@@ -337,7 +343,15 @@ public class EarlyMessageManager: NSObject {
             }
         }
 
-        let earlyEnvelopes = pendingEnvelopeStore.remove(key: identifier.rawValue, transaction: transaction)
+        let earlyEnvelopes: [EarlyEnvelope]?
+        do {
+            earlyEnvelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to decode early envelopes for message \(identifier) with error \(error)")
+            earlyEnvelopes = nil
+        }
+
+        pendingEnvelopeStore.removeValue(forKey: identifier.key, transaction: transaction)
 
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
@@ -354,35 +368,30 @@ public class EarlyMessageManager: NSObject {
     }
 
     private func cleanupStaleMessages() {
-        databaseStorage.write { transction in
+        databaseStorage.asyncWrite { transction in
             let oldestTimestampToKeep = Date.ows_millisecondTimestamp() - kWeekInMs
 
-            let pendingEnvelopes = pendingEnvelopeStore.orderedKeysAndValues(transaction: transction)
-            for (key, envelopes) in pendingEnvelopes {
-                let filteredEnvelopes = envelopes.filter { $0.envelope.timestamp > oldestTimestampToKeep }
-                if filteredEnvelopes.isEmpty {
-                    pendingEnvelopeStore.remove(key: key, transaction: transction)
-                } else if filteredEnvelopes.count < envelopes.count {
-                    pendingEnvelopeStore.replace(key: key, value: filteredEnvelopes, transaction: transction)
+            let allEnvelopeKeys = self.pendingEnvelopeStore.allKeys(transaction: transction)
+            let staleEnvelopeKeys = allEnvelopeKeys.filter {
+                guard let timestampString = $0.split(separator: ".")[safe: 1],
+                      let timestamp = UInt64(timestampString),
+                      timestamp > oldestTimestampToKeep else {
+                    return false
                 }
+                return true
             }
+            self.pendingEnvelopeStore.removeValues(forKeys: staleEnvelopeKeys, transaction: transction)
 
-            let pendingReceipts = pendingReceiptStore.orderedKeysAndValues(transaction: transction)
-            for (key, receipts) in pendingReceipts {
-                let filteredReceipts = receipts.filter { $0.timestamp > oldestTimestampToKeep }
-                if filteredReceipts.isEmpty {
-                    pendingReceiptStore.remove(key: key, transaction: transction)
-                } else if filteredReceipts.count < receipts.count {
-                    pendingReceiptStore.replace(key: key, value: filteredReceipts, transaction: transction)
+            let allReceiptKeys = self.pendingReceiptStore.allKeys(transaction: transction)
+            let staleReceiptKeys = allReceiptKeys.filter {
+                guard let timestampString = $0.split(separator: ".")[safe: 1],
+                      let timestamp = UInt64(timestampString),
+                      timestamp > oldestTimestampToKeep else {
+                    return false
                 }
+                return true
             }
+            self.pendingReceiptStore.removeValues(forKeys: staleReceiptKeys, transaction: transction)
         }
-    }
-}
-
-extension SDSOrderedKeyValueStore {
-    fileprivate func appendByReplacingIfNeeded(key: String, value: ValueType, transaction: SDSAnyWriteTransaction) {
-        remove(key: key, transaction: transaction)
-        append(key: key, value: value, transaction: transaction)
     }
 }
