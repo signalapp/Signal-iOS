@@ -66,11 +66,15 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
     // This property can be safely accessed from any thread.
     public var isReachable: Bool {
+        AssertIsOnMainThread()
+
         return isReachable(via: .any)
     }
 
     // This method can be safely called from any thread.
     public func isReachable(via reachabilityType: ReachabilityType) -> Bool {
+        AssertIsOnMainThread()
+
         switch reachabilityType {
         case .any:
             return token.get().isReachable
