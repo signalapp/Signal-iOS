@@ -1693,12 +1693,6 @@
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "ไปที่ การตั้งค่า";
 
-/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal รุ่นนี้มีการปรับปรุงและเพิ่มประสิทธิภาพฐานข้อมูล คุณอาจต้องเปิดแอปเพื่อให้กระบวนการเสร็จสมบูรณ์";
-
-/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "จัดระเบียบฐานข้อมูล";
-
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "คุณได้เปลี่ยนว่าใครสามารถแก้ไขข้อมูลกลุ่มเป็น “%@“";
 
@@ -4267,6 +4261,9 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "โปรไฟล์";
 
+/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
+"PUSH_FALLBACK_MESSAGE" = "คุณอาจมีข้อความใหม่";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "ทำเครื่องหมายว่าอ่านแล้ว";
 
@@ -5364,9 +5361,6 @@
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "ที่อยู่ไม่ถูกรูปแบบ";
-
-/* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "URL ไม่ถูกรูปแบบ";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "สแกนรหัส QR";

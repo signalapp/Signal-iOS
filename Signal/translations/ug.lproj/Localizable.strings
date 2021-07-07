@@ -1693,12 +1693,6 @@
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "تەڭشەكلەرگە يۆتكەل";
 
-/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "بۇ نەشرىدىكى Signal ساندان ئەلالاشتۇرۇش ۋە ئۈنۈمىنى ياخشىلاش ئىقتىدارىنى ئۆز ئىچىگە ئالغان. بۇ باسقۇچنى تاماملاش ئۈچۈن ئەپنى قايتا ئېچىشىڭىز زۆرۈر بولۇشى مۇمكىن.";
-
-/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "سانداننى ئەلالاشتۇرۇۋاتىدۇ";
-
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "گۇرۇپپا ئۇچۇرىنى كىم تەھرىرلەشنى «%@» غا ئۆزگەرتتىڭىز.";
 
@@ -4267,6 +4261,9 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ئارخىپ";
 
+/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
+"PUSH_FALLBACK_MESSAGE" = "يېڭى ئۇچۇرىڭىز بار";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "ئوقۇلدى قىلىڭ";
 
@@ -5364,9 +5361,6 @@
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "ئىناۋەتسىز ئادرېس";
-
-/* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "ئىناۋەتسىز URL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR كودى تارا";

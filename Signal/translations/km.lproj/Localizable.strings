@@ -1693,12 +1693,6 @@
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "ទៅកាន់ ការកំណត់";
 
-/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "ជំនាន់ Signal នេះ រួមមាន ការបង្កើនប្រសិទ្ធភាពទិន្នន័យនិងការកែលម្អការល្បឿន។ អ្នកអាចនឹងត្រូវបើកកម្មវិធីនេះ ដើម្បីបញ្ចប់ដំណើរការ។";
-
-/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "កំពុងធ្វើឲ្យទិន្នន័យប្រសើរឡើង";
-
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "អ្នកបានផ្លាស់ប្តូរអ្នកដែលអាចកែប្រែព័ត៌មានក្រុមទៅ “%@“។";
 
@@ -4267,6 +4261,9 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ប្រវត្តិរូប";
 
+/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
+"PUSH_FALLBACK_MESSAGE" = "អ្នកអាចមានសារថ្មី";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "កំណត់ ថាបានអាន";
 
@@ -5364,9 +5361,6 @@
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
-
-/* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "ស្កេនកូដ QR";

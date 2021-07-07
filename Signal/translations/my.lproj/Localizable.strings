@@ -1693,12 +1693,6 @@
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "အပြင်အဆင်များသို့ သွားမယ်";
 
-/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "ဤ Signal ဗားရှင်းသည် ဒေတာဘေ့စ် စွမ်းရည်အကောင်းဆုံးဖြစ်စေရန် တိုးတက်နိုင်စွမ်းများ ပါဝင်ပါသည်။ လုပ်ငန်းစဉ်ကို ပြီးမြောက်ရန် သင် အပ္ပလီကေးရှင်းကို ဖွင့်ရန်လိုပါမည်။";
-
-/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "ဒေတာဘေ့စ် စွမ်းရည်အကောင်းဆုံးဖြစ်စေရန် ပြုလုပ်နေပါသည်";
-
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "အဖွဲ့၏ အချက်အလက်များအား မည်သူက ပြင်ဆင်ပြောင်းလဲနိုင်သည်ကို \"%@\" သို့ သင် ပြောင်းလိုက်သည်။";
 
@@ -4267,6 +4261,9 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ပရိဖိုင်း";
 
+/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
+"PUSH_FALLBACK_MESSAGE" = "သင့်တွင် မက်ဆေ့ချ်အသစ်များ ရောက်ရှိနေပါသည်";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "ဖတ်ပြီးကြောင်းမှတ်";
 
@@ -5364,9 +5361,6 @@
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "အကြုံးမဝင်သော လိပ်စာ";
-
-/* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "မမှန်ကန်သော URL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR ကုဒ်ကို စကင်ဖတ်ပါ";

@@ -1,5 +1,5 @@
-• We’ve spruced up with the app with new animations when sending and receiving messages, selecting messages in the chat view, and replying to messages.
-• Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly. Please report any issues you see with notification reliability. 
-• Receive an unwanted message? You can now report it as spam when you tap block.
+• 在傳送和接收訊息、在聊天視窗中選擇訊息和回覆訊息時，我們為應用程式增加了新的動畫。
+• 電池壽命非常寶貴，因此我們對應用程式中處理通知的方式進行了多項更改，從而顯著降低了電池使用量。 請回報你在通知可靠性方面看到的任何問題。
+• 收到不需要的訊息？你現在可以在點擊封鎖時將其回報為垃圾訊息。
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+有興趣幫助改進 Signal？ 我們正在招聘。 連到 https://signal.org/workworkwork 了解更多資訊。

@@ -1693,12 +1693,6 @@
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Go to Settings";
 
-/* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal ನ ಈ ಆವೃತ್ತಿಯು ಡೇಟಾಬೇಸ್ ಆಪ್ಟಿಮೈಸೇಶನ್ ಮತ್ತು ಕಾರ್ಯನಿರ್ವಹಣೆಯ ಸುಧಾರಣೆಗಳನ್ನು ಒಳಗೊಂಡಿದೆ. ಪ್ರಕ್ರಿಯೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನೀವು ಆ್ಯಪ್ ತೆರೆಯಬೇಕಾಗಬಹುದು.";
-
-/* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "ಡೇಟಾಬೇಸ್ ಅನ್ನು ಅತ್ಯುತ್ತಮವಾಗಿಸುವುದು";
-
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "ನೀವು ಗುಂಪಿನ ಮಾಹಿತಿಯನ್ನು ಯಾರು “%@“  ಗೆ ತಿದ್ದಬಹುದು ಎನ್ನುವುದನ್ನು ಬದಲಾಯಿಸಿದ್ದೀರಿ.";
 
@@ -4267,6 +4261,9 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ಪ್ರೊಫೈಲ್";
 
+/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
+"PUSH_FALLBACK_MESSAGE" = "ನೀವು ಹೊಸ ಸಂದೇಶಗಳನ್ನು ಹೊಂದಿರಬಹುದು";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "ಓದಿರುವುದಾಗಿ ಗುರುತಿಸಿ";
 
@@ -5364,9 +5361,6 @@
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
-
-/* Error indicating that a QR code does not contain a valid MobileCoin public address URL. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS_URL" = "Invalid URL";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
