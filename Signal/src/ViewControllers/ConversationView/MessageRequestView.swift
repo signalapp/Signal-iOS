@@ -4,7 +4,6 @@
 
 import UIKit
 
-@objc
 protocol MessageRequestDelegate: AnyObject {
     func messageRequestViewDidTapBlock(mode: MessageRequestMode)
     func messageRequestViewDidTapDelete()
@@ -53,10 +52,8 @@ class MessageRequestView: UIStackView {
         messageRequestType.hasSentMessages
     }
 
-    @objc
     weak var delegate: MessageRequestDelegate?
 
-    @objc
     init(threadViewModel: ThreadViewModel) {
         let thread = threadViewModel.threadRecord
         self.thread = thread

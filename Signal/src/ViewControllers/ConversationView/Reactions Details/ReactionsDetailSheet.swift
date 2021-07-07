@@ -6,7 +6,6 @@ import Foundation
 
 @objc
 class ReactionsDetailSheet: InteractiveSheetViewController {
-    @objc
     let messageId: String
 
     private var reactionState: InteractionReactionState
@@ -25,7 +24,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         return emojiCounts.compactMap { Emoji($0.emoji) }
     }
 
-    @objc
     init(reactionState: InteractionReactionState, message: TSMessage) {
         self.reactionState = reactionState
         self.messageId = message.uniqueId
@@ -73,7 +71,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
     // MARK: -
 
-    @objc
     func setReactionState(_ reactionState: InteractionReactionState, transaction: SDSAnyReadTransaction) {
         self.reactionState = reactionState
 

@@ -7,7 +7,6 @@ extension ConversationViewController: MessageActionsDelegate {
         showDetailView(itemViewModel)
     }
 
-    @objc
     func prepareDetailViewForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
@@ -25,7 +24,6 @@ extension ConversationViewController: MessageActionsDelegate {
         panHandler.messageDetailViewController = detailVC
     }
 
-    @objc
     func showDetailView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
@@ -55,7 +53,6 @@ extension ConversationViewController: MessageActionsDelegate {
         populateReplyForMessage(itemViewModel)
     }
 
-    @objc
     public func populateReplyForMessage(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 

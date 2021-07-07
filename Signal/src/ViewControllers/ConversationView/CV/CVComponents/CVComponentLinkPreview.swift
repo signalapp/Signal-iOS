@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     private let linkPreviewState: CVComponentState.LinkPreview
@@ -68,7 +67,6 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewLinkPreview: NSObject, CVComponentView {
 
         fileprivate let linkPreviewView = LinkPreviewView(draftDelegate: nil)

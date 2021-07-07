@@ -4,7 +4,6 @@
 
 extension ConversationViewController {
 
-    @objc
     public func renderItem(forIndex index: NSInteger) -> CVRenderItem? {
         guard index >= 0, index < renderItems.count else {
             owsFailDebug("Invalid view item index: \(index)")
@@ -19,27 +18,23 @@ extension ConversationViewController {
         return loadCoordinator.renderState
     }
 
-    @objc
     public var renderItems: [CVRenderItem] {
         AssertIsOnMainThread()
 
         return loadCoordinator.renderItems
     }
 
-    @objc
     public var allIndexPaths: [IndexPath] {
         AssertIsOnMainThread()
 
         return loadCoordinator.allIndexPaths
     }
 
-    @objc
     func ensureIndexPath(of interaction: TSMessage) -> IndexPath? {
         // CVC TODO: This is incomplete.
         self.indexPath(forInteractionUniqueId: interaction.uniqueId)
     }
 
-    @objc
     func clearThreadUnreadFlagIfNecessary() {
         if threadViewModel.isMarkedUnread {
             self.databaseStorage.write { transaction in
@@ -151,7 +146,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     public func showUnknownThreadWarningAlert() {
         // TODO: Finalize this copy.
         let message = (thread.isGroupThread
@@ -263,7 +257,6 @@ extension ConversationViewController: GroupViewHelperDelegate {
 // MARK: - UIMode
 
 extension ConversationViewController {
-    @objc
     func uiModeDidChange(oldValue: ConversationUIMode) {
         switch oldValue {
         case .normal:
@@ -465,7 +458,6 @@ extension ConversationViewController: MediaPresentationContextProvider {
 
 // MARK: -
 
-@objc
 public extension ConversationViewController {
     func showManualMigrationAlert(groupThread: TSGroupThread,
                                   migrationInfo: GroupsV2MigrationInfo) {
@@ -509,7 +501,6 @@ extension ConversationViewController: LongTextViewDelegate {
         navigationController?.popToViewController(self, animated: true)
     }
 
-    @objc
     public func expandTruncatedTextOrPresentLongTextView(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 

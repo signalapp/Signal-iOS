@@ -88,9 +88,7 @@ public protocol CVAccessibilityComponent: CVComponent {
 
 // MARK: -
 
-@objc
 public class CVComponentBase: NSObject {
-    @objc
     public let itemModel: CVItemModel
 
     init(itemModel: CVItemModel) {

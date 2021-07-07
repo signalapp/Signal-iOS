@@ -5,7 +5,6 @@
 import Foundation
 import ContactsUI
 
-@objc
 public extension ConversationViewController {
 
     func updateV2GroupIfNecessary() {
@@ -273,7 +272,6 @@ public extension ConversationViewController {
 
 extension ConversationViewController: ConversationSettingsViewDelegate {
 
-    @objc
     public func conversationColorWasUpdated() {
         AssertIsOnMainThread()
 
@@ -281,7 +279,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
         headerView.updateAvatar()
     }
 
-    @objc
     public func conversationSettingsDidUpdate() {
         AssertIsOnMainThread()
 
@@ -292,7 +289,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
         }
     }
 
-    @objc
     public func conversationSettingsDidRequestConversationSearch() {
         AssertIsOnMainThread()
 
@@ -318,7 +314,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
         }
     }
 
-    @objc
     public func popAllConversationSettingsViews(completion: (() -> Void)?) {
         AssertIsOnMainThread()
 
@@ -333,7 +328,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
 
     // MARK: - Conversation Search
 
-    @objc
     private func tryToBecomeFirstResponderForSearch(cumulativeDelay: TimeInterval) {
         // If this took more than N seconds, assume we're not going
         // to be able to present search and bail.
@@ -360,7 +354,6 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
 // MARK: -
 
 extension ConversationViewController: CNContactViewControllerDelegate {
-    @objc
     public func contactViewController(_ viewController: CNContactViewController,
                                       didCompleteWith contact: CNContact?) {
         navigationController?.popToViewController(self, animated: true)
@@ -369,7 +362,6 @@ extension ConversationViewController: CNContactViewControllerDelegate {
 
 // MARK: - Preview / 3D Touch / UIContextMenu Methods
 
-@objc
 public extension ConversationViewController {
     var isInPreviewPlatter: Bool {
         get { viewState.isInPreviewPlatter }
@@ -385,6 +377,7 @@ public extension ConversationViewController {
         }
     }
 
+    @objc
     func previewSetup() {
         isInPreviewPlatter = true
         actionOnOpen = .none
@@ -393,7 +386,6 @@ public extension ConversationViewController {
 
 // MARK: - Unread Counts
 
-@objc
 public extension ConversationViewController {
     var unreadMessageCount: UInt {
         get { viewState.unreadMessageCount }
@@ -461,7 +453,6 @@ public extension ConversationViewController {
 // MARK: - Timers
 
 extension ConversationViewController {
-    @objc
     public func startReadTimer() {
         AssertIsOnMainThread()
 
@@ -485,7 +476,6 @@ extension ConversationViewController {
         markVisibleMessagesAsRead()
     }
 
-    @objc
     public func cancelReadTimer() {
         AssertIsOnMainThread()
 
@@ -498,13 +488,11 @@ extension ConversationViewController {
         set { viewState.readTimer = newValue }
     }
 
-    @objc
     public var reloadTimer: Timer? {
         get { viewState.reloadTimer }
         set { viewState.reloadTimer = newValue }
     }
 
-    @objc
     func startReloadTimer() {
         AssertIsOnMainThread()
         let reloadTimer = Timer.weakTimer(withTimeInterval: 1.0,
@@ -561,7 +549,6 @@ extension ConversationViewController {
         self.lastSortIdMarkedRead = lastSortIdMarkedRead
     }
 
-    @objc
     public func markVisibleMessagesAsRead() {
         AssertIsOnMainThread()
 

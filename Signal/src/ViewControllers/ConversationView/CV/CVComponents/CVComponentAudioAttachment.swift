@@ -5,7 +5,6 @@
 import Foundation
 import SignalMessaging
 
-@objc
 public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     private let audioAttachment: AudioAttachment
@@ -217,7 +216,6 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewAudioAttachment: NSObject, CVComponentView {
 
         fileprivate let stackView = ManualStackView(name: "CVComponentViewAudioAttachment.stackView")

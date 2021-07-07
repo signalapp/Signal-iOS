@@ -26,7 +26,6 @@ protocol CVAudioPlayerListener {
 // * Ensure thread safety.
 //
 // It's lifetime matches CVC.
-@objc
 public class CVAudioPlayer: NSObject {
 
     // The currently playing audio, if any.
@@ -99,7 +98,6 @@ public class CVAudioPlayer: NSObject {
         return audioPlayback
     }
 
-    @objc
     public func togglePlayState(forAudioAttachment audioAttachment: AudioAttachment) {
         AssertIsOnMainThread()
 
@@ -136,7 +134,6 @@ public class CVAudioPlayer: NSObject {
         soundComplete = completion
     }
 
-    @objc
     public func autoplayNextAudioAttachment(_ audioAttachment: AudioAttachment?) {
         AssertIsOnMainThread()
 
@@ -171,7 +168,6 @@ public class CVAudioPlayer: NSObject {
         }
     }
 
-    @objc
     public func setPlaybackProgress(progress: TimeInterval,
                                     forAttachmentStream attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
@@ -182,7 +178,6 @@ public class CVAudioPlayer: NSObject {
         }
     }
 
-    @objc
     public func playbackProgress(forAttachmentStream attachmentStream: TSAttachmentStream) -> TimeInterval {
         AssertIsOnMainThread()
 
@@ -193,7 +188,6 @@ public class CVAudioPlayer: NSObject {
         return progress
     }
 
-    @objc
     public func stopAll() {
         guard let audioPlayback = self.audioPlayback else {
             return
@@ -270,7 +264,6 @@ private class CVAudioPlayback: NSObject, OWSAudioPlayerDelegate {
     private let audioPlayer: OWSAudioPlayer
 
     private let _playbackState = AtomicValue<AudioPlaybackState>(AudioPlaybackState.stopped)
-    @objc
     public var audioPlaybackState: AudioPlaybackState {
         get {
             AssertIsOnMainThread()
@@ -294,20 +287,17 @@ private class CVAudioPlayback: NSObject, OWSAudioPlayerDelegate {
     }
 
     private let audioTiming = AtomicValue<AudioTiming>(AudioTiming.unknown)
-    @objc
     public var progress: TimeInterval {
         AssertIsOnMainThread()
 
         return audioTiming.get().progress
     }
-    @objc
     public var duration: TimeInterval {
         AssertIsOnMainThread()
 
         return audioTiming.get().duration
     }
 
-    @objc
     public func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval) {
         AssertIsOnMainThread()
 
@@ -316,7 +306,6 @@ private class CVAudioPlayback: NSObject, OWSAudioPlayerDelegate {
         delegate?.audioPlaybackStateDidChange(self)
     }
 
-    @objc
     public func audioPlayerDidFinish() {
         AssertIsOnMainThread()
 
@@ -326,7 +315,6 @@ private class CVAudioPlayback: NSObject, OWSAudioPlayerDelegate {
         delegate?.audioPlaybackDidFinish(self)
     }
 
-    @objc
     public required init?(attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 

@@ -6,7 +6,6 @@ import Foundation
 import Lottie
 
 // A view for presenting attachment upload/download/failure/pending state.
-@objc
 public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum Direction {
@@ -70,7 +69,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(name: String) {
         notImplemented()
     }
@@ -166,8 +164,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
         }
 
         @available(*, unavailable, message: "use other constructor instead.")
-        @objc
-        public required init(name: String) {
+            public required init(name: String) {
             notImplemented()
         }
 

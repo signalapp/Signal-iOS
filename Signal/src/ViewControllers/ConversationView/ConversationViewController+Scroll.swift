@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public enum ScrollAlignment: Int {
     case top
     case bottom
@@ -111,7 +110,6 @@ extension ConversationViewController {
         scrollToInteraction(uniqueId: interactionId, alignment: .top, animated: animated)
     }
 
-    @objc
     func scrollToBottomOfLoadWindow(animated: Bool) {
         let newContentOffset = CGPoint(x: 0, y: maxContentOffsetY)
         collectionView.setContentOffset(newContentOffset, animated: animated)
@@ -210,7 +208,6 @@ extension ConversationViewController {
                             animated: animated)
     }
 
-    @objc
     func scrollToInteraction(indexPath: IndexPath,
                              onScreenPercentage: CGFloat = 1,
                              alignment: ScrollAlignment,
@@ -281,7 +278,6 @@ extension ConversationViewController {
         updateLastKnownDistanceFromBottom()
     }
 
-    @objc
     func scrollToQuotedMessage(_ quotedReply: OWSQuotedReplyModel,
                                isAnimated: Bool) {
         if quotedReply.isRemotelySourced {
@@ -304,7 +300,6 @@ extension ConversationViewController {
                                                        isAnimated: isAnimated)
     }
 
-    @objc
     func ensureInteractionLoadedThenScrollToInteraction(_ interactionId: String,
                                                         onScreenPercentage: CGFloat = 1,
                                                         alignment: ScrollAlignment,
@@ -322,7 +317,6 @@ extension ConversationViewController {
         }
     }
 
-    @objc
     func setScrollActionForSizeTransition() {
         AssertIsOnMainThread()
 
@@ -353,7 +347,6 @@ extension ConversationViewController {
         }()
     }
 
-    @objc
     func clearScrollActionForSizeTransition() {
         AssertIsOnMainThread()
 
@@ -397,12 +390,10 @@ extension ConversationViewController {
         scrollToBottomOfConversation(animated: true)
     }
 
-    @objc
     public func recordInitialScrollState(_ focusMessageId: String?) {
         initialScrollState = CVInitialScrollState(focusMessageId: focusMessageId)
     }
 
-    @objc
     public func clearInitialScrollState() {
         initialScrollState = nil
     }
@@ -445,7 +436,6 @@ extension ConversationViewController {
         return CGPoint(x: 0, y: contentOffsetY)
     }
 
-    @objc
     var isScrolledToBottom: Bool {
         isScrolledToBottom(tolerancePoints: 5)
     }
@@ -458,12 +448,10 @@ extension ConversationViewController {
         safeDistanceFromTop <= tolerancePoints
     }
 
-    @objc
     public var safeDistanceFromTop: CGFloat {
         collectionView.contentOffset.y - minContentOffsetY
     }
 
-    @objc
     public var safeDistanceFromBottom: CGFloat {
         // This is a bit subtle.
         //
@@ -680,7 +668,6 @@ extension ConversationViewController {
         public var uniqueId: String { interaction.uniqueId }
     }
 
-    @objc
     public func lastVisibleInteractionIdWithSneakyTransaction(_ threadViewModel: ThreadViewModel) -> String? {
         lastVisibleInteractionWithSneakyTransaction(thread: threadViewModel.threadRecord)?.uniqueId
     }

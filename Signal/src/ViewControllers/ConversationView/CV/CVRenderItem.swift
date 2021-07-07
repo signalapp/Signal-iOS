@@ -4,9 +4,7 @@
 
 import Foundation
 
-@objc
 public class CVRenderItem: NSObject {
-    @objc
     public let itemModel: CVItemModel
 
     public var componentState: CVComponentState { itemModel.componentState }
@@ -19,17 +17,14 @@ public class CVRenderItem: NSObject {
 
     private let incomingMessageAuthorAddress: SignalServiceAddress?
 
-    @objc
     public var cellReuseIdentifier: String {
         rootComponent.cellReuseIdentifier.rawValue
     }
 
-    @objc
     public var interaction: TSInteraction {
         itemModel.interaction
     }
 
-    @objc
     public var interactionUniqueId: String { interaction.uniqueId }
     public var interactionType: OWSInteractionType { interaction.interactionType() }
 
@@ -89,12 +84,10 @@ public class CVRenderItem: NSObject {
         NSStringFromOWSInteractionType(interaction.interactionType())
     }
 
-    @objc
     public override var debugDescription: String {
         "\(interactionUniqueId) \(interactionTypeName)"
     }
 
-    @objc
     public var reactionState: InteractionReactionState? {
         componentState.reactions?.reactionState
     }

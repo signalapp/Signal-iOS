@@ -15,7 +15,6 @@ import Foundation
 //
 // Although we could combine these two views, these two scenarios are
 // just different enough that its convenient to have two separate views.
-@objc
 public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     private weak var referenceView: UIView?
@@ -287,7 +286,6 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     // MARK: - CALayerDelegate
 
-    @objc
     public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // Disable all implicit CALayer animations.
         NSNull()

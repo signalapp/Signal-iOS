@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public extension ConversationViewController {
 
     static func createBanner(title: String,
@@ -342,9 +341,7 @@ fileprivate extension ConversationViewController {
 // MARK: -
 
 // A convenience view that allows block-based gesture handling.
-@objc
 public class GestureView: UIView {
-    @objc
     public required init() {
         super.init(frame: .zero)
 
@@ -352,7 +349,6 @@ public class GestureView: UIView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -361,7 +357,6 @@ public class GestureView: UIView {
 
     private var tapBlock: BlockType?
 
-    @objc
     public func addTap(block tapBlock: @escaping () -> Void) {
         owsAssertDebug(self.tapBlock == nil)
 
@@ -542,7 +537,6 @@ private class NameCollisionBanner: UIView {
 
 extension ConversationViewController {
 
-    @objc
     public func ensureBannerState() {
         AssertIsOnMainThread()
 

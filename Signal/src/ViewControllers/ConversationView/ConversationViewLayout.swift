@@ -71,7 +71,6 @@ public protocol ConversationViewLayoutDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class ConversationViewLayout: UICollectionViewLayout {
 
     public weak var delegate: ConversationViewLayoutDelegate?
@@ -172,7 +171,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return layoutInfo
     }
 
-    @objc
     public required init(conversationStyle: ConversationStyle) {
         self.conversationStyle = conversationStyle
 
@@ -180,12 +178,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
     }
 
     @available(*, unavailable, message: "Use other constructor instead.")
-    @objc
     public required init(coder aDecoder: NSCoder) {
         notImplemented()
     }
 
-    @objc
     public func update(conversationStyle: ConversationStyle) {
         AssertIsOnMainThread()
 
@@ -198,7 +194,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         invalidateLayout()
     }
 
-    @objc
     public override func invalidateLayout() {
         AssertIsOnMainThread()
 
@@ -209,7 +204,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         ensureState()
     }
 
-    @objc
     public override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
         AssertIsOnMainThread()
 
@@ -231,7 +225,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         currentLayoutInfo = nil
     }
 
-    @objc
     public override func prepare() {
         super.prepare()
 
@@ -387,7 +380,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     // MARK: - UICollectionViewLayout Impl.
 
-    @objc
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         AssertIsOnMainThread()
 
@@ -406,7 +398,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return result.filter { $0.frame.intersects(rect) }
     }
 
-    @objc
     public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
@@ -414,7 +405,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return layoutInfo.layoutAttributesForItem(at: indexPath, assertIfMissing: true)
     }
 
-    @objc
     public override func layoutAttributesForSupplementaryView(ofKind elementKind: String,
                                                               at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
@@ -424,14 +414,12 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                                   at: indexPath)
     }
 
-    @objc
     public override var collectionViewContentSize: CGSize {
         AssertIsOnMainThread()
 
         return ensureCurrentLayoutInfo().contentSize
     }
 
-    @objc
     public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
     }
@@ -457,7 +445,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // Unlike isPerformBatchUpdatesOrReloadDataBeingAppliedOrSettling, this
     // returns true after performBatchUpdates() returns, before
     // its completion is called.
-    @objc
     public var isPerformBatchUpdatesOrReloadDataBeingApplied: Bool {
         isPerformingBatchUpdates || isReloadingData
     }
@@ -467,7 +454,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // Returns true during performBatchUpdates() or reloadData().
     // Unlike isPerformBatchUpdatesOrReloadDataBeingApplied, this
     // returns true until the completion of performBatchUpdates().
-    @objc
     public var isPerformBatchUpdatesOrReloadDataBeingAppliedOrSettling: Bool {
         updateCompletionCounter.get() > 0
     }
@@ -596,7 +582,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return nil
     }
 
-    @objc
     public func didPerformBatchUpdates() {
         AssertIsOnMainThread()
         owsAssertDebug(!isReloadingData)
@@ -613,14 +598,12 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
     }
 
-    @objc
     public func didCompleteBatchUpdates() {
         AssertIsOnMainThread()
 
         updateCompletionCounter.decrementOrZero()
     }
 
-    @objc
     public func willReloadData() {
         AssertIsOnMainThread()
         owsAssertDebug(!isReloadingData)
@@ -635,7 +618,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         delegateScrollContinuityMode = .enabled(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
     }
 
-    @objc
     public func didReloadData() {
         AssertIsOnMainThread()
         owsAssertDebug(isReloadingData)
@@ -838,7 +820,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return nil
     }
 
-    @objc
     public override var debugDescription: String {
         ensureCurrentLayoutInfo().debugDescription
     }
@@ -847,7 +828,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 // MARK: -
 
 // TODO: This might not have to be @objc after the CVC port.
-@objc
 public class CVScrollContinuityToken: NSObject {
     fileprivate let layoutInfo: ConversationViewLayout.LayoutInfo
     fileprivate let contentOffset: CGPoint

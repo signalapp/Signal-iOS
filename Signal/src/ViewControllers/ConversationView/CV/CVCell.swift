@@ -32,7 +32,6 @@ public protocol CVItemCell {
 
 // MARK: -
 
-@objc
 public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {
@@ -71,14 +70,12 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         notImplemented()
     }
 
-    @objc
     public static func registerReuseIdentifiers(collectionView: UICollectionView) {
         for value in CVCellReuseIdentifier.allCases {
             collectionView.register(self, forCellWithReuseIdentifier: value.rawValue)
         }
     }
 
-    @objc
     public override func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
         guard let renderItem = renderItem else {
             owsFailDebug("Missing renderItem.")
@@ -92,7 +89,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         return targetSize
     }
 
-    @objc
     public override func systemLayoutSizeFitting(_ targetSize: CGSize,
                                                  withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
                                                  verticalFittingPriority: UILayoutPriority) -> CGSize {
@@ -111,7 +107,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
     }
 
     // For perf reasons, skip the default implementation which is only relevant for self-sizing cells.
-    @objc
     public override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         layoutAttributes
     }
@@ -181,7 +176,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 // This view hosts the cell contents.
 // This allows us to display message cells outside of
 // UICollectionView, e.g. in the message details view.
-@objc
 public class CVCellView: UIView, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {

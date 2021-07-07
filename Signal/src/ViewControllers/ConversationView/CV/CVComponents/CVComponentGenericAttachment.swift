@@ -309,7 +309,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         return true
     }
 
-    @objc
     public var canQuickLook: Bool {
         guard #available(iOS 13, *) else { return false }
         guard let url = attachmentStream?.originalMediaURL else {
@@ -332,7 +331,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewGenericAttachment: NSObject, CVComponentView {
 
         fileprivate let hStackView = ManualStackView(name: "GenericAttachment.hStackView")

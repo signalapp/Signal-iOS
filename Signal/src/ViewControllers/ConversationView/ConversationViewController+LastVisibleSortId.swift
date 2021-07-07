@@ -15,7 +15,6 @@ extension ConversationViewController {
     }
 
     /// The index path of the last item in the collection view's visible rect
-    @objc
     public var firstVisibleIndexPath: IndexPath? {
         // For people looking at this in the future, UICollectionView has a very similar looking
         // property: -indexPathsForVisibleItems. Why aren't we using that?
@@ -38,7 +37,6 @@ extension ConversationViewController {
     }
 
     /// The index path of the last item in the collection view's visible rect
-    @objc
     public var lastVisibleIndexPath: IndexPath? {
         // For people looking at this in the future, UICollectionView has a very similar looking
         // property: -indexPathsForVisibleItems. Why aren't we using that?
@@ -60,25 +58,21 @@ extension ConversationViewController {
         return lastVisibleIndexPath
     }
 
-    @objc
     var lastVisibleSortId: UInt64 {
         guard let lastVisibleIndexPath = lastVisibleIndexPath else { return 0 }
         return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath)?.sortId ?? 0
     }
 
-    @objc
     var lastIndexPathInLoadedWindow: IndexPath? {
         guard !renderItems.isEmpty else { return nil }
         return IndexPath(row: renderItems.count - 1, section: 0)
     }
 
-    @objc
     var lastSortIdInLoadedWindow: UInt64 {
         guard let lastIndexPath = lastIndexPathInLoadedWindow else { return 0 }
         return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
     }
 
-    @objc
     func saveLastVisibleSortIdAndOnScreenPercentage() {
         AssertIsOnMainThread()
 
@@ -114,7 +108,6 @@ extension ConversationViewController {
     }
 
     #if TESTABLE_BUILD
-    @objc
     func logFirstAndLastVisibleItems() {
         AssertIsOnMainThread()
 

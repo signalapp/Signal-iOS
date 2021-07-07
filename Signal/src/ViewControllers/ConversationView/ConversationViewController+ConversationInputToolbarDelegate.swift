@@ -8,17 +8,14 @@ import PromiseKit
 
 extension ConversationViewController: ConversationInputToolbarDelegate {
 
-    @objc
     public func isBlockedConversation() -> Bool {
         blockingManager.isThreadBlocked(thread)
     }
 
-    @objc
     public func isGroup() -> Bool {
         isGroupConversation
     }
 
-    @objc
     public func sendButtonPressed() {
         AssertIsOnMainThread()
 
@@ -44,7 +41,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         tryToSendTextMessage(messageBody, updateKeyboardState: true)
     }
 
-    @objc
     public func messageWasSent(_ message: TSOutgoingMessage) {
         AssertIsOnMainThread()
 
@@ -157,7 +153,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         }
     }
 
-    @objc
     public func sendSticker(_ stickerInfo: StickerInfo) {
         AssertIsOnMainThread()
 
@@ -169,7 +164,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         messageWasSent(message)
     }
 
-    @objc
     public func presentManageStickersView() {
         AssertIsOnMainThread()
 
@@ -178,7 +172,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         presentFormSheet(navigationController, animated: true)
     }
 
-    @objc
     public func updateToolbarHeight() {
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("InputToolbar not yet ready.")
@@ -194,7 +187,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         updateContentInsets(animated: false)
     }
 
-    @objc
     public func voiceMemoGestureDidStart() {
         AssertIsOnMainThread()
         Logger.info("")
@@ -211,7 +203,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         checkPermissionsAndStartRecordingVoiceMessage()
     }
 
-    @objc
     public func voiceMemoGestureDidComplete() {
         AssertIsOnMainThread()
         Logger.info("")
@@ -219,7 +210,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         finishRecordingVoiceMessage(sendImmediately: true)
     }
 
-    @objc
     public func voiceMemoGestureDidLock() {
         AssertIsOnMainThread()
         Logger.info("")
@@ -227,7 +217,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         inputToolbar?.lockVoiceMemoUI()
     }
 
-    @objc
     public func voiceMemoGestureDidCancel() {
         AssertIsOnMainThread()
         Logger.info("")
@@ -235,7 +224,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         cancelRecordingVoiceMessage()
     }
 
-    @objc
     public func voiceMemoGestureWasInterrupted() {
         AssertIsOnMainThread()
         Logger.info("")
@@ -243,14 +231,12 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         finishRecordingVoiceMessage(sendImmediately: false)
     }
 
-    @objc
     public func sendVoiceMemoDraft(_ voiceMemoDraft: VoiceMessageModel) {
         AssertIsOnMainThread()
 
         sendVoiceMessageModel(voiceMemoDraft)
     }
 
-    @objc
     public func saveDraft() {
         AssertIsOnMainThread()
 
@@ -279,7 +265,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         }
     }
 
-    @objc
     public func tryToSendAttachments(_ attachments: [SignalAttachment],
                                      messageBody: MessageBody?) {
         AssertIsOnMainThread()
@@ -346,42 +331,36 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
     // MARK: - Accessory View
 
-    @objc
     public func cameraButtonPressed() {
         AssertIsOnMainThread()
 
         takePictureOrVideo()
     }
 
-    @objc
     public func galleryButtonPressed() {
         AssertIsOnMainThread()
 
         chooseFromLibrary()
     }
 
-    @objc
     public func gifButtonPressed() {
         AssertIsOnMainThread()
 
         showGifPicker()
     }
 
-    @objc
     public func fileButtonPressed() {
         AssertIsOnMainThread()
 
         showDocumentPicker()
     }
 
-    @objc
     public func contactButtonPressed() {
         AssertIsOnMainThread()
 
         chooseContactForSending()
     }
 
-    @objc
     public func locationButtonPressed() {
         AssertIsOnMainThread()
 
@@ -392,14 +371,12 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         presentFormSheet(navigationController, animated: true)
     }
 
-    @objc
     public func paymentButtonPressed() {
         AssertIsOnMainThread()
 
         showSendPaymentUI(paymentRequestModel: nil)
     }
 
-    @objc
     public func showSendPaymentUI(paymentRequestModel: TSPaymentRequestModel?) {
         AssertIsOnMainThread()
 
@@ -424,7 +401,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                                                               isOutgoingTransfer: false)
     }
 
-    @objc
     public func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {
         AssertIsOnMainThread()
 
@@ -439,7 +415,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
 // MARK: -
 
-@objc
 public extension ConversationViewController {
 
     func showErrorAlert(forAttachment attachment: SignalAttachment?) {
@@ -577,7 +552,6 @@ fileprivate extension ConversationViewController {
 
 // MARK: - Attachment Picking: GIFs
 
-@objc
 public extension ConversationViewController {
     func showGifPicker() {
         let gifModal = GifPickerNavigationViewController()
@@ -635,7 +609,6 @@ extension ConversationViewController: LocationPickerDelegate {
 
 extension ConversationViewController: UIDocumentPickerDelegate {
 
-    @objc
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
         Logger.debug("Picked document at url: \(url)")
 

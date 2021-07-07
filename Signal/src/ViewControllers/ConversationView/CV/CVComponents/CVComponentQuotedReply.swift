@@ -4,7 +4,6 @@
 
 import Foundation
 
-@objc
 public class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
     private let quotedReply: CVComponentState.QuotedReply
@@ -87,7 +86,6 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    @objc
     public class CVComponentViewQuotedReply: NSObject, CVComponentView {
 
         fileprivate let quotedMessageView = QuotedMessageView(name: "quotedMessageView")

@@ -4,10 +4,8 @@
 
 import Foundation
 
-@objc
 public class MessageSelectionView: ManualLayoutView {
 
-    @objc
     public var isSelected: Bool = false {
         didSet {
             selectedView.isHidden = !isSelected
@@ -15,7 +13,6 @@ public class MessageSelectionView: ManualLayoutView {
         }
     }
 
-    @objc
     public init() {
         super.init(name: "MessageSelectionView")
 
@@ -29,7 +26,6 @@ public class MessageSelectionView: ManualLayoutView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    @objc
     public required init(name: String) {
         notImplemented()
     }

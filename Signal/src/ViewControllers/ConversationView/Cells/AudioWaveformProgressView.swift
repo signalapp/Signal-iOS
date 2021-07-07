@@ -8,14 +8,12 @@ import Lottie
 // TODO: Convert to manual layout.
 @objc
 class AudioWaveformProgressView: UIView {
-    @objc
     var playedColor: UIColor = Theme.primaryTextColor {
         didSet {
             playedShapeLayer.fillColor = playedColor.cgColor
         }
     }
 
-    @objc
     var unplayedColor: UIColor = Theme.secondaryTextAndIconColor {
         didSet {
             unplayedShapeLayer.fillColor = unplayedColor.cgColor
@@ -25,14 +23,12 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    @objc
     var thumbColor: UIColor = Theme.primaryTextColor {
         didSet {
             thumbView.backgroundColor = thumbColor
         }
     }
 
-    @objc
     var value: CGFloat = 0 {
         didSet {
             guard value != oldValue else { return }
@@ -40,7 +36,6 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    @objc
     var audioWaveform: AudioWaveform? {
         didSet {
             guard audioWaveform != oldValue else { return }
@@ -74,7 +69,6 @@ class AudioWaveformProgressView: UIView {
     private let unplayedShapeLayer = CAShapeLayer()
     private let loadingAnimation = AnimationView(name: "waveformLoading")
 
-    @objc
     init() {
         super.init(frame: .zero)
 

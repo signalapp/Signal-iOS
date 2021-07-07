@@ -39,7 +39,6 @@ public extension ConversationViewController {
         }
     }
 
-    @objc
     func ensureBottomViewType() {
         AssertIsOnMainThread()
 
@@ -145,7 +144,6 @@ public extension ConversationViewController {
     //
     // TODO: Once conversationStyle is immutable, compare the old and new
     //       conversationStyle values and exit early if it hasn't changed.
-    @objc
     func updateInputToolbar() {
         AssertIsOnMainThread()
 
@@ -195,7 +193,6 @@ public extension ConversationViewController {
         inputToolbar.setMessageBody(messageDraft, animated: false)
     }
 
-    @objc
     func updateBottomBarPosition() {
         AssertIsOnMainThread()
 
@@ -229,7 +226,6 @@ public extension ConversationViewController {
         bottomBarSuperview.layoutIfNeeded()
     }
 
-    @objc
     func updateInputAccessoryPlaceholderHeight() {
         AssertIsOnMainThread()
 
@@ -250,7 +246,6 @@ public extension ConversationViewController {
 
     // MARK: - Message Request
 
-    @objc
     func showMessageRequestDialogIfRequiredAsync() {
         AssertIsOnMainThread()
 
@@ -259,14 +254,12 @@ public extension ConversationViewController {
         }
     }
 
-    @objc
     func showMessageRequestDialogIfRequired() {
         AssertIsOnMainThread()
 
         ensureBottomViewType()
     }
 
-    @objc
     func updateInputToolbarLayout() {
         AssertIsOnMainThread()
 
@@ -297,7 +290,6 @@ public extension ConversationViewController {
         inputToolbar.beginEditingMessage()
     }
 
-    @objc
     func dismissKeyBoard() {
         AssertIsOnMainThread()
 
@@ -355,7 +347,6 @@ public extension ConversationViewController {
         return groupThread.isLocalUserRequestingMember
     }
 
-    @objc
     var userLeftGroup: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
