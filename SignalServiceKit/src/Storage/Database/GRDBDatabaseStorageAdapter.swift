@@ -49,9 +49,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
-    private let writeLock = UnfairLock()
-    // writeCount should only be accessed while writeLock is acquired.
-    private var writeCount: UInt64?
+    private let checkpointLock = UnfairLock()
+    // The number of writes we can perform until our next checkpoint attempt.
+    //
+    // checkpointBudget should only be accessed while checkpointLock is acquired.
+    private var checkpointBudget: Int = 0
+    // lastSuccessfulCheckpointDate should only be accessed while checkpointLock is acquired.
+    private var lastSuccessfulCheckpointDate: Date?
 
     init(baseDir: URL, directoryMode: DirectoryMode = .primary) {
         databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir, directoryMode: directoryMode)
@@ -410,22 +414,19 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         var syncCompletions: [GRDBWriteTransaction.CompletionBlock] = []
         var asyncCompletions: [GRDBWriteTransaction.AsyncCompletion] = []
 
-        try writeLock.withLock {
-            let writeCount = (self.writeCount ?? 0) + 1
-            self.writeCount = writeCount
+        try pool.write { database in
+            autoreleasepool {
+                let transaction = GRDBWriteTransaction(database: database)
+                block(transaction)
+                transaction.finalizeTransaction()
 
-            try pool.write { database in
-                autoreleasepool {
-                    let transaction = GRDBWriteTransaction(database: database)
-                    block(transaction)
-                    transaction.finalizeTransaction()
-
-                    syncCompletions = transaction.syncCompletions
-                    asyncCompletions = transaction.asyncCompletions
-                }
+                syncCompletions = transaction.syncCompletions
+                asyncCompletions = transaction.asyncCompletions
             }
+        }
 
-            checkpointIfNecessary(writeCount: writeCount)
+        checkpointLock.withLock {
+            checkpointIfNecessary()
         }
 
         // Perform all completions _after_ the write transaction completes.
@@ -438,8 +439,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
     }
 
-    // This method should only be invoked with writeLock already acquired.
-    private func checkpointIfNecessary(writeCount: UInt64) {
+    // This method should only be invoked with checkpointLock already acquired.
+    private func checkpointIfNecessary() {
         // What Is Checkpointing?
         //
         // Checkpointing is the process of integrating the WAL into the main database file.
@@ -519,10 +520,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         // * It's expensive and unnecessary to do a checkpoint on every write,
         //   so we only checkpoint once every N writes. We always checkpoint after
         //   the first write.
-        // * We wrap writes + checkpoints in GRDBDatabaseStorageAdapter.writeLock.
-        //   This helps protect checkpointing from failing during heavy write activity.
-        //   This might be a waste of time; it won't protect checkpointing from
-        //   reads.
+        // * We try again more aggressively after failures.
         //
         //
         // What could go wrong:
@@ -539,8 +537,9 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         //   This shouldn't be an issue: We shouldn't have more than one of
         //   the apps (main app, SAE, NSE) active at the same time for long.
         // * Checkpoints might frequently fail if we're constantly doing reads.
-        //   If we find this is happening, we can change the checkpointing
-        //   strategy to take into account failures.
+        //   This shouldn't be an issue: A checkpoint should eventually
+        //   succeed when db activity settles.  This checkpoint might take a while
+        //   but that's unavoidable.
         //
         //
         // Solution:
@@ -562,16 +561,25 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             // To avoid blocking the main thread, we avoid doing "truncate" checkpoints
             // on the main thread. We perhaps could do passive checkpoints on the main
             // thread, which abort if there is any contention.
+            //
+            // We decrement the checkpoint budget anyway.
+            checkpointBudget -= 1
             return
         }
-        // TODO: We might try again immediately if the last checkpoint failed,
-        //       since it presumably timed out. Not sure if this is necessary.
         // TODO: We might limit checkpoint frequency by time so that heavy write
         //       activity won't bog down the main thread.  Ideally, checkpointing
         //       is fast enough that we don't need to do this.
-        let checkpointFrequency: UInt64 = 32
-        let shouldCheckpoint = (writeCount % checkpointFrequency) == 0 || writeCount <= 1
+        var shouldCheckpoint = checkpointBudget <= 0
+        let maxCheckpointFrequency: TimeInterval = 0.25
+        if shouldCheckpoint,
+           let lastSuccessfulCheckpointDate = self.lastSuccessfulCheckpointDate,
+           abs(lastSuccessfulCheckpointDate.timeIntervalSinceNow) < maxCheckpointFrequency {
+            Logger.verbose("Skipping checkpoint due to frequency.")
+            shouldCheckpoint = false
+        }
         guard shouldCheckpoint else {
+            // We decrement the checkpoint budget.
+            checkpointBudget -= 1
             return
         }
 
@@ -605,6 +613,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 } else {
                     owsFailDebug("Error code: \(code), errorMessage: \(errorMessage).")
                 }
+                // If the checkpoint failed, try again soon.
+                checkpointBudget += 5
             } else {
                 let pageSize: Int32 = 4 * 1024
                 let walFileSizeBytes = walSizePages * pageSize
@@ -615,6 +625,9 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 } else {
                     Logger.verbose("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
                 }
+                // If the checkpoint succeeded, wait N writes before performing another checkpoint.
+                checkpointBudget += 32
+                lastSuccessfulCheckpointDate = Date()
             }
             GRDBStorage.isCheckpointing.set(false)
         }
