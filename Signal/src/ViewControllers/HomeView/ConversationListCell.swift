@@ -200,11 +200,8 @@ public class ConversationListCell: UITableViewCell {
             }
 
             let unreadCount = thread.unreadCount
-            guard unreadCount > 0 else {
-                return
-            }
             let unreadLabel = self.unreadLabel
-            unreadLabel.text = OWSFormat.formatUInt(unreadCount)
+            unreadLabel.text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
             unreadLabel.textColor = .ows_white
             unreadLabel.lineBreakMode = .byTruncatingTail
             unreadLabel.textAlignment = .center
