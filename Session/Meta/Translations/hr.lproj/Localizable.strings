@@ -1,0 +1,539 @@
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ne sada";
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Verzija %@ je sada dostupna u App Storeu.";
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "Nova verzija Sessiona je dostupna";
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Ažuriraj";
+/* No comment provided by engineer. */
+"ATTACHMENT" = "Privitak";
+/* One-line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Dosegnuto ograničenje naslova.";
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Dodaj naslov…";
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Naslov";
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Veličina: %@";
+/* One-line label indicating the user can add no more text to the media message field. */
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Dosegnuto ograničenje poruke";
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Pošalji";
+/* Generic filename for an attachment with no known name */
+"ATTACHMENT_DEFAULT_FILENAME" = "Privitak";
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Pogreška kod slanja privitka";
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Odabir dokumenta neuspješan.";
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Molimo stvorite komprimirani arhiv ove datoteke ili direktorija i pokušajte poslati ponovo.";
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nepodržana datoteka";
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Glasovna poruka";
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Sigurnosnu kopiju podataka nije bilo moguće izvesti.";
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Nevažeći odgovor usluge";
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Čišćenje sigurnosne kopije";
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Inicijalizacija sigurnosne kopije";
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Izvoz podataka";
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "Izvoz sigurnosne kopije";
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Prijenos sigurnosne kopije";
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Sigurnosnu kopiju nije bilo moguće uvesti.";
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfiguriranje sigurnosne kopije";
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Preuzimanje sigurnosne kopije podataka";
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Dovršavanje uvoza sigurnosne kopije";
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "Uvoz sigurnosne kopije.";
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Obnavljanje baze podataka";
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Obnavljanje datoteka";
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "Dostupno sigurnosno kopiranje";
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "Vraćanje sigurnosne kopije";
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "Napredak";
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "Stanje";
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "Neočekivana pogreška kod sigurnosnog kopiranja";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Blokiraj";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokiraj %@?";
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokiraj";
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ je blokiran.";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Korisnik blokiran";
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokirani korisnici neće vas moći nazvati niti poslati poruke.";
+/* Label for generic done button. */
+"BUTTON_DONE" = "Gotovo";
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "Odaberi";
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Ne vraćaj";
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "Vrati";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session nije mogao utvrditi status vašeg iCloud računa. Prijavite se na svoj iCloud račun u postavkama iOS-a da biste napravili sigurnosnu kopiju podataka Session aplikacije.";
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "iCloud račun nedostupan. Prijavite se na svoj iCloud račun u postavkama iOS-a da biste napravili sigurnosnu kopiju podataka Session aplikacije.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Session-u je odbijen pristup vašem iCloud računu za sigurnosno kopiranje. Odobrite Session-u pristup svom iCloud računu u postavkama iOS-a da biste napravili sigurnosnu kopiju podataka Session aplikacije.";
+/* Alert body */
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Više nećete moći slati niti primati poruke u ovoj grupi.";
+/* Alert title */
+"CONFIRM_LEAVE_GROUP_TITLE" = "Da li zaista želite izaći?";
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ovaj je postupak nepovratan.";
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Obriši razgovor?";
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Nema podudaranja";
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 podudaranje";
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d od %d podudaranja";
+/* title for conversation settings screen */
+"CONVERSATION_SETTINGS" = "Postavke razgovora";
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokiraj ovog korisnika";
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Utišaj";
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Utišaj";
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nije utišano";
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Utišaj na jedan dan";
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Utišaj na jedan sat";
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Utišaj na jednu minutu";
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Utišaj na jedan tjedan";
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Utišaj na jednu godinu";
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "do %@";
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Pretraživanje razgovora";
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Uključi zvuk";
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Pomicanje i skaliranje";
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ovo može potrajati nekoliko minuta.";
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizacija Baze podataka";
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "Prije %@ sati";
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "Prije %@ min";
+/* The present; the current time. */
+"DATE_NOW" = "Sada";
+/* The current day. */
+"DATE_TODAY" = "Danas";
+/* The day before today. */
+"DATE_YESTERDAY" = "Jučer";
+/* table cell label in conversation settings */
+"DISAPPEARING_MESSAGES" = "Nestajuće poruke";
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Poruke u ovom razgovoru nestat će nakon %@.";
+/* table cell label in conversation settings */
+"EDIT_GROUP_ACTION" = "Uredi Grupu";
+/* Label indicating media gallery is empty */
+"GALLERY_TILES_EMPTY_GALLERY" = "U ovom razgovoru nemate multimedijskih podataka.";
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Učitavanje novijih medija…";
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Učitavanje starijih medija…";
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Dohvaćanje traženog GIF-a nije uspjelo. Provjerite jeste li spojeni na internet.";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "Došlo je do nepoznate greške.";
+/* Shown when selected GIF couldn't be fetched */
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Nije moguće odabrati GIF";
+/* Alert message shown when user tries to search for GIFs without entering any search terms. */
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Unesite svoju pretragu.";
+/* Indicates that an error occurred while searching. */
+"GIF_VIEW_SEARCH_ERROR" = "Greška. Dodirnite za ponovni pokušaj.";
+/* Indicates that the user's search had no results. */
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Nema rezultata.";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Kreirana Grupa";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = " %@ se pridružio grupi. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = " %@ je napustio grupu. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ je uklonjen iz grupe. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ su uklonjeni iz grupe. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Naslov je sada %@. ";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Grupa ažurirana.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Napustili ste grupu.";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " Uklonjeni ste iz grupe. ";
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ne možete podijeliti više od %@ stavki.";
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Odabir privitka nije uspio.";
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Nevažeća audio datoteka.";
+/* Slider label when disappearing messages is off */
+"KEEP_MESSAGES_FOREVER" = "Poruke ne nestaju.";
+/* Confirmation button within contextual alert */
+"LEAVE_BUTTON_TITLE" = "Napusti";
+/* table cell label in conversation settings */
+"LEAVE_GROUP_ACTION" = "Napusti grupu";
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Poruka";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Sva multimedija";
+/* media picker option to choose from library */
+"MEDIA_FROM_LIBRARY_BUTTON" = "Galerija slika";
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Izbriši broj poruka %d";
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Izbriši poruku";
+/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ u %@";
+/* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Ti";
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Ovaj mjesec";
+/* message status for message delivered to their recipient. */
+"MESSAGE_STATUS_DELIVERED" = "Isporučeno";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "Slanje nije uspjelo.";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Neuspjelo";
+/* status message for read messages */
+"MESSAGE_STATUS_READ" = "Pročitano";
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Preskočeno";
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "Slanje…";
+/* status message for sent messages */
+"MESSAGE_STATUS_SENT" = "Poslano";
+/* status message while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Prenošenje…";
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Ovo dopuštenje možete omogućiti u iOS postavkama.";
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session zahtijeva pristup vašim fotografijama za ovu značajku.";
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "Nećete primati obavijesti o utišanim razgovorima.";
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ za %@";
+/* Label for 1:1 conversation with yourself. */
+"NOTE_TO_SELF" = "Napomena sebi";
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Možda ste primili poruke dok se %@ ponovno pokretao.";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_FOOTER_WARNING" = "Zbog poznatih grešaka u Apple-ovom push notifikacijskom okviru, pregledi poruka biti će prikazani samo ako se poruka dohvati u roku od 30 sekundi nakon slanja. Značka aplikacije zbog toga može biti netočna.";
+/* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Zvoni kad je aplikacija otvorena";
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Zvukovi";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Ime i sadržaj";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "Samo ime";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "Bez imena ili sadržaja";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "Prikaži";
+/* No comment provided by engineer. */
+"OK" = "OK";
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je onemogućio nestajuće poruke.";
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je postavo vrijeme za koliko će poruke nestati, na %@";
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Nije moguće snimiti sliku.";
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Nije moguće snimiti sliku.";
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Konfiguriranje kamere nije uspjelo.";
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Neimenovani album";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Označi kao pročitano";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Odgovori";
+/* alert body during registration */
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Ne možemo aktivirati vaš račun, dok ne potvrdite kôd koji smo vam poslali.";
+/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Odmah";
+/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentificirajte se za otvaranje Session-a.";
+/* Title for alert indicating that screen lock could not be unlocked. */
+"SCREEN_LOCK_UNLOCK_FAILED" = "Neuspješna autentifikacija";
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Odbaciti medij?";
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Odbaci medij";
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Povratak na Fotoaparat";
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Povratak na biblioteku medija";
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (zadano)";
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "Sigurnosno kopiranje";
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "Stvori sigurnosnu kopiju";
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Otkaži sigurnosnu kopiju";
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Sigurnosno kopiranje omogućeno";
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud status";
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Vraćanje sigurnosne kopije nije uspjelo";
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Vraćanje sigurnosne kopije na mirovanju";
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Vraćanje sigurnosne kopije u tijeku";
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Vraćanje sigurnosne kopije uspješno";
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "Faza";
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "Napredak";
+/* Label for backup status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "Stanje";
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "Sigurnosno kopiranje neuspješno";
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "Čekanje";
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Izrada sigurnosne kopije";
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Sigurnosno kopiranje uspješno";
+/* No comment provided by engineer. */
+"SETTINGS_CLEAR_HISTORY" = "Izbriši povijest razgovora";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Izbriši sve";
+/* Section header */
+"SETTINGS_HISTORYLOG_TITLE" = "Izbriši povijest razgovora";
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk poruke";
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Pošaljite preglede poveznica";
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Pregledi su podržani za poveznice Imgur, Instagram, Pinterest, Reddit i YouTube.";
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Pregledi poveznica";
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Sadržaj obavijesti";
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "Potvrda o čitanju";
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Pogledajte i podijelite kada su poruke pročitane. Ova postavka je opcionalna i odnosi se na sve razgovore.";
+/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Istek zaključavanja zaslona";
+/* Title for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Zaključavanje zaslona";
+/* Label for the 'enable screen lock' switch of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Zaključaj zaslon";
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Zvukovi";
+/* Section header */
+"SETTINGS_SECURITY_TITLE" = "Sigurnost zaslona";
+/* Label for the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS" = "Indikatori tipkanja";
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "Ništa";
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ dana";
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ dana";
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ minuta";
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ sekundi";
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ dan";
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ sat";
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minutu";
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ tjedan";
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ tjedana";
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@tj";
+/* Label for the cancel button in an alert or action sheet. */
+"TXT_CANCEL_TITLE" = "Otkaži";
+/* No comment provided by engineer. */
+"TXT_DELETE_TITLE" = "Obriši";
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Glasovna poruka";
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Dodirnite i držite za snimanje glasovne poruke.";
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Glasovna poruka";
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Onemogućili ste nestajuće poruke.";
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Vrijeme nestajućih poruke postavili ste na %@";
+// MARK: - Session
+"continue_2" = "Nastavi";
+"copy" = "Kopiraj";
+"invalid_url" = "Neispravna poveznica";
+"next" = "Sljedeće";
+"share" = "Podijeli";
+"invalid_session_id" = "Nevažeći Session ID";
+"cancel" = "Otkaži";
+"your_session_id" = "Vaš Session ID";
+"vc_landing_title_2" = "Vaš Session počinje ovdje...";
+"vc_landing_register_button_title" = "Kreiraj Session ID";
+"vc_landing_restore_button_title" = "Nastavite sa svojim Session-om";
+"vc_landing_link_button_title" = "Poveži uređaj";
+"view_fake_chat_bubble_1" = "Što je Session?";
+"view_fake_chat_bubble_2" = "To je decentralizirana aplikacija za razmjenu šifriranih poruka";
+"view_fake_chat_bubble_3" = "Dakle, ne prikuplja moje osobne podatke ili metapodatke razgovora? Kako to radi?";
+"view_fake_chat_bubble_4" = "Koristeći kombinacije naprednih anonimnih usmjeravanja i end-to-end tehnologija šifriranja.";
+"view_fake_chat_bubble_5" = "Prijatelji ne dopuštaju prijateljima da koriste kompromitirane aplikacije za dopisivanje. Nema na čemu.";
+"vc_register_title" = "Pozdravite svoj Session ID";
+"vc_register_explanation" = "Vaš Session ID jedinstvena je adresa koju ljudi mogu koristiti da bi vas kontaktirali na Session-u. Bez povezivanja sa vašim stvarnim identitetom, vaš Session ID je potpuno anoniman i dizajniran privatno.";
+"vc_restore_title" = "Vrati korisnički račun";
+"vc_restore_explanation" = "Unesite frazu za oporavak koja Vam je dana kada ste se prijavili za vraćanje računa.";
+"vc_restore_seed_text_field_hint" = "Unesite frazu za oporavak";
+"vc_link_device_title" = "Poveži uređaj";
+"vc_link_device_scan_qr_code_tab_title" = "Skeniraj QR kôd";
+"vc_display_name_title_2" = "Odaberite svoje ime za prikaz";
+"vc_display_name_explanation" = "To će biti vaše ime dok ćete koristiti Session. To može biti vaše pravo ime, lažno ime ili bilo što drugo što želite.";
+"vc_display_name_text_field_hint" = "Unesite ime za prikaz";
+"vc_display_name_display_name_missing_error" = "Molimo odaberite svoje ime za prikaz";
+"vc_display_name_display_name_too_long_error" = "Odaberite kraće ime za prikaz";
+"vc_pn_mode_recommended_option_tag" = "Preporučeno";
+"vc_pn_mode_no_option_picked_modal_title" = "Odaberite opciju";
+"vc_home_empty_state_message" = "Nemate kontakata";
+"vc_home_empty_state_button_title" = "Pokreni Session razgovor";
+"vc_seed_title" = "Fraza za oporavak";
+"vc_seed_title_2" = "Fraza za oporavak";
+"vc_seed_explanation" = "Fraza za oporavak je glavni ključ vašeg Session ID-a - pomoću njega možete vratiti svoj Session ID ako izgubite pristup uređaju. Spremite frazu za oporavak na sigurno mjesto i nedajte je nikome.";
+"vc_seed_reveal_button_title" = "Drži za otkrivanje";
+"view_seed_reminder_subtitle_1" = "Osigurajte svoj račun spremanjem fraze za oporavak";
+"view_seed_reminder_subtitle_2" = "Dodirnite i zadržite uređene riječi da biste otkrili frazu za oporavak, a zatim je sigurno spremite kako biste osigurali svoj Session ID.";
+"view_seed_reminder_subtitle_3" = "Svakako pohranite frazu za oporavak na sigurno mjesto";
+"vc_path_title" = "Putanja";
+"vc_path_explanation" = "Session skriva vaš IP usmjeravanjem vaših poruka kroz više uslužnih čvorova u Session decentraliziranoj mreži. Ovo su zemlje kroz koje se vaša veza trenutno usmjerava:";
+"vc_path_device_row_title" = "Vi";
+"vc_path_guard_node_row_title" = "Ulazni čvor";
+"vc_path_service_node_row_title" = "Čvor usluge";
+"vc_path_destination_row_title" = "Odredište";
+"vc_path_learn_more_button_title" = "Saznaj više";
+"vc_create_private_chat_title" = "Nova sesija";
+"vc_create_private_chat_enter_session_id_tab_title" = "Unesite Session ID";
+"vc_create_private_chat_scan_qr_code_tab_title" = "Skeniraj QR kôd";
+"vc_create_private_chat_scan_qr_code_explanation" = "Skenirajte korisnikov QR kôd da biste započeli sesiju. QR kodovi se mogu pronaći dodirom ikone QR koda u postavkama računa.";
+"vc_enter_public_key_explanation" = "Korisnici mogu podijeliti svoj Session ID tako da uđu u postavke računa i dodirnu \"Dijeli Session ID\" ili dijeljenjem svog QR koda.";
+"vc_scan_qr_code_camera_access_explanation" = "Session treba pristup kameri za skeniranje QR kodova";
+"vc_scan_qr_code_grant_camera_access_button_title" = "Odobri pristup kameri";
+"vc_create_closed_group_title" = "Nova zatvorena grupa";
+"vc_create_closed_group_text_field_hint" = "Unesite naziv grupe";
+"vc_create_closed_group_empty_state_message" = "Još nemate kontakata";
+"vc_create_closed_group_empty_state_button_title" = "Pokreni Session razgovor";
+"vc_create_closed_group_group_name_missing_error" = "Unesite naziv grupe";
+"vc_create_closed_group_group_name_too_long_error" = "Unesite kraći naziv grupe";
+"vc_create_closed_group_too_many_group_members_error" = "Zatvorena grupa ne može imati više od 100 članova";
+"vc_join_public_chat_title" = "Pridruži se otvorenoj grupi";
+"vc_join_public_chat_enter_group_url_tab_title" = "Otvori poveznicu grupe";
+"vc_join_public_chat_scan_qr_code_tab_title" = "Skeniraj QR kôd";
+"vc_join_public_chat_scan_qr_code_explanation" = "Skenirajte QR kôd otvorene grupe kojoj se želite pridružiti";
+"vc_enter_chat_url_text_field_hint" = "Unesite poveznicu otvorene grupe";
+"vc_settings_title" = "Postavke";
+"vc_settings_display_name_text_field_hint" = "Unesite ime za prikaz";
+"vc_settings_display_name_missing_error" = "Molimo odaberite svoje ime za prikaz";
+"vc_settings_display_name_too_long_error" = "Odaberite kraće ime za prikaz";
+"vc_settings_privacy_button_title" = "Privatnost";
+"vc_settings_notifications_button_title" = "Obavijesti";
+"vc_settings_recovery_phrase_button_title" = "Fraza za oporavak";
+"vc_settings_clear_all_data_button_title" = "Obriši podatke";
+"vc_notification_settings_title" = "Obavijesti";
+"vc_privacy_settings_title" = "Privatnost";
+"preferences_notifications_strategy_category_title" = "Strategija obavijesti";
+"modal_seed_title" = "Fraza za oporavak";
+"modal_seed_explanation" = "Ovo je vaša fraza za oporavak. Pomoću nje možete vratiti ili migrirati svoj Session ID na novi uređaj.";
+"modal_clear_all_data_title" = "Obriši sve podatke";
+"modal_clear_all_data_explanation" = "Ovo će trajno izbrisati vaše poruke, sesije i kontakte.";
+"vc_qr_code_title" = "QR kôd";
+"vc_qr_code_view_my_qr_code_tab_title" = "Pogledaj moj QR kôd";
+"vc_qr_code_view_scan_qr_code_tab_title" = "Skeniraj QR kôd";
+"vc_qr_code_view_scan_qr_code_explanation" = "Skenirajte nečiji QR kôd da biste započeli razgovor s njim";
+"vc_view_my_qr_code_explanation" = "Ovo je vaš QR kôd. Drugi ga korisnici mogu skenirati kako bi započeli sesiju s vama.";
+// MARK: - Not Yet Translated
+"fast_mode_explanation" = "O novim ćete porukama biti obaviješteni odmah i pouzdano pomoću Appleovih poslužitelja za obavijesti.";
+"fast_mode" = "Brzi način";
+"slow_mode_explanation" = "Session će povremeno, u pozadini provjeravati ima li novih poruka.";
+"slow_mode" = "Spor način";
+"vc_pn_mode_title" = "Obavijest o poruci";
+"vc_notification_settings_notification_mode_title" = "Koristi brzi način";
+"vc_link_device_recovery_phrase_tab_title" = "Fraza za oporavak";
+"vc_link_device_scan_qr_code_explanation" = "Idite na Postavke → Fraza za oporavak, na drugom uređaju da biste prikazali svoj QR kôd.";
+"vc_enter_recovery_phrase_title" = "Fraza za oporavak";
+"vc_enter_recovery_phrase_explanation" = "Da biste povezali svoj uređaj, unesite frazu za oporavak koja vam je dana prilikom prijave.";
+"vc_enter_public_key_text_field_hint" = "Unesite Session ID ili ONS ime";
+"vc_home_title" = "Poruke";
+"admin_group_leave_warning" = "Budući da ste tvorac ove grupe, ona će biti izbrisana za sve. To se ne može poništiti.";
+"vc_join_open_group_suggestions_title" = "Ili se pridružite jednom od ovih...";
+"vc_settings_invite_a_friend_button_title" = "Pozovi prijatelja";
+"vc_settings_help_us_translate_button_title" = "Pomozite nam prevesti Session";
+"copied" = "Kopirano";
+"vc_conversation_settings_copy_session_id_button_title" = "Kopiraj Session ID";
+"vc_conversation_input_prompt" = "Poruka";
+"vc_conversation_voice_message_cancel_message" = "Pomakni za odustajanje";
+"modal_download_attachment_title" = "Vjeruj %@?";
+"modal_download_attachment_explanation" = "Jeste li sigurni da želite preuzeti medije koje je poslao %@?";
+"modal_download_button_title" = "Preuzmi";
+"modal_open_url_title" = "Otvori poveznicu?";
+"modal_open_url_explanation" = "Jeste li sigurni da želite otvoriti %@?";
+"modal_open_url_button_title" = "Otvori";
+"modal_blocked_title" = "Deblokiraj %@?";
+"modal_blocked_explanation" = "Jeste li sigurni da želite deblokirati %@?";
+"modal_blocked_button_title" = "Deblokiraj";
+"modal_link_previews_title" = "Omogući preglede poveznica?";
+"modal_link_previews_explanation" = "Omogućavanjem pregleda poveznica prikazat će se pregledi za URL-ove koje šaljete i primate. To može biti korisno, ali Session će trebati kontaktirati povezane web stranice kako bi generirao preglede. Uvijek možete onemogućiti preglede poveznica u postavkama Session-a.";
+"modal_link_previews_button_title" = "Uključi";
+"vc_share_title" = "Podijeli sa Session-om";
+"vc_share_loading_message" = "Priprema privitaka...";
+"vc_share_sending_message" = "Slanje...";
+"view_open_group_invitation_description" = "Otvori pozivnicu za grupu";
+"vc_conversation_settings_invite_button_title" = "Dodaj članove";

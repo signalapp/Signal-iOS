@@ -1,5 +1,5 @@
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Nicht jetzt";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Jetzt nicht";
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ ist nun im App Store verfügbar.";
 /* Title for the 'new app version available' alert. */
@@ -9,9 +9,9 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Anhang";
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Beschriftungslimit erreicht.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Zeichen Limit erreicht.";
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Beschriftung hinzufügen …";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Bemerkung hinzufügen …";
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Beschriftung";
 /* Format string for file extension label in call interstitial view */
@@ -83,7 +83,7 @@
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Benutzer blockiert";
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockierte Benutzer werden dich nicht anrufen oder dir Nachrichten senden können.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockierte Benutzer können dich nicht mehr anrufen oder dir Nachrichten senden.";
 /* Label for generic done button. */
 "BUTTON_DONE" = "Fertig";
 /* Button text to enable batch selection mode */
@@ -95,13 +95,13 @@
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session konnte den Status deines iCloud-Kontos nicht ermitteln. Melde dich in der iOS-App »Einstellungen« bei deinem iCloud-Konto an, um deine Session-Daten zu sichern.";
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Kein iCloud-Konto. Melde dich in der iOS-App »Einstellungen« bei deinem iCloud-Konto an, um deine Session-Daten zu sichern.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Kein iCloud-Konto. Melde dich auf deinem Handy bei »Einstellungen« mit deinem iCloud-Konto an, um deine Session-Daten zu sichern.";
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Session wurde für Datensicherungen kein Zugriff auf dein iCloud-Konto gewährt. Gestatte Session in der iOS-App »Einstellungen« Zugriff auf dein iCloud-Konto, um deine Session-Daten zu sichern.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Session wurde der Zugriff auf Datensicherungen bei deinem iCloud-Konto verwehrt. Gewähre Session in der iOS-App »Einstellungen« Zugriff auf dein iCloud-Konto, um deine Session-Daten zu sichern.";
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du wirst in dieser Gruppe keine Nachrichten mehr versenden oder empfangen können.";
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Wirklich verlassen?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Wollen Sie die Gruppe wirklich verlassen?";
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Dies kann nicht rückgängig gemacht werden.";
 /* Title for the 'conversation delete confirmation' alert. */
@@ -115,11 +115,11 @@
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Unterhaltungseinstellungen";
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Diesen Benutzer blockieren";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Diesen Nutzer blockieren";
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stumm";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stummschalten";
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Stumm";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Stummschalten";
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nicht stummgeschaltet";
 /* Label for button to mute a thread for a day. */
@@ -157,7 +157,7 @@
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Verschwindende Nachrichten";
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Nachrichten dieser Unterhaltung werden nach %@ verschwinden.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Nachrichten in dieser Unterhaltung werden nach %@ automatisch gelöscht.";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Gruppe bearbeiten";
 /* Label indicating media gallery is empty */
@@ -189,7 +189,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ wurden aus der Gruppe entfernt. ";
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Titel lautet jetzt »%@«.";
+"GROUP_TITLE_CHANGED" = "Gruppenname lautet jetzt »%@«. ";
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "Gruppe aktualisiert.";
 /* No comment provided by engineer. */
@@ -282,6 +282,10 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Konfigurieren der Kamera gescheitert.";
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unbenanntes Album";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Markieren als gelesen";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Antwort";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Dein Konto kann nicht aktiviert werden, bevor du den dir gesendeten Code verifizierst.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */

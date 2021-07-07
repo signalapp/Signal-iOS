@@ -1,0 +1,539 @@
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Inte nu";
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Version %@ finns nu tillgänglig i App Store.";
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "Ny version av Session är tillgänglig";
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Uppdatera";
+/* No comment provided by engineer. */
+"ATTACHMENT" = "Bilaga";
+/* One-line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Förbindelsebegränsning uppnådd.";
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Lägg till bildtext…";
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Bildtext";
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Filtyp: %@";
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Storlek: %@";
+/* One-line label indicating the user can add no more text to the media message field. */
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Meddelandegränsen har uppnåtts";
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Skicka";
+/* Generic filename for an attachment with no known name */
+"ATTACHMENT_DEFAULT_FILENAME" = "Bilaga";
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Fel vid sändning av bilaga";
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Det gick inte att välja dokument.";
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Skapa ett komprimerat arkiv för denna fil eller katalog och försök att skicka den istället.";
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen stöds ej";
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Röstmeddelande";
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Säkerhetskopian kunde inte återställas.";
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ogiltigt tjänstsvar";
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Rensar Upp Säkerhetskopian";
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initierar Säkerhetskopiering";
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exportera Data";
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "Exporterar Säkerhetskopian";
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Laddar Upp Säkerhetskopian";
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Säkerhetskopian kunde inte återställas.";
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfigurerar Säkerhetskopia";
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Hämtar Data för Säkerhetskopia";
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Slutför Säkerhetskopiering";
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "Importerar Säkerhetskopia.";
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Återställer Databasen";
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Återställer Dina Filer";
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "Säkerhetskopia tillgänglig";
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "Återställer säkerhetskopia";
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "Förlopp";
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "Status";
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "Oväntat säkerhetskopieringsfel";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "Blockera";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blockera %@?";
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Avblockera";
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ har blockerats.";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Användare blockerad";
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockerade användare kommer inte att kunna ringa dig eller skicka meddelanden.";
+/* Label for generic done button. */
+"BUTTON_DONE" = "Klart";
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "Välj";
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Återställ Inte";
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = "Återställ";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Sessionen kunde inte avgöra status för ditt iCloud-konto. Logga in på ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Sessionsdata.";
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Inget iCloud-konto. Logga in på ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Sessionsdata.";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Sessionen nekades åtkomst till ditt iCloud-konto för säkerhetskopior. Ge Session åtkomst till ditt iCloud-konto i iOS-inställningsappen för att säkerhetskopiera din Sessionsdata.";
+/* Alert body */
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kommer inte längre att kunna skicka eller ta emot meddelanden i denna grupp.";
+/* Alert title */
+"CONFIRM_LEAVE_GROUP_TITLE" = "Vill du verkligen lämna?";
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Detta kan inte ångras.";
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Radera konversation?";
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Inga träffar";
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 träff";
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d av %d matchningar";
+/* title for conversation settings screen */
+"CONVERSATION_SETTINGS" = "Konversationsinställningar";
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blockera denna Användare";
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tysta";
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Tysta";
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Inte tystad";
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Tysta i 1 dygn";
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Tysta i 1 timme";
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Tysta i en minut";
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Tysta i en vecka";
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Tysta i 1 år";
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "fram till %@";
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Sök i konversation";
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Slå på aviseringar";
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Flytta och skala";
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Detta kan dröja några minuter.";
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimerar databas";
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@T sedan";
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@ Min sedan";
+/* The present; the current time. */
+"DATE_NOW" = "Nu";
+/* The current day. */
+"DATE_TODAY" = "Idag";
+/* The day before today. */
+"DATE_YESTERDAY" = "Igår";
+/* table cell label in conversation settings */
+"DISAPPEARING_MESSAGES" = "Försvinnande meddelanden";
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Meddelanden i denna konversation försvinner efter %@.";
+/* table cell label in conversation settings */
+"EDIT_GROUP_ACTION" = "Redigera grupp";
+/* Label indicating media gallery is empty */
+"GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen media i den här konversationen.";
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Laddar nyare media…";
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Laddar äldre media…";
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Det gick inte att hämta den begärda GIF. Vänligen verifiera att du är online.";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "Ett okänt fel har uppstått.";
+/* Shown when selected GIF couldn't be fetched */
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Det gick inte att välja GIF";
+/* Alert message shown when user tries to search for GIFs without entering any search terms. */
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Vänligen ange sökord.";
+/* Indicates that an error occurred while searching. */
+"GIF_VIEW_SEARCH_ERROR" = "Fel. Klicka för att försöka igen.";
+/* Indicates that the user's search had no results. */
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Inga resultat.";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "Grupp skapad";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = " %@ gick med i gruppen. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = " %@ lämnade gruppen. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ togs bort från gruppen. ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ togs bort från gruppen. ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "Titeln är nu '%@'. ";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "Grupp uppdaterad.";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "Du har lämnat gruppen.";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " Du togs bort från gruppen. ";
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Du kan inte dela mer än %@ objekt.";
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Det gick inte att lägga till bifogad fil.";
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ogiltig ljudfil.";
+/* Slider label when disappearing messages is off */
+"KEEP_MESSAGES_FOREVER" = "Meddelanden försvinner inte.";
+/* Confirmation button within contextual alert */
+"LEAVE_BUTTON_TITLE" = "Lämna";
+/* table cell label in conversation settings */
+"LEAVE_GROUP_ACTION" = "Lämna grupp";
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Meddelande";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alla media";
+/* media picker option to choose from library */
+"MEDIA_FROM_LIBRARY_BUTTON" = "Bildbibliotek";
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Radera %d meddelanden";
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Radera meddelande";
+/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ den %@";
+/* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Du";
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denna månad";
+/* message status for message delivered to their recipient. */
+"MESSAGE_STATUS_DELIVERED" = "Levererat";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sändningen misslyckades.";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "Misslyckades";
+/* status message for read messages */
+"MESSAGE_STATUS_READ" = "Läst";
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Hoppade Över";
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "Skickar…";
+/* status message for sent messages */
+"MESSAGE_STATUS_SENT" = "Skickat";
+/* status message while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "Laddar upp…";
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Du kan aktivera denna behörighet i iOS-inställningarna.";
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Sessionen kräver åtkomst till dina bilder för denna funktion.";
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "Du kommer inte att få aviseringar för tystade konversationer.";
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ till %@";
+/* Label for 1:1 conversation with yourself. */
+"NOTE_TO_SELF" = "Egna Anteckningar";
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Du kan ha fått meddelanden medan din %@ startades om.";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_FOOTER_WARNING" = "På grund av kända buggar i Apples push-ramverk visas bara förhandsvisningar om meddelandet hämtas inom 30 sekunder efter att det skickats. Applikationsmärket kan vara felaktigt som ett resultat.";
+/* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "Spela upp medan appen är öppen";
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "Ljud";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Namn och innehåll";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "Endast Namn";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "Inget namn eller innehåll";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "Visa";
+/* No comment provided by engineer. */
+"OK" = "OK";
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ inaktiverade försvinnande meddelanden.";
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ har satt tid för försvunna meddelanden till %@";
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Det går inte att fånga bild.";
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Det går inte att fånga bild.";
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kunde inte konfigurera kameran.";
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlöst Album";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Reply";
+/* alert body during registration */
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vi kan inte aktivera ditt konto förrän du verifierar koden vi skickade till dig.";
+/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Omedelbar";
+/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentisera för att öppna Session.";
+/* Title for alert indicating that screen lock could not be unlocked. */
+"SCREEN_LOCK_UNLOCK_FAILED" = "Autentisering misslyckades";
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Släng media?";
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Släng Media";
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Tillbaka till Kameran";
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Tillbaka till mediabiblioteket";
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (standard)";
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "Säkerhetskopia";
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "Säkerhetskopiera Nu";
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Avbryt säkerhetskopiering";
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Säkerhetskopiering aktiverad";
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Återställning av säkerhetskopia misslyckades";
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Säkerhetskopiering Avstannad";
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Återställning av säkerhetskopior pågår";
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Återställning klar";
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "Steg";
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "Förlopp";
+/* Label for backup status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "Status";
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "Säkerhetskopieringen misslyckades";
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "Väntar";
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Säkerhetskopierar";
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Säkerhetskopieringen lyckades";
+/* No comment provided by engineer. */
+"SETTINGS_CLEAR_HISTORY" = "Rensa konversationshistorik";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Radera Allting";
+/* Section header */
+"SETTINGS_HISTORYLOG_TITLE" = "Rensa konversationshistorik";
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Meddelandeljud";
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "Länkförhandsvisningar";
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Förhandsvisningar stöds för Imgur-, Instagram-, Pinterest-, Reddit- och YouTube-länkar.";
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Förhandsgranskning av länkar";
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Aviseringsljud";
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "Läskvittenser";
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se och dela när meddelanden har lästs. Den här inställningen är valfri och gäller för alla konversationer.";
+/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Timeout för skärmlåset";
+/* Title for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Skärmlås";
+/* Label for the 'enable screen lock' switch of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Skärmlås";
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "Ljud";
+/* Section header */
+"SETTINGS_SECURITY_TITLE" = "Skärmsäkerhet";
+/* Label for the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS" = "Skrivindikatorer";
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "Inga";
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ dagar";
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ timmar";
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ minuter";
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ sekunder";
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ dag";
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ timme";
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minut";
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ vecka";
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ veckor";
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+/* Label for the cancel button in an alert or action sheet. */
+"TXT_CANCEL_TITLE" = "Avbryt";
+/* No comment provided by engineer. */
+"TXT_DELETE_TITLE" = "Radera";
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "Röstmeddelande";
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tryck och håll ned för att spela in ett röstmeddelande.";
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Röstmeddelande";
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du inaktiverade försvinnande meddelanden.";
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du satte tid för försvunna meddelanden till %@";
+// MARK: - Session
+"continue_2" = "Fortsätt";
+"copy" = "Kopiera";
+"invalid_url" = "Ogiltig URL";
+"next" = "Nästa";
+"share" = "Dela";
+"invalid_session_id" = "Ogiltigt Sessions-ID";
+"cancel" = "Avbryt";
+"your_session_id" = "Ditt Session ID";
+"vc_landing_title_2" = "Din session börjar här...";
+"vc_landing_register_button_title" = "Skapa Sessions-ID";
+"vc_landing_restore_button_title" = "Fortsätt din Session";
+"vc_landing_link_button_title" = "Länka ny enhet";
+"view_fake_chat_bubble_1" = "Vad är Session?";
+"view_fake_chat_bubble_2" = "Det är en decentraliserad, krypterad meddelandeapp";
+"view_fake_chat_bubble_3" = "Så det samlar inte in mina personuppgifter eller mina konversationers metadata? Hur fungerar det?";
+"view_fake_chat_bubble_4" = "Med hjälp av en kombination av avancerad anonym routing och end-to-end-krypteringsteknik.";
+"view_fake_chat_bubble_5" = "Vänner låter inte vänner använda komprometterade meddelandeappar. Varsågod.";
+"vc_register_title" = "Säg hej till ditt Sessions-ID";
+"vc_register_explanation" = "Ditt sessions-ID är den unika adress folk kan använda för att kontakta dig på Session. Ditt Sessions-ID är helt anonymt och privat rakt igenom, helt utan koppling till din riktiga identitet.";
+"vc_restore_title" = "Återställ konto";
+"vc_restore_explanation" = "Ange den återställningsfras du fick för att kunna återställa ditt konto.";
+"vc_restore_seed_text_field_hint" = "Ange din hemliga återställningsfras";
+"vc_link_device_title" = "Länka ny enhet";
+"vc_link_device_scan_qr_code_tab_title" = "Skanna QR-kod";
+"vc_display_name_title_2" = "Välj visningsnamn";
+"vc_display_name_explanation" = "Detta blir ditt namn när du använder Session. Det kan vara ditt riktiga namn, ett alias eller något annat du gillar.";
+"vc_display_name_text_field_hint" = "Ange ett visningsnamn";
+"vc_display_name_display_name_missing_error" = "Vänligen välj ett visningsnamn";
+"vc_display_name_display_name_too_long_error" = "Vänligen välj ett kortare visningsnamn";
+"vc_pn_mode_recommended_option_tag" = "Rekommenderat";
+"vc_pn_mode_no_option_picked_modal_title" = "Välj ett alternativ";
+"vc_home_empty_state_message" = "Du har inga kontakter";
+"vc_home_empty_state_button_title" = "Starta en Session";
+"vc_seed_title" = "Din Återställningsfras";
+"vc_seed_title_2" = "Möt din återställningsfras";
+"vc_seed_explanation" = "Din återställningsfras är huvudnyckeln till ditt Sessions-ID – du kan använda den för att återställa ditt Sessions-ID om du förlorar åtkomst till enheten. Förvara din återställningsfras på en säker plats, och ge den inte till någon.";
+"vc_seed_reveal_button_title" = "Håll ned för att visa";
+"view_seed_reminder_subtitle_1" = "Säkra ditt konto genom att spara din återställningsfras";
+"view_seed_reminder_subtitle_2" = "Tryck på och håll ned de dolda orden för att avslöja din återställningsfras och lagra dem på ett säkert sätt för att säkra ditt Sessions-ID.";
+"view_seed_reminder_subtitle_3" = "Se till att lagra din återställningsfras på en säker plats";
+"vc_path_title" = "Sökväg";
+"vc_path_explanation" = "Sessionen döljer din IP-adress genom att dirigera dina meddelanden genom flera Tjänstnoder i Sessionens decentraliserade nätverk. Detta är de länder som din anslutning för närvarande går igenom:";
+"vc_path_device_row_title" = "Du";
+"vc_path_guard_node_row_title" = "Entrénod";
+"vc_path_service_node_row_title" = "Tjänstnoden";
+"vc_path_destination_row_title" = "Mål";
+"vc_path_learn_more_button_title" = "Mer info";
+"vc_create_private_chat_title" = "Ny Session";
+"vc_create_private_chat_enter_session_id_tab_title" = "Ange Sessions-ID";
+"vc_create_private_chat_scan_qr_code_tab_title" = "Scanna QR-kod";
+"vc_create_private_chat_scan_qr_code_explanation" = "Skanna en användares QR-kod för att starta en session. QR-koder kan finnas genom att trycka på ikonen för QR-kod i kontoinställningarna.";
+"vc_enter_public_key_explanation" = "Användare kan dela sitt sessions-ID genom att gå in på sina kontoinställningar och trycka på \"Dela sessions-ID\" eller genom att dela sin QR-kod.";
+"vc_scan_qr_code_camera_access_explanation" = "Sessionen behöver kameraåtkomst för att skanna QR-koder";
+"vc_scan_qr_code_grant_camera_access_button_title" = "Tillåt kameraåtkomst";
+"vc_create_closed_group_title" = "Ny Sluten Grupp";
+"vc_create_closed_group_text_field_hint" = "Ange ett gruppnamn";
+"vc_create_closed_group_empty_state_message" = "Du har inga kontakter";
+"vc_create_closed_group_empty_state_button_title" = "Starta en Session";
+"vc_create_closed_group_group_name_missing_error" = "Vänligen ange ett gruppnamn";
+"vc_create_closed_group_group_name_too_long_error" = "Vänligen ange ett kortare namn för gruppen";
+"vc_create_closed_group_too_many_group_members_error" = "En sluten grupp kan inte ha fler än 100 medlemmar";
+"vc_join_public_chat_title" = "Gå med i öppen grupp";
+"vc_join_public_chat_enter_group_url_tab_title" = "Öppna grupp-URL";
+"vc_join_public_chat_scan_qr_code_tab_title" = "Skanna QR-kod";
+"vc_join_public_chat_scan_qr_code_explanation" = "Skanna QR-koden för den öppna grupp du vill ansluta till";
+"vc_enter_chat_url_text_field_hint" = "Ange en öppen grupp-URL";
+"vc_settings_title" = "Inställningar";
+"vc_settings_display_name_text_field_hint" = "Ange ett visningsnamn";
+"vc_settings_display_name_missing_error" = "Vänligen välj ett visningsnamn";
+"vc_settings_display_name_too_long_error" = "Vänligen välj ett kortare visningsnamn";
+"vc_settings_privacy_button_title" = "Integritet";
+"vc_settings_notifications_button_title" = "Aviseringar";
+"vc_settings_recovery_phrase_button_title" = "Återställningsfras";
+"vc_settings_clear_all_data_button_title" = "Rensa data";
+"vc_notification_settings_title" = "Aviseringar";
+"vc_privacy_settings_title" = "Integritet";
+"preferences_notifications_strategy_category_title" = "Strategi för aviseringar";
+"modal_seed_title" = "Din Återställningsfras";
+"modal_seed_explanation" = "Detta är din återställningsfras. Med den kan du återställa eller migrera ditt Sessions-ID till en ny enhet.";
+"modal_clear_all_data_title" = "Rensa all data";
+"modal_clear_all_data_explanation" = "Detta kommer att radera dina meddelanden, sessioner och kontakter permanent.";
+"vc_qr_code_title" = "QR-kod";
+"vc_qr_code_view_my_qr_code_tab_title" = "Visa min QR-kod";
+"vc_qr_code_view_scan_qr_code_tab_title" = "Skanna QR-kod";
+"vc_qr_code_view_scan_qr_code_explanation" = "Skanna någons QR-kod för att starta en konversation med dem";
+"vc_view_my_qr_code_explanation" = "Detta är din QR-kod. Andra användare kan skanna den för att starta en Session med dig.";
+// MARK: - Not Yet Translated
+"fast_mode_explanation" = "Du kommer att meddelas om nya meddelanden på ett tillförlitligt sätt och omedelbart använda Apples meddelandeservrar.";
+"fast_mode" = "Snabbläge";
+"slow_mode_explanation" = "Sessionen kommer då och då att leta efter nya meddelanden i bakgrunden.";
+"slow_mode" = "Långsamt läge";
+"vc_pn_mode_title" = "Meddelandeaviseringar";
+"vc_notification_settings_notification_mode_title" = "Använd snabbläge";
+"vc_link_device_recovery_phrase_tab_title" = "Återställningsfras";
+"vc_link_device_scan_qr_code_explanation" = "Navigera till Inställningar → Återställningsfras på din andra enhet för att visa din QR-kod.";
+"vc_enter_recovery_phrase_title" = "Återställningsfras";
+"vc_enter_recovery_phrase_explanation" = "För att länka din enhet, ange den återställningsfrasen du fick när du registrerade dig.";
+"vc_enter_public_key_text_field_hint" = "Ange sessions-ID eller ONS-namn";
+"vc_home_title" = "Meddelanden";
+"admin_group_leave_warning" = "Eftersom du skapade denna grupp kommer den att raderas för alla. Detta kan inte ångras.";
+"vc_join_open_group_suggestions_title" = "Eller gå med i en av dessa...";
+"vc_settings_invite_a_friend_button_title" = "Bjud in en vän";
+"vc_settings_help_us_translate_button_title" = "Hjälp oss att översätta Session";
+"copied" = "Kopierad!";
+"vc_conversation_settings_copy_session_id_button_title" = "Skapa Sessions-ID";
+"vc_conversation_input_prompt" = "Meddelande";
+"vc_conversation_voice_message_cancel_message" = "Svep för att avbryta";
+"modal_download_attachment_title" = "Lita på %@?";
+"modal_download_attachment_explanation" = "Är du säker du vill hämta media skickat av %@?";
+"modal_download_button_title" = "Hämta";
+"modal_open_url_title" = "Öppna URL?";
+"modal_open_url_explanation" = "Är du säker på att du vill öppna %@?";
+"modal_open_url_button_title" = "Öppna";
+"modal_blocked_title" = "Avblockera %@?";
+"modal_blocked_explanation" = "Är du säker på att du vill avblockera %@?";
+"modal_blocked_button_title" = "Avblockera";
+"modal_link_previews_title" = "Aktivera förhandsgranskningar av länkar?";
+"modal_link_previews_explanation" = "Om du aktiverar länkförhandsvisningar visas förhandsvisningar för URL: er du skickar och tar emot. Detta kan vara användbart, men sessionen måste kontakta länkade webbplatser för att generera förhandsvisningar. Du kan alltid inaktivera länkförhandsvisningar i sessionsinställningarna.";
+"modal_link_previews_button_title" = "Aktivera";
+"vc_share_title" = "Dela i Session";
+"vc_share_loading_message" = "Förbereder bilagor...";
+"vc_share_sending_message" = "Skickar...";
+"view_open_group_invitation_description" = "Öppen gruppinbjudan";
+"vc_conversation_settings_invite_button_title" = "Lägg till medlemmar";
