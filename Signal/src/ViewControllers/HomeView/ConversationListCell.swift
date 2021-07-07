@@ -294,7 +294,7 @@ public class ConversationListCell: UITableViewCell {
             let snippetFrame = CGRect(x: 0,
                                       y: 0,
                                       width: view.width,
-                                      height: ceil(snippetSize.height))
+                                      height: min(view.bounds.height, ceil(snippetSize.height)))
             self.snippetLabel.frame = snippetFrame
         }
         let typingIndicatorSize = TypingIndicatorView.measurement().measuredSize
