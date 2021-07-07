@@ -228,8 +228,7 @@ class PhotoCapture: NSObject {
 
     @discardableResult
     public func stopCapture() -> Guarantee<Void> {
-        let session = self.session
-        return sessionQueue.async(.promise) {
+        sessionQueue.async(.promise) { [session] in
             session.stopRunning()
         }
     }

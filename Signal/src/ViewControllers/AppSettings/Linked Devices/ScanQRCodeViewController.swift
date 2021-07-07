@@ -612,8 +612,7 @@ private class QRCodeScanner {
     }
 
     deinit {
-        let session = self.session
-        sessionQueue.async(.promise) {
+        sessionQueue.async(.promise) { [session] in
             session.stopRunning()
         }.done {
             Logger.debug("stopCapture completed")
