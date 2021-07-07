@@ -10,8 +10,9 @@ SSK_DIR="./SignalServiceKit/src"
 SAE_DIR="./SignalShareExtension"
 SM_DIR="./SignalMessaging"
 SCK_DIR="./Pods/SignalCoreKit"
+NSE_DIR="./NotificationServiceExtension"
 
-TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR} ${SCK_DIR}"
+TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR} ${SCK_DIR} ${NSE_DIR}"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 
