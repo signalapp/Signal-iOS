@@ -112,7 +112,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 let encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as? ECKeyPair,
                 let members = coder.decodeObject(forKey: "members") as? [Data],
                 let admins = coder.decodeObject(forKey: "admins") as? [Data] else { return nil }
-                let expirationTimer = coder.decodeObject(forKey: "expirationTimer") as? UInt32 ?? 0
+            let expirationTimer = coder.decodeObject(forKey: "expirationTimer") as? UInt32 ?? 0
             self.kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins, expirationTimer: expirationTimer)
         case "encryptionKeyPair":
             let publicKey = coder.decodeObject(forKey: "publicKey") as? Data
