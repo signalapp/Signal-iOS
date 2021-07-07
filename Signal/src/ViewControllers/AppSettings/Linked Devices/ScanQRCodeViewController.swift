@@ -170,11 +170,6 @@ class QRCodeScanViewController: OWSViewController {
     // MARK: - Scanning
 
     private func stopScanning() {
-        scanner?.stopCapture().done {
-            Logger.debug("stopCapture completed")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
         scanner = nil
     }
 
@@ -263,10 +258,11 @@ class QRCodeScanViewController: OWSViewController {
     }
 
     private lazy var detectQRCodeRequest: VNDetectBarcodesRequest = {
-        let request = VNDetectBarcodesRequest { request, error in
+        let request = VNDetectBarcodesRequest { [weak self] request, error in
+            guard let self = self else { return }
             if let error = error {
-                DispatchQueue.main.async { [weak self] in
-                    self?.showFailureUI(error: error)
+                DispatchQueue.main.async {
+                    self.showFailureUI(error: error)
                 }
                 return
             }
@@ -615,6 +611,17 @@ private class QRCodeScanner {
         output = QRCodeScanOutput(sampleBufferDelegate: sampleBufferDelegate)
     }
 
+    deinit {
+        let session = self.session
+        sessionQueue.async(.promise) {
+            session.stopRunning()
+        }.done {
+            Logger.debug("stopCapture completed")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
     // MARK: - Public
 
     @objc
@@ -687,13 +694,6 @@ private class QRCodeScanner {
             }
         }.done(on: sessionQueue) {
             self.session.startRunning()
-        }
-    }
-
-    @discardableResult
-    public func stopCapture() -> Guarantee<Void> {
-        return sessionQueue.async(.promise) {
-            self.session.stopRunning()
         }
     }
 
