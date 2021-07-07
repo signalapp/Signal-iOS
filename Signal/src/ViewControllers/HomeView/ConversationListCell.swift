@@ -157,8 +157,11 @@ public class ConversationListCell: UITableViewCell {
         let vStackConfig = self.vStackConfig
         let outerHStackConfig = self.outerHStackConfig
 
-        snippetLabelConfig(configuration: configuration).applyForRendering(label: snippetLabel)
-        let snippetLineHeight = CGFloat(ceil(1.1 * snippetFont.ows_semibold.lineHeight))
+        let snippetLabelConfig = self.snippetLabelConfig(configuration: configuration)
+        snippetLabelConfig.applyForRendering(label: snippetLabel)
+        // Reserve space for two lines of snippet text, taking into account
+        // the worst-case snippet content.
+        let snippetLineHeight = CGFloat(ceil(snippetFont.ows_semibold.lineHeight * 1.2))
 
         avatarView.shouldLoadAsync = configuration.shouldLoadAvatarAsync
         avatarView.configureWithSneakyTransaction(thread: thread.threadRecord)
@@ -291,6 +294,10 @@ public class ConversationListCell: UITableViewCell {
             guard let self = self else { return }
             // Top-align the snippet text.
             let snippetSize = self.snippetLabel.sizeThatFits(view.bounds.size)
+            if DebugFlags.internalLogging,
+               snippetSize.height > snippetLineHeight * 2 {
+                owsFailDebug("view: \(view.bounds.size), snippetSize: \(snippetSize), snippetLineHeight: \(snippetLineHeight), snippetLabelConfig: \(snippetLabelConfig.stringValue)")
+            }
             let snippetFrame = CGRect(x: 0,
                                       y: 0,
                                       width: view.width,
@@ -675,7 +682,7 @@ public class ConversationListCell: UITableViewCell {
                              font: snippetFont,
                              textColor: snippetColor,
                              numberOfLines: 2,
-                             lineBreakMode: .byWordWrapping)
+                             lineBreakMode: .byTruncatingTail)
     }
 
     private func updateTypingIndicatorState() {
