@@ -52,7 +52,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
-    DatabaseChangeDelegate,
     OWSBlockListCacheDelegate,
     CameraFirstCaptureDelegate,
     OWSGetStartedBannerViewControllerDelegate>
@@ -60,14 +59,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIView *emptyInboxView;
 
-@property (nonatomic) UIView *firstConversationCueView;
 @property (nonatomic) UILabel *firstConversationLabel;
 
 @property (nonatomic, readonly) ThreadMapping *threadMapping;
 @property (nonatomic) ConversationListMode conversationListMode;
 @property (nonatomic, readonly) AnyLRUCache *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasEverAppeared;
 
 // Get Started banner
@@ -131,61 +128,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _threadMapping = [ThreadMapping new];
 }
 
-#pragma mark -
-
-- (void)observeNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalAccountsDidChange:)
-                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillEnterForeground:)
-                                                 name:OWSApplicationWillEnterForegroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidBecomeActive:)
-                                                 name:OWSApplicationDidBecomeActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillResignActive:)
-                                                 name:OWSApplicationWillResignActiveNotification
-                                               object:nil];
-    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
-    [self.databaseStorage appendDatabaseChangeDelegate:self];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationStateDidChange:)
-                                                 name:NSNotificationNameRegistrationStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(outageStateDidChange:)
-                                                 name:OutageDetection.outageStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(localProfileDidChange:)
-                                                 name:kNSNotificationNameLocalProfileDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(profileWhitelistDidChange:)
-                                                 name:kNSNotificationNameProfileWhitelistDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appExpiryDidChange:)
-                                                 name:AppExpiry.AppExpiryDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(updateAvatars)
-                                                 name:SSKPreferences.preferContactAvatarsPreferenceDidChange
-                                               object:nil];
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Notifications
+#pragma mark -
 
 - (void)updateAvatars
 {
@@ -193,45 +141,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     self.lastReloadDate = [NSDate new];
     [self.tableView reloadData];
-}
-
-- (void)signalAccountsDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self reloadTableViewData];
-
-    if (!self.firstConversationCueView.isHidden) {
-        [self updateFirstConversationLabel];
-    }
-}
-
-- (void)registrationStateDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateReminderViews];
-}
-
-- (void)outageStateDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateReminderViews];
-}
-
-- (void)localProfileDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateBarButtonItems];
-}
-
-- (void)appExpiryDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateReminderViews];
 }
 
 #pragma mark - Theme
@@ -1130,26 +1039,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (BOOL)isViewingArchive
 {
     return self.conversationListMode == ConversationListMode_Archive;
-}
-
-- (void)applicationWillEnterForeground:(NSNotification *)notification
-{
-    [self updateViewState];
-}
-
-- (void)applicationDidBecomeActive:(NSNotification *)notification
-{
-    [self updateShouldObserveDBModifications];
-
-    if (![ExperienceUpgradeManager presentNextFromViewController:self]) {
-        [OWSActionSheets showIOSUpgradeNagIfNecessary];
-        [self presentGetStartedBannerIfNecessary];
-    }
-}
-
-- (void)applicationWillResignActive:(NSNotification *)notification
-{
-    [self updateShouldObserveDBModifications];
 }
 
 #pragma mark - startup
@@ -2132,30 +2021,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-#pragma mark - DatabaseChangeDelegate
-
-- (void)databaseChangesWillUpdate
-{
-    OWSAssertIsOnMainThread();
-    [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
-}
-
-- (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
-
-    if ([databaseChanges didUpdateModelWithCollection:TSPaymentModel.collection]) {
-        [self updateUnreadPaymentNotificationsCountWithSneakyTransaction];
-    }
-
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-
-    [self anyUIDBDidUpdateWithUpdatedThreadIds:databaseChanges.threadUniqueIds];
-}
-
 - (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction
 {
     if (!self.payments.arePaymentsEnabled) {
@@ -2183,33 +2048,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self updateBarButtonItems];
     [self updateReminderViews];
-}
-
-- (void)databaseChangesDidUpdateExternally
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    if (self.shouldObserveDBModifications) {
-        // External database modifications can't be converted into incremental updates,
-        // so rebuild everything.  This is expensive and usually isn't necessary, but
-        // there's no alternative.
-        //
-        // We don't need to do this if we're not observing db modifications since we'll
-        // do it when we resume.
-        [self resetMappings];
-    }
-}
-
-- (void)databaseChangesDidReset
-{
-    OWSAssertIsOnMainThread();
-    if (self.shouldObserveDBModifications) {
-        // We don't need to do this if we're not observing db modifications since we'll
-        // do it when we resume.
-        [self resetMappings];
-    }
 }
 
 #pragma mark AnyDB Update
@@ -2301,31 +2139,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.tableView endUpdates];
     [BenchManager completeEventWithEventId:@"uiDatabaseUpdate"];
-}
-
-#pragma mark Profile Whitelist Changes
-
-- (void)profileWhitelistDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    // If profile whitelist just changed, we need to update the associated
-    // thread to reflect the latest message request state.
-    SignalServiceAddress *_Nullable address = notification.userInfo[kNSNotificationKey_ProfileAddress];
-    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
-
-    __block NSString *_Nullable changedThreadId;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        if (address.isValid) {
-            changedThreadId = [TSContactThread getThreadWithContactAddress:address transaction:transaction].uniqueId;
-        } else if (groupId.length > 0) {
-            changedThreadId = [TSGroupThread threadIdForGroupId:groupId transaction:transaction];
-        }
-    }];
-
-    if (changedThreadId) {
-        [self anyUIDBDidUpdateWithUpdatedThreadIds:[NSSet setWithObject:changedThreadId]];
-    }
 }
 
 #pragma mark -

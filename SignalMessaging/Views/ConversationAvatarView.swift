@@ -431,11 +431,12 @@ public class ConversationAvatarView: AvatarImageView {
     }
 
     @objc
-    public func reset() {
+    public override func reset() {
         AssertIsOnMainThread()
 
+        super.reset()
+
         self.content = nil
-        self.image = nil
     }
 }
 

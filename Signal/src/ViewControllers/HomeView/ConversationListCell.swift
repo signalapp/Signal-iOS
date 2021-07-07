@@ -14,20 +14,43 @@ public class ConversationListCell: UITableViewCell {
                                                     localUserDisplayMode: .noteToSelf,
                                                     shouldLoadAsync: false)
 
-    private let nameLabel = UILabel()
-    private let snippetLabel = UILabel()
-    private let dateTimeLabel = UILabel()
-    private let messageStatusIconView = UIImageView()
-    private let messageStatusWrapper = UIView.container()
+    private let nameLabel = CVLabel()
+    private let snippetLabel = CVLabel()
+    private let dateTimeLabel = CVLabel()
+    private let messageStatusIconView = CVImageView()
     private let typingIndicatorView = TypingIndicatorView()
-    private let typingIndicatorWrapper = UIView.container()
-    private let muteIconView = UIImageView()
-    private let muteIconWrapper = UIView.container()
+    private let muteIconView = CVImageView()
 
-    private let unreadBadge = NeverClearView()
-    private let unreadLabel = UILabel()
+    private let unreadBadge = NeverClearView(name: "unreadBadge")
+    private let unreadLabel = CVLabel()
 
-    private var viewConstraints = [NSLayoutConstraint]()
+    private let outerHStack = ManualStackViewWithLayer(name: "outerHStack")
+    private let avatarStack = ManualStackView(name: "avatarStack")
+    private let vStack = ManualStackView(name: "vStack")
+    private let topRowStack = ManualStackView(name: "topRowStack")
+    private let bottomRowStack = ManualStackView(name: "bottomRowStack")
+    // The "Wrapper" shows either "snippet label" or "typing indicator".
+    private let bottomRowWrapper = ManualLayoutView(name: "bottomRowWrapper")
+
+    private var cvviews: [CVView] {
+        [
+            avatarView,
+            nameLabel,
+            snippetLabel,
+            dateTimeLabel,
+            messageStatusIconView,
+            typingIndicatorView,
+            muteIconView,
+            unreadLabel,
+
+            outerHStack,
+            avatarStack,
+            vStack,
+            topRowStack,
+            bottomRowStack,
+            bottomRowWrapper
+        ]
+    }
 
     @objc(ConversationListCellConfiguration)
     public class Configuration: NSObject {
@@ -69,7 +92,7 @@ public class ConversationListCell: UITableViewCell {
     }
 
     private var dateTimeFont: UIFont {
-        UIFont.ows_dynamicTypeCaption1Clamped
+        .ows_dynamicTypeCaption1Clamped
     }
 
     private var snippetFont: UIFont {
@@ -92,8 +115,6 @@ public class ConversationListCell: UITableViewCell {
     // This value is now larger than AvatarBuilder.standardAvatarSizePoints.
     private static let avatarSize: UInt = 56
 
-    private let avatarHSpacing: UInt = 12
-
     // MARK: -
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -109,102 +130,12 @@ public class ConversationListCell: UITableViewCell {
     private func commonInit() {
         self.backgroundColor = Theme.backgroundColor
 
-        contentView.addSubview(avatarView)
-        avatarView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        avatarView.autoVCenterInSuperview()
-        // Ensure that the cell's contents never overflow the cell bounds.
-        avatarView.autoPinEdge(toSuperviewEdge: .top, withInset: 12, relation: .greaterThanOrEqual)
-        avatarView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 12, relation: .greaterThanOrEqual)
+        contentView.addSubview(outerHStack)
+        outerHStack.shouldDeactivateConstraints = false
+        outerHStack.autoPinEdge(toSuperviewEdge: .leading)
+        outerHStack.autoPinTrailingToSuperviewMargin()
+        outerHStack.autoPinHeightToSuperview()
 
-        nameLabel.lineBreakMode = .byTruncatingTail
-        nameLabel.font = nameFont
-        nameLabel.setContentHuggingHorizontalLow()
-
-        dateTimeLabel.setContentHuggingHorizontalHigh()
-        dateTimeLabel.setCompressionResistanceHorizontalHigh()
-
-        typingIndicatorWrapper.setContentHuggingHorizontalHigh()
-        typingIndicatorWrapper.setCompressionResistanceHorizontalHigh()
-
-        messageStatusWrapper.setContentHuggingHorizontalHigh()
-        messageStatusWrapper.setCompressionResistanceHorizontalHigh()
-
-        muteIconWrapper.setContentHuggingHorizontalHigh()
-        muteIconWrapper.setCompressionResistanceHorizontalHigh()
-
-        muteIconView.setTemplateImageName("bell-disabled-outline-24",
-                                          tintColor: Theme.primaryTextColor)
-        muteIconView.setContentHuggingHorizontalHigh()
-        muteIconView.setCompressionResistanceHorizontalHigh()
-        muteIconWrapper.addSubview(muteIconView)
-        muteIconView.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0))
-
-        let topRowSpacer = UIView.hStretchingSpacer()
-
-        let topRowView = UIStackView(arrangedSubviews: [
-            nameLabel,
-            muteIconWrapper,
-            topRowSpacer,
-            dateTimeLabel
-        ])
-        topRowView.axis = .horizontal
-        topRowView.alignment = .lastBaseline
-        topRowView.spacing = 6
-
-        snippetLabel.numberOfLines = 2
-        snippetLabel.lineBreakMode = .byWordWrapping
-        snippetLabel.setContentHuggingHorizontalLow()
-        snippetLabel.setCompressionResistanceHorizontalLow()
-
-        let bottomRowView = UIStackView(arrangedSubviews: [
-            typingIndicatorWrapper,
-            snippetLabel,
-            messageStatusWrapper
-        ])
-        bottomRowView.axis = .horizontal
-        bottomRowView.alignment = .top
-        bottomRowView.spacing = 6
-
-        let vStackView = UIStackView(arrangedSubviews: [ topRowView, bottomRowView ])
-        vStackView.axis = .vertical
-        vStackView.spacing = 1
-
-        contentView.addSubview(vStackView)
-        vStackView.autoPinLeading(toTrailingEdgeOf: avatarView, offset: CGFloat(avatarHSpacing))
-        vStackView.autoVCenterInSuperview()
-        // Ensure that the cell's contents never overflow the cell bounds.
-        vStackView.autoPinEdge(toSuperviewEdge: .top, withInset: 7, relation: .greaterThanOrEqual)
-        vStackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 9, relation: .greaterThanOrEqual)
-        vStackView.autoPinTrailingToSuperviewMargin()
-        vStackView.isUserInteractionEnabled = false
-
-        messageStatusIconView.setContentHuggingHorizontalHigh()
-        messageStatusIconView.setCompressionResistanceHorizontalHigh()
-        messageStatusWrapper.addSubview(messageStatusIconView)
-        messageStatusIconView.autoPinWidthToSuperview()
-        messageStatusIconView.autoVCenterInSuperview()
-
-        unreadLabel.textColor = .ows_white
-        unreadLabel.lineBreakMode = .byTruncatingTail
-        unreadLabel.textAlignment = .center
-        unreadLabel.setContentHuggingHigh()
-        unreadLabel.setCompressionResistanceHigh()
-
-        unreadBadge.backgroundColor = .ows_accentBlue
-        unreadBadge.addSubview(unreadLabel)
-        unreadLabel.autoCenterInSuperview()
-        unreadBadge.setContentHuggingHigh()
-        unreadBadge.setCompressionResistanceHigh()
-        contentView.addSubview(unreadBadge)
-
-        typingIndicatorView.configureForConversationList()
-        typingIndicatorView.setContentHuggingHorizontalHigh()
-        typingIndicatorView.setCompressionResistanceHorizontalHigh()
-        typingIndicatorWrapper.addSubview(typingIndicatorView)
-        typingIndicatorView.autoPinWidthToSuperview()
-        typingIndicatorView.autoVCenterInSuperview()
-
-        // TODO: ?
         self.selectionStyle = .default
     }
 
@@ -214,12 +145,25 @@ public class ConversationListCell: UITableViewCell {
 
         OWSTableItem.configureCell(self)
 
+        self.preservesSuperviewLayoutMargins = false
+        self.contentView.preservesSuperviewLayoutMargins = false
+
         self.configuration = configuration
 
         let thread = configuration.thread
+        let isBlocked = configuration.isBlocked
+        let topRowStackConfig = self.topRowStackConfig
+        let bottomRowStackConfig = self.bottomRowStackConfig
+        let vStackConfig = self.vStackConfig
+        let outerHStackConfig = self.outerHStackConfig
+
+        snippetLabelConfig(configuration: configuration).applyForRendering(label: snippetLabel)
+        let snippetLineHeight = CGFloat(ceil(1.1 * snippetFont.ows_semibold.lineHeight))
 
         avatarView.shouldLoadAsync = configuration.shouldLoadAvatarAsync
         avatarView.configureWithSneakyTransaction(thread: thread.threadRecord)
+
+        typingIndicatorView.configureForConversationList()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(otherUsersProfileDidChange(notification:)),
@@ -230,130 +174,266 @@ public class ConversationListCell: UITableViewCell {
                                                name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
                                                object: nil)
 
-        updateNameLabel()
+        // Avatar
 
-        // We update the fonts every time this cell is configured to ensure that
-        // changes to the dynamic type settings are reflected.
-        snippetLabel.font = snippetFont
-        snippetLabel.textColor = snippetColor
+        let avatarSize: CGSize = .square(CGFloat(ConversationListCell.avatarSize))
+        let avatarStackSize = avatarStack.configure(config: ManualStackView.Config(axis: .horizontal,
+                                                                                   alignment: .center,
+                                                                                   spacing: 0,
+                                                                                   layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12)),
+                                                    subviews: [ avatarView ],
+                                                    subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]).measuredSize
 
-        let snippetLineHeight = CGFloat(ceil(1.1 * snippetFont.ows_semibold.lineHeight))
+        // Unread Indicator
 
-        let muteIconSize: CGFloat = 16
-
-        viewConstraints.append(contentsOf: [
-            muteIconView.autoSetDimension(.width, toSize: muteIconSize),
-            muteIconView.autoSetDimension(.height, toSize: muteIconSize),
-
-            // These views should align with the first (of two) of the snippet,
-            // so their a v-center within wrappers with the height of a single
-            // snippet line.
-            messageStatusWrapper.autoSetDimension(.height, toSize: snippetLineHeight),
-            typingIndicatorWrapper.autoSetDimension(.height, toSize: snippetLineHeight)
-        ])
-
-        updatePreview()
-
-        if let labelDate = configuration.overrideDate ?? thread.conversationListInfo?.lastMessageDate {
-            dateTimeLabel.text = DateUtil.formatDateShort(labelDate)
-        } else {
-            dateTimeLabel.text = nil
-        }
-
-        if hasUnreadStyle {
-            dateTimeLabel.font = dateTimeFont.ows_semibold
-            dateTimeLabel.textColor = Theme.primaryTextColor
-        } else {
-            dateTimeLabel.font = dateTimeFont
-            dateTimeLabel.textColor = snippetColor
-        }
-
+        // If there are unread messages, show the "unread badge."
         var shouldHideStatusIndicator = false
-
-        if hasOverrideSnippet {
-            // If we're using the conversation list cell to render search results,
-            // don't show "unread badge" or "message status" indicator.
-            unreadBadge.isHidden = true
-            shouldHideStatusIndicator = true
-        } else if hasUnreadStyle {
-            // If there are unread messages, show the "unread badge."
-            unreadBadge.isHidden = false
-
-            let unreadCount = thread.unreadCount
-            if unreadCount > 0 {
-                unreadLabel.text = OWSFormat.formatUInt(unreadCount)
-            } else {
-                unreadLabel.text = nil
+        func applyUnreadIndicator() {
+            guard !hasOverrideSnippet else {
+                // If we're using the conversation list cell to render search results,
+                // don't show "unread badge" or "message status" indicator.
+                shouldHideStatusIndicator = true
+                return
+            }
+            guard hasUnreadStyle else {
+                return
             }
 
+            let unreadCount = thread.unreadCount
+            guard unreadCount > 0 else {
+                return
+            }
+            let unreadLabel = self.unreadLabel
+            unreadLabel.text = OWSFormat.formatUInt(unreadCount)
+            unreadLabel.textColor = .ows_white
+            unreadLabel.lineBreakMode = .byTruncatingTail
+            unreadLabel.textAlignment = .center
             unreadLabel.font = unreadFont
+            unreadLabel.removeFromSuperview()
+            let unreadLabelSize = unreadLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
+
+            let unreadBadge = self.unreadBadge
+            unreadBadge.backgroundColor = .ows_accentBlue
+            unreadBadge.addSubview(unreadLabel) { view in
+                // Center within badge.
+                unreadLabel.frame = CGRect(origin: (view.frame.size - unreadLabelSize).asPoint * 0.5,
+                                           size: unreadLabelSize)
+            }
+
             let unreadBadgeHeight = ceil(unreadLabel.font.lineHeight * 1.5)
             unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2
             unreadBadge.layer.borderColor = Theme.backgroundColor.cgColor
             unreadBadge.layer.borderWidth = 2
-
-            NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-                // This is a bit arbitrary, but it should scale with the size of dynamic text
-                let minMargin = CeilEven(unreadBadgeHeight * 0.5)
-
-                viewConstraints.append(contentsOf: [
-                    // badge sizing
-                    unreadBadge.autoMatch(.width, to: .width, of: unreadLabel, withOffset: minMargin, relation: .greaterThanOrEqual),
-                    unreadBadge.autoSetDimension(.width, toSize: unreadBadgeHeight, relation: .greaterThanOrEqual),
-                    unreadBadge.autoSetDimension(.height, toSize: unreadBadgeHeight),
-                    unreadBadge.autoPinEdge(.trailing, to: .trailing, of: avatarView, withOffset: 6),
-                    unreadBadge.autoPinEdge(.top, to: .top, of: avatarView)
-                ])
+            // This is a bit arbitrary, but it should scale with the size of dynamic text
+            let minMargin = CeilEven(unreadBadgeHeight * 0.5)
+            // Pill should be at least circular; can be wider.
+            let unreadBadgeSize = CGSize(width: max(unreadBadgeHeight,
+                                                    unreadLabelSize.width + minMargin),
+                                         height: unreadBadgeHeight)
+            avatarStack.addSubview(unreadBadge) { view in
+                unreadBadge.frame = CGRect(origin: CGPoint(x: view.width - unreadBadgeSize.width + 6,
+                                                           y: (view.height - avatarSize.height) * 0.5),
+                                           size: unreadBadgeSize)
             }
-        } else {
-            unreadBadge.isHidden = true
+        }
+        applyUnreadIndicator()
+
+        // The top row contains:
+        //
+        // * Name label
+        // * Mute icon (optional)
+        // * (spacing)
+        // * Date/Time label (fixed width)
+        //
+        // If there's "overflow" (not enough space to render the entire name)
+        // The name label should compress.
+        //
+        // If there's "underflow" (extra space in the layout) it should appear
+        // before the date/time label.
+        //
+        // The catch is that mute icon should "hug" the name label, so the
+        // name label can't expand to occupt any underflow in the layout.
+        var topRowStackSubviews = [UIView]()
+        var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
+
+        let nameLabelConfig = self.nameLabelConfig(configuration: configuration)
+        nameLabelConfig.applyForRendering(label: nameLabel)
+        let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
+                                                maxWidth: .greatestFiniteMagnitude)
+        topRowStackSubviews.append(nameLabel)
+        topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
+                                                                         verticalFlowBehavior: .fixed))
+
+        if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
+            muteIconView.setTemplateImageName("bell-disabled-outline-24",
+                                              tintColor: Theme.primaryTextColor)
+            muteIconView.tintColor = snippetColor
+            let muteIconSize: CGFloat = 16
+            topRowStackSubviews.append(muteIconView)
+            topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
         }
 
-        if !shouldHideStatusIndicator,
-           let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage {
-            var statusIndicatorImage: UIImage?
-            var messageStatusViewTintColor = snippetColor
-            var shouldAnimateStatusIcon = false
+        let dateTimeLabelConfig = self.dateTimeLabelConfig(configuration: configuration)
+        dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
+        let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
+                                                maxWidth: CGFloat.greatestFiniteMagnitude)
+        topRowStackSubviews.append(dateTimeLabel)
+        topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
+                                                                         verticalFlowBehavior: .fixed))
 
-            let messageStatus =
-                MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
-            switch messageStatus {
-            case .uploading, .sending:
-                statusIndicatorImage = UIImage(named: "message_status_sending")
-                shouldAnimateStatusIcon = true
-            case .sent, .skipped:
-                statusIndicatorImage = UIImage(named: "message_status_sent")
-                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted
-            case .delivered:
-                statusIndicatorImage = UIImage(named: "message_status_delivered")
-                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted
-            case .read, .viewed:
-                statusIndicatorImage = UIImage(named: "message_status_read")
-                shouldHideStatusIndicator = outgoingMessage.wasRemotelyDeleted
-            case .failed:
-                statusIndicatorImage = UIImage(named: "error-outline-12")
-                messageStatusViewTintColor = .ows_accentRed
-            case .pending:
-                statusIndicatorImage = UIImage(named: "error-outline-12")
-                messageStatusViewTintColor = .ows_gray60
-            }
+        let topRowStackSize = topRowStack.configure(config: topRowStackConfig,
+                                                    subviews: topRowStackSubviews,
+                                                    subviewInfos: topRowStackSubviewInfos).measuredSize
 
-            messageStatusIconView.image = statusIndicatorImage?.withRenderingMode(.alwaysTemplate)
-            messageStatusIconView.tintColor = messageStatusViewTintColor
-            messageStatusWrapper.isHidden = shouldHideStatusIndicator || statusIndicatorImage == nil
-            if shouldAnimateStatusIcon {
-                let animation = CABasicAnimation(keyPath: "transform.rotation.z")
-                animation.toValue = NSNumber(value: Double.pi * 2)
-                animation.duration = kSecondInterval * 1
-                animation.isCumulative = true
-                animation.repeatCount = .greatestFiniteMagnitude
-                messageStatusIconView.layer.add(animation, forKey: "animation")
-            } else {
-                messageStatusIconView.layer.removeAllAnimations()
-            }
-        } else {
-            messageStatusWrapper.isHidden = true
+        // The bottom row layout is also complicated because we want to be able to
+        // show/hide the typing indicator without reloading the cell. And we need
+        // to switch between them without any "jitter" in the layout.
+        //
+        // The "Wrapper" shows either "snippet label" or "typing indicator".
+        bottomRowWrapper.addSubviewToFillSuperviewEdges(snippetLabel)
+        let typingIndicatorSize = TypingIndicatorView.measurement().measuredSize
+        bottomRowWrapper.addSubview(typingIndicatorView) { [weak self] _ in
+            guard let self = self else { return }
+            // Vertically align the typing indicator with the first line of the snippet label.
+            self.typingIndicatorView.frame = CGRect(x: 0,
+                                                    y: (snippetLineHeight - typingIndicatorSize.height) * 0.5,
+                                                    width: typingIndicatorSize.width,
+                                                    height: typingIndicatorSize.height)
         }
+        // Use a fixed size for the snippet label and its wrapper.
+        let bottomRowWrapperSize = CGSize(width: 0, height: snippetLineHeight * 2)
+
+        var bottomRowStackSubviews: [UIView] = [ bottomRowWrapper ]
+        var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
+            bottomRowWrapperSize.asManualSubviewInfo()
+        ]
+        if let statusIndicator = prepareStatusIndicatorView(thread: thread,
+                                                            shouldHideStatusIndicator: shouldHideStatusIndicator) {
+            bottomRowStackSubviews.append(statusIndicator.view)
+            // The status indicator should vertically align with the
+            // first line of the snippet.
+            let locationOffset = CGPoint(x: 0,
+                                         y: snippetLineHeight * -0.5)
+            bottomRowStackSubviewInfos.append(statusIndicator.size.asManualSubviewInfo(hasFixedSize: true,
+                                                                                       locationOffset: locationOffset))
+        }
+        let bottomRowStackSize = bottomRowStack.configure(config: bottomRowStackConfig,
+                                                          subviews: bottomRowStackSubviews,
+                                                          subviewInfos: bottomRowStackSubviewInfos).measuredSize
+
+        let vStackSize = vStack.configure(config: vStackConfig,
+                                          subviews: [ topRowStack, bottomRowStack ],
+                                          subviewInfos: [
+                                            topRowStackSize.asManualSubviewInfo,
+                                            bottomRowStackSize.asManualSubviewInfo
+                                          ]).measuredSize
+
+        _ = outerHStack.configure(config: outerHStackConfig,
+                                  subviews: [ avatarStack, vStack ],
+                                  subviewInfos: [
+                                    avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
+                                    vStackSize.asManualSubviewInfo
+                                  ]).measuredSize
+
+        updateTypingIndicatorState()
+    }
+
+    private var topRowStackConfig: ManualStackView.Config {
+        ManualStackView.Config(axis: .horizontal,
+                               alignment: .center,
+                               spacing: 6,
+                               layoutMargins: .zero)
+    }
+
+    private var bottomRowStackConfig: ManualStackView.Config {
+        ManualStackView.Config(axis: .horizontal,
+                               alignment: .center,
+                               spacing: 6,
+                               layoutMargins: .zero)
+    }
+
+    private var vStackConfig: ManualStackView.Config {
+        ManualStackView.Config(axis: .vertical,
+                               alignment: .fill,
+                               spacing: 1,
+                               layoutMargins: UIEdgeInsets(top: 7,
+                                                           leading: 0,
+                                                           bottom: 9,
+                                                           trailing: 0))
+    }
+
+    private var outerHStackConfig: ManualStackView.Config {
+        ManualStackView.Config(axis: .horizontal,
+                               alignment: .center,
+                               spacing: 12,
+                               layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 0))
+    }
+
+    struct StatusIndicator {
+        let view: UIView
+        let size: CGSize
+    }
+    private func prepareStatusIndicatorView(thread: ThreadViewModel,
+                                            shouldHideStatusIndicator: Bool) -> StatusIndicator? {
+        guard !shouldHideStatusIndicator,
+           let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage else {
+            return nil
+        }
+
+        var statusIndicatorImage: UIImage?
+        var messageStatusViewTintColor = snippetColor
+        var shouldAnimateStatusIcon = false
+
+        let messageStatus =
+            MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
+        switch messageStatus {
+        case .uploading, .sending:
+            statusIndicatorImage = UIImage(named: "message_status_sending")
+            shouldAnimateStatusIcon = true
+        case .sent, .skipped:
+            if outgoingMessage.wasRemotelyDeleted {
+                return nil
+            }
+            statusIndicatorImage = UIImage(named: "message_status_sent")
+        case .delivered:
+            if outgoingMessage.wasRemotelyDeleted {
+                return nil
+            }
+            statusIndicatorImage = UIImage(named: "message_status_delivered")
+        case .read, .viewed:
+            if outgoingMessage.wasRemotelyDeleted {
+                return nil
+            }
+            statusIndicatorImage = UIImage(named: "message_status_read")
+        case .failed:
+            statusIndicatorImage = UIImage(named: "error-outline-12")
+            messageStatusViewTintColor = .ows_accentRed
+        case .pending:
+            statusIndicatorImage = UIImage(named: "error-outline-12")
+            messageStatusViewTintColor = .ows_gray60
+        }
+        if statusIndicatorImage == nil {
+            return nil
+        }
+
+        guard let image = statusIndicatorImage else {
+            return nil
+        }
+        messageStatusIconView.image = image.withRenderingMode(.alwaysTemplate)
+        messageStatusIconView.tintColor = messageStatusViewTintColor
+
+        if shouldAnimateStatusIcon {
+            let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+            animation.toValue = NSNumber(value: Double.pi * 2)
+            animation.duration = kSecondInterval * 1
+            animation.isCumulative = true
+            animation.repeatCount = .greatestFiniteMagnitude
+            messageStatusIconView.layer.add(animation, forKey: "animation")
+        } else {
+            messageStatusIconView.layer.removeAllAnimations()
+        }
+
+        return StatusIndicator(view: messageStatusIconView, size: image.size)
     }
 
     private var hasUnreadStyle: Bool {
@@ -470,19 +550,66 @@ public class ConversationListCell: UITableViewCell {
         !hasOverrideSnippet && !isBlocked && !thread.hasPendingMessageRequest && thread.isMuted
     }
 
+    private func dateTimeLabelConfig(configuration: Configuration) -> CVLabelConfig {
+        let thread = configuration.thread
+        var text: String = ""
+        if let labelDate = configuration.overrideDate ?? thread.conversationListInfo?.lastMessageDate {
+            text = DateUtil.formatDateShort(labelDate)
+        }
+        if hasUnreadStyle {
+            return CVLabelConfig(text: text,
+                                 font: dateTimeFont.ows_semibold,
+                                 textColor: Theme.primaryTextColor,
+                                 textAlignment: .trailing)
+        } else {
+            return CVLabelConfig(text: text,
+                                 font: dateTimeFont,
+                                 textColor: snippetColor,
+                                 textAlignment: .trailing)
+        }
+    }
+
+    private func nameLabelConfig(configuration: Configuration) -> CVLabelConfig {
+        let thread = configuration.thread
+        let text: String = {
+            if thread.threadRecord is TSContactThread {
+                if thread.threadRecord.isNoteToSelf {
+                    return MessageStrings.noteToSelf
+                } else {
+                    return thread.name
+                }
+            } else {
+                if let name: String = thread.name.nilIfEmpty {
+                    return name
+                } else {
+                    return MessageStrings.newGroupDefaultTitle
+                }
+            }
+        }()
+        return CVLabelConfig(text: text,
+                             font: nameFont,
+                             textColor: Theme.primaryTextColor,
+                             lineBreakMode: .byTruncatingTail)
+    }
+
     // MARK: - Reuse
 
     @objc
     public override func prepareForReuse() {
         super.prepareForReuse()
 
-        NSLayoutConstraint.deactivate(viewConstraints)
-        viewConstraints = []
+        reset()
+    }
+
+    private func reset() {
+        for cvview in cvviews {
+            cvview.reset()
+        }
 
         configuration = nil
-        messageStatusWrapper.isHidden = false
         avatarView.image = nil
         avatarView.reset()
+        typingIndicatorView.reset()
 
         NotificationCenter.default.removeObserver(self)
     }
@@ -499,7 +626,11 @@ public class ConversationListCell: UITableViewCell {
               contactThread.contactAddress == address else {
             return
         }
-        updateNameLabel()
+        guard let configuration = configuration else {
+            return
+        }
+        reset()
+        configure(configuration)
     }
 
     @objc
@@ -512,36 +643,7 @@ public class ConversationListCell: UITableViewCell {
             return
         }
 
-        updatePreview()
-    }
-
-    private func updateNameLabel() {
-        AssertIsOnMainThread()
-
-        nameLabel.font = nameFont
-        nameLabel.textColor = Theme.primaryTextColor
-
-        guard let thread = self.thread else {
-            owsFailDebug("Missing thread.")
-            nameLabel.attributedText = nil
-            return
-        }
-
-        nameLabel.text = {
-            if thread.threadRecord is TSContactThread {
-                if thread.threadRecord.isNoteToSelf {
-                    return MessageStrings.noteToSelf
-                } else {
-                    return thread.name
-                }
-            } else {
-                if let name = thread.name.nilIfEmpty {
-                    return name
-                } else {
-                    return MessageStrings.newGroupDefaultTitle
-                }
-            }
-        }()
+        updateTypingIndicatorState()
     }
 
     // MARK: - Typing Indicators
@@ -555,53 +657,55 @@ public class ConversationListCell: UITableViewCell {
         return false
     }
 
-    private func updatePreview() {
-        AssertIsOnMainThread()
+    private func snippetLabelConfig(configuration: Configuration) -> CVLabelConfig {
+        var attributedText: NSAttributedString = {
+            if let overrideSnippet = self.overrideSnippet {
+                return overrideSnippet
+            }
+            return self.attributedSnippet(forThread: configuration.thread,
+                                          isBlocked: configuration.isBlocked)
+        }()
+        // Ensure that the snippet is at least two lines so that it is top-aligned.
+        //
+        // UILabel appears to have an issue where it's height is
+        // too large if its text is just a series of empty lines,
+        // so we include spaces to avoid that issue.
+        attributedText = attributedText.stringByAppendingString(" \n \n",
+                                                                attributes: [
+                                                                    .font: snippetFont
+                                                                ])
+        return CVLabelConfig(attributedText: attributedText,
+                             font: snippetFont,
+                             textColor: snippetColor,
+                             numberOfLines: 2,
+                             lineBreakMode: .byWordWrapping)
+    }
 
-        guard let configuration = self.configuration else {
-            return
-        }
+    private func updateTypingIndicatorState() {
+        AssertIsOnMainThread()
 
         // We use "override snippets" to show "message" search results.
         // We don't want to show typing indicators in that case.
         if shouldShowTypingIndicators {
-            // We want to be able to show/hide the typing indicators without
-            // any "jitter" in the cell layout.
-            //
-            // Therefore we do not hide the snippet label, but use it to
-            // display two lines of non-rendering text so that it retains its
-            // full height.
-            snippetLabel.attributedText = " \n ".asAttributedString(attributes: [
-                .font: snippetFont
-            ])
-            snippetLabel.textColor = Theme.backgroundColor
-            typingIndicatorWrapper.isHidden = false
+            snippetLabel.isHidden = true
+            typingIndicatorView.isHidden = false
             typingIndicatorView.startAnimation()
         } else {
-            var attributedText: NSAttributedString = {
-                if let overrideSnippet = self.overrideSnippet {
-                    return overrideSnippet
-                }
-                return self.attributedSnippet(forThread: configuration.thread,
-                                              isBlocked: configuration.isBlocked)
-            }()
-            // Ensure that the snippet is at least two lines so that it is top-aligned.
-            //
-            // UILabel appears to have an issue where it's height is
-            // too large if its text is just a series of empty lines,
-            // so we include spaces to avoid that issue.
-            attributedText = attributedText.stringByAppendingString(" \n \n",
-                                                                    attributes: [
-                                                                        .font: snippetFont
-                              ])
-            snippetLabel.attributedText = attributedText
-
-            typingIndicatorWrapper.isHidden = true
+            snippetLabel.isHidden = false
+            typingIndicatorView.isHidden = true
             typingIndicatorView.stopAnimation()
         }
+    }
+}
 
-        muteIconWrapper.isHidden = !shouldShowMuteIndicator(forThread: configuration.thread,
-                                                          isBlocked: configuration.isBlocked)
-        muteIconView.tintColor = snippetColor
+// MARK: -
+
+class NeverClearView: ManualLayoutViewWithLayer {
+    override var backgroundColor: UIColor? {
+        didSet {
+            if backgroundColor?.cgColor.alpha == 0 {
+                backgroundColor = oldValue
+            }
+        }
     }
 }

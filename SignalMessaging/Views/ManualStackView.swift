@@ -342,10 +342,15 @@ open class ManualStackView: ManualLayoutView {
         }
 
         // Handle underflow and overflow.
+        //
+        // If a stack's contents do not fit within the stack's bounds, they "overflow".
+        // If a stack's contents are smaller than the stack's bounds, they "underflow".
         let fuzzyTolerance: CGFloat = 0.001
         if abs(onAxisSizeTotal - onAxisMaxSize) < fuzzyTolerance {
-            // Exact match.
+            // Exact match; no adjustments necessary.
         } else if onAxisSizeTotal < onAxisMaxSize {
+            // Underflow case
+            //
             // Underflow is expected; a stack view is often larger than
             // the minimum size of its contents.  The stack view will
             // expand the layout of its contents to take advantage of
@@ -354,7 +359,7 @@ open class ManualStackView: ManualLayoutView {
 
             // TODO: We could weight re-distribution by contentHuggingPriority.
             var underflowLayoutItems = layoutItems.filter {
-                !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
+                $0.subviewInfo.canExpandOnAxis(isHorizontalLayout: isHorizontal)
             }
             if underflowLayoutItems.isEmpty {
                 owsFailDebug("\(name): No underflowLayoutItems.")
@@ -366,6 +371,8 @@ open class ManualStackView: ManualLayoutView {
                 layoutItem.onAxisSize = max(0, layoutItem.onAxisSize + adjustment)
             }
         } else if onAxisSizeTotal > onAxisMaxSize {
+            // Overflow case
+            //
             // Overflow should be rare, at least in the conversation view cells.
             // It is expected in some cases, e.g. when animating an orientation
             // change when the new layout hasn't landed yet.
@@ -374,7 +381,7 @@ open class ManualStackView: ManualLayoutView {
 
             // TODO: We could weight re-distribution by compressionResistence.
             var overflowLayoutItems = layoutItems.filter {
-                !$0.subviewInfo.hasFixedSizeOnAxis(isHorizontalLayout: isHorizontal)
+                $0.subviewInfo.canCompressOnAxis(isHorizontalLayout: isHorizontal)
             }
             if overflowLayoutItems.isEmpty {
                 owsFailDebug("\(name): No overflowLayoutItems.")
@@ -401,7 +408,7 @@ open class ManualStackView: ManualLayoutView {
             }
             var offAxisSize: CGFloat = min(layoutItem.offAxisMeasuredSize, offAxisMaxSize)
             if offAxisAlignment == .fill,
-               !layoutItem.subviewInfo.hasFixedSizeOffAxis(isHorizontalLayout: isHorizontal) {
+               layoutItem.subviewInfo.canExpandOffAxis(isHorizontalLayout: isHorizontal) {
                 offAxisSize = offAxisMaxSize
             }
             layoutItem.offAxisSize = offAxisSize
@@ -416,10 +423,10 @@ open class ManualStackView: ManualLayoutView {
             }
         }
 
-        // Apply layoutMargins.
+        // Apply layoutMargins and locationOffset.
         for layoutItem in layoutItems {
-            layoutItem.frame.x += layoutMargins.left
-            layoutItem.frame.y += layoutMargins.top
+            layoutItem.frame.x += layoutMargins.left + layoutItem.subviewInfo.locationOffset.x
+            layoutItem.frame.y += layoutMargins.top + layoutItem.subviewInfo.locationOffset.y
         }
 
         let arrangementItems = layoutItems.map { $0.asArrangementItem }
@@ -627,23 +634,83 @@ fileprivate extension CGRect {
 
 // MARK: -
 
+// Analogous to UIView.compressionResistence and .contentHugging.
+//
+// If a stack's contents do not fit within the stack's bounds, they "overflow".
+// If a stack's contents are smaller than the stack's bounds, they "underflow".
+public enum ManualFlowBehavior {
+    case fixed
+    case canExpand
+    case canCompress
+    case canExpandAndCompress
+
+    var canExpand: Bool {
+        switch self {
+        case .fixed, .canCompress:
+            return false
+        case .canExpand, .canExpandAndCompress:
+            return true
+        }
+    }
+
+    var canCompress: Bool {
+        switch self {
+        case .fixed, .canExpand:
+            return false
+        case .canCompress, .canExpandAndCompress:
+            return true
+        }
+    }
+}
+
+// MARK: -
+
 public struct ManualStackSubviewInfo: Equatable {
     let measuredSize: CGSize
-    let hasFixedWidth: Bool
-    let hasFixedHeight: Bool
+
+    let horizontalFlowBehavior: ManualFlowBehavior
+    let verticalFlowBehavior: ManualFlowBehavior
+
+    let locationOffset: CGPoint
+
+    public init(measuredSize: CGSize,
+                horizontalFlowBehavior: ManualFlowBehavior,
+                verticalFlowBehavior: ManualFlowBehavior,
+                locationOffset: CGPoint = .zero) {
+        self.measuredSize = measuredSize
+        self.horizontalFlowBehavior = horizontalFlowBehavior
+        self.verticalFlowBehavior = verticalFlowBehavior
+        self.locationOffset = locationOffset
+    }
 
     public init(measuredSize: CGSize,
                 hasFixedWidth: Bool = false,
-                hasFixedHeight: Bool = false) {
+                hasFixedHeight: Bool = false,
+                locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.hasFixedWidth = hasFixedWidth
-        self.hasFixedHeight = hasFixedHeight
+        self.horizontalFlowBehavior = hasFixedWidth ? .fixed : .canExpandAndCompress
+        self.verticalFlowBehavior = hasFixedHeight ? .fixed : .canExpandAndCompress
+        self.locationOffset = locationOffset
     }
 
-    public init(measuredSize: CGSize, hasFixedSize: Bool) {
+    public init(measuredSize: CGSize,
+                hasFixedSize: Bool,
+                locationOffset: CGPoint = .zero) {
         self.measuredSize = measuredSize
-        self.hasFixedWidth = hasFixedSize
-        self.hasFixedHeight = hasFixedSize
+        self.horizontalFlowBehavior = hasFixedSize ? .fixed : .canExpandAndCompress
+        self.verticalFlowBehavior = hasFixedSize ? .fixed : .canExpandAndCompress
+        self.locationOffset = locationOffset
+    }
+
+    public init(measuredSize: CGSize, subview: UIView) {
+        self.measuredSize = measuredSize
+
+        let hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
+        let hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
+        self.horizontalFlowBehavior = hasFixedWidth ? .fixed : .canExpandAndCompress
+        self.verticalFlowBehavior = hasFixedHeight ? .fixed : .canExpandAndCompress
+
+        self.locationOffset = .zero
     }
 
     private static func setSubviewFrame(subview: UIView, frame: CGRect) {
@@ -653,23 +720,24 @@ public struct ManualStackSubviewInfo: Equatable {
         subview.frame = frame
     }
 
-    public init(measuredSize: CGSize, subview: UIView) {
-        self.measuredSize = measuredSize
-
-        self.hasFixedWidth = subview.contentHuggingPriority(for: .horizontal) != .defaultHigh
-        self.hasFixedHeight = subview.contentHuggingPriority(for: .vertical) != .defaultHigh
-    }
-
     public static var empty: ManualStackSubviewInfo {
         ManualStackSubviewInfo(measuredSize: .zero)
     }
 
-    func hasFixedSizeOnAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedWidth : hasFixedHeight
+    func canExpandOnAxis(isHorizontalLayout: Bool) -> Bool {
+        (isHorizontalLayout ? horizontalFlowBehavior : verticalFlowBehavior).canExpand
     }
 
-    func hasFixedSizeOffAxis(isHorizontalLayout: Bool) -> Bool {
-        isHorizontalLayout ? hasFixedHeight : hasFixedWidth
+    func canCompressOnAxis(isHorizontalLayout: Bool) -> Bool {
+        (isHorizontalLayout ? horizontalFlowBehavior : verticalFlowBehavior).canCompress
+    }
+
+    func canExpandOffAxis(isHorizontalLayout: Bool) -> Bool {
+        (isHorizontalLayout ? verticalFlowBehavior : horizontalFlowBehavior).canExpand
+    }
+
+    func canCompressOffAxis(isHorizontalLayout: Bool) -> Bool {
+        (isHorizontalLayout ? verticalFlowBehavior : horizontalFlowBehavior).canCompress
     }
 }
 
@@ -681,14 +749,28 @@ public extension CGSize {
     }
 
     func asManualSubviewInfo(hasFixedWidth: Bool = false,
-                             hasFixedHeight: Bool = false) -> ManualStackSubviewInfo {
+                             hasFixedHeight: Bool = false,
+                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
         ManualStackSubviewInfo(measuredSize: self,
                                hasFixedWidth: hasFixedWidth,
-                               hasFixedHeight: hasFixedHeight)
+                               hasFixedHeight: hasFixedHeight,
+                               locationOffset: locationOffset)
     }
 
-    func asManualSubviewInfo(hasFixedSize: Bool) -> ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self, hasFixedSize: hasFixedSize)
+    func asManualSubviewInfo(hasFixedSize: Bool,
+                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self,
+                               hasFixedSize: hasFixedSize,
+                               locationOffset: locationOffset)
+    }
+
+    func asManualSubviewInfo(horizontalFlowBehavior: ManualFlowBehavior,
+                             verticalFlowBehavior: ManualFlowBehavior,
+                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(measuredSize: self,
+                               horizontalFlowBehavior: horizontalFlowBehavior,
+                               verticalFlowBehavior: verticalFlowBehavior,
+                               locationOffset: locationOffset)
     }
 }
 

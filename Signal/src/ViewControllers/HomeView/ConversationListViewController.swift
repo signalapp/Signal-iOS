@@ -142,8 +142,8 @@ public extension ConversationListViewController {
 
         let dismissButton = OWSLayerView.circleView(size: 20)
         dismissButton.backgroundColor = (Theme.isDarkThemeEnabled
-                                                    ? .ows_gray65
-                                                    : .ows_gray05)
+                                            ? .ows_gray65
+                                            : .ows_gray05)
         dismissButton.setCompressionResistanceHigh()
         dismissButton.setContentHuggingHigh()
 
@@ -218,7 +218,7 @@ public extension ConversationListViewController {
             let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
             let paymentsDetail = PaymentsDetailViewController(paymentItem: paymentsHistoryItem)
             viewControllers += [ paymentsSettings, paymentsDetail ]
-       case .paymentsTransferIn:
+        case .paymentsTransferIn:
             let paymentsSettings = PaymentsSettingsViewController(mode: .inAppSettings)
             let paymentsTransferIn = PaymentsTransferInViewController()
             viewControllers += [ paymentsSettings, paymentsTransferIn ]
