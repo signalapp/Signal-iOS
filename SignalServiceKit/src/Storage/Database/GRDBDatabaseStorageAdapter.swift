@@ -566,10 +566,10 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             checkpointBudget -= 1
             return
         }
-        // TODO: We might limit checkpoint frequency by time so that heavy write
-        //       activity won't bog down the main thread.  Ideally, checkpointing
-        //       is fast enough that we don't need to do this.
         var shouldCheckpoint = checkpointBudget <= 0
+
+        // Limit checkpoint frequency by time so that heavy write activity
+        // won't bog down the main thread.
         let maxCheckpointFrequency: TimeInterval = 0.25
         if shouldCheckpoint,
            let lastSuccessfulCheckpointDate = self.lastSuccessfulCheckpointDate,
