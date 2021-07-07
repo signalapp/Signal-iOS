@@ -2100,6 +2100,9 @@ extension SNProtoDataMessage.SNProtoDataMessageBuilder {
         }
         builder.setMembers(members)
         builder.setAdmins(admins)
+        if hasExpirationTimer {
+            builder.setExpirationTimer(expirationTimer)
+        }
         return builder
     }
 
@@ -2141,6 +2144,10 @@ extension SNProtoDataMessage.SNProtoDataMessageBuilder {
             proto.admins = wrappedItems
         }
 
+        @objc public func setExpirationTimer(_ valueParam: UInt32) {
+            proto.expirationTimer = valueParam
+        }
+
         @objc public func build() throws -> SNProtoConfigurationMessageClosedGroup {
             return try SNProtoConfigurationMessageClosedGroup.parseProto(proto)
         }
@@ -2180,6 +2187,13 @@ extension SNProtoDataMessage.SNProtoDataMessageBuilder {
 
     @objc public var admins: [Data] {
         return proto.admins
+    }
+
+    @objc public var expirationTimer: UInt32 {
+        return proto.expirationTimer
+    }
+    @objc public var hasExpirationTimer: Bool {
+        return proto.hasExpirationTimer
     }
 
     private init(proto: SessionProtos_ConfigurationMessage.ClosedGroup,

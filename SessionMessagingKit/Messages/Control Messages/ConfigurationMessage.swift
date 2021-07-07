@@ -101,15 +101,17 @@ extension ConfigurationMessage {
         public let encryptionKeyPair: ECKeyPair
         public let members: Set<String>
         public let admins: Set<String>
+        public let expirationTimer: UInt32
 
         public var isValid: Bool { !members.isEmpty && !admins.isEmpty }
 
-        public init(publicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: Set<String>, admins: Set<String>) {
+        public init(publicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: Set<String>, admins: Set<String>, expirationTimer: UInt32) {
             self.publicKey = publicKey
             self.name = name
             self.encryptionKeyPair = encryptionKeyPair
             self.members = members
             self.admins = admins
+            self.expirationTimer = expirationTimer
         }
 
         public required init?(coder: NSCoder) {
@@ -118,11 +120,13 @@ extension ConfigurationMessage {
                 let encryptionKeyPair = coder.decodeObject(forKey: "encryptionKeyPair") as! ECKeyPair?,
                 let members = coder.decodeObject(forKey: "members") as! Set<String>?,
                 let admins = coder.decodeObject(forKey: "admins") as! Set<String>? else { return nil }
+                let expirationTimer = coder.decodeObject(forKey: "expirationTimer") as? UInt32 ?? 0
             self.publicKey = publicKey
             self.name = name
             self.encryptionKeyPair = encryptionKeyPair
             self.members = members
             self.admins = admins
+            self.expirationTimer = expirationTimer
         }
 
         public func encode(with coder: NSCoder) {
@@ -131,6 +135,7 @@ extension ConfigurationMessage {
             coder.encode(encryptionKeyPair, forKey: "encryptionKeyPair")
             coder.encode(members, forKey: "members")
             coder.encode(admins, forKey: "admins")
+            coder.encode(expirationTimer, forKey: "expirationTimer")
         }
 
         public static func fromProto(_ proto: SNProtoConfigurationMessageClosedGroup) -> ClosedGroup? {
@@ -146,7 +151,8 @@ extension ConfigurationMessage {
             }
             let members = Set(proto.members.map { $0.toHexString() })
             let admins = Set(proto.admins.map { $0.toHexString() })
-            let result = ClosedGroup(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins)
+            let expirationTimer = proto.expirationTimer
+            let result = ClosedGroup(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair, members: members, admins: admins, expirationTimer: expirationTimer)
             guard result.isValid else { return nil }
             return result
         }
@@ -165,6 +171,7 @@ extension ConfigurationMessage {
             }
             result.setMembers(members.map { Data(hex: $0) })
             result.setAdmins(admins.map { Data(hex: $0) })
+            result.setExpirationTimer(expirationTimer)
             do {
                 return try result.build()
             } catch {
