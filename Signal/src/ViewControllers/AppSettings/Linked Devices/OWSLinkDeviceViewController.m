@@ -209,16 +209,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                profileKey:myProfileKeyData
                                                                       readReceiptsEnabled:areReadReceiptsEnabled];
 
-    __weak OWSLinkDeviceViewController *weakSelf = self;
     [provisioner
         provisionWithSuccess:^{
             OWSLogInfo(@"Successfully provisioned device.");
             dispatch_async(dispatch_get_main_queue(), ^{
-                OWSLinkDeviceViewController *_Nullable strongSelf = weakSelf;
-                if (strongSelf == nil) { return; }
-                
-                [strongSelf.delegate expectMoreDevices];
-                [strongSelf popToLinkedDeviceList];
+                [self.delegate expectMoreDevices];
+                [self popToLinkedDeviceList];
 
                 // The service implementation of the socket connection caches the linked device state,
                 // so all sync message sends will fail on the socket until it is cycled.
@@ -226,18 +222,15 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // Fetch the local profile to determine if all
                 // linked devices support UD.
-                [strongSelf.profileManager fetchLocalUsersProfile];
+                [self.profileManager fetchLocalUsersProfile];
             });
         }
         failure:^(NSError *error) {
             OWSLogError(@"Failed to provision device with error: %@", error);
             dispatch_async(dispatch_get_main_queue(), ^{
-                OWSLinkDeviceViewController *_Nullable strongSelf = weakSelf;
-                if (strongSelf == nil) { return; }
-
-                [strongSelf presentActionSheet:[strongSelf retryActionSheetControllerWithError:error
+                [self presentActionSheet:[self retryActionSheetControllerWithError:error
                                                                         retryBlock:^{
-                                                                            [strongSelf provisionWithParser:parser];
+                                                                            [self provisionWithParser:parser];
                                                                         }]];
             });
         }];
