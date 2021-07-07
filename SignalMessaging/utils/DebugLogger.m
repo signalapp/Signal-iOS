@@ -94,7 +94,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 
     if (SSKDebugFlags.extraDebugLogs) {
         // Keep extra log files in internal/QA builds.
-        self.fileLogger.logFileManager.maximumNumberOfLogFiles = 15;
+        self.fileLogger.logFileManager.maximumNumberOfLogFiles = 32;
     } else {
         // Keep last 3 days of logs - or last 3 logs (if logs rollover due to max file size).
         self.fileLogger.logFileManager.maximumNumberOfLogFiles = 3;
