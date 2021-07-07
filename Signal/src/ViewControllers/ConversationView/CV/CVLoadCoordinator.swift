@@ -560,8 +560,9 @@ public class CVLoadCoordinator: NSObject {
         func canLandLoad() -> Bool {
             AssertIsOnMainThread()
 
+            // Allow multi selection animation load to land, even if keyboard is animating
             if let lastKeyboardAnimationDate = viewState.lastKeyboardAnimationDate,
-               lastKeyboardAnimationDate.isAfterNow {
+               lastKeyboardAnimationDate.isAfterNow, viewState.selectionAnimationState != .willAnimate {
                 return false
             }
 

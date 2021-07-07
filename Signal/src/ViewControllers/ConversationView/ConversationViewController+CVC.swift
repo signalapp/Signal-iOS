@@ -807,19 +807,24 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
 extension ConversationViewController: CVViewStateDelegate {
     public func viewStateUIModeDidChange(oldValue: ConversationUIMode) {
-        loadCoordinator.enqueueReload()
 
         if oldValue != uiMode && (oldValue == .selection || uiMode == .selection) {
 
+            // Proactively update bottom bar before load lands
+            ensureBottomViewType()
+
              // Block loads while things animate.
             viewState.selectionAnimationState = .willAnimate
+            loadCoordinator.enqueueReload()
 
              DispatchQueue.main.asyncAfter(deadline: .now() + CVComponentMessage.selectionAnimationDuration) {
                 self.viewState.selectionAnimationState = .idle
                  // Enqueue a new load after animation so the "wasShowingSelectionUI" state is updated.
                  self.loadCoordinator.enqueueReload()
              }
-         }
+        } else {
+            loadCoordinator.enqueueReload()
+        }
     }
 }
 
