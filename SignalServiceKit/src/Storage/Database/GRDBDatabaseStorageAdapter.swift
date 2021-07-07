@@ -452,18 +452,20 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         // * The WAL tracks how many of its frames have been integrated into the database.
         // * Checkpointing entails some subset of the following tasks:
         //   * Integrating some or all of the frames of the WAL into the database.
-        //   * "Restarting" the WAL so the next frame is written to the head of the
-        //     WAL file, not the tail.
+        //   * "Restarting" the WAL so the next frame is written to the head of the WAL
+        //     file, not the tail. WAL file size doesn't change, but since subsequent writes
+        //     overwrite from the start of the WAL, WAL file size growth can be bounded.
         //   * "Truncating" the WAL so that that the WAL file is deleted or returned to
         //     an empty state.
         //
-        // The more unintegrated frames there are in the WAL, the long a checkpoint takes
+        // The more unintegrated frames there are in the WAL, the longer a checkpoint takes
         // to complete. Long-running checkpoints can cause problems in the app, e.g.
-        // blocking the main thread.  Therefore we want to bound overall WAL file size
-        // _and_ the number of unintegrated frames.
+        // blocking the main thread (note: we currently do _NOT_ checkpoint on the main
+        // thread).  Therefore we want to bound overall WAL file size _and_ the number of
+        // unintegrated frames.
         //
         // To bound WAL file size, it's important to periodically "restart" or (preferably)
-        // truncate the WAL file.
+        // truncate the WAL file. We currently always truncate.
         //
         // To bound the number of unintegrated frames, we can use passive checkpoints.
         // We don't explicitly initiate passive checkpoints, but leave this to SQLite
@@ -479,6 +481,9 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         //   they won't block for long.
         //   However they only integrate WAL contents, they don't "restart" or
         //   "truncate" so they don't inherently limit WAL growth.
+        //   My understanding is that they can have partial success, e.g.
+        //   integrating some but not all of the frames of the WAL. This is
+        //   beneficial.
         // * Full/Restart/Truncate checkpoints will block using the busy-handler.
         //   We use truncate checkpoints since they truncate the WAL file.
         //   See GRDBStorage.buildConfiguration for our busy-handler (aka busyMode
@@ -502,7 +507,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         //   each other within a given DatabasePool / DatabaseQueue.
         //   AFAIK this does not protect any GRDB internal state; it allows
         //   GRDB to detect re-entrancy, etc.
-        // * GRDBDatabaseStorageAdapter.writeLock (see below).
         //
         // SQLite cannot checkpoint if there are any readers or writers.
         // Therefore we cannot checkpoint within a SQLite write transaction.
@@ -513,17 +517,17 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         //
         // Our approach:
         //
-        // * Always use truncate checkpoints to limit WAL size.
-        // * Checkpoint once every N writes.  Large (in terms of file size)
-        //   writes should be rare, so WAL file size should be bounded and
-        //   quite small.
+        // * Always (not including auto-checkpointing) use truncate checkpoints
+        //   to limit WAL size.
+        // * Only checkpoint immediately after writes.
         // * It's expensive and unnecessary to do a checkpoint on every write,
         //   so we only checkpoint once every N writes. We always checkpoint after
-        //   the first write.
-        // * We try again more aggressively after failures.
+        //   the first write.  Large (in terms of file size) writes should be rare,
+        //   so WAL file size should be bounded and quite small.
         // * Use a "budget" to tracking the urgency of trying to perform a checkpoint after
         //   the next write.  When the budget reaches zero, we should try after the next
         //   write.  Successes bump up the budget considerably, failures bump it up a little.
+        // * Retry more often after failures, via the budget.
         //
         //
         // What could go wrong:
@@ -543,12 +547,20 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         //   This shouldn't be an issue: A checkpoint should eventually
         //   succeed when db activity settles.  This checkpoint might take a while
         //   but that's unavoidable.
-        //
+        //   The counter-argument is that we only try to checkpoint immediately after
+        //   a write. We often do reads immediately after writes to update the UI
+        //   to reflect the DB changes.  Those reads _might_ frequently interfere
+        //   with checkpointing.
+        // * We might not be checkpointing often enough, or we might be checkpointing
+        //   too often.  Either way, it's about balancing overall perf with the perf
+        //   cost of the next successful checkpoint.  We can tune this behavior
+        //   using the "checkpoint budget".
         //
         // Reference
         //
-        // See: https://www.sqlite.org/c3ref/wal_checkpoint_v2.html
-        // See: https://www.sqlite.org/wal.html
+        // * https://www.sqlite.org/c3ref/wal_checkpoint_v2.html
+        // * https://www.sqlite.org/wal.html
+        // * https://www.sqlite.org/howtocorrupt.html
         //
         guard !Thread.isMainThread else {
             // To avoid blocking the main thread, we avoid doing "truncate" checkpoints
