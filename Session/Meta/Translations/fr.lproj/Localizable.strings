@@ -29,7 +29,7 @@
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Échec de sélection du document.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Veuillez compresser ce dossier ou fichier et essayez plutôt d’envoyer cela à la place.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Veuillez créer une archive compressée de ce fichier ou de ce répertoire et essayez d'envoyer cette archive.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non pris en charge";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
@@ -57,21 +57,21 @@
 /* Indicates that the backup import data is being finalized. */
 "BACKUP_IMPORT_PHASE_FINALIZING" = "Finalisation de la sauvegarde";
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importation de la sauvegarde";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Importation de la sauvegarde.";
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restauration de la base de données";
 /* Indicates that the backup import data is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restauration des fichiers";
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Une sauvegarde existe";
+"BACKUP_RESTORE_DECISION_TITLE" = "Une sauvegarde est disponible";
 /* Label for the backup restore description. */
 "BACKUP_RESTORE_DESCRIPTION" = "Restauration de la sauvegarde";
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Progression";
 /* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "État";
+"BACKUP_RESTORE_STATUS" = "Statut";
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Erreur inattendue de sauvegarde";
+"BACKUP_UNEXPECTED_ERROR" = "Erreur inattendue lors de la sauvegarde";
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquer";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
@@ -95,7 +95,7 @@
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session n’a pas pu déterminer l’état de votre compte iCloud. Connectez-vous à votre compte iCloud dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Session.";
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Il n’y a pas de compte iCloud. Connectez-vous à votre compte iCloud dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Session.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Vous n'êtes pas connecté à un compte iCloud. Connectez-vous à votre compte iCloud dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Session.";
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Session s’est vu refuser l’accès à votre compte iCloud pour effectuer des sauvegardes. Accordez l’accès à votre compte iCloud à Session dans l’appli Réglages d’iOS pour sauvegarder vos données relatives à Session.";
 /* Alert body */
@@ -103,7 +103,7 @@
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Voulez-vous vraiment quitter ce groupe ?";
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Cette suppression ne peut pas être annulée.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Cette action est irréversible.";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
 /* keyboard toolbar label when no messages match the search string */
@@ -111,7 +111,7 @@
 /* keyboard toolbar label when exactly 1 message matches the search string */
 "CONVERSATION_SEARCH_ONE_RESULT" = "1 correspondance";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d sur %dcorrespondances";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d sur %d correspondances";
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Paramètres de la conversation";
 /* table cell label in conversation settings */
@@ -282,6 +282,10 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Échec de configuration de l’appareil photo";
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album sans nom";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Reply";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nous ne pouvons pas activer votre compte tant que vous n’aurez pas vérifié le code que nous vous avons envoyé.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */

@@ -282,6 +282,10 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "無法打開相機。";
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名相簿";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Reply";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "我們無法為您啟用帳號，直到您驗證了傳送給您的代碼。";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */

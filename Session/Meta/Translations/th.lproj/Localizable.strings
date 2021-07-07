@@ -1,0 +1,539 @@
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "ไม่ใช่ตอนนี้";
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ได้เวอร์ชั่นใหม่ %@ ในร้านแอปแล้ว";
+/* Title for the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_TITLE" = "มีเวอร์ชั่นใหม่พร้อมให้ใช้แล้ว";
+/* Label for the 'update' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "อัพเดต";
+/* No comment provided by engineer. */
+"ATTACHMENT" = "ไฟล์แนบ";
+/* One-line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "ถึงขีดจำกัด";
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "เขียนรายละเอียด";
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "รายละเอียด";
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ประเภทไฟล์: %@";
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ขนาดไฟล์: %@";
+/* One-line label indicating the user can add no more text to the media message field. */
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "ถึงขีดจำกัดการข้อความแล้ว";
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "ส่ง";
+/* Generic filename for an attachment with no known name */
+"ATTACHMENT_DEFAULT_FILENAME" = "ไฟล์แนบ";
+/* The title of the 'attachment error' alert. */
+"ATTACHMENT_ERROR_ALERT_TITLE" = "ส่งไฟล์แนบโดนผิดพลาด";
+/* Alert title when picking a document fails for an unknown reason */
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "เลือกไฟล์ไม่ได้สำเร็จ";
+/* Alert body when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "ส่งโฟลเดอร์ไม่ได้";
+/* Alert title when picking a document fails because user picked a directory/bundle */
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ไฟล์ชนิดนี้ส่งไม่ได้";
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "ข้อความเสียง";
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "สำรองข้อมูลโดนผิดพลาด";
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "การตอบสนองจากเซิร์ฟเวอร์ไม่ถูกต้อง";
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "กำลังล้างข้อมูลสำรอง";
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "กำลังเริ่มต้นการสำรองขข้อมูล";
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "กำลังส่งออกข้อมูล";
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "กำลังส่งออกสำรอง";
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "กำลังอัปโหลดสำรอง";
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ไม่สามารถนำเข้าสำรอง พิดพลาด";
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "กำลังกำหนดค่าการสำรอง";
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "กำลังดาวน์โหลดสำรองข้อมูล";
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "นำเข้าการสำรองเกือบเสร็จ";
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "กำลังนำเข้าการสำรอง";
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "กำลังกู้คืนฐานข้อมูล";
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "กำลังกู้คืนไฟล์";
+/* Label for the backup restore decision section. */
+"BACKUP_RESTORE_DECISION_TITLE" = "มีสำรองแล้ว";
+/* Label for the backup restore description. */
+"BACKUP_RESTORE_DESCRIPTION" = "กำลังกู้คืนสำรอง";
+/* Label for the backup restore progress. */
+"BACKUP_RESTORE_PROGRESS" = "ความก้าวหน้า";
+/* Label for the backup restore status. */
+"BACKUP_RESTORE_STATUS" = "สถานะ";
+/* Error shown when backup fails due to an unexpected error. */
+"BACKUP_UNEXPECTED_ERROR" = "ข้อผิดพลาดในการสำรองข้อมูลที่ไม่คาดคิด";
+/* Button label for the 'block' button */
+"BLOCK_LIST_BLOCK_BUTTON" = "บล็อก";
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "บล็อก %@ ไหม";
+/* Button label for the 'unblock' button */
+"BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกบล็อก";
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ บล็อกแล้ว";
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "คนบล็อกแล้ว";
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "คนที่บล็อกแล้วส่งข้อความและโทรมาหาไม่ได้";
+/* Label for generic done button. */
+"BUTTON_DONE" = "เสร็จ";
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "เลือก";
+/* The label for the 'do not restore backup' button. */
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "ไม่กู้คืน";
+/* The label for the 'restore backup' button. */
+"CHECK_FOR_BACKUP_RESTORE" = " กู้คืน";
+/* Error indicating that the app could not determine that user's iCloud account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "กำหนดสถานะ iCloud ไม่ได้. ขอเข้าสู่ระบบ iCloud ที่จะทำได้การสำรองข้อมูล";
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "ไม่มีระบบ iCloud. ขอเข้าสู่ระบบ iCloud ที่จะทำได้การสำรองข้อมูล";
+/* Error indicating that the app was prevented from accessing the user's iCloud account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Session ไม่สามารถเข้าไประบบ iCloud. คุณต้องอนุญาต Session ในค่าตั้ง iOS ก่อนจะทำสำรองได้";
+/* Alert body */
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "คุณจะไม่สามารถส่งและรับข้อความในกลุ่มนี้ได้อีกต่อไป";
+/* Alert title */
+"CONFIRM_LEAVE_GROUP_TITLE" = "แน่ใจออกจากไหม";
+/* Message for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "การกระทำนี้ไม่สามารถยกเลิกได้";
+/* Title for the 'conversation delete confirmation' alert. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ลบการสนทนาไหม";
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "ไม่​มี​รายการ​ตรง​กัน";
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "หนึ่งผลลัพธ์";
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "ผลลัพธ์ %d จาก %d รายการ";
+/* title for conversation settings screen */
+"CONVERSATION_SETTINGS" = "ตั้งค่าการสนทนา";
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "บล็อกคนนี้";
+/* Title of the 'mute this thread' action sheet. */
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ปิดแจ้งเตือน";
+/* label for 'mute thread' cell in conversation settings */
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "ปิดแจ้งเตือน";
+/* Indicates that the current thread is not muted. */
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "ไม่ได้ปิดแจ้งเตือน";
+/* Label for button to mute a thread for a day. */
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ปิดแจ้งเตือนเป็นวันเดียว";
+/* Label for button to mute a thread for a hour. */
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ปิดแจ้งเตือนเป็นชั่วโมงเดียว";
+/* Label for button to mute a thread for a minute. */
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ปิดแจ้งเตือนเป็นนาทีเดียว";
+/* Label for button to mute a thread for a week. */
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ปิดแจ้งเตือนเป็นสัปดาห์เดียว";
+/* Label for button to mute a thread for a year. */
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ปิดแจ้งเตือนเป็นปีเดียว";
+/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "ปิดแจ้งเตือนจน %@";
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "ค้นหาอะไรในการสนทนา";
+/* Label for button to unmute a thread. */
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "เลิกปิดแจ้งเตือน";
+/* Title for the 'crop/scale image' dialog. */
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "เลื่อนและย่อขยาย";
+/* Subtitle shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "นี่อาจใช้เวลาสักไม่กี่นาที";
+/* Title shown while the app is updating its database. */
+"DATABASE_VIEW_OVERLAY_TITLE" = "การเพิ่มประสิทธิภาพฐานข้อมูล";
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@ ชม ที่แล้ว";
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@ นาทีที่แล้ว";
+/* The present; the current time. */
+"DATE_NOW" = "ตอนนี้";
+/* The current day. */
+"DATE_TODAY" = "วันนี้";
+/* The day before today. */
+"DATE_YESTERDAY" = "เมื่อวานนี้";
+/* table cell label in conversation settings */
+"DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเอง";
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ข้อความในการสนทนานี้จะลบตัวเองหลัง %@";
+/* table cell label in conversation settings */
+"EDIT_GROUP_ACTION" = "แก้ไขกลุ่ม";
+/* Label indicating media gallery is empty */
+"GALLERY_TILES_EMPTY_GALLERY" = "คุณไม่มีรูปในการสนทนานี้";
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "กำลังโหลดข้อความใหม่...";
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "กำลังโหลดข้อความเก่า...";
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "ไม่สามารถดาวน์โหลดรูปภาพ ขอยืนยันว่าอุปกรณ์ออนไลน์อยู่";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "เกิดข้อผิดพลาดไม่ทราบสาเหตุ";
+/* Shown when selected GIF couldn't be fetched */
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "เลือกไม่ได้";
+/* Alert message shown when user tries to search for GIFs without entering any search terms. */
+"GIF_PICKER_VIEW_MISSING_QUERY" = "เขียนที่ค้นหา";
+/* Indicates that an error occurred while searching. */
+"GIF_VIEW_SEARCH_ERROR" = "ผิดพลาด. กดที่ลองใหม่";
+/* Indicates that the user's search had no results. */
+"GIF_VIEW_SEARCH_NO_RESULTS" = "ไม่มีผลลัพธ์";
+/* No comment provided by engineer. */
+"GROUP_CREATED" = "สร้างกลุ่มแล้ว";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_JOINED" = " %@ ได้เข้าร่วมกลุ่ม";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_LEFT" = " %@ ออกจากกลุ่ม ";
+/* No comment provided by engineer. */
+"GROUP_MEMBER_REMOVED" = " %@ ถูกลบออกจากกลุ่ม ";
+/* No comment provided by engineer. */
+"GROUP_MEMBERS_REMOVED" = " %@ ถูกลบออกจากกลุ่ม ";
+/* No comment provided by engineer. */
+"GROUP_TITLE_CHANGED" = "ชื่อเรื่องเปลี่ยนเป็น %@ แล้ว ";
+/* No comment provided by engineer. */
+"GROUP_UPDATED" = "อัพเดตกลุ่มแล้ว";
+/* No comment provided by engineer. */
+"GROUP_YOU_LEFT" = "คุณได้ออกจากกลุ่ม";
+/* No comment provided by engineer. */
+"YOU_WERE_REMOVED" = " คุณได้ถูกลบออกจากกลุ่ม ";
+/* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "เชอร์มากกว่า %@ ไฟล์ไม่ได้";
+/* alert title */
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "ไม่สามารถเรียกดูไฟล์แนบ ผิดพลาด";
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ใช้ไฟล์เสียงนี้ไม่ได้";
+/* Slider label when disappearing messages is off */
+"KEEP_MESSAGES_FOREVER" = "ไม่ให้ขอความหายไป";
+/* Confirmation button within contextual alert */
+"LEAVE_BUTTON_TITLE" = "ออก";
+/* table cell label in conversation settings */
+"LEAVE_GROUP_ACTION" = "ออกจากกลุ่ม";
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "ข้อความ";
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "ไฟล์ทั้งหมด";
+/* media picker option to choose from library */
+"MEDIA_FROM_LIBRARY_BUTTON" = "แกลเลอรี่รูปภาพ";
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "ลบข้อความ %d อน";
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "ลบข้อความ";
+/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ ตอน %@";
+/* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "คุณ";
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "เดือนนี้";
+/* message status for message delivered to their recipient. */
+"MESSAGE_STATUS_DELIVERED" = "ถูกจัดส่ง";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "ส่งไม่สำเร็จ";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED_SHORT" = "ไม่สำเร็จ";
+/* status message for read messages */
+"MESSAGE_STATUS_READ" = "อ่านแล้ว";
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "ข้าม";
+/* message status while message is sending. */
+"MESSAGE_STATUS_SENDING" = "กำลังส่ง...";
+/* status message for sent messages */
+"MESSAGE_STATUS_SENT" = "ส่งแล้ว";
+/* status message while attachment is uploading */
+"MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด...";
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "อนุญาตในค่าตั้ง iOS";
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "ต้องอนุญาตในค่าตั้งก่อน Session ได้ใช้รูปภาพ";
+/* An explanation of the consequences of muting a thread. */
+"MUTE_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับการแจ้งเตือนจากการสนทนาที่ปิดเสียง";
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ถึง %@";
+/* Label for 1:1 conversation with yourself. */
+"NOTE_TO_SELF" = "ข้อความให้ตังเองจำไว้";
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "อาจจะได้รับข้อความตอน %@ รีสตาร์ทมา";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_FOOTER_WARNING" = "เนื่องจากข้อบกพร่องที่ทราบในพุชเฟรมเวิร์กของ Apple การแสดงตัวอย่างข้อความจะแสดงก็ต่อเมื่อได้รับข้อความภายใน 30 วินาทีหลังจากส่ง ผลที่ตามมาคือตราแอปพลิเคชันอาจไม่ถูกต้อง";
+/* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
+"NOTIFICATIONS_SECTION_INAPP" = "เล่นขณะแอปเปิดอยู่";
+/* Label for settings UI that allows user to change the notification sound. */
+"NOTIFICATIONS_SECTION_SOUNDS" = "เสียง";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "ชื่อและข้อความ";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SENDER_ONLY" = "แค่เพียงชื่อ";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_NONE" = "ไม่แสดงข้อมูลเลย";
+/* No comment provided by engineer. */
+"NOTIFICATIONS_SHOW" = "แสดง";
+/* No comment provided by engineer. */
+"OK" = "ตกลง";
+/* Info Message when {{other user}} disables or doesn't support disappearing messages */
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ได้ปิดใช้งานข้อความที่ลบตัวเองแล้ว";
+/* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ตั้งเวลาข้อความที่ลบตัวเองไว้ที่ %@";
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "ถ่ายรูปไม่ได้";
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "ถ่ายรูปไม่ได้";
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "ตั้งกล้องไม่ได้";
+/* label for system photo collections which have no name. */
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "อัลบั้มที่ไม่มีชื่อ";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Reply";
+/* alert body during registration */
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "เราไม่สามารถเปิดใช้งานบัญชีของคุณได้จนกว่าคุณจะยืนยันรหัสที่เราส่งถึงคุณ";
+/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "ด่วน";
+/* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "ยืนยันตัวตนเพื่อเปิด Session";
+/* Title for alert indicating that screen lock could not be unlocked. */
+"SCREEN_LOCK_UNLOCK_FAILED" = "การตรวจสอบสิทธิ์ล้มเหลว";
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "ทิ้งข้อความไหม";
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "ทิ้งข้อความ";
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "กลับดูกล้อง";
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "กลับดูแกลเลอรี่รูปภาพ";
+/* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (ค่าเริ่มต้น)";
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "การสำรอง";
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "สำรองข้อมูลตอนนี้";
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "ยกเลิกการสำรอง";
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "เปิดใช้งานสำรอง";
+/* Label for iCloud status row in the in the backup settings view. */
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "สถานะ iCloud";
+/* Indicates that the last backup restore failed. */
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "กู้คืนค่าการสำรองข้อมูลล้มเหลว";
+/* Indicates that app is not restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "กู้คืนค่าการสำรองข้อมูลอยู่เฉย";
+/* Indicates that app is restoring up. */
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "อยู่ระหว่างการคืนค่าการสำรองข้อมูล";
+/* Indicates that the last backup restore succeeded. */
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "กู้คืนค่าการสำรองสำเร็จแล้ว";
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "ช่วงที่";
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "ความก้าวหน้า";
+/* Label for backup status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "สถานะ";
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "สำรองข้อมูลล้มเหลว";
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "กำลังรออยู่";
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "กำลังทำสำรองอยู่";
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "สำรองข้อมูลเรียบร้อยแล้ว";
+/* No comment provided by engineer. */
+"SETTINGS_CLEAR_HISTORY" = "ลบการสนทนา";
+/* Confirmation text for button which deletes all message, calling, attachments, etc. */
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ลบได้หมด";
+/* Section header */
+"SETTINGS_HISTORYLOG_TITLE" = "ลบการสนทนา";
+/* Label for settings view that allows user to change the notification sound. */
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "เสียงข้อความ";
+/* Setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS" = "สงตัวอย่างจากลินค์";
+/* Footer for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "สามารถได้ตัวอย่างจากเว็บไซต์ Imgur, Instagram, Pinterest, Reddit, และ YouTube";
+/* Header for setting for enabling & disabling link previews. */
+"SETTINGS_LINK_PREVIEWS_HEADER" = "ตัวอย่างจากลินค์";
+/* table section header */
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "ข้อมูลการแจ้งเตือน";
+/* Label for the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPT" = "แจ้งการอ่านข้อความ";
+/* An explanation of the 'read receipts' setting. */
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "ดูและแบ่งปันเมื่อมีการอ่านข้อความ การตั้งค่านี้เป็นทางเลือกและใช้กับการสนทนาทั้งหมด";
+/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "เวลาก่อนหน้าจอจะดับ";
+/* Title for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "ล็อกหน้าจอ";
+/* Label for the 'enable screen lock' switch of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "ล็อกหน้าจอ";
+/* Header Label for the sounds section of settings views. */
+"SETTINGS_SECTION_SOUNDS" = "เสียง";
+/* Section header */
+"SETTINGS_SECURITY_TITLE" = "ความปลอดภัยหน้าจอ";
+/* Label for the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS" = "บ่งชี้การพิมพ์";
+/* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
+"SOUNDS_NONE" = "ไม่มี";
+/* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS" = "%@ วัน";
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@วั";
+/* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS" = "%@ ชั่วโมง";
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ ชม.";
+/* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES" = "%@ นาที";
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@น";
+/* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS" = "%@ วินาที";
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@วิ";
+/* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_DAY" = "%@ วัน";
+/* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ ชั่วโมง";
+/* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ นาที";
+/* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ สัปดาห์";
+/* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS" = "%@ สัปดาห์";
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ส";
+/* Label for the cancel button in an alert or action sheet. */
+"TXT_CANCEL_TITLE" = "ยกเลิก";
+/* No comment provided by engineer. */
+"TXT_DELETE_TITLE" = "ลบ";
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "ข้อความเสียง";
+/* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "กดเลยที่จะอัดเสยง";
+/* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "ข้อความเสียง";
+/* Info Message when you disable disappearing messages */
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ปิดใช้งานข้อความที่ลบตัวเองแล้ว";
+/* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ตั้งเวลาข้อความที่ลบตัวเองไว้ที่ %@";
+// MARK: - Session
+"continue_2" = "ไปต่อ";
+"copy" = "คัดลอก";
+"invalid_url" = "URL ลิงค์ไม่ถูกต้อง";
+"next" = "ถัดไป";
+"share" = "แชร์";
+"invalid_session_id" = "ไอดีเซสชั่นไม่ถูกต้อง";
+"cancel" = "ยกเลิก";
+"your_session_id" = "Session ไอดีของคุณ";
+"vc_landing_title_2" = "ยินดีต้อนรับ Session...";
+"vc_landing_register_button_title" = "สร้างไอดี";
+"vc_landing_restore_button_title" = "กู้คืนไอดี";
+"vc_landing_link_button_title" = "เชื่อมโยงอุปกรณ์";
+"view_fake_chat_bubble_1" = "Session เซสชั่น คือว่าอะไร";
+"view_fake_chat_bubble_2" = "เป็นแอปส่งข้อความที่เข้ารหัสแบบกระจายอำนาจ";
+"view_fake_chat_bubble_3" = "จึงไม่รวบรวมข้อมูลส่วนบุคคลของฉันหรือข้อมูลเมตาการสนทนาของฉัน มันทำงานอย่างไร?";
+"view_fake_chat_bubble_4" = "มันใช้เทคโนโลยีการกำหนดเส้นทางและการเข้ารหัสแบบไม่ระบุชื่อขั้นสูง";
+"view_fake_chat_bubble_5" = "เพื่อนไม่ให้เพื่อนใช้ผู้ส่งสารที่ถูกบุกรุกนะ";
+"vc_register_title" = "ยินดีที่ได้รับไอดีใหม่ใน Session";
+"vc_register_explanation" = "ไอดีของคุณคือที่อยู่เฉพาะที่ผู้คนสามารถใช้เพื่อติดต่อคุณในเซสชัน Session โดยไม่ต้องมีการเชื่อมต่อกับตัวตนที่แท้จริงของคุณ ไอดีของคุณจะไม่เปิดเผยตัวตนและเป็นส่วนตัวโดยการออกแบบ";
+"vc_restore_title" = "กู้คืนค่าบัญชีของคุณ";
+"vc_restore_explanation" = "ป้อนวลีการกู้คืนที่ได้รับเมื่อคุณลงทะเบียนเพื่อกู้คืนบัญชีของคุณ";
+"vc_restore_seed_text_field_hint" = "ป้อนวลีกู้คืนของคุณ";
+"vc_link_device_title" = "เชื่อมโยงอุปกรณ์";
+"vc_link_device_scan_qr_code_tab_title" = "สแกน QR โค้ด";
+"vc_display_name_title_2" = "เลือกชื่อที่ใช้แสดง";
+"vc_display_name_explanation" = "ชื่อนี้จะเป็นชื่อของคุณเมื่อคุณใช้เซสชั่น Session เพื่อนทุกคนจะเห็นชื่อนี้ใน Session";
+"vc_display_name_text_field_hint" = "เลือกชื่อที่ใช้แสดง";
+"vc_display_name_display_name_missing_error" = "ขอเลือกชื่อที่ใช้แสดง";
+"vc_display_name_display_name_too_long_error" = "ขอเลือกชื่อสั้นกว่า";
+"vc_pn_mode_recommended_option_tag" = "แนะนำ";
+"vc_pn_mode_no_option_picked_modal_title" = "โปรดเลือกแผน";
+"vc_home_empty_state_message" = "คุณยังไม่มีผู้ติดต่อ";
+"vc_home_empty_state_button_title" = "ติดต่อใครสักคน";
+"vc_seed_title" = "วลีกู้คืนของคุณ";
+"vc_seed_title_2" = "คุณได้วลีกู้คืนแล้ว";
+"vc_seed_explanation" = "วลีกู้คืนของคุณคือคีย์หลักสำหรับไอดีของคุณ คุณสามารถใช้เพื่อกู้คืนไอดีของคุณ หากคุณไม่สามารถเข้าถึงอุปกรณ์ของคุณได้ เก็บวลีกู้คืนของคุณไว้ในที่ปลอดภัยและอย่าให้ใครเลย";
+"vc_seed_reveal_button_title" = "กดเพื่อเปิดเผย";
+"view_seed_reminder_subtitle_1" = "ปกป้องบัญชีของคุณด้วยการบันทึกวลีกู้คืน";
+"view_seed_reminder_subtitle_2" = "แตะคำที่ปกปิดไว้ค้างไว้เพื่อแสดงวลีกู้คืน จากนั้นจัดเก็บไว้อย่างปลอดภัยเพื่อรักษาความปลอดภัยไอดีของคุณ";
+"view_seed_reminder_subtitle_3" = "เก็บวลีการกู้คืนของคุณในที่ปลอดภัย";
+"vc_path_title" = "ทาง";
+"vc_path_explanation" = "Sessionซ่อนอินเตอร์เน็ต IP ของคุณโดยกำหนดเส้นทางข้อความของคุณผ่านโหนดบริการหลายโหนดในเครือข่ายการกระจายอำนาจของ Session. ประเทศเหล่านี้คือประเทศที่การเชื่อมต่อของคุณกำหนดเส้นทางผ่าน:";
+"vc_path_device_row_title" = "คุณ";
+"vc_path_guard_node_row_title" = "โหนดเข้า";
+"vc_path_service_node_row_title" = "โหนดบริการ";
+"vc_path_destination_row_title" = "ปลายทาง";
+"vc_path_learn_more_button_title" = "เรียน​รู้​เพิ่ม​เติม";
+"vc_create_private_chat_title" = "เซสชันใหม่";
+"vc_create_private_chat_enter_session_id_tab_title" = "ป้อนไอดี Session";
+"vc_create_private_chat_scan_qr_code_tab_title" = "สแกน QR โค้ด";
+"vc_create_private_chat_scan_qr_code_explanation" = "สแกนรหัส QR ของเพื่อนเพื่อเริ่มคุยกัน คุณสามารถค้นหารหัส QR ได้โดยแตะที่ไอคอนรหัส QR ในการตั้งค่าบัญชี";
+"vc_enter_public_key_explanation" = "แชร์ไอดีได้โดยไปที่การตั้งค่าบัญชีแล้วแตะ \"แชร์ไอดี Session\" หรือโดยการแชร์รหัส QR";
+"vc_scan_qr_code_camera_access_explanation" = "เปิดใช้กล้องเพื่อสแกนรหัส QR โค้ด";
+"vc_scan_qr_code_grant_camera_access_button_title" = "ให้สิทธิใช้กล้อง";
+"vc_create_closed_group_title" = "กลุ่มส่วนตัวใหม่";
+"vc_create_closed_group_text_field_hint" = "ป้อนชื่อกลุ่ม";
+"vc_create_closed_group_empty_state_message" = "คุณยังไม่มีผู้ติดต่อ";
+"vc_create_closed_group_empty_state_button_title" = "ติดต่อใครสักคน";
+"vc_create_closed_group_group_name_missing_error" = "ขอระบุชื่อกลุ่ม";
+"vc_create_closed_group_group_name_too_long_error" = "ขอระบุชื่อกลุ่มสั้นกว่า";
+"vc_create_closed_group_too_many_group_members_error" = "กลุ่มส่วนตัวจำกัดสมาชิกไม่เกิน100คน";
+"vc_join_public_chat_title" = "เข้าร่วมกลุ่มสาธารณะ";
+"vc_join_public_chat_enter_group_url_tab_title" = "ลินค์ URL กลุ่มสาธารณะ";
+"vc_join_public_chat_scan_qr_code_tab_title" = "สแกน QR โค้ด";
+"vc_join_public_chat_scan_qr_code_explanation" = "แสกน QR โค้ดของกลุ่มสาธารณะ";
+"vc_enter_chat_url_text_field_hint" = "ป้อนลินค์ URL ของกลุ่มสถาณนะ";
+"vc_settings_title" = "ตั้งค่า";
+"vc_settings_display_name_text_field_hint" = "เลือกชื่อที่ใช้แสดง";
+"vc_settings_display_name_missing_error" = "ขอเลือกชื่อที่ใช้แสดง";
+"vc_settings_display_name_too_long_error" = "ขอเลือกชื่อสั้นกว่า";
+"vc_settings_privacy_button_title" = "ความเป็นส่วนตัว";
+"vc_settings_notifications_button_title" = "การแจ้งเตือน";
+"vc_settings_recovery_phrase_button_title" = "วลี";
+"vc_settings_clear_all_data_button_title" = "ลบข้อมูล";
+"vc_notification_settings_title" = "การแจ้งเตือน";
+"vc_privacy_settings_title" = "ความเป็นส่วนตัว";
+"preferences_notifications_strategy_category_title" = "กลยุทธ์สำคัญแจ้งเตือน";
+"modal_seed_title" = "วลีกู้คืนของคุณ";
+"modal_seed_explanation" = "นี่คือวลีกู้คืนของคุณ ด้วยวิธีนี้ คุณสามารถกู้คืนหรือย้ายไอดีเซสชันSessionของคุณไปยังอุปกรณ์ใหม่ได้";
+"modal_clear_all_data_title" = "ลบข้อมูลไปหมด";
+"modal_clear_all_data_explanation" = "การดำเนินการนี้จะลบข้อความแชตและผู้ติดต่อของคุณ";
+"vc_qr_code_title" = "QR โค้ด";
+"vc_qr_code_view_my_qr_code_tab_title" = "แสดง QR โค้ดของคุน";
+"vc_qr_code_view_scan_qr_code_tab_title" = "สแกน QR โค้ด";
+"vc_qr_code_view_scan_qr_code_explanation" = "สแกนรหัส QR ของใครสักคนเพื่อเริ่มการสนทนากับเขา";
+"vc_view_my_qr_code_explanation" = "นี่คือ QR โค้ดของคุณ ผู้ใช้รายอื่นสามารถสแกนเพื่อเริ่มการสนทนากับคุณได้";
+// MARK: - Not Yet Translated
+"fast_mode_explanation" = "คุณจะได้รับการแจ้งเตือนเมื่อมีข้อความใหม่ที่เชื่อถือได้และทันทีโดยใช้เซิร์ฟเวอร์การแจ้งเตือนของ Apple";
+"fast_mode" = "โหมดเร็ว";
+"slow_mode_explanation" = "ตรวจสอบข้อความใหม่ในเบื้องหลังเป็นครั้งคราว";
+"slow_mode" = "โหมดล่าช้า";
+"vc_pn_mode_title" = "แจ้งเตือนข้อความ";
+"vc_notification_settings_notification_mode_title" = "ใช้โหมดเร็ว";
+"vc_link_device_recovery_phrase_tab_title" = "วลี";
+"vc_link_device_scan_qr_code_explanation" = "ไปที่การตั้งค่า → วลีกู้คืนบนอุปกรณ์อื่นของคุณเพื่อแสดงรหัส QR ของคุณ";
+"vc_enter_recovery_phrase_title" = "วลี";
+"vc_enter_recovery_phrase_explanation" = "หากต้องการเชื่อมโยงอุปกรณ์ของคุณ ให้ป้อนวลีการกู้คืนที่ได้รับเมื่อคุณลงชื่อสมัครใช้";
+"vc_enter_public_key_text_field_hint" = "ป้อนไอดีเซสชั่น Session หรือชื่อ ONS";
+"vc_home_title" = "ข้อความ";
+"admin_group_leave_warning" = "เนื่องจากคุณเป็นผู้สร้างกลุ่มนี้จึงจะถูกลบสำหรับทุกคน การดำเนินการนี้ไม่สามารถยกเลิกได้";
+"vc_join_open_group_suggestions_title" = "หรือเข้าร่วมอย่างใดอย่างหนึ่งเหล่านี้...";
+"vc_settings_invite_a_friend_button_title" = "เชิญเพื่อน";
+"vc_settings_help_us_translate_button_title" = "ช่วย​เรา​แปล​ Session";
+"copied" = "คัดลอกแล้ว";
+"vc_conversation_settings_copy_session_id_button_title" = "คัดลอกไอดี";
+"vc_conversation_input_prompt" = "ข้อความ";
+"vc_conversation_voice_message_cancel_message" = "เลื่อนเพื่อยกเลิก";
+"modal_download_attachment_title" = "ไว้ใจ %@ ไหม";
+"modal_download_attachment_explanation" = "ดาวน์โหลดไฟล์นี้จาก %@ ไหม";
+"modal_download_button_title" = "ดาวน์โหลด";
+"modal_open_url_title" = "เปิดลิงค์ URL ไหม";
+"modal_open_url_explanation" = "แน่ใจไหมว่าคุณต้องกาเปิดดู %@";
+"modal_open_url_button_title" = "เปิด";
+"modal_blocked_title" = "เลิกบล็อก %@ ไหม";
+"modal_blocked_explanation" = "แน่ใจไหมว่าคุณต้องการเลิกบล็อก %@";
+"modal_blocked_button_title" = "เลิกบล็อก";
+"modal_link_previews_title" = "เปิดใช้งานการแสดงตัวอย่างลิงค์";
+"modal_link_previews_explanation" = "การเปิดใช้งานการแสดงตัวอย่างลิงค์จะแสดงตัวอย่างสำหรับ URL ที่คุณส่งและรับ สิ่งนี้มีประโยชน์ แต่Sessionจะต้องติดต่อเว็บไซต์ที่เชื่อมโยงเพื่อสร้างตัวอย่าง คุณสามารถปิดการแสดงตัวอย่างลิงก์ได้ตลอดเวลาในการตั้งค่าของSession";
+"modal_link_previews_button_title" = "เปิดใช้งาน";
+"vc_share_title" = "เชิญมาใช้ Session";
+"vc_share_loading_message" = "รวบรวมสิ่งแนบ...";
+"vc_share_sending_message" = "กำลังส่ง...";
+"view_open_group_invitation_description" = "การเชิญเข้าร่วมกลุ่ม";
+"vc_conversation_settings_invite_button_title" = "เพิ่มสมาชิก";

@@ -79,7 +79,7 @@
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "ブロックを解除する";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ はブロックされています。";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@はブロックされました。";
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ユーザがブロックされました";
 /* An explanation of the consequences of blocking another user. */
@@ -185,9 +185,9 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_LEFT" = "%@がグループを離れました";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_REMOVED" = " %@ was removed from the group. ";
+"GROUP_MEMBER_REMOVED" = " %@ はグループから削除されました。 ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ はグループから削除されました。 ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "タイトルが「%@」に変更されました";
 /* No comment provided by engineer. */
@@ -195,7 +195,7 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "グループを離れました";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " あなたはこのグループから削除されました ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "画像の共有は%@点までです。";
 /* alert title */
@@ -269,7 +269,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "表示内容";
 /* No comment provided by engineer. */
-"OK" = "OK";
+"OK" = "確定";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@がメッセージの消失をオフにしました";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
@@ -282,12 +282,16 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "カメラの設定ができませんでした";
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "無名のアルバム";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "既読にする";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "返信";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "アカウントを有効化するには，お送りしたコードの確認を行ってください。";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "即座";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Sessionの起動を認証する";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Sessionを起動するのに認証する";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "認証失敗";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -343,7 +347,7 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "リンクプレビューを送る";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "プレビューはImgur、Instagram、Pinterest、RedditおよびYouTubeリンクをサポートしています。";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "リンクプレビュー";
 /* table section header */
@@ -365,7 +369,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "入力中アイコン";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "音声なし";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@日";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -496,40 +500,40 @@
 "vc_qr_code_view_scan_qr_code_explanation" = "誰かの QR コードをスキャンして、会話を始めましょう";
 "vc_view_my_qr_code_explanation" = "これはあなたの QR コードです。他のユーザーはそれをスキャンして、あなたとの Session を開始できます。";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
-"fast_mode" = "Fast Mode";
-"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
-"slow_mode" = "Slow Mode";
-"vc_pn_mode_title" = "Message Notifications";
-"vc_notification_settings_notification_mode_title" = "Use Fast Mode";
-"vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
-"vc_enter_recovery_phrase_title" = "Recovery Phrase";
-"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
-"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages";
-"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
-"vc_join_open_group_suggestions_title" = "Or join one of these...";
-"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
-"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
-"copied" = "Copied";
-"vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
-"vc_conversation_input_prompt" = "Message";
-"vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
-"modal_download_attachment_title" = "Trust %@?";
-"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
-"modal_download_button_title" = "Download";
-"modal_open_url_title" = "Open URL?";
-"modal_open_url_explanation" = "Are you sure you want to open %@?";
-"modal_open_url_button_title" = "Open";
-"modal_blocked_title" = "Unblock %@?";
-"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
-"modal_blocked_button_title" = "Unblock";
-"modal_link_previews_title" = "Enable Link Previews?";
-"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
-"modal_link_previews_button_title" = "Enable";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
-"view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"fast_mode_explanation" = "Appleの通知サーバーの利用で、すぐかつ確実に新しいメッセージの受信を通知されます。";
+"fast_mode" = "高速モード";
+"slow_mode_explanation" = "Sessionは時々バックグラウンドで新しいメッセージの受信をチェックします。";
+"slow_mode" = "低速モード";
+"vc_pn_mode_title" = "メッセージ通知";
+"vc_notification_settings_notification_mode_title" = "高速モードを使用する";
+"vc_link_device_recovery_phrase_tab_title" = "リカバリーフレーズ";
+"vc_link_device_scan_qr_code_explanation" = "QRコードを表示するのに、他のデバイスから「設定→リカバリーフレーズ」へナビゲートする";
+"vc_enter_recovery_phrase_title" = "リカバリーフレーズ";
+"vc_enter_recovery_phrase_explanation" = "デバイスをリンクするのに、サインアップした時に与えられたリカバリーフレーズを入力します。";
+"vc_enter_public_key_text_field_hint" = "Session IDを入力する";
+"vc_home_title" = "メッセージ";
+"admin_group_leave_warning" = "このグループの作成者なので、削除すると全てのメンバーが追い出されます。元に戻せません。";
+"vc_join_open_group_suggestions_title" = "または、以下のグループに参加する…";
+"vc_settings_invite_a_friend_button_title" = "友達を招待";
+"vc_settings_help_us_translate_button_title" = "Sessionの翻訳に協力しましょう。";
+"copied" = "コピーしました";
+"vc_conversation_settings_copy_session_id_button_title" = "Session ID をコピーする";
+"vc_conversation_input_prompt" = "メッセージ";
+"vc_conversation_voice_message_cancel_message" = "スライドして取り消す";
+"modal_download_attachment_title" = "%@ を信頼しますか？";
+"modal_download_attachment_explanation" = "%@ が送信したメディアをダウンロードしてもよろしいですか？";
+"modal_download_button_title" = "ダウンロード";
+"modal_open_url_title" = "URLを開きますか？";
+"modal_open_url_explanation" = "%@を本当に開いてもよろしいですか？";
+"modal_open_url_button_title" = "開く";
+"modal_blocked_title" = "%@のブロックを解除しますか？";
+"modal_blocked_explanation" = "%@のブロックを解除してもよろしいですか?";
+"modal_blocked_button_title" = "ブロックを解除する";
+"modal_link_previews_title" = "リンクプレビューを有効にしますか？";
+"modal_link_previews_explanation" = "リンクプレビューを有効すると、URLを送受信する場合にプレビューが表示されます。これは便利ですが、プレビューを作成するのにSessionはそのウェブサイトに接続する必要があります。Sessionの設定から、リンクプレビューをいつでも無効にできます。";
+"modal_link_previews_button_title" = "有効にする";
+"vc_share_title" = "Sessionと共有";
+"vc_share_loading_message" = "添付ファイルを準備しています...";
+"vc_share_sending_message" = "送信中…";
+"view_open_group_invitation_description" = "公開グループからの招待";
+"vc_conversation_settings_invite_button_title" = "メンバーを追加する";

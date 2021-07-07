@@ -282,6 +282,10 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Kameran määritys epäonnistui.";
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Nimetön albumi";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Reply";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Emme pysty aktivoimaan käyttäjätiliä ennen kuin vahvistat lähettämämme koodin.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */

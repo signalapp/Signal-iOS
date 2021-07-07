@@ -81,7 +81,7 @@
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ foi bloqueado.";
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Pessoa sob Bloqueio";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Usuário Bloqueado";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Você não receberá mais ligações e mensagens de quem bloquear.";
 /* Label for generic done button. */
@@ -282,6 +282,10 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Falha ao configurar câmera.";
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum sem nome";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+/* Notification action button title */
+"PUSH_MANAGER_REPLY" = "Reply";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Não podemos ativar sua conta até que você verifique o código que enviamos.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
@@ -532,4 +536,4 @@
 "vc_share_loading_message" = "Preparando anexos...";
 "vc_share_sending_message" = "Enviando...";
 "view_open_group_invitation_description" = "Convite para grupo aberto";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"vc_conversation_settings_invite_button_title" = "Adicionar Membros";
