@@ -521,6 +521,9 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         //   so we only checkpoint once every N writes. We always checkpoint after
         //   the first write.
         // * We try again more aggressively after failures.
+        // * Use a "budget" to tracking the urgency of trying to perform a checkpoint after
+        //   the next write.  When the budget reaches zero, we should try after the next
+        //   write.  Successes bump up the budget considerably, failures bump it up a little.
         //
         //
         // What could go wrong:
@@ -540,16 +543,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         //   This shouldn't be an issue: A checkpoint should eventually
         //   succeed when db activity settles.  This checkpoint might take a while
         //   but that's unavoidable.
-        //
-        //
-        // Solution:
-        //
-        // * Perform passive checkpoints often to ensure WAL contents are mostly integrated
-        //   at any given time.
-        // * Perform truncate checkpoints sometimes to limit WAL size.
-        // * Perform checkpoints using a dedicated GRDB DatabaseQueue so that checkpoints
-        //   don't block on writes. GRDB DatabasePool serializes writes on a queue that
-        //   doesn't honor the busy mode. This also makes the checkpoints very likely to succeed.
         //
         //
         // Reference
@@ -698,8 +691,8 @@ private struct GRDBStorage {
                 Logger.warn("Database busy for \(accumulatedWaitMs)ms")
             }
 
+            // Only time out during checkpoints, not writes.
             if isCheckpointing.get() {
-                Logger.verbose("----- accumulatedWaitMs: \(accumulatedWaitMs) >? maxBusyTimeoutMs: \(GRDBStorage.maxBusyTimeoutMs)")
                 // The checkpointing queue should time out.
                 if accumulatedWaitMs > GRDBStorage.maxBusyTimeoutMs {
                     Logger.warn("Aborting busy retry.")
