@@ -274,7 +274,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
         self.paymentStateCache.set(newPaymentsState)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(Self.arePaymentsEnabledDidChange, object: nil)
 
             self.updateCurrentPaymentBalance()

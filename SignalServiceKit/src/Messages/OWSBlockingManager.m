@@ -249,7 +249,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     OWSLogInfo(@"");
 
-    [transaction addAsyncCompletion:^{
+    [transaction addAsyncCompletionOnMain:^{
         [[NSNotificationCenter defaultCenter] postNotificationName:OWSBlockingManagerBlockedSyncDidComplete object:nil];
     }];
 

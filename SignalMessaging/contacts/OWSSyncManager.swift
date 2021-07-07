@@ -76,7 +76,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
 
         KeyBackupService.storeSyncedKey(type: .storageService, data: syncMessage.storageService, transaction: transaction)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(.OWSSyncManagerKeysSyncDidComplete, object: nil)
         }
     }

@@ -335,7 +335,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
 
             Logger.verbose("Completed \(processedJobs.count)/\(batchJobs.count) jobs. \(jobCount) jobs left.")
 
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOffMain {
                 assert(backgroundTask != nil)
                 backgroundTask = nil
 
@@ -889,7 +889,7 @@ public class GroupsV2MessageProcessor: NSObject {
 
         // The new envelope won't be visible to the finder until this transaction commits,
         // so drainQueue in the transaction completion.
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             self.processingQueue.drainQueueWhenReady()
         }
     }

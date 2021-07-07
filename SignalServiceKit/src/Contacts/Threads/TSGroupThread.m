@@ -170,9 +170,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                         }];
 
     if (didAvatarChange) {
-        [transaction addAsyncCompletion:^{
-            [self fireAvatarChangedNotification];
-        }];
+        [transaction addAsyncCompletionOnMain:^{ [self fireAvatarChangedNotification]; }];
     }
 }
 

@@ -27,8 +27,6 @@ public class SSKReachability: NSObject {
 @objc
 public protocol SSKReachabilityManager {
 
-    var observationContext: AnyObject { get }
-
     var isReachable: Bool { get }
 
     func isReachable(via reachabilityType: ReachabilityType) -> Bool
@@ -51,29 +49,42 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
         configuration: .background(withIdentifier: "backgroundSession")
     )
+
+    // This property should only be accessed on the main thread.
     private let reachability: Reachability
 
-    public var observationContext: AnyObject {
-        return self.reachability
-    }
+    private struct Token {
+        let isReachable: Bool
+        let isReachableViaWiFi: Bool
+        let isReachableViaWWAN: Bool
 
+        static var empty: Token {
+            Token(isReachable: false, isReachableViaWiFi: false, isReachableViaWWAN: false)
+        }
+    }
+    private let token = AtomicValue<Token>(.empty)
+
+    // This property can be safely accessed from any thread.
     public var isReachable: Bool {
         return isReachable(via: .any)
     }
 
+    // This method can be safely called from any thread.
     public func isReachable(via reachabilityType: ReachabilityType) -> Bool {
         switch reachabilityType {
         case .any:
-            return reachability.isReachable()
+            return token.get().isReachable
         case .wifi:
-            return reachability.isReachableViaWiFi()
+            return token.get().isReachableViaWiFi
         case .cellular:
-            return reachability.isReachableViaWWAN()
+            return token.get().isReachableViaWWAN
         }
     }
 
     @objc
     override public init() {
+        AssertIsOnMainThread()
+
         self.reachability = Reachability.forInternetConnection()
 
         super.init()
@@ -83,11 +94,21 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         }
     }
 
+    private func updateToken() {
+        AssertIsOnMainThread()
+
+        token.set(Token(isReachable: reachability.isReachable(),
+                        isReachableViaWiFi: reachability.isReachableViaWiFi(),
+                        isReachableViaWWAN: reachability.isReachableViaWWAN()))
+    }
+
     private func configure() {
+        AssertIsOnMainThread()
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
                                                name: .reachabilityChanged,
-                                               object: self.observationContext)
+                                               object: nil)
 
         startNotifier()
     }
@@ -103,12 +124,16 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
         Logger.verbose("isReachable: \(isReachable)")
 
-        NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: self.observationContext)
+        updateToken()
+
+        NotificationCenter.default.post(name: SSKReachability.owsReachabilityDidChange, object: nil)
 
         scheduleWakeupRequestIfNecessary()
     }
 
     private func startNotifier() {
+        AssertIsOnMainThread()
+
         guard AppReadiness.isAppReady else {
             owsFailDebug("App is unexpectedly not ready.")
             return
@@ -119,10 +144,14 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         }
         Logger.debug("started notifier")
 
+        updateToken()
+
         scheduleWakeupRequestIfNecessary()
     }
 
     private func scheduleWakeupRequestIfNecessary() {
+        AssertIsOnMainThread()
+
         // Start a background session to wake the app when the network
         // becomes available. We start this immediately when we lose
         // connectivity rather than waiting until the app is backgrounded,
@@ -139,6 +168,8 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         }
     }
 }
+
+// MARK: -
 
 private extension NetworkInterface {
     var reachabilityType: ReachabilityType {

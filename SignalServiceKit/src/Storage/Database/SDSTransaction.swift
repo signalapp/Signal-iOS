@@ -188,18 +188,18 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
 
     // Objective-C doesn't honor default arguments.
     @objc
-    public func addAsyncCompletion(_ block: @escaping () -> Void) {
-        addAsyncCompletion(queue: DispatchQueue.main, block: block)
+    public func addAsyncCompletionOnMain(_ block: @escaping () -> Void) {
+        addAsyncCompletion(queue: .main, block: block)
     }
 
     // Objective-C doesn't honor default arguments.
     @objc
     public func addAsyncCompletionOffMain(_ block: @escaping () -> Void) {
-        addAsyncCompletion(queue: DispatchQueue.global(), block: block)
+        addAsyncCompletion(queue: .global(), block: block)
     }
 
     @objc
-    public func addAsyncCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
+    public func addAsyncCompletion(queue: DispatchQueue, block: @escaping () -> Void) {
         switch writeTransaction {
         case .grdbWrite(let grdbWrite):
             grdbWrite.addAsyncCompletion(queue: queue, block: block)

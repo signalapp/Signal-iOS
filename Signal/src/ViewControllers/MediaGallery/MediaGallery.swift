@@ -788,7 +788,7 @@ class MediaGallery: Dependencies {
                     }
                 }
 
-                transaction.addAsyncCompletion {
+                transaction.addAsyncCompletionOnMain {
                     self.deletedAttachmentIds.subtract(items.lazy.map { $0.attachmentStream.uniqueId })
                 }
             }

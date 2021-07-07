@@ -180,7 +180,7 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
                 contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
             }
 
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOnMain {
                 let message = ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, thread: thread)
                 self.messageWasSent(message)
 

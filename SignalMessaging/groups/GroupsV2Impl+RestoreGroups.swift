@@ -70,7 +70,7 @@ public extension GroupsV2Impl {
         // Mark as needing restore.
         groupsFromStorageService_EnqueuedForRestore.setData(masterKeyData, key: key, transaction: transaction)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             self.enqueueRestoreGroupPass()
         }
     }

@@ -51,7 +51,7 @@ public class VoiceMessageModel: NSObject {
     @objc(clearDraftForThreadUniqueId:transaction:)
     public static func clearDraft(for threadUniqueId: String, transaction: SDSAnyWriteTransaction) {
         keyValueStore.removeValue(forKey: threadUniqueId, transaction: transaction)
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             do {
                 try OWSFileSystem.deleteFileIfExists(url: Self.directory(for: threadUniqueId))
             } catch {

@@ -208,7 +208,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                       transaction:transaction];
     }
 
-    [transaction addAsyncCompletion:^{
+    [transaction addAsyncCompletionOffMain:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSSyncManagerConfigurationSyncDidCompleteNotification
                                                                  object:nil];
     }];

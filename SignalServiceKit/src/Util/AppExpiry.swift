@@ -95,7 +95,7 @@ public class AppExpiry: NSObject {
             } catch {
                 owsFailDebug("Error persisting expiration state \(error)")
             }
-            transaction.addAsyncCompletion {
+            transaction.addAsyncCompletionOffMain {
                 NotificationCenter.default.postNotificationNameAsync(
                     Self.AppExpiryDidChange,
                     object: nil

@@ -33,7 +33,7 @@ public extension ThreadUtil {
                                                       transaction: writeTransaction)
                 Self.messageSenderJobQueue.add(message: outgoingMessagePreparer,
                                                transaction: writeTransaction)
-                writeTransaction.addAsyncCompletion {
+                writeTransaction.addAsyncCompletionOnMain {
                     benchmarkCompletion()
                     persistenceCompletion?()
                 }

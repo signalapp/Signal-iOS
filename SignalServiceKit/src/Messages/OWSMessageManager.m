@@ -2209,7 +2209,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [transaction addAsyncCompletion:^{
+    [transaction addAsyncCompletionOffMain:^{
         [GroupManager sendGroupUpdateMessageObjcWithThread:groupThread singleRecipient:senderAddress];
     }];
 }

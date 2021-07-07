@@ -64,7 +64,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
                                                    transaction: transaction)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOffMain {
             self.tryToUpdateNext()
         }
     }

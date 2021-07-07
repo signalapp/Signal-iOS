@@ -664,7 +664,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.defaultAction: preferredDefaultAction.rawValue
         ]
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOnMain {
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -678,7 +678,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyUser(for errorMessage: ThreadlessErrorMessage, transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(transaction: transaction)
 
-        transaction.addAsyncCompletion {
+        transaction.addAsyncCompletionOnMain {
             let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
             self.adaptee.notify(category: .threadlessErrorMessage,
                                 title: nil,

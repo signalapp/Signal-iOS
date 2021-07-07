@@ -719,7 +719,7 @@ extension PinSetupViewController {
                 SDSDatabaseStorage.shared.asyncWrite { transaction in
                     KeyBackupService.useDeviceLocalMasterKey(transaction: transaction)
 
-                    transaction.addAsyncCompletion {
+                    transaction.addAsyncCompletionOnMain {
                         modal.dismiss { resolver.fulfill(true) }
                     }
                 }
