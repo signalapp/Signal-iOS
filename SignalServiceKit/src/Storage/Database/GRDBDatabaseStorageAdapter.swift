@@ -678,12 +678,37 @@ private struct GRDBStorage {
     init(dbURL: URL, keyspec: GRDBKeySpecSource) throws {
         self.dbURL = dbURL
 
-        poolConfiguration = Self.buildConfiguration(keyspec: keyspec)
+        self.poolConfiguration = Self.buildConfiguration(keyspec: keyspec)
+        self.pool = try Self.buildPool(dbURL: dbURL, poolConfiguration: poolConfiguration)
 
-        pool = try DatabasePool(path: dbURL.path, configuration: poolConfiguration)
         Logger.debug("dbURL: \(dbURL)")
 
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
+    }
+
+    // See: https://github.com/groue/GRDB.swift/blob/master/Documentation/SharingADatabase.md
+    private static func buildPool(dbURL: URL, poolConfiguration: Configuration) throws -> DatabasePool {
+        let coordinator = NSFileCoordinator(filePresenter: nil)
+        var coordinatorError: NSError?
+        var newPool: DatabasePool?
+        var dbError: Error?
+        coordinator.coordinate(writingItemAt: dbURL,
+                               options: .forMerging,
+                               error: &coordinatorError,
+                               byAccessor: { url in
+            do {
+                newPool = try DatabasePool(path: url.path, configuration: poolConfiguration)
+            } catch {
+                dbError = error
+            }
+        })
+        if let error = dbError ?? coordinatorError {
+            throw error
+        }
+        guard let pool = newPool else {
+            throw OWSAssertionError("Missing pool.")
+        }
+        return pool
     }
 
     // The isCheckpointing flag is backed by a thread local.
