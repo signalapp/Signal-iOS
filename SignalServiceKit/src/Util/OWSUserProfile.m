@@ -392,6 +392,11 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
             });
         }
 
+        BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
+        if (isLocalUserProfile) {
+            OWSLogInfo(@"avatarFileName: %d -> %d", _avatarFileName.length > 0, avatarFileName.length > 0);
+        }
+
         _avatarFileName = avatarFileName;
     }
 }
@@ -571,6 +576,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                    NSString *_Nullable givenNameBefore = profile.givenName;
                                    NSString *_Nullable familyNameBefore = profile.familyName;
                                    NSString *_Nullable avatarUrlPathBefore = profile.avatarUrlPath;
+                                   NSString *_Nullable avatarFileNameBefore = profile.avatarFileName;
 
                                    [OWSUserProfile applyChanges:changes
                                                         profile:profile
@@ -584,6 +590,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                                                   equalTo:profile.familyName];
                                    BOOL avatarUrlPathDidChange = ![NSObject isNullableObject:avatarUrlPathBefore
                                                                                      equalTo:profile.avatarUrlPath];
+                                   BOOL avatarFileNameDidChange = ![NSObject isNullableObject:avatarFileNameBefore
+                                                                                      equalTo:profile.avatarFileName];
 
                                    if (isLocalUserProfile) {
                                        BOOL shouldReupload = NO;
@@ -614,9 +622,21 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                                      equalTo:profile.avatarUrlPath];
                                            if (givenNameDoesNotMatch || familyNameDoesNotMatch
                                                || avatarUrlPathDoesNotMatch) {
-                                               OWSLogWarn(@"Updating profile to reflect profile state: %@, %@.",
+                                               OWSLogWarn(@"Updating profile to reflect profile state: %@, %@, "
+                                                          @"isLocalUserProfile: %d, givenName: %d -> %d (%d), "
+                                                          @"familyName: %d -> %d (%d), avatarUrlPath: %d -> %d (%d), .",
                                                    changes.updateMethodName,
-                                                   NSStringForUserProfileWriter(userProfileWriter));
+                                                   NSStringForUserProfileWriter(userProfileWriter),
+                                                   isLocalUserProfile,
+                                                   profile.givenName.length > 0,
+                                                   changes.givenName.value.length > 0,
+                                                   givenNameDoesNotMatch,
+                                                   profile.familyName.length > 0,
+                                                   changes.familyName.value.length > 0,
+                                                   familyNameDoesNotMatch,
+                                                   profile.avatarUrlPath.length > 0,
+                                                   changes.avatarUrlPath.value.length > 0,
+                                                   avatarUrlPathDoesNotMatch);
                                                shouldReupload = YES;
                                            }
                                        }
@@ -644,10 +664,11 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                    }
 
                                    if (profileKeyDidChange || givenNameDidChange || familyNameDidChange
-                                       || avatarUrlPathDidChange) {
+                                       || avatarUrlPathDidChange || avatarFileNameDidChange) {
                                        OWSLogInfo(@"address: %@ (isLocal: %d), profileKeyDidChange: %d (%d -> %d) %@, "
                                                   @"givenNameDidChange: %d (%d -> %d), familyNameDidChange: %d (%d -> "
-                                                  @"%d), avatarUrlPathDidChange: %d (%d -> %d), %@, %@.",
+                                                  @"%d), avatarUrlPathDidChange: %d (%d -> %d), "
+                                                  @"avatarFileNameDidChange: %d (%d -> %d), %@, %@.",
                                            profile.address,
                                            profile.address.isLocalAddress,
                                            profileKeyDidChange,
@@ -663,6 +684,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                            avatarUrlPathDidChange,
                                            avatarUrlPathBefore != nil,
                                            profile.avatarUrlPath != nil,
+                                           avatarFileNameDidChange,
+                                           avatarFileNameBefore != nil,
+                                           profile.avatarFileName != nil,
                                            changes.updateMethodName,
                                            NSStringForUserProfileWriter(userProfileWriter));
                                    }
