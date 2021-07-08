@@ -197,9 +197,7 @@ class CustomColorViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let previewView = databaseStorage.read { transaction in
-            CustomColorPreviewView(thread: self.thread, transaction: transaction, delegate: self)
-        }
+        let previewView = CustomColorPreviewView(thread: self.thread, delegate: self)
         self.previewView = previewView
 
         let previewSection = OWSTableSection()
@@ -932,26 +930,33 @@ private class CustomColorPreviewView: UIView {
         updateKnobLayout()
     }
 
-    init(thread: TSThread?,
-         transaction: SDSAnyReadTransaction,
-         delegate: CustomColorPreviewDelegate) {
+    init(thread: TSThread?, delegate: CustomColorPreviewDelegate) {
 
-        self.mockConversationView = MockConversationView(
-            model: CustomColorPreviewView.buildMockConversationModel(),
-            hasWallpaper: delegate.hasWallpaper(transaction: transaction),
-            customChatColor: delegate.currentChatColor
-        )
+        let (mockConversationView, wallpaperPreviewView) = Self.databaseStorage.read { transaction -> (MockConversationView, UIView) in
+            let mockConversationView =
+                MockConversationView(
+                    model: CustomColorPreviewView.buildMockConversationModel(),
+                    hasWallpaper: delegate.hasWallpaper(transaction: transaction),
+                    customChatColor: delegate.currentChatColor
+                )
+
+            let wallpaperPreviewView: UIView
+            if let wallpaperView = Wallpaper.view(for: thread, transaction: transaction) {
+                wallpaperPreviewView = wallpaperView.asPreviewView()
+            } else {
+                wallpaperPreviewView = UIView()
+                wallpaperPreviewView.backgroundColor = Theme.backgroundColor
+            }
+
+            return (mockConversationView, wallpaperPreviewView)
+        }
+
+        self.mockConversationView = mockConversationView
+
         self.delegate = delegate
 
         super.init(frame: .zero)
 
-        let wallpaperPreviewView: UIView
-        if let wallpaperView = Wallpaper.view(for: thread, transaction: transaction) {
-            wallpaperPreviewView = wallpaperView.asPreviewView()
-        } else {
-            wallpaperPreviewView = UIView()
-            wallpaperPreviewView.backgroundColor = Theme.backgroundColor
-        }
         wallpaperPreviewView.layer.cornerRadius = OWSTableViewController2.cellRounding
         wallpaperPreviewView.clipsToBounds = true
 
