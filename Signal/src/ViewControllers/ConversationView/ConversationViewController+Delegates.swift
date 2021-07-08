@@ -381,7 +381,10 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
             return
         }
 
-        if shouldAnimateKeyboardChanges, animationDuration > 0 {
+        let isAnimatingQuotedReply = viewState.inputToolbar?.isAnimatingQuotedReply ?? false
+        let duration = isAnimatingQuotedReply ? ConversationInputToolbar.quotedReplyAnimationDuration() : animationDuration
+
+        if shouldAnimateKeyboardChanges, duration > 0 {
             if hasViewDidAppearEverCompleted {
                 // Make note of when the keyboard animation will block
                 // loads from landing during the keyboard animation.
@@ -403,10 +406,12 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
             UIView.beginAnimations("keyboardStateChange", context: nil)
             UIView.setAnimationBeginsFromCurrentState(true)
             UIView.setAnimationCurve(animationCurve)
-            UIView.setAnimationDuration(animationDuration)
+            UIView.setAnimationDuration(duration)
             updateBottomBarPosition()
+            // To minimize risk, only animatedly update insets when animating quoted reply for now
+            if isAnimatingQuotedReply { updateContentInsets(animated: true) }
             UIView.commitAnimations()
-            updateContentInsets(animated: true)
+            if !isAnimatingQuotedReply { updateContentInsets(animated: true) }
         } else {
             updateBottomBarPosition()
             updateContentInsets(animated: false)

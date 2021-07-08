@@ -110,7 +110,9 @@ extension ConversationViewController {
 
         UIView.performWithoutAnimation {
             if didChangeInsets {
+                let contentOffset = self.collectionView.contentOffset
                 self.collectionView.contentInset = newInsets
+                self.collectionView.setContentOffset(contentOffset, animated: false)
             }
             self.collectionView.scrollIndicatorInsets = newInsets
         }
