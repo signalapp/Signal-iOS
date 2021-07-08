@@ -588,9 +588,15 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             return
         }
 
-        guard GRDBStorage.isCheckpointing.tryToSetFlag() else {
-            owsFailDebug("Could not set isCheckpointing.")
-            return
+        // Set isCheckpointing flag.
+        owsAssertDebug(!GRDBStorage.isCheckpointing)
+        GRDBStorage.isCheckpointing = true
+        owsAssertDebug(GRDBStorage.isCheckpointing)
+        defer {
+            // Clear isCheckpointing flag.
+            owsAssertDebug(GRDBStorage.isCheckpointing)
+            GRDBStorage.isCheckpointing = false
+            owsAssertDebug(!GRDBStorage.isCheckpointing)
         }
 
         pool.writeWithoutTransaction { database in
@@ -634,7 +640,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 checkpointBudget += 32
                 lastSuccessfulCheckpointDate = Date()
             }
-            GRDBStorage.isCheckpointing.set(false)
         }
     }
 }
@@ -681,7 +686,18 @@ private struct GRDBStorage {
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
     }
 
-    fileprivate static let isCheckpointing = AtomicBool(false)
+    // The isCheckpointing flag is backed by a thread local.
+    // We don't want to affect the behavior of the busy-handler (aka busyMode callback)
+    // in other threads while checkpointing.
+    fileprivate static let isCheckpointingKey = "GRDBStorage.isCheckpointingKey"
+    fileprivate static var isCheckpointing: Bool {
+        get {
+            Thread.current.threadDictionary[Self.isCheckpointingKey] as? Bool == true
+        }
+        set {
+            Thread.current.threadDictionary[Self.isCheckpointingKey] = newValue
+        }
+    }
 
     private static func buildConfiguration(keyspec: GRDBKeySpecSource) -> Configuration {
         var configuration = Configuration()
@@ -704,8 +720,7 @@ private struct GRDBStorage {
             }
 
             // Only time out during checkpoints, not writes.
-            if isCheckpointing.get() {
-                // The checkpointing queue should time out.
+            if isCheckpointing {
                 if accumulatedWaitMs > GRDBStorage.maxBusyTimeoutMs {
                     Logger.warn("Aborting busy retry.")
                     return false
