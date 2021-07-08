@@ -506,6 +506,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
+
+    [self.databaseStorage readWithBlock:^(
+        SDSAnyReadTransaction *transaction) { [self refreshUnblockedGroupId:groupId transaction:transaction]; }];
 }
 
 - (void)removeBlockedGroupId:(NSData *)groupId
@@ -528,8 +531,18 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     [self handleUpdateAndSendSyncMessage:wasLocallyInitiated transaction:transaction];
+
+    [self refreshUnblockedGroupId:groupId transaction:transaction];
 }
 
+- (void)refreshUnblockedGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
+{
+    TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+    if (groupThread == nil) {
+        return;
+    }
+    [self.groupV2UpdatesObjc tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling:groupThread];
+}
 
 #pragma mark - Thread Blocking
 
