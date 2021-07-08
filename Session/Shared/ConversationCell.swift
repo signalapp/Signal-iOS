@@ -179,7 +179,7 @@ final class ConversationCell : UITableViewCell {
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
         profilePictureView.update(for: thread)
         displayNameLabel.text = getDisplayName()
-        timestampLabel.text = DateUtil.formatDateShort(threadViewModel.lastMessageDate)
+        timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate)
         if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: thread) != nil {
             snippetLabel.text = ""
             typingIndicatorView.isHidden = false

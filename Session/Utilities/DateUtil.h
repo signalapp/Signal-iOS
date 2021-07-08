@@ -34,10 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)exemplaryNowTimeFormat;
 + (NSString *)exemplaryMinutesTimeFormat;
 
-+ (NSString *)formatDateForConversationDateBreaks:(NSDate *)date;
++ (NSString *)formatDateForDisplay:(NSDate *)date;
 
 + (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
 + (BOOL)isSameDayWithDate:(NSDate *)date1 date:(NSDate *)date2;
+
++ (BOOL)isSameHourWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
++ (BOOL)isSameHourWithDate:(NSDate *)date1 date:(NSDate *)date2;
 
 @end
 
