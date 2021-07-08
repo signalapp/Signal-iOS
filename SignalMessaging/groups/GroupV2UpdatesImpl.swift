@@ -15,6 +15,58 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         super.init()
 
         SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            self.refreshGroupsOnLaunch()
+        }
+    }
+
+    // MARK: -
+
+    // On launch, we refresh a few randomly-selected groups.
+    private func refreshGroupsOnLaunch() {
+        guard CurrentAppContext().isMainApp,
+              tsAccountManager.isRegisteredAndReady,
+              reachabilityManager.isReachable,
+              !CurrentAppContext().isRunningTests else {
+            return
+        }
+
+        firstly(on: .global()) { () -> Promise<Void> in
+            self.messageProcessor.fetchingAndProcessingCompletePromise()
+        }.then(on: .global()) { _ -> Promise<Void> in
+            struct GroupInfo {
+                let groupId: Data
+                let groupSecretParamsData: Data
+            }
+            var groupInfos = [GroupInfo]()
+            Self.databaseStorage.read { transaction in
+                TSGroupThread.anyEnumerate(transaction: transaction,
+                                           batched: true) { (thread, _ ) in
+                    guard let groupThread = thread as? TSGroupThread,
+                          let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                        return
+                    }
+                    groupInfos.append(GroupInfo(groupId: groupThread.groupId,
+                                                groupSecretParamsData: groupModel.secretParamsData))
+                }
+            }
+            guard !groupInfos.isEmpty else {
+                return Promise.value(())
+            }
+            // Update N randomly-selected groups.
+            let maxUpdateCount: Int = 1
+            groupInfos = Array(groupInfos.shuffled().prefix(maxUpdateCount))
+            let promises = groupInfos.map { groupInfo in
+                self.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupInfo.groupId,
+                                                                       groupSecretParamsData: groupInfo.groupSecretParamsData).asVoid()
+            }
+            return when(resolved: promises).asVoid()
+        }.done(on: .global()) { _ in
+            Logger.verbose("Complete.")
+        }.catch(on: .global()) { error in
+            owsFailDebugUnlessNetworkFailure(error)
+        }
     }
 
     // MARK: -
