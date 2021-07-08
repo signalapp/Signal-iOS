@@ -49,6 +49,14 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return storage.pool
     }
 
+    private let checkpointLock = UnfairLock()
+    // The number of writes we can perform until our next checkpoint attempt.
+    //
+    // checkpointBudget should only be accessed while checkpointLock is acquired.
+    private var checkpointBudget: Int = 0
+    // lastSuccessfulCheckpointDate should only be accessed while checkpointLock is acquired.
+    private var lastSuccessfulCheckpointDate: Date?
+
     init(baseDir: URL, directoryMode: DirectoryMode = .primary) {
         databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir, directoryMode: directoryMode)
 
@@ -134,8 +142,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // DatabaseChangeObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
-        let databaseChangeObserver = try DatabaseChangeObserver(pool: pool,
-                                                                  checkpointingQueue: storage.checkpointingQueue)
+        let databaseChangeObserver = DatabaseChangeObserver()
         self.databaseChangeObserver = databaseChangeObserver
 
         try pool.write { db in
@@ -418,6 +425,10 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             }
         }
 
+        checkpointLock.withLock {
+            checkpointIfNecessary()
+        }
+
         // Perform all completions _after_ the write transaction completes.
         for block in syncCompletions {
             block()
@@ -425,6 +436,210 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
         for asyncCompletion in asyncCompletions {
             asyncCompletion.queue.async(execute: asyncCompletion.block)
+        }
+    }
+
+    // This method should only be invoked with checkpointLock already acquired.
+    private func checkpointIfNecessary() {
+        // What Is Checkpointing?
+        //
+        // Checkpointing is the process of integrating the WAL into the main database file.
+        // Without it, the WAL will grow indefinitely. A large WAL affects read performance.
+        // Therefore we want to keep the WAL small.
+        //
+        // * The SQLite WAL consists of "frames", representing changes to the database.
+        // * Frames are appended to the tail of the WAL.
+        // * The WAL tracks how many of its frames have been integrated into the database.
+        // * Checkpointing entails some subset of the following tasks:
+        //   * Integrating some or all of the frames of the WAL into the database.
+        //   * "Restarting" the WAL so the next frame is written to the head of the WAL
+        //     file, not the tail. WAL file size doesn't change, but since subsequent writes
+        //     overwrite from the start of the WAL, WAL file size growth can be bounded.
+        //   * "Truncating" the WAL so that that the WAL file is deleted or returned to
+        //     an empty state.
+        //
+        // The more unintegrated frames there are in the WAL, the longer a checkpoint takes
+        // to complete. Long-running checkpoints can cause problems in the app, e.g.
+        // blocking the main thread (note: we currently do _NOT_ checkpoint on the main
+        // thread).  Therefore we want to bound overall WAL file size _and_ the number of
+        // unintegrated frames.
+        //
+        // To bound WAL file size, it's important to periodically "restart" or (preferably)
+        // truncate the WAL file. We currently always truncate.
+        //
+        // To bound the number of unintegrated frames, we can use passive checkpoints.
+        // We don't explicitly initiate passive checkpoints, but leave this to SQLite
+        // auto-checkpointing.
+        //
+        //
+        // Checkpoint Types
+        //
+        // Checkpointing has several flavors: passive, full, restart, truncate.
+        //
+        // * Passive checkpoints abort immediately if there are any database
+        //   readers or writers. This makes them "cheap" in the sense that
+        //   they won't block for long.
+        //   However they only integrate WAL contents, they don't "restart" or
+        //   "truncate" so they don't inherently limit WAL growth.
+        //   My understanding is that they can have partial success, e.g.
+        //   integrating some but not all of the frames of the WAL. This is
+        //   beneficial.
+        // * Full/Restart/Truncate checkpoints will block using the busy-handler.
+        //   We use truncate checkpoints since they truncate the WAL file.
+        //   See GRDBStorage.buildConfiguration for our busy-handler (aka busyMode
+        //   callback). It aborts after ~50ms.
+        //   These checkpoints are more expensive and will block while they do
+        //   their work but will limit WAL growth.
+        //
+        // SQLite has auto-checkpointing enabled by default, meaning that it
+        // is continually trying to perform passive checkpoints in the background.
+        // This is beneficial.
+        //
+        //
+        // Exclusion
+        //
+        // Note that we are navigating multiple exclusion mechanisms.
+        //
+        // * SQLite (as we have configured it) excludes database writes using
+        //   write locks (POSIX advisory locking on the database files).
+        //   This locking protects the database from cross-process writes.
+        // * GRDB writers use a serial DispatchQueue to exclude writes from
+        //   each other within a given DatabasePool / DatabaseQueue.
+        //   AFAIK this does not protect any GRDB internal state; it allows
+        //   GRDB to detect re-entrancy, etc.
+        //
+        // SQLite cannot checkpoint if there are any readers or writers.
+        // Therefore we cannot checkpoint within a SQLite write transaction.
+        // We checkpoint after write transactions using
+        // DatabasePool.writeWithoutTransaction().  This method uses the
+        // GRDB exclusion mechanism but not the SQL one.
+        //
+        //
+        // Our approach:
+        //
+        // * Always (not including auto-checkpointing) use truncate checkpoints
+        //   to limit WAL size.
+        // * Only checkpoint immediately after writes.
+        // * It's expensive and unnecessary to do a checkpoint on every write,
+        //   so we only checkpoint once every N writes. We always checkpoint after
+        //   the first write.  Large (in terms of file size) writes should be rare,
+        //   so WAL file size should be bounded and quite small.
+        // * Use a "budget" to tracking the urgency of trying to perform a checkpoint after
+        //   the next write.  When the budget reaches zero, we should try after the next
+        //   write.  Successes bump up the budget considerably, failures bump it up a little.
+        // * Retry more often after failures, via the budget.
+        //
+        //
+        // What could go wrong:
+        //
+        // * Our busy-handler (aka busyMode callback) is untested. Previously it was
+        //   irrelevant because we always performed checkpoints on a separate
+        //   DatabaseQueue.
+        //   It needs to work correctly to ensure that checkpoints timeout if there's
+        //   heavy contention (reads or writes).
+        // * Checkpointing could be expensive in some cases, causing blocking.
+        //   This shouldn't be an issue: we're more aggressive than ever about
+        //   keeping the WAL small.
+        // * Cross-process activity could interfere with checkpointing.
+        //   This shouldn't be an issue: We shouldn't have more than one of
+        //   the apps (main app, SAE, NSE) active at the same time for long.
+        // * Checkpoints might frequently fail if we're constantly doing reads.
+        //   This shouldn't be an issue: A checkpoint should eventually
+        //   succeed when db activity settles.  This checkpoint might take a while
+        //   but that's unavoidable.
+        //   The counter-argument is that we only try to checkpoint immediately after
+        //   a write. We often do reads immediately after writes to update the UI
+        //   to reflect the DB changes.  Those reads _might_ frequently interfere
+        //   with checkpointing.
+        // * We might not be checkpointing often enough, or we might be checkpointing
+        //   too often.  Either way, it's about balancing overall perf with the perf
+        //   cost of the next successful checkpoint.  We can tune this behavior
+        //   using the "checkpoint budget".
+        //
+        // Reference
+        //
+        // * https://www.sqlite.org/c3ref/wal_checkpoint_v2.html
+        // * https://www.sqlite.org/wal.html
+        // * https://www.sqlite.org/howtocorrupt.html
+        //
+        guard !Thread.isMainThread else {
+            // To avoid blocking the main thread, we avoid doing "truncate" checkpoints
+            // on the main thread. We perhaps could do passive checkpoints on the main
+            // thread, which abort if there is any contention.
+            //
+            // We decrement the checkpoint budget anyway.
+            checkpointBudget -= 1
+            return
+        }
+        var shouldCheckpoint = checkpointBudget <= 0
+
+        // Limit checkpoint frequency by time so that heavy write activity
+        // won't bog down the main thread.
+        let maxCheckpointFrequency: TimeInterval = 0.25
+        if shouldCheckpoint,
+           let lastSuccessfulCheckpointDate = self.lastSuccessfulCheckpointDate,
+           abs(lastSuccessfulCheckpointDate.timeIntervalSinceNow) < maxCheckpointFrequency {
+            Logger.verbose("Skipping checkpoint due to frequency.")
+            shouldCheckpoint = false
+        }
+        guard shouldCheckpoint else {
+            // We decrement the checkpoint budget.
+            checkpointBudget -= 1
+            return
+        }
+
+        // Set isCheckpointing flag.
+        owsAssertDebug(!GRDBStorage.isCheckpointing)
+        GRDBStorage.isCheckpointing = true
+        owsAssertDebug(GRDBStorage.isCheckpointing)
+        defer {
+            // Clear isCheckpointing flag.
+            owsAssertDebug(GRDBStorage.isCheckpointing)
+            GRDBStorage.isCheckpointing = false
+            owsAssertDebug(!GRDBStorage.isCheckpointing)
+        }
+
+        pool.writeWithoutTransaction { database in
+            let kind: Database.CheckpointMode = .truncate
+
+            var walSizePages: Int32 = 0
+            var pagesCheckpointed: Int32 = 0
+            var code: Int32 = 0
+            Bench(title: "Checkpoint",
+                  logIfLongerThan: TimeInterval(5) / TimeInterval(1000),
+                  logInProduction: true) {
+                code = sqlite3_wal_checkpoint_v2(database.sqliteConnection,
+                                                 nil,
+                                                 kind.rawValue,
+                                                 &walSizePages,
+                                                 &pagesCheckpointed)
+            }
+            if code != SQLITE_OK {
+                // Extracting this error message can race.
+                let errorMessage = String(cString: sqlite3_errmsg(database.sqliteConnection))
+                if code == SQLITE_BUSY {
+                    // It is expected that the busy-handler (aka busyMode callback)
+                    // will abort checkpoints if there is contention.
+                    Logger.warn("Error code: \(code), errorMessage: \(errorMessage).")
+                } else {
+                    owsFailDebug("Error code: \(code), errorMessage: \(errorMessage).")
+                }
+                // If the checkpoint failed, try again soon.
+                checkpointBudget += 5
+            } else {
+                let pageSize: Int32 = 4 * 1024
+                let walFileSizeBytes = walSizePages * pageSize
+                let maxWalFileSizeBytes = 4 * 1024 * 1024
+                if walFileSizeBytes > maxWalFileSizeBytes {
+                    Logger.info("walFileSizeBytes: \(walFileSizeBytes).")
+                    Logger.info("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
+                } else {
+                    Logger.verbose("walSizePages: \(walSizePages), pagesCheckpointed: \(pagesCheckpointed).")
+                }
+                // If the checkpoint succeeded, wait N writes before performing another checkpoint.
+                checkpointBudget += 32
+                lastSuccessfulCheckpointDate = Date()
+            }
         }
     }
 }
@@ -455,39 +670,36 @@ private struct GRDBStorage {
 
     let pool: DatabasePool
 
-    // TODO: Can we eliminate this?
-    let checkpointingQueue: DatabaseQueue?
-
     private let dbURL: URL
     private let poolConfiguration: Configuration
-    private let checkpointingQueueConfiguration: Configuration
 
     fileprivate static let maxBusyTimeoutMs = 50
 
     init(dbURL: URL, keyspec: GRDBKeySpecSource) throws {
         self.dbURL = dbURL
 
-        poolConfiguration = Self.buildConfiguration(keyspec: keyspec,
-                                                    isForCheckpointingQueue: false)
-        checkpointingQueueConfiguration = Self.buildConfiguration(keyspec: keyspec,
-                                                                  isForCheckpointingQueue: true)
+        poolConfiguration = Self.buildConfiguration(keyspec: keyspec)
 
         pool = try DatabasePool(path: dbURL.path, configuration: poolConfiguration)
         Logger.debug("dbURL: \(dbURL)")
 
-        let shouldCheckpoint = CurrentAppContext().isMainApp
-        if shouldCheckpoint {
-            checkpointingQueue = try DatabaseQueue(path: dbURL.path,
-                                                   configuration: checkpointingQueueConfiguration)
-        } else {
-            checkpointingQueue = nil
-        }
-
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
     }
 
-    private static func buildConfiguration(keyspec: GRDBKeySpecSource,
-                                           isForCheckpointingQueue: Bool) -> Configuration {
+    // The isCheckpointing flag is backed by a thread local.
+    // We don't want to affect the behavior of the busy-handler (aka busyMode callback)
+    // in other threads while checkpointing.
+    fileprivate static let isCheckpointingKey = "GRDBStorage.isCheckpointingKey"
+    fileprivate static var isCheckpointing: Bool {
+        get {
+            Thread.current.threadDictionary[Self.isCheckpointingKey] as? Bool == true
+        }
+        set {
+            Thread.current.threadDictionary[Self.isCheckpointingKey] = newValue
+        }
+    }
+
+    private static func buildConfiguration(keyspec: GRDBKeySpecSource) -> Configuration {
         var configuration = Configuration()
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
@@ -495,9 +707,7 @@ private struct GRDBStorage {
             dbQueryLog(logString)
         }
         // Useful when your app opens multiple databases
-        configuration.label = (isForCheckpointingQueue
-                                ? "GRDB Checkpointing"
-                                : "GRDB Storage")
+        configuration.label = "GRDB Storage"
         configuration.maximumReaderCount = 10   // The default is 5
         configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
             // sleep N milliseconds
@@ -509,8 +719,8 @@ private struct GRDBStorage {
                 Logger.warn("Database busy for \(accumulatedWaitMs)ms")
             }
 
-            if isForCheckpointingQueue {
-                // The checkpointing queue should time out.
+            // Only time out during checkpoints, not writes.
+            if isCheckpointing {
                 if accumulatedWaitMs > GRDBStorage.maxBusyTimeoutMs {
                     Logger.warn("Aborting busy retry.")
                     return false
@@ -646,15 +856,11 @@ public struct GrdbTruncationResult {
 extension GRDBDatabaseStorageAdapter {
     @objc
     public func syncTruncatingCheckpoint() throws {
-        guard let checkpointingQueue = storage.checkpointingQueue else {
-            return
-        }
-
-        Logger.info("running truncating checkpoint.")
+        Logger.info("Running truncating checkpoint.")
 
         SDSDatabaseStorage.shared.logFileSizes()
 
-        let result = try GRDBDatabaseStorageAdapter.checkpoint(checkpointingQueue: checkpointingQueue,
+        let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool,
                                                                mode: .truncate)
 
         Logger.info("walSizePages: \(result.walSizePages), pagesCheckpointed: \(result.pagesCheckpointed)")
@@ -662,7 +868,7 @@ extension GRDBDatabaseStorageAdapter {
         SDSDatabaseStorage.shared.logFileSizes()
     }
 
-    public static func checkpoint(checkpointingQueue: DatabaseQueue,
+    public static func checkpoint(pool: DatabasePool,
                                   mode: Database.CheckpointMode) throws -> GrdbTruncationResult {
 
         var walSizePages: Int32 = 0
@@ -671,7 +877,7 @@ extension GRDBDatabaseStorageAdapter {
             #if TESTABLE_BUILD
             let startTime = CACurrentMediaTime()
             #endif
-            try checkpointingQueue.inDatabase { db in
+            try pool.writeWithoutTransaction { db in
                 #if TESTABLE_BUILD
                 let startElapsedSeconds: TimeInterval = CACurrentMediaTime() - startTime
                 let slowStartSeconds: TimeInterval = TimeInterval(GRDBStorage.maxBusyTimeoutMs) / 1000
