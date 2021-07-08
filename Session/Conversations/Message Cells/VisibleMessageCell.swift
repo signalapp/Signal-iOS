@@ -284,7 +284,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         dateBreakLabel.textColor = Colors.text
         dateBreakLabel.textAlignment = .center
         let date = viewItem.interaction.dateForUI()
-        let description = DateUtil.formatDate(forConversationDateBreaks: date)
+        let description = DateUtil.formatDate(forDisplay: date)
         dateBreakLabel.text = description
         headerView.addSubview(dateBreakLabel)
         dateBreakLabel.pin(.top, to: .top, of: headerView, withInset: Values.smallSpacing)
