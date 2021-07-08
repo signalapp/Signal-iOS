@@ -419,9 +419,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
             TSGroupThread *groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-            [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
-                                                                     transaction:transaction
-                                                                         success:nil];
+            if (groupThread.isLocalUserMemberOfAnyKind) {
+                [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
+                                                                         transaction:transaction
+                                                                             success:nil];
+            }
         });
     }
 

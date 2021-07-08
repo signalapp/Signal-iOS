@@ -652,6 +652,10 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             owsFailDebug("Already blocked.")
             return
         }
+        guard canLocalUserLeaveGroupWithoutChoosingNewAdmin else {
+            showReplaceAdminAlert()
+            return
+        }
         BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] _ in
             self?.updateTableContents()
         }

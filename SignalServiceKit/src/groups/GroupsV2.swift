@@ -29,6 +29,7 @@ public enum GroupsV2Error: Error {
     case groupDowngradeNotAllowed
     case missingGroupChangeProtos
     case unexpectedRevision
+    case groupBlocked
 }
 
 // MARK: -

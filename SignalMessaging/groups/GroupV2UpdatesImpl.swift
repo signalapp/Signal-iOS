@@ -92,6 +92,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                           groupUpdateMode: GroupUpdateMode,
                                           groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
 
+        guard !Self.blockingManager.isGroupIdBlocked(groupId) else {
+            return Promise(error: GroupsV2Error.groupBlocked)
+        }
         let isThrottled = { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
                 return false
