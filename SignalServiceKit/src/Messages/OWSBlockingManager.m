@@ -415,7 +415,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     // Open a sneaky transaction and quit the group if we're a member
-    if ([groupModel.groupMembers containsObject:TSAccountManager.localAddress]) {
+    if ([groupModel.groupMembership isLocalUserMemberOfAnyKind]) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
             TSGroupThread *groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
