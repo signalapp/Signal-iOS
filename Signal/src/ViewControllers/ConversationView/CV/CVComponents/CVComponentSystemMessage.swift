@@ -297,7 +297,13 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                     view.layer.add(animation, forKey: "remove")
                 }
             }
+        } else {
+            // Remove outstanding animations if needed
+            let selectionView = componentView.selectionView
+            selectionView.invalidateTransformBlocks()
+            outerVStack.invalidateTransformBlocks()
         }
+
         outerHStack.applyTransformBlocks()
 
     }

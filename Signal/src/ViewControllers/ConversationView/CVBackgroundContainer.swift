@@ -87,13 +87,14 @@ extension ConversationViewController: CVBackgroundContainerDelegate {
     public func updateScrollingContent() {
         AssertIsOnMainThread()
 
-        for cell in collectionView.visibleCells {
-            guard let cell = cell as? CVCell else {
-                owsFailDebug("Invalid cell.")
-                continue
+        UIView.performWithoutAnimation {
+            for cell in collectionView.visibleCells {
+                guard let cell = cell as? CVCell else {
+                    owsFailDebug("Invalid cell.")
+                    continue
+                }
+                cell.updateScrollingContent()
             }
-            cell.updateScrollingContent()
         }
-
     }
 }
