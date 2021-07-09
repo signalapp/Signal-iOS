@@ -88,8 +88,10 @@ const NSUInteger OWSCustomSoundShift = 16;
     OWSSingletonAssert();
 
     AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
-        [OWSSounds migrateLegacySounds];
-        [OWSSounds cleanupOrphanedSounds];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [OWSSounds migrateLegacySounds];
+            [OWSSounds cleanupOrphanedSounds];
+        });
     });
 
     return self;
