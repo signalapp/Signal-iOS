@@ -3071,7 +3071,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Letiltás és törlés";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Kéretlen üzenet bejelentése és tiltás";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "A letiltott felhasználók nem tudna sem felhívni, sem pedig üzenetet küldeni neked.";
@@ -3677,7 +3677,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Frissítsd a Signalt a fizetések használatához";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "A fizetés még nem került ellenőrzésre";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Sikertelen a fizetés befejezése. Ellenőrizd a kapcsolatod és próbáld újra.";

@@ -47,9 +47,7 @@ public class DatabaseChangeObserver: NSObject {
 
     private lazy var nonModelTables: Set<String> = Set([
                                                         MediaGalleryRecord.databaseTableName,
-                                                        PendingReadReceiptRecord.databaseTableName,
-        // Ignore updates to the GRDB FTS table(s).
-        GRDBFullTextSearchFinder.contentTableName
+                                                        PendingReadReceiptRecord.databaseTableName
     ])
 
     // We protect DatabaseChangeObserver state with an UnfairLock.
@@ -218,6 +216,9 @@ public class DatabaseChangeObserver: NSObject {
 extension DatabaseChangeObserver: TransactionObserver {
 
     public func observes(eventWithTableName tableName: String) -> Bool {
+        guard !tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
+            return false
+        }
         guard !nonModelTables.contains(tableName) else {
             // Ignore updates to non-model tables
             return false
