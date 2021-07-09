@@ -4262,7 +4262,7 @@
 "PROFILE_VIEW_TITLE" = "Профіль";
 
 /* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "You may have new messages";
+"PUSH_FALLBACK_MESSAGE" = "Можливо, у вас є нові повідомлення";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Позначити прочитаним";

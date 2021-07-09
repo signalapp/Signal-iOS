@@ -413,7 +413,7 @@
 "BUTTON_DONE" = "Tehtud";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "Duplikaat";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Muuda";
@@ -557,16 +557,16 @@
 "CHAT_COLOR_INCOMING_MESSAGE_1" = "Here’s a preview of the chat color.";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "Veel üks mull.";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "See värv on nähtav ainult sulle.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "See värv on nähtav ainult sulle.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "See värv on nähtav ainult sulle.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "automaatne";
@@ -1076,19 +1076,19 @@
 "CURRENCY_PICKER_VIEW_TITLE" = "Määra valuuta";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Üleminek";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Toon";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Küllastus";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Ühtlane";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Kohandatud värv";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
@@ -1103,13 +1103,13 @@
 "DATE_HOURS_AGO_FORMAT" = "%@t";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
+"DATE_HOURS_AGO_LONG_FORMAT" = "%@ tundi tagasi";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@m";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutit tagasi";
 
 /* The present; the current time. */
 "DATE_NOW" = "Praegu";
@@ -1277,7 +1277,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Jätkates keelatakse Signal teistes hetkel sama telefoninumbriga registreeritud seadmetes.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Uue seadme kontrollimine ei õnnestunud. Palun proovi hiljem uuesti";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Uue seadme kinnitamine ei õnnestunud. Palun proovi hiljem uuesti";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Andmete ülekandmine ei õnnestunud. Palun kontrolli, et seadmed oleks üksteise lähedal ja proovi uuesti";
@@ -1340,7 +1340,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Selle vestluse sõnumid kaovad %@ pärast.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Kohandatud aeg";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "päeva";
@@ -1397,19 +1397,19 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Annetus Signalile";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "Muud viisid annetamiseks";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Vali annetuseks suurem summa";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Vali annetuseks väiksem summa";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "Vali annetuseks summa";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Aitäh sinu toetuse eest!";
 
 /* Title for the donate to signal view */
 "DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
@@ -1418,7 +1418,7 @@
 "DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "Miks annetada?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Juurdepääs on võimalik anda iOS rakenduses Settings.";
@@ -1553,7 +1553,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serveri tõrge. Palun proovi hiljem uuesti.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server nõuab enne sõnumi saatmist kasutaja kinnitamist.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ilmnes tundmatu tõrge.";
@@ -1667,7 +1667,7 @@
 "GET_STARTED_CARD_NEW_GROUP" = "Uus grupp";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Soovitud GIF-i tõmbamine ei õnnestunud. Palun kontrolli, kas oled internetis.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Soovitud GIF-i tõmbamine ei õnnestunud. Palun kontrolli internetiühendust.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Ilmnes tundmatu tõrge.";
@@ -1808,7 +1808,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ on selles kõnes";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ esitleb";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Uuesti ühendamine";
@@ -2975,10 +2975,10 @@
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Ava link";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Näita kleebisepakki";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Helista";
@@ -2990,7 +2990,7 @@
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Saada tekstsõnum";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Vasta sellele sõnumile";
@@ -3032,7 +3032,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Ei õnnestunud";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Saatmine peatatud";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Loetud:";
@@ -3050,7 +3050,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Üleslaadimine";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Nähtud: ";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Saabunud";
@@ -3071,7 +3071,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokeeri ja kustuta";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Raporteeri rämpspostitus ja blokeeri";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blokeeritud isikutel pole võimalik sulle helistada ega sõnumeid saata.";
@@ -3125,7 +3125,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Vaata taotlus üle";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Reported as spam and blocked.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Raporteeritud rämpspostitusena ja blokeeritud";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Nõustun";
@@ -3194,7 +3194,7 @@
 "MESSAGE_STATUS_PENDING" = "Saatmine peatatud";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "Peatatud";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Loetud";
@@ -4388,7 +4388,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Sobimatu PIN-kood";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "PIN-koodi kontrollimine...";
+"REGISTER_2FA_PIN_PROGRESS" = "PIN-koodi kinnitamine...";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Sisesta";
@@ -5672,16 +5672,16 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Kui otsustad verifitseerimise vahele jätta, siis võid jääda ilma teiste poolt saadetud sõnumitest ja sinu sõnumite saatmine ei pruugi õnnestuda.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Kas jätkata ilma verifitseerimata?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Kas jätkata ilma kinnitamata?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Rämpssõnumite leviku tõkestamiseks Signalis pead kinnituse lõpule viima.\n\nPärast kinnitamist saad sõnumite saatmist jätkata. Kõik pausile jäänud sõnumid saadetakse automaatselt.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Sõnumite saatmise jätkamiseks kinnita";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Jäta kinnitamine vahele";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Lõpeta verifitseerimine";
@@ -5753,7 +5753,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Võta meiega ühendust";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Räägi meile, mis toimub";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Räägi meile oma probleemist: ";
@@ -5978,7 +5978,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Sinu seade ei toeta seda funktsiooni.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Sinu turvanumber kasutajaga %@ on muutunud tõenäoliselt seepärast, et paigaldasid Signali uuesti või muutsid seadmeid. Uue turvanumbri kinnitamiseks klõpsa Kinnita. See on valikuline tegevus.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Kinnita";
@@ -6122,10 +6122,10 @@
 "WALLPAPER_PREVIEW_TITLE" = "Eelvaade";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Clear Chat Color";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Eemalda vestluse värv";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Clear chat color for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Kas eemaldada selle vestluse värv?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Eemalda taustapilt";
@@ -6143,37 +6143,37 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Kõiki taustapilte ei õnnestunud lähtestada, probleemi püsimisel, palun proovi hiljem uuesti või võta ühendust kasutajatoega.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Reset All Colors";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Lähtesta kõik värvid";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Lähtesta kõik taustapildid";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Kas sa soovid kõiki vestluste värve muuta?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Lähtesta vestluse värvid";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Lähtesta vestluse värv";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Lähtesta taustapilt";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Lähtesta vaikimisi värvid";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Lähtesta vestluse värvid";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Lähtesta vaikimisi taustapilt";
 
 /* Reset wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Lähtesta taustapildid";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Would you like to override all wallpapers?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Kas soovid kõiki taustapilte muuta?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Lähtesta taustapilt";
