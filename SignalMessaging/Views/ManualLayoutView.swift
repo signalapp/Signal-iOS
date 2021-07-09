@@ -217,6 +217,10 @@ open class ManualLayoutView: UIView, CVView {
         transformBlocks.append(transformBlock)
     }
 
+    public func invalidateTransformBlocks() {
+        transformBlocks.removeAll()
+    }
+
     public func centerSubviewWithLayoutBlock(_ subview: UIView,
                                              onSiblingView siblingView: UIView,
                                              size: CGSize) {

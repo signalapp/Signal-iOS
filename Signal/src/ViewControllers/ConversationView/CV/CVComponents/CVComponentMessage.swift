@@ -604,6 +604,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     }
                 }
             }
+        } else {
+            // Remove outstanding animations if needed
+            let selectionView = componentView.selectionView
+            selectionView.invalidateTransformBlocks()
+            hInnerStack.invalidateTransformBlocks()
         }
 
         hOuterStack.applyTransformBlocks()
