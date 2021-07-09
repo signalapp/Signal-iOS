@@ -115,6 +115,8 @@ public enum HTTP {
         request.httpBody = body
         request.timeoutInterval = timeout
         request.allHTTPHeaderFields?.removeValue(forKey: "User-Agent")
+        request.setValue("WhatsApp", forHTTPHeaderField: "User-Agent") // Set a fake value
+        request.setValue("en-us", forHTTPHeaderField: "Accept-Language") // Set a fake value
         let (promise, seal) = Promise<JSON>.pending()
         let urlSession = useSeedNodeURLSession ? seedNodeURLSession : snodeURLSession
         let task = urlSession.dataTask(with: request) { data, response, error in
