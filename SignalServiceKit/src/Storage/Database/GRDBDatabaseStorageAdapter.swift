@@ -293,16 +293,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     // In debug builds, we can detect transactions opened within transaction.
     // These checks can also be used to detect unexpected "sneaky" transactions.
-    private static let kCanOpenTransactionKey = "kCanOpenTransactionKey"
-    public static func setCanOpenTransaction(_ value: Bool) {
-        Thread.current.threadDictionary[kCanOpenTransactionKey] = NSNumber(value: value)
-    }
-    private static var canOpenTransaction: Bool {
-        guard let value = Thread.current.threadDictionary[kCanOpenTransactionKey] as? NSNumber else {
-            return true
-        }
-        return value.boolValue
-    }
+    @ThreadBacked(key: "canOpenTransaction", defaultValue: true)
+    public static var canOpenTransaction: Bool
     #endif
 
     // TODO writeThrows flavors
@@ -313,11 +305,11 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         // Check for nested tractions.
         if Self.detectNestedTransactions {
             // Check for nested tractions.
-            Self.setCanOpenTransaction(false)
+            Self.canOpenTransaction = false
         }
         defer {
             if Self.detectNestedTransactions {
-                Self.setCanOpenTransaction(true)
+                Self.canOpenTransaction = true
             }
         }
         #endif
@@ -337,11 +329,11 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         // Check for nested tractions.
         if Self.detectNestedTransactions {
             // Check for nested tractions.
-            Self.setCanOpenTransaction(false)
+            Self.canOpenTransaction = false
         }
         defer {
             if Self.detectNestedTransactions {
-                Self.setCanOpenTransaction(true)
+                Self.canOpenTransaction = true
             }
         }
         #endif
@@ -378,11 +370,11 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         owsAssertDebug(Self.canOpenTransaction)
         if Self.detectNestedTransactions {
             // Check for nested tractions.
-            Self.setCanOpenTransaction(false)
+            Self.canOpenTransaction = false
         }
         defer {
             if Self.detectNestedTransactions {
-                Self.setCanOpenTransaction(true)
+                Self.canOpenTransaction = true
             }
         }
         #endif
@@ -402,11 +394,11 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         // Check for nested tractions.
         if Self.detectNestedTransactions {
             // Check for nested tractions.
-            Self.setCanOpenTransaction(false)
+            Self.canOpenTransaction = false
         }
         defer {
             if Self.detectNestedTransactions {
-                Self.setCanOpenTransaction(true)
+                Self.canOpenTransaction = true
             }
         }
         #endif

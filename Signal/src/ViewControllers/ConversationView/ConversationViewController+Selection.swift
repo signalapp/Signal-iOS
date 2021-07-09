@@ -125,12 +125,13 @@ extension ConversationViewController {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
                 guard let self = self else { return }
 
-                self.deleteSelectedItems(selectedInteractionIds: selectedInteractionIds)
-
                 DispatchQueue.main.async {
                     self.clearSelection()
                     modalActivityIndicator.dismiss {
                         self.uiMode = .normal
+                        DispatchQueue.global().async {
+                            self.deleteSelectedItems(selectedInteractionIds: selectedInteractionIds)
+                        }
                     }
                 }
             }
