@@ -57,15 +57,8 @@ public class DatabaseChangeObserver: NSObject {
         hasDatabaseChangeObserverLockOnCurrentThread
     }
 
-    fileprivate static let hasDatabaseChangeObserverLockOnCurrentThreadFlag = ThreadLocalFlag(key: "hasDatabaseChangeObserverLockOnCurrentThread")
-    fileprivate static var hasDatabaseChangeObserverLockOnCurrentThread: Bool {
-        get {
-            hasDatabaseChangeObserverLockOnCurrentThreadFlag.value
-        }
-        set {
-            hasDatabaseChangeObserverLockOnCurrentThreadFlag.value = newValue
-        }
-    }
+    @ThreadBacked(key: "hasDatabaseChangeObserverLockOnCurrentThread", defaultValue: false)
+    fileprivate static var hasDatabaseChangeObserverLockOnCurrentThread: Bool
 
     private static let databaseChangeObserverLock = UnfairLock()
 

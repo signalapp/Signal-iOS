@@ -286,16 +286,8 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     // In debug builds, we can detect transactions opened within transaction.
     // These checks can also be used to detect unexpected "sneaky" transactions.
-    fileprivate static let canOpenTransactionFlag = ThreadLocalFlag(key: "canOpenTransaction",
-                                                                    defaultValue: true)
-    public static var canOpenTransaction: Bool {
-        get {
-            canOpenTransactionFlag.value
-        }
-        set {
-            canOpenTransactionFlag.value = newValue
-        }
-    }
+    @ThreadBacked(key: "canOpenTransaction", defaultValue: true)
+    public static var canOpenTransaction: Bool
     #endif
 
     // TODO writeThrows flavors

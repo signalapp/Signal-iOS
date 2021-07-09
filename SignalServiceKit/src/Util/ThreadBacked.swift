@@ -4,21 +4,23 @@
 
 import Foundation
 
-public class ThreadLocalFlag {
+// Thread local
+@propertyWrapper
+public struct ThreadBacked<Value> {
     private let key: String
-    private let defaultValue: Bool
-
-    public init(key: String, defaultValue: Bool = false) {
+    private let defaultValue: Value
+    
+    public init(key: String, defaultValue: Value) {
         self.key = key
         self.defaultValue = defaultValue
     }
-
-    public var value: Bool {
+    
+    public var wrappedValue: Value {
         get {
             guard let value = Thread.current.threadDictionary[key] else {
                 return defaultValue
             }
-            guard let value = value as? Bool else {
+            guard let value = value as? Value else {
                 owsFailDebug("Unexpected value: \(type(of: value))")
                 return defaultValue
             }
