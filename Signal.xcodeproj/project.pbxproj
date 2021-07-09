@@ -724,6 +724,20 @@
 		8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */; };
 		8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = 8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */; };
 		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
+		883A7FB32698DB2E00841DF9 /* hello.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5E2044AAB400CD42F8 /* hello.aifc */; };
+		883A7FB42698DB2E00841DF9 /* input.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A602044AAB400CD42F8 /* input.aifc */; };
+		883A7FB52698DB2E00841DF9 /* synth.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A722044AAB600CD42F8 /* synth.aifc */; };
+		883A7FB62698DB2E00841DF9 /* keys.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A612044AAB400CD42F8 /* keys.aifc */; };
+		883A7FB72698DB2E00841DF9 /* complete.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A652044AAB400CD42F8 /* complete.aifc */; };
+		883A7FB82698DB2E00841DF9 /* note.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6D2044AAB500CD42F8 /* note.aifc */; };
+		883A7FB92698DB2E00841DF9 /* circles.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6A2044AAB500CD42F8 /* circles.aifc */; };
+		883A7FBA2698DB2E00841DF9 /* chord.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A622044AAB400CD42F8 /* chord.aifc */; };
+		883A7FBB2698DB2E00841DF9 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
+		883A7FBC2698DB2E00841DF9 /* bamboo.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6C2044AAB500CD42F8 /* bamboo.aifc */; };
+		883A7FBD2698DB2E00841DF9 /* pulse.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A692044AAB500CD42F8 /* pulse.aifc */; };
+		883A7FBE2698DB2E00841DF9 /* popcorn.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6B2044AAB500CD42F8 /* popcorn.aifc */; };
+		883A7FBF2698DB2E00841DF9 /* aurora.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6F2044AAB500CD42F8 /* aurora.aifc */; };
+		883A7FC02698DB4E00841DF9 /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		8841584C252F9F1C0078903D /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8841584B252F9F1C0078903D /* SignalCall.swift */; };
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
@@ -4541,7 +4555,21 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				883A7FBD2698DB2E00841DF9 /* pulse.aifc in Resources */,
+				883A7FBC2698DB2E00841DF9 /* bamboo.aifc in Resources */,
+				883A7FB82698DB2E00841DF9 /* note.aifc in Resources */,
 				88D7BA9F266852050088D1C2 /* Localizable.strings in Resources */,
+				883A7FB92698DB2E00841DF9 /* circles.aifc in Resources */,
+				883A7FBB2698DB2E00841DF9 /* classic.aifc in Resources */,
+				883A7FB52698DB2E00841DF9 /* synth.aifc in Resources */,
+				883A7FBE2698DB2E00841DF9 /* popcorn.aifc in Resources */,
+				883A7FB42698DB2E00841DF9 /* input.aifc in Resources */,
+				883A7FB72698DB2E00841DF9 /* complete.aifc in Resources */,
+				883A7FBF2698DB2E00841DF9 /* aurora.aifc in Resources */,
+				883A7FC02698DB4E00841DF9 /* NewMessage.aifc in Resources */,
+				883A7FB62698DB2E00841DF9 /* keys.aifc in Resources */,
+				883A7FBA2698DB2E00841DF9 /* chord.aifc in Resources */,
+				883A7FB32698DB2E00841DF9 /* hello.aifc in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
