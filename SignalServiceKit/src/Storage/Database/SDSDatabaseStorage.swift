@@ -245,18 +245,14 @@ public class SDSDatabaseStorage: SDSTransactable {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
             DatabaseChangeObserver.serializedSync {
-                guard !DatabaseChangeObserver.skipTouchObservations else {
-                    return
-                }
-
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
                     databaseChangeObserver.didTouch(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady {
                     owsFailDebug("databaseChangeObserver was unexpectedly nil")
                 }
-                if shouldReindex {
-                    GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
-                }
+            }
+            if shouldReindex {
+                GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
             }
         }
     }
@@ -266,19 +262,15 @@ public class SDSDatabaseStorage: SDSTransactable {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
             DatabaseChangeObserver.serializedSync {
-                guard !DatabaseChangeObserver.skipTouchObservations else {
-                    return
-                }
-
                 if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
                     databaseChangeObserver.didTouch(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady {
                     // This can race with observation setup when app becomes ready.
                     Logger.warn("databaseChangeObserver was unexpectedly nil")
                 }
-                if shouldReindex {
-                    GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
-                }
+            }
+            if shouldReindex {
+                GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
             }
         }
     }

@@ -52,34 +52,40 @@ public class DatabaseChangeObserver: NSObject {
         GRDBFullTextSearchFinder.contentTableName
     ])
 
-    // tldr; Instead, of protecting DatabaseChangeObserver state with a nested DispatchQueue,
-    // which would break GRDB's SchedulingWatchDog, we use objc_sync
-    //
-    // Longer version:
-    // Our database change observers manage state, which must not be accessed concurrently.
-    // Using a serial DispatchQueue would seem straight forward, but...
-    //
-    // Some of our database change observers read from the database *while* accessing this
-    // state. Note that reading from the db must be done on GRDB's DispatchQueue.
-    private static var _hasDatabaseChangeObserverLock = AtomicBool(false)
-
+    // We protect DatabaseChangeObserver state with an UnfairLock.
     static var hasDatabaseChangeObserverLock: Bool {
-        _hasDatabaseChangeObserverLock.get()
+        hasDatabaseChangeObserverLockOnCurrentThread
     }
 
-    // Toggle to skip expensive observations resulting
-    // from a `touch`. Useful for large migrations.
-    // Should only be accessed within DatabaseChangeObserver.serializedSync
-    public static var skipTouchObservations: Bool = false
+    fileprivate static let hasDatabaseChangeObserverLockOnCurrentThreadFlag = ThreadLocalFlag(key: "hasDatabaseChangeObserverLockOnCurrentThread")
+    fileprivate static var hasDatabaseChangeObserverLockOnCurrentThread: Bool {
+        get {
+            hasDatabaseChangeObserverLockOnCurrentThreadFlag.value
+        }
+        set {
+            hasDatabaseChangeObserverLockOnCurrentThreadFlag.value = newValue
+        }
+    }
 
     private static let databaseChangeObserverLock = UnfairLock()
 
     public class func serializedSync(block: () -> Void) {
-        databaseChangeObserverLock.withLock {
-            assert(!_hasDatabaseChangeObserverLock.get())
-            _hasDatabaseChangeObserverLock.set(true)
+        // UnfairLock is not recursive.
+        // In some cases serializedSync() might be re-entrant.
+        if hasDatabaseChangeObserverLockOnCurrentThread {
+            owsFailDebug("Re-entrant synchronization.")
             block()
-            _hasDatabaseChangeObserverLock.set(false)
+            return
+        }
+
+        databaseChangeObserverLock.withLock {
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == false)
+            hasDatabaseChangeObserverLockOnCurrentThread = true
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == true)
+            block()
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == true)
+            hasDatabaseChangeObserverLockOnCurrentThread = false
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == false)
         }
     }
 
