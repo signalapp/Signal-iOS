@@ -87,16 +87,54 @@ const NSUInteger OWSCustomSoundShift = 16;
 
     OWSSingletonAssert();
 
-    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{ [OWSSounds cleanupOrphanedSounds]; });
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [OWSSounds migrateLegacySounds];
+            [OWSSounds cleanupOrphanedSounds];
+        });
+    });
 
     return self;
 }
 
-+ (void)cleanupOrphanedSounds
++ (void)migrateLegacySounds
 {
-    if (CurrentAppContext().isNSE) {
+    OWSAssertDebug(CurrentAppContext().isMainApp);
+
+    NSString *legacySoundsDirectory =
+        [[OWSFileSystem appLibraryDirectoryPath] stringByAppendingPathComponent:@"Sounds"];
+    if (![OWSFileSystem fileOrFolderExistsAtPath:legacySoundsDirectory]) {
         return;
     }
+
+    NSError *error;
+    NSArray *legacySoundFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:legacySoundsDirectory
+                                                                                    error:&error];
+    if (error) {
+        OWSFailDebug(@"Failed looking up legacy sound files: %@", error.localizedDescription);
+        return;
+    }
+
+    for (NSString *soundFile in legacySoundFiles) {
+        NSError *moveError;
+        [[NSFileManager defaultManager] moveItemAtPath:[legacySoundsDirectory stringByAppendingPathComponent:soundFile]
+                                                toPath:[[self soundsDirectory] stringByAppendingPathComponent:soundFile]
+                                                 error:&moveError];
+        if (moveError) {
+            OWSFailDebug(@"Failed to migrate legacy sound file: %@", moveError.localizedDescription);
+            continue;
+        }
+    }
+
+    if (![OWSFileSystem deleteFile:legacySoundsDirectory]) {
+        OWSFailDebug(@"Failed to delete legacy sounds directory");
+    }
+}
+
++ (void)cleanupOrphanedSounds
+{
+    OWSAssertDebug(CurrentAppContext().isMainApp);
+
     NSSet<NSNumber *> *allCustomSounds = [NSSet setWithArray:[self allCustomNotificationSounds]];
     if (allCustomSounds.count == 0) {
         return;
@@ -558,7 +596,7 @@ const NSUInteger OWSCustomSoundShift = 16;
 
 + (NSString *)soundsDirectory
 {
-    NSString *directory = [[OWSFileSystem appLibraryDirectoryPath] stringByAppendingPathComponent:@"Sounds"];
+    NSString *directory = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"Library/Sounds"];
     [OWSFileSystem ensureDirectoryExists:directory];
     return directory;
 }

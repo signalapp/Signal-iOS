@@ -105,10 +105,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 - (BOOL)hasSafetyNumbers;
 
-- (void)markAllAsReadAndUpdateStorageService:(BOOL)updateStorageService
-                                 transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(markAllAsRead(updateStorageService:transaction:));
-
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
 

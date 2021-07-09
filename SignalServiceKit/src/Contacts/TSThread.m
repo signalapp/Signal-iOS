@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
@@ -16,7 +17,6 @@
 #import <SignalServiceKit/TSInteraction.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSThread.h>
 
 @import Intents;
 
@@ -358,31 +358,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 {
     OWSAssertDebug(transaction);
     return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countWithTransaction:transaction];
-}
-
-- (void)markAllAsReadAndUpdateStorageService:(BOOL)updateStorageService
-                                 transaction:(SDSAnyWriteTransaction *)transaction
-{
-    BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
-    OWSReceiptCircumstance circumstance = hasPendingMessageRequest
-        ? OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest
-        : OWSReceiptCircumstanceOnThisDevice;
-
-    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-
-    for (id<OWSReadTracking> message in
-        [interactionFinder allUnreadMessagesWithTransaction:transaction.unwrapGrdbRead]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
-                                thread:self
-                          circumstance:circumstance
-                           transaction:transaction];
-    }
-
-    ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:self transaction:transaction];
-    [associatedData updateWithIsMarkedUnread:NO updateStorageService:updateStorageService transaction:transaction];
-
-    // Just to be defensive, we'll also check for unread messages.
-    OWSAssertDebug([interactionFinder allUnreadMessagesWithTransaction:transaction.unwrapGrdbRead].count < 1);
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction

@@ -145,6 +145,17 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         guard isArchived != nil || isMarkedUnread != nil || mutedUntilTimestamp != nil else {
             return owsFailDebug("You must set one value")
         }
+
+        var isMarkedUnread = isMarkedUnread
+
+        // If we're archiving and we have an existing thread record,
+        // also mark that thread record as read.
+        if isArchived == true {
+            // Also clear marked unread if we're not explicitly setting it.
+            if isMarkedUnread == nil { isMarkedUnread = false }
+            markThreadAsReadIfExists(transaction: transaction)
+        }
+
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { associatedData in
             if let isArchived = isArchived {
                 associatedData.isArchived = isArchived
@@ -161,13 +172,13 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @objc
     @available(swift, obsoleted: 1.0)
     public func updateWith(isArchived: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
-        updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.isArchived = isArchived }
+        updateWith(isArchived: isArchived, updateStorageService: updateStorageService, transaction: transaction)
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
     public func updateWith(isMarkedUnread: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
-        updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.isMarkedUnread = isMarkedUnread }
+        updateWith(isMarkedUnread: isMarkedUnread, updateStorageService: updateStorageService, transaction: transaction)
     }
 
     @objc
@@ -223,5 +234,40 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
                 owsFailDebug("Unexpected thread type")
             }
         }
+    }
+
+    fileprivate func markThreadAsReadIfExists(transaction: SDSAnyWriteTransaction) {
+        guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else { return }
+        thread.markAllAsRead(transaction: transaction)
+    }
+}
+
+public extension TSThread {
+    @objc(markAllAsReadAndUpdateStorageService:transaction:)
+    func markAllAsRead(updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+        markAllAsRead(transaction: transaction)
+
+        let associatedData = ThreadAssociatedData.fetchOrDefault(for: self, transaction: transaction)
+        associatedData.updateWith(isMarkedUnread: false, updateStorageService: updateStorageService, transaction: transaction)
+    }
+
+    fileprivate func markAllAsRead(transaction: SDSAnyWriteTransaction) {
+        let hasPendingMessageRequest = hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+        let circumstance: OWSReceiptCircumstance = hasPendingMessageRequest
+            ? .onThisDeviceWhilePendingMessageRequest
+            : .onThisDevice
+
+        let finder = InteractionFinder(threadUniqueId: uniqueId)
+        for message in finder.allUnreadMessages(transaction: transaction.unwrapGrdbRead) {
+            message.markAsRead(
+                atTimestamp: Date.ows_millisecondTimestamp(),
+                thread: self,
+                circumstance: circumstance,
+                transaction: transaction
+            )
+        }
+
+        // Just to be defensive, we'll also check for unread messages.
+        owsAssertDebug(finder.allUnreadMessages(transaction: transaction.unwrapGrdbRead).isEmpty)
     }
 }

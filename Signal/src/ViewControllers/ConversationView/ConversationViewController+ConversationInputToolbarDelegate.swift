@@ -27,6 +27,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             owsFailDebug("Missing inputToolbar.")
             return
         }
+
+        inputToolbar.acceptAutocorrectSuggestion()
+
         guard let messageBody = inputToolbar.messageBody() else {
             return
         }
@@ -37,7 +40,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         BenchManager.startEvent(title: "Send Message milestone: toggleDefaultKeyboard completed",
                                 eventId: "fromSendUntil_toggleDefaultKeyboard")
 
-        inputToolbar.acceptAutocorrectSuggestion()
         tryToSendTextMessage(messageBody, updateKeyboardState: true)
     }
 
