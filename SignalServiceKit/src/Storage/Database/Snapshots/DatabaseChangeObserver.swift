@@ -45,36 +45,40 @@ public class DatabaseChangeObserver: NSObject {
 
     public static let kMaxIncrementalRowChanges = 200
 
-    private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName, PendingReadReceiptRecord.databaseTableName])
+    private lazy var nonModelTables: Set<String> = Set([
+                                                        MediaGalleryRecord.databaseTableName,
+                                                        PendingReadReceiptRecord.databaseTableName,
+        // Ignore updates to the GRDB FTS table(s).
+        GRDBFullTextSearchFinder.contentTableName
+    ])
 
-    // tldr; Instead, of protecting DatabaseChangeObserver state with a nested DispatchQueue,
-    // which would break GRDB's SchedulingWatchDog, we use objc_sync
-    //
-    // Longer version:
-    // Our database change observers manage state, which must not be accessed concurrently.
-    // Using a serial DispatchQueue would seem straight forward, but...
-    //
-    // Some of our database change observers read from the database *while* accessing this
-    // state. Note that reading from the db must be done on GRDB's DispatchQueue.
-    private static var _hasDatabaseChangeObserverLock = AtomicBool(false)
-
+    // We protect DatabaseChangeObserver state with an UnfairLock.
     static var hasDatabaseChangeObserverLock: Bool {
-        _hasDatabaseChangeObserverLock.get()
+        hasDatabaseChangeObserverLockOnCurrentThread
     }
 
-    // Toggle to skip expensive observations resulting
-    // from a `touch`. Useful for large migrations.
-    // Should only be accessed within DatabaseChangeObserver.serializedSync
-    public static var skipTouchObservations: Bool = false
+    @ThreadBacked(key: "hasDatabaseChangeObserverLockOnCurrentThread", defaultValue: false)
+    fileprivate static var hasDatabaseChangeObserverLockOnCurrentThread: Bool
 
     private static let databaseChangeObserverLock = UnfairLock()
 
     public class func serializedSync(block: () -> Void) {
-        databaseChangeObserverLock.withLock {
-            assert(!_hasDatabaseChangeObserverLock.get())
-            _hasDatabaseChangeObserverLock.set(true)
+        // UnfairLock is not recursive.
+        // In some cases serializedSync() might be re-entrant.
+        if hasDatabaseChangeObserverLockOnCurrentThread {
+            owsFailDebug("Re-entrant synchronization.")
             block()
-            _hasDatabaseChangeObserverLock.set(false)
+            return
+        }
+
+        databaseChangeObserverLock.withLock {
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == false)
+            hasDatabaseChangeObserverLockOnCurrentThread = true
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == true)
+            block()
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == true)
+            hasDatabaseChangeObserverLockOnCurrentThread = false
+            owsAssertDebug(hasDatabaseChangeObserverLockOnCurrentThread == false)
         }
     }
 
@@ -222,18 +226,21 @@ public class DatabaseChangeObserver: NSObject {
 
 extension DatabaseChangeObserver: TransactionObserver {
 
-    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
-        guard !eventKind.tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
-            // Ignore updates to the GRDB FTS table(s)
-            return false
-        }
-
-        guard !nonModelTables.contains(eventKind.tableName) else {
+    public func observes(eventWithTableName tableName: String) -> Bool {
+        guard !nonModelTables.contains(tableName) else {
             // Ignore updates to non-model tables
             return false
         }
 
         return true
+    }
+
+    public func observes(eventsOfKind eventKind: DatabaseEventKind) -> Bool {
+        observes(eventWithTableName: eventKind.tableName)
+    }
+
+    public func observes(event: DatabaseEvent) -> Bool {
+        observes(eventWithTableName: event.tableName)
     }
 
     // This should only be called by DatabaseStorage.
@@ -310,6 +317,12 @@ extension DatabaseChangeObserver: TransactionObserver {
     //   * The database might be checkpointed.
     //   * All "database change delegates" receive databaseChangesDidUpdate with the changes.
     public func databaseDidChange(with event: DatabaseEvent) {
+        // Check before serializedSync() to avoid recursively obtaining the
+        // unfairLock when touching.
+        guard observes(event: event) else {
+            return
+        }
+
         DatabaseChangeObserver.serializedSync {
 
             pendingChanges.append(tableName: event.tableName)

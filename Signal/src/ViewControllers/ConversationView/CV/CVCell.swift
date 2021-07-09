@@ -243,7 +243,7 @@ public extension CVRootComponentHost {
         self.renderItem = renderItem
 
         #if TESTABLE_BUILD
-        GRDBDatabaseStorageAdapter.setCanOpenTransaction(false)
+        GRDBDatabaseStorageAdapter.canOpenTransaction = false
         #endif
 
         let rootComponent = renderItem.rootComponent
@@ -267,7 +267,7 @@ public extension CVRootComponentHost {
                                                  componentView: componentView)
 
         #if TESTABLE_BUILD
-        GRDBDatabaseStorageAdapter.setCanOpenTransaction(true)
+        GRDBDatabaseStorageAdapter.canOpenTransaction = true
         #endif
     }
 
