@@ -4,6 +4,7 @@ import SessionUtilitiesKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {
+    private static var buildPathsPromise: Promise<[Path]>? = nil
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     private static var pathFailureCount: [Path:UInt] = [:]
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
@@ -114,12 +115,13 @@ public enum OnionRequestAPI {
     /// if not enough (reliable) snodes are available.
     @discardableResult
     private static func buildPaths(reusing reusablePaths: [Path]) -> Promise<[Path]> {
+        if let existingBuildPathsPromise = buildPathsPromise { return existingBuildPathsPromise }
         SNLog("Building onion request paths.")
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .buildingPaths, object: nil)
         }
         let reusableGuardSnodes = reusablePaths.map { $0[0] }
-        return getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
+        let promise: Promise<[Path]> = getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
             var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes).subtracting(reusablePaths.flatMap { $0 })
             let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
             let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
@@ -146,6 +148,10 @@ public enum OnionRequestAPI {
             }
             return paths
         }
+        promise.done2 { _ in buildPathsPromise = nil }
+        promise.catch2 { _ in buildPathsPromise = nil }
+        buildPathsPromise = promise
+        return promise
     }
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
