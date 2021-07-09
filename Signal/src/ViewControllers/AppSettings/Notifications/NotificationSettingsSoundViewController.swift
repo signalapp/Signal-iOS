@@ -107,7 +107,9 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
                         "com.microsoft.waveform-audio",
                         "public.aifc-audio",
                         "public.aiff-audio",
-                        "com.apple.coreaudio-format"
+                        "com.apple.coreaudio-format",
+                        "public.mp3",
+                        "com.apple.mpeg-4-ringtone"
                     ],
                     in: .import
                 )
