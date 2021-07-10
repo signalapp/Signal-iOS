@@ -56,6 +56,12 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }
 
     @objc
+    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread) {
+        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithoutThrottling
+        tryToRefreshV2GroupThread(groupThread, groupUpdateMode: groupUpdateMode)
+    }
+
+    @objc
     public func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
                                                                    upToRevision: UInt32) {
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: upToRevision)
@@ -92,6 +98,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                           groupUpdateMode: GroupUpdateMode,
                                           groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
 
+        guard !Self.blockingManager.isGroupIdBlocked(groupId) else {
+            return Promise(error: GroupsV2Error.groupBlocked)
+        }
         let isThrottled = { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
                 return false
@@ -476,6 +485,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             case .upToSpecificRevisionImmediately:
                 return false
             case .upToCurrentRevisionAfterMessageProcessWithThrottling,
+                 .upToCurrentRevisionAfterMessageProcessWithoutThrottling,
                  .upToCurrentRevisionImmediately:
                 return true
             }

@@ -29,6 +29,7 @@ public enum GroupsV2Error: Error {
     case groupDowngradeNotAllowed
     case missingGroupChangeProtos
     case unexpectedRevision
+    case groupBlocked
 }
 
 // MARK: -
@@ -213,13 +214,18 @@ public enum GroupUpdateMode {
     // * Group update _should_ be throttled.
     case upToCurrentRevisionAfterMessageProcessWithThrottling
     // * Group update should continue until current revision.
+    // * Group update _should_ block on message processing.
+    // * Group update _should not_ be throttled.
+    case upToCurrentRevisionAfterMessageProcessWithoutThrottling
+    // * Group update should continue until current revision.
     // * Group update _should not_ block on message processing.
     // * Group update _should not_ be throttled.
     case upToCurrentRevisionImmediately
 
     public var shouldBlockOnMessageProcessing: Bool {
         switch self {
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling,
+             .upToCurrentRevisionAfterMessageProcessWithoutThrottling:
             return true
         default:
             return false
@@ -250,6 +256,8 @@ public enum GroupUpdateMode {
 @objc
 public protocol GroupV2Updates: AnyObject {
     func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread)
+
+    func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread)
 
     func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
                                                             upToRevision: UInt32)
@@ -685,6 +693,11 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift {
     @objc
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
+        owsFail("Not implemented.")
+    }
+
+    @objc
+    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread) {
         owsFail("Not implemented.")
     }
 

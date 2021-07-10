@@ -415,13 +415,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     // Open a sneaky transaction and quit the group if we're a member
-    if ([groupModel.groupMembers containsObject:TSAccountManager.localAddress]) {
+    if ([groupModel.groupMembership isLocalUserMemberOfAnyKind]) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
             TSGroupThread *groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-            [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
-                                                                     transaction:transaction
-                                                                         success:nil];
+            if (groupThread.isLocalUserMemberOfAnyKind) {
+                [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
+                                                                         transaction:transaction
+                                                                             success:nil];
+            }
         });
     }
 
@@ -504,6 +506,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
+
+    [self.databaseStorage readWithBlock:^(
+        SDSAnyReadTransaction *transaction) { [self refreshUnblockedGroupId:groupId transaction:transaction]; }];
 }
 
 - (void)removeBlockedGroupId:(NSData *)groupId
@@ -526,8 +531,18 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     [self handleUpdateAndSendSyncMessage:wasLocallyInitiated transaction:transaction];
+
+    [self refreshUnblockedGroupId:groupId transaction:transaction];
 }
 
+- (void)refreshUnblockedGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
+{
+    TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+    if (groupThread == nil) {
+        return;
+    }
+    [self.groupV2UpdatesObjc tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling:groupThread];
+}
 
 #pragma mark - Thread Blocking
 
