@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
 
 @interface OWSAudioPlayer : NSObject
 
-@property (nonatomic, weak) id<OWSAudioPlayerDelegate> delegate;
+@property (nonatomic, nullable, weak) id<OWSAudioPlayerDelegate> delegate;
 
 @property (nonatomic) BOOL isLooping;
 @property (nonatomic, readonly) NSTimeInterval duration;

@@ -12,26 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// A no-op delegate implementation to be used when we don't need a delegate.
-@interface OWSAudioPlayerDelegateStub : NSObject <OWSAudioPlayerDelegate>
-
-@property (nonatomic) AudioPlaybackState audioPlaybackState;
-
-@end
-
-#pragma mark -
-
-@implementation OWSAudioPlayerDelegateStub
-
-- (void)setAudioProgress:(NSTimeInterval)progress duration:(NSTimeInterval)duration
-{
-    // Do nothing;
-}
-
-@end
-
-#pragma mark -
-
 @interface OWSAudioPlayer () <AVAudioPlayerDelegate>
 
 @property (nonatomic, readonly) NSURL *mediaUrl;
@@ -56,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(mediaUrl);
 
     _mediaUrl = mediaUrl;
-    _delegate = [OWSAudioPlayerDelegateStub new];
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ %@", self.logTag, self.mediaUrl];
     _audioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:audioBehavior];
