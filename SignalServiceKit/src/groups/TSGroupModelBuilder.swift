@@ -144,7 +144,7 @@ public struct TSGroupModelBuilder: Dependencies {
 
         var name: String?
         if let strippedName = self.name?.stripped,
-            strippedName.count > 0 {
+           strippedName.count > 0 {
             name = strippedName
         }
 

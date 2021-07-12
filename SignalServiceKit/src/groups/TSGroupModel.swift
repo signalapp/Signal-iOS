@@ -193,8 +193,8 @@ public class TSGroupModelV2: TSGroupModel {
 public extension TSGroupModelV2 {
     var groupInviteLinkMode: GroupsV2LinkMode {
         guard let inviteLinkPassword = inviteLinkPassword,
-            !inviteLinkPassword.isEmpty else {
-                return .disabled
+              !inviteLinkPassword.isEmpty else {
+            return .disabled
         }
 
         switch access.addFromInviteLink {
@@ -209,8 +209,8 @@ public extension TSGroupModelV2 {
 
     var isGroupInviteLinkEnabled: Bool {
         if let inviteLinkPassword = inviteLinkPassword,
-            !inviteLinkPassword.isEmpty,
-            access.canJoinFromInviteLink {
+           !inviteLinkPassword.isEmpty,
+           access.canJoinFromInviteLink {
             return true
         }
         return false
