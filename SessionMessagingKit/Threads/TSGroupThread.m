@@ -119,15 +119,14 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
-    NSMutableArray<NSString *> *groupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
-
-    if (groupMemberIds == nil) {
-        return @[];
+    if (self.isClosedGroup) {
+        NSMutableArray<NSString *> *groupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
+        if (groupMemberIds == nil) { return @[]; }
+        [groupMemberIds removeObject:TSAccountManager.localNumber];
+        return [groupMemberIds copy];
+    } else {
+        return @[ [LKGroupUtilities getDecodedGroupID:self.groupModel.groupId] ];
     }
-
-    [groupMemberIds removeObject:TSAccountManager.localNumber];
-
-    return [groupMemberIds copy];
 }
 
 // @returns all threads to which the recipient is a member.
