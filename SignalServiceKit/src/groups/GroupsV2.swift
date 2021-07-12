@@ -303,6 +303,8 @@ public protocol GroupV2Snapshot {
     var profileKeys: [UUID: Data] { get }
 
     var inviteLinkPassword: Data? { get }
+
+    var isAnnouncementsOnly: Bool { get }
 }
 
 // MARK: -

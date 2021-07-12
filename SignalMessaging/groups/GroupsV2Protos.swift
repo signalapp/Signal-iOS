@@ -392,6 +392,10 @@ public class GroupsV2Protos {
 
         let inviteLinkPassword = groupProto.inviteLinkPassword
 
+        let isAnnouncementsOnly = (groupProto.hasAnnouncementsOnly
+                                    ? groupProto.announcementsOnly
+                                    : false)
+
         guard let accessControl = groupProto.accessControl else {
             throw OWSAssertionError("Missing accessControl.")
         }
@@ -428,6 +432,7 @@ public class GroupsV2Protos {
                                    groupAccess: groupAccess,
                                    inviteLinkPassword: inviteLinkPassword,
                                    disappearingMessageToken: disappearingMessageToken,
+                                   isAnnouncementsOnly: isAnnouncementsOnly,
                                    profileKeys: profileKeys)
     }
 

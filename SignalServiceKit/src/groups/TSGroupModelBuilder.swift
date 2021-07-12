@@ -18,6 +18,7 @@ public struct TSGroupModelBuilder: Dependencies {
     public var newGroupSeed: NewGroupSeed?
     public var avatarUrlPath: String?
     public var inviteLinkPassword: Data?
+    public var isAnnouncementsOnly: Bool = false
     public var isPlaceholderModel: Bool = false
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
@@ -41,6 +42,7 @@ public struct TSGroupModelBuilder: Dependencies {
         self.groupSecretParamsData = groupV2Snapshot.groupSecretParamsData
         self.avatarUrlPath = groupV2Snapshot.avatarUrlPath
         self.inviteLinkPassword = groupV2Snapshot.inviteLinkPassword
+        self.isAnnouncementsOnly = groupV2Snapshot.isAnnouncementsOnly
         self.isPlaceholderModel = false
         self.wasJustMigrated = false
         self.wasJustCreatedByLocalUser = false
@@ -192,6 +194,7 @@ public struct TSGroupModelBuilder: Dependencies {
                                   secretParamsData: groupSecretParamsData,
                                   avatarUrlPath: avatarUrlPath,
                                   inviteLinkPassword: inviteLinkPassword,
+                                  isAnnouncementsOnly: isAnnouncementsOnly,
                                   isPlaceholderModel: isPlaceholderModel,
                                   wasJustMigrated: wasJustMigrated,
                                   wasJustCreatedByLocalUser: wasJustCreatedByLocalUser,

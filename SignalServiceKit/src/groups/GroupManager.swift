@@ -84,7 +84,7 @@ public class GroupManager: NSObject {
 
     // Epoch 1: Group Links
     // Epoch 2: Group Description
-    public static let changeProtoEpoch: UInt32 {
+    public static var changeProtoEpoch: UInt32 {
         FeatureFlags.announcementOnlyGroupsReceive ? 3 : 2
     }
 
