@@ -132,11 +132,29 @@ final class NukeDataModal : Modal {
     
     @objc private func clearEntireAccount() {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] _ in
-            SnodeAPI.clearAllData().ensure(on: DispatchQueue.main) {
+            SnodeAPI.clearAllData().done(on: DispatchQueue.main) { confirmations in
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
-                NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
-            }.retainUntilComplete()
+                let potentiallyMaliciousSnodes = confirmations.compactMap { $0.value == false ? $0.key : nil }
+                if potentiallyMaliciousSnodes.isEmpty {
+                    UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
+                    NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+                } else {
+                    let message: String
+                    if potentiallyMaliciousSnodes.count == 1 {
+                        message = String(format: NSLocalizedString("dialog_clear_all_data_deletion_failed_1", comment: ""), potentiallyMaliciousSnodes[0])
+                    } else {
+                        message = String(format: NSLocalizedString("dialog_clear_all_data_deletion_failed_2", comment: ""), String(potentiallyMaliciousSnodes.count), potentiallyMaliciousSnodes.joined(separator: ", "))
+                    }
+                    let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                    self?.presentAlert(alert)
+                }
+            }.catch(on: DispatchQueue.main) { error in
+                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                self?.presentAlert(alert)
+            }
         }
     }
 }
