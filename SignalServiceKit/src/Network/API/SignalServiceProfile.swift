@@ -88,7 +88,6 @@ public class SignalServiceProfile: NSObject {
     private static func parseCapabilityFlag(capabilityKey: String,
                                             params: ParamParser,
                                             requireCapability: Bool) -> Bool {
-
         do {
             let capabilitiesJson: Any? = try params.required(key: "capabilities")
             if let capabilities = ParamParser(responseObject: capabilitiesJson) {

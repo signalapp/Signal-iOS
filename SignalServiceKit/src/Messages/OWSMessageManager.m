@@ -449,9 +449,6 @@ NS_ASSUME_NONNULL_BEGIN
                                  transaction:transaction];
             }
         } else if (contentProto.typingMessage) {
-            if (shouldDiscardVisibleMessages) {
-                return;
-            }
             [self handleIncomingEnvelope:envelope
                        withTypingMessage:contentProto.typingMessage
                  serverDeliveryTimestamp:serverDeliveryTimestamp
@@ -1043,7 +1040,13 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Ignoring messages for left group.");
             return;
         }
-
+        if ([groupThread.groupModel isKindOfClass:TSGroupModelV2.class]) {
+            TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
+            if (groupModel.isAnnouncementsOnly
+                && ![groupModel.groupMembership isFullMemberAndAdministrator:envelope.sourceAddress]) {
+                return;
+            }
+        }
         thread = groupThread;
     } else {
         thread = [TSContactThread getThreadWithContactAddress:envelope.sourceAddress transaction:transaction];

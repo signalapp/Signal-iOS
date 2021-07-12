@@ -316,21 +316,46 @@ public class MessageProcessor: NSObject {
             if let groupContextV2 = GroupsV2MessageProcessor.groupContextV2(
                 forEnvelope: envelope,
                 plaintextData: result.plaintextData
-            ), !GroupsV2MessageProcessor.canContextBeProcessedImmediately(
-                groupContext: groupContextV2,
-                transaction: transaction
             ) {
-                // If we can't process the message immediately, we enqueue it for
-                // for processing in the same transaction within which it was decrypted
-                // to prevent data loss.
-                Self.groupsV2MessageProcessor.enqueue(
-                    envelopeData: result.envelopeData,
-                    plaintextData: result.plaintextData,
-                    envelope: envelope,
-                    wasReceivedByUD: result.wasReceivedByUD,
-                    serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                if GroupsV2MessageProcessor.canContextBeProcessedImmediately(
+                    groupContext: groupContextV2,
                     transaction: transaction
-                )
+                ) {
+                    let discardMode = GroupsMessageProcessor.discardMode(
+                        envelopeData: result.envelopeData,
+                        plaintextData: result.plaintextData,
+                        groupContext: groupContextV2,
+                        wasReceivedByUD: result.wasReceivedByUD,
+                        serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                        transaction: transaction
+                        )
+                    if discardMode == .discard {
+                        // Do nothing.
+                        Logger.verbose("Discarding job.")
+                        return
+                    }
+                    let shouldDiscardVisibleMessages = discardMode == .discardVisibleMessages
+                    Self.messageManager.processEnvelope(
+                        envelope,
+                        plaintextData: result.plaintextData,
+                        wasReceivedByUD: result.wasReceivedByUD,
+                        serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                        shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
+                        transaction: transaction
+                    )
+                } else {
+                    // If we can't process the message immediately, we enqueue it for
+                    // for processing in the same transaction within which it was decrypted
+                    // to prevent data loss.
+                    Self.groupsV2MessageProcessor.enqueue(
+                        envelopeData: result.envelopeData,
+                        plaintextData: result.plaintextData,
+                        envelope: envelope,
+                        wasReceivedByUD: result.wasReceivedByUD,
+                        serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                        transaction: transaction
+                    )
+                }
             } else {
                 // Envelopes can be processed immediately if they're:
                 // 1. Not a GV2 message.

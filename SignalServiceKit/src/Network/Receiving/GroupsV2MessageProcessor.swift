@@ -195,7 +195,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 //
 // It's promise is fulfilled when all jobs are processed _or_
 // we give up.
-private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
+internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
 
     private let groupId: Data
     private let finder = GRDBGroupsV2MessageJobFinder()
@@ -203,7 +203,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
     fileprivate let promise: Promise<Void>
     private let resolver: Resolver<Void>
 
-    fileprivate required init(groupId: Data) {
+    internal required init(groupId: Data) {
         self.groupId = groupId
 
         let (promise, resolver) = Promise<Void>.pending()
@@ -374,7 +374,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         }
     }
 
-    private func jobInfo(forJob job: IncomingGroupsV2MessageJob,
+    private static func jobInfo(forJob job: IncomingGroupsV2MessageJob,
                          transaction: SDSAnyReadTransaction) -> IncomingGroupsV2MessageJobInfo {
         var jobInfo = IncomingGroupsV2MessageJobInfo(job: job)
         guard let envelope = job.envelope else {
@@ -397,7 +397,32 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         return jobInfo
     }
 
-    private enum DiscardMode {
+    public static func discardMode(envelopeData: Data,
+                                   plaintextData: Data?,
+                                   groupContext: SSKProtoGroupContextV2,
+                                   wasReceivedByUD: Bool,
+                                   serverDeliveryTimestamp: UInt64,
+                                   transaction: SDSAnyReadTransaction) -> DiscardMode {
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+        } catch {
+            owsFailDebug("Invalid group context: \(error).")
+            return .discard
+        }
+        let groupId = groupContextInfo.groupId
+        let job = IncomingGroupsV2MessageJob(envelopeData: envelopeData,
+                                             plaintextData: plaintextData,
+                                             groupId: groupId,
+                                             wasReceivedByUD: wasReceivedByUD,
+                                             serverDeliveryTimestamp: serverDeliveryTimestamp)
+        let jobInfo = self.jobInfo(forJob: job, transaction: transaction)
+        return self.discardMode(forJobInfo: jobInfo,
+                                 hasGroupBeenUpdated: true,
+                                 transaction: transaction)
+    }
+
+    public enum DiscardMode {
         // Do not process this envelope.
         case discard
         // Process this envelope.
@@ -407,9 +432,9 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         case discardVisibleMessages
     }
 
-    private func discardMode(forJobInfo jobInfo: IncomingGroupsV2MessageJobInfo,
-                             hasGroupBeenUpdated: Bool,
-                             transaction: SDSAnyReadTransaction) -> DiscardMode {
+    private static func discardMode(forJobInfo jobInfo: IncomingGroupsV2MessageJobInfo,
+                                    hasGroupBeenUpdated: Bool,
+                                    transaction: SDSAnyReadTransaction) -> DiscardMode {
 
         // We want to discard asap to avoid problems with batching.
         guard let envelope = jobInfo.envelope else {
@@ -502,9 +527,9 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
     // message at the head of the queue.
     private func canJobBeProcessedWithoutUpdate(jobInfo: IncomingGroupsV2MessageJobInfo,
                                                 transaction: SDSAnyReadTransaction) -> Bool {
-        if .discard == discardMode(forJobInfo: jobInfo,
-                                   hasGroupBeenUpdated: false,
-                                   transaction: transaction) {
+        if .discard == Self.discardMode(forJobInfo: jobInfo,
+                                        hasGroupBeenUpdated: false,
+                                        transaction: transaction) {
             return true
         }
         guard let groupContext = jobInfo.groupContext else {
@@ -537,7 +562,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         var isUpdateBatch = false
         var jobInfos = [IncomingGroupsV2MessageJobInfo]()
         for job in jobs {
-            let jobInfo = self.jobInfo(forJob: job, transaction: transaction)
+            let jobInfo = Self.jobInfo(forJob: job, transaction: transaction)
             let canJobBeProcessedWithoutUpdate = self.canJobBeProcessedWithoutUpdate(jobInfo: jobInfo, transaction: transaction)
             if !canJobBeProcessedWithoutUpdate {
                 if jobInfos.count > 0 {
@@ -585,7 +610,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         for jobInfo in jobInfos {
             let job = jobInfo.job
 
-            let discardMode = self.discardMode(forJobInfo: jobInfo,
+            let discardMode = Self.discardMode(forJobInfo: jobInfo,
                                                hasGroupBeenUpdated: true,
                                                transaction: transaction)
             if discardMode == .discard {
