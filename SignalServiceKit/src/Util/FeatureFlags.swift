@@ -191,6 +191,12 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let newLinkDeviceScheme = build.includes(.dev)
 
+    @objc
+    public static let announcementOnlyGroupsReceive = build.includes(.qa) || announcementOnlyGroupsSend
+
+    @objc
+    public static let announcementOnlyGroupsSend = build.includes(.qa)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)

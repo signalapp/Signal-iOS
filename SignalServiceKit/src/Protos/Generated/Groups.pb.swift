@@ -275,6 +275,9 @@ struct GroupsProtos_Group {
 
   var descriptionBytes: Data = Data()
 
+  /// next: 13
+  var announcementsOnly: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -453,6 +456,16 @@ struct GroupsProtos_GroupChange {
     var hasModifyDescription: Bool {return _storage._modifyDescription != nil}
     /// Clears the value of `modifyDescription`. Subsequent reads from it will return its default value.
     mutating func clearModifyDescription() {_uniqueStorage()._modifyDescription = nil}
+
+    /// change epoch = 3
+    var modifyAnnouncementsOnly: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction {
+      get {return _storage._modifyAnnouncementsOnly ?? GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction()}
+      set {_uniqueStorage()._modifyAnnouncementsOnly = newValue}
+    }
+    /// Returns true if `modifyAnnouncementsOnly` has been explicitly set.
+    var hasModifyAnnouncementsOnly: Bool {return _storage._modifyAnnouncementsOnly != nil}
+    /// Clears the value of `modifyAnnouncementsOnly`. Subsequent reads from it will return its default value.
+    mutating func clearModifyAnnouncementsOnly() {_uniqueStorage()._modifyAnnouncementsOnly = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -717,6 +730,18 @@ struct GroupsProtos_GroupChange {
       init() {}
     }
 
+    struct ModifyAnnouncementsOnlyAction {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var announcementsOnly: Bool = false
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+    }
+
     init() {}
 
     fileprivate var _storage = _StorageClass.defaultInstance
@@ -740,29 +765,28 @@ struct GroupsProtos_GroupChanges {
     // methods supported on all messages.
 
     var groupChange: GroupsProtos_GroupChange {
-      get {return _groupChange ?? GroupsProtos_GroupChange()}
-      set {_groupChange = newValue}
+      get {return _storage._groupChange ?? GroupsProtos_GroupChange()}
+      set {_uniqueStorage()._groupChange = newValue}
     }
     /// Returns true if `groupChange` has been explicitly set.
-    var hasGroupChange: Bool {return self._groupChange != nil}
+    var hasGroupChange: Bool {return _storage._groupChange != nil}
     /// Clears the value of `groupChange`. Subsequent reads from it will return its default value.
-    mutating func clearGroupChange() {self._groupChange = nil}
+    mutating func clearGroupChange() {_uniqueStorage()._groupChange = nil}
 
     var groupState: GroupsProtos_Group {
-      get {return _groupState ?? GroupsProtos_Group()}
-      set {_groupState = newValue}
+      get {return _storage._groupState ?? GroupsProtos_Group()}
+      set {_uniqueStorage()._groupState = newValue}
     }
     /// Returns true if `groupState` has been explicitly set.
-    var hasGroupState: Bool {return self._groupState != nil}
+    var hasGroupState: Bool {return _storage._groupState != nil}
     /// Clears the value of `groupState`. Subsequent reads from it will return its default value.
-    mutating func clearGroupState() {self._groupState = nil}
+    mutating func clearGroupState() {_uniqueStorage()._groupState = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
-    fileprivate var _groupChange: GroupsProtos_GroupChange?
-    fileprivate var _groupState: GroupsProtos_Group?
+    fileprivate var _storage = _StorageClass.defaultInstance
   }
 
   init() {}
@@ -1237,7 +1261,8 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     8: .same(proto: "pendingMembers"),
     9: .same(proto: "requestingMembers"),
     10: .same(proto: "inviteLinkPassword"),
-    11: .same(proto: "descriptionBytes")
+    11: .same(proto: "descriptionBytes"),
+    12: .standard(proto: "announcements_only")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1257,6 +1282,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 9: try { try decoder.decodeRepeatedMessageField(value: &self.requestingMembers) }()
       case 10: try { try decoder.decodeSingularBytesField(value: &self.inviteLinkPassword) }()
       case 11: try { try decoder.decodeSingularBytesField(value: &self.descriptionBytes) }()
+      case 12: try { try decoder.decodeSingularBoolField(value: &self.announcementsOnly) }()
       default: break
       }
     }
@@ -1296,6 +1322,9 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if !self.descriptionBytes.isEmpty {
       try visitor.visitSingularBytesField(value: self.descriptionBytes, fieldNumber: 11)
     }
+    if self.announcementsOnly != false {
+      try visitor.visitSingularBoolField(value: self.announcementsOnly, fieldNumber: 12)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1311,6 +1340,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if lhs.requestingMembers != rhs.requestingMembers {return false}
     if lhs.inviteLinkPassword != rhs.inviteLinkPassword {return false}
     if lhs.descriptionBytes != rhs.descriptionBytes {return false}
+    if lhs.announcementsOnly != rhs.announcementsOnly {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1382,7 +1412,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     17: .same(proto: "deleteRequestingMembers"),
     18: .same(proto: "promoteRequestingMembers"),
     19: .same(proto: "modifyInviteLinkPassword"),
-    20: .same(proto: "modifyDescription")
+    20: .same(proto: "modifyDescription"),
+    21: .standard(proto: "modify_announcements_only")
   ]
 
   fileprivate class _StorageClass {
@@ -1406,6 +1437,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     var _promoteRequestingMembers: [GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction] = []
     var _modifyInviteLinkPassword: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction?
     var _modifyDescription: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction?
+    var _modifyAnnouncementsOnly: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction?
 
     static let defaultInstance = _StorageClass()
 
@@ -1432,6 +1464,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       _promoteRequestingMembers = source._promoteRequestingMembers
       _modifyInviteLinkPassword = source._modifyInviteLinkPassword
       _modifyDescription = source._modifyDescription
+      _modifyAnnouncementsOnly = source._modifyAnnouncementsOnly
     }
   }
 
@@ -1470,6 +1503,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         case 18: try { try decoder.decodeRepeatedMessageField(value: &_storage._promoteRequestingMembers) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._modifyInviteLinkPassword) }()
         case 20: try { try decoder.decodeSingularMessageField(value: &_storage._modifyDescription) }()
+        case 21: try { try decoder.decodeSingularMessageField(value: &_storage._modifyAnnouncementsOnly) }()
         default: break
         }
       }
@@ -1538,6 +1572,9 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._modifyDescription {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
       }
+      if let v = _storage._modifyAnnouncementsOnly {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1567,6 +1604,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._promoteRequestingMembers != rhs_storage._promoteRequestingMembers {return false}
         if _storage._modifyInviteLinkPassword != rhs_storage._modifyInviteLinkPassword {return false}
         if _storage._modifyDescription != rhs_storage._modifyDescription {return false}
+        if _storage._modifyAnnouncementsOnly != rhs_storage._modifyAnnouncementsOnly {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2202,6 +2240,38 @@ extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobu
   }
 }
 
+extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAnnouncementsOnlyAction"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "announcements_only")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.announcementsOnly) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.announcementsOnly != false {
+      try visitor.visitSingularBoolField(value: self.announcementsOnly, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction, rhs: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction) -> Bool {
+    if lhs.announcementsOnly != rhs.announcementsOnly {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChanges"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -2241,32 +2311,66 @@ extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, Swi
     2: .same(proto: "groupState")
   ]
 
+  fileprivate class _StorageClass {
+    var _groupChange: GroupsProtos_GroupChange?
+    var _groupState: GroupsProtos_Group?
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _groupChange = source._groupChange
+      _groupState = source._groupState
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._groupChange) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._groupState) }()
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._groupChange) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._groupState) }()
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._groupChange {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
-    if let v = self._groupState {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._groupChange {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      }
+      if let v = _storage._groupState {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: GroupsProtos_GroupChanges.GroupChangeState, rhs: GroupsProtos_GroupChanges.GroupChangeState) -> Bool {
-    if lhs._groupChange != rhs._groupChange {return false}
-    if lhs._groupState != rhs._groupState {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._groupChange != rhs_storage._groupChange {return false}
+        if _storage._groupState != rhs_storage._groupState {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2288,28 +2392,36 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
-        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: String?
         try decoder.decodeSingularStringField(value: &v)
-        if let v = v {self.content = .title(v)}
+        if let v = v {
+          if self.content != nil {try decoder.handleConflictingOneOf()}
+          self.content = .title(v)
+        }
       }()
       case 2: try {
-        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: Data?
         try decoder.decodeSingularBytesField(value: &v)
-        if let v = v {self.content = .avatar(v)}
+        if let v = v {
+          if self.content != nil {try decoder.handleConflictingOneOf()}
+          self.content = .avatar(v)
+        }
       }()
       case 3: try {
-        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: UInt32?
         try decoder.decodeSingularUInt32Field(value: &v)
-        if let v = v {self.content = .disappearingMessagesDuration(v)}
+        if let v = v {
+          if self.content != nil {try decoder.handleConflictingOneOf()}
+          self.content = .disappearingMessagesDuration(v)
+        }
       }()
       case 4: try {
-        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: String?
         try decoder.decodeSingularStringField(value: &v)
-        if let v = v {self.content = .descriptionText(v)}
+        if let v = v {
+          if self.content != nil {try decoder.handleConflictingOneOf()}
+          self.content = .descriptionText(v)
+        }
       }()
       default: break
       }
@@ -2363,12 +2475,16 @@ extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._Me
       switch fieldNumber {
       case 1: try {
         var v: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1?
+        var hadOneofValue = false
         if let current = self.contents {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .contentsV1(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.contents = .contentsV1(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.contents = .contentsV1(v)
+        }
       }()
       default: break
       }
