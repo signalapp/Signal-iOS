@@ -2253,6 +2253,7 @@ public class GroupManager: NSObject {
 
     private static let groupsV2CapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2Capability")
     private static let groupsV2MigrationCapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2MigrationCapability")
+    private static let announcementOnlyGroupsCapabilityStore = SDSKeyValueStore(collection: "GroupManager.announcementOnlyGroupsCapability")
 
     @objc
     public static func doesUserHaveGroupsV2Capability(address: SignalServiceAddress,
@@ -2279,9 +2280,19 @@ public class GroupManager: NSObject {
     }
 
     @objc
+    public static func doesUserHaveAnnouncementOnlyGroupsCapability(address: SignalServiceAddress,
+                                                                    transaction: SDSAnyReadTransaction) -> Bool {
+        guard let uuid = address.uuid else {
+            return false
+        }
+        return announcementOnlyGroupsCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
+    }
+
+    @objc
     public static func setUserCapabilities(address: SignalServiceAddress,
                                            hasGroupsV2Capability: Bool,
                                            hasGroupsV2MigrationCapability: Bool,
+                                           hasAnnouncementOnlyGroupsCapability: Bool,
                                            transaction: SDSAnyWriteTransaction) {
         guard let uuid = address.uuid else {
             Logger.warn("Address without uuid: \(address)")
@@ -2296,6 +2307,10 @@ public class GroupManager: NSObject {
                                                           defaultValue: false,
                                                           key: key,
                                                           transaction: transaction)
+        announcementOnlyGroupsCapabilityStore.setBoolIfChanged(hasAnnouncementOnlyGroupsCapability,
+                                                               defaultValue: false,
+                                                               key: key,
+                                                               transaction: transaction)
     }
 
     // MARK: - Profiles
