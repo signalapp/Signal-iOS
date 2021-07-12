@@ -340,6 +340,11 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
 
     @objc
     func didTapSet() {
+        guard groupViewHelper.canEditPermissions else {
+            owsFailDebug("Missing edit permission.")
+            return
+        }
+
         // TODO: We might consolidate this from (up to) 3 separate group changes
         // into a single change.
         GroupViewUtils.updateGroupWithActivityIndicator(
