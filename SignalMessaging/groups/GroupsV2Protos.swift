@@ -171,6 +171,8 @@ public class GroupsV2Protos {
 
         validateInviteLinkState(inviteLinkPassword: groupModel.inviteLinkPassword, groupAccess: groupAccess)
 
+        groupBuilder.setAnnouncementsOnly(groupModel.isAnnouncementsOnly)
+
         return try groupBuilder.build()
     }
 

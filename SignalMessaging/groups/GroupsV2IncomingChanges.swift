@@ -84,6 +84,7 @@ public class GroupsV2IncomingChanges: Dependencies {
         var newAvatarData: Data? = oldGroupModel.groupAvatarData
         var newAvatarUrlPath = oldGroupModel.avatarUrlPath
         var newInviteLinkPassword: Data? = oldGroupModel.inviteLinkPassword
+        var newIsAnnouncementsOnly: Bool = oldGroupModel.isAnnouncementsOnly
         var didJustAddSelfViaGroupLink = false
 
         let oldGroupMembership = oldGroupModel.groupMembership
@@ -132,6 +133,7 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
         let canEditAccess = isChangeAuthorAdmin
         let canEditInviteLinks = isChangeAuthorAdmin
+        let canEditIsAnnouncementsOnly = isChangeAuthorAdmin
 
         // This client can learn of profile keys from parsing group state protos.
         // After parsing, we should fill in profileKeys in the profile manager.
@@ -570,6 +572,14 @@ public class GroupsV2IncomingChanges: Dependencies {
             newInviteLinkPassword = action.inviteLinkPassword
         }
 
+        if let action = changeActionsProto.modifyAnnouncementsOnly {
+            if !canEditIsAnnouncementsOnly {
+                owsFailDebug("Cannot modify inviteLinkPassword.")
+            }
+
+            newIsAnnouncementsOnly = action.announcementsOnly
+        }
+
         let newGroupMembership = groupMembershipBuilder.build()
         let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess, addFromInviteLink: newAddFromInviteLinkAccess)
 
@@ -584,6 +594,7 @@ public class GroupsV2IncomingChanges: Dependencies {
         builder.groupV2Revision = newRevision
         builder.avatarUrlPath = newAvatarUrlPath
         builder.inviteLinkPassword = newInviteLinkPassword
+        builder.isAnnouncementsOnly = newIsAnnouncementsOnly
 
         builder.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
 
