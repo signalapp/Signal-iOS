@@ -104,32 +104,32 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     // MARK: - Accessors
 
     var isBlockedByMigration: Bool {
-        return groupViewHelper.isBlockedByMigration
+        groupViewHelper.isBlockedByMigration
     }
 
     var canEditConversationAttributes: Bool {
-        return groupViewHelper.canEditConversationAttributes
+        groupViewHelper.canEditConversationAttributes
     }
 
     var canEditConversationMembership: Bool {
-        return groupViewHelper.canEditConversationMembership
+        groupViewHelper.canEditConversationMembership
     }
 
     // Can local user edit group access.
-    var canEditConversationAccess: Bool {
-        return groupViewHelper.canEditConversationAccess
+    var canEditPermissions: Bool {
+        groupViewHelper.canEditPermissions
     }
 
     var isLocalUserFullMember: Bool {
-        return groupViewHelper.isLocalUserFullMember
+        groupViewHelper.isLocalUserFullMember
     }
 
     var isLocalUserFullOrInvitedMember: Bool {
-        return groupViewHelper.isLocalUserFullOrInvitedMember
+        groupViewHelper.isLocalUserFullOrInvitedMember
     }
 
     var isGroupThread: Bool {
-        return thread.isGroupThread
+        thread.isGroupThread
     }
 
     // MARK: - View Lifecycle

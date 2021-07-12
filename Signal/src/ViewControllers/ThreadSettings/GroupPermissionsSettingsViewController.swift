@@ -52,6 +52,10 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
 
         self.groupViewHelper.delegate = self
 
+        // We only show the "announcement-only" UI if all members of the
+        // group support this capability.  If some members don't, fetch their
+        // profiles; perhaps they have the capability and we just don't know
+        // it yet.
         switch announcementOnlyMode {
         case .enabled:
             break
@@ -108,9 +112,13 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     }
 
     private var hasUnsavedChanges: Bool {
-        currentAccessMembers != accessMembers ||
+        guard groupViewHelper.canEditPermissions else {
+            return false
+        }
+
+        return (currentAccessMembers != accessMembers ||
             currentAccessAttributes != accessAttributes ||
-            currentIsAnnouncementsOnly != isAnnouncementsOnly
+            currentIsAnnouncementsOnly != isAnnouncementsOnly)
     }
 
     // Don't allow interactive dismiss when there are unsaved changes.
@@ -144,10 +152,6 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
         defer { self.contents = contents }
 
-        guard groupViewHelper.canEditConversationAccess else {
-            return owsFailDebug("!canEditConversationAccess")
-        }
-
         let accessMembersSection = OWSTableSection()
         accessMembersSection.headerTitle = NSLocalizedString(
             "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS",
@@ -164,10 +168,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                 comment: "Label for button that sets 'group attributes access' to 'members-only'."
             ),
             actionBlock: { [weak self] in
-                guard let self = self else { return }
-                self.accessMembers = .member
-                self.updateTableContents()
-                self.updateNavigation()
+                self?.tryToSetAccessMembers(.member)
             },
             accessoryType: accessMembers == .member ? .checkmark : .none
         ))
@@ -177,10 +178,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                 comment: "Label for button that sets 'group attributes access' to 'administrators-only'."
             ),
             actionBlock: { [weak self] in
-                guard let self = self else { return }
-                self.accessMembers = .administrator
-                self.updateTableContents()
-                self.updateNavigation()
+                self?.tryToSetAccessMembers(.administrator)
             },
             accessoryType: accessMembers == .administrator ? .checkmark : .none
         ))
@@ -203,10 +201,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                 comment: "Label for button that sets 'group attributes access' to 'members-only'."
             ),
             actionBlock: { [weak self] in
-                guard let self = self else { return }
-                self.accessAttributes = .member
-                self.updateTableContents()
-                self.updateNavigation()
+                self?.tryToSetAccessAttributes(.member)
             },
             accessoryType: accessAttributes == .member ? .checkmark : .none
         ))
@@ -216,17 +211,18 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                 comment: "Label for button that sets 'group attributes access' to 'administrators-only'."
             ),
             actionBlock: { [weak self] in
-                guard let self = self else { return }
-                self.accessAttributes = .administrator
-                self.updateTableContents()
-                self.updateNavigation()
+                self?.tryToSetAccessAttributes(.administrator)
             },
             accessoryType: accessAttributes == .administrator ? .checkmark : .none
         ))
 
         contents.addSection(accessAttributesSection)
 
-        let canShowAnnouncementOnlyMode = announcementOnlyMode == .enabled
+        // Always show the announcements-only UI if that option is
+        // already enabled.  If not, only show that UI if all group
+        // members support that capability.
+        let canShowAnnouncementOnlyMode = (announcementOnlyMode == .enabled ||
+                                            isAnnouncementsOnly)
         if RemoteConfig.announcementOnlyGroups,
            canShowAnnouncementOnlyMode {
             let isAnnouncementsOnly = self.isAnnouncementsOnly
@@ -247,10 +243,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                     comment: "Label for button that sets 'send messages permission' for a group to 'all members'."
                 ),
                 actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    self.isAnnouncementsOnly = false
-                    self.updateTableContents()
-                    self.updateNavigation()
+                    self?.tryToSetIsAnnouncementsOnly(false)
                 },
                 accessoryType: !isAnnouncementsOnly ? .checkmark : .none
             ))
@@ -260,16 +253,50 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                     comment: "Label for button that sets 'send messages permission' for a group to 'administrators only'."
                 ),
                 actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    self.isAnnouncementsOnly = true
-                    self.updateTableContents()
-                    self.updateNavigation()
+                    self?.tryToSetIsAnnouncementsOnly(true)
                 },
                 accessoryType: isAnnouncementsOnly ? .checkmark : .none
             ))
 
             contents.addSection(announcementOnlySection)
         }
+    }
+
+    private func tryToSetAccessMembers(_ value: GroupV2Access) {
+        guard groupViewHelper.canEditPermissions else {
+            showAdminOnlyWarningAlert()
+            return
+        }
+        self.accessMembers = value
+        self.updateTableContents()
+        self.updateNavigation()
+    }
+
+    private func tryToSetAccessAttributes(_ value: GroupV2Access) {
+        guard groupViewHelper.canEditPermissions else {
+            showAdminOnlyWarningAlert()
+            return
+        }
+        self.accessAttributes = value
+        self.updateTableContents()
+        self.updateNavigation()
+    }
+
+    private func tryToSetIsAnnouncementsOnly(_ value: Bool) {
+        guard groupViewHelper.canEditPermissions else {
+            showAdminOnlyWarningAlert()
+            return
+        }
+        isAnnouncementsOnly = value
+        updateTableContents()
+        updateNavigation()
+    }
+
+    private func showAdminOnlyWarningAlert() {
+        let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
+                                        comment: "Message indicating that a feature can only be used by group admins.")
+        presentToast(text: message)
+        updateTableContents()
     }
 
     private func reloadThreadAndUpdateContent() {

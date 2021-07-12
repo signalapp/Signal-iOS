@@ -106,8 +106,8 @@ class GroupViewHelper: NSObject {
         }
     }
 
-    // Can local user edit group access.
-    var canEditConversationAccess: Bool {
+    // Can local user edit group access and message send permission.
+    var canEditPermissions: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
