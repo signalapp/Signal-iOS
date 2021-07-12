@@ -15,6 +15,8 @@ public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance
         case getMessages = "retrieve"
         case sendMessage = "store"
         case oxenDaemonRPCCall = "oxend_request"
+        case getInfo = "info"
+        case clearAllData = "delete_all"
     }
 
     public struct KeySet {

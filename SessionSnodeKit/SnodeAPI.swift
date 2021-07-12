@@ -30,6 +30,8 @@ public final class SnodeAPI : NSObject {
         case clockOutOfSync
         case snodePoolUpdatingFailed
         case inconsistentSnodePools
+        case noKeyPair
+        case signingFailed
         // ONS
         case decryptionFailed
         case hashingFailed
@@ -41,6 +43,8 @@ public final class SnodeAPI : NSObject {
             case .clockOutOfSync: return "Your clock is out of sync with the Service Node network. Please check that your device's clock is set to automatic time."
             case .snodePoolUpdatingFailed: return "Failed to update the Service Node pool."
             case .inconsistentSnodePools: return "Received inconsistent Service Node pool information from the Service Node network."
+            case .noKeyPair: return "Missing user key pair."
+            case .signingFailed: return "Couldn't sign message."
             // ONS
             case .decryptionFailed: return "Couldn't decrypt ONS name."
             case .hashingFailed: return "Couldn't compute ONS name hash."
@@ -127,6 +131,14 @@ public final class SnodeAPI : NSObject {
                 guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error else { throw error }
                 throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
             }
+        }
+    }
+    
+    private static func getNetworkTime(from snode: Snode) -> Promise<UInt64> {
+        return invoke(.getInfo, on: snode, parameters: [:]).map2 { rawResponse in
+            guard let json = rawResponse as? JSON,
+                let timestamp = json["timestamp"] as? UInt64 else { throw HTTP.Error.invalidJSON }
+            return timestamp
         }
     }
     
@@ -419,6 +431,56 @@ public final class SnodeAPI : NSObject {
             }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
+    }
+    
+    /// Clears all the user's data from their swarm. Returns a dictionary of snode public key to deletion confirmation.
+    public static func clearAllData() -> Promise<[String:Bool]> {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        guard let userX25519PublicKey = storage.getUserPublicKey(),
+            let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
+        let sodium = Sodium()
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+            getSwarm(for: userX25519PublicKey).then2 { swarm -> Promise<[String:Bool]> in
+                let snode = swarm.randomElement()!
+                return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                    getNetworkTime(from: snode).then2 { timestamp -> Promise<[String:Bool]> in
+                        let verificationData = (Snode.Method.clearAllData.rawValue + String(timestamp)).data(using: String.Encoding.utf8)!
+                        guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else { throw Error.signingFailed }
+                        let parameters: JSON = [
+                            "pubkey" : userX25519PublicKey,
+                            "pubkey_ed25519" : userED25519KeyPair.publicKey.toHexString(),
+                            "timestamp" : timestamp,
+                            "signature" : signature.toBase64()!
+                        ]
+                        return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                            invoke(.clearAllData, on: snode, parameters: parameters).map2 { rawResponse -> [String:Bool] in
+                                guard let json = rawResponse as? JSON, let swarm = json["swarm"] as? JSON else { throw HTTP.Error.invalidJSON }
+                                var result: [String:Bool] = [:]
+                                for (snodePublicKey, rawJSON) in swarm {
+                                    guard let json = rawJSON as? JSON else { throw HTTP.Error.invalidJSON }
+                                    let isFailed = json["failed"] as? Bool ?? false
+                                    if !isFailed {
+                                        guard let hashes = json["deleted"] as? [String], let signature = json["signature"] as? String else { throw HTTP.Error.invalidJSON }
+                                        // The signature format is ( PUBKEY_HEX || TIMESTAMP || DELETEDHASH[0] || ... || DELETEDHASH[N] )
+                                        let verificationData = (userX25519PublicKey + String(timestamp) + hashes.joined(separator: "")).data(using: String.Encoding.utf8)!
+                                        let isValid = sodium.sign.verify(message: Bytes(verificationData), publicKey: Bytes(Data(hex: snodePublicKey)), signature: Bytes(Data(base64Encoded: signature)!))
+                                        result[snodePublicKey] = isValid
+                                    } else {
+                                        if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
+                                            SNLog("Couldn't delete data from: \(snodePublicKey) due to error: \(reason) (\(statusCode)).")
+                                        } else {
+                                            SNLog("Couldn't delete data from: \(snodePublicKey).")
+                                        }
+                                        result[snodePublicKey] = false
+                                    }
+                                }
+                                return result
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     // MARK: Parsing
