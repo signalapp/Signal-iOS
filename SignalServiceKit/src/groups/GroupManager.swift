@@ -86,7 +86,7 @@ public class GroupManager: NSObject {
     // Epoch 2: Group Description
     // Epoch 3: Announcement-Only Groups
     public static var changeProtoEpoch: UInt32 {
-        FeatureFlags.announcementOnlyGroups ? 3 : 2
+        3
     }
 
     // This matches kOversizeTextMessageSizeThreshold.

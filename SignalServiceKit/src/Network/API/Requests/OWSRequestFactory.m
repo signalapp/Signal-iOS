@@ -502,6 +502,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"gv2"] = @(YES);
     capabilities[@"gv2-2"] = @(YES);
     capabilities[@"gv2-3"] = @(YES);
+    capabilities[@"announcement-only"] = @(YES);
 
     if (SSKFeatureFlags.groupsV2MigrationSetCapability
         && !SSKDebugFlags.groupsV2migrationsDisableMigrationCapability.value) {
@@ -510,9 +511,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
-    }
-    if (SSKFeatureFlags.announcementOnlyGroups) {
-        capabilities[@"announcement-only"] = @(YES);
     }
     if (SSKDebugFlags.groupsV2memberStatusIndicators) {
         OWSLogInfo(@"capabilities: %@", capabilities);
