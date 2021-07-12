@@ -350,6 +350,7 @@ public class MessageProcessor: NSObject {
                     plaintextData: result.plaintextData,
                     wasReceivedByUD: result.wasReceivedByUD,
                     serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                    shouldDiscardVisibleMessages: false,
                     transaction: transaction
                 )
             }
