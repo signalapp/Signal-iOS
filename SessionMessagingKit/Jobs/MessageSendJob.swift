@@ -1,4 +1,5 @@
 import SessionUtilitiesKit
+import SessionSnodeKit
 
 @objc(SNMessageSendJob)
 public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
@@ -96,7 +97,10 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                 SNLog("Couldn't send message due to error: \(error).")
                 if let error = error as? MessageSender.Error, !error.isRetryable {
                     self.handlePermanentFailure(error: error)
-                } else {
+                } else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _) = error,
+                    statusCode == 429 { // Rate limited
+                    self.handlePermanentFailure(error: error)
+               } else {
                     self.handleFailure(error: error)
                 }
             }
