@@ -42,7 +42,18 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     public let groupId: Data
     public let groupSecretParamsData: Data
 
-    // MARK: - These properties capture the original intent of the local user.
+    // MARK: -
+
+    // These properties capture the original intent of the local user.
+    //
+    // NOTE: These properties generally _DO NOT_ capture the new state of the group;
+    // they capture only "changed" aspects of group state.
+    //
+    // NOTE: Even if set, these properties _DO NOT_ necessarily translate into
+    // "change actions"; we only need to build change actions if _current_ group
+    // state differs from the "changed" group state.  Our client might race with
+    // similar changes made by other group members/clients.  We can & must skip
+    // redundant changes.
 
     // Non-nil if the title changed.
     // When clearing the title, this will be the empty string.
@@ -76,6 +87,9 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
 
     private var shouldLeaveGroupDeclineInvite = false
     private var shouldRevokeInvalidInvites = false
+
+    // Non-nil if the value changed.
+    private var isAnnouncementsOnly: Bool?
 
     private var shouldUpdateLocalProfileKey = false
 
@@ -214,26 +228,30 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         if oldDisappearingMessageToken != newDisappearingMessageToken {
             setNewDisappearingMessageToken(newDisappearingMessageToken)
         }
+
+        if oldGroupModel.isAnnouncementsOnly != newGroupModel.isAnnouncementsOnly {
+            self.isAnnouncementsOnly = newGroupModel.isAnnouncementsOnly
+        }
     }
 
     @objc
     public func setTitle(_ value: String?) {
-        assert(self.newTitle == nil)
+        owsAssertDebug(self.newTitle == nil)
         // Non-nil if the title changed.
         self.newTitle = value ?? ""
     }
 
     @objc
     public func setDescriptionText(_ value: String?) {
-        assert(self.newDescriptionText == nil)
+        owsAssertDebug(self.newDescriptionText == nil)
         self.newDescriptionText = value ?? ""
     }
 
     @objc
     public func setAvatar(avatarData: Data?, avatarUrlPath: String?) {
-        assert(self.newAvatarData == nil)
-        assert(self.newAvatarUrlPath == nil)
-        assert(!self.shouldUpdateAvatar)
+        owsAssertDebug(self.newAvatarData == nil)
+        owsAssertDebug(self.newAvatarUrlPath == nil)
+        owsAssertDebug(!self.shouldUpdateAvatar)
 
         self.newAvatarData = avatarData
         self.newAvatarUrlPath = avatarUrlPath
@@ -241,70 +259,70 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     }
 
     public func addMember(_ uuid: UUID, role: TSGroupMemberRole) {
-        assert(membersToAdd[uuid] == nil)
+        owsAssertDebug(membersToAdd[uuid] == nil)
         membersToAdd[uuid] = role
     }
 
     @objc
     public func removeMember(_ uuid: UUID) {
-        assert(!membersToRemove.contains(uuid))
+        owsAssertDebug(!membersToRemove.contains(uuid))
         membersToRemove.append(uuid)
     }
 
     @objc
     public func promoteInvitedMember(_ uuid: UUID) {
-        assert(!invitedMembersToPromote.contains(uuid))
+        owsAssertDebug(!invitedMembersToPromote.contains(uuid))
         invitedMembersToPromote.append(uuid)
     }
 
     public func changeRoleForMember(_ uuid: UUID, role: TSGroupMemberRole) {
-        assert(membersToChangeRole[uuid] == nil)
+        owsAssertDebug(membersToChangeRole[uuid] == nil)
         membersToChangeRole[uuid] = role
     }
 
     public func addInvitedMember(_ uuid: UUID, role: TSGroupMemberRole) {
-        assert(invitedMembersToAdd[uuid] == nil)
+        owsAssertDebug(invitedMembersToAdd[uuid] == nil)
         invitedMembersToAdd[uuid] = role
     }
 
     public func setShouldLeaveGroupDeclineInvite() {
-        assert(!shouldLeaveGroupDeclineInvite)
+        owsAssertDebug(!shouldLeaveGroupDeclineInvite)
         shouldLeaveGroupDeclineInvite = true
     }
 
     public func removeInvalidInvite(invalidInvite: InvalidInvite) {
-        assert(invalidInvitesToRemove[invalidInvite.userId] == nil)
+        owsAssertDebug(invalidInvitesToRemove[invalidInvite.userId] == nil)
         invalidInvitesToRemove[invalidInvite.userId] = invalidInvite
     }
 
     public func setAccessForMembers(_ value: GroupV2Access) {
-        assert(accessForMembers == nil)
+        owsAssertDebug(accessForMembers == nil)
         accessForMembers = value
     }
 
     public func setAccessForAttributes(_ value: GroupV2Access) {
-        assert(accessForAttributes == nil)
+        owsAssertDebug(accessForAttributes == nil)
         accessForAttributes = value
     }
 
     public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
-        assert(self.newDisappearingMessageToken == nil)
+        owsAssertDebug(self.newDisappearingMessageToken == nil)
         self.newDisappearingMessageToken = newDisappearingMessageToken
     }
 
     public func setShouldUpdateLocalProfileKey() {
-        assert(!shouldUpdateLocalProfileKey)
+        owsAssertDebug(!shouldUpdateLocalProfileKey)
         shouldUpdateLocalProfileKey = true
     }
 
     public func revokeInvalidInvites() {
-        assert(!shouldRevokeInvalidInvites)
+        owsAssertDebug(!shouldRevokeInvalidInvites)
         shouldRevokeInvalidInvites = true
     }
 
     public func setLinkMode(_ linkMode: GroupsV2LinkMode) {
-        assert(accessForAddFromInviteLink == nil)
-        assert(inviteLinkPasswordMode == nil)
+        owsAssertDebug(accessForAddFromInviteLink == nil)
+        owsAssertDebug(inviteLinkPasswordMode == nil)
 
         switch linkMode {
         case .disabled:
@@ -319,9 +337,15 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     }
 
     public func rotateInviteLinkPassword() {
-        assert(inviteLinkPasswordMode == nil)
+        owsAssertDebug(inviteLinkPasswordMode == nil)
 
         inviteLinkPasswordMode = .rotate
+    }
+
+    public func setIsAnnouncementsOnly(_ isAnnouncementsOnly: Bool) {
+        owsAssertDebug(self.isAnnouncementsOnly == nil)
+
+        self.isAnnouncementsOnly = isAnnouncementsOnly
     }
 
     // MARK: - Change Protos
@@ -766,6 +790,17 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
                 var actionBuilder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.builder()
                 actionBuilder.setTimer(encryptedTimerData)
                 actionsBuilder.setModifyDisappearingMessagesTimer(try actionBuilder.build())
+                didChange = true
+            }
+        }
+
+        if let isAnnouncementsOnly = self.isAnnouncementsOnly {
+            if isAnnouncementsOnly == currentGroupModel.isAnnouncementsOnly {
+                // Redundant change, not a conflict.
+            } else {
+                var actionBuilder = GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction.builder()
+                actionBuilder.setAnnouncementsOnly(isAnnouncementsOnly)
+                actionsBuilder.setModifyAnnouncementsOnly(try actionBuilder.build())
                 didChange = true
             }
         }

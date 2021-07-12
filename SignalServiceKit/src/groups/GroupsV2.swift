@@ -196,6 +196,8 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func rotateInviteLinkPassword()
 
+    func setIsAnnouncementsOnly(_ isAnnouncementsOnly: Bool)
+
     func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
 }
