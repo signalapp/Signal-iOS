@@ -511,6 +511,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
+    if (SSKFeatureFlags.announcementOnlyGroups) {
+        capabilities[@"announcement-only"] = @(YES);
+    }
     if (SSKDebugFlags.groupsV2memberStatusIndicators) {
         OWSLogInfo(@"capabilities: %@", capabilities);
     }

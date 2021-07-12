@@ -813,6 +813,9 @@ extension CVComponentSystemMessage {
             return Theme.iconName(.memberAdded16)
         case .groupMigrated_usersDropped:
             return Theme.iconName(.group16)
+        case .isAnnouncementOnly:
+            // TODO:
+            return Theme.iconName(.group16)
         }
     }
 

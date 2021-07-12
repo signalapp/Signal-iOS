@@ -52,6 +52,7 @@ public enum GroupUpdateType: Int {
     case disappearingMessagesState_enabled
     case disappearingMessagesState_disabled
     case groupInviteLink
+    case isAnnouncementOnly
     case generic
     case groupMigrated
     case groupMigrated_usersDropped
@@ -179,6 +180,8 @@ struct GroupUpdateCopy: Dependencies {
                                               newToken: newDisappearingMessageToken)
 
                 addGroupInviteLinkUpdates(oldGroupModel: oldGroupModel)
+
+                addIsAnnouncementOnlyLinkUpdates(oldGroupModel: oldGroupModel)
             }
         } else {
             // We're just learning of the group.
@@ -1609,8 +1612,8 @@ extension GroupUpdateCopy {
 
         guard oldGroupInviteLinkMode != newGroupInviteLinkMode else {
             if let oldInviteLinkPassword = oldGroupModel.inviteLinkPassword,
-                let newInviteLinkPassword = newGroupModel.inviteLinkPassword,
-                oldInviteLinkPassword != newInviteLinkPassword {
+               let newInviteLinkPassword = newGroupModel.inviteLinkPassword,
+               oldInviteLinkPassword != newInviteLinkPassword {
                 switch updater {
                 case .localUser:
                     let format = NSLocalizedString("GROUP_INVITE_LINK_RESET_BY_LOCAL_USER",
@@ -1712,6 +1715,56 @@ extension GroupUpdateCopy {
                                                    comment: "Message indicating that the group invite link was set to require approval.")
                     addItem(.groupInviteLink, format: format)
                 }
+            }
+        }
+    }
+
+    // MARK: - Announcement-Only Groups
+
+    mutating func addIsAnnouncementOnlyLinkUpdates(oldGroupModel: TSGroupModel) {
+        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
+            return
+        }
+        guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
+        let oldIsGroupInviteLinkEnabled = oldGroupModel.isGroupInviteLinkEnabled
+        let newIsGroupInviteLinkEnabled = newGroupModel.isGroupInviteLinkEnabled
+
+        guard oldIsGroupInviteLinkEnabled != newIsGroupInviteLinkEnabled else {
+            return
+        }
+
+        if newIsGroupInviteLinkEnabled {
+            switch updater {
+            case .localUser:
+                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER",
+                                               comment: "Message indicating that 'announcement-only' mode was enabled by the local user.")
+                addItem(.isAnnouncementOnly, format: format)
+            case .otherUser(let updaterName, _):
+                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT",
+                                               comment: "Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}.")
+                addItem(.isAnnouncementOnly, format: format, updaterName)
+            case .unknown:
+                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED",
+                                               comment: "Message indicating that 'announcement-only' mode was enabled.")
+                addItem(.isAnnouncementOnly, format: format)
+            }
+        } else {
+            switch updater {
+            case .localUser:
+                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER",
+                                               comment: "Message indicating that 'announcement-only' mode was disabled by the local user.")
+                addItem(.isAnnouncementOnly, format: format)
+            case .otherUser(let updaterName, _):
+                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT",
+                                               comment: "Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}.")
+                addItem(.isAnnouncementOnly, format: format, updaterName)
+            case .unknown:
+                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED",
+                                               comment: "Message indicating that 'announcement-only' mode was disabled.")
+                addItem(.isAnnouncementOnly, format: format)
             }
         }
     }
