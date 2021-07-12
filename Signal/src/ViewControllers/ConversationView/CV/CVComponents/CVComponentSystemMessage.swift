@@ -787,8 +787,7 @@ extension CVComponentSystemMessage {
              .userMembershipState_invalidInvitesRemoved,
              .userMembershipState_invalidInvitesAdded,
              .groupInviteLink,
-             .groupGroupLinkPromotion,
-             .isAnnouncementOnly:
+             .groupGroupLinkPromotion:
             return Theme.iconName(.group16)
         case .userMembershipState_invitesDeclined,
              .userMembershipState_invitesRevoked:
@@ -814,6 +813,8 @@ extension CVComponentSystemMessage {
             return Theme.iconName(.memberAdded16)
         case .groupMigrated_usersDropped:
             return Theme.iconName(.group16)
+        case .isAnnouncementOnly:
+            return Theme.iconName(.megaphone16)
         }
     }
 

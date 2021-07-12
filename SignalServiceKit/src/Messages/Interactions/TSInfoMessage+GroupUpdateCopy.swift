@@ -1729,14 +1729,14 @@ extension GroupUpdateCopy {
             owsFailDebug("Invalid group model.")
             return
         }
-        let oldIsGroupInviteLinkEnabled = oldGroupModel.isGroupInviteLinkEnabled
-        let newIsGroupInviteLinkEnabled = newGroupModel.isGroupInviteLinkEnabled
+        let oldIsAnnouncementsOnly = oldGroupModel.isAnnouncementsOnly
+        let newIsAnnouncementsOnly = newGroupModel.isAnnouncementsOnly
 
-        guard oldIsGroupInviteLinkEnabled != newIsGroupInviteLinkEnabled else {
+        guard oldIsAnnouncementsOnly != newIsAnnouncementsOnly else {
             return
         }
 
-        if newIsGroupInviteLinkEnabled {
+        if newIsAnnouncementsOnly {
             switch updater {
             case .localUser:
                 let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER",

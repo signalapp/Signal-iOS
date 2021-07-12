@@ -1027,6 +1027,18 @@
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
 
+/* Label for button that sets 'send messages permission' for a group to 'all members'. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "All Members";
+
+/* Footer for the 'send messages' section in conversation settings permissions view. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+
+/* Label for 'send messages' action in conversation settings permissions view. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+
+/* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Only Admins";
+
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
 
