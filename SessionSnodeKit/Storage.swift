@@ -1,5 +1,6 @@
 import SessionUtilitiesKit
 import PromiseKit
+import Sodium
 
 public protocol SessionSnodeKitStorageProtocol {
 
@@ -10,6 +11,7 @@ public protocol SessionSnodeKitStorageProtocol {
     func writeSync(with block: @escaping (Any) -> Void)
 
     func getUserPublicKey() -> String?
+    func getUserED25519KeyPair() -> Box.KeyPair?
     func getOnionRequestPaths() -> [OnionRequestAPI.Path]
     func setOnionRequestPaths(to paths: [OnionRequestAPI.Path], using transaction: Any)
     func getSnodePool() -> Set<Snode>
