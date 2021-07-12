@@ -44,7 +44,12 @@ public enum OnionRequestAPI {
 
         public var errorDescription: String? {
             switch self {
-            case .httpRequestFailedAtDestination(let statusCode, _): return "HTTP request failed at destination with status code: \(statusCode)."
+            case .httpRequestFailedAtDestination(let statusCode, _):
+                if statusCode == 429 {
+                    return "Rate limited."
+                } else {
+                    return "HTTP request failed at destination with status code: \(statusCode)."
+                }
             case .insufficientSnodes: return "Couldn't find enough Service Nodes to build a path."
             case .invalidURL: return "Invalid URL"
             case .missingSnodeVersion: return "Missing Service Node version."
