@@ -1,5 +1,6 @@
 import Foundation
 import SessionUtilitiesKit
+import SessionSnodeKit
 import SignalCoreKit
 
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
@@ -82,6 +83,10 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                 storage.write(with: { transaction in
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
                 }, completion: { })
+                self.handlePermanentFailure(error: error)
+            } else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _) = error,
+                statusCode == 400 {
+                // This usually indicates a file that has expired on the server, so there's no need to retry.
                 self.handlePermanentFailure(error: error)
             } else {
                 self.handleFailure(error: error)
