@@ -494,6 +494,9 @@
 "modal_seed_explanation" = "This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.";
 "modal_clear_all_data_title" = "Clear All Data";
 "modal_clear_all_data_explanation" = "This will permanently delete your messages, sessions, and contacts.";
+"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
+"modal_clear_all_data_device_only_button_title" = "Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Entire Account";
 "vc_qr_code_title" = "QR Code";
 "vc_qr_code_view_my_qr_code_tab_title" = "View My QR Code";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Scan QR Code";
