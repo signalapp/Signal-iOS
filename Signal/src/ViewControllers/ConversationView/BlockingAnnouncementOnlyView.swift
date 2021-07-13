@@ -37,7 +37,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
         isLayoutMarginsRelativeArrangement = true
         alignment = .fill
 
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        let blurView = UIVisualEffectView(effect: Theme.barBlurEffect)
         addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
 
@@ -117,6 +117,18 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
     private let tableViewController = OWSTableViewController2()
     private let addresses: [SignalServiceAddress]
+    override var renderExternalHandle: Bool { false }
+    private let handleContainer = UIView()
+
+    var contentSizeHeight: CGFloat {
+        tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
+    }
+    override var minimizedHeight: CGFloat {
+        return min(contentSizeHeight, maximizedHeight)
+    }
+    override var maximizedHeight: CGFloat {
+        min(contentSizeHeight, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32))
+    }
 
     init(addresses: [SignalServiceAddress]) {
         owsAssertDebug(!addresses.isEmpty)
@@ -135,17 +147,70 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+
+        updateTableContents()
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
+        updateTableContents()
     }
 
     private func createContent() {
         addChild(tableViewController)
         let tableView = tableViewController.tableView
+        tableViewController.shouldDeferInitialLoad = false
         tableView.register(ContactTableViewCell.self,
                            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
 
+        // We add the handle directly to the content view,
+        // so that it doesn't scroll with the table.
+        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
+        contentView.addSubview(handleContainer)
+        handleContainer.autoPinWidthToSuperview()
+        handleContainer.autoPinEdge(toSuperviewEdge: .top)
+
+        let handle = UIView()
+        handle.backgroundColor = tableViewController.separatorColor
+        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
+        handle.layer.cornerRadius = 5 / 2
+        handleContainer.addSubview(handle)
+        handle.autoPinHeightToSuperview(withMargin: 12)
+        handle.autoHCenterInSuperview()
+
+        updateViewState()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updateViewState()
+    }
+
+    private var previousMinimizedHeight: CGFloat?
+    private var previousSafeAreaInsets: UIEdgeInsets?
+    private func updateViewState() {
+        if previousSafeAreaInsets != tableViewController.view.safeAreaInsets {
+            updateTableContents()
+            previousSafeAreaInsets = tableViewController.view.safeAreaInsets
+        }
+        if minimizedHeight != previousMinimizedHeight {
+            heightConstraint?.constant = minimizedHeight
+            previousMinimizedHeight = minimizedHeight
+        }
+    }
+
+    private func updateTableContents() {
         let contents = OWSTableContents()
+
+        // Leave space at the top for the handle
+        let handleSection = OWSTableSection()
+        handleSection.customHeaderHeight = 25
+        contents.addSection(handleSection)
+
         let section = OWSTableSection()
         let header = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
                                        comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group.")
