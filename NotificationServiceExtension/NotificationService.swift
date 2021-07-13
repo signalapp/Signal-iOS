@@ -56,7 +56,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         environment.setupIfNecessary()
 
-        owsAssertDebug(FeatureFlags.notificationServiceExtension)
+        owsAssertDebug(RemoteConfig.notificationServiceExtension)
 
         Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier)")
 

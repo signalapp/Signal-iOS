@@ -130,14 +130,6 @@ public class FeatureFlags: BaseFlags {
     public static let sendRecipientUpdates = false
 
     @objc
-    public static var notificationServiceExtension: Bool {
-        // The CallKit APIs for the NSE are only available
-        // from iOS 14.5 and on.
-        guard #available(iOS 14.5, *) else { return false }
-        return build.includes(.beta)
-    }
-
-    @objc
     public static let pinsForNewUsers = true
 
     @objc
@@ -422,6 +414,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let forceViewedReceiptSending = true
+
+    @objc
+    public static let forceNotificationServiceExtension = build.includes(.beta)
 
     @objc
     public static let extraDebugLogs = build.includes(.openPreview)

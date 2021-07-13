@@ -193,6 +193,13 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.forceViewedReceiptSending || isEnabled(.viewedReceiptSending)
     }
 
+    @objc
+    public static var notificationServiceExtension: Bool {
+        // The CallKit APIs for the NSE are only available from iOS 14.5 and on.
+        guard #available(iOS 14.5, *) else { return false }
+        return DebugFlags.forceNotificationServiceExtension || isEnabled(.notificationServiceExtension)
+    }
+
     // MARK: -
 
     private static func interval(
@@ -383,6 +390,7 @@ private struct Flags {
         case paymentsResetKillSwitch
         case giphySendAsMP4
         case viewedReceiptSending
+        case notificationServiceExtension
     }
 
     // Values defined in this array remain set once they are
