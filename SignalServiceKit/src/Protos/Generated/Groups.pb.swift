@@ -1262,7 +1262,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     9: .same(proto: "requestingMembers"),
     10: .same(proto: "inviteLinkPassword"),
     11: .same(proto: "descriptionBytes"),
-    12: .standard(proto: "announcements_only")
+    12: .same(proto: "announcementsOnly")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1413,7 +1413,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     18: .same(proto: "promoteRequestingMembers"),
     19: .same(proto: "modifyInviteLinkPassword"),
     20: .same(proto: "modifyDescription"),
-    21: .standard(proto: "modify_announcements_only")
+    21: .same(proto: "modifyAnnouncementsOnly")
   ]
 
   fileprivate class _StorageClass {
@@ -2243,7 +2243,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobu
 extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAnnouncementsOnlyAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "announcements_only")
+    1: .same(proto: "announcementsOnly")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
