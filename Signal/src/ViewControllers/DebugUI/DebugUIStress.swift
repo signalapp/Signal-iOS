@@ -99,7 +99,9 @@ public extension DebugUIStress {
             for member in members {
                 Logger.verbose("Member: \(member)")
             }
-            let groupName = Self.nameForClonedGroup(oldGroupThread) + " (v2)"
+            var groupName = Self.nameForClonedGroup(oldGroupThread) + " (v2)"
+            groupName = groupName.trimToGlyphCount(GroupManager.maxGroupNameGlyphCount)
+
             return GroupManager.localCreateNewGroup(members: members,
                                                     groupId: nil,
                                                     name: groupName,

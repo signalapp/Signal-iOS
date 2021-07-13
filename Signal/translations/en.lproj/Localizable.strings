@@ -2449,6 +2449,15 @@
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "You have left the group.";
 
+/* Label for group administrators in the 'announcement-only' group UI. */
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+
+/* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+
+/* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
 

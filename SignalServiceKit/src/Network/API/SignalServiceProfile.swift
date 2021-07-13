@@ -29,6 +29,7 @@ public class SignalServiceProfile: NSObject {
     public let credential: Data?
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
+
         guard let params = ParamParser(responseObject: responseObject) else {
             throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")
         }
@@ -40,6 +41,9 @@ public class SignalServiceProfile: NSObject {
         } else {
             throw ValidationError.invalid(description: "response or input missing address")
         }
+
+        Logger.verbose("address: \(address), isLocalAddress: \(address?.isLocalAddress), responseObject: \(responseObject)")
+        Logger.flush()
 
         let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
         guard identityKeyWithType.count == kIdentityKeyLength else {
