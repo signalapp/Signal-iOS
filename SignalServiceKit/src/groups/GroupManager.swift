@@ -85,9 +85,7 @@ public class GroupManager: NSObject {
     // Epoch 1: Group Links
     // Epoch 2: Group Description
     // Epoch 3: Announcement-Only Groups
-    public static var changeProtoEpoch: UInt32 {
-        3
-    }
+    public static let changeProtoEpoch: UInt32 = 3
 
     // This matches kOversizeTextMessageSizeThreshold.
     public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
