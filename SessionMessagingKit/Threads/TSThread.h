@@ -111,7 +111,7 @@ BOOL IsNoteToSelfEnabled(void);
 
 #pragma mark Muting
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMutedUntilDate:(NSDate * _Nullable)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

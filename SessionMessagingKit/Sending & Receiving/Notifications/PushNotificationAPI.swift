@@ -10,9 +10,15 @@ public final class PushNotificationAPI : NSObject {
     private static let maxRetryCount: UInt = 4
     private static let tokenExpirationInterval: TimeInterval = 12 * 60 * 60
 
-    public enum ClosedGroupOperation: String {
-        case subscribe = "subscribe_closed_group"
-        case unsubscribe = "unsubscribe_closed_group"
+    @objc public enum ClosedGroupOperation : Int {
+        case subscribe, unsubscribe
+        
+        public var endpoint: String {
+            switch self {
+            case .subscribe: return "subscribe_closed_group"
+            case .unsubscribe: return "unsubscribe_closed_group"
+            }
+        }
     }
 
     // MARK: Initialization
@@ -97,13 +103,13 @@ public final class PushNotificationAPI : NSObject {
         let isUsingFullAPNs = UserDefaults.standard[.isUsingFullAPNs]
         guard isUsingFullAPNs else { return Promise<Void> { $0.fulfill(()) } }
         let parameters = [ "closedGroupPublicKey" : closedGroupPublicKey, "pubKey" : publicKey ]
-        let url = URL(string: "\(server)/\(operation.rawValue)")!
+        let url = URL(string: "\(server)/\(operation.endpoint)")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey).map2 { response in
                 guard let json = response["body"] as? JSON else {
-                    return SNLog("Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
+                    return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")
                 }
                 guard json["code"] as? Int != 0 else {
                     return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(json["message"] as? String ?? "nil").")
@@ -111,8 +117,13 @@ public final class PushNotificationAPI : NSObject {
             }
         }
         promise.catch2 { error in
-            SNLog("Couldn't subscribe/unsubscribe closed group: \(closedGroupPublicKey).")
+            SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")
         }
         return promise
+    }
+    
+    @objc(performOperation:forClosedGroupWithPublicKey:userPublicKey:)
+    public static func objc_performOperation(_ operation: ClosedGroupOperation, for closedGroupPublicKey: String, publicKey: String) -> AnyPromise {
+        return AnyPromise.from(performOperation(operation, for: closedGroupPublicKey, publicKey: publicKey))
     }
 }
