@@ -406,6 +406,12 @@ public final class OpenGroupAPIV2 : NSObject {
         return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
     
+    public static func banAndDeleteAllMessages(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
+        let parameters = [ "public_key" : publicKey ]
+        let request = Request(verb: .post, room: room, server: server, endpoint: "ban_and_delete_all", parameters: parameters)
+        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
+    }
+    
     public static func unban(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
         let request = Request(verb: .delete, room: room, server: server, endpoint: "block_list/\(publicKey)")
         return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }

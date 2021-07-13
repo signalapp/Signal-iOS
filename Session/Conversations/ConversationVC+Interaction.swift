@@ -532,12 +532,27 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func ban(_ viewItem: ConversationViewItem) {
         guard let message = viewItem.interaction as? TSIncomingMessage, message.isOpenGroupMessage else { return }
-        let alert = UIAlertController(title: "Ban This User?", message: nil, preferredStyle: .alert)
+        let explanation = "This will ban the selected user from this room. It won't ban them from other rooms."
+        let alert = UIAlertController(title: "Session", message: explanation, preferredStyle: .alert)
         let threadID = thread.uniqueId!
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             let publicKey = message.authorId
             guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
             OpenGroupAPIV2.ban(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func banAndDeleteAllMessages(_ viewItem: ConversationViewItem) {
+        guard let message = viewItem.interaction as? TSIncomingMessage, message.isOpenGroupMessage else { return }
+        let explanation = "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there."
+        let alert = UIAlertController(title: "Session", message: explanation, preferredStyle: .alert)
+        let threadID = thread.uniqueId!
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            let publicKey = message.authorId
+            guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
+            OpenGroupAPIV2.banAndDeleteAllMessages(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)

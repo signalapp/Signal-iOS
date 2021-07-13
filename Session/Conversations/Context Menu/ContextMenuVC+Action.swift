@@ -35,6 +35,11 @@ extension ContextMenuVC {
             let title = "Ban User"
             return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.ban(viewItem) }
         }
+        
+        static func banAndDeleteAllMessages(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
+            let title = "Ban and Delete All"
+            return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.banAndDeleteAllMessages(viewItem) }
+        }
     }
 
     static func actions(for viewItem: ConversationViewItem, delegate: ContextMenuActionDelegate?) -> [Action] {
@@ -53,7 +58,10 @@ extension ContextMenuVC {
             let isGroup = viewItem.isGroupThread
             if isGroup && viewItem.interaction is TSIncomingMessage { result.append(Action.copySessionID(viewItem, delegate)) }
             if !isGroup || viewItem.userCanDeleteGroupMessage { result.append(Action.delete(viewItem, delegate)) }
-            if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission { result.append(Action.ban(viewItem, delegate)) }
+            if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission {
+                result.append(Action.ban(viewItem, delegate))
+                result.append(Action.banAndDeleteAllMessages(viewItem, delegate))
+            }
             return result
         case .mediaMessage, .audio, .genericAttachment:
             var result: [Action] = []
@@ -63,7 +71,10 @@ extension ContextMenuVC {
             let isGroup = viewItem.isGroupThread
             if isGroup && viewItem.interaction is TSIncomingMessage { result.append(Action.copySessionID(viewItem, delegate)) }
             if !isGroup || viewItem.userCanDeleteGroupMessage { result.append(Action.delete(viewItem, delegate)) }
-            if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission { result.append(Action.ban(viewItem, delegate)) }
+            if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission {
+                result.append(Action.ban(viewItem, delegate))
+                result.append(Action.banAndDeleteAllMessages(viewItem, delegate))
+            }
             return result
         default: return []
         }
@@ -79,4 +90,5 @@ protocol ContextMenuActionDelegate : class {
     func delete(_ viewItem: ConversationViewItem)
     func save(_ viewItem: ConversationViewItem)
     func ban(_ viewItem: ConversationViewItem)
+    func banAndDeleteAllMessages(_ viewItem: ConversationViewItem)
 }
