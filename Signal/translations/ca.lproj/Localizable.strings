@@ -3677,7 +3677,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualitzeu el Signal per usar els pagaments.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Pagament no verificat encara";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "No s'ha pogut completar el pagament. Comproveu la connexió i torneu-ho a provar.";

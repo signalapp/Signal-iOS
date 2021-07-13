@@ -1184,7 +1184,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Het opzeggen van je registratie is mislukt. Ga na dat wifi of mobiele-dataoverdracht is ingeschakeld en probeer het daarna opnieuw.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Hiermee worden alle gegevens van Signal servers, je profiel en all je berichten gewist.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Hiermee worden alle gegevens van Signal servers, je profiel en al je berichten gewist.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Registratie aan het opzeggen en alle gegevens aan wissen …";

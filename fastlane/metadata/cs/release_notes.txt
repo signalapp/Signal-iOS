@@ -1,5 +1,5 @@
-• We’ve spruced up with the app with new animations when sending and receiving messages, selecting messages in the chat view, and replying to messages.
-• Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly. Please report any issues you see with notification reliability. 
-• Receive an unwanted message? You can now report it as spam when you tap block.
+• Aplikaci jsme vylepšili o nové animace při odesílání a přijímání zpráv, výběru zpráv v zobrazení chatu a odpovídání na zprávy.
+• Výdrž baterie je vzácnost, proto jsme provedli několik změn ve způsobu zpracování oznámení v aplikaci, které výrazně snižují spotřebu baterie. Nahlaste prosím všechny problémy, které se spolehlivostí oznámení zaznamenáte. 
+• Obdrželi jste nechtěnou zprávu? Nyní ji můžete nahlásit jako spam klepnutím na tlačítko blokovat.
 
 Chcete pomoci vylepšit Signal? Nabíráme. Další informace najdete na adrese https://signal.org/workworkwork.

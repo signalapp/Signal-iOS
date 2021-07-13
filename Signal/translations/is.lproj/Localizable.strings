@@ -3677,7 +3677,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Uppfærðu Signal til að geta notað greiðslur.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Greiðsla ekki ennþá sannvottuð";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Ekki var hægt að ljúka greiðslu. Athugaðu nettenginguna þína og prófaðu svo aftur.";
