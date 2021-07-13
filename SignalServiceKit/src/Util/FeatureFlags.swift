@@ -506,11 +506,7 @@ public class DebugFlags: BaseFlags {
                                                        details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org."))
 
     @objc
-    public static let forceAnnouncementOnlyGroups = build.includes(.qa)
-    // TODO:
-//    public static let forceAnnouncementOnlyGroups = TestableFlag(false,
-//                                                                 title: LocalizationNotNeeded("Force announcement-only groups"),
-//                                                                 details: LocalizationNotNeeded("Announcement-only group support will be enabled."))
+    public static let forceAnnouncementOnlyGroups = true
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

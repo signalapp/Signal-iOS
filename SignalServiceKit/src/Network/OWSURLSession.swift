@@ -513,6 +513,9 @@ public class OWSURLSession: NSObject {
     private func removeCompletedTaskState(_ task: URLSessionTask) -> TaskState? {
         lock.withLock { () -> TaskState? in
             guard let taskState = self.taskStateMap[task.taskIdentifier] else {
+                // This isn't necessarily an error or bug.
+                // A task might "succeed" after it "fails" in certain edge cases,
+                // although we make a best effort to avoid them.
                 owsFailDebug("Missing TaskState.")
                 return nil
             }
@@ -522,6 +525,7 @@ public class OWSURLSession: NSObject {
     }
 
     private func downloadTaskDidSucceed(_ task: URLSessionTask, downloadUrl: URL) {
+        Logger.verbose("---- task.taskIdentifier: \(task.taskIdentifier)")
         guard let taskState = removeCompletedTaskState(task) as? DownloadTaskState else {
             owsFailDebug("Missing TaskState.")
             return
@@ -530,6 +534,7 @@ public class OWSURLSession: NSObject {
     }
 
     private func uploadOrDataTaskDidSucceed(_ task: URLSessionTask, responseData: Data?) {
+        Logger.verbose("---- task.taskIdentifier: \(task.taskIdentifier)")
         guard let taskState = removeCompletedTaskState(task) as? UploadOrDataTaskState else {
             owsFailDebug("Missing TaskState.")
             return
@@ -538,11 +543,13 @@ public class OWSURLSession: NSObject {
     }
 
     private func taskDidFail(_ task: URLSessionTask, error: Error) {
+        Logger.verbose("---- task.taskIdentifier: \(task.taskIdentifier)")
         guard let taskState = removeCompletedTaskState(task) else {
             owsFailDebug("Missing TaskState.")
             return
         }
         taskState.reject(error: error)
+        task.cancel()
     }
 
     // MARK: -
