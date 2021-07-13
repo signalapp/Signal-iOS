@@ -11,6 +11,8 @@ import Foundation
 @objc
 open class OWSTableViewController2: OWSViewController {
 
+    public var debug = false
+
     @objc
     public weak var delegate: OWSTableViewControllerDelegate?
 
@@ -275,6 +277,9 @@ open class OWSTableViewController2: OWSViewController {
 extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection sectionIndex: Int) -> Int {
+        if debug {
+            Logger.verbose("----")
+        }
         guard let section = self.section(for: sectionIndex) else {
             owsFailDebug("Missing section: \(sectionIndex)")
             return 0
@@ -283,10 +288,16 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     public func numberOfSections(in tableView: UITableView) -> Int {
-        contents.sections.count
+        if debug {
+            Logger.verbose("----")
+        }
+        return contents.sections.count
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if debug {
+            Logger.verbose("----")
+        }
         guard let item = self.item(for: indexPath) else {
             owsFailDebug("Missing item: \(indexPath)")
             let cell = OWSTableItem.newCell()

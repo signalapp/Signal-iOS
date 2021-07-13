@@ -114,14 +114,17 @@ class BlockingAnnouncementOnlyView: UIStackView {
 
 @objc
 class MessageUserSubsetSheet: InteractiveSheetViewController {
-    override var interactiveScrollViews: [UIScrollView] { [tableView] }
-    private let tableView = UITableView(frame: .zero, style: .grouped)
+    override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
+    private let tableViewController = OWSTableViewController2()
     private let addresses: [SignalServiceAddress]
 
     init(addresses: [SignalServiceAddress]) {
         owsAssertDebug(!addresses.isEmpty)
         self.addresses = addresses.stableSort()
+
         super.init()
+
+        createContent()
     }
 
     public required init() {
@@ -132,106 +135,48 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+    }
 
-//        if UIAccessibility.isReduceTransparencyEnabled {
-//            contentView.backgroundColor = .ows_blackAlpha80
-//        } else {
-//            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-//            contentView.addSubview(blurEffectView)
-//            blurEffectView.autoPinEdgesToSuperviewEdges()
-//            contentView.backgroundColor = .ows_blackAlpha40
-//        }
-
-        tableView.dataSource = self
-        tableView.delegate = self
-//        tableView.backgroundColor = .clear
-        tableView.backgroundColor = OWSTableViewController2.tableBackgroundColor(useNewStyle: true,
-                                                                                 isUsingPresentedStyle: true,
-                                                                                 useThemeBackgroundColors: false)
-
-        tableView.separatorStyle = .none
-        tableView.tableHeaderView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: CGFloat.leastNormalMagnitude)))
-        contentView.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
-
+    private func createContent() {
+        addChild(tableViewController)
+        let tableView = tableViewController.tableView
         tableView.register(ContactTableViewCell.self,
                            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+        contentView.addSubview(tableViewController.view)
+        tableViewController.view.autoPinEdgesToSuperviewEdges()
 
-        tableView.reloadData()
-//        updateMembers()
-    }
-}
-
-// MARK: -
-
-extension MessageUserSubsetSheet: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        addresses.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier,
-                                                       for: indexPath) as? ContactTableViewCell else {
-            owsFailDebug("unexpected cell type")
-            return UITableViewCell()
-        }
-
-        guard let address = addresses[safe: indexPath.row] else {
-            owsFailDebug("missing address")
-            return cell
-        }
-
-        cell.configureWithSneakyTransaction(address: address, localUserDisplayMode: .asLocalUser)
-
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let label = UILabel()
-        label.text = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
+        let contents = OWSTableContents()
+        let section = OWSTableSection()
+        let header = NSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
                                        comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group.")
-        label.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-        label.textColor = Theme.primaryTextColor
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
+        section.headerAttributedTitle = NSAttributedString(string: header, attributes: [
+            .font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
+            .foregroundColor: Theme.primaryTextColor
+            ])
+        contents.addSection(section)
+        for address in addresses {
+            section.add(OWSTableItem(
+                            dequeueCellBlock: { tableView in
+                                guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                                    owsFailDebug("Missing cell.")
+                                    return UITableViewCell()
+                                }
 
-        let labelContainer = UIView()
-        labelContainer.layoutMargins = UIEdgeInsets(top: 13, left: 16, bottom: 13, right: 16)
-        labelContainer.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
-        return labelContainer
-    }
+                                cell.selectionStyle = .none
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return UITableView.automaticDimension
-    }
+                                cell.configureWithSneakyTransaction(address: address,
+                                                                    localUserDisplayMode: .asLocalUser)
 
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return .leastNormalMagnitude
-    }
-
-    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        Logger.verbose("")
-
-        guard let address = addresses[safe: indexPath.row] else {
-            owsFailDebug("missing address")
-            return
+                                return cell
+                            },
+                actionBlock: { [weak self] in
+                    self?.dismiss(animated: true) {
+                        Self.signalApp.presentConversation(for: address,
+                                                           action: .compose,
+                                                           animated: true)
+                    }
+                }))
         }
-
-//
-//        let cell = tableView.cellForRow(at: indexPath) as! ContactCell
-//        let selectedContact = cell.contact!
-//
-//        guard contactsPickerDelegate == nil || contactsPickerDelegate!.contactsPicker(self, shouldSelectContact: selectedContact) else {
-//            self.tableView.deselectRow(at: indexPath, animated: false)
-//            return
-//        }
-//
-//        selectedContacts.append(selectedContact)
-//
-//        if !allowsMultipleSelection {
-//            // Single selection code
-//            self.contactsPickerDelegate?.contactsPicker(self, didSelectContact: selectedContact)
-//        }
+        tableViewController.contents = contents
     }
 }
