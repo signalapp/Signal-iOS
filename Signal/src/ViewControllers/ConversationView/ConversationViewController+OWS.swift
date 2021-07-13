@@ -56,26 +56,13 @@ extension ConversationViewController {
         guard !threadViewModel.hasPendingMessageRequest else {
             return false
         }
-        if let contactThread = thread as? TSContactThread {
-            guard !contactThread.isNoteToSelf else {
-                return false
-            }
-            return true
-        } else {
-            guard RemoteConfig.groupCalling else {
-                return false
-            }
-            guard let groupThread = threadViewModel.threadRecord as? TSGroupThread,
-                  let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                owsFailDebug("Invalid group.")
-                return false
-            }
-            // In "announcement-only" groups, only admins can start group calls.
-            if !groupModel.isAnnouncementsOnly {
-                return true
-            }
-            return groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
+        guard let contactThread = thread as? TSContactThread else {
+            return RemoteConfig.groupCalling && thread.isGroupV2Thread
         }
+        guard !contactThread.isNoteToSelf else {
+            return false
+        }
+        return true
     }
 
     // MARK: -

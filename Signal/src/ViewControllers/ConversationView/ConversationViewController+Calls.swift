@@ -35,6 +35,25 @@ public extension ConversationViewController {
             return
         }
 
+        let blockedByAnnouncementOnly: Bool = {
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                owsFailDebug("Invalid group.")
+                return false
+            }
+            // In "announcement-only" groups, only admins can start group calls.
+            return (groupModel.isAnnouncementsOnly &&
+                        !groupModel.groupMembership.isLocalUserFullMemberAndAdministrator)
+        }()
+        if blockedByAnnouncementOnly {
+            OWSActionSheets.showActionSheet(
+                title: NSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE",
+                                           comment: "Title for eror alert indicating that only group administrators can start calls in announcement-only groups."),
+                message: NSLocalizedString("GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE",
+                                         comment: "Message for eror alert indicating that only group administrators can start calls in announcement-only groups.")
+            )
+            return
+        }
+
         removeGroupCallTooltip()
 
         // We initiated a call, so if there was a pending message request we should accept it.

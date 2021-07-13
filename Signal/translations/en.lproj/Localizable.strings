@@ -1747,6 +1747,12 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
 
+/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+
+/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
 

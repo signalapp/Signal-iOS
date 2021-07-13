@@ -136,24 +136,8 @@ extension ConversationViewController {
                         videoCallButton.action = #selector(showGroupLobbyOrActiveCall)
                     }
 
-                    videoCallButton.isEnabled = { () -> Bool in
-                        if self.callService.currentCall == nil {
-                            return true
-                        }
-                        if self.isCurrentCallForThread {
-                            return true
-                        }
-                        guard let groupThread = threadViewModel.threadRecord as? TSGroupThread,
-                              let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                            owsFailDebug("Invalid group.")
-                            return false
-                        }
-                        // In "announcement-only" groups, only admins can start group calls.
-                        if !groupModel.isAnnouncementsOnly {
-                            return true
-                        }
-                        return groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
-                    }()
+                    videoCallButton.isEnabled = (self.callService.currentCall == nil
+                                                    || self.isCurrentCallForThread)
                     videoCallButton.accessibilityLabel = NSLocalizedString("VIDEO_CALL_LABEL",
                                                                            comment: "Accessibility label for placing a video call")
                     self.groupCallBarButtonItem = videoCallButton
