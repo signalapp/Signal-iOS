@@ -127,4 +127,8 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     var isNewGroup: Bool {
         true
     }
+
+    var groupThreadForGroupMemberView: TSGroupThread? {
+        nil
+    }
 }

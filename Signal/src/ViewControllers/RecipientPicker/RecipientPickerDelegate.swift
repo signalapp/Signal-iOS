@@ -11,6 +11,7 @@ public enum RecipientPickerRecipientState: Int {
     case duplicateGroupMember
     case userAlreadyInBlocklist
     case conversationAlreadyInBlocklist
+    case memberHasOutdatedClient
     case unknownError
 }
 
@@ -165,6 +166,9 @@ extension RecipientPickerViewController {
             owsFailDebug("Unexpected value.")
             errorMessage = NSLocalizedString("RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
                                              comment: "Error message indicating that a user can't be selected.")
+        case .memberHasOutdatedClient:
+            errorMessage = NSLocalizedString("RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT",
+                                             comment: "Error message indicating that a user can't be selected until they upgrade their app.")
         }
         OWSActionSheets.showErrorAlert(message: errorMessage)
         return

@@ -78,6 +78,16 @@ public extension TSThread {
         return (groupModel.isAnnouncementsOnly &&
                     !groupModel.groupMembership.isLocalUserFullMemberAndAdministrator)
     }
+
+    var isAnnouncementOnlyGroupThread: Bool {
+        guard let groupThread = self as? TSGroupThread else {
+            return false
+        }
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            return false
+        }
+        return groupModel.isAnnouncementsOnly
+    }
 }
 
 // MARK: -

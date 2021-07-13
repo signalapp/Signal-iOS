@@ -4405,6 +4405,9 @@
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
 
+/* Error message indicating that a user can't be selected until they upgrade their app. */
+"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "This user can't be added to the group until they upgrade Signal.";
+ 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
 

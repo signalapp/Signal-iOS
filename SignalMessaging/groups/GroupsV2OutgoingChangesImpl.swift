@@ -375,23 +375,51 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         // credentials that we'll actually need to build the change proto.
         //
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
-        var uuidsForProfileKeyCredentials = Set<UUID>()
-        uuidsForProfileKeyCredentials.formUnion(membersToAdd.keys)
-        uuidsForProfileKeyCredentials.formUnion(invitedMembersToPromote)
+        var newUserUUIDs = Set<UUID>()
+        newUserUUIDs.formUnion(membersToAdd.keys)
+        newUserUUIDs.formUnion(invitedMembersToPromote)
         // This should be redundant, but we'll also double-check that we have
         // the local profile key credential.
-        uuidsForProfileKeyCredentials.insert(localUuid)
-        let addressesForProfileKeyCredentials: [SignalServiceAddress] = uuidsForProfileKeyCredentials.map { SignalServiceAddress(uuid: $0) }
+        newUserUUIDs.insert(localUuid)
+        let newAddresses = newUserUUIDs.map { SignalServiceAddress(uuid: $0) }
+        let addressesForProfileKeyCredentials = newAddresses
+
+        if isMissingAnnouncementOnlyCapability(currentGroupModel: currentGroupModel,
+                                                         newAddresses: newAddresses) {
+            return Promise(error: GroupsV2Error.newMemberMissingAnnouncementOnlyCapability)
+        }
 
         return firstly {
             groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials,
                                                           ignoreMissingProfiles: false)
         }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
-            groupsV2Impl.loadProfileKeyCredentialData(for: Array(uuidsForProfileKeyCredentials))
+            groupsV2Impl.loadProfileKeyCredentialData(for: Array(newUserUUIDs))
         }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
             try self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
                                            currentDisappearingMessageToken: currentDisappearingMessageToken,
                                            profileKeyCredentialMap: profileKeyCredentialMap)
+        }
+    }
+
+    private func isMissingAnnouncementOnlyCapability(currentGroupModel: TSGroupModelV2,
+                                                     newAddresses: [SignalServiceAddress]) -> Bool {
+        let shouldPreventNewMembersWithoutAnnouncementOnlyCapability: Bool = {
+            if let isAnnouncementsOnly = self.isAnnouncementsOnly {
+                return isAnnouncementsOnly
+            }
+            return currentGroupModel.isAnnouncementsOnly
+        }()
+        guard shouldPreventNewMembersWithoutAnnouncementOnlyCapability else {
+            return false
+        }
+        return databaseStorage.read { transaction in
+            for address in newAddresses {
+                guard GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
+                                                                                transaction: transaction) else {
+                    return true
+                }
+            }
+            return false
         }
     }
 

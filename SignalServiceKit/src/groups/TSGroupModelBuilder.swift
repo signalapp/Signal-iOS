@@ -291,6 +291,7 @@ public extension TSGroupModel {
             builder.groupSecretParamsData = v2.secretParamsData
             builder.avatarUrlPath = v2.avatarUrlPath
             builder.inviteLinkPassword = v2.inviteLinkPassword
+            builder.isAnnouncementsOnly = v2.isAnnouncementsOnly
             builder.droppedMembers = v2.droppedMembers
             builder.descriptionText = v2.descriptionText
 

@@ -30,6 +30,7 @@ public enum GroupsV2Error: Error {
     case missingGroupChangeProtos
     case unexpectedRevision
     case groupBlocked
+    case newMemberMissingAnnouncementOnlyCapability
 }
 
 // MARK: -
