@@ -376,7 +376,7 @@ BOOL IsNoteToSelfEnabled(void)
     return (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0);
 }
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithMutedUntilDate:(NSDate * _Nullable)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSThread *thread) {
