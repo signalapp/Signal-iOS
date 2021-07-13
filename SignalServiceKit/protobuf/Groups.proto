@@ -74,7 +74,7 @@ message Group {
     repeated RequestingMember requestingMembers         = 9;
              bytes            inviteLinkPassword        = 10;
              bytes            descriptionBytes          = 11;
-             bool announcements_only = 12;
+             bool             announcements_only        = 12;
              // next: 13
 }
 
@@ -185,7 +185,7 @@ message GroupChange {
         repeated PromoteRequestingMemberAction              promoteRequestingMembers        = 18;  // change epoch = 1
                  ModifyInviteLinkPasswordAction             modifyInviteLinkPassword        = 19;  // change epoch = 1
                  ModifyDescriptionAction                    modifyDescription               = 20;  // change epoch = 2
-                 ModifyAnnouncementsOnlyAction modify_announcements_only                    = 21;  // change epoch = 3
+                 ModifyAnnouncementsOnlyAction              modify_announcements_only       = 21;  // change epoch = 3
     }
 
     bytes  actions         = 1; // The serialized actions
