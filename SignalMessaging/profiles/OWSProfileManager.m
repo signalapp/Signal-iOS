@@ -110,6 +110,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         if (CurrentAppContext().isMainApp && !CurrentAppContext().isRunningTests
             && TSAccountManager.shared.isRegistered) {
+            [self logLocalAvatarStatus];
             [self fetchLocalUsersProfile];
         }
     });
@@ -145,6 +146,44 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                              selector:@selector(blockListDidChange:)
                                                  name:kNSNotificationNameBlockListDidChange
                                                object:nil];
+}
+
+#pragma mark -
+
+- (void)logLocalAvatarStatus
+{
+    OWSAssertDebug(CurrentAppContext().isMainApp);
+    OWSAssertDebug(!CurrentAppContext().isRunningTests);
+    OWSAssertDebug(TSAccountManager.shared.isRegistered);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        __block OWSUserProfile *_Nullable localUserProfile;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            localUserProfile = [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress
+                                                            transaction:transaction];
+        }];
+        if (localUserProfile == nil) {
+            OWSFailDebug(@"Missing local user profile.");
+            return;
+        }
+        BOOL hasAvatarFileOnDisk = NO;
+        if (localUserProfile.avatarFileName.length > 0) {
+            NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:localUserProfile.avatarFileName];
+            hasAvatarFileOnDisk = [OWSFileSystem fileOrFolderExistsAtPath:filePath];
+        }
+
+        if (SSKDebugFlags.internalLogging) {
+            OWSLogInfo(@"Local user profile. avatarUrlPath: %@, avatarFileName: %@, hasAvatarFileOnDisk: %d",
+                localUserProfile.avatarUrlPath,
+                localUserProfile.avatarFileName,
+                hasAvatarFileOnDisk);
+        } else {
+            OWSLogInfo(@"Local user profile. avatarUrlPath: %d, avatarFileName: %d, hasAvatarFileOnDisk: %d",
+                localUserProfile.avatarUrlPath.length > 0,
+                localUserProfile.avatarFileName.length > 0,
+                hasAvatarFileOnDisk);
+        }
+    });
 }
 
 #pragma mark - User Profile Accessor
