@@ -435,7 +435,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            category = (thread.canSendToThread
+            category = (thread.canSendChatMessagesToThread()
                             ? .incomingMessageWithActions_CanReply
                             : .incomingMessageWithActions_CannotReply)
         }
@@ -537,7 +537,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
         } else {
-            category = (thread.canSendToThread
+            category = (thread.canSendChatMessagesToThread()
                             ? .incomingReactionWithActions_CanReply
                             : .incomingReactionWithActions_CannotReply)
         }

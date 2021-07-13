@@ -267,7 +267,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewIsGroupsV2Required() -> Bool {
-        return groupThread.isGroupV2Thread
+        groupThread.isGroupV2Thread
     }
 
     func groupMemberViewDismiss() {
@@ -276,5 +276,9 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
 
     var isNewGroup: Bool {
         false
+    }
+
+    var groupThreadForGroupMemberView: TSGroupThread? {
+        groupThread
     }
 }

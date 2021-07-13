@@ -460,6 +460,7 @@ public extension GroupMembership {
         return isFullOrInvitedAdministrator(SignalServiceAddress(uuid: uuid))
     }
 
+    @objc
     func isFullMemberAndAdministrator(_ address: SignalServiceAddress) -> Bool {
         guard let memberState = memberStates[address] else {
             return false

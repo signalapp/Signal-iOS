@@ -185,7 +185,7 @@ open class ConversationPickerViewController: OWSViewController {
             let maxRecentCount = 25 - pinnedThreadIds.count
 
             let addThread = { (thread: TSThread) -> Void in
-                guard thread.canSendToThread else {
+                guard thread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true) else {
                     return
                 }
 
@@ -265,7 +265,7 @@ open class ConversationPickerViewController: OWSViewController {
         return DispatchQueue.global().async(.promise) {
             return self.databaseStorage.read { transaction in
                 let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
-                    guard groupThread.canSendToThread else {
+                    guard groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true) else {
                         return nil
                     }
                     return self.buildGroupItem(groupThread, transaction: transaction)
@@ -521,8 +521,30 @@ extension ConversationPickerViewController: UITableViewDelegate {
             owsFailDebug("conversation was unexpectedly nil")
             return
         }
+        let isBlocked: Bool = databaseStorage.write { transaction in
+            guard let thread = conversation.thread(transaction: transaction) else {
+                return false
+            }
+            return !thread.canSendChatMessagesToThread(ignoreAnnouncementOnly: false)
+        }
+        guard !isBlocked else {
+            tableView.deselectRow(at: indexPath, animated: false)
+            showBlockedByAnnouncementOnlyToast()
+            return
+        }
+
         delegate?.conversationPicker(self, didSelectConversation: conversation)
         updateUIForCurrentSelection(animated: true)
+    }
+
+    private func showBlockedByAnnouncementOnlyToast() {
+        Logger.info("")
+
+        let toastFormat = NSLocalizedString("CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY",
+                                            comment: "Message indicating that only administrators can send message to an announcement-only group.")
+
+        let toastText = String(format: toastFormat, NSNumber(value: kMaxPickerSelection))
+        showToast(message: toastText)
     }
 
     public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -549,7 +571,13 @@ extension ConversationPickerViewController: UITableViewDelegate {
                                             comment: "Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected.")
 
         let toastText = String(format: toastFormat, NSNumber(value: kMaxPickerSelection))
-        let toastController = ToastController(text: toastText)
+        showToast(message: toastText)
+    }
+
+    private func showToast(message: String) {
+        Logger.info("")
+
+        let toastController = ToastController(text: message)
 
         let bottomInset = (view.bounds.height - tableView.frame.height)
         let kToastInset: CGFloat = bottomInset + 10

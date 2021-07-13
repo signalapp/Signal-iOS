@@ -195,7 +195,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 //
 // It's promise is fulfilled when all jobs are processed _or_
 // we give up.
-private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
+internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
 
     private let groupId: Data
     private let finder = GRDBGroupsV2MessageJobFinder()
@@ -203,7 +203,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
     fileprivate let promise: Promise<Void>
     private let resolver: Resolver<Void>
 
-    fileprivate required init(groupId: Data) {
+    internal required init(groupId: Data) {
         self.groupId = groupId
 
         let (promise, resolver) = Promise<Void>.pending()
@@ -374,7 +374,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         }
     }
 
-    private func jobInfo(forJob job: IncomingGroupsV2MessageJob,
+    private static func jobInfo(forJob job: IncomingGroupsV2MessageJob,
                          transaction: SDSAnyReadTransaction) -> IncomingGroupsV2MessageJobInfo {
         var jobInfo = IncomingGroupsV2MessageJobInfo(job: job)
         guard let envelope = job.envelope else {
@@ -397,35 +397,71 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         return jobInfo
     }
 
-    private func canJobBeDiscarded(jobInfo: IncomingGroupsV2MessageJobInfo,
-                                   shouldDiscardIfNotAMember: Bool = false,
-                                   transaction: SDSAnyReadTransaction) -> Bool {
+    public static func discardMode(envelopeData: Data,
+                                   plaintextData: Data?,
+                                   groupContext: SSKProtoGroupContextV2,
+                                   wasReceivedByUD: Bool,
+                                   serverDeliveryTimestamp: UInt64,
+                                   transaction: SDSAnyReadTransaction) -> DiscardMode {
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+        } catch {
+            owsFailDebug("Invalid group context: \(error).")
+            return .discard
+        }
+        let groupId = groupContextInfo.groupId
+        let job = IncomingGroupsV2MessageJob(envelopeData: envelopeData,
+                                             plaintextData: plaintextData,
+                                             groupId: groupId,
+                                             wasReceivedByUD: wasReceivedByUD,
+                                             serverDeliveryTimestamp: serverDeliveryTimestamp)
+        let jobInfo = self.jobInfo(forJob: job, transaction: transaction)
+        return self.discardMode(forJobInfo: jobInfo,
+                                 hasGroupBeenUpdated: true,
+                                 transaction: transaction)
+    }
+
+    public enum DiscardMode {
+        // Do not process this envelope.
+        case discard
+        // Process this envelope.
+        case doNotDiscard
+        // Process this envelope, but discard any "renderable" content,
+        // e.g. calls or messages in the chat history.
+        case discardVisibleMessages
+    }
+
+    private static func discardMode(forJobInfo jobInfo: IncomingGroupsV2MessageJobInfo,
+                                    hasGroupBeenUpdated: Bool,
+                                    transaction: SDSAnyReadTransaction) -> DiscardMode {
+
         // We want to discard asap to avoid problems with batching.
         guard let envelope = jobInfo.envelope else {
             owsFailDebug("Missing envelope.")
-            return true
+            return .discard
         }
         guard let groupContext = jobInfo.groupContext else {
             owsFailDebug("Missing groupContext.")
-            return true
+            return .discard
         }
         guard let groupContextInfo = jobInfo.groupContextInfo else {
             owsFailDebug("Missing groupContextInfo.")
-            return true
+            return .discard
         }
         guard let sourceAddress = envelope.sourceAddress,
             sourceAddress.isValid else {
                 owsFailDebug("Invalid source address.")
-                return true
+            return .discard
         }
         guard !blockingManager.isAddressBlocked(sourceAddress) &&
             !blockingManager.isGroupIdBlocked(groupContextInfo.groupId) else {
                 Logger.info("Discarding blocked envelope.")
-                return true
+            return .discard
         }
         guard groupContext.hasRevision else {
             Logger.info("Missing revision.")
-            return true
+            return .discard
         }
 
         // We need to pre-process all incoming envelopes; they might change
@@ -434,10 +470,10 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         // But we should only pass envelopes to the MessageManager for
         // processing if they correspond to v2 groups of which we are a
         // non-pending member.
-        if shouldDiscardIfNotAMember {
+        if hasGroupBeenUpdated {
             guard let localAddress = self.tsAccountManager.localAddress else {
                 owsFailDebug("Missing localAddress.")
-                return true
+                return .discard
             }
             guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId,
                                                         transaction: transaction) else {
@@ -445,23 +481,34 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
                                                             // but this race should be extremely rare.
                                                             // Usually this should indicate a bug.
                                                             owsFailDebug("Missing thread.")
-                                                            return true
+                return .discard
             }
             guard groupThread.groupModel.groupMembership.isFullMember(localAddress) else {
                 // * Local user might have just left the group.
                 // * Local user may have just learned that we were removed from the group.
                 // * Local user might be a pending member with an invite.
                 Logger.warn("Discarding envelope; local user is not an active group member.")
-                return true
+                return .discard
             }
             guard groupThread.groupModel.groupMembership.isFullMember(sourceAddress) else {
                 // * The sender might have just left the group.
                 Logger.warn("Discarding envelope; sender is not an active group member.")
-                return true
+                return .discard
+            }
+            if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
+                if groupModel.isAnnouncementsOnly {
+                    guard groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(sourceAddress) else {
+                        // * Only administrators can send "renderable" messages to a "announcement-only" group.
+                        Logger.warn("Discarding renderable content in envelope; sender is not an active group member.")
+                        return .discardVisibleMessages
+                    }
+                }
+            } else {
+                owsFailDebug("Invalid group model.")
             }
         }
 
-        return false
+        return .doNotDiscard
     }
 
     // Like non-v2 group messages, we want to do batch processing
@@ -480,7 +527,9 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
     // message at the head of the queue.
     private func canJobBeProcessedWithoutUpdate(jobInfo: IncomingGroupsV2MessageJobInfo,
                                                 transaction: SDSAnyReadTransaction) -> Bool {
-        if canJobBeDiscarded(jobInfo: jobInfo, transaction: transaction) {
+        if .discard == Self.discardMode(forJobInfo: jobInfo,
+                                        hasGroupBeenUpdated: false,
+                                        transaction: transaction) {
             return true
         }
         guard let groupContext = jobInfo.groupContext else {
@@ -513,7 +562,7 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         var isUpdateBatch = false
         var jobInfos = [IncomingGroupsV2MessageJobInfo]()
         for job in jobs {
-            let jobInfo = self.jobInfo(forJob: job, transaction: transaction)
+            let jobInfo = Self.jobInfo(forJob: job, transaction: transaction)
             let canJobBeProcessedWithoutUpdate = self.canJobBeProcessedWithoutUpdate(jobInfo: jobInfo, transaction: transaction)
             if !canJobBeProcessedWithoutUpdate {
                 if jobInfos.count > 0 {
@@ -561,9 +610,10 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
         for jobInfo in jobInfos {
             let job = jobInfo.job
 
-            if canJobBeDiscarded(jobInfo: jobInfo,
-                                 shouldDiscardIfNotAMember: true,
-                                 transaction: transaction) {
+            let discardMode = Self.discardMode(forJobInfo: jobInfo,
+                                               hasGroupBeenUpdated: true,
+                                               transaction: transaction)
+            if discardMode == .discard {
                 // Do nothing.
                 Logger.verbose("Discarding job.")
             } else {
@@ -572,10 +622,12 @@ private class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenci
                     reportFailure(transaction)
                     continue
                 }
+                let shouldDiscardVisibleMessages = discardMode == .discardVisibleMessages
                 if !self.messageManager.processEnvelope(envelope,
                                                         plaintextData: job.plaintextData,
                                                         wasReceivedByUD: job.wasReceivedByUD,
                                                         serverDeliveryTimestamp: job.serverDeliveryTimestamp,
+                                                        shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
                                                         transaction: transaction) {
                     reportFailure(transaction)
                 }

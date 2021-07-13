@@ -37,6 +37,7 @@ public class CallMessageRelay: NSObject {
                     plaintextData: payload.plaintextData,
                     wasReceivedByUD: payload.wasReceivedByUD,
                     serverDeliveryTimestamp: payload.serverDeliveryTimestamp,
+                    shouldDiscardVisibleMessages: false,
                     transaction: transaction
                 )
             }

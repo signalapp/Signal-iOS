@@ -83,6 +83,10 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                                                         transaction: transaction) {
                     capabilities.append("migration")
                 }
+                if GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
+                                                                             transaction: transaction) {
+                    capabilities.append("announcementGroup")
+                }
                 section.add(.label(withText: String(format: "Capabilities: %@",
                                                     capabilities.joined(separator: ", "))))
 

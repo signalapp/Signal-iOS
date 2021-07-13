@@ -62,7 +62,7 @@ public class ReactionManager: NSObject {
         assert(emoji.isSingleEmoji)
 
         let thread = message.thread(transaction: transaction)
-        guard thread.canSendToThread else {
+        guard thread.canSendReactionToThread else {
             throw OWSAssertionError("Cannot send to thread.")
         }
 

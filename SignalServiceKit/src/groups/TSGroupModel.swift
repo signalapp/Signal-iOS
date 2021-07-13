@@ -26,6 +26,8 @@ public class TSGroupModelV2: TSGroupModel {
     public var avatarUrlPath: String?
     @objc
     public var inviteLinkPassword: Data?
+    @objc
+    public var isAnnouncementsOnly: Bool = false
     // We sometimes create "placeholder" models to reflect
     // groups that we don't have access to on the service.
     @objc
@@ -52,6 +54,7 @@ public class TSGroupModelV2: TSGroupModel {
                          secretParamsData: Data,
                          avatarUrlPath: String?,
                          inviteLinkPassword: Data?,
+                         isAnnouncementsOnly: Bool,
                          isPlaceholderModel: Bool,
                          wasJustMigrated: Bool,
                          wasJustCreatedByLocalUser: Bool,
@@ -67,6 +70,7 @@ public class TSGroupModelV2: TSGroupModel {
         self.revision = revision
         self.avatarUrlPath = avatarUrlPath
         self.inviteLinkPassword = inviteLinkPassword
+        self.isAnnouncementsOnly = isAnnouncementsOnly
         self.isPlaceholderModel = isPlaceholderModel
         self.wasJustMigrated = wasJustMigrated
         self.wasJustCreatedByLocalUser = wasJustCreatedByLocalUser
@@ -143,6 +147,9 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.inviteLinkPassword == inviteLinkPassword else {
             return false
         }
+        guard other.isAnnouncementsOnly == isAnnouncementsOnly else {
+            return false
+        }
         guard other.droppedMembers.stableSort() == droppedMembers.stableSort() else {
             return false
         }
@@ -168,6 +175,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "revision: \(revision),\n"
         result += "avatarUrlPath: \(String(describing: avatarUrlPath)),\n"
         result += "inviteLinkPassword: \(inviteLinkPassword?.hexadecimalString ?? "None"),\n"
+        result += "isAnnouncementsOnly: \(isAnnouncementsOnly),\n"
         result += "addedByAddress: \(addedByAddress?.debugDescription ?? "None"),\n"
         result += "isPlaceholderModel: \(isPlaceholderModel),\n"
         result += "wasJustMigrated: \(wasJustMigrated),\n"
@@ -185,8 +193,8 @@ public class TSGroupModelV2: TSGroupModel {
 public extension TSGroupModelV2 {
     var groupInviteLinkMode: GroupsV2LinkMode {
         guard let inviteLinkPassword = inviteLinkPassword,
-            !inviteLinkPassword.isEmpty else {
-                return .disabled
+              !inviteLinkPassword.isEmpty else {
+            return .disabled
         }
 
         switch access.addFromInviteLink {
@@ -201,8 +209,8 @@ public extension TSGroupModelV2 {
 
     var isGroupInviteLinkEnabled: Bool {
         if let inviteLinkPassword = inviteLinkPassword,
-            !inviteLinkPassword.isEmpty,
-            access.canJoinFromInviteLink {
+           !inviteLinkPassword.isEmpty,
+           access.canJoinFromInviteLink {
             return true
         }
         return false

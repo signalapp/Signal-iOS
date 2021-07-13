@@ -611,7 +611,7 @@ extension ConversationSettingsViewController {
                                                     self?.showMemberRequestsAndInvitesView()
         }))
 
-        if canEditConversationAccess {
+        if canEditPermissions {
             let itemTitle = NSLocalizedString(
                 "CONVERSATION_SETTINGS_PERMISSIONS",
                 comment: "Label for 'permissions' action in conversation settings view."

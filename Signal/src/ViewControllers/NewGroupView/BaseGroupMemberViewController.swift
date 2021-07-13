@@ -34,6 +34,8 @@ protocol GroupMemberViewDelegate: AnyObject {
     func groupMemberViewDismiss()
 
     var isNewGroup: Bool { get }
+
+    var groupThreadForGroupMemberView: TSGroupThread? { get }
 }
 
 // MARK: -
@@ -344,13 +346,20 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return .unknownError
         }
-        guard (Self.databaseStorage.read { transaction in
-            !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
-                                                                       transaction: transaction)
-        }) else {
-            return .duplicateGroupMember
+        return Self.databaseStorage.read { transaction -> RecipientPickerRecipientState in
+            if groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
+                                                                          transaction: transaction) {
+                return .duplicateGroupMember
+            }
+            if let groupThread = groupMemberViewDelegate.groupThreadForGroupMemberView,
+               groupThread.isAnnouncementOnlyGroupThread,
+               let address = recipient.address,
+               !GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
+                                                                          transaction: transaction) {
+                return .memberHasOutdatedClient
+            }
+            return .canBeSelected
         }
-        return .canBeSelected
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,

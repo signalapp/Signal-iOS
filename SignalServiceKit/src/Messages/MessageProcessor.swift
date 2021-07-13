@@ -313,13 +313,52 @@ public class MessageProcessor: NSObject {
                 return
             }
 
-            if let groupContextV2 = GroupsV2MessageProcessor.groupContextV2(
-                forEnvelope: envelope,
-                plaintextData: result.plaintextData
-            ), !GroupsV2MessageProcessor.canContextBeProcessedImmediately(
-                groupContext: groupContextV2,
-                transaction: transaction
-            ) {
+            enum ProcessingStep {
+                case discard
+                case enqueueForGroupProcessing
+                case processNow(shouldDiscardVisibleMessages: Bool)
+            }
+            let processingStep = { () -> ProcessingStep in
+                guard let groupContextV2 = GroupsV2MessageProcessor.groupContextV2(
+                    forEnvelope: envelope,
+                    plaintextData: result.plaintextData
+                ) else {
+                    // Non-v2-group messages can be processed immediately.
+                    return .processNow(shouldDiscardVisibleMessages: false)
+                }
+
+                guard GroupsV2MessageProcessor.canContextBeProcessedImmediately(
+                    groupContext: groupContextV2,
+                    transaction: transaction
+                ) else {
+                    // Some v2 group messages required group state to be
+                    // updated before they can be processed.
+                    return .enqueueForGroupProcessing
+                }
+                let discardMode = GroupsMessageProcessor.discardMode(
+                    envelopeData: result.envelopeData,
+                    plaintextData: result.plaintextData,
+                    groupContext: groupContextV2,
+                    wasReceivedByUD: result.wasReceivedByUD,
+                    serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                    transaction: transaction
+                )
+                if discardMode == .discard {
+                    // Some v2 group messages should be discarded and not processed.
+                    Logger.verbose("Discarding job.")
+                    return .discard
+                }
+                // Some v2 group messages should be processed, but
+                // discarding any "visible" messages, e.g. text messages
+                // or calls.
+                return .processNow(shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages)
+            }()
+
+            switch processingStep {
+            case .discard:
+                // Do nothing.
+                Logger.verbose("Discarding job.")
+            case .enqueueForGroupProcessing:
                 // If we can't process the message immediately, we enqueue it for
                 // for processing in the same transaction within which it was decrypted
                 // to prevent data loss.
@@ -331,7 +370,7 @@ public class MessageProcessor: NSObject {
                     serverDeliveryTimestamp: result.serverDeliveryTimestamp,
                     transaction: transaction
                 )
-            } else {
+            case .processNow(let shouldDiscardVisibleMessages):
                 // Envelopes can be processed immediately if they're:
                 // 1. Not a GV2 message.
                 // 2. A GV2 message that doesn't require updating the group.
@@ -350,6 +389,7 @@ public class MessageProcessor: NSObject {
                     plaintextData: result.plaintextData,
                     wasReceivedByUD: result.wasReceivedByUD,
                     serverDeliveryTimestamp: result.serverDeliveryTimestamp,
+                    shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
                     transaction: transaction
                 )
             }

@@ -25,6 +25,7 @@ public class SignalServiceProfile: NSObject {
     public let hasUnrestrictedUnidentifiedAccess: Bool
     public let supportsGroupsV2: Bool
     public let supportsGroupsV2Migration: Bool
+    public let supportsAnnouncementOnlyGroups: Bool
     public let credential: Data?
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
@@ -77,6 +78,9 @@ public class SignalServiceProfile: NSObject {
         self.supportsGroupsV2Migration = Self.parseCapabilityFlag(capabilityKey: "gv1-migration",
                                                                   params: params,
                                                                   requireCapability: true)
+        self.supportsAnnouncementOnlyGroups = Self.parseCapabilityFlag(capabilityKey: "announcementGroup",
+                                                                       params: params,
+                                                                       requireCapability: true)
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
     }
@@ -84,13 +88,14 @@ public class SignalServiceProfile: NSObject {
     private static func parseCapabilityFlag(capabilityKey: String,
                                             params: ParamParser,
                                             requireCapability: Bool) -> Bool {
-
         do {
-            if let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) {
+            let capabilitiesJson: Any? = try params.required(key: "capabilities")
+            if let capabilities = ParamParser(responseObject: capabilitiesJson) {
                 if let value: Bool = try capabilities.optional(key: capabilityKey) {
                     return value
                 } else {
                     if requireCapability {
+                        Logger.verbose("capabilitiesJson: \(capabilitiesJson)")
                         owsFailDebug("Missing capability: \(capabilityKey).")
                     } else {
                         Logger.warn("Missing capability: \(capabilityKey).")

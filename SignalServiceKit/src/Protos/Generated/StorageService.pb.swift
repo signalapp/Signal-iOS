@@ -926,39 +926,55 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
       switch fieldNumber {
       case 1: try {
         var v: StorageServiceProtos_ContactRecord?
+        var hadOneofValue = false
         if let current = self.record {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .contact(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.record = .contact(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .contact(v)
+        }
       }()
       case 2: try {
         var v: StorageServiceProtos_GroupV1Record?
+        var hadOneofValue = false
         if let current = self.record {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .groupV1(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.record = .groupV1(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .groupV1(v)
+        }
       }()
       case 3: try {
         var v: StorageServiceProtos_GroupV2Record?
+        var hadOneofValue = false
         if let current = self.record {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .groupV2(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.record = .groupV2(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .groupV2(v)
+        }
       }()
       case 4: try {
         var v: StorageServiceProtos_AccountRecord?
+        var hadOneofValue = false
         if let current = self.record {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .account(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.record = .account(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.record = .account(v)
+        }
       }()
       default: break
       }
@@ -1450,24 +1466,32 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
       switch fieldNumber {
       case 1: try {
         var v: StorageServiceProtos_AccountRecord.PinnedConversation.Contact?
+        var hadOneofValue = false
         if let current = self.identifier {
-          try decoder.handleConflictingOneOf()
+          hadOneofValue = true
           if case .contact(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.identifier = .contact(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.identifier = .contact(v)
+        }
       }()
       case 3: try {
-        if self.identifier != nil {try decoder.handleConflictingOneOf()}
         var v: Data?
         try decoder.decodeSingularBytesField(value: &v)
-        if let v = v {self.identifier = .legacyGroupID(v)}
+        if let v = v {
+          if self.identifier != nil {try decoder.handleConflictingOneOf()}
+          self.identifier = .legacyGroupID(v)
+        }
       }()
       case 4: try {
-        if self.identifier != nil {try decoder.handleConflictingOneOf()}
         var v: Data?
         try decoder.decodeSingularBytesField(value: &v)
-        if let v = v {self.identifier = .groupMasterKey(v)}
+        if let v = v {
+          if self.identifier != nil {try decoder.handleConflictingOneOf()}
+          self.identifier = .groupMasterKey(v)
+        }
       }()
       default: break
       }

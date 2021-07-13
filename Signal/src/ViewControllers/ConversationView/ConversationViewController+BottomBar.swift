@@ -14,6 +14,7 @@ enum CVCBottomViewType: Equatable {
     case search
     case selection
     case blockingGroupMigration
+    case announcementOnlyGroup
 }
 
 // MARK: -
@@ -62,6 +63,8 @@ public extension ConversationViewController {
                 return .memberRequestView
             } else if hasBlockingGroupMigration {
                 return .blockingGroupMigration
+            } else if isBlockedFromSendingByAnnouncementOnlyGroup {
+                return .announcementOnlyGroup
             } else {
                 switch uiMode {
                 case .search:
@@ -118,6 +121,11 @@ public extension ConversationViewController {
                                                            fromViewController: self)
             requestView = migrationView
             bottomView = migrationView
+        case .announcementOnlyGroup:
+            let announcementOnlyView = BlockingAnnouncementOnlyView(threadViewModel: threadViewModel,
+                                                                    fromViewController: self)
+            requestView = announcementOnlyView
+            bottomView = announcementOnlyView
         }
 
         for subView in bottomBar.subviews {
@@ -356,5 +364,9 @@ public extension ConversationViewController {
 
     private var hasBlockingGroupMigration: Bool {
         thread.isBlockedByMigration
+    }
+
+    private var isBlockedFromSendingByAnnouncementOnlyGroup: Bool {
+        thread.isBlockedByAnnouncementOnly
     }
 }

@@ -30,6 +30,7 @@ public enum GroupsV2Error: Error {
     case missingGroupChangeProtos
     case unexpectedRevision
     case groupBlocked
+    case newMemberMissingAnnouncementOnlyCapability
 }
 
 // MARK: -
@@ -196,6 +197,8 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func rotateInviteLinkPassword()
 
+    func setIsAnnouncementsOnly(_ isAnnouncementsOnly: Bool)
+
     func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
 }
@@ -303,6 +306,8 @@ public protocol GroupV2Snapshot {
     var profileKeys: [UUID: Data] { get }
 
     var inviteLinkPassword: Data? { get }
+
+    var isAnnouncementsOnly: Bool { get }
 }
 
 // MARK: -

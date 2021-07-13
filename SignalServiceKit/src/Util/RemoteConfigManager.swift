@@ -193,6 +193,11 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.forceViewedReceiptSending || isEnabled(.viewedReceiptSending)
     }
 
+    @objc
+    public static var announcementOnlyGroups: Bool {
+        DebugFlags.forceAnnouncementOnlyGroups || isEnabled(.announcementOnlyGroups)
+    }
+
     // MARK: -
 
     private static func interval(
@@ -383,6 +388,7 @@ private struct Flags {
         case paymentsResetKillSwitch
         case giphySendAsMP4
         case viewedReceiptSending
+        case announcementOnlyGroups
     }
 
     // Values defined in this array remain set once they are

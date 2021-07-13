@@ -61,6 +61,7 @@ class MemberActionSheet: InteractiveSheetViewController {
         }()
         self.groupViewHelper = groupViewHelper
         self.address = address
+
         super.init()
 
         tableViewController.shouldDeferInitialLoad = false
