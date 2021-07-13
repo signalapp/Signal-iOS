@@ -161,6 +161,7 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
         addChild(tableViewController)
         let tableView = tableViewController.tableView
         tableViewController.shouldDeferInitialLoad = false
+        tableViewController.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
         tableView.register(ContactTableViewCell.self,
                            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
         contentView.addSubview(tableViewController.view)

@@ -611,17 +611,20 @@ extension ConversationSettingsViewController {
                                                     self?.showMemberRequestsAndInvitesView()
         }))
 
-        section.add(OWSTableItem.disclosureItem(
-            icon: .settingsPrivacy,
-            name: NSLocalizedString(
+        if canEditPermissions {
+            let itemTitle = NSLocalizedString(
                 "CONVERSATION_SETTINGS_PERMISSIONS",
                 comment: "Label for 'permissions' action in conversation settings view."
-            ),
-            accessibilityIdentifier: "conversation_settings_permissions",
-            actionBlock: { [weak self] in
-                self?.showPermissionsSettingsView()
-            }
-        ))
+            )
+            section.add(OWSTableItem.disclosureItem(
+                icon: .settingsPrivacy,
+                name: itemTitle,
+                accessibilityIdentifier: "conversation_settings_permissions",
+                actionBlock: { [weak self] in
+                    self?.showPermissionsSettingsView()
+                }
+            ))
+        }
 
         contents.addSection(section)
     }
