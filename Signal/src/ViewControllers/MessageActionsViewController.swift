@@ -255,7 +255,7 @@ public class MessageActionsViewController: UIViewController {
     // MARK: - Reaction handling
 
     var canAddReact: Bool {
-        guard thread.canSendToThread else { return false }
+        guard thread.canSendReactionToThread else { return false }
         guard let delegate = delegate else { return false }
         return delegate.messageActionsViewController(self, shouldShowReactionPickerForInteraction: focusedInteraction)
     }

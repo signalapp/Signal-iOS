@@ -367,12 +367,6 @@ public extension ConversationViewController {
     }
 
     private var isBlockedFromSendingByAnnouncementOnlyGroup: Bool {
-        guard let groupThread = thread as? TSGroupThread,
-              let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            return false
-        }
-        // In "announcement-only" groups, only admins can send messages.
-        return (groupModel.isAnnouncementsOnly &&
-                    !groupModel.groupMembership.isLocalUserFullMemberAndAdministrator)
+        thread.isBlockedByAnnouncementOnly
     }
 }

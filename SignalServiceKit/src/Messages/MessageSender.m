@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/MessageSender.h>
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
 #import "NSError+OWSOperation.h"
@@ -15,7 +16,6 @@
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
-#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSContact.h>
@@ -25,6 +25,9 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSOperation.h>
+#import <SignalServiceKit/OWSOutgoingCallMessage.h>
+#import <SignalServiceKit/OWSOutgoingGroupCallMessage.h>
+#import <SignalServiceKit/OWSOutgoingReactionMessage.h>
 #import <SignalServiceKit/OWSOutgoingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
@@ -681,9 +684,20 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     NSArray<SignalServiceAddress *> *recipientAddresses = sendInfo.recipients;
     SenderCertificates *senderCertificates = sendInfo.senderCertificates;
 
-    if (!thread.canSendToThread) {
+    BOOL canSendToThread = NO;
+    if ([message isKindOfClass:OWSOutgoingReactionMessage.class]) {
+        canSendToThread = thread.canSendReactionToThread;
+    } else if (message.hasRenderableContent ||
+               [message isKindOfClass:OWSOutgoingGroupCallMessage.class] ||
+               [message isKindOfClass:OWSOutgoingCallMessage.class]) {
+        canSendToThread = [thread canSendChatMessagesToThread];
+    } else {
+        canSendToThread = thread.canSendNonChatMessagesToThread;
+    }
+    
+    if (!canSendToThread) {
         if (message.shouldBeSaved) {
-            return failureHandler(OWSErrorMakeAssertionError(@"Blocked by group migration."));
+            return failureHandler(OWSErrorMakeAssertionError(@"Sending to thread blocked."));
         } else {
             // Pretend to succeed for non-visible messages like read receipts, etc.
             successHandler();

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,8 +36,47 @@ public extension TSThread {
         isGroupV1Thread && GroupManager.areMigrationsBlocking
     }
 
-    var canSendToThread: Bool {
-        !isBlockedByMigration
+    var canSendReactionToThread: Bool {
+        guard !isBlockedByMigration else {
+            return false
+        }
+        return true
+    }
+
+    var canSendNonChatMessagesToThread: Bool {
+        guard !isBlockedByMigration else {
+            return false
+        }
+        return true
+    }
+
+    @available(swift, obsoleted: 1.0)
+    func canSendChatMessagesToThread() -> Bool {
+        canSendChatMessagesToThread(ignoreAnnouncementOnly: false)
+    }
+
+    func canSendChatMessagesToThread(ignoreAnnouncementOnly: Bool = false) -> Bool {
+        guard !isBlockedByMigration else {
+            return false
+        }
+        if !ignoreAnnouncementOnly {
+            guard !isBlockedByAnnouncementOnly else {
+                return false
+            }
+        }
+        return true
+    }
+
+    var isBlockedByAnnouncementOnly: Bool {
+        guard let groupThread = self as? TSGroupThread else {
+            return false
+        }
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            return false
+        }
+        // In "announcement-only" groups, only admins can send messages and start group calls.
+        return (groupModel.isAnnouncementsOnly &&
+                    !groupModel.groupMembership.isLocalUserFullMemberAndAdministrator)
     }
 }
 
