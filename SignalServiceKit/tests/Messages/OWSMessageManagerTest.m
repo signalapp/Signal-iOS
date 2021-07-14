@@ -36,6 +36,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
                  plaintextData:(NSData *)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
        serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+  shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
@@ -126,6 +127,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
                                       plaintextData:nil
                                     wasReceivedByUD:NO
                             serverDeliveryTimestamp:0
+                       shouldDiscardVisibleMessages:NO
                                         transaction:transaction];
     }];
 
@@ -172,6 +174,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
                                       plaintextData:nil
                                     wasReceivedByUD:NO
                             serverDeliveryTimestamp:0
+                       shouldDiscardVisibleMessages:NO
                                         transaction:transaction];
     }];
 
