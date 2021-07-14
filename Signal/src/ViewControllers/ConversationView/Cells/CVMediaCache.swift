@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Lottie
 
 public class CVMediaCache: NSObject {
 
@@ -13,6 +14,10 @@ public class CVMediaCache: NSObject {
 
     private let stillMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 12)
     private let animatedMediaViewCache = MediaInnerCache<String, ReusableMediaView>(maxSize: 6)
+
+    private let lottieAnimationCache = LRUCache<String, Lottie.Animation>(maxSize: 8,
+                                                                          shouldEvacuateInBackground: true)
+    private let lottieImageProvider = BundleImageProvider(bundle: .main, searchPath: nil)
 
     public required override init() {
         AssertIsOnMainThread()
@@ -40,6 +45,30 @@ public class CVMediaCache: NSObject {
         cache.set(value: value, forKey: key)
     }
 
+    public func getLottieAnimation(name: String) -> Lottie.Animation? {
+        AssertIsOnMainThread()
+
+        if let value = lottieAnimationCache.get(key: name) {
+            return value
+        }
+        guard let value = Lottie.Animation.named(name) else {
+            owsFailDebug("Invalid Lottie animation: \(name).")
+            return nil
+        }
+        lottieAnimationCache.set(key: name, value: value)
+        return value
+    }
+
+    public func buildLottieAnimationView(name: String) -> Lottie.AnimationView {
+        AssertIsOnMainThread()
+
+        // Don't use Lottie.AnimationCacheProvider; LRUCache is better.
+        let animation: Lottie.Animation? = getLottieAnimation(name: name)
+        // Don't specify textProvider.
+        let animationView = Lottie.AnimationView(animation: animation, imageProvider: lottieImageProvider)
+        return animationView
+    }
+
     public func removeAllObjects() {
         AssertIsOnMainThread()
 
@@ -48,6 +77,8 @@ public class CVMediaCache: NSObject {
 
         stillMediaViewCache.removeAllObjects()
         animatedMediaViewCache.removeAllObjects()
+
+        lottieAnimationCache.removeAllObjects()
     }
 }
 

@@ -64,7 +64,8 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         // TODO: We might want to convert AudioMessageView into a form that can be reused.
         let audioMessageView = AudioMessageView(audioAttachment: audioAttachment,
                                                 isIncoming: isIncoming,
-                                                componentDelegate: componentDelegate)
+                                                componentDelegate: componentDelegate,
+                                                mediaCache: mediaCache)
         if let incomingMessage = interaction as? TSIncomingMessage {
             audioMessageView.setViewed(incomingMessage.wasViewed, animated: false)
         } else if let outgoingMessage = interaction as? TSOutgoingMessage {

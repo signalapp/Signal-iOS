@@ -778,9 +778,6 @@ public class SendPaymentViewController: OWSViewController {
                let fiatCurrencyAmount = currencyConversion.convertToFiatCurrency(paymentAmount: parsedPaymentAmount),
                let fiatString = PaymentsFormat.formatAsDoubleString(fiatCurrencyAmount) {
                 // Store the otherCurrencyAmount.
-                Logger.verbose("fiatCurrencyAmount: \(fiatCurrencyAmount)")
-                Logger.verbose("fiatString: \(fiatString)")
-                Logger.flush()
                 amounts.set(currentAmount: .fiatCurrency(inputString: InputString.parseString(fiatString, isFiat: true),
                                                          currencyConversion: currencyConversion),
                             otherCurrencyAmount: self.amount)

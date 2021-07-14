@@ -508,9 +508,6 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         guard let filePath = attachmentStream.originalFilePath else {
             return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
         }
-        let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)
-        Logger.verbose("imageMetadata: \(NSStringForImageFormat(imageMetadata.imageFormat))")
-        Logger.flush()
         if shouldBeRenderedByYY {
             guard let animatedImage = YYImage(contentsOfFile: filePath) else {
                 return Promise(error: OWSAssertionError("Invalid animated image."))

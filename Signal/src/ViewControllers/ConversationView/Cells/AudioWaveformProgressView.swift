@@ -67,9 +67,11 @@ class AudioWaveformProgressView: UIView {
     private let thumbView = UIView()
     private let playedShapeLayer = CAShapeLayer()
     private let unplayedShapeLayer = CAShapeLayer()
-    private let loadingAnimation = AnimationView(name: "waveformLoading")
+    private let loadingAnimation: AnimationView
 
-    init() {
+    init(mediaCache: CVMediaCache) {
+        self.loadingAnimation = mediaCache.buildLottieAnimationView(name: "waveformLoading")
+
         super.init(frame: .zero)
 
         playedShapeLayer.fillColor = playedColor.cgColor

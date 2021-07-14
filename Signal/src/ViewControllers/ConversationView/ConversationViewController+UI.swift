@@ -258,6 +258,7 @@ extension ConversationViewController {
         owsAssertDebug(hasViewWillAppearEverBegun)
 
         let inputToolbar = ConversationInputToolbar(conversationStyle: conversationStyle,
+                                                    mediaCache: mediaCache,
                                                     messageDraft: messageDraft,
                                                     inputToolbarDelegate: self,
                                                     inputTextViewDelegate: self,
