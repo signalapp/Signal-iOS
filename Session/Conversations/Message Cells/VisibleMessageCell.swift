@@ -449,7 +449,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
         guard let viewItem = viewItem else { return }
         let location = gestureRecognizer.location(in: self)
-        if replyButton.frame.contains(location) {
+        if profilePictureView.frame.contains(location) && VisibleMessageCell.shouldShowProfilePicture(for: viewItem) {
+            guard let message = viewItem.interaction as? TSIncomingMessage else { return }
+            delegate?.showUserDetails(for: message.authorId)
+        } else if replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             reply()
         } else {

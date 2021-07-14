@@ -48,7 +48,7 @@ class MessageCell : UITableViewCell {
     }
 }
 
-protocol MessageCellDelegate : class {
+protocol MessageCellDelegate : AnyObject {
     var lastSearchedText: String? { get }
     
     func getMediaCache() -> NSCache<NSString, AnyObject>
@@ -58,4 +58,5 @@ protocol MessageCellDelegate : class {
     func showFullText(_ viewItem: ConversationViewItem)
     func openURL(_ url: URL)
     func handleReplyButtonTapped(for viewItem: ConversationViewItem)
+    func showUserDetails(for sessionID: String)
 }
