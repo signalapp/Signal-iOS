@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, ConversationListViewControllerSection) {
     ConversationListViewControllerSectionArchiveButton,
 };
 
+@class HVViewState;
 @class TSThread;
 
 @interface ConversationListViewController : OWSViewController
@@ -35,6 +36,7 @@ typedef NS_ENUM(NSInteger, ConversationListViewControllerSection) {
 - (void)archiveSelectedConversation;
 - (void)unarchiveSelectedConversation;
 
+@property (nonatomic, readonly) HVViewState *viewState;
 @property (nonatomic) TSThread *lastViewedThread;
 
 // For use by Swift extension.

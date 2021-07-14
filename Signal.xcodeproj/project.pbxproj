@@ -460,6 +460,12 @@
 		34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */; };
 		34E93F942667F92100CE6FA5 /* ChatColorsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */; };
 		34E93F982668257400CE6FA5 /* color-bubble-64.json in Resources */ = {isa = PBXBuildFile; fileRef = 34E93F972668257400CE6FA5 /* color-bubble-64.json */; };
+		34E95C1B269F4F1B004807EC /* ThreadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1A269F4F1A004807EC /* ThreadMapping.swift */; };
+		34E95C21269F4F4F004807EC /* HVLoadCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1C269F4F4F004807EC /* HVLoadCoordinator.swift */; };
+		34E95C22269F4F4F004807EC /* HVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1D269F4F4F004807EC /* HVRenderState.swift */; };
+		34E95C23269F4F4F004807EC /* HVLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1E269F4F4F004807EC /* HVLoader.swift */; };
+		34E95C24269F4F4F004807EC /* HVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1F269F4F4F004807EC /* HVViewState.swift */; };
+		34E95C25269F4F4F004807EC /* HVTableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C20269F4F4F004807EC /* HVTableDataSource.swift */; };
 		34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */; };
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
 		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
@@ -578,7 +584,6 @@
 		4C0387532339B3220062D293 /* UIColor+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0387522339B3220062D293 /* UIColor+OWS.swift */; };
 		4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */; };
 		4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */; };
-		4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0C36F7226647FE0083F19A /* ThreadMapping.swift */; };
 		4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C0CF6F92386295400C9F818 /* tap_to_focus.json */; };
 		4C10B19423176D250099396B /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
 		4C10B19523176D250099396B /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
@@ -1558,6 +1563,12 @@
 		34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BodyTextItems.swift"; sourceTree = "<group>"; };
 		34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorsMegaphone.swift; sourceTree = "<group>"; };
 		34E93F972668257400CE6FA5 /* color-bubble-64.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "color-bubble-64.json"; sourceTree = "<group>"; };
+		34E95C1A269F4F1A004807EC /* ThreadMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadMapping.swift; sourceTree = "<group>"; };
+		34E95C1C269F4F4F004807EC /* HVLoadCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVLoadCoordinator.swift; sourceTree = "<group>"; };
+		34E95C1D269F4F4F004807EC /* HVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVRenderState.swift; sourceTree = "<group>"; };
+		34E95C1E269F4F4F004807EC /* HVLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVLoader.swift; sourceTree = "<group>"; };
+		34E95C1F269F4F4F004807EC /* HVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVViewState.swift; sourceTree = "<group>"; };
+		34E95C20269F4F4F004807EC /* HVTableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVTableDataSource.swift; sourceTree = "<group>"; };
 		34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesViewController.swift; sourceTree = "<group>"; };
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
 		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
@@ -1686,7 +1697,6 @@
 		4C043929220A9EC800BAEA63 /* VoiceNoteLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteLock.swift; sourceTree = "<group>"; };
 		4C046AA6236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSGroupSyncProcessingJobQueue.swift; sourceTree = "<group>"; };
 		4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
-		4C0C36F7226647FE0083F19A /* ThreadMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMapping.swift; sourceTree = "<group>"; };
 		4C0CF6F92386295400C9F818 /* tap_to_focus.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tap_to_focus.json; sourceTree = "<group>"; };
 		4C10B1C323176D250099396B /* SignalPerformanceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalPerformanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSPerformanceTest.swift; sourceTree = "<group>"; };
@@ -2465,6 +2475,12 @@
 				34882C512694A9260013E289 /* ConversationListViewController+Notifications.swift */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
+				34E95C1C269F4F4F004807EC /* HVLoadCoordinator.swift */,
+				34E95C1E269F4F4F004807EC /* HVLoader.swift */,
+				34E95C1D269F4F4F004807EC /* HVRenderState.swift */,
+				34E95C20269F4F4F004807EC /* HVTableDataSource.swift */,
+				34E95C1F269F4F4F004807EC /* HVViewState.swift */,
+				34E95C1A269F4F1A004807EC /* ThreadMapping.swift */,
 			);
 			path = HomeView;
 			sourceTree = "<group>";
@@ -3292,7 +3308,6 @@
 				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
 				458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */,
 				4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */,
-				4C0C36F7226647FE0083F19A /* ThreadMapping.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -5571,7 +5586,6 @@
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
 				88A4CC0E246CD6CC0082211F /* OnboardingTransferProgressViewController.swift in Sources */,
 				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
-				4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */,
 				88FBE94E2649D4CE005F6C80 /* Stripe.swift in Sources */,
 				34B14D8D24F02A9600CC3A9A /* GroupLinkViewController.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
@@ -5653,6 +5667,7 @@
 				88A4CC19246CE6810082211F /* DeviceTransferInitialViewController.swift in Sources */,
 				3406D32425DD4A8F00885B14 /* PaymentsQRScanViewController.swift in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
+				34E95C1B269F4F1B004807EC /* ThreadMapping.swift in Sources */,
 				34A4D88D267A363A00A794E7 /* ConversationViewController.swift in Sources */,
 				3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */,
 				3406D32225DD40F000885B14 /* PaymentsTransferOutViewController.swift in Sources */,
@@ -5694,6 +5709,7 @@
 				347C3849252D004C00F3D941 /* CVComponentDateHeader.swift in Sources */,
 				34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */,
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
+				34E95C22269F4F4F004807EC /* HVRenderState.swift in Sources */,
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				88D23D1223CEBFB200B0E74B /* NotificationActionHandler.swift in Sources */,
@@ -5714,6 +5730,7 @@
 				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				347C382A252CE69400F3D941 /* CVLoadCoordinator.swift in Sources */,
+				34E95C23269F4F4F004807EC /* HVLoader.swift in Sources */,
 				88238EB224F19D0B00F28079 /* Emoji+SkinTones.swift in Sources */,
 				348815C2255341F300D4F4C4 /* CVComponentAudioAttachment.swift in Sources */,
 				347C384B252D085900F3D941 /* CVComponentUnreadIndicator.swift in Sources */,
@@ -5751,6 +5768,7 @@
 				3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */,
 				88CB462025843527001900F2 /* GroupCallsMegaphone.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
+				34E95C24269F4F4F004807EC /* HVViewState.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
@@ -5777,9 +5795,11 @@
 				887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */,
 				880D9025247F8841003D2B14 /* Emoji+Name.swift in Sources */,
 				8829883925B979F900DEE1E3 /* ThemeSettingsTableViewController.swift in Sources */,
+				34E95C21269F4F4F004807EC /* HVLoadCoordinator.swift in Sources */,
 				888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */,
 				347C3847252CE6C900F3D941 /* CVComponentBodyMedia.swift in Sources */,
 				88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */,
+				34E95C25269F4F4F004807EC /* HVTableDataSource.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				347C3857252E1E2300F3D941 /* CVComponentThreadDetails.swift in Sources */,

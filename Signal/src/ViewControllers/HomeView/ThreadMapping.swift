@@ -84,7 +84,7 @@ public class ThreadMappingDiff: NSObject {
 // MARK: -
 
 @objc
-class ThreadMapping: NSObject {
+public class ThreadMapping: NSObject {
 
     private var pinnedThreads = OrderedDictionary<String, TSThread>()
     private var unpinnedThreads: [TSThread] = []

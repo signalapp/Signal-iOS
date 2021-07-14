@@ -61,7 +61,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic) UILabel *firstConversationLabel;
 
-@property (nonatomic, readonly) ThreadMapping *threadMapping;
 @property (nonatomic) ConversationListMode conversationListMode;
 @property (nonatomic, readonly) AnyLRUCache *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
@@ -111,6 +110,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return self;
     }
 
+    _viewState = [HVViewState new];
     _conversationListMode = ConversationListMode_Inbox;
 
     [self commonInit];
@@ -125,7 +125,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _threadViewModelCache = [[AnyLRUCache alloc] initWithMaxSize:32
                                                       nseMaxSize:0
                                       shouldEvacuateInBackground:NO];
-    _threadMapping = [ThreadMapping new];
 }
 
 - (void)dealloc
