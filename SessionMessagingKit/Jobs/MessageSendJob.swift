@@ -97,7 +97,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                 SNLog("Couldn't send message due to error: \(error).")
                 if let error = error as? MessageSender.Error, !error.isRetryable {
                     self.handlePermanentFailure(error: error)
-                } else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _) = error,
+                } else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _, _) = error,
                     statusCode == 429 { // Rate limited
                     self.handlePermanentFailure(error: error)
                } else {

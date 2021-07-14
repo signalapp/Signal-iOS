@@ -28,14 +28,21 @@ public enum OnionRequestAPI {
     private static var targetGuardSnodeCount: UInt { return targetPathCount } // One per path
 
     // MARK: Destination
-    public enum Destination {
+    public enum Destination : CustomStringConvertible {
         case snode(Snode)
         case server(host: String, target: String, x25519PublicKey: String, scheme: String?, port: UInt16?)
+        
+        public var description: String {
+            switch self {
+            case .snode(let snode): return "Service node \(snode.ip):\(snode.port)"
+            case .server(let host, _, _, _, _): return host
+            }
+        }
     }
 
     // MARK: Error
     public enum Error : LocalizedError {
-        case httpRequestFailedAtDestination(statusCode: UInt, json: JSON)
+        case httpRequestFailedAtDestination(statusCode: UInt, json: JSON, destination: Destination)
         case insufficientSnodes
         case invalidURL
         case missingSnodeVersion
@@ -44,11 +51,11 @@ public enum OnionRequestAPI {
 
         public var errorDescription: String? {
             switch self {
-            case .httpRequestFailedAtDestination(let statusCode, _):
+            case .httpRequestFailedAtDestination(let statusCode, _, let destination):
                 if statusCode == 429 {
                     return "Rate limited."
                 } else {
-                    return "HTTP request failed at destination with status code: \(statusCode)."
+                    return "HTTP request failed at destination (\(destination)) with status code: \(statusCode)."
                 }
             case .insufficientSnodes: return "Couldn't find enough Service Nodes to build a path."
             case .invalidURL: return "Invalid URL"
@@ -297,7 +304,7 @@ public enum OnionRequestAPI {
     public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
         return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
-            guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json) = error else { throw error }
+            guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else { throw error }
             throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
         }
     }
@@ -397,10 +404,10 @@ public enum OnionRequestAPI {
                                 let b = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
                                 body = b
                             }
-                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body)) }
+                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination)) }
                             seal.fulfill(body)
                         } else {
-                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json)) }
+                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json, destination: destination)) }
                             seal.fulfill(json)
                         }
                     } catch {

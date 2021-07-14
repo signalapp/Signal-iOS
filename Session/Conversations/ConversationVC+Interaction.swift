@@ -458,7 +458,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func showFailedMessageSheet(for tsMessage: TSOutgoingMessage) {
         let thread = self.thread
-        let sheet = UIAlertController(title: tsMessage.mostRecentFailureText, message: nil, preferredStyle: .actionSheet)
+        let error = tsMessage.mostRecentFailureText
+        let sheet = UIAlertController(title: error, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         sheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
             Storage.write { transaction in
@@ -480,6 +481,17 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 MessageSender.send(message, in: thread, using: transaction)
             }
         }))
+        // HACK: Extracting this info from the error string is pretty dodgy
+        let prefix = "HTTP request failed at destination (Service node "
+        if error.hasPrefix(prefix) {
+            let rest = error.substring(from: prefix.count)
+            if let index = rest.firstIndex(of: ")") {
+                let snodeAddress = String(rest[rest.startIndex..<index])
+                sheet.addAction(UIAlertAction(title: "Copy Service Node Info", style: .default, handler: { _ in
+                    UIPasteboard.general.string = snodeAddress
+                }))
+            }
+        }
         present(sheet, animated: true, completion: nil)
     }
 

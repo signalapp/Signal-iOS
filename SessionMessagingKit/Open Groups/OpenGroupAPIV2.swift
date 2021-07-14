@@ -130,7 +130,7 @@ public final class OpenGroupAPIV2 : NSObject {
                         // A 401 means that we didn't provide a (valid) auth token for a route that required one. We use this as an
                         // indication that the token we're using has expired. Note that a 403 has a different meaning; it means that
                         // we provided a valid token but it doesn't have a high enough permission level for the route in question.
-                        if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _) = error, statusCode == 401 {
+                        if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _, _) = error, statusCode == 401 {
                             let storage = SNMessagingKitConfiguration.shared.storage
                             storage.writeSync { transaction in
                                 storage.removeAuthToken(for: room, on: request.server, using: transaction)

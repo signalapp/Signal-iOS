@@ -84,7 +84,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
                 }, completion: { })
                 self.handlePermanentFailure(error: error)
-            } else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _) = error,
+            } else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _, _) = error,
                 statusCode == 400 {
                 // This usually indicates a file that has expired on the server, so there's no need to retry.
                 self.handlePermanentFailure(error: error)
