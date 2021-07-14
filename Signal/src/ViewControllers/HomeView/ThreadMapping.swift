@@ -89,8 +89,8 @@ public class ThreadMapping: NSObject {
     private var pinnedThreads = OrderedDictionary<String, TSThread>()
     private var unpinnedThreads: [TSThread] = []
 
-    private let pinnedSection: Int = ConversationListViewControllerSection.pinned.rawValue
-    private let unpinnedSection: Int = ConversationListViewControllerSection.unpinned.rawValue
+    private let pinnedSection: Int = HomeViewSection.pinned.rawValue
+    private let unpinnedSection: Int = HomeViewSection.unpinned.rawValue
 
     @objc
     let numberOfSections: Int = 1
