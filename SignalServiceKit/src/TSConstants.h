@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
     TSPreKeyWhisperMessageType = 3,
     TSUnencryptedWhisperMessageType = 4,
     TSUnidentifiedSenderMessageType = 6,
+    TSPlaintextMessageType = 7,
 };
 
 #pragma mark Server Address

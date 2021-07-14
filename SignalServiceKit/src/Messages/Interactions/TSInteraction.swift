@@ -72,4 +72,47 @@ extension TSInteraction {
             return true
         }
     }
+
+    private func replacePlaceholder(
+        from sender: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) -> Bool {
+        do {
+            let placeholders = try InteractionFinder.interactions(
+                withTimestamp: timestamp,
+                filter: { candidate in
+                    guard let placeholder = candidate as? OWSRecoverableDecryptionPlaceholder else { return false }
+                    return placeholder.sender == sender && placeholder.timestamp == self.timestamp
+                },
+                transaction: transaction
+            )
+
+            if let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) {
+                owsAssertDebug(placeholders.count == 1)
+                placeholder.replaceWithInteraction(self, writeTx: transaction)
+                return true
+            }
+        } catch {
+            owsFailDebug("\(error)")
+        }
+        return false
+    }
+
+    @objc
+    public func insertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        if replacePlaceholder(from: sender, transaction: transaction) {
+            // Done!
+        } else {
+            anyInsert(transaction: transaction)
+        }
+    }
+
+    @objc
+    public func upsertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        if replacePlaceholder(from: sender, transaction: transaction) {
+            // Done!
+        } else {
+            anyUpsert(transaction: transaction)
+        }
+    }
 }

@@ -680,7 +680,8 @@ extension CVComponentSystemMessage {
                  .duplicateMessage,
                  .invalidVersion,
                  .unknownContactBlockOffer,
-                 .groupCreationFailed:
+                 .groupCreationFailed,
+                 .decryptionFailure:
                 return nil
             @unknown default:
                 owsFailDebug("Unknown value.")
@@ -952,6 +953,9 @@ extension CVComponentSystemMessage {
             return Action(title: CommonStrings.learnMore,
                           accessibilityIdentifier: "learn_more",
                           action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
+        case .decryptionFailure:
+            // Sender Key TODO: Error interaction UI?
+            return nil
         case .duplicateMessage,
              .invalidVersion:
             return nil

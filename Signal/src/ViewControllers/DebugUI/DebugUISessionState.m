@@ -78,6 +78,17 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     }
 
+    if ([threadParameter isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)threadParameter;
+        [items addObject:[OWSTableItem itemWithTitle:@"Rotate sender key"
+                                         actionBlock:^{
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                [self.senderKeyStore resetSenderKeySessionFor:groupThread
+                                                  transaction:transaction];
+            });
+        }]];
+    }
+
     if (threadParameter) {
         [items addObject:[OWSTableItem itemWithTitle:@"Update verification state"
                                          actionBlock:^{ [self updateIdentityVerificationForThread:threadParameter]; }]];
@@ -87,6 +98,13 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
                         actionBlock:^{ [self clearSessionAndIdentityStore]; }],
     ]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear sender key store"
+                                     actionBlock:^{
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [self.senderKeyStore resetSenderKeyStoreWithTransaction:transaction];
+        });
+    }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }

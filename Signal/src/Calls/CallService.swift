@@ -709,6 +709,11 @@ extension CallService {
 
     @objc
     func peekCallAndUpdateThread(_ thread: TSGroupThread, expectedEraId: String? = nil, triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
+
+        // Sender Key TODO: This can be called as a result of an incoming message
+        // We'll want to make sure we replace any placeholder messages if necessary
+        // There's just some plumbing that needs to be done.
+
         AssertIsOnMainThread()
 
         guard RemoteConfig.groupCalling, thread.isLocalUserFullMember else { return }

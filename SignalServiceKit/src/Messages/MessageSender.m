@@ -1,5 +1,6 @@
 //
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
 
 #import <SignalServiceKit/MessageSender.h>
 #import "NSData+keyVersionByte.h"
@@ -1141,18 +1142,18 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
 
     for (NSDictionary *deviceMessage in deviceMessages) {
-        NSNumber *_Nullable messageType = deviceMessage[@"type"];
-        OWSAssertDebug(messageType);
-        BOOL hasValidMessageType;
+        TSWhisperMessageType messageType = [deviceMessage[@"type"] integerValue];
+        BOOL hasValidMessageType = NO;
         if (messageSend.isUDSend) {
-            hasValidMessageType = [messageType isEqualToNumber:@(TSUnidentifiedSenderMessageType)];
+            hasValidMessageType |= (messageType == TSUnidentifiedSenderMessageType);
         } else {
-            hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
-                [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+            hasValidMessageType |= (messageType == TSEncryptedWhisperMessageType);
+            hasValidMessageType |= (messageType == TSPreKeyWhisperMessageType);
+            hasValidMessageType |= (messageType == TSPlaintextMessageType);
         }
 
         if (!hasValidMessageType) {
-            OWSFailDebug(@"Invalid message type: %@", messageType);
+            OWSFailDebug(@"Invalid message type: %ld", (long)messageType);
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
             [error setIsRetryable:NO];
             return messageSend.failure(error);

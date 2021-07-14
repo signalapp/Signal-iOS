@@ -239,6 +239,8 @@ NS_ASSUME_NONNULL_BEGIN
         case SSKProtoEnvelopeTypeCiphertext:
         case SSKProtoEnvelopeTypePrekeyBundle:
         case SSKProtoEnvelopeTypeUnidentifiedSender:
+        case SSKProtoEnvelopeTypeSenderkeyMessage:
+        case SSKProtoEnvelopeTypePlaintextContent:
             if (!plaintextData) {
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
                 return;
@@ -466,6 +468,10 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope
                       withReceiptMessage:contentProto.receiptMessage
                              transaction:transaction];
+        } else if (contentProto.decryptionErrorMessage) {
+            [self handleIncomingEnvelope:envelope
+                withDecryptionErrorMessage:contentProto.decryptionErrorMessage
+                               transaction:transaction];
         } else if (!contentProto.hasSenderKeyDistributionMessage) {
             // An SKDM can be sent in isolation. Only warn if we don't have any
             // of the above messages *and* no sender key
@@ -1995,12 +2001,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [message anyInsertWithTransaction:transaction];
-
-    OWSAssertDebug(message.sortId == 0);
-    [message fillInMissingSortIdForJustInsertedInteractionWithTransaction:transaction];
-    OWSAssertDebug(message.sortId > 0);
-
+    // Check for any placeholders inserted because of a previously undecryptable message
+    // The sender may have resent the message. If so, we should swap it in place of the placeholder
+    // Sender Key TODO: Insert sortId?
+    [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
     [self.earlyMessageManager applyPendingMessagesFor:message transaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.

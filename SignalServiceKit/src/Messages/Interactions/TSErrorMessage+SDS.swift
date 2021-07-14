@@ -102,7 +102,7 @@ class TSErrorMessageSerializer: SDSSerializer {
         let read: Bool? = model.wasRead
         let recipientAddress: Data? = optionalArchive(model.recipientAddress)
         let recipientAddressStates: Data? = nil
-        let sender: Data? = nil
+        let sender: Data? = optionalArchive(model.sender)
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil
         let storedMessageState: TSOutgoingMessageState? = nil

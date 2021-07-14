@@ -105,6 +105,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     }
 
     _errorType = errorMessageBuilder.errorType;
+    _sender = errorMessageBuilder.senderAddress;
     _recipientAddress = errorMessageBuilder.recipientAddress;
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
     _wasIdentityVerified = errorMessageBuilder.wasIdentityVerified;
@@ -145,6 +146,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                          sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
 {
     self = [super initWithGrdbId:grdbId
@@ -175,6 +177,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     _errorType = errorType;
     _read = read;
     _recipientAddress = recipientAddress;
+    _sender = sender;
     _wasIdentityVerified = wasIdentityVerified;
 
     return self;
@@ -228,6 +231,13 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
         case TSErrorMessageSessionRefresh:
             return NSLocalizedString(
                 @"ERROR_MESSAGE_SESSION_REFRESH", @"Text notifying the user that their secure session has been reset");
+        case TSErrorMessageDecryptionFailure: {
+            NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
+                @"Error message for a decryption failure. Embeds {{senders name}}.");
+            NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender
+                                                                        transaction:transaction];
+            return [[NSString alloc] initWithFormat:formatString, senderName];
+        }
         default:
             OWSFailDebug(@"failure: unknown error type");
             break;
@@ -283,6 +293,34 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
         [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageNonBlockingIdentityChange];
     builder.recipientAddress = address;
     builder.wasIdentityVerified = wasIdentityVerified;
+    return [builder build];
+}
+
++ (instancetype)failedDecryptionForEnvelope:(SSKProtoEnvelope *)envelope
+                                    groupId:(nullable NSData *)groupId
+                            withTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithUuidString:envelope.sourceUuid];
+    if (!sender) {
+        OWSFailDebug(@"Invalid UUID");
+        return nil;
+    }
+
+    TSThread *thread;
+    if (groupId.length > 0) {
+        thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        OWSAssertDebug(thread);
+    }
+    if (!thread) {
+        thread = [TSContactThread getThreadWithContactAddress:sender transaction:transaction];
+        OWSAssertDebug(thread);
+    }
+    if (!thread) {
+        return nil;
+    }
+    TSErrorMessageBuilder *builder = [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+    builder.senderAddress = sender;
+    builder.timestamp = envelope.timestamp;
     return [builder build];
 }
 

@@ -23,6 +23,7 @@ message Envelope {
     RECEIPT             = 5;
     UNIDENTIFIED_SENDER = 6;
     SENDERKEY_MESSAGE   = 7;
+    PLAINTEXT_CONTENT   = 8;
   }
 
   optional Type   type            = 1;
@@ -61,6 +62,7 @@ message Content {
   optional ReceiptMessage receiptMessage                = 5;
   optional TypingMessage  typingMessage                 = 6;
   optional bytes          senderKeyDistributionMessage  = 7;    // Serialized SKDM
+  optional bytes          decryptionErrorMessage        = 8;    // Serialized decryption error
 }
 
 message CallMessage {
@@ -692,4 +694,10 @@ message PaymentAddress {
   // oneof Address {
   optional MobileCoin mobileCoin = 1;
   // }
+}
+
+message DecryptionErrorMessage {
+  optional bytes    ratchetKey  = 1;
+  optional uint64   timestamp   = 2;
+  optional uint32   deviceId    = 3;
 }

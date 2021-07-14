@@ -111,7 +111,9 @@ import SignalMessaging
             sentAtTimestamp: call.individualCall.sentAtTimestamp
         )
         databaseStorage.asyncWrite { transaction in
-            callRecord.anyInsert(transaction: transaction)
+            callRecord.insertOrReplacePlaceholder(
+                from: call.individualCall.remoteAddress,
+                transaction: transaction)
         }
         call.individualCall.callRecord = callRecord
 
@@ -157,7 +159,9 @@ import SignalMessaging
                 sentAtTimestamp: call.individualCall.sentAtTimestamp
             )
             databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
+                callRecord.insertOrReplacePlaceholder(
+                    from: call.individualCall.remoteAddress,
+                    transaction: transaction)
             }
             call.individualCall.callRecord = callRecord
         } else {
@@ -256,7 +260,7 @@ import SignalMessaging
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
             databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
+                callRecord.insertOrReplacePlaceholder(from: thread.contactAddress, transaction: transaction)
             }
 
             newCall.individualCall.state = .localFailure
@@ -289,7 +293,7 @@ import SignalMessaging
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
             databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
+                callRecord.insertOrReplacePlaceholder(from: thread.contactAddress, transaction: transaction)
             }
 
             newCall.individualCall.state = .localFailure
@@ -309,7 +313,7 @@ import SignalMessaging
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
             databaseStorage.write { transaction in
-                callRecord.anyInsert(transaction: transaction)
+                callRecord.insertOrReplacePlaceholder(from: thread.contactAddress, transaction: transaction)
             }
 
             newCall.individualCall.state = .localFailure
@@ -344,7 +348,7 @@ import SignalMessaging
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
             databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
+                callRecord.insertOrReplacePlaceholder(from: thread.contactAddress, transaction: transaction)
             }
 
             newCall.individualCall.state = .localFailure
@@ -701,7 +705,11 @@ import SignalMessaging
                     thread: call.individualCall.thread,
                     sentAtTimestamp: call.individualCall.sentAtTimestamp
                 )
-                databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
+                databaseStorage.asyncWrite { transaction in
+                    callRecord.insertOrReplacePlaceholder(
+                        from: call.individualCall.remoteAddress,
+                        transaction: transaction)
+                }
                 call.individualCall.callRecord = callRecord
                 callUIAdapter.reportMissedCall(call)
             }
@@ -981,7 +989,9 @@ import SignalMessaging
         switch callRecord.callType {
         case .incomingMissed:
             databaseStorage.asyncWrite { transaction in
-                callRecord.anyUpsert(transaction: transaction)
+                callRecord.upsertOrReplacePlaceholder(
+                    from: call.individualCall.remoteAddress,
+                    transaction: transaction)
             }
             callUIAdapter.reportMissedCall(call)
         case .incomingIncomplete, .incoming:
@@ -992,11 +1002,15 @@ import SignalMessaging
         case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
             databaseStorage.asyncWrite { transaction in
-                callRecord.anyUpsert(transaction: transaction)
+                callRecord.upsertOrReplacePlaceholder(
+                    from: call.individualCall.remoteAddress,
+                    transaction: transaction)
             }
         @unknown default:
             databaseStorage.asyncWrite { transaction in
-                callRecord.anyUpsert(transaction: transaction)
+                callRecord.upsertOrReplacePlaceholder(
+                    from: call.individualCall.remoteAddress,
+                    transaction: transaction)
             }
             owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
         }
@@ -1016,7 +1030,11 @@ import SignalMessaging
                 sentAtTimestamp: call.individualCall.sentAtTimestamp
             )
             call.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { transaction in
+                callRecord.insertOrReplacePlaceholder(
+                    from: call.individualCall.remoteAddress,
+                    transaction: transaction)
+            }
         }
 
         call.individualCall.state = .answeredElsewhere
@@ -1041,7 +1059,11 @@ import SignalMessaging
                 sentAtTimestamp: call.individualCall.sentAtTimestamp
             )
             call.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { transaction in
+                callRecord.insertOrReplacePlaceholder(
+                    from: call.individualCall.remoteAddress,
+                    transaction: transaction)
+            }
         }
 
         call.individualCall.state = .declinedElsewhere
@@ -1066,7 +1088,11 @@ import SignalMessaging
                 sentAtTimestamp: call.individualCall.sentAtTimestamp
             )
             call.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
+            databaseStorage.asyncWrite { transaction in
+                callRecord.insertOrReplacePlaceholder(
+                    from: call.individualCall.remoteAddress,
+                    transaction: transaction)
+            }
         }
 
         call.individualCall.state = .busyElsewhere

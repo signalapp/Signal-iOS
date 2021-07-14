@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                          sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
@@ -89,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
                          errorType:errorType
                               read:read
                   recipientAddress:recipientAddress
+                            sender:sender
                wasIdentityVerified:wasIdentityVerified];
 
     if (!self) {

@@ -24,8 +24,6 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         return @"Missing Type.";
     }
     switch (envelope.unwrappedType) {
-        case SSKProtoEnvelopeTypeReceipt:
-            return @"DeliveryReceipt";
         case SSKProtoEnvelopeTypeUnknown:
             // Shouldn't happen
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
@@ -38,8 +36,14 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             return @"KeyExchange";
         case SSKProtoEnvelopeTypePrekeyBundle:
             return @"PreKeyEncryptedMessage";
+        case SSKProtoEnvelopeTypeReceipt:
+            return @"DeliveryReceipt";
         case SSKProtoEnvelopeTypeUnidentifiedSender:
             return @"UnidentifiedSender";
+        case SSKProtoEnvelopeTypeSenderkeyMessage:
+            return @"SenderKey";
+        case SSKProtoEnvelopeTypePlaintextContent:
+            return @"PlaintextContent";
         default:
             // Shouldn't happen
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeOther]);
@@ -83,6 +87,8 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         [message appendFormat:@"<ReceiptMessage: %@ />", content.receiptMessage];
     } else if (content.typingMessage) {
         [message appendFormat:@"<TypingMessage: %@ />", content.typingMessage];
+    } else if (content.decryptionErrorMessage) {
+        [message appendFormat:@"<DecryptionErrorMessage: %@ />", content.decryptionErrorMessage];
     }
 
     // SKDM's are not mutually exclusive with other content types

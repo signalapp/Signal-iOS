@@ -608,6 +608,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     WHERE \(interactionColumn: .timestamp) = ?
                     AND \(interactionColumn: .authorUUID) = ?
                     AND \(interactionColumn: .sourceDeviceId) = ?
+                    AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
                 )
             """
             let arguments: StatementArguments = [timestamp, uuidString, sourceDeviceId]
@@ -622,6 +623,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     WHERE \(interactionColumn: .timestamp) = ?
                     AND \(interactionColumn: .authorPhoneNumber) = ?
                     AND \(interactionColumn: .sourceDeviceId) = ?
+                    AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
                 )
             """
             let arguments: StatementArguments = [timestamp, phoneNumber, sourceDeviceId]
@@ -1219,7 +1221,8 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             .invalidMessage,
             .duplicateMessage,
             .groupCreationFailed,
-            .sessionRefresh
+            .sessionRefresh,
+            .decryptionFailure
         ]
 
         let interactionTypes: [SDSRecordType] = [

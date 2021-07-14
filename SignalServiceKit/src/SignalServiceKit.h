@@ -41,6 +41,8 @@
 #import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/OWSRecoverableDecryptionPlaceholder.h>
+#import <SignalServiceKit/OWSOutgoingResendRequest.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSessionResetJobRecord.h>
 #import <SignalServiceKit/OWSSignalService.h>

@@ -1245,7 +1245,10 @@ extension MessageSender {
                 messageType = .encryptedWhisperMessageType
             case .preKey:
                 messageType = .preKeyWhisperMessageType
+            case .plaintext:
+                messageType = .plaintextMessageType
             default:
+                owsFailDebug("Unrecognized message type")
                 messageType = .unknownMessageType
             }
 

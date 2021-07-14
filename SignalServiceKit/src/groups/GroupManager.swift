@@ -2117,7 +2117,7 @@ public class GroupManager: NSObject {
             let newMembers = newGroupModelV2.membership.allMembersOfAnyKind
 
             if oldMembers.subtracting(newMembers).isEmpty == false {
-                senderKeyStore.resetSenderKeySession(for: groupThread, writeTx: transaction)
+                senderKeyStore.resetSenderKeySession(for: groupThread, transaction: transaction)
             }
         }
 

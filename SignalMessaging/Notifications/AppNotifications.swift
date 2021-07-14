@@ -624,6 +624,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
              .invalidVersion,
              .nonBlockingIdentityChange,
              .unknownContactBlockOffer,
+             .decryptionFailure,
              .groupCreationFailed:
             return
         @unknown default:

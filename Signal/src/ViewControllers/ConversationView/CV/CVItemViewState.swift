@@ -600,6 +600,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             return
         }
 
+        // Sender Key TODO: How do these errors collapse?
         switch item.interactionType {
         case .error:
             guard let errorMessage = interaction as? TSErrorMessage,
@@ -686,6 +687,7 @@ private class ItemBuilder {
             // Only show the date for non-synced thread messages;
             return infoMessage.messageType != .syncedThread
         case .unreadIndicator, .incomingMessage, .outgoingMessage, .error, .call:
+            // Sender Key TODO: Check UI design
             return true
         }
     }

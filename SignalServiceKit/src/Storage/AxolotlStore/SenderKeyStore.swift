@@ -128,7 +128,8 @@ public class SenderKeyStore: NSObject {
         }
     }
 
-    public func resetSenderKeySession(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
+    @objc
+    public func resetSenderKeySession(for thread: TSGroupThread, transaction writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
             setMetadata(nil, for: distributionId, writeTx: writeTx)

@@ -12,17 +12,17 @@ import SignalCoreKit
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension TSInvalidIdentityKeyErrorMessage {
+public extension OWSRecoverableDecryptionPlaceholder {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchInvalidIdentityKeyErrorMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSInvalidIdentityKeyErrorMessage? {
+    class func anyFetchRecoverableDecryptionPlaceholder(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSRecoverableDecryptionPlaceholder? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? TSInvalidIdentityKeyErrorMessage else {
+        guard let instance = object as? OWSRecoverableDecryptionPlaceholder else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -30,9 +30,9 @@ public extension TSInvalidIdentityKeyErrorMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateInvalidIdentityKeyErrorMessage(transaction: SDSAnyWriteTransaction, block: (TSInvalidIdentityKeyErrorMessage) -> Void) {
+    func anyUpdateRecoverableDecryptionPlaceholder(transaction: SDSAnyWriteTransaction, block: (OWSRecoverableDecryptionPlaceholder) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? TSInvalidIdentityKeyErrorMessage else {
+            guard let instance = object as? OWSRecoverableDecryptionPlaceholder else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -45,10 +45,10 @@ public extension TSInvalidIdentityKeyErrorMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSInvalidIdentityKeyErrorMessageSerializer: SDSSerializer {
+class OWSRecoverableDecryptionPlaceholderSerializer: SDSSerializer {
 
-    private let model: TSInvalidIdentityKeyErrorMessage
-    public required init(model: TSInvalidIdentityKeyErrorMessage) {
+    private let model: OWSRecoverableDecryptionPlaceholder
+    public required init(model: OWSRecoverableDecryptionPlaceholder) {
         self.model = model
     }
 
@@ -57,7 +57,7 @@ class TSInvalidIdentityKeyErrorMessageSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
-        let recordType: SDSRecordType = .invalidIdentityKeyErrorMessage
+        let recordType: SDSRecordType = .recoverableDecryptionPlaceholder
         let uniqueId: String = model.uniqueId
 
         // Properties
