@@ -581,6 +581,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func handleReplyButtonTapped(for viewItem: ConversationViewItem) {
         reply(viewItem)
     }
+    
+    func showUserDetails(for sessionID: String) {
+        let userDetailsSheet = UserDetailsSheet(for: sessionID)
+        userDetailsSheet.modalPresentationStyle = .overFullScreen
+        userDetailsSheet.modalTransitionStyle = .crossDissolve
+        present(userDetailsSheet, animated: true, completion: nil)
+    }
 
     // MARK: Voice Message Playback
     @objc func handleAudioDidFinishPlayingNotification(_ notification: Notification) {
