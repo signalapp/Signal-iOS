@@ -38,6 +38,17 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         return result
     }()
     
+    private lazy var publicKeyLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = Fonts.spaceMono(ofSize: isIPhone5OrSmaller ? Values.mediumFontSize : Values.largeFontSize)
+        result.numberOfLines = 0
+        result.textAlignment = .center
+        result.lineBreakMode = .byCharWrapping
+        result.text = getUserHexEncodedPublicKey()
+        return result
+    }()
+    
     private lazy var copyButton: Button = {
         let result = Button(style: .prominentOutline, size: .medium)
         result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
@@ -52,10 +63,50 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         return result
     }()
     
+    private lazy var inviteButton: UIButton = {
+        let result = UIButton()
+        result.setTitle(NSLocalizedString("vc_settings_invite_a_friend_button_title", comment: ""), for: UIControl.State.normal)
+        result.setTitleColor(Colors.text, for: UIControl.State.normal)
+        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var faqButton: UIButton = {
+        let result = UIButton()
+        result.setTitle(NSLocalizedString("vc_settings_faq_button_title", comment: ""), for: UIControl.State.normal)
+        result.setTitleColor(Colors.text, for: UIControl.State.normal)
+        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.addTarget(self, action: #selector(openFAQ), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var helpTranslateButton: UIButton = {
+        let result = UIButton()
+        result.setTitle(NSLocalizedString("vc_settings_help_us_translate_button_title", comment: ""), for: UIControl.State.normal)
+        result.setTitleColor(Colors.text, for: UIControl.State.normal)
+        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.addTarget(self, action: #selector(helpTranslate), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
     private lazy var logoImageView: UIImageView = {
         let result = UIImageView()
         result.set(.height, to: 24)
         result.contentMode = .scaleAspectFit
+        return result
+    }()
+    
+    private lazy var versionLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.numberOfLines = 0
+        result.textAlignment = .center
+        result.lineBreakMode = .byCharWrapping
+        let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
+        let buildNumber = Bundle.main.infoDictionary!["CFBundleVersion"]!
+        result.text = "Version \(version) (\(buildNumber))"
         return result
     }()
     
@@ -99,14 +150,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         headerStackView.alignment = .center
         // Separator
         let separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
-        // Public key label
-        let publicKeyLabel = UILabel()
-        publicKeyLabel.textColor = Colors.text
-        publicKeyLabel.font = Fonts.spaceMono(ofSize: isIPhone5OrSmaller ? Values.mediumFontSize : Values.largeFontSize)
-        publicKeyLabel.numberOfLines = 0
-        publicKeyLabel.textAlignment = .center
-        publicKeyLabel.lineBreakMode = .byCharWrapping
-        publicKeyLabel.text = getUserHexEncodedPublicKey()
         // Share button
         let shareButton = Button(style: .regular, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
@@ -127,34 +170,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         getSettingButtons().forEach { settingButtonOrSeparator in
             settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator)
         }
-        // Version label
-        let versionLabel = UILabel()
-        versionLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
-        versionLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        versionLabel.numberOfLines = 0
-        versionLabel.textAlignment = .center
-        versionLabel.lineBreakMode = .byCharWrapping
-        let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
-        let buildNumber = Bundle.main.infoDictionary!["CFBundleVersion"]!
-        versionLabel.text = "Version \(version) (\(buildNumber))"
-        // Invite button
-        let inviteButton = UIButton()
-        inviteButton.setTitle(NSLocalizedString("vc_settings_invite_a_friend_button_title", comment: ""), for: UIControl.State.normal)
-        inviteButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        inviteButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        inviteButton.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
-        // FAQ button
-        let faqButton = UIButton()
-        faqButton.setTitle(NSLocalizedString("vc_settings_faq_button_title", comment: ""), for: UIControl.State.normal)
-        faqButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        faqButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        faqButton.addTarget(self, action: #selector(openFAQ), for: UIControl.Event.touchUpInside)
-        // Help translate button
-        let helpTranslateButton = UIButton()
-        helpTranslateButton.setTitle(NSLocalizedString("vc_settings_help_us_translate_button_title", comment: ""), for: UIControl.State.normal)
-        helpTranslateButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        helpTranslateButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        helpTranslateButton.addTarget(self, action: #selector(helpTranslate), for: UIControl.Event.touchUpInside)
         // Oxen logo
         updateLogo()
         let logoContainer = UIView()
