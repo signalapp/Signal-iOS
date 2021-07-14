@@ -510,7 +510,8 @@ extension StickerKeyboard: StickerPackCollectionViewDelegate {
 @objc
 public class StickerViewCache: NSObject {
 
-    private let backingCache: LRUCache<StickerInfo, StickerReusableView>
+    private typealias CacheType = LRUCache<StickerInfo, ThreadSafeCacheHandle<StickerReusableView>>
+    private let backingCache: CacheType
 
     @objc
     public init(maxSize: Int) {
@@ -522,12 +523,12 @@ public class StickerViewCache: NSObject {
 
     @objc
     public func get(key: StickerInfo) -> StickerReusableView? {
-        return self.backingCache.get(key: key)
+        self.backingCache.get(key: key)?.value
     }
 
     @objc
     public func set(key: StickerInfo, value: StickerReusableView) {
-        self.backingCache.set(key: key, value: value)
+        self.backingCache.set(key: key, value: ThreadSafeCacheHandle(value))
     }
 
     @objc

@@ -118,7 +118,9 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     @objc
     public func clear() {
-        cache.removeAllObjects()
+        autoreleasepool {
+            cache.removeAllObjects()
+        }
     }
 
     public subscript(key: KeyType) -> ValueType? {
@@ -150,5 +152,31 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     public func removeAllObjects() {
         clear()
+    }
+}
+
+// MARK: -
+
+// NSCache sometimes evacuates entries off the main thread.
+// Some cached entities should only be deallocated on the main thread.
+// This handle can be used to ensure that cache entries are released
+// on the main thread.
+public class ThreadSafeCacheHandle<T> {
+
+    public let value: T
+
+    public init(_ value: T) {
+        self.value = value
+    }
+
+    deinit {
+        guard !Thread.isMainThread else {
+            return
+        }
+        var valueReference: T? = value
+        DispatchQueue.main.async {
+            valueReference = nil
+            owsAssertDebug(valueReference == nil)
+        }
     }
 }
