@@ -143,6 +143,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         inviteButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         inviteButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
         inviteButton.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
+        // FAQ button
+        let faqButton = UIButton()
+        faqButton.setTitle(NSLocalizedString("vc_settings_faq_button_title", comment: ""), for: UIControl.State.normal)
+        faqButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+        faqButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        faqButton.addTarget(self, action: #selector(openFAQ), for: UIControl.Event.touchUpInside)
         // Help translate button
         let helpTranslateButton = UIButton()
         helpTranslateButton.setTitle(NSLocalizedString("vc_settings_help_us_translate_button_title", comment: ""), for: UIControl.State.normal)
@@ -157,7 +163,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         logoContainer.pin(.bottom, to: .bottom, of: logoImageView)
         logoImageView.centerXAnchor.constraint(equalTo: logoContainer.centerXAnchor, constant: -2).isActive = true
         // Main stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, helpTranslateButton, logoContainer, versionLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, faqButton, helpTranslateButton, logoContainer, versionLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
@@ -225,21 +231,10 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         }, completion: nil)
     }
     
-    func avatarActionSheetTitle() -> String? {
-        return "Update Profile Picture"
-    }
-    
-    func fromViewController() -> UIViewController {
-        return self
-    }
-    
-    func hasClearAvatarAction() -> Bool {
-        return false
-    }
-    
-    func clearAvatarActionLabel() -> String {
-        return "Clear"
-    }
+    func avatarActionSheetTitle() -> String? { return "Update Profile Picture" }
+    func fromViewController() -> UIViewController { return self }
+    func hasClearAvatarAction() -> Bool { return false }
+    func clearAvatarActionLabel() -> String { return "Clear" }
     
     // MARK: Updating
     private func handleIsEditingDisplayNameChanged() {
@@ -437,17 +432,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         let notificationSettingsVC = NotificationSettingsViewController()
         navigationController!.pushViewController(notificationSettingsVC, animated: true)
     }
-
-    @objc private func sendInvitation() {
-        let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey())!"
-        let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
-        navigationController!.present(shareVC, animated: true, completion: nil)
-    }
-    
-    @objc private func helpTranslate() {
-        let url = URL(string: "https://crowdin.com/project/session-ios")!
-        UIApplication.shared.open(url)
-    }
     
     @objc private func showSeed() {
         let seedModal = SeedModal()
@@ -461,5 +445,21 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         nukeDataModal.modalPresentationStyle = .overFullScreen
         nukeDataModal.modalTransitionStyle = .crossDissolve
         present(nukeDataModal, animated: true, completion: nil)
+    }
+    
+    @objc private func sendInvitation() {
+        let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey()) !"
+        let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
+        navigationController!.present(shareVC, animated: true, completion: nil)
+    }
+    
+    @objc private func openFAQ() {
+        let url = URL(string: "https://getsession.org/faq")!
+        UIApplication.shared.open(url)
+    }
+    
+    @objc private func helpTranslate() {
+        let url = URL(string: "https://crowdin.com/project/session-ios")!
+        UIApplication.shared.open(url)
     }
 }
