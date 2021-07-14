@@ -46,6 +46,11 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (void)returnToCallView;
 @property (nonatomic, readonly) BOOL hasCall;
 
+#pragma mark - Context Menu
+- (void)presentContextMenu:(UIViewController *)contextMenuController;
+- (void)dismissContextMenu;
+@property (nonatomic, readonly) BOOL shouldShowContextMenu;
+
 @end
 
 NS_ASSUME_NONNULL_END
