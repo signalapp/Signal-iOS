@@ -83,6 +83,7 @@ public class ThreadMappingDiff: NSObject {
 
 // MARK: -
 
+// TODO: Rewrite
 @objc
 public class ThreadMapping: NSObject {
 

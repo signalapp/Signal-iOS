@@ -9,15 +9,46 @@ public class HVTableDataSource: NSObject {
     fileprivate let viewState: HVViewState
 
     @objc
+    public weak var viewController: ConversationListViewController?
+
+//    fileprivate var threadMapping: ThreadMapping { viewState.threadMapping }
+
+    fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
+
+    fileprivate var renderState: HVRenderState = .empty
+
+    @objc
     public required init(viewState: HVViewState) {
         self.viewState = viewState
+    }
+
+    private let kArchivedConversationsReuseIdentifier = "kArchivedConversationsReuseIdentifier"
+
+    private func configure() {
+        let tableView = viewState.tableView
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
+        tableView.separatorColor = Theme.cellSeparatorColor
+        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.reuseIdentifier)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: kArchivedConversationsReuseIdentifier)
+        tableView.tableFooterView = UIView()
     }
 }
 
 // MARK: -
 
+// TODO: Revisit
 @objc
-public enum HomeViewSection: Int {
+public enum ConversationListMode: Int, CaseIterable {
+    case archive
+    case inbox
+}
+
+// MARK: -
+
+@objc
+public enum HomeViewSection: Int, CaseIterable {
     case reminders
     case pinned
     case unpinned
@@ -28,7 +59,7 @@ public enum HomeViewSection: Int {
 //    HomeViewSectionPinned,
 //    HomeViewSectionUnpinned,
 //    HomeViewSectionArchiveButton,
-// };
+// }
 
 // MARK: -
 
@@ -233,22 +264,222 @@ extension HVTableDataSource: UITableViewDelegate {
 
 extension HVTableDataSource: UITableViewDataSource {
 
-//    UITableViewDelegate,
-//    UITableViewDataSource
+    public func numberOfSections(in tableView: UITableView) -> Int {
+        AssertIsOnMainThread()
 
-//    @available(iOS 2.0, *)
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+        return HomeViewSection.allCases.count
+    }
+
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        AssertIsOnMainThread()
+
+        guard let section = HomeViewSection(rawValue: section) else {
+            owsFailDebug("Invalid section: \(section).")
+            return 0
+        }
+        switch section {
+        case .reminders:
+            return viewState.hasVisibleReminders ? 1 : 0
+        case .pinned:
+            return renderState.pinnedThreads.count
+        case .unpinned:
+            return renderState.unpinnedThreads.count
+        case .archiveButton:
+            return viewState.hasArchivedThreadsRow ? 1 : 0
+        }
+    }
+
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        AssertIsOnMainThread()
+
+        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section).")
+            return UITableViewCell()
+        }
+
+        let cell: UITableViewCell = {
+            switch section {
+            case .reminders:
+                return viewState.reminderViewCell
+            case .pinned, .unpinned:
+                return buildConversationCell(tableView: tableView, indexPath: indexPath)
+            case .archiveButton:
+                return buildArchivedConversationsButtonCell(tableView: tableView, indexPath: indexPath)
+            }
+        }()
+
+        if let splitViewController = self.splitViewController {
+            if !splitViewController.isCollapsed {
+                cell.selectedBackgroundView?.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
+                cell.backgroundColor = Theme.secondaryBackgroundColor
+            }
+        } else {
+            owsFailDebug("Missing splitViewController.")
+        }
+
+        return cell
+    }
+
+    private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        AssertIsOnMainThread()
+
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
+            owsFailDebug("Invalid cell.")
+            return UITableViewCell()
+        }
+        guard let threadViewModel = renderState.threadViewModel(indexPath: indexPath) else {
+            owsFailDebug("Missing threadViewModel.")
+            return UITableViewCell()
+        }
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return UITableViewCell()
+        }
+
+        let thread = threadViewModel.threadRecord
+
+        // We want initial loads and reloads to load avatars sync,
+        // but subsequent avatar loads (e.g. from scrolling) should
+        // be async.
+        //
+        // TODO: We should add an explicit "isReloadingAll" flag to ConversationListViewController.
+        let avatarAsyncLoadInterval: TimeInterval = kSecondInterval * 1
+        let lastReloadInterval: TimeInterval = abs(viewState.lastReloadDate?.timeIntervalSinceNow ?? 0)
+        let shouldLoadAvatarAsync = (viewState.hasEverAppeared
+                                        && (viewState.lastReloadDate == nil ||
+                                                lastReloadInterval > avatarAsyncLoadInterval))
+        let isBlocked = viewState.blocklistCache.isBlocked(thread: thread)
+        let configuration = ConversationListCell.Configuration(thread: threadViewModel,
+                                                               shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                                                               isBlocked: isBlocked)
+        cell.configure(configuration)
+
+        let cellName: String = {
+            if let groupThread = thread as? TSGroupThread {
+                return "cell-group-\(groupThread.groupModel.groupName ?? "unknown")"
+            } else if let contactThread = thread as? TSContactThread {
+                return "cell-contact-\(contactThread.contactAddress.stringForDisplay)"
+            } else {
+                owsFailDebug("invalid-thread-\(thread.uniqueId) ")
+                return "Unknown"
+            }
+        }()
+        cell.accessibilityIdentifier = cellName
+
+        let archiveTitle = (viewState.conversationListMode == .inbox
+                                ? CommonStrings.archiveAction
+                                : CommonStrings.unarchiveAction)
+
+        // TODO: Test selector.
+        let performAccessibilityCustomActionSelector = #selector(ConversationListViewController.performAccessibilityCustomAction)
+
+        let archiveAction = OWSCellAccessibilityCustomAction(name: archiveTitle,
+                                                             type: .archive,
+                                                             threadViewModel: threadViewModel,
+                                                             target: viewController,
+                                                             selector: performAccessibilityCustomActionSelector)
+        let deleteAction = OWSCellAccessibilityCustomAction(name: CommonStrings.deleteButton,
+                                                            type: .delete,
+                                                            threadViewModel: threadViewModel,
+                                                            target: viewController,
+                                                            selector: performAccessibilityCustomActionSelector)
+
+        let unreadAction = (threadViewModel.hasUnreadMessages
+                                ? OWSCellAccessibilityCustomAction(name: CommonStrings.readAction,
+                                                                   type: .markRead,
+                                                                   threadViewModel: threadViewModel,
+                                                                   target: viewController,
+                                                                   selector: performAccessibilityCustomActionSelector)
+                                : OWSCellAccessibilityCustomAction(name: CommonStrings.unreadAction,
+                                                                   type: .markUnread,
+                                                                   threadViewModel: threadViewModel,
+                                                                   target: viewController,
+                                                                   selector: performAccessibilityCustomActionSelector))
+
+        // TODO: Did we fix a bug here?
+        let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
+        let pinnedAction = (isThreadPinned
+            ? OWSCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
+                                               type: .unpin,
+                                               threadViewModel: threadViewModel,
+                                               target: viewController,
+                                               selector: performAccessibilityCustomActionSelector)
+            : OWSCellAccessibilityCustomAction(name: CommonStrings.pinAction,
+                                               type: .pin,
+                                               threadViewModel: threadViewModel,
+                                               target: viewController,
+                                               selector: performAccessibilityCustomActionSelector))
+
+        cell.accessibilityCustomActions = [ archiveAction, deleteAction, unreadAction, pinnedAction ]
+
+        if isConversationActive(forThread: thread) {
+            tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+        } else {
+            tableView.deselectRow(at: indexPath, animated: false)
+        }
+
+        return cell
+    }
+
+    private func isConversationActive(forThread thread: TSThread) -> Bool {
+        AssertIsOnMainThread()
+
+        guard let conversationSplitViewController = splitViewController as? ConversationSplitViewController else {
+            owsFailDebug("Missing conversationSplitViewController.")
+            return false
+        }
+        return conversationSplitViewController.selectedThread?.uniqueId == thread.uniqueId
+    }
+
+    private func buildArchivedConversationsButtonCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        AssertIsOnMainThread()
+
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: kArchivedConversationsReuseIdentifier) else {
+            owsFailDebug("Invalid cell.")
+            return UITableViewCell()
+        }
+        OWSTableItem.configureCell(cell)
+        cell.selectionStyle = .none
+
+        for subview in cell.contentView.subviews {
+            subview.removeFromSuperview()
+        }
+
+        let disclosureImageName = CurrentAppContext().isRTL ? "NavBarBack" : "NavBarBackRTL"
+        let disclosureImageView = UIImageView.withTemplateImageName(disclosureImageName,
+                                                                    tintColor: UIColor(rgbHex: 0xd1d1d6))
+        disclosureImageView.setContentHuggingHigh()
+        disclosureImageView.setCompressionResistanceHigh()
+
+        let label = UILabel()
+        label.text = NSLocalizedString("HOME_VIEW_ARCHIVED_CONVERSATIONS",
+                                       comment: "Label for 'archived conversations' button.")
+        label.textAlignment = .center
+        label.font = .ows_dynamicTypeBody
+        label.textColor = Theme.primaryTextColor
+
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 5
+        // If alignment isn't set, UIStackView uses the height of
+        // disclosureImageView, even if label has a higher desired height.
+        stackView.alignment = .center
+        stackView.addArrangedSubview(label)
+        stackView.addArrangedSubview(disclosureImageView)
+        cell.contentView.addSubview(stackView)
+        stackView.autoCenterInSuperview()
+        // Constrain to cell margins.
+        stackView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewMargin: .top)
+        stackView.autoPinEdge(toSuperviewMargin: .bottom)
+
+        cell.accessibilityIdentifier = "archived_conversations"
+
+        return cell
+    }
+
 //
-//
-//    // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
-//    // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
-//
-//    @available(iOS 2.0, *)
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
-//
-//
-//    @available(iOS 2.0, *)
-//    optional func numberOfSections(in tableView: UITableView) -> Int // Default is 1 if not implemented
 //
 //
 //    @available(iOS 2.0, *)
@@ -304,56 +535,34 @@ extension HVTableDataSource: UITableViewDataSource {
 //    - (BOOL)updateHasArchivedThreadsRow
 //    {
 //    BOOL hasArchivedThreadsRow
-//    = (self.conversationListMode == ConversationListMode_Inbox && self.numberOfArchivedThreads > 0);
+//    = (self.conversationListMode == ConversationListModeInbox && self.numberOfArchivedThreads > 0)
 //    if (self.hasArchivedThreadsRow == hasArchivedThreadsRow) {
-//    return NO;
+//    return NO
 //    }
-//    self.hasArchivedThreadsRow = hasArchivedThreadsRow;
+//    self.hasArchivedThreadsRow = hasArchivedThreadsRow
 //
-//    return YES;
-//    }
-//
-//    - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-//    {
-//    return 4;
-//    }
-//
-//    - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)aSection
-//    {
-//    HomeViewSection section = (HomeViewSection)aSection;
-//    switch (section) {
-//    case HomeViewSectionReminders:
-//    return self.hasVisibleReminders ? 1 : 0;
-//    case HomeViewSectionPinned:
-//    case HomeViewSectionUnpinned:
-//    return [self.threadMapping numberOfItemsInSection:section];
-//    case HomeViewSectionArchiveButton:
-//    return self.hasArchivedThreadsRow ? 1 : 0;
-//    }
-//
-//    OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
-//    return 0;
+//    return YES
 //    }
 //
 //    - (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
 //    {
-//    TSThread *threadRecord = [self threadForIndexPath:indexPath];
-//    OWSAssertDebug(threadRecord);
+//    TSThread *threadRecord = [self threadForIndexPath:indexPath]
+//    OWSAssertDebug(threadRecord)
 //
 //    ThreadViewModel *_Nullable cachedThreadViewModel
-//    = (ThreadViewModel *)[self.threadViewModelCache objectForKey:threadRecord.uniqueId];
+//    = (ThreadViewModel *)[self.threadViewModelCache objectForKey:threadRecord.uniqueId]
 //    if (cachedThreadViewModel) {
-//    return cachedThreadViewModel;
+//    return cachedThreadViewModel
 //    }
 //
-//    __block ThreadViewModel *_Nullable newThreadViewModel;
+//    __block ThreadViewModel *_Nullable newThreadViewModel
 //    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
 //    newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord
 //    forConversationList:YES
-//    transaction:transaction];
-//    }];
-//    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
-//    return newThreadViewModel;
+//    transaction:transaction]
+//    }]
+//    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId]
+//    return newThreadViewModel
 //    }
 //
 //    - (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -361,24 +570,24 @@ extension HVTableDataSource: UITableViewDataSource {
 //    switch (section) {
 //    case HomeViewSectionPinned:
 //    case HomeViewSectionUnpinned: {
-//    UIView *container = [UIView new];
-//    container.layoutMargins = UIEdgeInsetsMake(14, 16, 8, 16);
+//    UIView *container = [UIView new]
+//    container.layoutMargins = UIEdgeInsetsMake(14, 16, 8, 16)
 //
-//    UILabel *label = [UILabel new];
-//    [container addSubview:label];
-//    [label autoPinEdgesToSuperviewMargins];
-//    label.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
-//    label.textColor = Theme.primaryTextColor;
+//    UILabel *label = [UILabel new]
+//    [container addSubview:label]
+//    [label autoPinEdgesToSuperviewMargins]
+//    label.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold
+//    label.textColor = Theme.primaryTextColor
 //    label.text = section == HomeViewSectionPinned
 //    ? NSLocalizedString(
 //    @"PINNED_SECTION_TITLE", @"The title for pinned conversation section on the conversation list")
 //    : NSLocalizedString(
-//    @"UNPINNED_SECTION_TITLE", @"The title for unpinned conversation section on the conversation list");
+//    @"UNPINNED_SECTION_TITLE", @"The title for unpinned conversation section on the conversation list")
 //
-//    return container;
+//    return container
 //    }
 //    default:
-//    return [UIView new];
+//    return [UIView new]
 //    }
 //    }
 //
@@ -388,21 +597,21 @@ extension HVTableDataSource: UITableViewDataSource {
 //    case HomeViewSectionPinned:
 //    case HomeViewSectionUnpinned:
 //    if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
-//    return FLT_EPSILON;
+//    return FLT_EPSILON
 //    }
 //
-//    return UITableViewAutomaticDimension;
+//    return UITableViewAutomaticDimension
 //    default:
 //    // Without returning a header with a non-zero height, Grouped
 //    // table view will use a default spacing between sections. We
 //    // do not want that spacing so we use the smallest possible height.
-//    return FLT_EPSILON;
+//    return FLT_EPSILON
 //    }
 //    }
 //
 //    - (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 //    {
-//    return [UIView new];
+//    return [UIView new]
 //    }
 //
 //    - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
@@ -410,216 +619,34 @@ extension HVTableDataSource: UITableViewDataSource {
 //    // Without returning a footer with a non-zero height, Grouped
 //    // table view will use a default spacing between sections. We
 //    // do not want that spacing so we use the smallest possible height.
-//    return FLT_EPSILON;
-//    }
-//
-//    - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-//    {
-//    HomeViewSection section = (HomeViewSection)indexPath.section;
-//
-//    UITableViewCell *_Nullable cell;
-//
-//    switch (section) {
-//    case HomeViewSectionReminders: {
-//    OWSAssert(self.reminderStackView);
-//    cell = self.reminderViewCell;
-//    break;
-//    }
-//    case HomeViewSectionPinned:
-//    case HomeViewSectionUnpinned: {
-//    cell = [self tableView:tableView cellForConversationAtIndexPath:indexPath];
-//    break;
-//    }
-//    case HomeViewSectionArchiveButton: {
-//    cell = [self cellForArchivedConversationsRow:tableView];
-//    break;
-//    }
-//    }
-//
-//    if (!cell) {
-//    OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
-//    cell = [UITableViewCell new];
-//    }
-//
-//    if (!self.splitViewController.isCollapsed) {
-//    cell.selectedBackgroundView.backgroundColor
-//    = Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray15Color;
-//    cell.backgroundColor = Theme.secondaryBackgroundColor;
-//    }
-//
-//    return cell;
-//    }
-//
-//    - (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath
-//    {
-//    ConversationListCell *cell =
-//    [self.tableView dequeueReusableCellWithIdentifier:ConversationListCell.reuseIdentifier];
-//    OWSAssertDebug(cell);
-//
-//    ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
-//
-//    // We want initial loads and reloads to load avatars sync,
-//    // but subsequent avatar loads (e.g. from scrolling) should
-//    // be async.
-//    const NSTimeInterval avatarAsyncLoadInterval = kSecondInterval * 1;
-//    BOOL shouldLoadAvatarAsync = (self.hasEverAppeared
-//    && (self.lastReloadDate == nil || fabs(self.lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval));
-//    BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
-//    [cell configure:[[ConversationListCellConfiguration alloc] initWithThread:thread
-//    shouldLoadAvatarAsync:shouldLoadAvatarAsync
-//    isBlocked:isBlocked
-//    overrideSnippet:nil
-//    overrideDate:nil]];
-//
-//    NSString *cellName;
-//    if (thread.threadRecord.isGroupThread) {
-//    TSGroupThread *groupThread = (TSGroupThread *)thread.threadRecord;
-//    cellName = [NSString stringWithFormat:@"cell-group-%@", groupThread.groupModel.groupName];
-//    } else {
-//    TSContactThread *contactThread = (TSContactThread *)thread.threadRecord;
-//    cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactAddress.stringForDisplay];
-//    }
-//    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
-//
-//    NSString *archiveTitle;
-//    if (self.conversationListMode == ConversationListMode_Inbox) {
-//    archiveTitle = CommonStrings.archiveAction;
-//    } else {
-//    archiveTitle = CommonStrings.unarchiveAction;
-//    }
-//
-//    OWSCellAccessibilityCustomAction *archiveAction =
-//    [[OWSCellAccessibilityCustomAction alloc] initWithName:archiveTitle
-//    type:OWSCellAccessibilityCustomActionTypeArchive
-//    threadViewModel:thread
-//    target:self
-//    selector:@selector(performAccessibilityCustomAction:)];
-//
-//    OWSCellAccessibilityCustomAction *deleteAction =
-//    [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.deleteButton
-//    type:OWSCellAccessibilityCustomActionTypeDelete
-//    threadViewModel:thread
-//    target:self
-//    selector:@selector(performAccessibilityCustomAction:)];
-//
-//    OWSCellAccessibilityCustomAction *unreadAction;
-//    if (thread.hasUnreadMessages) {
-//    unreadAction =
-//    [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.readAction
-//    type:OWSCellAccessibilityCustomActionTypeMarkRead
-//    threadViewModel:thread
-//    target:self
-//    selector:@selector(performAccessibilityCustomAction:)];
-//    } else {
-//    unreadAction =
-//    [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unreadAction
-//    type:OWSCellAccessibilityCustomActionTypeMarkUnread
-//    threadViewModel:thread
-//    target:self
-//    selector:@selector(performAccessibilityCustomAction:)];
-//    }
-//
-//    OWSCellAccessibilityCustomAction *pinnedAction;
-//    if ([self isThreadPinned:thread]) {
-//    pinnedAction =
-//    [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unpinAction
-//    type:OWSCellAccessibilityCustomActionTypePin
-//    threadViewModel:thread
-//    target:self
-//    selector:@selector(performAccessibilityCustomAction:)];
-//    } else {
-//    pinnedAction =
-//    [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.pinAction
-//    type:OWSCellAccessibilityCustomActionTypeUnpin
-//    threadViewModel:thread
-//    target:self
-//    selector:@selector(performAccessibilityCustomAction:)];
-//    }
-//
-//    cell.accessibilityCustomActions = @[ archiveAction, deleteAction, unreadAction, pinnedAction ];
-//
-//
-//    if ([self isConversationActiveForThread:thread.threadRecord]) {
-//    [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-//    } else {
-//    [tableView deselectRowAtIndexPath:indexPath animated:NO];
-//    }
-//
-//    return cell;
-//    }
-//
-//    - (UITableViewCell *)cellForArchivedConversationsRow:(UITableView *)tableView
-//    {
-//    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kArchivedConversationsReuseIdentifier];
-//    OWSAssertDebug(cell);
-//    [OWSTableItem configureCell:cell];
-//
-//    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//
-//    for (UIView *subview in cell.contentView.subviews) {
-//    [subview removeFromSuperview];
-//    }
-//
-//    UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
-//    OWSAssertDebug(disclosureImage);
-//    UIImageView *disclosureImageView = [UIImageView new];
-//    disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-//    disclosureImageView.tintColor = [UIColor colorWithRGBHex:0xd1d1d6];
-//    [disclosureImageView setContentHuggingHigh];
-//    [disclosureImageView setCompressionResistanceHigh];
-//
-//    UILabel *label = [UILabel new];
-//    label.text = NSLocalizedString(@"HOME_VIEW_ARCHIVED_CONVERSATIONS", @"Label for 'archived conversations' button.");
-//    label.textAlignment = NSTextAlignmentCenter;
-//    label.font = [UIFont ows_dynamicTypeBodyFont];
-//    label.textColor = Theme.primaryTextColor;
-//
-//    UIStackView *stackView = [UIStackView new];
-//    stackView.axis = UILayoutConstraintAxisHorizontal;
-//    stackView.spacing = 5;
-//    // If alignment isn't set, UIStackView uses the height of
-//    // disclosureImageView, even if label has a higher desired height.
-//    stackView.alignment = UIStackViewAlignmentCenter;
-//    [stackView addArrangedSubview:label];
-//    [stackView addArrangedSubview:disclosureImageView];
-//    [cell.contentView addSubview:stackView];
-//    [stackView autoCenterInSuperview];
-//    // Constrain to cell margins.
-//    [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
-//    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
-//    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop];
-//    [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
-//
-//    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"archived_conversations");
-//
-//    return cell;
+//    return FLT_EPSILON
 //    }
 //
 //    - (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath
 //    {
 //    OWSAssertDebug(indexPath.section == HomeViewSectionPinned
-//    || indexPath.section == HomeViewSectionUnpinned);
+//    || indexPath.section == HomeViewSectionUnpinned)
 //
-//    return [self.threadMapping threadForIndexPath:indexPath];
+//    return [self.threadMapping threadForIndexPath:indexPath]
 //    }
 //
 //    - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 //    {
-//    OWSAssertIsOnMainThread();
-//    OWSLogInfo(@"beggining refreshing.");
+//    OWSAssertIsOnMainThread()
+//    OWSLogInfo(@"beggining refreshing.")
 //
 //    [self.messageFetcherJob runObjc]
 //    .then(^{
 //    if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
-//    return [AnyPromise promiseWithValue:nil];
+//    return [AnyPromise promiseWithValue:nil]
 //    }
 //
-//    return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
+//    return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20]
 //    })
 //    .ensure(^{
-//    OWSLogInfo(@"ending refreshing.");
-//    [refreshControl endRefreshing];
-//    });
+//    OWSLogInfo(@"ending refreshing.")
+//    [refreshControl endRefreshing]
+//    })
 //    }
 //
 // }

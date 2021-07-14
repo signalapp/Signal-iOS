@@ -4,7 +4,7 @@
 
 import UIKit
 
-@objcMembers class OWSCellAccessibilityCustomAction: UIAccessibilityCustomAction {
+public class OWSCellAccessibilityCustomAction: UIAccessibilityCustomAction {
 
     var type: OWSCellAccessibilityCustomActionType
     var threadViewModel: ThreadViewModel
@@ -16,7 +16,7 @@ import UIKit
     }
 }
 
-@objc enum OWSCellAccessibilityCustomActionType: Int {
+public enum OWSCellAccessibilityCustomActionType: Int {
     case delete
     case archive
     case markRead
