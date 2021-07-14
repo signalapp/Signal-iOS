@@ -807,7 +807,9 @@ typedef struct {
     NSNumber *hasAlpha = imageProperties[(__bridge NSString *)kCGImagePropertyHasAlpha];
     if (!hasAlpha) {
         // This is not an error; kCGImagePropertyHasAlpha is an optional property.
-        OWSLogVerbose(@"Could not determine transparency of image");
+        if (!SSKDebugFlags.reduceLogChatter) {
+            OWSLogVerbose(@"Could not determine transparency of image");
+        }
     }
 
     /* The number of bits in each color sample of each pixel. The value of this
