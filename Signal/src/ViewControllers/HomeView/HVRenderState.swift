@@ -25,6 +25,10 @@ public class HVRenderState: NSObject {
                       unpinnedThreads: [])
     }
 
+    public var hasPinnedAndUnpinnedThreads: Bool {
+        !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty
+    }
+
     public func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
         if let value = threadViewModelCache.get(key: thread.uniqueId) {
             return value
@@ -36,8 +40,8 @@ public class HVRenderState: NSObject {
         return threadViewModel
     }
 
-    @objc(threadForIndexPath:)
-    func thread(indexPath: IndexPath) -> TSThread? {
+    @objc
+    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
         guard let section = HomeViewSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return nil
@@ -62,11 +66,22 @@ public class HVRenderState: NSObject {
         }
     }
 
-    @objc(threadViewModelForIndexPath:)
-    func threadViewModel(indexPath: IndexPath) -> ThreadViewModel? {
-        guard let thread = self.thread(indexPath: indexPath) else {
+    @objc
+    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
+        guard let thread = self.thread(forIndexPath: indexPath) else {
             return nil
         }
         return self.threadViewModel(forThread: thread)
+    }
+
+    @objc
+    func indexPath(forUniqueId uniqueId: String) -> IndexPath? {
+        if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
+            return IndexPath(item: index, section: HomeViewSection.unpinned.rawValue)
+        } else if let index = (pinnedThreads.orderedKeys.firstIndex { $0 == uniqueId}) {
+            return IndexPath(item: index, section: HomeViewSection.pinned.rawValue)
+        } else {
+            return nil
+        }
     }
 }

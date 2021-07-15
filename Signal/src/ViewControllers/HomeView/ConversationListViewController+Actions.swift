@@ -6,7 +6,7 @@ import Foundation
 
 extension ConversationListViewController {
     @objc
-    public func performAccessibilityCustomAction(_ action: OWSCellAccessibilityCustomAction) {
+    public func performAccessibilityCustomAction(_ action: HVCellAccessibilityCustomAction) {
         AssertIsOnMainThread()
 
         switch action.type {

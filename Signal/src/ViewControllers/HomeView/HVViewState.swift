@@ -6,7 +6,9 @@ import Foundation
 
 @objc
 public class HVViewState: NSObject {
+
     public let threadMapping = ThreadMapping()
+    public let tableDataSource = HVTableDataSource()
 
     // TODO: Rework OWSBlockListCache.
     public let blocklistCache = BlockListCache()
@@ -15,9 +17,12 @@ public class HVViewState: NSObject {
 
     public let tableView = UITableView(frame: .zero, style: .grouped)
     public let reminderViewCell = UITableViewCell()
+    public let searchBar = OWSSearchBar()
+    public let searchResultsController = ConversationSearchViewController()
 
     // MARK: - State
 
+    // TODO: We should make this a let.
     public var conversationListMode: ConversationListMode = .inbox
 
     public var isViewVisible = false
@@ -30,6 +35,15 @@ public class HVViewState: NSObject {
     public var hasThemeChanged = false
     // TODO: Review.
     public var hasVisibleReminders = false
+
+    // MARK: - Initializer
+
+    @objc
+    public override required init() {
+        super.init()
+
+        tableDataSource.viewState = self
+    }
 }
 
 // MARK: -
@@ -38,12 +52,16 @@ public class HVViewState: NSObject {
 public extension ConversationListViewController {
 
     var threadMapping: ThreadMapping { viewState.threadMapping }
+    var tableDataSource: HVTableDataSource { viewState.tableDataSource }
+
     var blocklistCache: BlockListCache { viewState.blocklistCache }
 
     // MARK: - Views
 
     var tableView: UITableView { viewState.tableView }
     var reminderViewCell: UITableViewCell { viewState.reminderViewCell }
+    var searchBar: OWSSearchBar { viewState.searchBar }
+    var searchResultsController: ConversationSearchViewController { viewState.searchResultsController }
 
     // MARK: - State
 
@@ -52,10 +70,6 @@ public extension ConversationListViewController {
         set { viewState.conversationListMode = newValue }
     }
 
-    var isViewVisible: Bool {
-        get { viewState.isViewVisible }
-        set { viewState.isViewVisible = newValue }
-    }
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }
         set { viewState.hasEverAppeared = newValue }
@@ -72,9 +86,5 @@ public extension ConversationListViewController {
     var hasThemeChanged: Bool {
         get { viewState.hasThemeChanged }
         set { viewState.hasThemeChanged = newValue }
-    }
-    var hasVisibleReminders: Bool {
-        get { viewState.hasVisibleReminders }
-        set { viewState.hasVisibleReminders = newValue }
     }
 }

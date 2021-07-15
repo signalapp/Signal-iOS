@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 public class HVTableDataSource: NSObject {
-    fileprivate let viewState: HVViewState
+    var viewState: HVViewState!
 
     @objc
     public weak var viewController: ConversationListViewController?
@@ -15,16 +15,22 @@ public class HVTableDataSource: NSObject {
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
-    fileprivate var renderState: HVRenderState = .empty
-
-    @objc
-    public required init(viewState: HVViewState) {
-        self.viewState = viewState
-    }
+    public var renderState: HVRenderState = .empty
 
     private let kArchivedConversationsReuseIdentifier = "kArchivedConversationsReuseIdentifier"
 
+    @objc
+    public required override init() {
+        super.init()
+
+        configure()
+    }
+
+    // TODO: Call this.
+    // TODO: Move elsewhere?
     private func configure() {
+        AssertIsOnMainThread()
+
         let tableView = viewState.tableView
         tableView.delegate = self
         tableView.dataSource = self
@@ -86,12 +92,75 @@ extension HVTableDataSource: UITableViewDelegate {
 //    @available(iOS 2.0, *)
 //    optional func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
 //
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat
-//
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        AssertIsOnMainThread()
+
+        guard let section = HomeViewSection(rawValue: section) else {
+            owsFailDebug("Invalid section: \(section).")
+            return 0
+        }
+
+        switch section {
+        case .pinned, .unpinned:
+            if !renderState.hasPinnedAndUnpinnedThreads {
+                return CGFloat.ulpOfOne
+            }
+
+            return UITableView.automaticDimension
+        default:
+            // Without returning a header with a non-zero height, Grouped
+            // table view will use a default spacing between sections. We
+            // do not want that spacing so we use the smallest possible height.
+            return CGFloat.ulpOfOne
+        }
+    }
+
+    public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        AssertIsOnMainThread()
+
+        // Without returning a footer with a non-zero height, Grouped
+        // table view will use a default spacing between sections. We
+        // do not want that spacing so we use the smallest possible height.
+        return CGFloat.ulpOfOne
+    }
+
+    public func tableView(_ tableView: UITableView,
+                          viewForHeaderInSection section: Int) -> UIView? {
+        AssertIsOnMainThread()
+
+        guard let section = HomeViewSection(rawValue: section) else {
+            owsFailDebug("Invalid section: \(section).")
+            return nil
+        }
+
+        switch section {
+        case .pinned, .unpinned:
+            let container = UIView()
+            container.layoutMargins = UIEdgeInsets(top: 14, leading: 16, bottom: 8, trailing: 16)
+
+            let label = UILabel()
+            container.addSubview(label)
+            label.autoPinEdgesToSuperviewMargins()
+            label.font = UIFont.ows_dynamicTypeBody.ows_semibold
+            label.textColor = Theme.primaryTextColor
+            label.text = (section == .pinned
+            ? NSLocalizedString("PINNED_SECTION_TITLE",
+                                comment: "The title for pinned conversation section on the conversation list")
+            : NSLocalizedString("UNPINNED_SECTION_TITLE",
+                                comment: "The title for unpinned conversation section on the conversation list"))
+
+            return container
+        default:
+            return UIView()
+        }
+    }
+
+    public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        AssertIsOnMainThread()
+
+        return UIView()
+    }
+
 //    @available(iOS 7.0, *)
 //    optional func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat
 //
@@ -100,12 +169,6 @@ extension HVTableDataSource: UITableViewDelegate {
 //
 //    @available(iOS 7.0, *)
 //    optional func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
 //
 //    @available(iOS 2.0, *)
 //    optional func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath)
@@ -124,10 +187,38 @@ extension HVTableDataSource: UITableViewDelegate {
 //
 //    @available(iOS 3.0, *)
 //    optional func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath?
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-//
+
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        AssertIsOnMainThread()
+
+        Logger.info("\(indexPath)")
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+
+        viewController.dismissSearchKeyboard()
+
+        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section).")
+            return
+        }
+
+        switch section {
+        case .reminders:
+            break
+        case .pinned, .unpinned:
+            guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
+                owsFailDebug("Missing threadViewModel.")
+                return
+            }
+            viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
+        case .archiveButton:
+            viewController.showArchivedConversations()
+        }
+    }
+
 //    @available(iOS 3.0, *)
 //    optional func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
 //
@@ -139,12 +230,6 @@ extension HVTableDataSource: UITableViewDelegate {
 //
 //    @available(iOS, introduced: 8.0, deprecated: 13.0)
 //    optional func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
-//
-//    @available(iOS 11.0, *)
-//    optional func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
-//
-//    @available(iOS 11.0, *)
-//    optional func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
 //
 //    @available(iOS 2.0, *)
 //    optional func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool
@@ -193,22 +278,34 @@ extension HVTableDataSource: UITableViewDelegate {
 //
 //    @available(iOS 13.0, *)
 //    optional func tableViewDidEndMultipleSelectionInteraction(_ tableView: UITableView)
-//
-//    /**
-//     * @abstract Called when the interaction begins.
-//     *
-//     * @param tableView  This UITableView.
-//     * @param indexPath  IndexPath of the row for which a configuration is being requested.
-//     * @param point      Location of the interaction in the table view's coordinate space
-//     *
-//     * @return A UIContextMenuConfiguration describing the menu to be presented. Return nil to prevent the interaction from beginning.
-//     *         Returning an empty configuration causes the interaction to begin then fail with a cancellation effect. You might use this
-//     *         to indicate to users that it's possible for a menu to be presented from this element, but that there are no actions to
-//     *         present at this particular time.
-//     */
-//    @available(iOS 13.0, *)
-//    optional func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration?
-//
+
+    @available(iOS 13.0, *)
+    public func tableView(_ tableView: UITableView,
+                          contextMenuConfigurationForRowAt indexPath: IndexPath,
+                          point: CGPoint) -> UIContextMenuConfiguration? {
+        AssertIsOnMainThread()
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return nil
+        }
+        guard viewController.canPresentPreview(fromIndexPath: indexPath) else {
+            return nil
+        }
+        guard let threadId = renderState.thread(forIndexPath: indexPath) else {
+            return nil
+        }
+
+        return UIContextMenuConfiguration(identifier: threadId,
+                                          previewProvider: { [weak viewController] in
+                                            viewController?.createPreviewController(atIndexPath: indexPath)
+                                          },
+                                          actionProvider: { _ in
+                                            // nil for now. But we may want to add options like "Pin" or "Mute" in the future
+                                            return nil
+                                          })
+    }
+
 //    /**
 //     * @abstract Called when the interaction begins. Return a UITargetedPreview to override the default preview created by the table view.
 //     *
@@ -226,17 +323,73 @@ extension HVTableDataSource: UITableViewDelegate {
 //     * @param configuration  The configuration of the menu displayed by this interaction.
 //     */
 //    @available(iOS 13.0, *)
-//    optional func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview?
-//
-//    /**
-//     * @abstract Called when the interaction is about to "commit" in response to the user tapping the preview.
-//     *
-//     * @param tableView      This UITableView.
-//     * @param configuration  Configuration of the currently displayed menu.
-//     * @param animator       Commit animator. Add animations to this object to run them alongside the commit transition.
-//     */
-//    @available(iOS 13.0, *)
-//    optional func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating)
+
+    @available(iOS 13.0, *)
+    public func tableView(_ tableView: UITableView,
+                          previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        AssertIsOnMainThread()
+
+        guard let threadId = configuration.identifier as? String else {
+            owsFailDebug("Unexpected context menu configuration identifier")
+            return nil
+        }
+        guard let indexPath = renderState.indexPath(forUniqueId: threadId) else {
+            Logger.warn("No index path for threadId: \(threadId).")
+            return nil
+        }
+
+        // Below is a partial workaround for database updates causing cells to reload mid-transition:
+        // When the conversation view controller is dismissed, it touches the database which causes
+        // the row to update.
+        //
+        // The way this *should* appear is that during presentation and dismissal, the row animates
+        // into and out of the platter. Currently, it looks like UIKit uses a portal view to accomplish
+        // this. It seems the row stays in its original position and is occluded by context menu internals
+        // while the portal view is translated.
+        //
+        // But in our case, when the table view is updated the old cell will be removed and hidden by
+        // UITableView. So mid-transition, the cell appears to disappear. What's left is the background
+        // provided by UIPreviewParameters. By default this is opaque and the end result is that an empty
+        // row appears while dismissal completes.
+        //
+        // A straightforward way to work around this is to just set the background color to clear. When
+        // the row is updated because of a database change, it will appear to snap into position instead
+        // of properly animating. This isn't *too* much of an issue since the row is usually occluded by
+        // the platter anyway. This avoids the empty row issue. A better solution would probably be to
+        // defer data source updates until the transition completes but, as far as I can tell, we aren't
+        // notified when this happens.
+
+        guard let cell = tableView.cellForRow(at: indexPath) as? ConversationListCell else {
+            owsFailDebug("Invalid cell.")
+            return nil
+        }
+        let cellFrame = tableView.rectForRow(at: indexPath)
+        let center = cellFrame.center
+        let target = UIPreviewTarget(container: tableView, center: center)
+        let params = UIPreviewParameters()
+        params.backgroundColor = .clear
+        return UITargetedPreview(view: cell, parameters: params, target: target)
+    }
+
+    @available(iOS 13.0, *)
+    public func tableView(_ tableView: UITableView,
+                          willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
+                          animator: UIContextMenuInteractionCommitAnimating) {
+        AssertIsOnMainThread()
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        guard let vc = animator.previewViewController else {
+            owsFailDebug("Missing previewViewController.")
+            return
+        }
+        animator.addAnimations { [weak viewController] in
+            viewController?.commitPreviewController(vc)
+        }
+    }
+
 //
 //    /**
 //     * @abstract Called when the table view is about to display a menu.
@@ -327,7 +480,7 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        guard let threadViewModel = renderState.threadViewModel(indexPath: indexPath) else {
+        guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
             owsFailDebug("Missing threadViewModel.")
             return UITableViewCell()
         }
@@ -373,24 +526,24 @@ extension HVTableDataSource: UITableViewDataSource {
         // TODO: Test selector.
         let performAccessibilityCustomActionSelector = #selector(ConversationListViewController.performAccessibilityCustomAction)
 
-        let archiveAction = OWSCellAccessibilityCustomAction(name: archiveTitle,
+        let archiveAction = HVCellAccessibilityCustomAction(name: archiveTitle,
                                                              type: .archive,
                                                              threadViewModel: threadViewModel,
                                                              target: viewController,
                                                              selector: performAccessibilityCustomActionSelector)
-        let deleteAction = OWSCellAccessibilityCustomAction(name: CommonStrings.deleteButton,
+        let deleteAction = HVCellAccessibilityCustomAction(name: CommonStrings.deleteButton,
                                                             type: .delete,
                                                             threadViewModel: threadViewModel,
                                                             target: viewController,
                                                             selector: performAccessibilityCustomActionSelector)
 
         let unreadAction = (threadViewModel.hasUnreadMessages
-                                ? OWSCellAccessibilityCustomAction(name: CommonStrings.readAction,
+                                ? HVCellAccessibilityCustomAction(name: CommonStrings.readAction,
                                                                    type: .markRead,
                                                                    threadViewModel: threadViewModel,
                                                                    target: viewController,
                                                                    selector: performAccessibilityCustomActionSelector)
-                                : OWSCellAccessibilityCustomAction(name: CommonStrings.unreadAction,
+                                : HVCellAccessibilityCustomAction(name: CommonStrings.unreadAction,
                                                                    type: .markUnread,
                                                                    threadViewModel: threadViewModel,
                                                                    target: viewController,
@@ -399,12 +552,12 @@ extension HVTableDataSource: UITableViewDataSource {
         // TODO: Did we fix a bug here?
         let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
         let pinnedAction = (isThreadPinned
-            ? OWSCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
+            ? HVCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
                                                type: .unpin,
                                                threadViewModel: threadViewModel,
                                                target: viewController,
                                                selector: performAccessibilityCustomActionSelector)
-            : OWSCellAccessibilityCustomAction(name: CommonStrings.pinAction,
+            : HVCellAccessibilityCustomAction(name: CommonStrings.pinAction,
                                                type: .pin,
                                                threadViewModel: threadViewModel,
                                                target: viewController,
@@ -489,13 +642,6 @@ extension HVTableDataSource: UITableViewDataSource {
 //    optional func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String?
 //
 //
-//    // Editing
-//
-//    // Individual rows can opt out of having the -editing property set for them. If not implemented, all rows are assumed to be editable.
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
-//
-//
 //    // Moving/reordering
 //
 //    // Allows the reorder accessory view to optionally be shown for a particular row. By default, the reorder control will be shown only if the datasource implements -tableView:moveRowAtIndexPath:toIndexPath:
@@ -517,7 +663,194 @@ extension HVTableDataSource: UITableViewDataSource {
 //    // After a row has the minus or plus button invoked (based on the UITableViewCellEditingStyle for the cell), the dataSource must commit the change
 //    // Not called for edit actions using UITableViewRowAction - the action's handler will be invoked instead
 //    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath)
+
+    // MARK: - Edit Actions
+
+    public func tableView(_ tableView: UITableView,
+                          commit editingStyle: UITableViewCell.EditingStyle,
+                          forRowAt indexPath: IndexPath) {
+        AssertIsOnMainThread()
+
+        // TODO: Is this method necessary?
+    }
+
+    public func tableView(_ tableView: UITableView,
+                          trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        AssertIsOnMainThread()
+
+        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section).")
+            return nil
+        }
+
+        switch section {
+        case .reminders, .archiveButton:
+            return nil
+        case .pinned, .unpinned:
+            guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
+                owsFailDebug("Missing threadViewModel.")
+                return nil
+            }
+            guard let viewController = self.viewController else {
+                owsFailDebug("Missing viewController.")
+                return nil
+            }
+            let deleteAction = UIContextualAction(style: .destructive,
+                                                  title: nil) { [weak viewController] (_, _, completion) in
+                viewController?.deleteThreadWithConfirmation(threadViewModel: threadViewModel)
+                completion(false)
+            }
+            deleteAction.backgroundColor = .ows_accentRed
+            deleteAction.image = self.actionImage(name: "trash-solid-24",
+                                                  title: CommonStrings.deleteButton)
+            deleteAction.accessibilityLabel = CommonStrings.deleteButton
+
+            let archiveAction = UIContextualAction(style: .normal,
+                                                   title: nil) { [weak viewController] (_, _, completion) in
+                viewController?.archiveThread(threadViewModel: threadViewModel)
+                completion(false)
+            }
+
+            let archiveTitle = (viewController.conversationListMode == .inbox
+                                    ? CommonStrings.archiveAction
+                                    : CommonStrings.unarchiveAction)
+
+            archiveAction.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray25
+            deleteAction.image = self.actionImage(name: "archive-solid-24",
+                                                  title: archiveTitle)
+            archiveAction.accessibilityLabel = archiveTitle
+
+            // The first action will be auto-performed for "very long swipes".
+            return UISwipeActionsConfiguration(actions: [ archiveAction, deleteAction ])
+        }
+    }
+
+    private func actionImage(name imageName: String, title: String) -> UIImage? {
+        AssertIsOnMainThread()
+
+        // We need to bake the title text into the image because `UIContextualAction`
+        // only displays title + image when the cell's height > 91. We want to always
+        // show both.
+        guard let image = UIImage(named: imageName) else {
+            owsFailDebug("Missing image.")
+            return nil
+        }
+        guard let image = image.withTitle(title,
+                                          font: UIFont.systemFont(ofSize: 13),
+                                          color: .ows_white,
+                                          maxTitleWidth: 68,
+                                          // TODO: Did we fix a bug here?
+                                          minimumScaleFactor: CGFloat(8) / CGFloat(13),
+                                          spacing: 4) else {
+            owsFailDebug("Missing image.")
+            return nil
+        }
+        return image.withRenderingMode(.alwaysTemplate)
+    }
+
+    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        AssertIsOnMainThread()
+
+        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section).")
+            return false
+        }
+
+        switch section {
+        case .reminders:
+            return false
+        case .pinned, .unpinned:
+            return true
+        case .archiveButton:
+            return false
+        }
+    }
+
+    public func tableView(_ tableView: UITableView,
+                          leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        AssertIsOnMainThread()
+
+        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section).")
+            return nil
+        }
+
+        switch section {
+        case .reminders:
+            return nil
+        case .archiveButton:
+            return nil
+        case .pinned, .unpinned:
+            guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
+                owsFailDebug("Missing threadViewModel.")
+                return nil
+            }
+            //            guard let viewController = self.viewController else {
+            //                owsFailDebug("Missing viewController.")
+            //                return nil
+            //            }
+            let thread = threadViewModel.threadRecord
+
+            let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
+            let pinnedStateAction: UIContextualAction
+            if isThreadPinned {
+                pinnedStateAction = UIContextualAction(style: .normal,
+                                                       title: nil) { [weak viewController] (_, _, completion) in
+                    viewController?.unpinThread(threadViewModel: threadViewModel)
+                    completion(false)
+                }
+                pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
+                pinnedStateAction.accessibilityLabel = CommonStrings.unpinAction
+                pinnedStateAction.image = actionImage(name: "unpin-solid-24",
+                                                      title: CommonStrings.unpinAction)
+            } else {
+                pinnedStateAction = UIContextualAction(style: .destructive,
+                                                       title: nil) { [weak viewController] (_, _, completion) in
+                    completion(false)
+                    viewController?.pinThread(threadViewModel: threadViewModel)
+                }
+                pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
+                pinnedStateAction.accessibilityLabel = CommonStrings.pinAction
+                pinnedStateAction.image = actionImage(name: "pin-solid-24",
+                                                      title: CommonStrings.pinAction)
+            }
+
+            let readStateAction: UIContextualAction
+            if threadViewModel.hasUnreadMessages {
+                readStateAction = UIContextualAction(style: .destructive,
+                                                     title: nil) { [weak viewController] (_, _, completion) in
+                    completion(false)
+                    // We delay here so the animation can play out before we
+                    // reload the cell
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
+                        viewController?.markThreadAsRead(threadViewModel: threadViewModel)
+                    }
+                }
+                readStateAction.backgroundColor = .ows_accentBlue
+                readStateAction.accessibilityLabel = CommonStrings.readAction
+                readStateAction.image = actionImage(name: "read-solid-24",
+                                                    title: CommonStrings.readAction)
+            } else {
+                readStateAction = UIContextualAction(style: .normal,
+                                                     title: nil) { [weak viewController] (_, _, completion) in
+                    completion(false)
+                    // We delay here so the animation can play out before we
+                    // reload the cell
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
+                        viewController?.markThreadAsUnread(threadViewModel: threadViewModel)
+                    }
+                }
+                readStateAction.backgroundColor = .ows_accentBlue
+                readStateAction.accessibilityLabel = CommonStrings.unreadAction
+                readStateAction.image = actionImage(name: "unread-solid-24",
+                                                    title: CommonStrings.unreadAction)
+            }
+
+            // The first action will be auto-performed for "very long swipes".
+            return UISwipeActionsConfiguration(actions: [ readStateAction, pinnedStateAction ])
+        }
+    }
+
 //
 //
 //    // Data manipulation - reorder / moving support
@@ -563,63 +896,6 @@ extension HVTableDataSource: UITableViewDataSource {
 //    }]
 //    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId]
 //    return newThreadViewModel
-//    }
-//
-//    - (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-//    {
-//    switch (section) {
-//    case HomeViewSectionPinned:
-//    case HomeViewSectionUnpinned: {
-//    UIView *container = [UIView new]
-//    container.layoutMargins = UIEdgeInsetsMake(14, 16, 8, 16)
-//
-//    UILabel *label = [UILabel new]
-//    [container addSubview:label]
-//    [label autoPinEdgesToSuperviewMargins]
-//    label.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold
-//    label.textColor = Theme.primaryTextColor
-//    label.text = section == HomeViewSectionPinned
-//    ? NSLocalizedString(
-//    @"PINNED_SECTION_TITLE", @"The title for pinned conversation section on the conversation list")
-//    : NSLocalizedString(
-//    @"UNPINNED_SECTION_TITLE", @"The title for unpinned conversation section on the conversation list")
-//
-//    return container
-//    }
-//    default:
-//    return [UIView new]
-//    }
-//    }
-//
-//    - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-//    {
-//    switch (section) {
-//    case HomeViewSectionPinned:
-//    case HomeViewSectionUnpinned:
-//    if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
-//    return FLT_EPSILON
-//    }
-//
-//    return UITableViewAutomaticDimension
-//    default:
-//    // Without returning a header with a non-zero height, Grouped
-//    // table view will use a default spacing between sections. We
-//    // do not want that spacing so we use the smallest possible height.
-//    return FLT_EPSILON
-//    }
-//    }
-//
-//    - (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-//    {
-//    return [UIView new]
-//    }
-//
-//    - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-//    {
-//    // Without returning a footer with a non-zero height, Grouped
-//    // table view will use a default spacing between sections. We
-//    // do not want that spacing so we use the smallest possible height.
-//    return FLT_EPSILON
 //    }
 //
 //    - (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath

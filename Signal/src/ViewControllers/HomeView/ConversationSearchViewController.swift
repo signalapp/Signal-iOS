@@ -6,12 +6,12 @@ import Foundation
 import BonMot
 
 @objc
-protocol ConversationSearchViewDelegate: AnyObject {
+public protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchViewWillBeginDragging()
 }
 
 @objc
-class ConversationSearchViewController: UITableViewController, BlockListCacheDelegate {
+public class ConversationSearchViewController: UITableViewController {
 
     // MARK: -
 
@@ -73,7 +73,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
 
         blockListCache = BlockListCache()
@@ -100,7 +100,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         updateSeparators()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
+    public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         guard hasThemeChanged else {
@@ -146,7 +146,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
     // MARK: UITableViewDelegate
 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
 
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
@@ -201,7 +201,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
 
     // MARK: UITableViewDataSource
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let searchSection = SearchSection(rawValue: section) else {
             owsFailDebug("unknown section: \(section)")
             return 0
@@ -221,7 +221,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             return UITableViewCell()
@@ -349,26 +349,26 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
     }
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    public override func numberOfSections(in tableView: UITableView) -> Int {
         return 5
     }
 
-    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    public override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         UIView()
     }
 
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    public override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         .leastNonzeroMagnitude
     }
 
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    public override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard nil != self.tableView(tableView, titleForHeaderInSection: section) else {
             return .leastNonzeroMagnitude
         }
         return UITableView.automaticDimension
     }
 
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    public override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let title = self.tableView(tableView, titleForHeaderInSection: section) else {
             return UIView()
         }
@@ -391,7 +391,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         return textView
     }
 
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    public override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard let searchSection = SearchSection(rawValue: section) else {
             owsFailDebug("unknown section: \(section)")
             return nil
@@ -425,12 +425,6 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 return nil
             }
         }
-    }
-
-    // MARK: BlockListCacheDelegate
-
-    func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
-        refreshSearchResults()
     }
 
     // MARK: Update Search Results
@@ -507,18 +501,31 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         })
     }
 
-    // MARK: - UIScrollViewDelegate
-
-    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        delegate?.conversationSearchViewWillBeginDragging()
-    }
-
     // MARK: -
 
     private func isBlocked(thread: ThreadViewModel) -> Bool {
         return self.blockListCache.isBlocked(thread: thread.threadRecord)
     }
 }
+
+// MARK: -
+
+extension ConversationSearchViewController: BlockListCacheDelegate {
+
+    public func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
+        refreshSearchResults()
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+
+extension ConversationSearchViewController {
+    public override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        delegate?.conversationSearchViewWillBeginDragging()
+    }
+}
+
+// MARK: -
 
 class EmptySearchResultCell: UITableViewCell {
     static let reuseIdentifier = "EmptySearchResultCell"
@@ -584,11 +591,11 @@ class EmptySearchResultCell: UITableViewCell {
 
 extension ConversationSearchViewController: DatabaseChangeDelegate {
 
-    func databaseChangesWillUpdate() {
+    public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
     }
 
-    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
         guard databaseChanges.didUpdateThreads || databaseChanges.didUpdateInteractions else {
@@ -598,13 +605,13 @@ extension ConversationSearchViewController: DatabaseChangeDelegate {
         refreshSearchResults()
     }
 
-    func databaseChangesDidUpdateExternally() {
+    public func databaseChangesDidUpdateExternally() {
         AssertIsOnMainThread()
 
         refreshSearchResults()
     }
 
-    func databaseChangesDidReset() {
+    public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
         refreshSearchResults()
