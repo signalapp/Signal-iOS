@@ -7,7 +7,6 @@ import Foundation
 @objc
 public class HVViewState: NSObject {
 
-    public let threadMappingOld = ThreadMapping()
     public let tableDataSource = HVTableDataSource()
     public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
 
@@ -52,7 +51,6 @@ public class HVViewState: NSObject {
 @objc
 public extension ConversationListViewController {
 
-    var threadMappingOld: ThreadMapping { viewState.threadMappingOld }
     var tableDataSource: HVTableDataSource { viewState.tableDataSource }
 
     @nonobjc

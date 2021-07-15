@@ -32,8 +32,8 @@ extension ConversationListViewController {
         AssertIsOnMainThread()
 
         return Self.databaseStorage.read { transaction in
-            ThreadMapping.loadRenderState(isViewingArchive: isViewingArchive,
-                                          transaction: transaction)
+            HVLoader.loadRenderState(isViewingArchive: isViewingArchive,
+                                     transaction: transaction)
         }
     }
 
@@ -59,10 +59,10 @@ extension ConversationListViewController {
         }
 
         let mappingDiff = Self.databaseStorage.read { transaction in
-            ThreadMapping.loadRenderStateAndDiff(isViewingArchive: isViewingArchive,
-                                                 updatedItemIds: updatedItemIds,
-                                                 lastRenderState: renderState,
-                                                 transaction: transaction)
+            HVLoader.loadRenderStateAndDiff(isViewingArchive: isViewingArchive,
+                                            updatedItemIds: updatedItemIds,
+                                            lastRenderState: renderState,
+                                            transaction: transaction)
         }
         guard let mappingDiff = mappingDiff else {
             owsFailDebug("Could not update.")

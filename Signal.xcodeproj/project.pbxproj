@@ -460,10 +460,9 @@
 		34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */; };
 		34E93F942667F92100CE6FA5 /* ChatColorsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */; };
 		34E93F982668257400CE6FA5 /* color-bubble-64.json in Resources */ = {isa = PBXBuildFile; fileRef = 34E93F972668257400CE6FA5 /* color-bubble-64.json */; };
-		34E95C1B269F4F1B004807EC /* ThreadMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1A269F4F1A004807EC /* ThreadMapping.swift */; };
+		34E95C1B269F4F1B004807EC /* HVLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1A269F4F1A004807EC /* HVLoader.swift */; };
 		34E95C21269F4F4F004807EC /* HVLoadCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1C269F4F4F004807EC /* HVLoadCoordinator.swift */; };
 		34E95C22269F4F4F004807EC /* HVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1D269F4F4F004807EC /* HVRenderState.swift */; };
-		34E95C23269F4F4F004807EC /* HVLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1E269F4F4F004807EC /* HVLoader.swift */; };
 		34E95C24269F4F4F004807EC /* HVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1F269F4F4F004807EC /* HVViewState.swift */; };
 		34E95C25269F4F4F004807EC /* HVTableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C20269F4F4F004807EC /* HVTableDataSource.swift */; };
 		34E95C27269F6096004807EC /* ConversationListViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */; };
@@ -1566,10 +1565,9 @@
 		34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BodyTextItems.swift"; sourceTree = "<group>"; };
 		34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorsMegaphone.swift; sourceTree = "<group>"; };
 		34E93F972668257400CE6FA5 /* color-bubble-64.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "color-bubble-64.json"; sourceTree = "<group>"; };
-		34E95C1A269F4F1A004807EC /* ThreadMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadMapping.swift; sourceTree = "<group>"; };
+		34E95C1A269F4F1A004807EC /* HVLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVLoader.swift; sourceTree = "<group>"; };
 		34E95C1C269F4F4F004807EC /* HVLoadCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVLoadCoordinator.swift; sourceTree = "<group>"; };
 		34E95C1D269F4F4F004807EC /* HVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVRenderState.swift; sourceTree = "<group>"; };
-		34E95C1E269F4F4F004807EC /* HVLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVLoader.swift; sourceTree = "<group>"; };
 		34E95C1F269F4F4F004807EC /* HVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVViewState.swift; sourceTree = "<group>"; };
 		34E95C20269F4F4F004807EC /* HVTableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVTableDataSource.swift; sourceTree = "<group>"; };
 		34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Actions.swift"; sourceTree = "<group>"; };
@@ -2486,11 +2484,10 @@
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
 				34E95C2A269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift */,
 				34E95C1C269F4F4F004807EC /* HVLoadCoordinator.swift */,
-				34E95C1E269F4F4F004807EC /* HVLoader.swift */,
+				34E95C1A269F4F1A004807EC /* HVLoader.swift */,
 				34E95C1D269F4F4F004807EC /* HVRenderState.swift */,
 				34E95C20269F4F4F004807EC /* HVTableDataSource.swift */,
 				34E95C1F269F4F4F004807EC /* HVViewState.swift */,
-				34E95C1A269F4F1A004807EC /* ThreadMapping.swift */,
 			);
 			path = HomeView;
 			sourceTree = "<group>";
@@ -5678,7 +5675,7 @@
 				3406D32425DD4A8F00885B14 /* PaymentsQRScanViewController.swift in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
 				34E95C2B269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift in Sources */,
-				34E95C1B269F4F1B004807EC /* ThreadMapping.swift in Sources */,
+				34E95C1B269F4F1B004807EC /* HVLoader.swift in Sources */,
 				34A4D88D267A363A00A794E7 /* ConversationViewController.swift in Sources */,
 				3495FF0F25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift in Sources */,
 				3406D32225DD40F000885B14 /* PaymentsTransferOutViewController.swift in Sources */,
@@ -5741,7 +5738,6 @@
 				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				347C382A252CE69400F3D941 /* CVLoadCoordinator.swift in Sources */,
-				34E95C23269F4F4F004807EC /* HVLoader.swift in Sources */,
 				88238EB224F19D0B00F28079 /* Emoji+SkinTones.swift in Sources */,
 				348815C2255341F300D4F4C4 /* CVComponentAudioAttachment.swift in Sources */,
 				347C384B252D085900F3D941 /* CVComponentUnreadIndicator.swift in Sources */,

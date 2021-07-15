@@ -29,12 +29,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// The bulk of the content in this view is driven by ThreadMapping.
+// The bulk of the content in this view is driven by HVRenderState.
 // However, we also want to optionally include ReminderView's at the top
 // and an "Archived Conversations" button at the bottom. Rather than introduce
 // index-offsets into the Mapping calculation, we introduce two pseudo groups
 // to add a top and bottom section to the content, and create cells for those
-// sections without consulting the ThreadMapping.
+// sections without consulting the HVRenderState.
 // This is a bit of a hack, but it consolidates the hacks into the Reminder/Archive section
 // and allows us to leaves the bulk of the content logic on the happy path.
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";

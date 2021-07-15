@@ -57,7 +57,7 @@ extension ConversationListViewController {
                                                                      comment: "Message for the 'conversation delete confirmation' alert."))
         alert.addAction(ActionSheetAction(title: CommonStrings.deleteButton,
                                           style: .destructive) { [weak self] _ in
-                            self?.deleteThread(threadViewModel: threadViewModel)
+            self?.deleteThread(threadViewModel: threadViewModel)
         })
         alert.addAction(OWSActionSheets.cancelAction)
 

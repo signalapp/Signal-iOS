@@ -90,27 +90,27 @@ public enum HomeViewSection: Int, CaseIterable {
 
 extension HVTableDataSource: UITableViewDelegate {
 
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int)
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int)
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath)
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int)
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, didEndDisplayingFooterView view: UIView, forSection section: Int)
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-//
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int)
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int)
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath)
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, didEndDisplayingHeaderView view: UIView, forSection section: Int)
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, didEndDisplayingFooterView view: UIView, forSection section: Int)
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    //
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         AssertIsOnMainThread()
 
@@ -163,10 +163,10 @@ extension HVTableDataSource: UITableViewDelegate {
             label.font = UIFont.ows_dynamicTypeBody.ows_semibold
             label.textColor = Theme.primaryTextColor
             label.text = (section == .pinned
-            ? NSLocalizedString("PINNED_SECTION_TITLE",
-                                comment: "The title for pinned conversation section on the conversation list")
-            : NSLocalizedString("UNPINNED_SECTION_TITLE",
-                                comment: "The title for unpinned conversation section on the conversation list"))
+                            ? NSLocalizedString("PINNED_SECTION_TITLE",
+                                                comment: "The title for pinned conversation section on the conversation list")
+                            : NSLocalizedString("UNPINNED_SECTION_TITLE",
+                                                comment: "The title for unpinned conversation section on the conversation list"))
 
             return container
         default:
@@ -180,32 +180,32 @@ extension HVTableDataSource: UITableViewDelegate {
         return UIView()
     }
 
-//    @available(iOS 7.0, *)
-//    optional func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat
-//
-//    @available(iOS 7.0, *)
-//    optional func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat
-//
-//    @available(iOS 7.0, *)
-//    optional func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath)
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath)
-//
-//    @available(iOS 6.0, *)
-//    optional func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath)
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath?
-//
-//    @available(iOS 3.0, *)
-//    optional func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath?
+    //    @available(iOS 7.0, *)
+    //    optional func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat
+    //
+    //    @available(iOS 7.0, *)
+    //    optional func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat
+    //
+    //    @available(iOS 7.0, *)
+    //    optional func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath)
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath)
+    //
+    //    @available(iOS 6.0, *)
+    //    optional func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath)
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath?
+    //
+    //    @available(iOS 3.0, *)
+    //    optional func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath?
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
@@ -238,65 +238,65 @@ extension HVTableDataSource: UITableViewDelegate {
         }
     }
 
-//    @available(iOS 3.0, *)
-//    optional func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle
-//
-//    @available(iOS 3.0, *)
-//    optional func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String?
-//
-//    @available(iOS, introduced: 8.0, deprecated: 13.0)
-//    optional func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath)
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?)
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int
-//
-//    @available(iOS, introduced: 5.0, deprecated: 13.0)
-//    optional func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool
-//
-//    @available(iOS, introduced: 5.0, deprecated: 13.0)
-//    optional func tableView(_ tableView: UITableView, canPerformAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) -> Bool
-//
-//    @available(iOS, introduced: 5.0, deprecated: 13.0)
-//    optional func tableView(_ tableView: UITableView, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?)
-//
-//    @available(iOS 9.0, *)
-//    optional func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool
-//
-//    @available(iOS 9.0, *)
-//    optional func tableView(_ tableView: UITableView, shouldUpdateFocusIn context: UITableViewFocusUpdateContext) -> Bool
-//
-//    @available(iOS 9.0, *)
-//    optional func tableView(_ tableView: UITableView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator)
-//
-//    @available(iOS 9.0, *)
-//    optional func indexPathForPreferredFocusedView(in tableView: UITableView) -> IndexPath?
-//
-//    @available(iOS 11.0, *)
-//    optional func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool
-//
-//    @available(iOS 13.0, *)
-//    optional func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool
-//
-//    @available(iOS 13.0, *)
-//    optional func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath)
-//
-//    @available(iOS 13.0, *)
-//    optional func tableViewDidEndMultipleSelectionInteraction(_ tableView: UITableView)
+    //    @available(iOS 3.0, *)
+    //    optional func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath)
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle
+    //
+    //    @available(iOS 3.0, *)
+    //    optional func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String?
+    //
+    //    @available(iOS, introduced: 8.0, deprecated: 13.0)
+    //    optional func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath)
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?)
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int
+    //
+    //    @available(iOS, introduced: 5.0, deprecated: 13.0)
+    //    optional func tableView(_ tableView: UITableView, shouldShowMenuForRowAt indexPath: IndexPath) -> Bool
+    //
+    //    @available(iOS, introduced: 5.0, deprecated: 13.0)
+    //    optional func tableView(_ tableView: UITableView, canPerformAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) -> Bool
+    //
+    //    @available(iOS, introduced: 5.0, deprecated: 13.0)
+    //    optional func tableView(_ tableView: UITableView, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?)
+    //
+    //    @available(iOS 9.0, *)
+    //    optional func tableView(_ tableView: UITableView, canFocusRowAt indexPath: IndexPath) -> Bool
+    //
+    //    @available(iOS 9.0, *)
+    //    optional func tableView(_ tableView: UITableView, shouldUpdateFocusIn context: UITableViewFocusUpdateContext) -> Bool
+    //
+    //    @available(iOS 9.0, *)
+    //    optional func tableView(_ tableView: UITableView, didUpdateFocusIn context: UITableViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator)
+    //
+    //    @available(iOS 9.0, *)
+    //    optional func indexPathForPreferredFocusedView(in tableView: UITableView) -> IndexPath?
+    //
+    //    @available(iOS 11.0, *)
+    //    optional func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool
+    //
+    //    @available(iOS 13.0, *)
+    //    optional func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool
+    //
+    //    @available(iOS 13.0, *)
+    //    optional func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath)
+    //
+    //    @available(iOS 13.0, *)
+    //    optional func tableViewDidEndMultipleSelectionInteraction(_ tableView: UITableView)
 
     @available(iOS 13.0, *)
     public func tableView(_ tableView: UITableView,
@@ -325,23 +325,23 @@ extension HVTableDataSource: UITableViewDelegate {
                                           })
     }
 
-//    /**
-//     * @abstract Called when the interaction begins. Return a UITargetedPreview to override the default preview created by the table view.
-//     *
-//     * @param tableView      This UITableView.
-//     * @param configuration  The configuration of the menu about to be displayed by this interaction.
-//     */
-//    @available(iOS 13.0, *)
-//    optional func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview?
-//
-//    /**
-//     * @abstract Called when the interaction is about to dismiss. Return a UITargetedPreview describing the desired dismissal target.
-//     * The interaction will animate the presented menu to the target. Use this to customize the dismissal animation.
-//     *
-//     * @param tableView      This UITableView.
-//     * @param configuration  The configuration of the menu displayed by this interaction.
-//     */
-//    @available(iOS 13.0, *)
+    //    /**
+    //     * @abstract Called when the interaction begins. Return a UITargetedPreview to override the default preview created by the table view.
+    //     *
+    //     * @param tableView      This UITableView.
+    //     * @param configuration  The configuration of the menu about to be displayed by this interaction.
+    //     */
+    //    @available(iOS 13.0, *)
+    //    optional func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview?
+    //
+    //    /**
+    //     * @abstract Called when the interaction is about to dismiss. Return a UITargetedPreview describing the desired dismissal target.
+    //     * The interaction will animate the presented menu to the target. Use this to customize the dismissal animation.
+    //     *
+    //     * @param tableView      This UITableView.
+    //     * @param configuration  The configuration of the menu displayed by this interaction.
+    //     */
+    //    @available(iOS 13.0, *)
 
     @available(iOS 13.0, *)
     public func tableView(_ tableView: UITableView,
@@ -409,27 +409,27 @@ extension HVTableDataSource: UITableViewDelegate {
         }
     }
 
-//
-//    /**
-//     * @abstract Called when the table view is about to display a menu.
-//     *
-//     * @param tableView       This UITableView.
-//     * @param configuration   The configuration of the menu about to be displayed.
-//     * @param animator        Appearance animator. Add animations to run them alongside the appearance transition.
-//     */
-//    @available(iOS 14.0, *)
-//    optional func tableView(_ tableView: UITableView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?)
-//
-//    /**
-//     * @abstract Called when the table view's context menu interaction is about to end.
-//     *
-//     * @param tableView       This UITableView.
-//     * @param configuration   Ending configuration.
-//     * @param animator        Disappearance animator. Add animations to run them alongside the disappearance transition.
-//     */
-//    @available(iOS 14.0, *)
-//    optional func tableView(_ tableView: UITableView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?)
-// }
+    //
+    //    /**
+    //     * @abstract Called when the table view is about to display a menu.
+    //     *
+    //     * @param tableView       This UITableView.
+    //     * @param configuration   The configuration of the menu about to be displayed.
+    //     * @param animator        Appearance animator. Add animations to run them alongside the appearance transition.
+    //     */
+    //    @available(iOS 14.0, *)
+    //    optional func tableView(_ tableView: UITableView, willDisplayContextMenu configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?)
+    //
+    //    /**
+    //     * @abstract Called when the table view's context menu interaction is about to end.
+    //     *
+    //     * @param tableView       This UITableView.
+    //     * @param configuration   Ending configuration.
+    //     * @param animator        Disappearance animator. Add animations to run them alongside the disappearance transition.
+    //     */
+    //    @available(iOS 14.0, *)
+    //    optional func tableView(_ tableView: UITableView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?)
+    // }
 }
 
 // MARK: -
@@ -546,41 +546,41 @@ extension HVTableDataSource: UITableViewDataSource {
         let performAccessibilityCustomActionSelector = #selector(ConversationListViewController.performAccessibilityCustomAction)
 
         let archiveAction = HVCellAccessibilityCustomAction(name: archiveTitle,
-                                                             type: .archive,
-                                                             threadViewModel: threadViewModel,
-                                                             target: viewController,
-                                                             selector: performAccessibilityCustomActionSelector)
-        let deleteAction = HVCellAccessibilityCustomAction(name: CommonStrings.deleteButton,
-                                                            type: .delete,
+                                                            type: .archive,
                                                             threadViewModel: threadViewModel,
                                                             target: viewController,
                                                             selector: performAccessibilityCustomActionSelector)
+        let deleteAction = HVCellAccessibilityCustomAction(name: CommonStrings.deleteButton,
+                                                           type: .delete,
+                                                           threadViewModel: threadViewModel,
+                                                           target: viewController,
+                                                           selector: performAccessibilityCustomActionSelector)
 
         let unreadAction = (threadViewModel.hasUnreadMessages
                                 ? HVCellAccessibilityCustomAction(name: CommonStrings.readAction,
-                                                                   type: .markRead,
-                                                                   threadViewModel: threadViewModel,
-                                                                   target: viewController,
-                                                                   selector: performAccessibilityCustomActionSelector)
+                                                                  type: .markRead,
+                                                                  threadViewModel: threadViewModel,
+                                                                  target: viewController,
+                                                                  selector: performAccessibilityCustomActionSelector)
                                 : HVCellAccessibilityCustomAction(name: CommonStrings.unreadAction,
-                                                                   type: .markUnread,
-                                                                   threadViewModel: threadViewModel,
-                                                                   target: viewController,
-                                                                   selector: performAccessibilityCustomActionSelector))
+                                                                  type: .markUnread,
+                                                                  threadViewModel: threadViewModel,
+                                                                  target: viewController,
+                                                                  selector: performAccessibilityCustomActionSelector))
 
         // TODO: Did we fix a bug here?
         let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
         let pinnedAction = (isThreadPinned
-            ? HVCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
-                                               type: .unpin,
-                                               threadViewModel: threadViewModel,
-                                               target: viewController,
-                                               selector: performAccessibilityCustomActionSelector)
-            : HVCellAccessibilityCustomAction(name: CommonStrings.pinAction,
-                                               type: .pin,
-                                               threadViewModel: threadViewModel,
-                                               target: viewController,
-                                               selector: performAccessibilityCustomActionSelector))
+                                ? HVCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
+                                                                  type: .unpin,
+                                                                  threadViewModel: threadViewModel,
+                                                                  target: viewController,
+                                                                  selector: performAccessibilityCustomActionSelector)
+                                : HVCellAccessibilityCustomAction(name: CommonStrings.pinAction,
+                                                                  type: .pin,
+                                                                  threadViewModel: threadViewModel,
+                                                                  target: viewController,
+                                                                  selector: performAccessibilityCustomActionSelector))
 
         cell.accessibilityCustomActions = [ archiveAction, deleteAction, unreadAction, pinnedAction ]
 
@@ -651,37 +651,37 @@ extension HVTableDataSource: UITableViewDataSource {
         return cell
     }
 
-//
-//
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? // fixed font style. use custom view (UILabel) if you want something different
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String?
-//
-//
-//    // Moving/reordering
-//
-//    // Allows the reorder accessory view to optionally be shown for a particular row. By default, the reorder control will be shown only if the datasource implements -tableView:moveRowAtIndexPath:toIndexPath:
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool
-//
-//
-//    // Index
-//
-//    @available(iOS 2.0, *)
-//    optional func sectionIndexTitles(for tableView: UITableView) -> [String]? // return list of section titles to display in section index view (e.g. "ABCD...Z#")
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int // tell table which section corresponds to section title/index (e.g. "B",1))
-//
-//
-//    // Data manipulation - insert and delete support
-//
-//    // After a row has the minus or plus button invoked (based on the UITableViewCellEditingStyle for the cell), the dataSource must commit the change
-//    // Not called for edit actions using UITableViewRowAction - the action's handler will be invoked instead
-//    @available(iOS 2.0, *)
+    //
+    //
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? // fixed font style. use custom view (UILabel) if you want something different
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String?
+    //
+    //
+    //    // Moving/reordering
+    //
+    //    // Allows the reorder accessory view to optionally be shown for a particular row. By default, the reorder control will be shown only if the datasource implements -tableView:moveRowAtIndexPath:toIndexPath:
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool
+    //
+    //
+    //    // Index
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func sectionIndexTitles(for tableView: UITableView) -> [String]? // return list of section titles to display in section index view (e.g. "ABCD...Z#")
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int // tell table which section corresponds to section title/index (e.g. "B",1))
+    //
+    //
+    //    // Data manipulation - insert and delete support
+    //
+    //    // After a row has the minus or plus button invoked (based on the UITableViewCellEditingStyle for the cell), the dataSource must commit the change
+    //    // Not called for edit actions using UITableViewRowAction - the action's handler will be invoked instead
+    //    @available(iOS 2.0, *)
 
     // MARK: - Edit Actions
 
@@ -870,78 +870,11 @@ extension HVTableDataSource: UITableViewDataSource {
         }
     }
 
-//
-//
-//    // Data manipulation - reorder / moving support
-//
-//    @available(iOS 2.0, *)
-//    optional func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
-// }
+    //
+    //
+    //    // Data manipulation - reorder / moving support
+    //
+    //    @available(iOS 2.0, *)
+    //    optional func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
+    // }
 }
-
-// MARK: -
-
-//    #pragma mark - Table View Data Source
-//
-//    // Returns YES IFF this value changes.
-//    - (BOOL)updateHasArchivedThreadsRow
-//    {
-//    BOOL hasArchivedThreadsRow
-//    = (self.conversationListMode == ConversationListModeInbox && self.numberOfArchivedThreads > 0)
-//    if (self.hasArchivedThreadsRow == hasArchivedThreadsRow) {
-//    return NO
-//    }
-//    self.hasArchivedThreadsRow = hasArchivedThreadsRow
-//
-//    return YES
-//    }
-//
-//    - (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
-//    {
-//    TSThread *threadRecord = [self threadForIndexPath:indexPath]
-//    OWSAssertDebug(threadRecord)
-//
-//    ThreadViewModel *_Nullable cachedThreadViewModel
-//    = (ThreadViewModel *)[self.threadViewModelCache objectForKey:threadRecord.uniqueId]
-//    if (cachedThreadViewModel) {
-//    return cachedThreadViewModel
-//    }
-//
-//    __block ThreadViewModel *_Nullable newThreadViewModel
-//    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-//    newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord
-//    forConversationList:YES
-//    transaction:transaction]
-//    }]
-//    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId]
-//    return newThreadViewModel
-//    }
-//
-//    - (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath
-//    {
-//    OWSAssertDebug(indexPath.section == HomeViewSectionPinned
-//    || indexPath.section == HomeViewSectionUnpinned)
-//
-//    return [self.threadMapping threadForIndexPath:indexPath]
-//    }
-//
-//    - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
-//    {
-//    OWSAssertIsOnMainThread()
-//    OWSLogInfo(@"beggining refreshing.")
-//
-//    [self.messageFetcherJob runObjc]
-//    .then(^{
-//    if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
-//    return [AnyPromise promiseWithValue:nil]
-//    }
-//
-//    return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20]
-//    })
-//    .ensure(^{
-//    OWSLogInfo(@"ending refreshing.")
-//    [refreshControl endRefreshing]
-//    })
-//    }
-//
-// }
