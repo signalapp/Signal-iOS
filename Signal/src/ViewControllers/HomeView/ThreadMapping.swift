@@ -66,8 +66,13 @@ public class ThreadMappingRowChange: NSObject {
     }
 }
 
+// MARK: -
+
 @objc
 public class ThreadMappingDiff: NSObject {
+
+    @objc
+    let renderState: HVRenderState
 
     @objc
     let sectionChanges: [ThreadMappingSectionChange]
@@ -75,7 +80,10 @@ public class ThreadMappingDiff: NSObject {
     @objc
     let rowChanges: [ThreadMappingRowChange]
 
-    init(sectionChanges: [ThreadMappingSectionChange], rowChanges: [ThreadMappingRowChange]) {
+    init(renderState: HVRenderState,
+         sectionChanges: [ThreadMappingSectionChange],
+         rowChanges: [ThreadMappingRowChange]) {
+        self.renderState = renderState
         self.sectionChanges = sectionChanges
         self.rowChanges = rowChanges
     }
@@ -198,20 +206,28 @@ public class ThreadMapping: NSObject {
 
     let threadFinder = AnyThreadFinder()
 
-    @objc
-    func updateSwallowingErrors(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) {
+    func updateSwallowingErrors(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) -> HVRenderState? {
+        AssertIsOnMainThread()
+
         do {
-            try update(isViewingArchive: isViewingArchive, transaction: transaction)
+            return try update(isViewingArchive: isViewingArchive, transaction: transaction)
         } catch {
             owsFailDebug("error: \(error)")
+            return nil
         }
     }
 
-    func update(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws {
-        try Bench(title: "update thread mapping (\(isViewingArchive ? "archive" : "inbox"))") {
+    private func update(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws -> HVRenderState? {
+        AssertIsOnMainThread()
+
+        return try Bench(title: "update thread mapping (\(isViewingArchive ? "archive" : "inbox"))") {
             archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
             inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
             try self.loadThreads(isViewingArchive: isViewingArchive, transaction: transaction)
+            return HVRenderState(pinnedThreads: self.pinnedThreads,
+                                 unpinnedThreads: self.unpinnedThreads,
+                                 archiveCount: self.archiveCount,
+                                 inboxCount: self.inboxCount)
         }
     }
 
@@ -319,10 +335,9 @@ public class ThreadMapping: NSObject {
         }
     }
 
-    @objc
-    func updateAndCalculateDiff(isViewingArchive: Bool,
-                                updatedItemIds allUpdatedItemIds: Set<String>,
-                                transaction: SDSAnyReadTransaction) throws -> ThreadMappingDiff {
+    private func updateAndCalculateDiff(isViewingArchive: Bool,
+                                        updatedItemIds allUpdatedItemIds: Set<String>,
+                                        transaction: SDSAnyReadTransaction) throws -> ThreadMappingDiff? {
 
         // Ignore updates to non-visible threads.
         var updatedItemIds = Set<String>()
@@ -338,7 +353,11 @@ public class ThreadMapping: NSObject {
 
         let oldPinnedThreadIds: [String] = pinnedThreads.orderedKeys
         let oldUnpinnedThreadIds: [String] = unpinnedThreads.map { $0.uniqueId }
-        try update(isViewingArchive: isViewingArchive, transaction: transaction)
+        guard let renderState = try update(isViewingArchive: isViewingArchive,
+                                           transaction: transaction) else {
+            owsFailDebug("Could not update.")
+            return nil
+        }
         let newPinnedThreadIds: [String] = pinnedThreads.orderedKeys
         let newUnpinnedThreadIds: [String] = unpinnedThreads.map { $0.uniqueId }
 
@@ -634,7 +653,9 @@ public class ThreadMapping: NSObject {
                                                      newIndexPath: nil))
         }
 
-        return ThreadMappingDiff(sectionChanges: [], rowChanges: rowChanges)
+        return ThreadMappingDiff(renderState: renderState,
+                                 sectionChanges: [],
+                                 rowChanges: rowChanges)
     }
 }
 

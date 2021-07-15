@@ -149,7 +149,7 @@ extension ConversationListViewController {
         }
 
         if let threadId = changedThreadId {
-            anyUIDBDidUpdate(withUpdatedThreadIds: Set<String>([threadId]))
+            updateRenderStateWithDiff(updatedThreadIds: Set<String>([threadId]))
         }
     }
 }
@@ -174,7 +174,7 @@ extension ConversationListViewController: DatabaseChangeDelegate {
             return
         }
 
-        anyUIDBDidUpdate(withUpdatedThreadIds: databaseChanges.threadUniqueIds)
+        updateRenderStateWithDiff(updatedThreadIds: databaseChanges.threadUniqueIds)
     }
 
     public func databaseChangesDidUpdateExternally() {

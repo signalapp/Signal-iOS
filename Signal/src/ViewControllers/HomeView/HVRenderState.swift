@@ -147,14 +147,4 @@ public class HVRenderState: NSObject {
             return nil
         }
     }
-
-    func indexPath(forUniqueId uniqueId: String) -> IndexPath? {
-        if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
-            return IndexPath(item: index, section: HomeViewSection.unpinned.rawValue)
-        } else if let index = (pinnedThreads.orderedKeys.firstIndex { $0 == uniqueId}) {
-            return IndexPath(item: index, section: HomeViewSection.pinned.rawValue)
-        } else {
-            return nil
-        }
-    }
 }

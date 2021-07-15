@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showNewConversationView;
 - (void)showNewGroupView;
 - (void)focusSearch;
-- (void)selectPreviousConversation;
-- (void)selectNextConversation;
 - (void)archiveSelectedConversation;
 - (void)unarchiveSelectedConversation;
 
@@ -37,13 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateReminderViews;
 - (void)updateViewState;
 - (void)updateShouldObserveDBModifications;
-- (void)reloadTableViewData;
 - (void)updateFirstConversationLabel;
 - (void)presentGetStartedBannerIfNecessary;
 - (void)updateAvatars;
-- (void)resetMappings;
 - (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction;
-- (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds;
 
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) UIView *firstConversationCueView;

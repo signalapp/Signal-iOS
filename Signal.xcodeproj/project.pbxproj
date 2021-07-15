@@ -469,6 +469,7 @@
 		34E95C27269F6096004807EC /* ConversationListViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */; };
 		34E95C29269F6109004807EC /* ConversationListViewController+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C28269F6109004807EC /* ConversationListViewController+Helpers.swift */; };
 		34E95C2B269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C2A269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift */; };
+		34E95C2D26A06740004807EC /* ConversationListViewController+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C2C26A0673F004807EC /* ConversationListViewController+Loading.swift */; };
 		34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */; };
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
 		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
@@ -1574,6 +1575,7 @@
 		34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Actions.swift"; sourceTree = "<group>"; };
 		34E95C28269F6109004807EC /* ConversationListViewController+Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Helpers.swift"; sourceTree = "<group>"; };
 		34E95C2A269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVCellAccessibilityCustomAction.swift; sourceTree = "<group>"; };
+		34E95C2C26A0673F004807EC /* ConversationListViewController+Loading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Loading.swift"; sourceTree = "<group>"; };
 		34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesViewController.swift; sourceTree = "<group>"; };
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
 		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
@@ -2478,6 +2480,7 @@
 				3406D32525DD5EAF00885B14 /* ConversationListViewController.swift */,
 				34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */,
 				34E95C28269F6109004807EC /* ConversationListViewController+Helpers.swift */,
+				34E95C2C26A0673F004807EC /* ConversationListViewController+Loading.swift */,
 				34882C512694A9260013E289 /* ConversationListViewController+Notifications.swift */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
@@ -5657,6 +5660,7 @@
 				347C3845252CE6C900F3D941 /* CVComponentQuotedReply.swift in Sources */,
 				88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */,
 				346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */,
+				34E95C2D26A06740004807EC /* ConversationListViewController+Loading.swift in Sources */,
 				34882C522694A9260013E289 /* ConversationListViewController+Notifications.swift in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,

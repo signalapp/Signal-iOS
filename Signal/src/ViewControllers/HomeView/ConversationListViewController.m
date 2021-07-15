@@ -51,8 +51,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic) UILabel *firstConversationLabel;
 
-@property (nonatomic, readonly) AnyLRUCache *threadViewModelCache;
-
 // Get Started banner
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 @property (nonatomic, nullable) OWSGetStartedBannerViewController *getStartedBanner;
@@ -94,9 +92,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)commonInit
 {
     [self.blocklistCache startObservingAndSyncStateWithDelegate:self];
-    _threadViewModelCache = [[AnyLRUCache alloc] initWithMaxSize:32
-                                                      nseMaxSize:0
-                                      shouldEvacuateInBackground:NO];
 }
 
 - (void)dealloc
@@ -879,81 +874,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-- (void)reloadTableViewData
-{
-    OWSAssertIsOnMainThread();
-
-    // PERF: come up with a more nuanced cache clearing scheme
-    [self.threadViewModelCache removeAllObjects];
-    self.lastReloadDate = [NSDate new];
-    [self.tableView reloadData];
-}
-
-- (void)resetMappings
-{
-    [BenchManager benchWithTitle:@"ConversationListViewController#resetMappings"
-                           block:^{
-                               [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                                   [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                                                      transaction:transaction];
-                               }];
-
-                               [self updateHasArchivedThreadsRow];
-                               [self reloadTableViewData];
-
-                               [self updateViewState];
-                           }];
-}
-
-- (BOOL)isViewingArchive
-{
-    return self.conversationListMode == ConversationListModeArchive;
-}
-
-#pragma mark - Table View Data Source
-
-// Returns YES IFF this value changes.
-- (BOOL)updateHasArchivedThreadsRow
-{
-    BOOL hasArchivedThreadsRow
-        = (self.conversationListMode == ConversationListModeInbox && self.numberOfArchivedThreads > 0);
-    if (self.hasArchivedThreadsRow == hasArchivedThreadsRow) {
-        return NO;
-    }
-    self.hasArchivedThreadsRow = hasArchivedThreadsRow;
-
-    return YES;
-}
-
-//// TODO: Remove?
-//- (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
-//{
-//    TSThread *threadRecord = [self threadForIndexPath:indexPath];
-//    OWSAssertDebug(threadRecord);
-//
-//    ThreadViewModel *_Nullable cachedThreadViewModel
-//        = (ThreadViewModel *)[self.threadViewModelCache objectForKey:threadRecord.uniqueId];
-//    if (cachedThreadViewModel) {
-//        return cachedThreadViewModel;
-//    }
-//
-//    __block ThreadViewModel *_Nullable newThreadViewModel;
-//    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-//        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord
-//                                                 forConversationList:YES
-//                                                         transaction:transaction];
-//    }];
-//    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
-//    return newThreadViewModel;
-//}
-
-//// TODO: Remove?
-//- (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath
-//{
-//    OWSAssertDebug(indexPath.section == HomeViewSectionPinned || indexPath.section == HomeViewSectionUnpinned);
-//
-//    return [self.threadMapping threadForIndexPath:indexPath];
-//}
+#pragma mark -
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
@@ -1147,97 +1068,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self updateBarButtonItems];
     [self updateReminderViews];
-}
-
-#pragma mark AnyDB Update
-
-- (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds
-{
-    OWSAssertIsOnMainThread();
-
-    if (updatedItemIds.count < 1) {
-        // Ignoring irrelevant update.
-        [self updateViewState];
-        return;
-    }
-
-    __block ThreadMappingDiff *_Nullable mappingDiff;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        mappingDiff =
-            [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                                            updatedItemIds:updatedItemIds
-                                                                               transaction:transaction];
-    }];
-
-    // We want this regardless of if we're currently viewing the archive.
-    // So we run it before the early return
-    [self updateViewState];
-
-    if (mappingDiff == nil) {
-        // Diffing failed, reload to get back to a known good state.
-        self.lastReloadDate = [NSDate new];
-        [self.tableView reloadData];
-        return;
-    }
-
-    if (mappingDiff.sectionChanges.count == 0 && mappingDiff.rowChanges.count == 0) {
-        return;
-    }
-
-    if ([self updateHasArchivedThreadsRow]) {
-        self.lastReloadDate = [NSDate new];
-        [self.tableView reloadData];
-        return;
-    }
-
-    [self.tableView beginUpdates];
-
-    OWSAssertDebug(mappingDiff.sectionChanges.count == 0);
-    for (ThreadMappingRowChange *rowChange in mappingDiff.rowChanges) {
-        NSString *key = rowChange.uniqueRowId;
-        OWSAssertDebug(key);
-        [self.threadViewModelCache removeObjectForKey:key];
-
-        switch (rowChange.type) {
-            case ThreadMappingChangeDelete: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case ThreadMappingChangeInsert: {
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case ThreadMappingChangeMove: {
-                // NOTE: if we're moving within the same section, we perform
-                //       moves using a "delete" and "insert" rather than a "move".
-                //       This ensures that moved items are also reloaded. This is
-                //       how UICollectionView performs reloads internally. We can't
-                //       do this when changing sections, because it results in a weird
-                //       animation. This should generally be safe, because you'll only
-                //       move between sections when pinning / unpinning which doesn't
-                //       require the moved item to be reloaded.
-                if (rowChange.oldIndexPath.section != rowChange.newIndexPath.section) {
-                    [self.tableView moveRowAtIndexPath:rowChange.oldIndexPath toIndexPath:rowChange.newIndexPath];
-                } else {
-                    [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
-                                          withRowAnimation:UITableViewRowAnimationAutomatic];
-                    [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                          withRowAnimation:UITableViewRowAnimationAutomatic];
-                }
-                break;
-            }
-            case ThreadMappingChangeUpdate: {
-                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationNone];
-                break;
-            }
-        }
-    }
-
-    [self.tableView endUpdates];
-    [BenchManager completeEventWithEventId:@"uiDatabaseUpdate"];
 }
 
 #pragma mark -

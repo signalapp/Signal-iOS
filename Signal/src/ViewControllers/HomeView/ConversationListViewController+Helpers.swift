@@ -177,4 +177,17 @@ public extension ConversationListViewController {
         }
         present(previewController.thread, action: .none, animated: false)
     }
+
+    // MARK: -
+
+    // Returns YES IFF this value changes.
+    func updateHasArchivedThreadsRow() -> Bool {
+        let hasArchivedThreadsRow = (conversationListMode == .inbox &&
+                                        self.numberOfArchivedThreads > 0)
+        if self.hasArchivedThreadsRow == hasArchivedThreadsRow {
+            return false
+        }
+        self.hasArchivedThreadsRow = hasArchivedThreadsRow
+        return true
+    }
 }
