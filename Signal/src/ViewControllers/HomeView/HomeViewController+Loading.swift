@@ -49,10 +49,10 @@ extension HomeViewController {
     }
 
     // TODO: Make async.
-    fileprivate func resetMappings() {
+    fileprivate func reloadEverythingAndReloadTable() {
         AssertIsOnMainThread()
 
-        BenchManager.bench(title: "HomeViewController#resetMappings") {
+        BenchManager.bench(title: "HomeViewController#reloadEverythingAndReloadTable") {
             guard let renderState = tryToLoadRenderState() else {
                 owsFailDebug("Could not update renderState.")
                 return
@@ -101,7 +101,7 @@ extension HomeViewController {
         guard let mappingDiff = mappingDiff else {
             owsFailDebug("Could not update.")
             // Diffing failed, reload to get back to a known good state.
-            resetMappings()
+            reloadEverythingAndReloadTable()
             return
         }
 
@@ -222,7 +222,7 @@ public class HVLoadCoordinator: NSObject {
         self.nextLoadInfo = HVLoadInfo()
 
         if currentLoadInfo.shouldResetAll {
-            viewController.resetMappings()
+            viewController.reloadEverythingAndReloadTable()
         } else {
             viewController.updateRenderStateWithDiff(updatedThreadIds: currentLoadInfo.dirtyThreadUniqueIds,
                                                      isAnimated: !suppressAnimations)
