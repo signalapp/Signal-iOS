@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 public class HVTableDataSource: NSObject {
-    var viewState: HVViewState!
+    private var viewState: HVViewState!
 
     @objc
     public weak var viewController: ConversationListViewController?
@@ -20,14 +20,13 @@ public class HVTableDataSource: NSObject {
     @objc
     public required override init() {
         super.init()
-
-        configure()
     }
 
-    // TODO: Call this.
     // TODO: Move elsewhere?
-    private func configure() {
+    func configure(viewState: HVViewState) {
         AssertIsOnMainThread()
+
+        self.viewState = viewState
 
         let tableView = viewState.tableView
         tableView.delegate = self
@@ -58,12 +57,6 @@ public enum HomeViewSection: Int, CaseIterable {
     case unpinned
     case archiveButton
 }
-// typedef NS_ENUM(NSInteger, HomeViewSection) {
-//    HomeViewSectionReminders,
-//    HomeViewSectionPinned,
-//    HomeViewSectionUnpinned,
-//    HomeViewSectionArchiveButton,
-// }
 
 // MARK: -
 

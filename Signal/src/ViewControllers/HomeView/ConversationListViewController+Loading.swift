@@ -69,7 +69,7 @@ extension ConversationListViewController {
             return
         }
 
-        tableDataSource.renderState = renderState
+        tableDataSource.renderState = mappingDiff.renderState
 
         // We want this regardless of if we're currently viewing the archive.
         // So we run it before the early return
@@ -95,12 +95,14 @@ extension ConversationListViewController {
                     owsFailDebug("Missing rowChange.oldIndexPath.")
                     continue
                 }
+                Logger.verbose("----- delete: \(oldIndexPath)")
                 tableView.deleteRows(at: [oldIndexPath], with: .automatic)
             case .insert:
                 guard let newIndexPath = rowChange.newIndexPath else {
                     owsFailDebug("Missing rowChange.newIndexPath.")
                     continue
                 }
+                Logger.verbose("----- insert: \(newIndexPath)")
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
             case .move:
                 guard let oldIndexPath = rowChange.oldIndexPath else {
@@ -119,6 +121,7 @@ extension ConversationListViewController {
                 //       animation. This should generally be safe, because you'll only
                 //       move between sections when pinning / unpinning which doesn't
                 //       require the moved item to be reloaded.
+                Logger.verbose("----- move: \(oldIndexPath) -> \(newIndexPath)")
                 if oldIndexPath.section != newIndexPath.section {
                     tableView.moveRow(at: oldIndexPath, to: newIndexPath)
                 } else {
@@ -130,6 +133,7 @@ extension ConversationListViewController {
                     owsFailDebug("Missing rowChange.oldIndexPath.")
                     continue
                 }
+                Logger.verbose("----- update: \(oldIndexPath)")
                 tableView.reloadRows(at: [oldIndexPath], with: .none)
             }
         }

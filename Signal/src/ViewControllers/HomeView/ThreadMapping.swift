@@ -4,7 +4,7 @@
 
 import Foundation
 
-enum ThreadMappingChange: Int {
+enum ThreadMappingChange {
     case delete, insert, update, move
 }
 

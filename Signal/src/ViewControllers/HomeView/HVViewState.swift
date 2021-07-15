@@ -42,7 +42,7 @@ public class HVViewState: NSObject {
     public override required init() {
         super.init()
 
-        tableDataSource.viewState = self
+        tableDataSource.configure(viewState: self)
     }
 }
 

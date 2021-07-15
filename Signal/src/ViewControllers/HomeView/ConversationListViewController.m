@@ -83,6 +83,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     _viewState = [HVViewState new];
+    self.tableDataSource.viewController = self;
 
     [self commonInit];
 
