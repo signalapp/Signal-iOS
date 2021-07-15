@@ -153,6 +153,17 @@ public class HomeViewCell: UITableViewCell {
         cellMeasurementCache.set(key: cacheKey, value: cellMeasurement)
     }
 
+    fileprivate struct Configs {
+        let topRowStackConfig: ManualStackView.Config
+        let bottomRowStackConfig: ManualStackView.Config
+        let vStackConfig: ManualStackView.Config
+        let outerHStackConfig: ManualStackView.Config
+        let avatarStackConfig: ManualStackView.Config
+        let snippetLabelConfig: CVLabelConfig
+        let nameLabelConfig: CVLabelConfig
+        let dateTimeLabelConfig: CVLabelConfig
+    }
+
     private func configure(configuration: Configuration,
                            existingCellMeasurement: HVCellMeasurement?) -> HVCellMeasurement {
         AssertIsOnMainThread()
@@ -166,12 +177,34 @@ public class HomeViewCell: UITableViewCell {
 
         let thread = configuration.thread
         let isBlocked = configuration.isBlocked
-        let topRowStackConfig = self.topRowStackConfig
-        let bottomRowStackConfig = self.bottomRowStackConfig
-        let vStackConfig = self.vStackConfig
-        let outerHStackConfig = self.outerHStackConfig
 
-        let snippetLabelConfig = self.snippetLabelConfig(configuration: configuration)
+        let configs: Configs
+        if let existingCellMeasurement = existingCellMeasurement {
+            configs = existingCellMeasurement.configs
+        } else {
+            configs = Configs(
+                topRowStackConfig: self.topRowStackConfig,
+                bottomRowStackConfig: self.bottomRowStackConfig,
+                vStackConfig: self.vStackConfig,
+                outerHStackConfig: self.outerHStackConfig,
+                avatarStackConfig: ManualStackView.Config(axis: .horizontal,
+                                                          alignment: .center,
+                                                          spacing: 0,
+                                                          layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12)),
+                snippetLabelConfig: self.snippetLabelConfig(configuration: configuration),
+                nameLabelConfig: self.nameLabelConfig(configuration: configuration),
+                dateTimeLabelConfig: self.dateTimeLabelConfig(configuration: configuration)
+            )
+        }
+        let topRowStackConfig = configs.topRowStackConfig
+        let bottomRowStackConfig = configs.bottomRowStackConfig
+        let vStackConfig = configs.vStackConfig
+        let outerHStackConfig = configs.outerHStackConfig
+        let avatarStackConfig = configs.avatarStackConfig
+        let snippetLabelConfig = configs.snippetLabelConfig
+        let nameLabelConfig = configs.nameLabelConfig
+        let dateTimeLabelConfig = configs.dateTimeLabelConfig
+
         snippetLabelConfig.applyForRendering(label: snippetLabel)
         // Reserve space for two lines of snippet text, taking into account
         // the worst-case snippet content.
@@ -194,12 +227,6 @@ public class HomeViewCell: UITableViewCell {
         // Avatar
 
         let avatarSize: CGSize = .square(CGFloat(HomeViewCell.avatarSize))
-        let avatarStackSize = avatarStack.configure(config: ManualStackView.Config(axis: .horizontal,
-                                                                                   alignment: .center,
-                                                                                   spacing: 0,
-                                                                                   layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12)),
-                                                    subviews: [ avatarView ],
-                                                    subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]).measuredSize
 
         // Unread Indicator
 
@@ -268,36 +295,20 @@ public class HomeViewCell: UITableViewCell {
         // The catch is that mute icon should "hug" the name label, so the
         // name label can't expand to occupt any underflow in the layout.
         var topRowStackSubviews = [UIView]()
-        var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
 
-        let nameLabelConfig = self.nameLabelConfig(configuration: configuration)
         nameLabelConfig.applyForRendering(label: nameLabel)
-        let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
-                                                maxWidth: .greatestFiniteMagnitude)
         topRowStackSubviews.append(nameLabel)
-        topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
-                                                                         verticalFlowBehavior: .fixed))
 
+        let muteIconSize: CGFloat = 16
         if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
             muteIconView.setTemplateImageName("bell-disabled-outline-24",
                                               tintColor: Theme.primaryTextColor)
             muteIconView.tintColor = snippetColor
-            let muteIconSize: CGFloat = 16
             topRowStackSubviews.append(muteIconView)
-            topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
         }
 
-        let dateTimeLabelConfig = self.dateTimeLabelConfig(configuration: configuration)
         dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
-        let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
-                                                maxWidth: CGFloat.greatestFiniteMagnitude)
         topRowStackSubviews.append(dateTimeLabel)
-        topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
-                                                                         verticalFlowBehavior: .fixed))
-
-        let topRowStackSize = topRowStack.configure(config: topRowStackConfig,
-                                                    subviews: topRowStackSubviews,
-                                                    subviewInfos: topRowStackSubviewInfos).measuredSize
 
         // The bottom row layout is also complicated because we want to be able to
         // show/hide the typing indicator without reloading the cell. And we need
@@ -347,10 +358,19 @@ public class HomeViewCell: UITableViewCell {
 
         updateTypingIndicatorState()
 
+        let avatarStackSubviews = [ avatarView ]
         let vStackSubviews = [ topRowStack, bottomRowStack ]
         let outerHStackSubviews = [ avatarStack, vStack ]
 
         if let existingCellMeasurement = existingCellMeasurement {
+            avatarStack.configure(config: avatarStackConfig,
+                                     measurement: existingCellMeasurement.avatarStackMeasurement,
+                                     subviews: avatarStackSubviews)
+
+            topRowStack.configure(config: topRowStackConfig,
+                                     measurement: existingCellMeasurement.topRowStackMeasurement,
+                                     subviews: topRowStackSubviews)
+
             bottomRowStack.configure(config: bottomRowStackConfig,
                                      measurement: existingCellMeasurement.bottomRowStackMeasurement,
                                      subviews: bottomRowStackSubviews)
@@ -365,6 +385,29 @@ public class HomeViewCell: UITableViewCell {
 
             return existingCellMeasurement
         } else {
+            var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
+            let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
+                                                    maxWidth: .greatestFiniteMagnitude)
+            topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
+                                                                             verticalFlowBehavior: .fixed))
+            if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
+                topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
+            }
+            let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
+                                                    maxWidth: CGFloat.greatestFiniteMagnitude)
+            topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
+                                                                             verticalFlowBehavior: .fixed))
+
+            let avatarStackMeasurement = avatarStack.configure(config: avatarStackConfig,
+                                                               subviews: avatarStackSubviews,
+                                                               subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ])
+            let avatarStackSize = avatarStackMeasurement.measuredSize
+
+            let topRowStackMeasurement = topRowStack.configure(config: topRowStackConfig,
+                                                               subviews: topRowStackSubviews,
+                                                               subviewInfos: topRowStackSubviewInfos)
+            let topRowStackSize = topRowStackMeasurement.measuredSize
+
             let bottomRowStackMeasurement = bottomRowStack.configure(config: bottomRowStackConfig,
                                                               subviews: bottomRowStackSubviews,
                                                               subviewInfos: bottomRowStackSubviewInfos)
@@ -385,9 +428,12 @@ public class HomeViewCell: UITableViewCell {
                                                                 vStackSize.asManualSubviewInfo
                                                                ])
 
-            return HVCellMeasurement(bottomRowStackMeasurement: bottomRowStackMeasurement,
+            return HVCellMeasurement(avatarStackMeasurement: avatarStackMeasurement,
+                                     topRowStackMeasurement: topRowStackMeasurement,
+                                     bottomRowStackMeasurement: bottomRowStackMeasurement,
                                      vStackMeasurement: vStackMeasurement,
-                                     outerHStackMeasurement: outerHStackMeasurement)
+                                     outerHStackMeasurement: outerHStackMeasurement,
+                                     configs: configs)
         }
     }
 
@@ -745,9 +791,12 @@ public class HomeViewCell: UITableViewCell {
 // MARK: -
 
 public struct HVCellMeasurement {
+    let avatarStackMeasurement: ManualStackView.Measurement
+    let topRowStackMeasurement: ManualStackView.Measurement
     let bottomRowStackMeasurement: ManualStackView.Measurement
     let vStackMeasurement: ManualStackView.Measurement
     let outerHStackMeasurement: ManualStackView.Measurement
+    fileprivate let configs: HomeViewCell.Configs
 }
 
 // MARK: -
