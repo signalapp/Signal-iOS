@@ -146,6 +146,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>fontawesome-webfont.ttf</string>
+		<string>Inter-Medium.otf</string>
 	</array>
 	<key>UIApplicationShortcutItems</key>
 	<array>

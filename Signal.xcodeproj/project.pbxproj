@@ -497,7 +497,6 @@
 		451F8A451FD71570005CB9DA /* BlockListUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 343D3D991E9283F100165CA4 /* BlockListUIUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 452037D01EE84975004E4CDF /* DebugUISessionState.m */; };
 		4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
-		4521C3C01F59F3BA00B4C582 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
 		452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */; };
 		452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */; };
 		452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGallery.swift */; };
@@ -739,9 +738,16 @@
 		883A7FBE2698DB2E00841DF9 /* popcorn.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6B2044AAB500CD42F8 /* popcorn.aifc */; };
 		883A7FBF2698DB2E00841DF9 /* aurora.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6F2044AAB500CD42F8 /* aurora.aifc */; };
 		883A7FC02698DB4E00841DF9 /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
+		883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */; };
+		883A7FC5269F58F600841DF9 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 883A7FC4269F58F600841DF9 /* Inter-Medium.otf */; };
+		883A7FC6269F58F600841DF9 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 883A7FC4269F58F600841DF9 /* Inter-Medium.otf */; };
+		883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
+		883A7FD3269F651800841DF9 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		8841584C252F9F1C0078903D /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8841584B252F9F1C0078903D /* SignalCall.swift */; };
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
+		8847E6ED269FACF90063E319 /* EditableTextAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FC7269F5F9100841DF9 /* EditableTextAvatarView.swift */; };
+		8847E6EE269FAD060063E319 /* EditableImageAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FCA269F609A00841DF9 /* EditableImageAvatarView.swift */; };
 		88489AFB266AB59800EE1166 /* NSEEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88489AFA266AB59800EE1166 /* NSEEnvironment.swift */; };
 		884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */; };
 		885091C02525650100428A37 /* PHPhotoLibrary+Xcode11.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */; };
@@ -1830,6 +1836,11 @@
 		8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationSuccess.json; sourceTree = "<group>"; };
 		8837F74023DA0B0F00772A32 /* MegaphoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MegaphoneView.swift; sourceTree = "<group>"; };
+		883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarSettingsViewController.swift; sourceTree = "<group>"; };
+		883A7FC4269F58F600841DF9 /* Inter-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.otf"; sourceTree = "<group>"; };
+		883A7FC7269F5F9100841DF9 /* EditableTextAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableTextAvatarView.swift; sourceTree = "<group>"; };
+		883A7FCA269F609A00841DF9 /* EditableImageAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableImageAvatarView.swift; sourceTree = "<group>"; };
+		883A7FD1269F642F00841DF9 /* AvatarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarModel.swift; sourceTree = "<group>"; };
 		88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+LastVisibleSortId.swift"; sourceTree = "<group>"; };
 		8841584B252F9F1C0078903D /* SignalCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
 		884596EF24B93E13002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2441,6 +2452,7 @@
 		34330A581E7875FB00DF2FB9 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				883A7FC4269F58F600841DF9 /* Inter-Medium.otf */,
 				34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */,
 			);
 			path = Fonts;
@@ -2476,7 +2488,7 @@
 			isa = PBXGroup;
 			children = (
 				349ED991221EE80D008045B0 /* AppPreferences.swift */,
-				34FC7EEB265834F30046707A /* AvatarBuilder.swift */,
+				883A7FD0269F640D00841DF9 /* Avatars */,
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
@@ -2916,8 +2928,7 @@
 				452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */,
 				340FC87A204DAC8C007AEB0F /* AppSettings */,
 				8809CE8822F93C0D00D38867 /* Attachment Keyboard */,
-				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
-				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
+				883A7FC1269F4BE700841DF9 /* Avatars */,
 				4C46361022EB98EC00185951 /* CameraFirstNavigationController.swift */,
 				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
@@ -3542,6 +3553,27 @@
 				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
 			);
 			path = RecipientPicker;
+			sourceTree = "<group>";
+		};
+		883A7FC1269F4BE700841DF9 /* Avatars */ = {
+			isa = PBXGroup;
+			children = (
+				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
+				883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */,
+				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
+				883A7FC7269F5F9100841DF9 /* EditableTextAvatarView.swift */,
+				883A7FCA269F609A00841DF9 /* EditableImageAvatarView.swift */,
+			);
+			path = Avatars;
+			sourceTree = "<group>";
+		};
+		883A7FD0269F640D00841DF9 /* Avatars */ = {
+			isa = PBXGroup;
+			children = (
+				883A7FD1269F642F00841DF9 /* AvatarModel.swift */,
+				34FC7EEB265834F30046707A /* AvatarBuilder.swift */,
+			);
+			path = Avatars;
 			sourceTree = "<group>";
 		};
 		8851DB3D24CCE9B9001EACD2 /* Mentions */ = {
@@ -4547,6 +4579,7 @@
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
 				347850551FD749C0007B8332 /* Localizable.strings in Resources */,
 				347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */,
+				883A7FC6269F58F600841DF9 /* Inter-Medium.otf in Resources */,
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4650,6 +4683,7 @@
 				34848D6125D43ADD00E5034B /* add-money.json in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
 				3406D32D25DD80D600885B14 /* payments_spinner_info.json in Resources */,
+				883A7FC5269F58F600841DF9 /* Inter-Medium.otf in Resources */,
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
 				34848D6025D43ADD00E5034B /* activate-payments.json in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
@@ -5339,6 +5373,7 @@
 				343DA0012645CA720000833C /* ChatColors.swift in Sources */,
 				45BC829D1FD9C4B400011CF3 /* ShareViewDelegate.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
+				883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
 				3425A5A12631E051006D5863 /* CVUtils.swift in Sources */,
 				34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */,
@@ -5361,6 +5396,7 @@
 				34BBC84D220B2D0800857249 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
 				3474C57426111605006723D2 /* MobileCoinAPI+Configuration.swift in Sources */,
 				340872BF22393CFA00CB25B0 /* UIGestureRecognizer+OWS.swift in Sources */,
+				883A7FD3269F651800841DF9 /* TextHelper.swift in Sources */,
 				88139CD6236290090003B264 /* ActionSheetController.swift in Sources */,
 				34080F02222853E30087E99F /* ImageEditorBrushViewController.swift in Sources */,
 				34AC0A15211B39EA00997B47 /* ContactsViewHelper.m in Sources */,
@@ -5726,6 +5762,7 @@
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				34848D6325D44EBD00E5034B /* PaymentsTransferInViewController.swift in Sources */,
+				883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
@@ -5745,6 +5782,7 @@
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */,
 				880D9025247F8841003D2B14 /* Emoji+Name.swift in Sources */,
+				8847E6ED269FACF90063E319 /* EditableTextAvatarView.swift in Sources */,
 				8829883925B979F900DEE1E3 /* ThemeSettingsTableViewController.swift in Sources */,
 				888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */,
 				347C3847252CE6C900F3D941 /* CVComponentBodyMedia.swift in Sources */,
@@ -5829,6 +5867,7 @@
 				880D902C2480889B003D2B14 /* EmojiPickerCollectionView.swift in Sources */,
 				32A9E22624C11B3F00C43518 /* EmojiMoodPickerView.swift in Sources */,
 				881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */,
+				8847E6EE269FAD060063E319 /* EditableImageAvatarView.swift in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
 				88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */,
@@ -5863,7 +5902,6 @@
 				3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */,
 				88081437234D80150004C187 /* UIResponder+OWS.swift in Sources */,
 				3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */,
-				4521C3C01F59F3BA00B4C582 /* TextHelper.swift in Sources */,
 				889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */,
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "AvatarViewHelper.h"
@@ -36,26 +36,20 @@ NS_ASSUME_NONNULL_BEGIN
     ActionSheetAction *takePictureAction = [[ActionSheetAction alloc]
         initWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
                 style:ActionSheetActionStyleDefault
-              handler:^(ActionSheetAction *_Nonnull action) {
-                  [self takePicture];
-              }];
+              handler:^(ActionSheetAction *_Nonnull action) { [self takePicture]; }];
     [actionSheet addAction:takePictureAction];
 
     ActionSheetAction *choosePictureAction = [[ActionSheetAction alloc]
         initWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
                 style:ActionSheetActionStyleDefault
-              handler:^(ActionSheetAction *_Nonnull action) {
-                  [self chooseFromLibrary];
-              }];
+              handler:^(ActionSheetAction *_Nonnull action) { [self chooseFromLibrary]; }];
     [actionSheet addAction:choosePictureAction];
 
     if (self.delegate.hasClearAvatarAction) {
-        ActionSheetAction *clearAction =
-            [[ActionSheetAction alloc] initWithTitle:self.delegate.clearAvatarActionLabel
-                                               style:ActionSheetActionStyleDefault
-                                             handler:^(ActionSheetAction *_Nonnull action) {
-                                                 [self.delegate clearAvatar];
-                                             }];
+        ActionSheetAction *clearAction = [[ActionSheetAction alloc]
+            initWithTitle:self.delegate.clearAvatarActionLabel
+                    style:ActionSheetActionStyleDefault
+                  handler:^(ActionSheetAction *_Nonnull action) { [self.delegate clearAvatar]; }];
         [actionSheet addAction:clearAction];
     }
 
@@ -134,9 +128,8 @@ NS_ASSUME_NONNULL_BEGIN
                                    CropScaleImageViewController *vc = [[CropScaleImageViewController alloc]
                                         initWithSrcImage:rawAvatar
                                        successCompletion:^(UIImage *_Nonnull dstImage) {
-                                           dispatch_async(dispatch_get_main_queue(), ^{
-                                               [self.delegate avatarDidChange:dstImage];
-                                           });
+                                           dispatch_async(dispatch_get_main_queue(),
+                                               ^{ [self.delegate avatarDidChange:dstImage]; });
                                        }];
                                    [self.delegate.fromViewController presentViewController:vc
                                                                                   animated:YES
