@@ -93,29 +93,13 @@ extension HomeViewController {
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
 
             switch rowChange.type {
-            case .delete:
-                guard let oldIndexPath = rowChange.oldIndexPath else {
-                    owsFailDebug("Missing rowChange.oldIndexPath.")
-                    continue
-                }
+            case .delete(let oldIndexPath):
                 Logger.verbose("----- delete: \(oldIndexPath)")
                 tableView.deleteRows(at: [oldIndexPath], with: .automatic)
-            case .insert:
-                guard let newIndexPath = rowChange.newIndexPath else {
-                    owsFailDebug("Missing rowChange.newIndexPath.")
-                    continue
-                }
+            case .insert(let newIndexPath):
                 Logger.verbose("----- insert: \(newIndexPath)")
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
-            case .move:
-                guard let oldIndexPath = rowChange.oldIndexPath else {
-                    owsFailDebug("Missing rowChange.oldIndexPath.")
-                    continue
-                }
-                guard let newIndexPath = rowChange.newIndexPath else {
-                    owsFailDebug("Missing rowChange.newIndexPath.")
-                    continue
-                }
+            case .move(let oldIndexPath, let newIndexPath):
                 // NOTE: if we're moving within the same section, we perform
                 //       moves using a "delete" and "insert" rather than a "move".
                 //       This ensures that moved items are also reloaded. This is
@@ -131,11 +115,7 @@ extension HomeViewController {
                     tableView.deleteRows(at: [oldIndexPath], with: .automatic)
                     tableView.insertRows(at: [newIndexPath], with: .automatic)
                 }
-            case .update:
-                guard let oldIndexPath = rowChange.oldIndexPath else {
-                    owsFailDebug("Missing rowChange.oldIndexPath.")
-                    continue
-                }
+            case .update(let oldIndexPath):
                 Logger.verbose("----- update: \(oldIndexPath)")
                 tableView.reloadRows(at: [oldIndexPath], with: .none)
             }
