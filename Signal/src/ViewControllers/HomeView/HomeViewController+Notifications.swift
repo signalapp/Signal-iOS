@@ -183,15 +183,16 @@ extension HomeViewController: DatabaseChangeDelegate {
         // External database modifications can't be converted into incremental updates,
         // so rebuild everything.  This is expensive and usually isn't necessary, but
         // there's no alternative.
-        //
-        // We don't need to do this if we're not observing db modifications since we'll
-        // do it when we resume.
         self.loadCoordinator.scheduleHardReset()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
+        // This should only happen if we need to recover from an error in the
+        // database change observation pipeline.  This should never occur,
+        // but when it does we need to rebuild everything.  This is expensive,
+        // but there's no alternative.
         self.loadCoordinator.scheduleHardReset()
     }
 }
