@@ -455,7 +455,7 @@
 "view_seed_reminder_subtitle_3" = "Pamiętaj, aby przechowywać frazę odzyskiwania w bezpiecznym miejscu";
 "vc_path_title" = "Ścieżka";
 "vc_path_explanation" = "Sesja ukrywa Twój adres IP, odbijając wiadomości przez kilka węzłów usług w zdecentralizowanej sieci Session. Oto kraje, w których obecnie Twoje połączenie jest odbijane:";
-"vc_path_device_row_title" = "ty";
+"vc_path_device_row_title" = "Ty";
 "vc_path_guard_node_row_title" = "Węzeł wejścia";
 "vc_path_service_node_row_title" = "Węzeł serwisowy";
 "vc_path_destination_row_title" = "Miejsce docelowe";
@@ -465,7 +465,7 @@
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skanowania QR code";
 "vc_create_private_chat_scan_qr_code_explanation" = "Zeskanuj kod QR użytkownika, aby rozpocząć sesję. Kody QR można znaleźć, dotykając ikony kodu QR w ustawieniach konta.";
 "vc_enter_public_key_explanation" = "Użytkownicy mogą udostępnić swój identyfikator Session, przechodząc do ustawień konta i stukając opcję Udostępnij identyfikator Session lub udostępniając kod QR.";
-"vc_scan_qr_code_camera_access_explanation" = "Sesja wymaga dostępu do kamery, aby skanować kody QR";
+"vc_scan_qr_code_camera_access_explanation" = "Session wymaga dostępu do kamery aby skanować kody QR";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Udziel dostępu do kamery";
 "vc_create_closed_group_title" = "Nowa grupa zamknięta";
 "vc_create_closed_group_text_field_hint" = "Wpisz nazwę grupy";
@@ -494,6 +494,11 @@
 "modal_seed_explanation" = "To jest twoja fraza odzyskiwania. Dzięki niej możesz przywrócić lub przenieść identyfikator Session na nowe urządzenie.";
 "modal_clear_all_data_title" = "Wyczyść wszystkie dane";
 "modal_clear_all_data_explanation" = "Spowoduje to trwałe usunięcie wiadomości, Session i kontaktów.";
+"modal_clear_all_data_explanation_2" = "Czy chcesz wyczyścić tylko to urządzenie, czy usunąć całe swoje konto?";
+"dialog_clear_all_data_deletion_failed_1" = "Dane nie zostały usunięte przez 1 węzeł usługowy. Identyfikator węzła: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Dane nie zostały usunięte przez %@ węzły usługowe. Identyfikatory węzłów: %@.";
+"modal_clear_all_data_device_only_button_title" = "Tylko urządzenie";
+"modal_clear_all_data_entire_account_button_title" = "Całe konto";
 "vc_qr_code_title" = "Kod QR";
 "vc_qr_code_view_my_qr_code_tab_title" = "Wyświetl mój kod QR";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Skanowania QR code";

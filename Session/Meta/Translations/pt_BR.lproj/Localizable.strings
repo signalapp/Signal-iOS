@@ -494,6 +494,11 @@
 "modal_seed_explanation" = "Esta é sua frase de recuperação. Com ela, você pode restaurar ou migrar seu ID Session para um novo dispositivo.";
 "modal_clear_all_data_title" = "Limpar todos os dados";
 "modal_clear_all_data_explanation" = "Isso excluirá permanentemente suas mensagens, sessões e contatos.";
+"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
+"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Entire Account";
 "vc_qr_code_title" = "Código QR";
 "vc_qr_code_view_my_qr_code_tab_title" = "Ver meu código QR";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Escanear código QR";

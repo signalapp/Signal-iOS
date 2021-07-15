@@ -494,6 +494,11 @@
 "modal_seed_explanation" = "Это ваша секретная фраза. С ее помощью вы можете восстановить или перенести свой Session ID на новое устройство.";
 "modal_clear_all_data_title" = "Очистить все данные";
 "modal_clear_all_data_explanation" = "Это навсегда удалит ваши сообщения, сессии и контакты.";
+"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
+"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Entire Account";
 "vc_qr_code_title" = "QR-код";
 "vc_qr_code_view_my_qr_code_tab_title" = "Посмотреть мой QR-код";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Сканировать QR-код";

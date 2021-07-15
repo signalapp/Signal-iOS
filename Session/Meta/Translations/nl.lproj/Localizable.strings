@@ -494,6 +494,11 @@
 "modal_seed_explanation" = "Dit is uw herstel zin, Hiermee kun je je sessie-ID herstellen of migreren naar een nieuw apparaat.";
 "modal_clear_all_data_title" = "Wis alle gegevens";
 "modal_clear_all_data_explanation" = "Hiermee worden uw berichten, sessies en contacten permanent verwijderd.";
+"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
+"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Entire Account";
 "vc_qr_code_title" = "QR-code";
 "vc_qr_code_view_my_qr_code_tab_title" = "Bekijk mijn QR-code";
 "vc_qr_code_view_scan_qr_code_tab_title" = "QR-code scannen";

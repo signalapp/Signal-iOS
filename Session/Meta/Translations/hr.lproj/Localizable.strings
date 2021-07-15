@@ -494,6 +494,11 @@
 "modal_seed_explanation" = "Ovo je vaša fraza za oporavak. Pomoću nje možete vratiti ili migrirati svoj Session ID na novi uređaj.";
 "modal_clear_all_data_title" = "Obriši sve podatke";
 "modal_clear_all_data_explanation" = "Ovo će trajno izbrisati vaše poruke, sesije i kontakte.";
+"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
+"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Entire Account";
 "vc_qr_code_title" = "QR kôd";
 "vc_qr_code_view_my_qr_code_tab_title" = "Pogledaj moj QR kôd";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Skeniraj QR kôd";

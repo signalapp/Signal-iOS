@@ -187,7 +187,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = " %@ è stato rimosso dal gruppo. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBERS_REMOVED" = " %@ were removed from the group. ";
+"GROUP_MEMBERS_REMOVED" = " %@ sono stati rimossi dal gruppo. ";
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Il nuovo titolo è '%@'";
 /* No comment provided by engineer. */
@@ -195,7 +195,7 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Hai lasciato il gruppo.";
 /* No comment provided by engineer. */
-"YOU_WERE_REMOVED" = " You were removed from the group. ";
+"YOU_WERE_REMOVED" = " Sei stato rimosso da questo gruppo. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Non puoi condividere più di %@ elementi.";
 /* alert title */
@@ -283,15 +283,15 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album senza nome";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Segna come letto";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "Rispondi";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Non possiamo attivare il tuo accanto fintanto che non verificherai il codice che ti abbiamo inviato.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Immediato";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticazione per aprire la Sessione.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autenticarsi per aprire Session.";
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Autenticazione fallita";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
@@ -347,7 +347,7 @@
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Invia anteprime link";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Le anteprime sono supportate per link di Imgur, Instagram, Pinterest, Reddit e YouTube.";
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Anteprime link";
 /* table section header */
@@ -369,7 +369,7 @@
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicatori di scrittura";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Nessuno";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ giorni";
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
@@ -494,47 +494,52 @@
 "modal_seed_explanation" = "Questa è la tua frase di recupero. Usala per ripristinare o migrare la Sessione ID a un nuovo dispositivo.";
 "modal_clear_all_data_title" = "Elimina tutti i dati";
 "modal_clear_all_data_explanation" = "Ciò eliminerà permanentemente i tuoi messaggi, sessioni e contatti.";
+"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
+"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Entire Account";
 "vc_qr_code_title" = "Codice QR";
 "vc_qr_code_view_my_qr_code_tab_title" = "Visualizza il mio codice QR";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Scansiona il codice QR";
 "vc_qr_code_view_scan_qr_code_explanation" = "Scansiona il codice QR di un utente per iniziare una conversazione con questa persona";
 "vc_view_my_qr_code_explanation" = "Questo è il tuo codice QR. Altri utenti possono scansionarlo per iniziare una sessione con te.";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "You’ll be notified of new messages reliably and immediately using Apple’s notification servers.";
-"fast_mode" = "Fast Mode";
-"slow_mode_explanation" = "Session will occasionally check for new messages in the background.";
-"slow_mode" = "Slow Mode";
-"vc_pn_mode_title" = "Message Notifications";
-"vc_notification_settings_notification_mode_title" = "Use Fast Mode";
-"vc_link_device_recovery_phrase_tab_title" = "Recovery Phrase";
-"vc_link_device_scan_qr_code_explanation" = "Navigate to Settings → Recovery Phrase on your other device to show your QR code.";
-"vc_enter_recovery_phrase_title" = "Recovery Phrase";
-"vc_enter_recovery_phrase_explanation" = "To link your device, enter the recovery phrase that was given to you when you signed up.";
-"vc_enter_public_key_text_field_hint" = "Enter Session ID or ONS name";
-"vc_home_title" = "Messages";
-"admin_group_leave_warning" = "Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
-"vc_join_open_group_suggestions_title" = "Or join one of these...";
-"vc_settings_invite_a_friend_button_title" = "Invite a Friend";
-"vc_settings_help_us_translate_button_title" = "Help us Translate Session";
-"copied" = "Copied";
-"vc_conversation_settings_copy_session_id_button_title" = "Copy Session ID";
-"vc_conversation_input_prompt" = "Message";
-"vc_conversation_voice_message_cancel_message" = "Slide to Cancel";
-"modal_download_attachment_title" = "Trust %@?";
-"modal_download_attachment_explanation" = "Are you sure you want to download media sent by %@?";
-"modal_download_button_title" = "Download";
-"modal_open_url_title" = "Open URL?";
-"modal_open_url_explanation" = "Are you sure you want to open %@?";
-"modal_open_url_button_title" = "Open";
-"modal_blocked_title" = "Unblock %@?";
-"modal_blocked_explanation" = "Are you sure you want to unblock %@?";
-"modal_blocked_button_title" = "Unblock";
-"modal_link_previews_title" = "Enable Link Previews?";
-"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
-"modal_link_previews_button_title" = "Enable";
-"vc_share_title" = "Share to Session";
-"vc_share_loading_message" = "Preparing attachments...";
-"vc_share_sending_message" = "Sending...";
-"view_open_group_invitation_description" = "Open group invitation";
-"vc_conversation_settings_invite_button_title" = "Add Members";
+"fast_mode_explanation" = "Riceverai notifiche di nuovi messaggi in modo affidabile e immediato utilizzando i server di notifica di Apple.";
+"fast_mode" = "Modalità Veloce";
+"slow_mode_explanation" = "Session controllerà di tanto in tanto la presenza di nuovi messaggi in background.";
+"slow_mode" = "Modalità Lenta";
+"vc_pn_mode_title" = "Notifiche Messaggi";
+"vc_notification_settings_notification_mode_title" = "Usa Modalità Veloce";
+"vc_link_device_recovery_phrase_tab_title" = "Frase di recupero";
+"vc_link_device_scan_qr_code_explanation" = "Vai su Impostazioni → Frase di recupero sul tuo altro dispositivo per mostrare il tuo codice QR.";
+"vc_enter_recovery_phrase_title" = "Frase di recupero";
+"vc_enter_recovery_phrase_explanation" = "Per collegare il tuo dispositivo, inserisci la frase di recupero che ti è stata data quando ti sei registrato.";
+"vc_enter_public_key_text_field_hint" = "Inserisci Session ID o nome ONS";
+"vc_home_title" = "Messaggi";
+"admin_group_leave_warning" = "Perché sei il creatore di questo gruppo sarà eliminato per tutti. Questo non può essere annullato.";
+"vc_join_open_group_suggestions_title" = "Oppure unisciti a uno di questi...";
+"vc_settings_invite_a_friend_button_title" = "Invita un Amico";
+"vc_settings_help_us_translate_button_title" = "Aiutaci a tradurre Session";
+"copied" = "Copiato";
+"vc_conversation_settings_copy_session_id_button_title" = "Copia Session ID";
+"vc_conversation_input_prompt" = "Messaggio";
+"vc_conversation_voice_message_cancel_message" = "Scorri per cancellare";
+"modal_download_attachment_title" = "Ti fidi di %@?";
+"modal_download_attachment_explanation" = "Sei sicuro di voler scaricare i media inviati da %@?";
+"modal_download_button_title" = "Scarica";
+"modal_open_url_title" = "Aprire URL?";
+"modal_open_url_explanation" = "Sei sicuro di voler aprire %@?";
+"modal_open_url_button_title" = "Apri";
+"modal_blocked_title" = "Sbloccare %@?";
+"modal_blocked_explanation" = "Sei sicuro di voler sbloccare %@?";
+"modal_blocked_button_title" = "Sblocca";
+"modal_link_previews_title" = "Abilitare Anteprima Link?";
+"modal_link_previews_explanation" = "Abilitando le anteprime dei collegamenti Session mostrerà le anteprime degli URL che invii e ricevi. Questo può essere utile, ma Session dovrà contattare i siti web collegati per generare le anteprime. Puoi sempre disabilitare le anteprime dei link nelle impostazioni di Session.";
+"modal_link_previews_button_title" = "Abilita";
+"vc_share_title" = "Condividi con Session";
+"vc_share_loading_message" = "Preparazione allegati...";
+"vc_share_sending_message" = "Invio...";
+"view_open_group_invitation_description" = "Apri invito di gruppo";
+"vc_conversation_settings_invite_button_title" = "Aggiungi membri";
 "vc_settings_faq_button_title" = "FAQ";

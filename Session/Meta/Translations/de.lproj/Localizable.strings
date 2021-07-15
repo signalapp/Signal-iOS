@@ -494,6 +494,11 @@
 "modal_seed_explanation" = "Das ist Ihr Wiederherstellungssatz. Damit können Sie Ihre Session ID wiederherstellen oder auf ein neues Gerät migrieren.";
 "modal_clear_all_data_title" = "Alle Daten löschen";
 "modal_clear_all_data_explanation" = "Dadurch werden Ihre Nachrichten, Sessions und Kontakte dauerhaft gelöscht.";
+"modal_clear_all_data_explanation_2" = "Möchtest du nur dieses Gerät löschen oder dein gesamtes Konto löschen?";
+"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
+"modal_clear_all_data_device_only_button_title" = "Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Entire Account";
 "vc_qr_code_title" = "QR-Code";
 "vc_qr_code_view_my_qr_code_tab_title" = "Meinen QR-Code anzeigen";
 "vc_qr_code_view_scan_qr_code_tab_title" = "QR-Code scannen";

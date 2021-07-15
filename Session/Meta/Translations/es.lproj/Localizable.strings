@@ -283,9 +283,9 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum sin nombre";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Marcar como leído";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "Responder";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "No podemos activar tu cuenta hasta que no verifiques el código que te hemos enviado.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
@@ -494,6 +494,11 @@
 "modal_seed_explanation" = "Esta es tu frase de recuperación. Con ella, puedes restaurar o migrar tu ID de Session a un nuevo dispositivo.";
 "modal_clear_all_data_title" = "Borrar todos los datos";
 "modal_clear_all_data_explanation" = "Esto eliminará permanentemente tu ID de Session, incluyendo todos los mensajes, sesiones y contactos.";
+"modal_clear_all_data_explanation_2" = "¿Quieres borrar sólo este dispositivo o eliminar toda tu cuenta?";
+"dialog_clear_all_data_deletion_failed_1" = "Datos no borrados por 1 nodo de servicio. ID del nodo de servicio: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Datos no borrados por %@ nodos de servicio. ID del nodo de servicio: %@.";
+"modal_clear_all_data_device_only_button_title" = "Sólo el dispositivo";
+"modal_clear_all_data_entire_account_button_title" = "Toda la cuenta";
 "vc_qr_code_title" = "Código QR";
 "vc_qr_code_view_my_qr_code_tab_title" = "Ver mi código QR";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Escanear código QR";
