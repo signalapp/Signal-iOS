@@ -12,32 +12,30 @@ extension HomeViewController {
         set {
             viewState.isViewVisible = newValue
 
-            updateShouldObserveDBModifications()
+            updateShouldBeUpdatingView()
         }
     }
 
-    @objc
-    public var shouldObserveDBModifications: Bool {
-        get { viewState.shouldObserveDBModifications }
+    fileprivate var shouldBeUpdatingView: Bool {
+        get { viewState.shouldBeUpdatingView }
         set {
-            guard viewState.shouldObserveDBModifications != newValue else {
+            guard viewState.shouldBeUpdatingView != newValue else {
                 // Ignore redundant changes.
                 return
             }
-            viewState.shouldObserveDBModifications = newValue
+            viewState.shouldBeUpdatingView = newValue
 
             if newValue {
-                resetMappings()
+                loadCoordinator.loadIfNecessary(suppressAnimations: true)
             }
         }
     }
 
-    @objc
-    public func updateShouldObserveDBModifications() {
+    public func updateShouldBeUpdatingView() {
         AssertIsOnMainThread()
 
         let isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive()
-        self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive
+        self.shouldBeUpdatingView = self.isViewVisible && isAppForegroundAndActive
     }
 
     // MARK: -
@@ -51,8 +49,7 @@ extension HomeViewController {
     }
 
     // TODO: Make async.
-    @objc
-    public func resetMappings() {
+    fileprivate func resetMappings() {
         AssertIsOnMainThread()
 
         BenchManager.bench(title: "HomeViewController#resetMappings") {
@@ -85,7 +82,8 @@ extension HomeViewController {
 
     private var isViewingArchive: Bool { self.homeViewMode == .archive }
 
-    func updateRenderStateWithDiff(updatedThreadIds updatedItemIds: Set<String>) {
+    fileprivate func updateRenderStateWithDiff(updatedThreadIds updatedItemIds: Set<String>,
+                                               isAnimated: Bool) {
         AssertIsOnMainThread()
 
         guard !updatedItemIds.isEmpty else {
@@ -122,42 +120,52 @@ extension HomeViewController {
             return
         }
 
-        tableView.beginUpdates()
+        let tableView = self.tableView
+        let threadViewModelCache = self.threadViewModelCache
+        let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
+        let applyChanges = {
+            tableView.beginUpdates()
+            for rowChange in mappingDiff.rowChanges {
 
-        for rowChange in mappingDiff.rowChanges {
+                threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
 
-            threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
-
-            switch rowChange.type {
-            case .delete(let oldIndexPath):
-                Logger.verbose("----- delete: \(oldIndexPath)")
-                tableView.deleteRows(at: [oldIndexPath], with: .automatic)
-            case .insert(let newIndexPath):
-                Logger.verbose("----- insert: \(newIndexPath)")
-                tableView.insertRows(at: [newIndexPath], with: .automatic)
-            case .move(let oldIndexPath, let newIndexPath):
-                // NOTE: if we're moving within the same section, we perform
-                //       moves using a "delete" and "insert" rather than a "move".
-                //       This ensures that moved items are also reloaded. This is
-                //       how UICollectionView performs reloads internally. We can't
-                //       do this when changing sections, because it results in a weird
-                //       animation. This should generally be safe, because you'll only
-                //       move between sections when pinning / unpinning which doesn't
-                //       require the moved item to be reloaded.
-                Logger.verbose("----- move: \(oldIndexPath) -> \(newIndexPath)")
-                if oldIndexPath.section != newIndexPath.section {
-                    tableView.moveRow(at: oldIndexPath, to: newIndexPath)
-                } else {
-                    tableView.deleteRows(at: [oldIndexPath], with: .automatic)
-                    tableView.insertRows(at: [newIndexPath], with: .automatic)
+                switch rowChange.type {
+                case .delete(let oldIndexPath):
+                    Logger.verbose("----- delete: \(oldIndexPath)")
+                    tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
+                case .insert(let newIndexPath):
+                    Logger.verbose("----- insert: \(newIndexPath)")
+                    tableView.insertRows(at: [newIndexPath], with: rowAnimation)
+                case .move(let oldIndexPath, let newIndexPath):
+                    // NOTE: if we're moving within the same section, we perform
+                    //       moves using a "delete" and "insert" rather than a "move".
+                    //       This ensures that moved items are also reloaded. This is
+                    //       how UICollectionView performs reloads internally. We can't
+                    //       do this when changing sections, because it results in a weird
+                    //       animation. This should generally be safe, because you'll only
+                    //       move between sections when pinning / unpinning which doesn't
+                    //       require the moved item to be reloaded.
+                    Logger.verbose("----- move: \(oldIndexPath) -> \(newIndexPath)")
+                    if oldIndexPath.section != newIndexPath.section {
+                        tableView.moveRow(at: oldIndexPath, to: newIndexPath)
+                    } else {
+                        tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
+                        tableView.insertRows(at: [newIndexPath], with: rowAnimation)
+                    }
+                case .update(let oldIndexPath):
+                    Logger.verbose("----- update: \(oldIndexPath)")
+                    tableView.reloadRows(at: [oldIndexPath], with: .none)
                 }
-            case .update(let oldIndexPath):
-                Logger.verbose("----- update: \(oldIndexPath)")
-                tableView.reloadRows(at: [oldIndexPath], with: .none)
             }
-        }
 
-        tableView.endUpdates()
+            tableView.endUpdates()
+        }
+        if isAnimated {
+            applyChanges()
+        } else {
+            // Suppress animations.
+            UIView.animate(withDuration: 0, animations: applyChanges)
+        }
         BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }
 }
@@ -167,5 +175,57 @@ extension HomeViewController {
 @objc
 public class HVLoadCoordinator: NSObject {
     @objc
-    public weak var homeViewController: HomeViewController?
+    public weak var viewController: HomeViewController?
+
+    private class HVLoadInfo {
+        // TODO: Review this state.
+        var shouldResetAll = false
+        var dirtyThreadUniqueIds = Set<String>()
+    }
+    private var nextLoadInfo = HVLoadInfo()
+
+    @objc
+    public override required init() {
+        nextLoadInfo.shouldResetAll = true
+    }
+
+    public func scheduleHardReset() {
+        AssertIsOnMainThread()
+
+        nextLoadInfo.shouldResetAll = true
+
+        loadIfNecessary()
+    }
+
+    public func scheduleLoad(updatedThreadIds: Set<String>) {
+        AssertIsOnMainThread()
+        owsAssertDebug(!updatedThreadIds.isEmpty)
+
+        nextLoadInfo.dirtyThreadUniqueIds.formUnion(updatedThreadIds)
+
+        loadIfNecessary()
+    }
+
+    public func loadIfNecessary(suppressAnimations: Bool = false) {
+        AssertIsOnMainThread()
+
+        guard let viewController = viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        guard viewController.shouldBeUpdatingView else {
+            return
+        }
+
+        // Copy the "current" load info, reset "next" load info.
+        let currentLoadInfo = self.nextLoadInfo
+        self.nextLoadInfo = HVLoadInfo()
+
+        if currentLoadInfo.shouldResetAll {
+            viewController.resetMappings()
+        } else {
+            viewController.updateRenderStateWithDiff(updatedThreadIds: currentLoadInfo.dirtyThreadUniqueIds,
+                                                     isAnimated: !suppressAnimations)
+        }
+    }
 }

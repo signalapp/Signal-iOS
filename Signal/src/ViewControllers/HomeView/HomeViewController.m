@@ -84,15 +84,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     _viewState = [HVViewState new];
     self.tableDataSource.viewController = self;
+    self.loadCoordinator.viewController = self;
 
-    [self commonInit];
+    [self.blocklistCache startObservingAndSyncStateWithDelegate:self];
 
     return self;
-}
-
-- (void)commonInit
-{
-    [self.blocklistCache startObservingAndSyncStateWithDelegate:self];
 }
 
 - (void)dealloc
@@ -487,7 +483,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [super viewDidLoad];
 
     [self observeNotifications];
-    [self resetMappings];
 
     switch (self.homeViewMode) {
         case HomeViewModeInbox:
