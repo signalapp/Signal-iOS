@@ -32,8 +32,8 @@ extension ConversationListViewController {
         AssertIsOnMainThread()
 
         return Self.databaseStorage.read { transaction in
-            self.threadMappingOld.updateSwallowingErrors(isViewingArchive: isViewingArchive,
-                                                         transaction: transaction)
+            ThreadMapping.loadRenderState(isViewingArchive: isViewingArchive,
+                                          transaction: transaction)
         }
     }
 
@@ -59,9 +59,10 @@ extension ConversationListViewController {
         }
 
         let mappingDiff = Self.databaseStorage.read { transaction in
-            threadMappingOld.updateAndCalculateDiffSwallowingErrors(isViewingArchive: isViewingArchive,
-                                                                    updatedItemIds: updatedItemIds,
-                                                                    transaction: transaction)
+            ThreadMapping.loadRenderStateAndDiff(isViewingArchive: isViewingArchive,
+                                                 updatedItemIds: updatedItemIds,
+                                                 lastRenderState: renderState,
+                                                 transaction: transaction)
         }
         guard let mappingDiff = mappingDiff else {
             owsFailDebug("Could not update.")
@@ -76,11 +77,9 @@ extension ConversationListViewController {
         // So we run it before the early return
         updateViewState()
 
-        if mappingDiff.sectionChanges.isEmpty,
-           mappingDiff.rowChanges.isEmpty {
+        if mappingDiff.rowChanges.isEmpty {
             return
         }
-        owsAssertDebug(mappingDiff.sectionChanges.isEmpty)
 
         if updateHasArchivedThreadsRow() {
             reloadTableViewData()
@@ -91,7 +90,7 @@ extension ConversationListViewController {
 
         for rowChange in mappingDiff.rowChanges {
 
-            threadViewModelCache.removeObject(forKey: rowChange.uniqueRowId)
+            threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
 
             switch rowChange.type {
             case .delete:
