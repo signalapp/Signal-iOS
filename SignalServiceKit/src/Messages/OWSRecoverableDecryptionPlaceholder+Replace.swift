@@ -5,14 +5,13 @@
 extension OWSRecoverableDecryptionPlaceholder {
     @objc
     func replaceWithInteraction(_ interaction: TSInteraction, writeTx: SDSAnyWriteTransaction) {
+        guard let inheritedId = grdbId?.int64Value else { return owsFailDebug("Missing rowId") }
+
+        interaction.anyInsert(transaction: writeTx)
         anyRemove(transaction: writeTx)
 
-        if let inheritedId = grdbId?.int64Value {
-            interaction.clearRowId()
-            interaction.updateRowId(inheritedId)
-        } else {
-            owsFailDebug("Missing rowId")
-        }
-        anyInsert(transaction: writeTx)
+        interaction.clearRowId()
+        interaction.updateRowId(inheritedId)
+        interaction.anyOverwritingUpdate(transaction: writeTx)
     }
 }
