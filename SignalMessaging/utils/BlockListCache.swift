@@ -34,14 +34,15 @@ public protocol BlockListCacheDelegate: AnyObject {
 ///      }
 ///
 //
-// TODO: Hang on SSKEnvironment?
+// TODO: Merge with block manager.
 @objc(OWSBlockListCache)
 public class BlockListCache: NSObject {
 
     private var blockedPhoneNumbers: Set<String> = Set()
     private var blockedUUIDs: Set<String> = Set()
     private var blockedGroupIds: Set<Data> = Set()
-    private let serialQueue: DispatchQueue = DispatchQueue(label: "BlockListCache")
+    private let unfairLock = UnfairLock()
+
     weak var delegate: BlockListCacheDelegate?
 
     /// Generally something which wants to use this cache wants to do 3 things
@@ -68,7 +69,7 @@ public class BlockListCache: NSObject {
 
     @objc(isAddressBlocked:)
     public func isBlocked(address: SignalServiceAddress) -> Bool {
-        return serialQueue.sync {
+        unfairLock.withLock {
             var blocked = false
             if let phoneNumber = address.phoneNumber {
                 blocked = blockedPhoneNumbers.contains(phoneNumber)
@@ -82,7 +83,7 @@ public class BlockListCache: NSObject {
 
     @objc(isGroupIdBlocked:)
     public func isBlocked(groupId: Data) -> Bool {
-        return serialQueue.sync {
+        unfairLock.withLock {
             blockedGroupIds.contains(groupId)
         }
     }
@@ -117,7 +118,7 @@ public class BlockListCache: NSObject {
     }
 
     private func update(blockedPhoneNumbers: Set<String>, blockedUUIDs: Set<String>, blockedGroupIds: Set<Data>) {
-        serialQueue.sync {
+        unfairLock.withLock {
             self.blockedPhoneNumbers = blockedPhoneNumbers
             self.blockedUUIDs = blockedUUIDs
             self.blockedGroupIds = blockedGroupIds
