@@ -11,8 +11,6 @@ public class HVTableDataSource: NSObject {
     @objc
     public weak var viewController: ConversationListViewController?
 
-//    fileprivate var threadMapping: ThreadMapping { viewState.threadMapping }
-
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
     public var renderState: HVRenderState = .empty

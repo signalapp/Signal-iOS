@@ -20,22 +20,33 @@ extension ConversationListViewController {
         AssertIsOnMainThread()
 
         BenchManager.bench(title: "ConversationListViewController#resetMappings") {
-
-            let isViewingArchive = self.conversationListMode == .archive
-            let renderState = Self.databaseStorage.read { transaction in
-                self.threadMappingOld.updateSwallowingErrors(isViewingArchive: isViewingArchive, transaction: transaction)
-            }
-            guard let renderState = renderState else {
+            guard let renderState = tryToLoadRenderState() else {
                 owsFailDebug("Could not update renderState.")
                 return
             }
-            self.tableDataSource.renderState = renderState
-
-            _ = updateHasArchivedThreadsRow()
-            reloadTableViewData()
-            updateViewState()
+            applyNewRenderState(renderState)
         }
     }
+
+    private func tryToLoadRenderState() -> HVRenderState? {
+        AssertIsOnMainThread()
+
+        return Self.databaseStorage.read { transaction in
+            self.threadMappingOld.updateSwallowingErrors(isViewingArchive: isViewingArchive,
+                                                         transaction: transaction)
+        }
+    }
+
+    private func applyNewRenderState(_ renderState: HVRenderState) {
+        AssertIsOnMainThread()
+
+        tableDataSource.renderState = renderState
+        _ = updateHasArchivedThreadsRow()
+        reloadTableViewData()
+        updateViewState()
+    }
+
+    private var isViewingArchive: Bool { self.conversationListMode == .archive }
 
     func updateRenderStateWithDiff(updatedThreadIds updatedItemIds: Set<String>) {
         AssertIsOnMainThread()
@@ -46,7 +57,6 @@ extension ConversationListViewController {
             return
         }
 
-        let isViewingArchive = self.conversationListMode == .archive
         let mappingDiff = Self.databaseStorage.read { transaction in
             threadMappingOld.updateAndCalculateDiffSwallowingErrors(isViewingArchive: isViewingArchive,
                                                                     updatedItemIds: updatedItemIds,
@@ -58,6 +68,8 @@ extension ConversationListViewController {
             resetMappings()
             return
         }
+
+        tableDataSource.renderState = renderState
 
         // We want this regardless of if we're currently viewing the archive.
         // So we run it before the early return
