@@ -624,10 +624,6 @@ extension HVTableDataSource: UITableViewDataSource {
                 owsFailDebug("Missing threadViewModel.")
                 return nil
             }
-            //            guard let viewController = self.viewController else {
-            //                owsFailDebug("Missing viewController.")
-            //                return nil
-            //            }
             let thread = threadViewModel.threadRecord
 
             let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
