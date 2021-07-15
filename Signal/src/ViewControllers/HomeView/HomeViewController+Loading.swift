@@ -7,6 +7,42 @@ import Foundation
 extension HomeViewController {
 
     @objc
+    public var isViewVisible: Bool {
+        get { viewState.isViewVisible }
+        set {
+            viewState.isViewVisible = newValue
+
+            updateShouldObserveDBModifications()
+        }
+    }
+
+    @objc
+    public var shouldObserveDBModifications: Bool {
+        get { viewState.shouldObserveDBModifications }
+        set {
+            guard viewState.shouldObserveDBModifications != newValue else {
+                // Ignore redundant changes.
+                return
+            }
+            viewState.shouldObserveDBModifications = newValue
+
+            if newValue {
+                resetMappings()
+            }
+        }
+    }
+
+    @objc
+    public func updateShouldObserveDBModifications() {
+        AssertIsOnMainThread()
+
+        let isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive()
+        self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive
+    }
+
+    // MARK: -
+
+    @objc
     public func reloadTableViewData() {
         AssertIsOnMainThread()
 
@@ -124,4 +160,12 @@ extension HomeViewController {
         tableView.endUpdates()
         BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }
+}
+
+// MARK: -
+
+@objc
+public class HVLoadCoordinator: NSObject {
+    @objc
+    public weak var homeViewController: HomeViewController?
 }

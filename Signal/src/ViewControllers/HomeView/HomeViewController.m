@@ -857,25 +857,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewWillDisappear:animated];
 }
 
-- (void)updateShouldObserveDBModifications
-{
-    BOOL isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive;
-    self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive;
-}
-
-- (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
-{
-    if (_shouldObserveDBModifications == shouldObserveDBModifications) {
-        return;
-    }
-
-    _shouldObserveDBModifications = shouldObserveDBModifications;
-
-    if (self.shouldObserveDBModifications) {
-        [self resetMappings];
-    }
-}
-
 #pragma mark -
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl

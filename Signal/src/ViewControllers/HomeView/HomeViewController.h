@@ -34,13 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateBarButtonItems;
 - (void)updateReminderViews;
 - (void)updateViewState;
-- (void)updateShouldObserveDBModifications;
 - (void)updateFirstConversationLabel;
 - (void)presentGetStartedBannerIfNecessary;
 - (void)updateAvatars;
 - (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction;
 
-@property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) UIView *firstConversationCueView;
 
 @end

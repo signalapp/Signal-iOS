@@ -41,15 +41,6 @@ public extension HomeViewController {
         }
     }
 
-    var isViewVisible: Bool {
-        get { viewState.isViewVisible }
-        set {
-            viewState.isViewVisible = newValue
-
-            updateShouldObserveDBModifications()
-        }
-    }
-
     // MARK: -
 
     func isConversationActive(forThread thread: TSThread) -> Bool {

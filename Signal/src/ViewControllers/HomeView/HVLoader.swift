@@ -38,7 +38,7 @@ public class HVLoader: NSObject {
         AssertIsOnMainThread()
 
         do {
-            return try Bench(title: "update thread mapping (\(isViewingArchive ? "archive" : "inbox"))") {
+            return try Bench(title: "loadRenderState for reset (\(isViewingArchive ? "archive" : "inbox"))") {
                 try Self.loadRenderStateInternal(isViewingArchive: isViewingArchive, transaction: transaction)
             }
         } catch {
@@ -184,8 +184,9 @@ public class HVLoader: NSObject {
             }
         }
 
-        let newRenderState = try loadRenderStateInternal(isViewingArchive: isViewingArchive,
-                                                         transaction: transaction)
+        let newRenderState = try Bench(title: "loadRenderState for diff (\(isViewingArchive ? "archive" : "inbox"))") {
+            try Self.loadRenderStateInternal(isViewingArchive: isViewingArchive, transaction: transaction)
+        }
 
         let oldPinnedThreadIds: [String] = lastRenderState.pinnedThreads.orderedKeys
         let oldUnpinnedThreadIds: [String] = lastRenderState.unpinnedThreads.map { $0.uniqueId }
@@ -442,6 +443,9 @@ public class HVLoader: NSObject {
             logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
             logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
             logThreadIds(movedThreadIds, name: "movedThreadIds")
+            for rowChange in rowChanges {
+                Logger.verbose("rowChange: \(rowChange)")
+            }
             throw OWSAssertionError("Could not reorder pinned contents.")
         }
 
@@ -459,6 +463,9 @@ public class HVLoader: NSObject {
             logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
             logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
             logThreadIds(movedThreadIds, name: "movedThreadIds")
+            for rowChange in rowChanges {
+                Logger.verbose("rowChange: \(rowChange)")
+            }
             throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 

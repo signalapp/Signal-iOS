@@ -25,6 +25,8 @@ public class HVViewState: NSObject {
     // TODO: We should make this a let.
     public var homeViewMode: HomeViewMode = .inbox
 
+    public var shouldObserveDBModifications = false
+
     public var isViewVisible = false
     public var hasEverAppeared = false
     public var lastReloadDate: Date?
