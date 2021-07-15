@@ -41,7 +41,7 @@ class MemberActionSheet: InteractiveSheetViewController {
                 ) else { return nil }
                 return ThreadViewModel(
                     thread: thread,
-                    forConversationList: false,
+                    forHomeView: false,
                     transaction: transaction
                 )
             }) else {
@@ -52,7 +52,7 @@ class MemberActionSheet: InteractiveSheetViewController {
                     )
                     return ThreadViewModel(
                         thread: thread,
-                        forConversationList: false,
+                        forHomeView: false,
                         transaction: transaction
                     )
                 }

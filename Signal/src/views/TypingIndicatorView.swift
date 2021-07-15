@@ -47,7 +47,7 @@ class TypingIndicatorView: ManualStackView {
     // MARK: -
 
     @objc
-    func configureForConversationList() {
+    func configureForHomeView() {
         let measurement = Self.measurement()
         self.configure(config: Self.stackConfig,
                        measurement: measurement,

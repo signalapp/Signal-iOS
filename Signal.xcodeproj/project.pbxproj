@@ -42,7 +42,7 @@
 		3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
 		3406D32225DD40F000885B14 /* PaymentsTransferOutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */; };
 		3406D32425DD4A8F00885B14 /* PaymentsQRScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */; };
-		3406D32625DD5EAF00885B14 /* ConversationListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32525DD5EAF00885B14 /* ConversationListViewController.swift */; };
+		3406D32625DD5EAF00885B14 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D32525DD5EAF00885B14 /* HomeViewController.swift */; };
 		3406D32B25DD80D600885B14 /* payments_spinner_fail.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32725DD80D600885B14 /* payments_spinner_fail.json */; };
 		3406D32C25DD80D600885B14 /* payments_spinner_success.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32825DD80D600885B14 /* payments_spinner_success.json */; };
 		3406D32D25DD80D600885B14 /* payments_spinner_info.json in Resources */ = {isa = PBXBuildFile; fileRef = 3406D32925DD80D600885B14 /* payments_spinner_info.json */; };
@@ -110,7 +110,7 @@
 		343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343417F02530A7480034FE0C /* CVComponentReactions.swift */; };
 		3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */; };
 		3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */; };
-		34386A51207D0C01009F5D9C /* ConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A4D207D0C01009F5D9C /* ConversationListViewController.m */; };
+		34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A4D207D0C01009F5D9C /* HomeViewController.m */; };
 		343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */; };
 		343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */; };
 		343D69AA260B870600F8638C /* ManualStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343D69A9260B870600F8638C /* ManualStackView.swift */; };
@@ -190,7 +190,7 @@
 		346C19E125ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */; };
 		346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346CD5C126306578004162D6 /* UnknownThreadWarningInteraction.swift */; };
 		346E08FF2662A9FA0042375E /* CVBodyTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E08FE2662A9FA0042375E /* CVBodyTextLabel.swift */; };
-		346E09012662FBBE0042375E /* ConversationListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E09002662FBBE0042375E /* ConversationListCell.swift */; };
+		346E09012662FBBE0042375E /* HomeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346E09002662FBBE0042375E /* HomeViewCell.swift */; };
 		346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */; };
 		346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EAA13250199A300E8AB6F /* MemberRequestView.swift */; };
 		346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346EFC3025FD050F00F493C7 /* PaymentsTest.swift */; };
@@ -281,7 +281,7 @@
 		348815CC2554216A00D4F4C4 /* CVAudioPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */; };
 		348815CE25545B1000D4F4C4 /* CVComponentGenericAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */; };
 		348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CF25545C0A00D4F4C4 /* CVAttachments.swift */; };
-		34882C522694A9260013E289 /* ConversationListViewController+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34882C512694A9260013E289 /* ConversationListViewController+Notifications.swift */; };
+		34882C522694A9260013E289 /* HomeViewController+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34882C512694A9260013E289 /* HomeViewController+Notifications.swift */; };
 		3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* CVMediaView.swift */; };
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348B9C9D264024D200A104C3 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348B9C9C264024D100A104C3 /* ContactTableViewCell.swift */; };
@@ -465,10 +465,10 @@
 		34E95C22269F4F4F004807EC /* HVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1D269F4F4F004807EC /* HVRenderState.swift */; };
 		34E95C24269F4F4F004807EC /* HVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1F269F4F4F004807EC /* HVViewState.swift */; };
 		34E95C25269F4F4F004807EC /* HVTableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C20269F4F4F004807EC /* HVTableDataSource.swift */; };
-		34E95C27269F6096004807EC /* ConversationListViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */; };
-		34E95C29269F6109004807EC /* ConversationListViewController+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C28269F6109004807EC /* ConversationListViewController+Helpers.swift */; };
+		34E95C27269F6096004807EC /* HomeViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C26269F6095004807EC /* HomeViewController+Actions.swift */; };
+		34E95C29269F6109004807EC /* HomeViewController+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C28269F6109004807EC /* HomeViewController+Helpers.swift */; };
 		34E95C2B269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C2A269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift */; };
-		34E95C2D26A06740004807EC /* ConversationListViewController+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C2C26A0673F004807EC /* ConversationListViewController+Loading.swift */; };
+		34E95C2D26A06740004807EC /* HomeViewController+Loading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C2C26A0673F004807EC /* HomeViewController+Loading.swift */; };
 		34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */; };
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
 		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
@@ -1087,7 +1087,7 @@
 		3406D31D25DBF70400885B14 /* RefreshEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshEvent.swift; sourceTree = "<group>"; };
 		3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsTransferOutViewController.swift; sourceTree = "<group>"; };
 		3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsQRScanViewController.swift; sourceTree = "<group>"; };
-		3406D32525DD5EAF00885B14 /* ConversationListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationListViewController.swift; sourceTree = "<group>"; };
+		3406D32525DD5EAF00885B14 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		3406D32725DD80D600885B14 /* payments_spinner_fail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_fail.json; sourceTree = "<group>"; };
 		3406D32825DD80D600885B14 /* payments_spinner_success.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_success.json; sourceTree = "<group>"; };
 		3406D32925DD80D600885B14 /* payments_spinner_info.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = payments_spinner_info.json; sourceTree = "<group>"; };
@@ -1169,8 +1169,8 @@
 		343417F02530A7480034FE0C /* CVComponentReactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentReactions.swift; sourceTree = "<group>"; };
 		3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessageViewController.swift; sourceTree = "<group>"; };
 		3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedDevicesTableViewController.swift; sourceTree = "<group>"; };
-		34386A4D207D0C01009F5D9C /* ConversationListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationListViewController.m; sourceTree = "<group>"; };
-		34386A4F207D0C01009F5D9C /* ConversationListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationListViewController.h; sourceTree = "<group>"; };
+		34386A4D207D0C01009F5D9C /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		34386A4F207D0C01009F5D9C /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
 		343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISyncMessages.h; sourceTree = "<group>"; };
 		343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISyncMessages.m; sourceTree = "<group>"; };
 		343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationScrollButton.m; sourceTree = "<group>"; };
@@ -1264,7 +1264,7 @@
 		346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaDownloadSettingsViewController.swift; sourceTree = "<group>"; };
 		346CD5C126306578004162D6 /* UnknownThreadWarningInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownThreadWarningInteraction.swift; sourceTree = "<group>"; };
 		346E08FE2662A9FA0042375E /* CVBodyTextLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVBodyTextLabel.swift; sourceTree = "<group>"; };
-		346E09002662FBBE0042375E /* ConversationListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationListCell.swift; sourceTree = "<group>"; };
+		346E09002662FBBE0042375E /* HomeViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewCell.swift; sourceTree = "<group>"; };
 		346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendMessageFlow.swift; sourceTree = "<group>"; };
 		346EAA13250199A300E8AB6F /* MemberRequestView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberRequestView.swift; sourceTree = "<group>"; };
 		346EFC3025FD050F00F493C7 /* PaymentsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsTest.swift; sourceTree = "<group>"; };
@@ -1358,7 +1358,7 @@
 		348815CB2554216900D4F4C4 /* CVAudioPlayback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAudioPlayback.swift; sourceTree = "<group>"; };
 		348815CD25545B0F00D4F4C4 /* CVComponentGenericAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentGenericAttachment.swift; sourceTree = "<group>"; };
 		348815CF25545C0A00D4F4C4 /* CVAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAttachments.swift; sourceTree = "<group>"; };
-		34882C512694A9260013E289 /* ConversationListViewController+Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Notifications.swift"; sourceTree = "<group>"; };
+		34882C512694A9260013E289 /* HomeViewController+Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeViewController+Notifications.swift"; sourceTree = "<group>"; };
 		3488F9352191CC4000E524CC /* CVMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaView.swift; sourceTree = "<group>"; };
 		348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadFinderPerformanceTest.swift; sourceTree = "<group>"; };
 		348B9C9C264024D100A104C3 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
@@ -1570,10 +1570,10 @@
 		34E95C1D269F4F4F004807EC /* HVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVRenderState.swift; sourceTree = "<group>"; };
 		34E95C1F269F4F4F004807EC /* HVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVViewState.swift; sourceTree = "<group>"; };
 		34E95C20269F4F4F004807EC /* HVTableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVTableDataSource.swift; sourceTree = "<group>"; };
-		34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Actions.swift"; sourceTree = "<group>"; };
-		34E95C28269F6109004807EC /* ConversationListViewController+Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Helpers.swift"; sourceTree = "<group>"; };
+		34E95C26269F6095004807EC /* HomeViewController+Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeViewController+Actions.swift"; sourceTree = "<group>"; };
+		34E95C28269F6109004807EC /* HomeViewController+Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeViewController+Helpers.swift"; sourceTree = "<group>"; };
 		34E95C2A269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVCellAccessibilityCustomAction.swift; sourceTree = "<group>"; };
-		34E95C2C26A0673F004807EC /* ConversationListViewController+Loading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+Loading.swift"; sourceTree = "<group>"; };
+		34E95C2C26A0673F004807EC /* HomeViewController+Loading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeViewController+Loading.swift"; sourceTree = "<group>"; };
 		34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesViewController.swift; sourceTree = "<group>"; };
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
 		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
@@ -2472,16 +2472,16 @@
 		34386A4C207D0C01009F5D9C /* HomeView */ = {
 			isa = PBXGroup;
 			children = (
-				346E09002662FBBE0042375E /* ConversationListCell.swift */,
-				34386A4F207D0C01009F5D9C /* ConversationListViewController.h */,
-				34386A4D207D0C01009F5D9C /* ConversationListViewController.m */,
-				3406D32525DD5EAF00885B14 /* ConversationListViewController.swift */,
-				34E95C26269F6095004807EC /* ConversationListViewController+Actions.swift */,
-				34E95C28269F6109004807EC /* ConversationListViewController+Helpers.swift */,
-				34E95C2C26A0673F004807EC /* ConversationListViewController+Loading.swift */,
-				34882C512694A9260013E289 /* ConversationListViewController+Notifications.swift */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
+				346E09002662FBBE0042375E /* HomeViewCell.swift */,
+				34386A4F207D0C01009F5D9C /* HomeViewController.h */,
+				34386A4D207D0C01009F5D9C /* HomeViewController.m */,
+				3406D32525DD5EAF00885B14 /* HomeViewController.swift */,
+				34E95C26269F6095004807EC /* HomeViewController+Actions.swift */,
+				34E95C28269F6109004807EC /* HomeViewController+Helpers.swift */,
+				34E95C2C26A0673F004807EC /* HomeViewController+Loading.swift */,
+				34882C512694A9260013E289 /* HomeViewController+Notifications.swift */,
 				34E95C2A269F6FA6004807EC /* HVCellAccessibilityCustomAction.swift */,
 				34E95C1C269F4F4F004807EC /* HVLoadCoordinator.swift */,
 				34E95C1A269F4F1A004807EC /* HVLoader.swift */,
@@ -5540,7 +5540,7 @@
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGallery.swift in Sources */,
-				3406D32625DD5EAF00885B14 /* ConversationListViewController.swift in Sources */,
+				3406D32625DD5EAF00885B14 /* HomeViewController.swift in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
 				88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */,
@@ -5583,7 +5583,7 @@
 				3498AC922518E92B00B1F315 /* PaymentsSettingsViewController.swift in Sources */,
 				3497972025DAA86100E99FA4 /* SendPaymentCompletionActionSheet.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
-				34386A51207D0C01009F5D9C /* ConversationListViewController.m in Sources */,
+				34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */,
 				348EE28E25B897BF00814FC2 /* CVMediaCache.swift in Sources */,
 				4C4F5EBC22711EEB00F3DD01 /* SendMediaBottomButton.swift in Sources */,
 				343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */,
@@ -5657,8 +5657,8 @@
 				347C3845252CE6C900F3D941 /* CVComponentQuotedReply.swift in Sources */,
 				88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */,
 				346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */,
-				34E95C2D26A06740004807EC /* ConversationListViewController+Loading.swift in Sources */,
-				34882C522694A9260013E289 /* ConversationListViewController+Notifications.swift in Sources */,
+				34E95C2D26A06740004807EC /* HomeViewController+Loading.swift in Sources */,
+				34882C522694A9260013E289 /* HomeViewController+Notifications.swift in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				349767E325B8744700ECE1B0 /* ManageStickersViewController.swift in Sources */,
@@ -5701,7 +5701,7 @@
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */,
-				346E09012662FBBE0042375E /* ConversationListCell.swift in Sources */,
+				346E09012662FBBE0042375E /* HomeViewCell.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
@@ -5847,7 +5847,7 @@
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,
 				34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */,
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
-				34E95C29269F6109004807EC /* ConversationListViewController+Helpers.swift in Sources */,
+				34E95C29269F6109004807EC /* HomeViewController+Helpers.swift in Sources */,
 				88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */,
 				45C0DC1B1E68FE9000E04C47 /* UIApplication+OWS.swift in Sources */,
 				4C46361122EB98EC00185951 /* CameraFirstNavigationController.swift in Sources */,
@@ -5907,7 +5907,7 @@
 				3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */,
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
 				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
-				34E95C27269F6096004807EC /* ConversationListViewController+Actions.swift in Sources */,
+				34E95C27269F6096004807EC /* HomeViewController+Actions.swift in Sources */,
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
 				346EFC40260276E400F493C7 /* PaymentsRestoreWalletPasteboardViewController.swift in Sources */,

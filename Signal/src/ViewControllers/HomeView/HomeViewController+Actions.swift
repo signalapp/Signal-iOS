@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension ConversationListViewController {
+extension HomeViewController {
     @objc
     public func performAccessibilityCustomAction(_ action: HVCellAccessibilityCustomAction) {
         AssertIsOnMainThread()
@@ -34,7 +34,7 @@ extension ConversationListViewController {
         }
 
         databaseStorage.write { transaction in
-            switch self.conversationListMode {
+            switch self.homeViewMode {
             case .inbox:
                 threadViewModel.associatedData.updateWith(isArchived: true,
                                                           updateStorageService: true,
@@ -132,8 +132,8 @@ extension ConversationListViewController {
         Logger.info("")
 
         // If we have presented a conversation list (the archive) navigate through that instead.
-        if let presentedConversationListViewController = self.presentedConversationListViewController {
-            presentedConversationListViewController.selectPreviousConversation()
+        if let presentedHomeViewController = self.presentedHomeViewController {
+            presentedHomeViewController.selectPreviousConversation()
             return
         }
 
@@ -151,8 +151,8 @@ extension ConversationListViewController {
         Logger.info("")
 
         // If we have presented a conversation list (the archive) navigate through that instead.
-        if let presentedConversationListViewController = self.presentedConversationListViewController {
-            presentedConversationListViewController.selectNextConversation()
+        if let presentedHomeViewController = self.presentedHomeViewController {
+            presentedHomeViewController.selectNextConversation()
             return
         }
 

@@ -86,7 +86,7 @@ public class ConversationSearchViewController: UITableViewController {
         tableView.separatorStyle = .none
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
-        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.reuseIdentifier)
+        tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.reuseIdentifier)
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -259,7 +259,7 @@ public class ConversationSearchViewController: UITableViewController {
             cell.configure(searchText: searchText)
             return cell
         case .contactThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -275,7 +275,7 @@ public class ConversationSearchViewController: UITableViewController {
             ))
             return cell
         case .groupThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -307,7 +307,7 @@ public class ConversationSearchViewController: UITableViewController {
                                                 localUserDisplayMode: .noteToSelf)
             return cell
         case .messages:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }

@@ -23,7 +23,7 @@ public class HVViewState: NSObject {
     // MARK: - State
 
     // TODO: We should make this a let.
-    public var conversationListMode: ConversationListMode = .inbox
+    public var homeViewMode: HomeViewMode = .inbox
 
     public var isViewVisible = false
     public var hasEverAppeared = false
@@ -49,7 +49,7 @@ public class HVViewState: NSObject {
 // MARK: -
 
 @objc
-public extension ConversationListViewController {
+public extension HomeViewController {
 
     var tableDataSource: HVTableDataSource { viewState.tableDataSource }
 
@@ -67,9 +67,9 @@ public extension ConversationListViewController {
 
     // MARK: - State
 
-    var conversationListMode: ConversationListMode {
-        get { viewState.conversationListMode }
-        set { viewState.conversationListMode = newValue }
+    var homeViewMode: HomeViewMode {
+        get { viewState.homeViewMode }
+        set { viewState.homeViewMode = newValue }
     }
 
     var hasEverAppeared: Bool {

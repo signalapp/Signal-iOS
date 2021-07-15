@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension ConversationListViewController {
+extension HomeViewController {
 
     @objc
     public func reloadTableViewData() {
@@ -19,7 +19,7 @@ extension ConversationListViewController {
     public func resetMappings() {
         AssertIsOnMainThread()
 
-        BenchManager.bench(title: "ConversationListViewController#resetMappings") {
+        BenchManager.bench(title: "HomeViewController#resetMappings") {
             guard let renderState = tryToLoadRenderState() else {
                 owsFailDebug("Could not update renderState.")
                 return
@@ -47,7 +47,7 @@ extension ConversationListViewController {
         updateViewState()
     }
 
-    private var isViewingArchive: Bool { self.conversationListMode == .archive }
+    private var isViewingArchive: Bool { self.homeViewMode == .archive }
 
     func updateRenderStateWithDiff(updatedThreadIds updatedItemIds: Set<String>) {
         AssertIsOnMainThread()

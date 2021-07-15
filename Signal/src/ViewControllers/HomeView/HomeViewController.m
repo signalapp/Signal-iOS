@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "ConversationListViewController.h"
+#import "HomeViewController.h"
 #import "AppDelegate.h"
 #import "OWSNavigationController.h"
 #import "RegistrationUtils.h"
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
 NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
-@interface ConversationListViewController () <UIViewControllerPreviewingDelegate,
+@interface HomeViewController () <UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
     OWSBlockListCacheDelegate,
@@ -71,7 +71,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark -
 
-@implementation ConversationListViewController
+@implementation HomeViewController
 
 #pragma mark - Init
 
@@ -204,14 +204,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, self.reminderViewCell);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, reminderStackView);
 
-    __weak ConversationListViewController *weakSelf = self;
+    __weak HomeViewController *weakSelf = self;
     ReminderView *deregisteredView = [ReminderView
         nagWithText:TSAccountManager.shared.isPrimaryDevice
             ? NSLocalizedString(@"DEREGISTRATION_WARNING", @"Label warning the user that they have been de-registered.")
             : NSLocalizedString(
                 @"UNLINKED_WARNING", @"Label warning the user that they have been unlinked from their primary device.")
           tapAction:^{
-              ConversationListViewController *strongSelf = weakSelf;
+              HomeViewController *strongSelf = weakSelf;
               if (!strongSelf) {
                   return;
               }
@@ -289,7 +289,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     emptyInboxLabel.text = NSLocalizedString(
         @"INBOX_VIEW_EMPTY_INBOX", @"Message shown in the conversation list when the inbox is empty.");
     emptyInboxLabel.font = UIFont.ows_dynamicTypeSubheadlineClampedFont;
-    emptyInboxLabel.textColor = Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray45Color;
+    emptyInboxLabel.textColor
+        = Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : UIColor.ows_gray45Color;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
     emptyInboxLabel.numberOfLines = 0;
     emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -453,7 +454,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateReminderViews
 {
-    self.archiveReminderView.hidden = self.conversationListMode != ConversationListModeArchive;
+    self.archiveReminderView.hidden = self.homeViewMode != HomeViewModeArchive;
     self.deregisteredView.hidden
         = !TSAccountManager.shared.isDeregistered || TSAccountManager.shared.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.shared.hasOutage;
@@ -488,13 +489,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self observeNotifications];
     [self resetMappings];
 
-    switch (self.conversationListMode) {
-        case ConversationListModeInbox:
+    switch (self.homeViewMode) {
+        case HomeViewModeInbox:
             // TODO: Should our app name be translated?  Probably not.
             self.title
                 = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the conversation list's default mode.");
             break;
-        case ConversationListModeArchive:
+        case HomeViewModeArchive:
             self.title
                 = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the conversation list's 'archive' mode.");
             break;
@@ -600,7 +601,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateBarButtonItems
 {
-    if (self.conversationListMode != ConversationListModeInbox) {
+    if (self.homeViewMode != HomeViewModeInbox) {
         return;
     }
 
@@ -717,8 +718,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSLogInfo(@"");
 
     // If we have presented a conversation list (the archive) search there instead.
-    if (self.presentedConversationListViewController) {
-        [self.presentedConversationListViewController focusSearch];
+    if (self.presentedHomeViewController) {
+        [self.presentedHomeViewController focusSearch];
         return;
     }
 
@@ -1099,7 +1100,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)shouldShowEmptyInboxView
 {
-    return self.conversationListMode == ConversationListModeInbox && self.numberOfInboxThreads == 0
+    return self.homeViewMode == HomeViewModeInbox && self.numberOfInboxThreads == 0
         && self.numberOfArchivedThreads == 0;
 }
 
@@ -1117,9 +1118,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         static dispatch_once_t onceToken;
         // Despite `SKStoreReviewController` docs, some people have reported seeing the "request review" prompt
         // repeatedly after first installation. Let's make sure it only happens at most once per launch.
-        dispatch_once(&onceToken, ^{
-            [SKStoreReviewController requestReview];
-        });
+        dispatch_once(&onceToken, ^{ [SKStoreReviewController requestReview]; });
 #endif
     } else {
         OWSLogDebug(@"not requesting review");
@@ -1150,7 +1149,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)presentGetStartedBannerIfNecessary
 {
-    if (self.getStartedBanner || self.conversationListMode != ConversationListModeInbox) {
+    if (self.getStartedBanner || self.homeViewMode != HomeViewModeInbox) {
         return;
     }
 

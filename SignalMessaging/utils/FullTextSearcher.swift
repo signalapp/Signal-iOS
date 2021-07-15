@@ -365,7 +365,7 @@ public class FullTextSearcher: NSObject {
                                                   creationDate: groupThread.creationDate,
                                                   lastInteractionRowId: groupThread.lastInteractionRowId)
                 let threadViewModel = ThreadViewModel(thread: groupThread,
-                                                      forConversationList: true,
+                                                      forHomeView: true,
                                                       transaction: transaction)
                 let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
                 groups.append(searchResult)
@@ -471,7 +471,7 @@ public class FullTextSearcher: NSObject {
                 return threadViewModel
             }
             let threadViewModel = ThreadViewModel(thread: thread,
-                                                  forConversationList: true,
+                                                  forHomeView: true,
                                                   transaction: transaction)
             threadViewModelCache[thread.uniqueId] = threadViewModel
             return threadViewModel

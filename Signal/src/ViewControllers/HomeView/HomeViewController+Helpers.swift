@@ -6,7 +6,7 @@ import Foundation
 
 // TODO: Decompose into multiple source files?
 @objc
-public extension ConversationListViewController {
+public extension HomeViewController {
 
     var renderState: HVRenderState { viewState.tableDataSource.renderState }
 
@@ -72,24 +72,24 @@ public extension ConversationListViewController {
     func showArchivedConversations() {
         AssertIsOnMainThread()
 
-        owsAssertDebug(self.conversationListMode == .inbox)
+        owsAssertDebug(self.homeViewMode == .inbox)
 
         // When showing archived conversations, we want to use a conventional "back" button
         // to return to the "inbox" conversation list.
         applyArchiveBackButton()
 
         // Push a separate instance of this view using "archive" mode.
-        let conversationList = ConversationListViewController()
-        conversationList.conversationListMode = .archive
+        let homeView = HomeViewController()
+        homeView.homeViewMode = .archive
 
         // TODO: What is this?
-        self.show(conversationList, sender: self)
+        self.show(homeView, sender: self)
     }
 
-    var presentedConversationListViewController: ConversationListViewController? {
+    var presentedHomeViewController: HomeViewController? {
         AssertIsOnMainThread()
 
-        guard let topViewController = navigationController?.topViewController as? ConversationListViewController,
+        guard let topViewController = navigationController?.topViewController as? HomeViewController,
               topViewController != self else {
             return nil
         }
@@ -182,7 +182,7 @@ public extension ConversationListViewController {
 
     // Returns YES IFF this value changes.
     func updateHasArchivedThreadsRow() -> Bool {
-        let hasArchivedThreadsRow = (conversationListMode == .inbox &&
+        let hasArchivedThreadsRow = (homeViewMode == .inbox &&
                                         self.numberOfArchivedThreads > 0)
         if self.hasArchivedThreadsRow == hasArchivedThreadsRow {
             return false

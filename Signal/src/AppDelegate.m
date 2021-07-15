@@ -3,8 +3,8 @@
 //
 
 #import "AppDelegate.h"
-#import "ConversationListViewController.h"
 #import "DebugLogger.h"
+#import "HomeViewController.h"
 #import "MainAppContext.h"
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSOrphanDataCleaner.h"
