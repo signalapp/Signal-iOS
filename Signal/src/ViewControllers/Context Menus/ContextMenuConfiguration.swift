@@ -96,7 +96,7 @@ class ContextMenuConfiguration {
         if let ident = identifier {
             self.identifier = ident
         } else {
-            self.identifier = NSUUID()
+            self.identifier = UUID() as NSCopying
         }
         
         self.actionProvider = actionProvider
