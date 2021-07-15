@@ -9,6 +9,7 @@ public class HVViewState: NSObject {
 
     public let threadMappingOld = ThreadMapping()
     public let tableDataSource = HVTableDataSource()
+    public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
 
     // TODO: Rework OWSBlockListCache.
     public let blocklistCache = BlockListCache()
@@ -53,6 +54,9 @@ public extension ConversationListViewController {
 
     var threadMappingOld: ThreadMapping { viewState.threadMappingOld }
     var tableDataSource: HVTableDataSource { viewState.tableDataSource }
+
+    @nonobjc
+    var threadViewModelCache: LRUCache<String, ThreadViewModel> { viewState.threadViewModelCache }
 
     var blocklistCache: BlockListCache { viewState.blocklistCache }
 

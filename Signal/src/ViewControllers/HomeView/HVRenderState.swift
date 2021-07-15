@@ -14,9 +14,6 @@ public class HVRenderState: NSObject {
     let archiveCount: UInt
     let inboxCount: UInt
 
-    // We use a new cache for each render state.
-    private let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
-
     public init(pinnedThreads: OrderedDictionary<String, TSThread>,
                 unpinnedThreads: [TSThread],
                 archiveCount: UInt,
@@ -36,17 +33,6 @@ public class HVRenderState: NSObject {
 
     public var hasPinnedAndUnpinnedThreads: Bool {
         !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty
-    }
-
-    public func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
-        if let value = threadViewModelCache.get(key: thread.uniqueId) {
-            return value
-        }
-        let threadViewModel = databaseStorage.read { transaction in
-            ThreadViewModel(thread: thread, forConversationList: true, transaction: transaction)
-        }
-        threadViewModelCache.set(key: thread.uniqueId, value: threadViewModel)
-        return threadViewModel
     }
 
     @objc
@@ -73,14 +59,6 @@ public class HVRenderState: NSObject {
             owsFailDebug("Invalid index path: \(indexPath).")
             return nil
         }
-    }
-
-    @objc
-    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
-        guard let thread = self.thread(forIndexPath: indexPath) else {
-            return nil
-        }
-        return self.threadViewModel(forThread: thread)
     }
 
     @objc

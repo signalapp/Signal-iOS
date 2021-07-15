@@ -41,6 +41,34 @@ public class HVTableDataSource: NSObject {
 
 // MARK: -
 
+extension HVTableDataSource {
+    public func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
+        let threadViewModelCache = viewState.threadViewModelCache
+        if let value = threadViewModelCache.get(key: thread.uniqueId) {
+            return value
+        }
+        let threadViewModel = databaseStorage.read { transaction in
+            ThreadViewModel(thread: thread, forConversationList: true, transaction: transaction)
+        }
+        threadViewModelCache.set(key: thread.uniqueId, value: threadViewModel)
+        return threadViewModel
+    }
+
+    @objc
+    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
+        guard let thread = self.thread(forIndexPath: indexPath) else {
+            return nil
+        }
+        return self.threadViewModel(forThread: thread)
+    }
+
+    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
+        renderState.thread(forIndexPath: indexPath)
+    }
+}
+
+// MARK: -
+
 // TODO: Revisit
 @objc
 public enum ConversationListMode: Int, CaseIterable {
@@ -200,7 +228,7 @@ extension HVTableDataSource: UITableViewDelegate {
         case .reminders:
             break
         case .pinned, .unpinned:
-            guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
+            guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
                 owsFailDebug("Missing threadViewModel.")
                 return
             }
@@ -471,7 +499,7 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
+        guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
             owsFailDebug("Missing threadViewModel.")
             return UITableViewCell()
         }
@@ -678,7 +706,7 @@ extension HVTableDataSource: UITableViewDataSource {
         case .reminders, .archiveButton:
             return nil
         case .pinned, .unpinned:
-            guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
+            guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
                 owsFailDebug("Missing threadViewModel.")
                 return nil
             }
@@ -772,7 +800,7 @@ extension HVTableDataSource: UITableViewDataSource {
         case .archiveButton:
             return nil
         case .pinned, .unpinned:
-            guard let threadViewModel = renderState.threadViewModel(forIndexPath: indexPath) else {
+            guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
                 owsFailDebug("Missing threadViewModel.")
                 return nil
             }

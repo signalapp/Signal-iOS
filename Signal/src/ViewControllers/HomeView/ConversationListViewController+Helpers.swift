@@ -11,15 +11,15 @@ public extension ConversationListViewController {
     var renderState: HVRenderState { viewState.tableDataSource.renderState }
 
     func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
-        renderState.threadViewModel(forThread: thread)
+        tableDataSource.threadViewModel(forThread: thread)
     }
 
     func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
-        renderState.thread(forIndexPath: indexPath)
+        tableDataSource.thread(forIndexPath: indexPath)
     }
 
     func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
-        renderState.threadViewModel(forIndexPath: indexPath)
+        tableDataSource.threadViewModel(forIndexPath: indexPath)
     }
 
     var numberOfInboxThreads: UInt { renderState.inboxCount }

@@ -41,6 +41,7 @@ extension ConversationListViewController {
         AssertIsOnMainThread()
 
         tableDataSource.renderState = renderState
+        threadViewModelCache.clear()
         _ = updateHasArchivedThreadsRow()
         reloadTableViewData()
         updateViewState()
@@ -89,6 +90,9 @@ extension ConversationListViewController {
         tableView.beginUpdates()
 
         for rowChange in mappingDiff.rowChanges {
+
+            threadViewModelCache.removeObject(forKey: rowChange.uniqueRowId)
+
             switch rowChange.type {
             case .delete:
                 guard let oldIndexPath = rowChange.oldIndexPath else {
