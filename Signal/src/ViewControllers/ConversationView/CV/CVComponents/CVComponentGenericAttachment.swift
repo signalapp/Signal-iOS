@@ -4,6 +4,7 @@
 
 import Foundation
 import QuickLook
+import PassKit
 
 @objc
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
@@ -316,6 +317,17 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return false
         }
         return QLPreviewController.canPreview(url as NSURL)
+    }
+
+    /// Returns the `PKPass` represented by this attachment, if any.
+    public func representedPKPass() -> PKPass? {
+        guard attachmentStream?.contentType == "application/vnd.apple.pkpass" else {
+            return nil
+        }
+        guard let data = try? attachmentStream?.readDataFromFile() else {
+            return nil
+        }
+        return try? PKPass(data: data)
     }
 
     @objc(showShareUIFromView:)
