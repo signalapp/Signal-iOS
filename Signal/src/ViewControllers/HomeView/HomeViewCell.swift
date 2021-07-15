@@ -52,25 +52,26 @@ public class HomeViewCell: UITableViewCell {
         ]
     }
 
-    @objc(HomeViewCellConfiguration)
-    public class Configuration: NSObject {
+    public struct Configuration {
         let thread: ThreadViewModel
         let shouldLoadAvatarAsync: Bool
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
+        let cellMeasurementCache: LRUCache<String, HVCellMeasurement>
 
-        @objc
         public init(thread: ThreadViewModel,
                     shouldLoadAvatarAsync: Bool,
                     isBlocked: Bool,
                     overrideSnippet: NSAttributedString? = nil,
-                    overrideDate: Date? = nil) {
+                    overrideDate: Date? = nil,
+                    cellMeasurementCache: LRUCache<String, HVCellMeasurement>) {
             self.thread = thread
             self.shouldLoadAvatarAsync = shouldLoadAvatarAsync
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
+            self.cellMeasurementCache = cellMeasurementCache
         }
     }
     private var configuration: Configuration?
@@ -139,8 +140,21 @@ public class HomeViewCell: UITableViewCell {
         self.selectionStyle = .default
     }
 
-    @objc
     public func configure(_ configuration: Configuration) {
+        AssertIsOnMainThread()
+
+        // If we have an existing HVCellMeasurement, use it.
+        // Cell measurement/arrangement is expensive.
+        let cacheKey = configuration.thread.threadRecord.uniqueId
+        let cellMeasurementCache = configuration.cellMeasurementCache
+        let existingCellMeasurement: HVCellMeasurement? = cellMeasurementCache.get(key: cacheKey)
+        let cellMeasurement = configure(configuration: configuration,
+                                        existingCellMeasurement: existingCellMeasurement)
+        cellMeasurementCache.set(key: cacheKey, value: cellMeasurement)
+    }
+
+    private func configure(configuration: Configuration,
+                           existingCellMeasurement: HVCellMeasurement?) -> HVCellMeasurement {
         AssertIsOnMainThread()
 
         OWSTableItem.configureCell(self)
@@ -330,25 +344,51 @@ public class HomeViewCell: UITableViewCell {
             bottomRowStackSubviewInfos.append(statusIndicator.size.asManualSubviewInfo(hasFixedSize: true,
                                                                                        locationOffset: locationOffset))
         }
-        let bottomRowStackSize = bottomRowStack.configure(config: bottomRowStackConfig,
-                                                          subviews: bottomRowStackSubviews,
-                                                          subviewInfos: bottomRowStackSubviewInfos).measuredSize
-
-        let vStackSize = vStack.configure(config: vStackConfig,
-                                          subviews: [ topRowStack, bottomRowStack ],
-                                          subviewInfos: [
-                                            topRowStackSize.asManualSubviewInfo,
-                                            bottomRowStackSize.asManualSubviewInfo
-                                          ]).measuredSize
-
-        _ = outerHStack.configure(config: outerHStackConfig,
-                                  subviews: [ avatarStack, vStack ],
-                                  subviewInfos: [
-                                    avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
-                                    vStackSize.asManualSubviewInfo
-                                  ]).measuredSize
 
         updateTypingIndicatorState()
+
+        let vStackSubviews = [ topRowStack, bottomRowStack ]
+        let outerHStackSubviews = [ avatarStack, vStack ]
+
+        if let existingCellMeasurement = existingCellMeasurement {
+            bottomRowStack.configure(config: bottomRowStackConfig,
+                                     measurement: existingCellMeasurement.bottomRowStackMeasurement,
+                                     subviews: bottomRowStackSubviews)
+
+            vStack.configure(config: vStackConfig,
+                             measurement: existingCellMeasurement.vStackMeasurement,
+                             subviews: vStackSubviews)
+
+            outerHStack.configure(config: outerHStackConfig,
+                             measurement: existingCellMeasurement.outerHStackMeasurement,
+                             subviews: outerHStackSubviews)
+
+            return existingCellMeasurement
+        } else {
+            let bottomRowStackMeasurement = bottomRowStack.configure(config: bottomRowStackConfig,
+                                                              subviews: bottomRowStackSubviews,
+                                                              subviewInfos: bottomRowStackSubviewInfos)
+            let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
+
+            let vStackMeasurement = vStack.configure(config: vStackConfig,
+                                                     subviews: vStackSubviews,
+                                                     subviewInfos: [
+                                                        topRowStackSize.asManualSubviewInfo,
+                                                        bottomRowStackSize.asManualSubviewInfo
+                                                     ])
+            let vStackSize = vStackMeasurement.measuredSize
+
+            let outerHStackMeasurement = outerHStack.configure(config: outerHStackConfig,
+                                                               subviews: [ avatarStack, vStack ],
+                                                               subviewInfos: [
+                                                                avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
+                                                                vStackSize.asManualSubviewInfo
+                                                               ])
+
+            return HVCellMeasurement(bottomRowStackMeasurement: bottomRowStackMeasurement,
+                                     vStackMeasurement: vStackMeasurement,
+                                     outerHStackMeasurement: outerHStackMeasurement)
+        }
     }
 
     private var topRowStackConfig: ManualStackView.Config {
@@ -700,6 +740,14 @@ public class HomeViewCell: UITableViewCell {
             typingIndicatorView.stopAnimation()
         }
     }
+}
+
+// MARK: -
+
+public struct HVCellMeasurement {
+    let bottomRowStackMeasurement: ManualStackView.Measurement
+    let vStackMeasurement: ManualStackView.Measurement
+    let outerHStackMeasurement: ManualStackView.Measurement
 }
 
 // MARK: -

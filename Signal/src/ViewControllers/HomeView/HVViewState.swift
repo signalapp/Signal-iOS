@@ -9,6 +9,7 @@ public class HVViewState: NSObject {
 
     public let tableDataSource = HVTableDataSource()
     public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
+    public let cellMeasurementCache = LRUCache<String, HVCellMeasurement>(maxSize: 256)
 
     // TODO: Rework OWSBlockListCache.
     public let blocklistCache = BlockListCache()
@@ -59,6 +60,9 @@ public extension HomeViewController {
 
     @nonobjc
     var threadViewModelCache: LRUCache<String, ThreadViewModel> { viewState.threadViewModelCache }
+
+    @nonobjc
+    var cellMeasurementCache: LRUCache<String, HVCellMeasurement> { viewState.cellMeasurementCache }
 
     var blocklistCache: BlockListCache { viewState.blocklistCache }
 
