@@ -14,7 +14,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/ByteParser.h>
 #import <SignalUtilitiesKit/ContactCellView.h>
 #import <SignalUtilitiesKit/ContactTableViewCell.h>
-#import <SignalUtilitiesKit/DebugLogger.h>
 #import <SignalUtilitiesKit/FunctionalUtil.h>
 #import <SignalUtilitiesKit/NSArray+OWS.h>
 #import <SignalUtilitiesKit/NSAttributedString+OWS.h>
@@ -37,7 +36,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/OWSQueues.h>
 #import <SignalUtilitiesKit/OWSResaveCollectionDBMigration.h>
-#import <SignalUtilitiesKit/OWSScrubbingLogFormatter.h>
 #import <SignalUtilitiesKit/OWSSearchBar.h>
 #import <SignalUtilitiesKit/OWSTableViewController.h>
 #import <SignalUtilitiesKit/OWSTextField.h>

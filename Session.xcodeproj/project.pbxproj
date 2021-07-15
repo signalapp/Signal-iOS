@@ -559,15 +559,11 @@
 		C38EF30D255B6DBF007E1867 /* OWSUnreadIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */; };
 		C38EF30E255B6DBF007E1867 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */; };
 		C38EF30F255B6DBF007E1867 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E5255B6DB9007E1867 /* AppPreferences.swift */; };
-		C38EF310255B6DBF007E1867 /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E6255B6DBA007E1867 /* DebugLogger.m */; };
-		C38EF311255B6DBF007E1867 /* OWSScrubbingLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2E7255B6DBA007E1867 /* OWSScrubbingLogFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF313255B6DBF007E1867 /* OWSUnreadIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2E9255B6DBA007E1867 /* OWSUnreadIndicator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF317255B6DBF007E1867 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2ED255B6DBB007E1867 /* DisplayableText.swift */; };
 		C38EF31A255B6DBF007E1867 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F0255B6DBB007E1867 /* OWSAnyTouchGestureRecognizer.m */; };
 		C38EF31C255B6DBF007E1867 /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F2255B6DBC007E1867 /* Searcher.swift */; };
 		C38EF31D255B6DBF007E1867 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F3255B6DBC007E1867 /* UIImage+OWS.swift */; };
-		C38EF320255B6DBF007E1867 /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F6255B6DBC007E1867 /* OWSScrubbingLogFormatter.m */; };
-		C38EF322255B6DBF007E1867 /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2F8255B6DBC007E1867 /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF324255B6DBF007E1867 /* Bench.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2FA255B6DBD007E1867 /* Bench.swift */; };
 		C38EF326255B6DBF007E1867 /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2FC255B6DBD007E1867 /* ConversationStyle.swift */; };
 		C38EF32A255B6DBF007E1867 /* UIUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF300255B6DBD007E1867 /* UIUtil.m */; };
@@ -1551,8 +1547,6 @@
 		C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSUnreadIndicator.m; path = SignalUtilitiesKit/Messaging/OWSUnreadIndicator.m; sourceTree = SOURCE_ROOT; };
 		C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FullTextSearcher.swift; path = SignalUtilitiesKit/Messaging/FullTextSearcher.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2E5255B6DB9007E1867 /* AppPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppPreferences.swift; path = SignalUtilitiesKit/Database/AppPreferences.swift; sourceTree = SOURCE_ROOT; };
-		C38EF2E6255B6DBA007E1867 /* DebugLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DebugLogger.m; path = SignalUtilitiesKit/Utilities/DebugLogger.m; sourceTree = SOURCE_ROOT; };
-		C38EF2E7255B6DBA007E1867 /* OWSScrubbingLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSScrubbingLogFormatter.h; path = SignalUtilitiesKit/Utilities/OWSScrubbingLogFormatter.h; sourceTree = SOURCE_ROOT; };
 		C38EF2E9255B6DBA007E1867 /* OWSUnreadIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSUnreadIndicator.h; path = SignalUtilitiesKit/Messaging/OWSUnreadIndicator.h; sourceTree = SOURCE_ROOT; };
 		C38EF2EC255B6DBA007E1867 /* ProximityMonitoringManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProximityMonitoringManager.swift; path = SessionMessagingKit/Utilities/ProximityMonitoringManager.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2ED255B6DBB007E1867 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DisplayableText.swift; path = SignalUtilitiesKit/Utilities/DisplayableText.swift; sourceTree = SOURCE_ROOT; };
@@ -1562,9 +1556,7 @@
 		C38EF2F2255B6DBC007E1867 /* Searcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Searcher.swift; path = SignalUtilitiesKit/Utilities/Searcher.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2F3255B6DBC007E1867 /* UIImage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIImage+OWS.swift"; path = "SignalUtilitiesKit/Utilities/UIImage+OWS.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF2F5255B6DBC007E1867 /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAudioPlayer.h; path = SessionMessagingKit/Utilities/OWSAudioPlayer.h; sourceTree = SOURCE_ROOT; };
-		C38EF2F6255B6DBC007E1867 /* OWSScrubbingLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSScrubbingLogFormatter.m; path = SignalUtilitiesKit/Utilities/OWSScrubbingLogFormatter.m; sourceTree = SOURCE_ROOT; };
 		C38EF2F7255B6DBC007E1867 /* OWSAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAudioPlayer.m; path = SessionMessagingKit/Utilities/OWSAudioPlayer.m; sourceTree = SOURCE_ROOT; };
-		C38EF2F8255B6DBC007E1867 /* DebugLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebugLogger.h; path = SignalUtilitiesKit/Utilities/DebugLogger.h; sourceTree = SOURCE_ROOT; };
 		C38EF2FA255B6DBD007E1867 /* Bench.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Bench.swift; path = SignalUtilitiesKit/Utilities/Bench.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2FB255B6DBD007E1867 /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSWindowManager.h; path = SessionMessagingKit/Utilities/OWSWindowManager.h; sourceTree = SOURCE_ROOT; };
 		C38EF2FC255B6DBD007E1867 /* ConversationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConversationStyle.swift; path = SignalUtilitiesKit/Messaging/ConversationStyle.swift; sourceTree = SOURCE_ROOT; };
@@ -3359,11 +3351,7 @@
 				C33FDAE0255A580400E217F9 /* ByteParser.m */,
 				C38EF3DD255B6DF1007E1867 /* UIAlertController+OWS.swift */,
 				C38EF241255B6D67007E1867 /* Collection+OWS.swift */,
-				C38EF2F8255B6DBC007E1867 /* DebugLogger.h */,
-				C38EF2E6255B6DBA007E1867 /* DebugLogger.m */,
 				C38EF3AE255B6DE5007E1867 /* OrderedDictionary.swift */,
-				C38EF2E7255B6DBA007E1867 /* OWSScrubbingLogFormatter.h */,
-				C38EF2F6255B6DBC007E1867 /* OWSScrubbingLogFormatter.m */,
 				C38EF301255B6DBD007E1867 /* OWSFormat.h */,
 				C38EF305255B6DBE007E1867 /* OWSFormat.m */,
 				C38EF226255B6D5D007E1867 /* ShareViewDelegate.swift */,
@@ -3547,7 +3535,6 @@
 				C33FDD74255A582000E217F9 /* OWSPrimaryStorage+keyFromIntLong.h in Headers */,
 				C33FDDB0255A582000E217F9 /* NSURLSessionDataTask+StatusCode.h in Headers */,
 				C33FDDD0255A582000E217F9 /* FunctionalUtil.h in Headers */,
-				C38EF311255B6DBF007E1867 /* OWSScrubbingLogFormatter.h in Headers */,
 				B8C2B3442563782400551B4D /* ThreadUtil.h in Headers */,
 				C38EF334255B6DBF007E1867 /* UIUtil.h in Headers */,
 				C33FDD5B255A582000E217F9 /* OWSOperation.h in Headers */,
@@ -3586,7 +3573,6 @@
 				C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				C38EF404255B6DF7007E1867 /* ContactTableViewCell.h in Headers */,
 				C33FDDB2255A582000E217F9 /* NSArray+OWS.h in Headers */,
-				C38EF322255B6DBF007E1867 /* DebugLogger.h in Headers */,
 				C38EF2D7255B6DAF007E1867 /* OWSProfileManager.h in Headers */,
 				C38EF290255B6D86007E1867 /* AppSetup.h in Headers */,
 				C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */,
@@ -4415,7 +4401,6 @@
 				C33FDD49255A582000E217F9 /* ParamParser.swift in Sources */,
 				C38EF35F255B6DCC007E1867 /* SelectRecipientViewController.m in Sources */,
 				C38EF3C5255B6DE7007E1867 /* OWSViewController+ImageEditor.swift in Sources */,
-				C38EF320255B6DBF007E1867 /* OWSScrubbingLogFormatter.m in Sources */,
 				C38EF39B255B6DDA007E1867 /* ThreadViewModel.swift in Sources */,
 				C38EF2A5255B6D93007E1867 /* Identicon+ObjC.swift in Sources */,
 				C38EF273255B6D7A007E1867 /* OWSDatabaseMigrationRunner.m in Sources */,
@@ -4479,7 +4464,6 @@
 				C33FDD13255A582000E217F9 /* OWSFailedAttachmentDownloadsJob.m in Sources */,
 				C38EF24D255B6D67007E1867 /* UIView+OWS.swift in Sources */,
 				C38EF408255B6DF7007E1867 /* OWSSearchBar.m in Sources */,
-				C38EF310255B6DBF007E1867 /* DebugLogger.m in Sources */,
 				C38EF38B255B6DD2007E1867 /* AttachmentPrepViewController.swift in Sources */,
 				C33FDC7B255A582000E217F9 /* NSSet+Functional.m in Sources */,
 				C38EF405255B6DF7007E1867 /* OWSButton.swift in Sources */,

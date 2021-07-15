@@ -102,11 +102,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         // This should be the first thing we do.
         SetCurrentAppContext(NotificationServiceExtensionContext())
 
-        DebugLogger.shared().enableTTYLogging()
-        if _isDebugAssertConfiguration() {
-            DebugLogger.shared().enableFileLogging()
-        }
-
         _ = AppVersion.sharedInstance()
 
         Cryptography.seedRandom()

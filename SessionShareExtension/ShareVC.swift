@@ -24,13 +24,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         AppModeManager.configure(delegate: self)
 
-        DebugLogger.shared().enableTTYLogging()
-        if _isDebugAssertConfiguration() {
-            DebugLogger.shared().enableFileLogging()
-        } else if OWSPreferences.isLoggingEnabled() {
-            DebugLogger.shared().enableFileLogging()
-        }
-
         Logger.info("")
 
         _ = AppVersion.sharedInstance()

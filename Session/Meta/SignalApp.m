@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/Threading.h>
-#import <SignalUtilitiesKit/DebugLogger.h>
 #import <SessionMessagingKit/Environment.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/TSContactThread.h>

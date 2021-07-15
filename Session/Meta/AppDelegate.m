@@ -3,7 +3,6 @@
 //
 
 #import "AppDelegate.h"
-#import "DebugLogger.h"
 #import "MainAppContext.h"
 #import "OWSBackup.h"
 #import "OWSOrphanDataCleaner.h"
@@ -154,19 +153,6 @@ static NSTimeInterval launchStartedAt;
     // OWSLinkPreview is now in SessionMessagingKit, so to still be able to deserialize them we
     // need to tell NSKeyedUnarchiver about the changes.
     [NSKeyedUnarchiver setClass:OWSLinkPreview.class forClassName:@"SessionServiceKit.OWSLinkPreview"];
-
-    BOOL isLoggingEnabled;
-#ifdef DEBUG
-    // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
-    // the phone directory being looked up during tests.
-    isLoggingEnabled = TRUE;
-    [DebugLogger.sharedLogger enableTTYLogging];
-#elif RELEASE
-    isLoggingEnabled = OWSPreferences.isLoggingEnabled;
-#endif
-    if (isLoggingEnabled) {
-        [DebugLogger.sharedLogger enableFileLogging];
-    }
 
     [Cryptography seedRandom];
 
