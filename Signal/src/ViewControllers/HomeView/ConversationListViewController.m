@@ -729,48 +729,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchBar becomeFirstResponder];
 }
 
-- (void)selectPreviousConversation
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"");
-
-    // If we have presented a conversation list (the archive) navigate through that instead.
-    if (self.presentedConversationListViewController) {
-        [self.presentedConversationListViewController selectPreviousConversation];
-        return;
-    }
-
-    TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
-    NSIndexPath *_Nullable previousIndexPath = [self.threadMapping indexPathBeforeThread:currentThread];
-    if (previousIndexPath) {
-        [self presentThread:[self threadForIndexPath:previousIndexPath] action:ConversationViewActionCompose animated:YES];
-        [self.tableView selectRowAtIndexPath:previousIndexPath
-                                    animated:YES
-                              scrollPosition:UITableViewScrollPositionNone];
-    }
-}
-
-- (void)selectNextConversation
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"");
-
-    // If we have presented a conversation list (the archive) navigate through that instead.
-    if (self.presentedConversationListViewController) {
-        [self.presentedConversationListViewController selectNextConversation];
-        return;
-    }
-
-    TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
-    NSIndexPath *_Nullable nextIndexPath = [self.threadMapping indexPathAfterThread:currentThread];
-    if (nextIndexPath) {
-        [self presentThread:[self threadForIndexPath:nextIndexPath] action:ConversationViewActionCompose animated:YES];
-        [self.tableView selectRowAtIndexPath:nextIndexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
-    }
-}
-
 - (void)archiveSelectedConversation
 {
     OWSAssertIsOnMainThread();
@@ -873,7 +831,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // visible.  The threads often change ordering while in conversation view due
         // to incoming & outgoing messages.
         NSIndexPath *_Nullable indexPathOfLastThread =
-            [self.threadMapping indexPathForUniqueId:self.lastViewedThread.uniqueId];
+            [self.renderState indexPathForUniqueId:self.lastViewedThread.uniqueId];
         if (indexPathOfLastThread) {
             [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
                                   atScrollPosition:UITableViewScrollPositionNone
@@ -1283,16 +1241,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 }
 
 #pragma mark -
-
-- (NSUInteger)numberOfInboxThreads
-{
-    return self.threadMapping.inboxCount;
-}
-
-- (NSUInteger)numberOfArchivedThreads
-{
-    return self.threadMapping.archiveCount;
-}
 
 - (void)updateViewState
 {

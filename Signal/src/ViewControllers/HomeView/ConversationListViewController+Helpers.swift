@@ -22,6 +22,9 @@ public extension ConversationListViewController {
         renderState.threadViewModel(forIndexPath: indexPath)
     }
 
+    var numberOfInboxThreads: UInt { renderState.inboxCount }
+    var numberOfArchivedThreads: UInt { renderState.archiveCount }
+
     // MARK: - Accessors with side effects
 
     var hasVisibleReminders: Bool {

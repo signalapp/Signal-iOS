@@ -7,7 +7,7 @@ import Foundation
 @objc
 public class HVViewState: NSObject {
 
-    public let threadMapping = ThreadMapping()
+    public let threadMappingOld = ThreadMapping()
     public let tableDataSource = HVTableDataSource()
 
     // TODO: Rework OWSBlockListCache.
@@ -51,7 +51,7 @@ public class HVViewState: NSObject {
 @objc
 public extension ConversationListViewController {
 
-    var threadMapping: ThreadMapping { viewState.threadMapping }
+    var threadMappingOld: ThreadMapping { viewState.threadMappingOld }
     var tableDataSource: HVTableDataSource { viewState.tableDataSource }
 
     var blocklistCache: BlockListCache { viewState.blocklistCache }
