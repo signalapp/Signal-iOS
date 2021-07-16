@@ -181,10 +181,14 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
 
-    for (SignalServiceAddress *address in addresses) {
-        OWSAssertDebug(address.isValid);
-        [self.blockingManager addBlockedAddress:address blockMode:BlockMode_LocalShouldLeaveGroups];
-    }
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        for (SignalServiceAddress *address in addresses) {
+            OWSAssertDebug(address.isValid);
+            [self.blockingManager addBlockedAddress:address
+                                          blockMode:BlockModeLocalShouldLeaveGroups
+                                        transaction:transaction];
+        }
+    });
 
     [self showOkAlertWithTitle:NSLocalizedString(
                                    @"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE", @"The title of the 'user blocked' alert.")
@@ -211,9 +215,14 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                                     success:^{
                                                         // block the group regardless of the ability to deliver the
                                                         // "leave group" message.
-                                                        [self.blockingManager
-                                                            addBlockedGroup:groupThread.groupModel
-                                                                  blockMode:BlockMode_LocalShouldLeaveGroups];
+                                                        DatabaseStorageWrite(self.databaseStorage,
+                                                            ^(SDSAnyWriteTransaction *transaction) {
+                                                                [self.blockingManager
+                                                                    addBlockedGroupWithGroupModel:groupThread.groupModel
+                                                                                        blockMode:
+                                                                                            BlockModeLocalShouldLeaveGroups
+                                                                                      transaction:transaction];
+                                                            });
 
                                                         NSString *alertTitle = NSLocalizedString(
                                                             @"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
@@ -334,10 +343,12 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
 
-    for (SignalServiceAddress *address in addresses) {
-        OWSAssertDebug(address.isValid);
-        [self.blockingManager removeBlockedAddress:address wasLocallyInitiated:YES];
-    }
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        for (SignalServiceAddress *address in addresses) {
+            OWSAssertDebug(address.isValid);
+            [self.blockingManager removeBlockedAddress:address wasLocallyInitiated:YES transaction:transaction];
+        }
+    });
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
         @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");
@@ -396,7 +407,11 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 {
     OWSAssertDebug(fromViewController);
 
-    [self.blockingManager removeBlockedGroupId:groupModel.groupId wasLocallyInitiated:YES];
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.blockingManager removeBlockedGroupWithGroupId:groupModel.groupId
+                                        wasLocallyInitiated:YES
+                                                transaction:transaction];
+    });
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
         @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");

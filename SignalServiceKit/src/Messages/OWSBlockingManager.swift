@@ -331,6 +331,17 @@ public class OWSBlockingManager: NSObject {
         return blockedAddresses
     }
 
+//    @objc
+//    public func addBlockedAddressWithSneakyTransaction(_ address: SignalServiceAddress,
+//                                                       blockMode: BlockMode) {
+//        guard !isAddressBlocked(address) else {
+//            return
+//        }
+//        databaseStorage.write { transaction in
+//            addBlockedAddress(address, blockMode: blockMode, transaction: transaction)
+//        }
+//    }
+
     @objc
     public func addBlockedAddress(_ address: SignalServiceAddress,
                                   blockMode: BlockMode,
@@ -458,9 +469,10 @@ public class OWSBlockingManager: NSObject {
         return Set(blockedGroupIds)
     }
 
-//    public var blockedGroupModels: [TSGroupModel] {
-//        unfairLock.withLock { Array(self.currentState.blockedGroupMap.values) }
-//    }
+    @objc
+    public var blockedGroupModels: [TSGroupModel] {
+        unfairLock.withLock { Array(self.currentState.blockedGroupMap.values) }
+    }
 
     @objc
     public func isGroupIdBlocked(_ groupId: Data) -> Bool {
@@ -471,6 +483,17 @@ public class OWSBlockingManager: NSObject {
     public func cachedGroupModel(forGroupId groupId: Data) -> TSGroupModel? {
         unfairLock.withLock { self.currentState.blockedGroupMap[groupId] }
     }
+
+//    @objc
+//    public func addBlockedGroupWithSneakyTransaction(groupModel: TSGroupModel,
+//                                                       blockMode: BlockMode) {
+//        guard !isGroupIdBlocked(groupModel.groupId) else {
+//            return
+//        }
+//        databaseStorage.write { transaction in
+//            addBlockedGroup(groupModel: groupModel, blockMode: blockMode, transaction: transaction)
+//        }
+//    }
 
     @objc
     public func addBlockedGroup(groupModel: TSGroupModel,

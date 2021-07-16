@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:blockedContactsSection];
     }
 
-    NSArray<TSGroupModel *> *blockedGroups = self.blockingManager.blockedGroups;
+    NSArray<TSGroupModel *> *blockedGroups = self.blockingManager.blockedGroupModels;
     if (blockedGroups.count > 0) {
         OWSTableSection *blockedGroupsSection = [OWSTableSection new];
         blockedGroupsSection.headerTitle = NSLocalizedString(

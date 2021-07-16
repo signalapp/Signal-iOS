@@ -131,7 +131,7 @@ public class CVLoadCoordinator: NSObject {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
-                                               name: .blockListDidChange,
+                                               name: OWSBlockingManager.blockListDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(localProfileDidChange),

@@ -10,7 +10,7 @@ extension ConversationViewController {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
-                                               name: .blockListDidChange,
+                                               name: OWSBlockingManager.blockListDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(windowManagerCallDidChange),
