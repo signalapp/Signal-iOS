@@ -118,7 +118,9 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     @objc
     public func clear() {
-        cache.removeAllObjects()
+        autoreleasepool {
+            cache.removeAllObjects()
+        }
     }
 
     public subscript(key: KeyType) -> ValueType? {
@@ -150,5 +152,69 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     public func removeAllObjects() {
         clear()
+    }
+}
+
+// MARK: -
+
+// NSCache sometimes evacuates entries off the main thread.
+// Some cached entities should only be deallocated on the main thread.
+// This handle can be used to ensure that cache entries are released
+// on the main thread.
+public class ThreadSafeCacheHandle<T: AnyObject> {
+
+    public let value: T
+
+    public init(_ value: T) {
+        self.value = value
+    }
+
+    deinit {
+        guard !Thread.isMainThread else {
+            return
+        }
+        ThreadSafeCacheReleaser.releaseOnMainThread(value)
+    }
+}
+
+// MARK: -
+
+// Some caches use ThreadSafeCacheHandle to ensure that their
+// values are released on the main thread.  If one of these caches
+// evacuated a large number of values at the same time off the main
+// thread, we wouldn't want to dispatch to the main thread once for
+// each value. This class buffers the values and releases them in
+// batches.
+private class ThreadSafeCacheReleaser {
+    private static let unfairLock = UnfairLock()
+    private static var valuesToRelease = [AnyObject]()
+
+    fileprivate static func releaseOnMainThread(_ value: AnyObject) {
+        unfairLock.withLock {
+            let shouldSchedule = valuesToRelease.isEmpty
+            valuesToRelease.append(value)
+            if shouldSchedule {
+                DispatchQueue.main.async {
+                    Self.releaseValues()
+                }
+            }
+        }
+    }
+
+    private static func releaseValues() {
+        AssertIsOnMainThread()
+
+        autoreleasepool {
+            var valuesToRelease: [AnyObject] = unfairLock.withLock {
+                let valuesToRelease = Self.valuesToRelease
+                Self.valuesToRelease = []
+                return valuesToRelease
+            }
+            // To avoid deadlock, we release the values without unfairLock acquired.
+            owsAssertDebug(valuesToRelease.count > 0)
+            Logger.info("Releasing \(valuesToRelease.count) values.")
+            valuesToRelease = []
+            owsAssertDebug(valuesToRelease.isEmpty)
+        }
     }
 }
