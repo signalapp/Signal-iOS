@@ -71,52 +71,50 @@ public enum AvatarIcon: String, CaseIterable {
 }
 
 public enum AvatarTheme: String, CaseIterable {
-    case theme1
-    case theme2
-    case theme3
-    case theme4
-    case theme5
-    case theme6
-    case theme7
-    case theme8
-    case theme9
-    case theme10
-    case theme11
-    case theme12
-
-    // TODO: final colors + names
+    case A100
+    case A110
+    case A120
+    case A130
+    case A140
+    case A150
+    case A160
+    case A170
+    case A180
+    case A190
+    case A200
+    case A210
 
     public var foregroundColor: UIColor {
         switch self {
-        case .theme1: return UIColor(rgbHex: 0x2E51FF)
-        case .theme2: return UIColor(rgbHex: 0x006DA3)
-        case .theme3: return UIColor(rgbHex: 0x077D92)
-        case .theme4: return UIColor(rgbHex: 0x067906)
-        case .theme5: return UIColor(rgbHex: 0x8F2AF4)
-        case .theme6: return UIColor(rgbHex: 0xCC0066)
-        case .theme7: return UIColor(rgbHex: 0xB814B8)
-        case .theme8: return UIColor(rgbHex: 0xC13215)
-        case .theme9: return UIColor(rgbHex: 0xA19A58)
-        case .theme10: return UIColor(rgbHex: 0x6B6B24)
-        case .theme11: return UIColor(rgbHex: 0x5B6976)
-        case .theme12: return UIColor(rgbHex: 0x848484)
+        case .A100: return UIColor(rgbHex: 0x3838F5)
+        case .A110: return UIColor(rgbHex: 0x1251D3)
+        case .A120: return UIColor(rgbHex: 0x086DA0)
+        case .A130: return UIColor(rgbHex: 0x067906)
+        case .A140: return UIColor(rgbHex: 0x661AFF)
+        case .A150: return UIColor(rgbHex: 0x9F00F0)
+        case .A160: return UIColor(rgbHex: 0xB8057C)
+        case .A170: return UIColor(rgbHex: 0xBE0404)
+        case .A180: return UIColor(rgbHex: 0x836B01)
+        case .A190: return UIColor(rgbHex: 0x7D6F40)
+        case .A200: return UIColor(rgbHex: 0x4F4F6D)
+        case .A210: return UIColor(rgbHex: 0x5C5C5C)
         }
     }
 
     public var backgroundColor: UIColor {
         switch self {
-        case .theme1: return UIColor(rgbHex: 0xDEE3FF)
-        case .theme2: return UIColor(rgbHex: 0xC2DCE9)
-        case .theme3: return UIColor(rgbHex: 0xC3E0E5)
-        case .theme4: return UIColor(rgbHex: 0xC3DFC3)
-        case .theme5: return UIColor(rgbHex: 0xE4CCFC)
-        case .theme6: return UIColor(rgbHex: 0xF3C2DA)
-        case .theme7: return UIColor(rgbHex: 0xEEC7EE)
-        case .theme8: return UIColor(rgbHex: 0xF0CEC7)
-        case .theme9: return UIColor(rgbHex: 0xFCF6C4)
-        case .theme10: return UIColor(rgbHex: 0xDBDBCA)
-        case .theme11: return UIColor(rgbHex: 0xD8DBDE)
-        case .theme12: return UIColor(rgbHex: 0xEDEDED)
+        case .A100: return UIColor(rgbHex: 0xE3E3FE)
+        case .A110: return UIColor(rgbHex: 0xDDE7FC)
+        case .A120: return UIColor(rgbHex: 0xD8E8F0)
+        case .A130: return UIColor(rgbHex: 0xCDE4CD)
+        case .A140: return UIColor(rgbHex: 0xEAE0FD)
+        case .A150: return UIColor(rgbHex: 0xF5E3FE)
+        case .A160: return UIColor(rgbHex: 0xF6D8EC)
+        case .A170: return UIColor(rgbHex: 0xF5D7D7)
+        case .A180: return UIColor(rgbHex: 0xFEF5D0)
+        case .A190: return UIColor(rgbHex: 0xEAE6D5)
+        case .A200: return UIColor(rgbHex: 0xD2D2DC)
+        case .A210: return UIColor(rgbHex: 0xD7D7D9)
         }
     }
 }
@@ -124,7 +122,7 @@ public enum AvatarTheme: String, CaseIterable {
 // MARK: - Avatar Colors
 
 public extension AvatarTheme {
-    static var `default`: AvatarTheme { .theme1 }
+    static var `default`: AvatarTheme { .A100 }
 
     static func forThread(_ thread: TSThread) -> AvatarTheme {
         if let contactThread = thread as? TSContactThread {
