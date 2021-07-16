@@ -331,6 +331,7 @@ public class OWSBlockingManager: NSObject {
         return blockedAddresses
     }
 
+    @objc
     public func addBlockedAddress(_ address: SignalServiceAddress,
                                   blockMode: BlockMode,
                                   transaction: SDSAnyWriteTransaction) {
@@ -382,6 +383,7 @@ public class OWSBlockingManager: NSObject {
                           transaction: transaction)
     }
 
+    @objc
     public func removeBlockedAddress(_ address: SignalServiceAddress,
                                      wasLocallyInitiated: Bool,
                                      transaction: SDSAnyWriteTransaction) {
@@ -470,6 +472,7 @@ public class OWSBlockingManager: NSObject {
         unfairLock.withLock { self.currentState.blockedGroupMap[groupId] }
     }
 
+    @objc
     public func addBlockedGroup(groupModel: TSGroupModel,
                                 blockMode: BlockMode,
                                 transaction: SDSAnyWriteTransaction) {
@@ -527,6 +530,7 @@ public class OWSBlockingManager: NSObject {
                           transaction: transaction)
     }
 
+    @objc
     public func addBlockedGroup(groupId: Data,
                                 blockMode: BlockMode,
                                 transaction: SDSAnyWriteTransaction) {
@@ -548,6 +552,7 @@ public class OWSBlockingManager: NSObject {
                         transaction: transaction)
     }
 
+    @objc
     public func removeBlockedGroup(groupId: Data,
                                    wasLocallyInitiated: Bool,
                                    transaction: SDSAnyWriteTransaction) {
@@ -599,6 +604,7 @@ public class OWSBlockingManager: NSObject {
 
     // MARK: - Thread Blocking
 
+    @objc
     public func isThreadBlocked(_ thread: TSThread) -> Bool {
         if let contactThread = thread as? TSContactThread {
             return isAddressBlocked(contactThread.contactAddress)
@@ -610,6 +616,7 @@ public class OWSBlockingManager: NSObject {
         }
     }
 
+    @objc
     public func addBlockedThread(_ thread: TSThread,
                                  blockMode: BlockMode,
                                  transaction: SDSAnyWriteTransaction) {
@@ -632,6 +639,7 @@ public class OWSBlockingManager: NSObject {
     //    })
     //    }
 
+    @objc
     public func removeBlockedThread(_ thread: TSThread,
                                     wasLocallyInitiated: Bool,
                                     transaction: SDSAnyWriteTransaction) {

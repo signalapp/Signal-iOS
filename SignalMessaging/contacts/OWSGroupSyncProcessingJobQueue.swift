@@ -229,11 +229,15 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
 
         if groupDetails.isBlocked {
             if !self.blockingManager.isGroupIdBlocked(groupDetails.groupId) {
-                self.blockingManager.addBlockedGroup(groupModel, blockMode: .remote, transaction: transaction)
+                self.blockingManager.addBlockedGroup(groupModel: groupModel,
+                                                     blockMode: .remote,
+                                                     transaction: transaction)
             }
         } else {
             if self.blockingManager.isGroupIdBlocked(groupDetails.groupId) {
-                self.blockingManager.removeBlockedGroupId(groupDetails.groupId, wasLocallyInitiated: false, transaction: transaction)
+                self.blockingManager.removeBlockedGroup(groupId: groupDetails.groupId,
+                                                        wasLocallyInitiated: false,
+                                                        transaction: transaction)
             }
         }
 

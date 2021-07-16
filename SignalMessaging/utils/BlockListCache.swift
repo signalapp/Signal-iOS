@@ -55,7 +55,7 @@ public class BlockListCache: NSObject {
         self.delegate = delegate
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
-                                               name: .blockListDidChange,
+                                               name: OWSBlockingManager.blockListDidChange,
                                                object: nil)
         updateWithoutNotifyingDelegate()
     }

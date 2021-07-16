@@ -143,7 +143,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
-                                                 name:kNSNotificationNameBlockListDidChange
+                                                 name:OWSBlockingManager.blockListDidChange
                                                object:nil];
 }
 
@@ -585,7 +585,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         }
 
         NSSet<NSString *> *blockedPhoneNumbers = self.blockingManager.blockedPhoneNumbers;
-        NSSet<NSString *> *blockedUUIDs = blockingManager.blockedUUIDStrings;
+        NSSet<NSString *> *blockedUUIDs = self.blockingManager.blockedUUIDStrings;
         NSSet<NSData *> *blockedGroupIds = self.blockingManager.blockedGroupIds;
 
         // Find the users and groups which are both a) blocked b) may have our current profile key.
