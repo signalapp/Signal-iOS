@@ -5,14 +5,29 @@
 import Foundation
 
 public struct AvatarModel: Equatable {
+    public let identifier: String
     public var type: AvatarType
     public var theme: AvatarTheme
+
+    public init(identifier: String? = nil, type: AvatarType, theme: AvatarTheme) {
+        if let identifier = identifier {
+            if case .icon(let icon) = type { owsAssertDebug(identifier == icon.rawValue) }
+            self.identifier = identifier
+        } else {
+            switch type {
+            case .icon(let icon): self.identifier = icon.rawValue
+            default: self.identifier = UUID().uuidString
+            }
+        }
+        self.type = type
+        self.theme = theme
+    }
 }
 
 public enum AvatarType: Equatable {
-    case image(AvatarImage)
+    case image(URL)
     case icon(AvatarIcon)
-    case text(AvatarText)
+    case text(String)
 
     public var isEditable: Bool {
         switch self {
@@ -31,7 +46,7 @@ public enum AvatarType: Equatable {
     }
 }
 
-public enum AvatarIcon: String {
+public enum AvatarIcon: String, CaseIterable {
     case dog
     case leftFace
     case rightFace
@@ -41,42 +56,31 @@ public enum AvatarIcon: String {
     case parrot
     case snake
 
-    // todo: real names / final icons
-
     public var image: UIImage { UIImage(named: imageName)! }
 
     public var imageName: String {
         switch self {
         case .dog: return "avatar-illustration-fox"
-        case .leftFace: return "avatar-illustration-fox"
+        case .leftFace: return "avatar-illustration-left-face"
         case .rightFace: return "avatar-illustration-fox"
-        case .pointyFace: return "avatar-illustration-fox"
-        case .cat: return "avatar-illustration-fox"
+        case .pointyFace: return "avatar-illustration-pointy-face"
+        case .cat: return "avatar-illustration-cat"
         case .fox: return "avatar-illustration-fox"
         case .parrot: return "avatar-illustration-fox"
         case .snake: return "avatar-illustration-fox"
         }
     }
-}
 
-public struct AvatarText: Equatable {
-    public let identifier: UUID
-    public var text: String
+    // todo: real names / final icons
 
-    public init(identifier: UUID, text: String) {
-        self.identifier = identifier
-        self.text = text
-    }
-}
+    public static var defaultGroupIcons: [AvatarIcon] = [
+        .dog,
+        .cat,
+        .fox,
+        .parrot
+    ]
 
-public struct AvatarImage: Equatable {
-    public let identifier: UUID
-    public let path: URL
-
-    public init(identifier: UUID, path: URL) {
-        self.identifier = identifier
-        self.path = path
-    }
+    public static var defaultProfileIcons: [AvatarIcon] = allCases
 }
 
 public enum AvatarTheme: String, CaseIterable {

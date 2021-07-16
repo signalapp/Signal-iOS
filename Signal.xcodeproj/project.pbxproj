@@ -441,7 +441,6 @@
 		34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDC206939B200CB1A14 /* DebugUIMessagesAssetLoader.m */; };
 		34D3E57B245A189D00F5E4A1 /* DebugUIScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D3E579245A189D00F5E4A1 /* DebugUIScreenshots.swift */; };
 		34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D3E57A245A189D00F5E4A1 /* DebugUIScreenshots.m */; };
-		34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */; };
 		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
 		34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
 		34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C02A1ED3685800188D7C /* DebugUIContacts.m */; };
@@ -746,8 +745,8 @@
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		8841584C252F9F1C0078903D /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8841584B252F9F1C0078903D /* SignalCall.swift */; };
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
-		8847E6ED269FACF90063E319 /* EditableTextAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FC7269F5F9100841DF9 /* EditableTextAvatarView.swift */; };
-		8847E6EE269FAD060063E319 /* EditableImageAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FCA269F609A00841DF9 /* EditableImageAvatarView.swift */; };
+		8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */; };
+		8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */; };
 		88489AFB266AB59800EE1166 /* NSEEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88489AFA266AB59800EE1166 /* NSEEnvironment.swift */; };
 		884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */; };
 		885091C02525650100428A37 /* PHPhotoLibrary+Xcode11.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */; };
@@ -1530,8 +1529,6 @@
 		34D3E578245A189D00F5E4A1 /* DebugUIScreenshots.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIScreenshots.h; sourceTree = "<group>"; };
 		34D3E579245A189D00F5E4A1 /* DebugUIScreenshots.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIScreenshots.swift; sourceTree = "<group>"; };
 		34D3E57A245A189D00F5E4A1 /* DebugUIScreenshots.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIScreenshots.m; sourceTree = "<group>"; };
-		34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarViewHelper.h; sourceTree = "<group>"; };
-		34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvatarViewHelper.m; sourceTree = "<group>"; };
 		34D8C0231ED3673300188D7C /* DebugUIMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessages.h; sourceTree = "<group>"; };
 		34D8C0241ED3673300188D7C /* DebugUIMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMessages.m; sourceTree = "<group>"; };
 		34D8C0251ED3673300188D7C /* DebugUITableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUITableViewController.h; sourceTree = "<group>"; };
@@ -1838,14 +1835,14 @@
 		8837F74023DA0B0F00772A32 /* MegaphoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MegaphoneView.swift; sourceTree = "<group>"; };
 		883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarSettingsViewController.swift; sourceTree = "<group>"; };
 		883A7FC4269F58F600841DF9 /* Inter-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.otf"; sourceTree = "<group>"; };
-		883A7FC7269F5F9100841DF9 /* EditableTextAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableTextAvatarView.swift; sourceTree = "<group>"; };
-		883A7FCA269F609A00841DF9 /* EditableImageAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableImageAvatarView.swift; sourceTree = "<group>"; };
 		883A7FD1269F642F00841DF9 /* AvatarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarModel.swift; sourceTree = "<group>"; };
 		88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+LastVisibleSortId.swift"; sourceTree = "<group>"; };
 		8841584B252F9F1C0078903D /* SignalCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
 		884596EF24B93E13002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/Localizable.strings; sourceTree = "<group>"; };
 		884596F024B93E32002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDescriptionPreviewView.swift; sourceTree = "<group>"; };
+		8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarHistoryManager.swift; sourceTree = "<group>"; };
+		8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarEditViewController.swift; sourceTree = "<group>"; };
 		88489AFA266AB59800EE1166 /* NSEEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSEEnvironment.swift; sourceTree = "<group>"; };
 		884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchMegaphone.swift; sourceTree = "<group>"; };
 		885091BF2525650100428A37 /* PHPhotoLibrary+Xcode11.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHPhotoLibrary+Xcode11.swift"; sourceTree = "<group>"; };
@@ -3558,11 +3555,9 @@
 		883A7FC1269F4BE700841DF9 /* Avatars */ = {
 			isa = PBXGroup;
 			children = (
-				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
 				883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */,
-				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
-				883A7FC7269F5F9100841DF9 /* EditableTextAvatarView.swift */,
-				883A7FCA269F609A00841DF9 /* EditableImageAvatarView.swift */,
+				8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */,
+				8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */,
 			);
 			path = Avatars;
 			sourceTree = "<group>";
@@ -5742,7 +5737,6 @@
 				328EF3DC25782A6A00D5C31D /* GroupCallSwipeToastView.swift in Sources */,
 				346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */,
 				88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */,
-				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */,
 				327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */,
 				8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */,
@@ -5782,7 +5776,6 @@
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */,
 				880D9025247F8841003D2B14 /* Emoji+Name.swift in Sources */,
-				8847E6ED269FACF90063E319 /* EditableTextAvatarView.swift in Sources */,
 				8829883925B979F900DEE1E3 /* ThemeSettingsTableViewController.swift in Sources */,
 				888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */,
 				347C3847252CE6C900F3D941 /* CVComponentBodyMedia.swift in Sources */,
@@ -5854,6 +5847,7 @@
 				3426A37025631C250036407F /* CVComponentLinkPreview.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */,
+				8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */,
 				3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */,
 				3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */,
 				88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */,
@@ -5867,7 +5861,6 @@
 				880D902C2480889B003D2B14 /* EmojiPickerCollectionView.swift in Sources */,
 				32A9E22624C11B3F00C43518 /* EmojiMoodPickerView.swift in Sources */,
 				881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */,
-				8847E6EE269FAD060063E319 /* EditableImageAvatarView.swift in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
 				88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */,
@@ -5913,6 +5906,7 @@
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
 				88EF42E525F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */,
+				8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */,
 				348815BA2552063F00D4F4C4 /* CVAvatarBuilder.swift in Sources */,
 				32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */,
 				346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */,

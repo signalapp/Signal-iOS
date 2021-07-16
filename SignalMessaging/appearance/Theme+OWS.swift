@@ -77,6 +77,7 @@ public enum ThemeIcon: UInt {
     case trash24
     case copy24
     case color24
+    case text24
 
     case checkCircle
     case message
@@ -303,6 +304,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "copy-solid-24" : "ic_copy"
         case .color24:
             return isDarkThemeEnabled ? "color-solid-24" : "color-outline-24"
+        case .text24:
+            return "text-24"
 
         case .checkCircle:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"

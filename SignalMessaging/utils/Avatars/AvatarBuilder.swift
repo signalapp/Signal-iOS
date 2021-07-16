@@ -200,17 +200,23 @@ public class AvatarBuilder: NSObject {
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    @objc
     public func avatarImage(personNameComponents: PersonNameComponents,
+                            address: SignalServiceAddress? = nil,
                             diameterPoints: UInt,
                             transaction: SDSAnyReadTransaction) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let shouldBlurAvatar = false
+        let theme: AvatarTheme
+        if let address = address {
+            theme = .forAddress(address)
+        } else {
+            theme = .default
+        }
         let requestType: RequestType = {
             if let initials = Self.contactInitials(forPersonNameComponents: personNameComponents) {
-                return .text(text: initials, theme: .default)
+                return .text(text: initials, theme: theme)
             } else {
-                return .contactDefaultIcon(theme: .default)
+                return .contactDefaultIcon(theme: theme)
             }
         }()
         let request = Request(requestType: requestType,
@@ -222,10 +228,15 @@ public class AvatarBuilder: NSObject {
     @objc
     public func avatarImage(forGroupId groupId: Data, diameterPoints: UInt) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
+        return avatarImage(forGroupId: groupId, diameterPixels: UInt(diameterPixels))
+    }
+
+    @objc
+    public func avatarImage(forGroupId groupId: Data, diameterPixels: UInt) -> UIImage? {
         let shouldBlurAvatar = false
         let requestType: RequestType = .groupDefaultIcon(groupId: groupId)
         let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
+                              diameterPixels: CGFloat(diameterPixels),
                               shouldBlurAvatar: shouldBlurAvatar)
         let avatarContentType: AvatarContentType = .groupDefault(theme: .forGroupId(groupId))
         let avatarContent = AvatarContent(request: request,
@@ -236,31 +247,54 @@ public class AvatarBuilder: NSObject {
         return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
-    @objc
-    public func avatarImageForContactDefault(address: SignalServiceAddress,
-                                             diameterPoints: UInt) -> UIImage? {
+    public func defaultAvatarImageForLocalUser(
+        diameterPoints: UInt,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let shouldBlurAvatar = false
-        let theme = AvatarTheme.forAddress(address)
-        let requestType: RequestType = .contactDefaultIcon(theme: theme)
-        let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
-                              shouldBlurAvatar: shouldBlurAvatar)
-        let avatarContentType: AvatarContentType = .contactDefaultIcon(theme: theme)
-        let avatarContent = AvatarContent(request: request,
-                                          contentType: avatarContentType,
-                                          failoverContentType: nil,
-                                          diameterPixels: request.diameterPixels,
-                                          shouldBlurAvatar: request.shouldBlurAvatar)
-        return avatarImage(forRequest: request, avatarContent: avatarContent)
+        return defaultAvatarImageForLocalUser(
+            diameterPixels: UInt(diameterPixels),
+            transaction: transaction
+        )
+    }
+
+    public func defaultAvatarImageForLocalUser(
+        diameterPixels: UInt,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing local address")
+            return nil
+        }
+
+        let theme = AvatarTheme.forAddress(localAddress)
+        let nameComponents = Self.contactsManager.nameComponents(for: localAddress, transaction: transaction)
+
+        let requestType: RequestType = {
+            if let nameComponents = nameComponents,
+               let initials = Self.contactInitials(forPersonNameComponents: nameComponents) {
+                return .text(text: initials, theme: theme)
+            } else {
+                return .contactDefaultIcon(theme: theme)
+            }
+        }()
+        let request = Request(
+            requestType: requestType,
+            diameterPixels: CGFloat(diameterPixels),
+            shouldBlurAvatar: false
+        )
+        return avatarImage(forRequest: request, transaction: transaction)
     }
 
     public func avatarImage(model: AvatarModel, diameterPoints: UInt) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
+        return avatarImage(model: model, diameterPixels: UInt(diameterPixels))
+    }
 
+    public func avatarImage(model: AvatarModel, diameterPixels: UInt) -> UIImage? {
         let request = Request(
             requestType: .model(model),
-            diameterPixels: diameterPixels,
+            diameterPixels: CGFloat(diameterPixels),
             shouldBlurAvatar: false
         )
 
@@ -268,10 +302,10 @@ public class AvatarBuilder: NSObject {
         switch model.type {
         case .icon(let icon):
             avatarContentType = .avatarIcon(icon: icon, theme: model.theme)
-        case .image(let image):
-            avatarContentType = .file(fileUrl: image.path, shouldValidate: false)
+        case .image(let url):
+            avatarContentType = .file(fileUrl: url, shouldValidate: false)
         case .text(let text):
-            avatarContentType = .text(text: text.text, theme: model.theme)
+            avatarContentType = .text(text: text, theme: model.theme)
         }
 
         let avatarContent = AvatarContent(
@@ -320,8 +354,8 @@ public class AvatarBuilder: NSObject {
                     return "icon.\(icon.rawValue).\(avatarModel.theme.rawValue)"
                 case .text(let text):
                     return "text.\(text).\(avatarModel.theme.rawValue)"
-                case .image(let image):
-                    return "file.\(image.path.path)"
+                case .image(let url):
+                    return "file.\(url.path)"
                 }
             }
         }
@@ -606,14 +640,14 @@ public class AvatarBuilder: NSObject {
                         contentType: .avatarIcon(icon: icon, theme: model.theme),
                         failoverContentType: nil
                     )
-                case .image(let image):
+                case .image(let url):
                     return AvatarContentTypes(
-                        contentType: .file(fileUrl: image.path, shouldValidate: false),
+                        contentType: .file(fileUrl: url, shouldValidate: false),
                         failoverContentType: nil
                     )
                 case .text(let text):
                     return AvatarContentTypes(
-                        contentType: .text(text: text.text, theme: model.theme),
+                        contentType: .text(text: text, theme: model.theme),
                         failoverContentType: nil
                     )
                 }
@@ -940,7 +974,7 @@ public class AvatarBuilder: NSObject {
         ]
         let options: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
         let baseTextSize = (text).boundingRect(
-            with: frame.size,
+            with: CGSize(width: .max, height: .max),
             options: options,
             attributes: textAttributesForMeasurement,
             context: nil

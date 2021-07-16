@@ -8,7 +8,6 @@
 // Separate iOS Frameworks from other imports.
 #import "AVAudioSession+OWS.h"
 #import "AppDelegate.h"
-#import "AvatarViewHelper.h"
 #import "BlockListViewController.h"
 #import "ConversationCollectionView.h"
 #import "ConversationInputToolbar.h"

@@ -65,7 +65,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         // First section.
 
         helper.delegate = self
-        helper.buildContents(avatarViewHelperDelegate: self)
+        helper.buildContents()
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
@@ -428,34 +428,6 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         }
         let vc = SFSafariViewController(url: url)
         fromViewController.present(vc, animated: true, completion: nil)
-    }
-}
-
-// MARK: -
-
-extension NewGroupConfirmViewController: AvatarViewHelperDelegate {
-    public func avatarActionSheetTitle() -> String? {
-        return NSLocalizedString("NEW_GROUP_ADD_PHOTO_ACTION", comment: "Action Sheet title prompting the user for a group avatar")
-    }
-
-    public func avatarDidChange(_ image: UIImage) {
-        helper.setAvatarImage(image)
-    }
-
-    public func fromViewController() -> UIViewController {
-        return self
-    }
-
-    public func hasClearAvatarAction() -> Bool {
-        return newGroupState.avatarData != nil
-    }
-
-    public func clearAvatar() {
-        helper.setAvatarImage(nil)
-    }
-
-    public func clearAvatarActionLabel() -> String {
-        return NSLocalizedString("EDIT_GROUP_CLEAR_AVATAR", comment: "The 'clear avatar' button in the 'edit group' view.")
     }
 }
 

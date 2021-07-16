@@ -1,15 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "avatar-illustration-fox.svg",
+      "filename" : "text-24.svg",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "preserves-vector-representation" : true
   }
 }

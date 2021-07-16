@@ -322,6 +322,27 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
 
+/* Text prompting the user to choose a color when editing their avatar */
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+
+/* Segment indicating the user can edit the color of the avatar */
+"AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Color";
+
+/* Segment indicating the user can edit the text of the avatar */
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+
+/* Text indicating the user can select an avatar from their camera */
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+
+/* Text indicating the user can select an avatar from their photos */
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+
+/* Title for the previously used and preset avatar section. */
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
 /* return to the previous screen */
 "BACK_BUTTON" = "Back";
 
@@ -1440,9 +1461,6 @@
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
-
-/* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Edit Group";
@@ -2953,12 +2971,6 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
 
-/* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Camera";
-
-/* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
-
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
 
@@ -3339,9 +3351,6 @@
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
-
-/* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Set Group Photo";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "New Group";
@@ -4276,12 +4285,6 @@
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
 
-/* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
-
-/* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
-
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
 
@@ -4407,7 +4410,7 @@
 
 /* Error message indicating that a user can't be selected until they upgrade their app. */
 "RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "This user can't be added to the group until they upgrade Signal.";
- 
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
 
