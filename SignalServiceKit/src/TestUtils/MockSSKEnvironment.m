@@ -6,7 +6,6 @@
 #import <SignalServiceKit/MockSSKEnvironment.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFakeCallMessageHandler.h>
 #import <SignalServiceKit/OWSFakeMessageSender.h>

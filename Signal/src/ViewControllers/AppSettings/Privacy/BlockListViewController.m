@@ -13,7 +13,6 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -96,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
         [blockedAddressesSet addObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
     }
 
-    for (NSString *uuidString in self.blockingManager.blockedUUIDs) {
+    for (NSString *uuidString in self.blockingManager.blockedUUIDStrings) {
         [blockedAddressesSet addObject:[[SignalServiceAddress alloc] initWithUuidString:uuidString]];
     }
 

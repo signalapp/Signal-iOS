@@ -111,9 +111,9 @@ public class BlockListCache: NSObject {
     }
 
     private func updateWithoutNotifyingDelegate() {
-        let blockedPhoneNumbers = Set(blockingManager.blockedPhoneNumbers)
-        let blockedUUIDs = Set(blockingManager.blockedUUIDs)
-        let blockedGroupIds = Set(blockingManager.blockedGroupIds)
+        let blockedPhoneNumbers = blockingManager.blockedPhoneNumbers
+        let blockedUUIDs = blockingManager.blockedUUIDStrings
+        let blockedGroupIds = blockingManager.blockedGroupIds
         update(blockedPhoneNumbers: blockedPhoneNumbers, blockedUUIDs: blockedUUIDs, blockedGroupIds: blockedGroupIds)
     }
 

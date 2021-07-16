@@ -8,7 +8,6 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>

@@ -225,131 +225,13 @@ public class OWSBlockingManager: NSObject {
         blockMode != .remote
     }
 
-    // MARK: - Contact Blocking
+    // MARK: - Sync
 
-    public var blockedAddresses: Set<SignalServiceAddress> {
-        let state = unfairLock.withLock {
-            self.currentState
-        }
-        var blockedAddresses = Set<SignalServiceAddress>()
-        for phoneNumber in state.blockedPhoneNumbers {
-            blockedAddresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
-        }
-        for uuidString in state.blockedUUIDStrings {
-            blockedAddresses.insert(SignalServiceAddress(uuidString: uuidString))
-        }
-        // TODO UUID - optimize this. Maybe blocking manager should store a SignalServiceAddressSet as
-        // it's state instead of the two separate sets.
-        return blockedAddresses
-    }
-
-    public func addBlockedAddress(_ address: SignalServiceAddress,
-                                  blockMode: BlockMode,
-                                  transaction: SDSAnyWriteTransaction) {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
-        }
-
-        let newState: State? = unfairLock.withLock {
-            let oldState = self.currentState
-            guard !oldState.isBlocked(address: address) else {
-                return nil
-            }
-
-            var blockedPhoneNumbers = oldState.blockedPhoneNumbers
-            var blockedUUIDStrings = oldState.blockedUUIDStrings
-            let blockedGroupMap = oldState.blockedGroupMap
-
-            if let phoneNumber = address.phoneNumber {
-                blockedPhoneNumbers.insert(phoneNumber)
-            }
-            if let uuidString = address.uuidString {
-                blockedUUIDStrings.insert(uuidString)
-            }
-            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
-                                 blockedUUIDStrings: blockedUUIDStrings,
-                                 blockedGroupMap: blockedGroupMap)
-            self.currentState = newState
-            return newState
-        }
-        guard let newState = newState else {
-            // No changes.
-            return
-        }
-
-        Logger.info("addBlockedAddress: \(address)")
-
-        // TODO: Should we consult "didChange" or "isBlockedAfter != isBlockedBefore".
-        // What if isBlocked didn't change but now we know one of the address components
-        // that we didn't before?
-        let wasLocallyInitiated = self.wasLocallyInitiated(withBlockMode: blockMode)
-        if wasLocallyInitiated {
-            // The block state changed, schedule a backup with the storage service
-            storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
-        }
-
-        Self.handleUpdate(newState: newState,
-                          sendSyncMessage: wasLocallyInitiated,
-                          transaction: transaction)
-    }
-
-    public func removeBlockedAddress(_ address: SignalServiceAddress,
-                                     wasLocallyInitiated: Bool,
-                                     transaction: SDSAnyWriteTransaction) {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
-        }
-
-        Logger.info("removeBlockedAddress: \(address)")
-
-        let newState: State? = unfairLock.withLock {
-            let oldState = self.currentState
-
-            // TODO: Should we consult "didChange" or "isBlockedAfter != isBlockedBefore".
-            // What if isBlocked didn't change but now we know one of the address components
-            // that we didn't before?
-            guard oldState.isBlocked(address: address) else {
-                return nil
-            }
-
-            var blockedPhoneNumbers = oldState.blockedPhoneNumbers
-            var blockedUUIDStrings = oldState.blockedUUIDStrings
-            let blockedGroupMap = oldState.blockedGroupMap
-
-            if let phoneNumber = address.phoneNumber {
-                blockedPhoneNumbers.remove(phoneNumber)
-            }
-            if let uuidString = address.uuidString {
-                blockedUUIDStrings.remove(uuidString)
-            }
-            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
-                                 blockedUUIDStrings: blockedUUIDStrings,
-                                 blockedGroupMap: blockedGroupMap)
-            self.currentState = newState
-            return newState
-        }
-        guard let newState = newState else {
-            // No changes.
-            return
-        }
-
-        if wasLocallyInitiated {
-            // The block state changed, schedule a backup with the storage service
-            storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
-        }
-
-        Self.handleUpdate(newState: newState,
-                          sendSyncMessage: wasLocallyInitiated,
-                          transaction: transaction)
-    }
-
-    // TODO: Do these params need to be optional?
-    private func processIncomingSync(blockedPhoneNumbers: Set<String>,
-                                     blockedUUIDs: Set<UUID>,
-                                     blockedGroupIds: Set<Data>,
-                                     transaction: SDSAnyWriteTransaction) {
+    @objc
+    public func processIncomingSync(blockedPhoneNumbers: Set<String>,
+                                    blockedUUIDs: Set<UUID>,
+                                    blockedGroupIds: Set<Data>,
+                                    transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
         // TODO: Audit this notification's usage.
@@ -387,7 +269,7 @@ public class OWSBlockingManager: NSObject {
             transitionalBlockedGroupMap[groupId] = groupThread.groupModel
         }
 
-        let newState: State? = unfairLock.withLock {
+        let state: State? = unfairLock.withLock {
             let oldState = self.currentState
 
             // The new "blocked group" state should reflect the state from the sync.
@@ -421,7 +303,7 @@ public class OWSBlockingManager: NSObject {
             return newState
         }
 
-        guard let newState = newState else {
+        guard let newState = state else {
             // No changes.
             return
         }
@@ -431,51 +313,172 @@ public class OWSBlockingManager: NSObject {
                           transaction: transaction)
     }
 
-    // TODO: Array or set?
-    private var blockedPhoneNumbers: Set<String> {
+    // MARK: - Contact Blocking
+
+    public var blockedAddresses: Set<SignalServiceAddress> {
+        let state = unfairLock.withLock {
+            self.currentState
+        }
+        var blockedAddresses = Set<SignalServiceAddress>()
+        for phoneNumber in state.blockedPhoneNumbers {
+            blockedAddresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
+        }
+        for uuidString in state.blockedUUIDStrings {
+            blockedAddresses.insert(SignalServiceAddress(uuidString: uuidString))
+        }
+        // TODO UUID - optimize this. Maybe blocking manager should store a SignalServiceAddressSet as
+        // it's state instead of the two separate sets.
+        return blockedAddresses
+    }
+
+    public func addBlockedAddress(_ address: SignalServiceAddress,
+                                  blockMode: BlockMode,
+                                  transaction: SDSAnyWriteTransaction) {
+        guard address.isValid else {
+            owsFailDebug("Invalid address: \(address).")
+            return
+        }
+
+        let state: State? = unfairLock.withLock {
+            let oldState = self.currentState
+            guard !oldState.isBlocked(address: address) else {
+                return nil
+            }
+
+            var blockedPhoneNumbers = oldState.blockedPhoneNumbers
+            var blockedUUIDStrings = oldState.blockedUUIDStrings
+            let blockedGroupMap = oldState.blockedGroupMap
+
+            if let phoneNumber = address.phoneNumber {
+                blockedPhoneNumbers.insert(phoneNumber)
+            }
+            if let uuidString = address.uuidString {
+                blockedUUIDStrings.insert(uuidString)
+            }
+            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
+                                 blockedUUIDStrings: blockedUUIDStrings,
+                                 blockedGroupMap: blockedGroupMap)
+            self.currentState = newState
+            return newState
+        }
+        guard let newState = state else {
+            // No changes.
+            return
+        }
+
+        Logger.info("addBlockedAddress: \(address)")
+
+        // TODO: Should we consult "didChange" or "isBlockedAfter != isBlockedBefore".
+        // What if isBlocked didn't change but now we know one of the address components
+        // that we didn't before?
+        let wasLocallyInitiated = self.wasLocallyInitiated(withBlockMode: blockMode)
+        if wasLocallyInitiated {
+            // The block state changed, schedule a backup with the storage service
+            storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+        }
+
+        Self.handleUpdate(newState: newState,
+                          sendSyncMessage: wasLocallyInitiated,
+                          transaction: transaction)
+    }
+
+    public func removeBlockedAddress(_ address: SignalServiceAddress,
+                                     wasLocallyInitiated: Bool,
+                                     transaction: SDSAnyWriteTransaction) {
+        guard address.isValid else {
+            owsFailDebug("Invalid address: \(address).")
+            return
+        }
+
+        Logger.info("removeBlockedAddress: \(address)")
+
+        let state: State? = unfairLock.withLock {
+            let oldState = self.currentState
+
+            // TODO: Should we consult "didChange" or "isBlockedAfter != isBlockedBefore".
+            // What if isBlocked didn't change but now we know one of the address components
+            // that we didn't before?
+            guard oldState.isBlocked(address: address) else {
+                return nil
+            }
+
+            var blockedPhoneNumbers = oldState.blockedPhoneNumbers
+            var blockedUUIDStrings = oldState.blockedUUIDStrings
+            let blockedGroupMap = oldState.blockedGroupMap
+
+            if let phoneNumber = address.phoneNumber {
+                blockedPhoneNumbers.remove(phoneNumber)
+            }
+            if let uuidString = address.uuidString {
+                blockedUUIDStrings.remove(uuidString)
+            }
+            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
+                                 blockedUUIDStrings: blockedUUIDStrings,
+                                 blockedGroupMap: blockedGroupMap)
+            self.currentState = newState
+            return newState
+        }
+        guard let newState = state else {
+            // No changes.
+            return
+        }
+
+        if wasLocallyInitiated {
+            // The block state changed, schedule a backup with the storage service
+            storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+        }
+
+        Self.handleUpdate(newState: newState,
+                          sendSyncMessage: wasLocallyInitiated,
+                          transaction: transaction)
+    }
+
+    @objc
+    public var blockedPhoneNumbers: Set<String> {
         unfairLock.withLock { self.currentState.blockedPhoneNumbers }
     }
 
-    // TODO: Array or set?
-    // TODO: blockedUUIDs
-    private var blockedUUIDStrings: Set<String> {
+    @objc
+    public var blockedUUIDStrings: Set<String> {
         unfairLock.withLock { self.currentState.blockedUUIDStrings }
     }
 
-    private func isAddressBlocked(_ address: SignalServiceAddress) -> Bool {
+    @objc
+    public func isAddressBlocked(_ address: SignalServiceAddress) -> Bool {
         unfairLock.withLock { self.currentState.isBlocked(address: address) }
     }
 
     // MARK: - Group Blocking
 
-    // TODO: Array or set?
-    private var blockedGroupIds: Set<Data> {
+    @objc
+    public var blockedGroupIds: Set<Data> {
         let blockedGroupIds = unfairLock.withLock { self.currentState.blockedGroupMap.keys }
         return Set(blockedGroupIds)
     }
 
-    private var blockedGroupModels: [TSGroupModel] {
-        unfairLock.withLock { Array(self.currentState.blockedGroupMap.values) }
-    }
+//    public var blockedGroupModels: [TSGroupModel] {
+//        unfairLock.withLock { Array(self.currentState.blockedGroupMap.values) }
+//    }
 
-    private func isGroupIdBlocked(_ groupId: Data) -> Bool {
+    @objc
+    public func isGroupIdBlocked(_ groupId: Data) -> Bool {
         unfairLock.withLock { self.currentState.isBlocked(groupId: groupId) }
     }
 
     // TODO: cachedGroupDetailsWithGroupId
-    private func cachedGroupModel(forGroupId groupId: Data) -> TSGroupModel? {
+    public func cachedGroupModel(forGroupId groupId: Data) -> TSGroupModel? {
         unfairLock.withLock { self.currentState.blockedGroupMap[groupId] }
     }
 
-    private func addBlockedGroup(groupModel: TSGroupModel,
-                                 blockMode: BlockMode,
-                                 transaction: SDSAnyWriteTransaction) {
+    public func addBlockedGroup(groupModel: TSGroupModel,
+                                blockMode: BlockMode,
+                                transaction: SDSAnyWriteTransaction) {
         let groupId = groupModel.groupId
         owsAssertDebug(GroupManager.isValidGroupIdOfAnyKind(groupId))
 
         Logger.info("groupId: \(groupId.hexadecimalString)")
 
-        let newState: State? = unfairLock.withLock {
+        let state: State? = unfairLock.withLock {
             let oldState = self.currentState
 
             guard !oldState.isBlocked(groupId: groupId) else {
@@ -495,7 +498,7 @@ public class OWSBlockingManager: NSObject {
             self.currentState = newState
             return newState
         }
-        guard let newState = newState else {
+        guard let newState = state else {
             // Already blocked.
             return
         }
@@ -524,9 +527,9 @@ public class OWSBlockingManager: NSObject {
                           transaction: transaction)
     }
 
-    private func addBlockedGroup(groupId: Data,
-                                 blockMode: BlockMode,
-                                 transaction: SDSAnyWriteTransaction) {
+    public func addBlockedGroup(groupId: Data,
+                                blockMode: BlockMode,
+                                transaction: SDSAnyWriteTransaction) {
 
         let groupModel: TSGroupModel = {
             if let groupModel = self.cachedGroupModel(forGroupId: groupId) {
@@ -545,9 +548,9 @@ public class OWSBlockingManager: NSObject {
                         transaction: transaction)
     }
 
-    private func removeBlockedGroup(groupId: Data,
-                                    wasLocallyInitiated: Bool,
-                                    transaction: SDSAnyWriteTransaction) {
+    public func removeBlockedGroup(groupId: Data,
+                                   wasLocallyInitiated: Bool,
+                                   transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(GroupManager.isValidGroupIdOfAnyKind(groupId))
 
         let result: (State, TSGroupModel)? = unfairLock.withLock {
@@ -596,8 +599,7 @@ public class OWSBlockingManager: NSObject {
 
     // MARK: - Thread Blocking
 
-    // TODO: Do we need this?
-    private func isThreadBlocked(_ thread: TSThread) -> Bool {
+    public func isThreadBlocked(_ thread: TSThread) -> Bool {
         if let contactThread = thread as? TSContactThread {
             return isAddressBlocked(contactThread.contactAddress)
         } else if let groupThread = thread as? TSGroupThread {
@@ -713,6 +715,7 @@ public class OWSBlockingManager: NSObject {
         observeNotifications()
     }
 
+    @objc
     public func syncBlockList() {
         DispatchQueue.global().async {
             let state = Self.unfairLock.withLock { self.currentState }
@@ -740,10 +743,10 @@ public class OWSBlockingManager: NSObject {
     }
 
     private static func sendBlockListSyncMessage(state: State) {
-        let thread = databaseStorage.write { transaction in
+        let possibleThread = databaseStorage.write { transaction in
             TSAccountManager.getOrCreateLocalThread(transaction: transaction)
         }
-        guard let thread = thread else {
+        guard let thread = possibleThread else {
             owsFailDebug("Missing thread.")
             return
         }

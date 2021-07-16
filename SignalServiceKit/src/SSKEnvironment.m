@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
