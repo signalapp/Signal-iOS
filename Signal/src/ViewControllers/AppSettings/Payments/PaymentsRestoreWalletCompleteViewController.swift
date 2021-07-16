@@ -12,7 +12,10 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     private let bottomStack = UIStackView()
 
-    open override var bottomFooter: UIView? { bottomStack }
+    open override var bottomFooter: UIView? {
+        get { bottomStack }
+        set {}
+    }
 
     public required init(restoreWalletDelegate: PaymentsRestoreWalletDelegate,
                          passphrase: PaymentsPassphrase) {

@@ -12,7 +12,10 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
 
     private let bottomStack = UIStackView()
 
-    open override var bottomFooter: UIView? { bottomStack }
+    open override var bottomFooter: UIView? {
+        get { bottomStack }
+        set {}
+    }
 
     private let wordIndices: [Int]
     private var wordIndex0: Int { wordIndices[0] }

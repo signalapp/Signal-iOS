@@ -22,14 +22,16 @@ class AvatarEditViewController: OWSTableViewController2 {
         self.completion = completion
         super.init()
         createTopHeader()
+        createBottomFooter()
         shouldAvoidKeyboard = true
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        updateTableContents()
         updateNavigation()
+        updateHeaderView()
+        updateFooterView()
     }
 
     @objc
@@ -49,67 +51,6 @@ class AvatarEditViewController: OWSTableViewController2 {
         }
 
         completion(model)
-    }
-
-    private let headerImageView = AvatarImageView()
-    private let headerTextField = UITextField()
-    private let topHeaderStack = UIStackView()
-    private func createTopHeader() {
-        topHeaderStack.isLayoutMarginsRelativeArrangement = true
-        topHeaderStack.axis = .vertical
-        topHeaderStack.alignment = .center
-
-        headerTextField.font = AvatarBuilder.avatarMaxFont(diameter: Self.headerAvatarSize)
-        headerTextField.adjustsFontSizeToFitWidth = true
-        headerTextField.textAlignment = .center
-        headerTextField.delegate = self
-        headerTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        headerTextField.returnKeyType = .done
-        headerTextField.autocorrectionType = .no
-        headerTextField.spellCheckingType = .no
-        headerImageView.addSubview(headerTextField)
-        headerTextField.autoPinEdgesToSuperviewEdges(with: AvatarBuilder.avatarMargins(diameter: Self.headerAvatarSize))
-        headerTextField.isHidden = true
-
-        headerImageView.autoSetDimensions(to: CGSize(square: Self.headerAvatarSize))
-        headerImageView.isUserInteractionEnabled = true
-        topHeaderStack.addArrangedSubview(headerImageView)
-
-        topHeader = topHeaderStack
-
-        updateHeaderView()
-    }
-
-    private func updateTableContents() {
-        let contents = OWSTableContents()
-        defer { self.contents = contents }
-
-        let section = OWSTableSection()
-        if case .icon = model.type {
-            section.headerTitle = NSLocalizedString(
-                "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR",
-                comment: "Text prompting the user to choose a color when editing their avatar"
-            )
-        } else {
-            let segmentedControlContainer = UIView()
-            segmentedControlContainer.addSubview(segmentedControl)
-            segmentedControl.autoPinEdgesToSuperviewEdges(with: cellOuterInsetsWithMargin(top: 12, bottom: 10))
-            section.customHeaderView = segmentedControlContainer
-        }
-
-        let isColorSelected = segmentedControl.selectedSegmentIndex == Segments.color.rawValue
-        section.hasBackground = isColorSelected
-
-        section.add(.init { [weak self] in
-            let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
-            cell.selectionStyle = .none
-            if isColorSelected {
-                self.configureThemeCell(cell)
-            }
-            return cell
-        } actionBlock: {})
-        contents.addSection(section)
     }
 
     private func updateNavigation() {
@@ -174,14 +115,105 @@ class AvatarEditViewController: OWSTableViewController2 {
         switch selectedSegment {
         case .color:
             headerTextField.resignFirstResponder()
-            updateTableContents()
+            updateFooterView()
         case .text:
             headerTextField.becomeFirstResponder()
-            updateTableContents()
+            updateFooterView()
         }
     }
 
-    // MARK: - Theme Options
+    // MARK: - Header
+
+    private let headerImageView = AvatarImageView()
+    private let headerTextField = UITextField()
+    private let topHeaderStack = UIStackView()
+    private func createTopHeader() {
+        topHeaderStack.isLayoutMarginsRelativeArrangement = true
+        topHeaderStack.axis = .vertical
+        topHeaderStack.alignment = .center
+
+        headerTextField.font = AvatarBuilder.avatarMaxFont(diameter: Self.headerAvatarSize)
+        headerTextField.adjustsFontSizeToFitWidth = true
+        headerTextField.textAlignment = .center
+        headerTextField.delegate = self
+        headerTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        headerTextField.returnKeyType = .done
+        headerTextField.autocorrectionType = .no
+        headerTextField.spellCheckingType = .no
+        headerImageView.addSubview(headerTextField)
+        headerTextField.autoPinEdgesToSuperviewEdges(with: AvatarBuilder.avatarMargins(diameter: Self.headerAvatarSize))
+        headerTextField.isHidden = true
+
+        headerImageView.autoSetDimensions(to: CGSize(square: Self.headerAvatarSize))
+        headerImageView.isUserInteractionEnabled = true
+        topHeaderStack.addArrangedSubview(headerImageView)
+
+        topHeader = topHeaderStack
+    }
+
+    func updateHeaderView() {
+        topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: UIDevice.current.isIPhone5OrShorter ? 25 : 58)
+
+        switch model.type {
+        case .icon:
+            headerTextField.isHidden = true
+            headerImageView.image = avatarBuilder.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
+        case .text(let text):
+            headerTextField.isHidden = false
+            headerTextField.textColor = model.theme.foregroundColor
+            if !headerTextField.isFirstResponder { headerTextField.text = text }
+            headerImageView.image = .init(color: model.theme.backgroundColor)
+        case .image:
+            owsFailDebug("Unexpectedly encountered image model")
+        }
+    }
+
+    // MARK: - Footer View
+
+    private let bottomFooterStack = UIStackView()
+    private let segmentedControlContainer = UIView()
+    private let themePickerContainer = UIView()
+    private let themeHeaderContainer = UIView()
+
+    private func createBottomFooter() {
+        bottomFooterStack.isLayoutMarginsRelativeArrangement = true
+        bottomFooterStack.axis = .vertical
+        bottomFooterStack.spacing = 16
+
+        segmentedControlContainer.addSubview(segmentedControl)
+        segmentedControl.autoPinEdgesToSuperviewEdges()
+        bottomFooterStack.addArrangedSubview(segmentedControlContainer)
+
+        bottomFooterStack.addArrangedSubview(themeHeaderContainer)
+        bottomFooterStack.addArrangedSubview(themePickerContainer)
+        bottomFooterStack.addArrangedSubview(.vStretchingSpacer())
+
+        bottomFooter = bottomFooterStack
+    }
+
+    private var previousFooterSizeReference: CGSize?
+    private func updateFooterView() {
+
+        if case .text = model.type {
+            segmentedControlContainer.isHiddenInStackView = false
+            themeHeaderContainer.isHiddenInStackView = true
+            themePickerContainer.isHiddenInStackView = segmentedControl.selectedSegmentIndex == Segments.text.rawValue
+        } else {
+            segmentedControlContainer.isHiddenInStackView = true
+            themeHeaderContainer.isHiddenInStackView = false
+            themePickerContainer.isHiddenInStackView = false
+        }
+
+        // Update theme options layout only when the view size changes.
+        guard view.frame.size != previousFooterSizeReference else { return }
+        previousFooterSizeReference = view.frame.size
+
+        segmentedControlContainer.layoutMargins = cellOuterInsetsWithMargin(top: 12, bottom: 10)
+        bottomFooterStack.layoutMargins = cellOuterInsets
+
+        updateThemeHeaderContainer()
+        updateThemePickerContainer()
+    }
 
     private var optionViews = [OptionView]()
     private func reusableOptionView(for index: Int) -> OptionView {
@@ -195,7 +227,26 @@ class AvatarEditViewController: OWSTableViewController2 {
         return optionView
     }
 
-    private func configureThemeCell(_ cell: UITableViewCell) {
+    private func updateThemeHeaderContainer() {
+        themeHeaderContainer.removeAllSubviews()
+
+        let label = UILabel()
+        label.text = NSLocalizedString(
+            "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR",
+            comment: "Text prompting the user to choose a color when editing their avatar"
+        )
+        label.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
+        label.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        themeHeaderContainer.addSubview(label)
+        label.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: Self.cellHInnerMargin * 0.5, vMargin: 0))
+    }
+
+    private func updateThemePickerContainer() {
+        themePickerContainer.removeAllSubviews()
+        themePickerContainer.layoutMargins = UIEdgeInsets(hMargin: Self.cellHInnerMargin, vMargin: Self.cellVInnerMargin)
+        themePickerContainer.backgroundColor = cellBackgroundColor
+        themePickerContainer.layer.cornerRadius = Self.cellRounding
+
         let rowWidth = max(0, view.width - (view.safeAreaInsets.totalWidth + cellOuterInsets.totalWidth + Self.cellHInnerMargin * 2))
         let minThemeSize: CGFloat = 66
         let themeSpacing: CGFloat = 16
@@ -206,7 +257,7 @@ class AvatarEditViewController: OWSTableViewController2 {
         vStackView.axis = .vertical
         vStackView.spacing = themeSpacing
         vStackView.alignment = .leading
-        cell.contentView.addSubview(vStackView)
+        themePickerContainer.addSubview(vStackView)
         vStackView.autoPinEdgesToSuperviewMargins()
 
         for (row, themes) in AvatarTheme.allCases.chunked(by: themesPerRow).enumerated() {
@@ -223,30 +274,6 @@ class AvatarEditViewController: OWSTableViewController2 {
             }
         }
     }
-
-    // MARK: - Header
-
-    private var previousSize: CGSize?
-    func updateHeaderView() {
-        switch model.type {
-        case .icon:
-            headerTextField.isHidden = true
-            headerImageView.image = avatarBuilder.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
-        case .text(let text):
-            headerTextField.isHidden = false
-            headerTextField.textColor = model.theme.foregroundColor
-            if !headerTextField.isFirstResponder { headerTextField.text = text }
-            headerImageView.image = .init(color: model.theme.backgroundColor)
-        case .image:
-            owsFailDebug("Unexpectedly encountered image model")
-        }
-
-        // Update button layout only when the view size changes.
-        guard view.frame.size != previousSize else { return }
-        previousSize = view.frame.size
-
-        topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: 58, bottom: 58)
-    }
 }
 
 extension AvatarEditViewController: UITextFieldDelegate {
@@ -261,7 +288,7 @@ extension AvatarEditViewController: UITextFieldDelegate {
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        updateTableContents()
+        updateFooterView()
         return false
     }
 
@@ -272,11 +299,13 @@ extension AvatarEditViewController: UITextFieldDelegate {
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        updateTableContents()
+        segmentedControl.selectedSegmentIndex = Segments.text.rawValue
+        updateFooterView()
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        updateTableContents()
+        segmentedControl.selectedSegmentIndex = Segments.color.rawValue
+        updateFooterView()
     }
 }
 

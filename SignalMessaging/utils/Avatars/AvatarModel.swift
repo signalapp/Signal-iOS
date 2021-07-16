@@ -47,38 +47,25 @@ public enum AvatarType: Equatable {
 }
 
 public enum AvatarIcon: String, CaseIterable {
-    case dog
-    case leftFace
-    case rightFace
-    case pointyFace
+    case face1
+    case face2
     case cat
     case fox
-    case parrot
-    case snake
 
     public var image: UIImage { UIImage(named: imageName)! }
 
     public var imageName: String {
         switch self {
-        case .dog: return "avatar-illustration-fox"
-        case .leftFace: return "avatar-illustration-left-face"
-        case .rightFace: return "avatar-illustration-fox"
-        case .pointyFace: return "avatar-illustration-pointy-face"
+        case .face1: return "avatar-illustration-face1"
+        case .face2: return "avatar-illustration-face2"
         case .cat: return "avatar-illustration-cat"
         case .fox: return "avatar-illustration-fox"
-        case .parrot: return "avatar-illustration-fox"
-        case .snake: return "avatar-illustration-fox"
         }
     }
 
     // todo: real names / final icons
 
-    public static var defaultGroupIcons: [AvatarIcon] = [
-        .dog,
-        .cat,
-        .fox,
-        .parrot
-    ]
+    public static var defaultGroupIcons: [AvatarIcon] = allCases
 
     public static var defaultProfileIcons: [AvatarIcon] = allCases
 }

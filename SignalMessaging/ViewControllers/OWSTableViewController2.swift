@@ -46,7 +46,7 @@ open class OWSTableViewController2: OWSViewController {
     open var topHeader: UIView?
 
     @objc
-    open var bottomFooter: UIView? { nil }
+    open var bottomFooter: UIView?
 
     // TODO: Remove.
     @objc
