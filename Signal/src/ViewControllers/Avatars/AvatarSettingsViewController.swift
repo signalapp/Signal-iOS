@@ -538,6 +538,10 @@ extension AvatarSettingsViewController: OptionViewDelegate {
                 transaction: transaction
             )
         } completion: { [weak self] in
+            // If we just deleted the selected avatar, also clear it.
+            if self?.selectedAvatarModel == model {
+                self?.state = .new(nil)
+            }
             self?.updateTableContents()
         }
     }
