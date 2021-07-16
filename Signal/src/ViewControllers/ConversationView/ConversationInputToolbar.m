@@ -58,6 +58,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     AttachmentKeyboardDelegate>
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
+@property (nonatomic, readonly) CVMediaCache *mediaCache;
 
 @property (nonatomic, weak) id<ConversationInputToolbarDelegate> inputToolbarDelegate;
 
@@ -110,6 +111,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @property (nonatomic) BOOL hasMeasuredKeyboardHeight;
 
 #pragma mark - Quoted replies
+
 @property (nonatomic, assign, readwrite) BOOL isAnimatingQuotedReply;
 
 @end
@@ -122,6 +124,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 @synthesize attachmentKeyboard = _attachmentKeyboard;
 
 - (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
+                               mediaCache:(CVMediaCache *)mediaCache
                              messageDraft:(nullable MessageBody *)messageDraft
                      inputToolbarDelegate:(id<ConversationInputToolbarDelegate>)inputToolbarDelegate
                     inputTextViewDelegate:(id<ConversationInputTextViewDelegate>)inputTextViewDelegate
@@ -130,6 +133,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self = [super initWithFrame:CGRectZero];
 
     _conversationStyle = conversationStyle;
+    _mediaCache = mediaCache;
     _receivedSafeAreaInsets = UIEdgeInsetsZero;
     _suggestedStickerViewCache = [[StickerViewCache alloc] initWithMaxSize:12];
 
@@ -1029,6 +1033,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     __weak __typeof(self) weakSelf = self;
     UIView *draftView = [[VoiceMessageDraftView alloc] initWithVoiceMessageModel:voiceMemoDraft
+                                                                      mediaCache:self.mediaCache
                                                                didDeleteCallback:^{ [weakSelf hideVoiceMemoUI:YES]; }];
     [self.voiceMemoContentView addSubview:draftView];
     [draftView autoPinEdgesToSuperviewEdges];

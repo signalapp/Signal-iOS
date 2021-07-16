@@ -52,14 +52,18 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     private var attachmentId: String { direction.attachmentId }
 
-    public required init(direction: Direction, style: Style, conversationStyle: ConversationStyle) {
+    public required init(direction: Direction,
+                         style: Style,
+                         conversationStyle: ConversationStyle,
+                         mediaCache: CVMediaCache) {
         self.direction = direction
         self.style = style
         self.conversationStyle = conversationStyle
         self.stateView = StateView(diameter: Self.innerDiameter(style: style),
                                    direction: direction,
                                    style: style,
-                                   conversationStyle: conversationStyle)
+                                   conversationStyle: conversationStyle,
+                                   mediaCache: mediaCache)
 
         super.init(name: "CVAttachmentProgressView")
 
@@ -133,6 +137,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
         private var unknownProgressView: Lottie.AnimationView?
         private var progressView: Lottie.AnimationView?
         private lazy var outerCircleView = CVImageView()
+        private let mediaCache: CVMediaCache
 
         var state: State = .none {
             didSet {
@@ -152,11 +157,16 @@ public class CVAttachmentProgressView: ManualLayoutView {
             }
         }
 
-        required init(diameter: CGFloat, direction: Direction, style: Style, conversationStyle: ConversationStyle) {
+        required init(diameter: CGFloat,
+                      direction: Direction,
+                      style: Style,
+                      conversationStyle: ConversationStyle,
+                      mediaCache: CVMediaCache) {
             self.diameter = diameter
             self.direction = direction
             self.style = style
             self.conversationStyle = conversationStyle
+            self.mediaCache = mediaCache
 
             super.init(name: "CVAttachmentProgressView.StateView")
 
@@ -308,8 +318,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
             if let animationView = animationView {
                 return animationView
             } else {
-                let animationView = AnimationView(name: animationName)
-                return animationView
+                return mediaCache.buildLottieAnimationView(name: animationName)
             }
         }
 

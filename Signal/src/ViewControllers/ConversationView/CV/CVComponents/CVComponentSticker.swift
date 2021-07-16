@@ -72,7 +72,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             case .uploading:
                 let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                             style: .withCircle,
-                                                            conversationStyle: conversationStyle)
+                                                            conversationStyle: conversationStyle,
+                                                            mediaCache: mediaCache)
                 stackView.addSubview(progressView)
                 stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
             case .pendingDownload:
@@ -100,7 +101,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         style: .withCircle,
-                                                        conversationStyle: conversationStyle)
+                                                        conversationStyle: conversationStyle,
+                                                        mediaCache: mediaCache)
             stackView.addSubview(progressView)
             stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
         } else {

@@ -29,14 +29,15 @@ class AudioMessageView: ManualStackView {
 
     private let isIncoming: Bool
     private weak var componentDelegate: CVComponentDelegate?
+    private let mediaCache: CVMediaCache
 
-    private let playedDotAnimation = AnimationView(name: "audio-played-dot")
+    private let playedDotAnimation: Lottie.AnimationView
     private let playedDotContainer = ManualLayoutView(name: "playedDotContainer")
-    private let playPauseAnimation = AnimationView(name: "playPauseButton")
+    private let playPauseAnimation: Lottie.AnimationView
     private let playPauseContainer = ManualLayoutView.circleView(name: "playPauseContainer")
     private let playbackTimeLabel = CVLabel()
     private let progressSlider = UISlider()
-    private let waveformProgress = AudioWaveformProgressView()
+    private let waveformProgress: AudioWaveformProgressView
     private let waveformContainer = ManualLayoutView(name: "waveformContainer")
 
     private var audioPlaybackState: AudioPlaybackState {
@@ -57,10 +58,19 @@ class AudioMessageView: ManualStackView {
         updateContents(animated: animated)
     }
 
-    init(audioAttachment: AudioAttachment, isIncoming: Bool, componentDelegate: CVComponentDelegate) {
+    init(audioAttachment: AudioAttachment,
+         isIncoming: Bool,
+         componentDelegate: CVComponentDelegate,
+         mediaCache: CVMediaCache) {
+
         self.audioAttachment = audioAttachment
         self.isIncoming = isIncoming
         self.componentDelegate = componentDelegate
+        self.mediaCache = mediaCache
+
+        self.waveformProgress = AudioWaveformProgressView(mediaCache: mediaCache)
+        self.playedDotAnimation = mediaCache.buildLottieAnimationView(name: "audio-played-dot")
+        self.playPauseAnimation = mediaCache.buildLottieAnimationView(name: "playPauseButton")
 
         super.init(name: "AudioMessageView")
     }
@@ -140,7 +150,8 @@ class AudioMessageView: ManualStackView {
         } else if let attachmentPointer = audioAttachment.attachmentPointer {
             leftView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                 style: .withoutCircle(diameter: Self.animationSize),
-                                                conversationStyle: conversationStyle)
+                                                conversationStyle: conversationStyle,
+                                                mediaCache: mediaCache)
         } else {
             owsFailDebug("Unexpected state.")
             leftView = UIView.transparentContainer()

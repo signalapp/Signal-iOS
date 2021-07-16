@@ -210,7 +210,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
         return CVAttachmentProgressView(direction: direction,
                                         style: .withoutCircle(diameter: progressSize),
-                                        conversationStyle: conversationStyle)
+                                        conversationStyle: conversationStyle,
+                                        mediaCache: mediaCache)
     }
 
     private var hasProgressView: Bool {

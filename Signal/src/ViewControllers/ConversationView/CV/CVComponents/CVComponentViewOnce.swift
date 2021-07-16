@@ -89,7 +89,8 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         case .incomingDownloading(let attachmentPointer):
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         style: .withoutCircle(diameter: iconSize),
-                                                        conversationStyle: conversationStyle)
+                                                        conversationStyle: conversationStyle,
+                                                        mediaCache: mediaCache)
             subviews.append(progressView)
         default:
             if shouldShowIcon, let iconName = self.iconName {

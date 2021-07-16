@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class CVMediaCache;
+@class ConversationInputTextView;
 @class ConversationStyle;
 @class MessageBody;
 @class OWSLinkPreviewDraft;
@@ -16,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class StickerInfo;
 @class VoiceMessageModel;
 
+@protocol ConversationInputTextViewDelegate;
 @protocol MentionTextViewDelegate;
 
 @protocol ConversationInputToolbarDelegate <NSObject>
@@ -73,15 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@class ConversationInputTextView;
-
-@protocol ConversationInputTextViewDelegate;
-
 @interface ConversationInputToolbar : UIView
 
 @property (nonatomic) BOOL isMeasuringKeyboardHeight;
 
 - (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
+                               mediaCache:(CVMediaCache *)mediaCache
                              messageDraft:(nullable MessageBody *)messageDraft
                      inputToolbarDelegate:(id<ConversationInputToolbarDelegate>)inputToolbarDelegate
                     inputTextViewDelegate:(id<ConversationInputTextViewDelegate>)inputTextViewDelegate

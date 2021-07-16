@@ -8,15 +8,20 @@ import Lottie
 @objc
 class VoiceMessageDraftView: UIStackView, OWSAudioPlayerDelegate {
     private let playbackTimeLabel = UILabel()
-    private let waveformView = AudioWaveformProgressView()
+    private let waveformView: AudioWaveformProgressView
     private let voiceMessageModel: VoiceMessageModel
     private let playPauseButton = LottieToggleButton()
 
     var audioPlaybackState: AudioPlaybackState = .stopped
 
     @objc
-    init(voiceMessageModel: VoiceMessageModel, didDeleteCallback: @escaping () -> Void) {
+    init(voiceMessageModel: VoiceMessageModel,
+         mediaCache: CVMediaCache,
+         didDeleteCallback: @escaping () -> Void) {
         self.voiceMessageModel = voiceMessageModel
+
+        self.waveformView = AudioWaveformProgressView(mediaCache: mediaCache)
+
         super.init(frame: .zero)
 
         axis = .horizontal
