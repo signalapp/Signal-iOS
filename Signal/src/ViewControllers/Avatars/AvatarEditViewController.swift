@@ -26,6 +26,10 @@ class AvatarEditViewController: OWSTableViewController2 {
         shouldAvoidKeyboard = true
     }
 
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.isIPad ? .all : .portrait
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -56,7 +60,9 @@ class AvatarEditViewController: OWSTableViewController2 {
     private func updateNavigation() {
         navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
 
-        if model != originalModel {
+        if case .text(let text) = model.type, text.nilIfEmpty == nil {
+            navigationItem.rightBarButtonItem = nil
+        } else if model != originalModel {
             navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -68,9 +74,18 @@ class AvatarEditViewController: OWSTableViewController2 {
 
         coordinator.animate { [weak self] _ in
             self?.updateHeaderView()
+            self?.updateFooterViewLayout()
         } completion: { [weak self] _ in
             self?.updateHeaderView()
+            self?.updateFooterViewLayout()
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        guard case .text(let text) = model.type, text.isEmpty else { return }
+        headerTextField.becomeFirstResponder()
     }
 
     // MARK: - Segmented Control
@@ -132,6 +147,9 @@ class AvatarEditViewController: OWSTableViewController2 {
         topHeaderStack.axis = .vertical
         topHeaderStack.alignment = .center
 
+        let topSpacer = UIView.vStretchingSpacer()
+        topHeaderStack.addArrangedSubview(topSpacer)
+
         headerTextField.font = AvatarBuilder.avatarMaxFont(diameter: Self.headerAvatarSize)
         headerTextField.adjustsFontSizeToFitWidth = true
         headerTextField.textAlignment = .center
@@ -148,11 +166,18 @@ class AvatarEditViewController: OWSTableViewController2 {
         headerImageView.isUserInteractionEnabled = true
         topHeaderStack.addArrangedSubview(headerImageView)
 
+        let bottomSpacer = UIView.vStretchingSpacer()
+        topHeaderStack.addArrangedSubview(bottomSpacer)
+        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+        topSpacer.autoSetDimension(.height, toSize: 16, relation: .greaterThanOrEqual)
+        topSpacer.setCompressionResistanceLow()
+        bottomSpacer.setCompressionResistanceLow()
+
         topHeader = topHeaderStack
     }
 
     func updateHeaderView() {
-        topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: UIDevice.current.isIPhone5OrShorter ? 25 : 58)
+        topHeaderStack.layoutMargins = cellOuterInsets
 
         switch model.type {
         case .icon:
@@ -191,7 +216,6 @@ class AvatarEditViewController: OWSTableViewController2 {
         bottomFooter = bottomFooterStack
     }
 
-    private var previousFooterSizeReference: CGSize?
     private func updateFooterView() {
 
         if case .text = model.type {
@@ -204,9 +228,20 @@ class AvatarEditViewController: OWSTableViewController2 {
             themePickerContainer.isHiddenInStackView = false
         }
 
+        updateFooterViewLayout()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updateFooterViewLayout()
+    }
+
+    private var previousSizeReference: CGSize?
+    private func updateFooterViewLayout() {
         // Update theme options layout only when the view size changes.
-        guard view.frame.size != previousFooterSizeReference else { return }
-        previousFooterSizeReference = view.frame.size
+        guard view.frame.size != previousSizeReference else { return }
+        previousSizeReference = view.frame.size
 
         segmentedControlContainer.layoutMargins = cellOuterInsetsWithMargin(top: 12, bottom: 10)
         bottomFooterStack.layoutMargins = cellOuterInsets
@@ -248,8 +283,8 @@ class AvatarEditViewController: OWSTableViewController2 {
         themePickerContainer.layer.cornerRadius = Self.cellRounding
 
         let rowWidth = max(0, view.width - (view.safeAreaInsets.totalWidth + cellOuterInsets.totalWidth + Self.cellHInnerMargin * 2))
-        let minThemeSize: CGFloat = 66
         let themeSpacing: CGFloat = 16
+        let minThemeSize: CGFloat = min(66, (rowWidth - (themeSpacing * 3)) / 4)
         let themesPerRow = max(1, Int(floor(rowWidth + themeSpacing) / (minThemeSize + themeSpacing)))
         let themeSize = max(minThemeSize, (rowWidth - (themeSpacing * CGFloat(themesPerRow - 1))) / CGFloat(themesPerRow))
 

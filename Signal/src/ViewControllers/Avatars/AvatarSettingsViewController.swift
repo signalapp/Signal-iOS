@@ -52,6 +52,10 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         createTopHeader()
     }
 
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIDevice.current.isIPad ? .all : .portrait
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -210,9 +214,9 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         super.viewWillTransition(to: size, with: coordinator)
 
         coordinator.animate { [weak self] _ in
-            self?.updateHeaderView()
+            self?.updateHeaderViewLayout()
         } completion: { [weak self] _ in
-            self?.updateHeaderView()
+            self?.updateHeaderViewLayout()
         }
     }
 
@@ -232,8 +236,8 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
     private func configureAvatarsCell(_ cell: UITableViewCell) {
         let rowWidth = max(0, view.width - (view.safeAreaInsets.totalWidth + cellOuterInsets.totalWidth + Self.cellHInnerMargin * 2))
-        let minAvatarSize: CGFloat = 66
         let avatarSpacing: CGFloat = 16
+        let minAvatarSize: CGFloat = min(66, (rowWidth - (avatarSpacing * 3)) / 4)
         let avatarsPerRow = max(1, Int(floor(rowWidth + avatarSpacing) / (minAvatarSize + avatarSpacing)))
         let avatarSize = max(minAvatarSize, (rowWidth - (avatarSpacing * CGFloat(avatarsPerRow - 1))) / CGFloat(avatarsPerRow))
 
@@ -275,7 +279,6 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Header
 
-    private var previousSize: CGSize?
     func updateHeaderView() {
         switch state {
         case .new(let model):
@@ -296,9 +299,20 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             }
         }
 
+        updateHeaderViewLayout()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        updateHeaderViewLayout()
+    }
+
+    private var previousSizeReference: CGSize?
+    private func updateHeaderViewLayout() {
         // Update button layout only when the view size changes.
-        guard view.frame.size != previousSize else { return }
-        previousSize = view.frame.size
+        guard view.frame.size != previousSizeReference else { return }
+        previousSizeReference = view.frame.size
 
         topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: 24, bottom: 13)
 
@@ -408,7 +422,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         button.isEnabled = isEnabled
         button.layer.cornerRadius = 10
         button.clipsToBounds = true
-        button.setBackgroundImage(UIImage(color: cellBackgroundColor), for: .normal)
+        button.setBackgroundImage(UIImage(color: Self.cellBackgroundColor(isUsingPresentedStyle: true)), for: .normal)
         button.accessibilityLabel = text
 
         let imageView = UIImageView()
