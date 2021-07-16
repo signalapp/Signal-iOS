@@ -3707,6 +3707,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                           [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
                       TSContactThread *contactThread =
                           [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
+                      [self.profileManager addThreadToProfileWhitelist:contactThread transaction:transaction];
                       [self createFakeMessagesInBatches:messageCount
                                                  thread:contactThread
                                      messageContentType:MessageContentTypeLongText

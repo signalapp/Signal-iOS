@@ -575,7 +575,9 @@ public class CVLoadCoordinator: NSObject {
         func tryToResolve() {
             guard canLandLoad() else {
                 // TODO: async() or asyncAfter()?
-                Logger.verbose("Waiting to land load.")
+                if !DebugFlags.reduceLogChatter {
+                    Logger.verbose("Waiting to land load.")
+                }
                 // We wait in a pretty tight loop to ensure loads land in a timely way.
                 //
                 // DispatchQueue.asyncAfter() will take longer to perform

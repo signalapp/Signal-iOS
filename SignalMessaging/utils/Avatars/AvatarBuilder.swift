@@ -555,11 +555,15 @@ public class AvatarBuilder: NSObject {
         let cacheKey = avatarContent.cacheKey
 
         if let image = contentToImageCache.object(forKey: cacheKey) {
-            Logger.verbose("---- Cache hit.")
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("---- Cache hit.")
+            }
             return image
         }
 
-        Logger.verbose("---- Cache miss.")
+        if !DebugFlags.reduceLogChatter {
+            Logger.verbose("---- Cache miss.")
+        }
 
         guard let image = Self.buildOrLoadImage(forAvatarContent: avatarContent) else {
             return nil
