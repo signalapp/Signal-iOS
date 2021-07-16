@@ -276,6 +276,11 @@ public class HomeViewCell: UITableViewCell {
                                                            y: (view.height - avatarSize.height) * 0.5),
                                            size: unreadBadgeSize)
             }
+            // The unread badge should appear on top of the avatar, but it is added
+            // to the view hierarchy first (in the "configure" below where we leverage
+            // existing measurement/arrangements).  We solve that by nudging the zPosition
+            // of the unread badge.
+            unreadBadge.layer.zPosition = +1
         }
         applyUnreadIndicator()
 
@@ -362,14 +367,35 @@ public class HomeViewCell: UITableViewCell {
         let vStackSubviews = [ topRowStack, bottomRowStack ]
         let outerHStackSubviews = [ avatarStack, vStack ]
 
+        // Perf matters in home view.  Configuring home view cells is
+        // probably the biggest perf bottleneck.  In conversation view,
+        // we address this by doing cell measurement/arrangement off
+        // the main thread.  That's viable in conversation view because
+        // there's a "load window" so there's an upper bound on how
+        // many cells need to be prepared.
+        //
+        // Home view has no load window.  Therefore, home view defers
+        // the expensive work of a) building ThreadViewModel
+        // b) measurement/arrangement of cells.  threadViewModelCache
+        // caches a).  cellMeasurementCache caches b).
+        //
+        // When configuring a hohome view cell, we reuse any existing
+        // cell measurement in cellMeasurementCache.  If none exists,
+        // we build one and store it in cellMeasurementCache for next
+        // time.
+        //
+        // This requires an unusual arrangement of the code in this
+        // configuration method for home view cells, where we defer
+        // all measurement logic here (below) so that we can skip it
+        // if it's not necessary.
         if let existingCellMeasurement = existingCellMeasurement {
             avatarStack.configure(config: avatarStackConfig,
-                                     measurement: existingCellMeasurement.avatarStackMeasurement,
-                                     subviews: avatarStackSubviews)
+                                  measurement: existingCellMeasurement.avatarStackMeasurement,
+                                  subviews: avatarStackSubviews)
 
             topRowStack.configure(config: topRowStackConfig,
-                                     measurement: existingCellMeasurement.topRowStackMeasurement,
-                                     subviews: topRowStackSubviews)
+                                  measurement: existingCellMeasurement.topRowStackMeasurement,
+                                  subviews: topRowStackSubviews)
 
             bottomRowStack.configure(config: bottomRowStackConfig,
                                      measurement: existingCellMeasurement.bottomRowStackMeasurement,
@@ -380,8 +406,8 @@ public class HomeViewCell: UITableViewCell {
                              subviews: vStackSubviews)
 
             outerHStack.configure(config: outerHStackConfig,
-                             measurement: existingCellMeasurement.outerHStackMeasurement,
-                             subviews: outerHStackSubviews)
+                                  measurement: existingCellMeasurement.outerHStackMeasurement,
+                                  subviews: outerHStackSubviews)
 
             return existingCellMeasurement
         } else {
@@ -409,8 +435,8 @@ public class HomeViewCell: UITableViewCell {
             let topRowStackSize = topRowStackMeasurement.measuredSize
 
             let bottomRowStackMeasurement = bottomRowStack.configure(config: bottomRowStackConfig,
-                                                              subviews: bottomRowStackSubviews,
-                                                              subviewInfos: bottomRowStackSubviewInfos)
+                                                                     subviews: bottomRowStackSubviews,
+                                                                     subviewInfos: bottomRowStackSubviewInfos)
             let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
 
             let vStackMeasurement = vStack.configure(config: vStackConfig,
@@ -475,7 +501,7 @@ public class HomeViewCell: UITableViewCell {
     private func prepareStatusIndicatorView(thread: ThreadViewModel,
                                             shouldHideStatusIndicator: Bool) -> StatusIndicator? {
         guard !shouldHideStatusIndicator,
-           let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage else {
+              let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage else {
             return nil
         }
 
