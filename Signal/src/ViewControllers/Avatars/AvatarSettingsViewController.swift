@@ -50,6 +50,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         self.avatarChangeCallback = avatarChangeCallback
         super.init()
         createTopHeader()
+
+        // We only support portrait on non-iPad devices, but if we're
+        // already in landscape we need to force the device to rotate.
+        // TODO: There might be a better spot to do this, but generally
+        // this should never be initialized unless about to be shown.
+        if !UIDevice.current.isIPad { UIDevice.current.ows_setOrientation(.portrait) }
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
