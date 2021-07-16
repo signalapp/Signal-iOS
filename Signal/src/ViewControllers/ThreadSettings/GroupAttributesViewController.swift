@@ -56,7 +56,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
         helper.delegate = self
-        helper.buildContents(avatarViewHelperDelegate: self)
+        helper.buildContents()
 
         updateTableContents()
     }
@@ -187,34 +187,6 @@ class GroupAttributesViewController: OWSTableViewController2 {
     @objc
     func didTapAvatarView() {
         helper.didTapAvatarView()
-    }
-}
-
-// MARK: -
-
-extension GroupAttributesViewController: AvatarViewHelperDelegate {
-    func avatarActionSheetTitle() -> String? {
-        return NSLocalizedString("NEW_GROUP_ADD_PHOTO_ACTION", comment: "Action Sheet title prompting the user for a group avatar")
-    }
-
-    func avatarDidChange(_ image: UIImage) {
-        helper.setAvatarImage(image)
-    }
-
-    func fromViewController() -> UIViewController {
-        return self
-    }
-
-    func hasClearAvatarAction() -> Bool {
-        return helper.avatarCurrent != nil
-    }
-
-    func clearAvatar() {
-        helper.setAvatarImage(nil)
-    }
-
-    func clearAvatarActionLabel() -> String {
-        return NSLocalizedString("EDIT_GROUP_CLEAR_AVATAR", comment: "The 'clear avatar' button in the 'edit group' view.")
     }
 }
 

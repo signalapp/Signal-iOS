@@ -10,7 +10,6 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
 
     // MARK: - Properties
 
-    private let avatarViewHelper = AvatarViewHelper()
     private var avatarData: Data?
 
     private var isValidProfile: Bool {
@@ -234,7 +233,6 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
     public override func viewDidLoad() {
         super.viewDidLoad()
         shouldBottomViewReserveSpaceForKeyboard = false
-        avatarViewHelper.delegate = self
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -388,38 +386,18 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
 
     @objc
     private func didTapAvatar() {
-        avatarViewHelper.showChangeAvatarUI()
-    }
-}
+        let currentAvatarImage: UIImage? = {
+            guard let avatarData = avatarData else { return nil }
+            return UIImage(data: avatarData)
+        }()
 
-// MARK: - <AvatarViewHelperDelegate>
-
-extension OnboardingProfileCreationViewController: AvatarViewHelperDelegate {
-
-    public func avatarActionSheetTitle() -> String? {
-        NSLocalizedString("PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE", comment: "Action Sheet title prompting the user for a profile avatar")
-    }
-
-    public func avatarDidChange(_ image: UIImage) {
-        AssertIsOnMainThread()
-
-        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameterPixels))))
-    }
-
-    public func fromViewController() -> UIViewController {
-        self
-    }
-
-    public func hasClearAvatarAction() -> Bool {
-        avatarData != nil
-    }
-
-    public func clearAvatar() {
-        setAvatarImage(nil)
-    }
-
-    public func clearAvatarActionLabel() -> String {
-        return NSLocalizedString("PROFILE_VIEW_CLEAR_AVATAR", comment: "Label for action that clear's the user's profile avatar")
+        let vc = AvatarSettingsViewController(
+            context: .profile,
+            currentAvatarImage: currentAvatarImage
+        ) { [weak self] newAvatarImage in
+            self?.setAvatarImage(newAvatarImage)
+        }
+        presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 }
 

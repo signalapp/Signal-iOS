@@ -9,6 +9,7 @@ import UIKit
 protocol GroupAttributesEditorHelperDelegate: AnyObject {
     func groupAttributesEditorContentsDidChange()
     func groupAttributesEditorSelectionDidChange()
+    func presentFormSheet(_ viewControllerToPresent: UIViewController, animated: Bool, completion: (() -> Void)?)
 }
 
 // MARK: -
@@ -29,8 +30,6 @@ class GroupAttributesEditorHelper: NSObject {
     private let groupModelOriginal: TSGroupModel?
 
     private let groupId: Data
-
-    private let avatarViewHelper = AvatarViewHelper()
 
     private var avatarView: UIImageView?
 
@@ -105,10 +104,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     // MARK: -
 
-    func buildContents(avatarViewHelperDelegate: AvatarViewHelperDelegate? = nil) {
-
-        avatarViewHelper.delegate = avatarViewHelperDelegate
-
+    func buildContents() {
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.
         avatarImageView.contentMode = .scaleAspectFill
@@ -237,7 +233,15 @@ class GroupAttributesEditorHelper: NSObject {
     func showAvatarUI() {
         nameTextField.resignFirstResponder()
         descriptionTextView.resignFirstResponder()
-        avatarViewHelper.showChangeAvatarUI()
+
+        let vc = AvatarSettingsViewController(
+            context: .groupId(groupId),
+            currentAvatarImage: avatarCurrent?.image
+        ) { [weak self] newAvatarImage in
+            self?.setAvatarImage(newAvatarImage)
+        }
+
+        delegate?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)
     }
 
     // MARK: - update

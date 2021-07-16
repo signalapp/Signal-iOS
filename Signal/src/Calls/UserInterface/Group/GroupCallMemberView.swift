@@ -221,7 +221,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 
         videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
 
-        noVideoView.backgroundColor = ChatColors.avatarColor(forAddress: localAddress)
+        noVideoView.backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
 
         layer.cornerRadius = isFullScreen ? 0 : 10
         clipsToBounds = true
@@ -324,7 +324,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         muteBottomConstraint.constant = -muteInsets
         muteHeightConstraint.constant = muteHeight
 
-        noVideoView.backgroundColor = ChatColors.avatarColor(forAddress: device.address)
+        noVideoView.backgroundColor = AvatarTheme.forAddress(device.address).backgroundColor
 
         configureRemoteVideo(device: device)
         let isRemoteDeviceBlocked = blockingManager.isAddressBlocked(device.address)

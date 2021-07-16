@@ -12,7 +12,10 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
 
     private let bottomStack = UIStackView()
 
-    open override var bottomFooter: UIView? { bottomStack }
+    open override var bottomFooter: UIView? {
+        get { bottomStack }
+        set {}
+    }
 
     public required init(passphrase: PaymentsPassphrase,
                          viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {

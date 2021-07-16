@@ -145,14 +145,12 @@ public class AvatarBuilder: NSObject {
                             localUserDisplayMode: LocalUserDisplayMode,
                             transaction: SDSAnyReadTransaction) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
                                                                            transaction: transaction)
         let requestType: RequestType = .contactAddress(address: address,
                                                        localUserDisplayMode: localUserDisplayMode)
         let request = Request(requestType: requestType,
                               diameterPixels: diameterPixels,
-                              isDarkThemeEnabled: isDarkThemeEnabled,
                               shouldBlurAvatar: shouldBlurAvatar)
         return avatarImage(forRequest: request, transaction: transaction)
     }
@@ -162,7 +160,6 @@ public class AvatarBuilder: NSObject {
                             diameterPoints: UInt,
                             transaction: SDSAnyReadTransaction) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
                                                                          transaction: transaction)
         let requestType = buildRequestType(forGroupThread: groupThread,
@@ -170,7 +167,6 @@ public class AvatarBuilder: NSObject {
                                            transaction: transaction)
         let request = Request(requestType: requestType,
                               diameterPixels: diameterPixels,
-                              isDarkThemeEnabled: isDarkThemeEnabled,
                               shouldBlurAvatar: shouldBlurAvatar)
         return avatarImage(forRequest: request, transaction: transaction)
     }
@@ -194,36 +190,37 @@ public class AvatarBuilder: NSObject {
             owsFailDebug("Missing localAddress.")
             return nil
         }
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
                                                                            transaction: transaction)
         let requestType: RequestType = .contactAddress(address: address,
                                                        localUserDisplayMode: localUserDisplayMode)
         let request = Request(requestType: requestType,
                               diameterPixels: diameterPixels,
-                              isDarkThemeEnabled: isDarkThemeEnabled,
                               shouldBlurAvatar: shouldBlurAvatar)
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    @objc
     public func avatarImage(personNameComponents: PersonNameComponents,
+                            address: SignalServiceAddress? = nil,
                             diameterPoints: UInt,
                             transaction: SDSAnyReadTransaction) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
         let shouldBlurAvatar = false
-        let backgroundColor = ChatColors.defaultAvatarColor.asOWSColor
+        let theme: AvatarTheme
+        if let address = address {
+            theme = .forAddress(address)
+        } else {
+            theme = .default
+        }
         let requestType: RequestType = {
             if let initials = Self.contactInitials(forPersonNameComponents: personNameComponents) {
-                return .contactInitials(initials: initials, backgroundColor: backgroundColor)
+                return .text(text: initials, theme: theme)
             } else {
-                return .contactDefaultIcon(backgroundColor: backgroundColor)
+                return .contactDefaultIcon(theme: theme)
             }
         }()
         let request = Request(requestType: requestType,
                               diameterPixels: diameterPixels,
-                              isDarkThemeEnabled: isDarkThemeEnabled,
                               shouldBlurAvatar: shouldBlurAvatar)
         return avatarImage(forRequest: request, transaction: transaction)
     }
@@ -231,54 +228,109 @@ public class AvatarBuilder: NSObject {
     @objc
     public func avatarImage(forGroupId groupId: Data, diameterPoints: UInt) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
+        return avatarImage(forGroupId: groupId, diameterPixels: UInt(diameterPixels))
+    }
+
+    @objc
+    public func avatarImage(forGroupId groupId: Data, diameterPixels: UInt) -> UIImage? {
         let shouldBlurAvatar = false
-        let requestType: RequestType = .groupDefault(groupId: groupId)
+        let requestType: RequestType = .groupDefaultIcon(groupId: groupId)
         let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
-                              isDarkThemeEnabled: isDarkThemeEnabled,
+                              diameterPixels: CGFloat(diameterPixels),
                               shouldBlurAvatar: shouldBlurAvatar)
-        let backgroundColor = ChatColors.avatarColor(forGroupId: groupId)
-        let avatarContentType: AvatarContentType = .groupDefault(backgroundColor: backgroundColor.asOWSColor)
+        let avatarContentType: AvatarContentType = .groupDefault(theme: .forGroupId(groupId))
         let avatarContent = AvatarContent(request: request,
                                           contentType: avatarContentType,
                                           failoverContentType: nil,
                                           diameterPixels: request.diameterPixels,
-                                          isDarkThemeEnabled: request.isDarkThemeEnabled,
                                           shouldBlurAvatar: request.shouldBlurAvatar)
         return avatarImage(forRequest: request, avatarContent: avatarContent)
     }
 
-    @objc
-    public func avatarImageForContactDefault(address: SignalServiceAddress,
-                                             diameterPoints: UInt) -> UIImage? {
+    public func defaultAvatarImageForLocalUser(
+        diameterPoints: UInt,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
-        let shouldBlurAvatar = false
-        let backgroundColor = ChatColors.avatarColor(forAddress: address).asOWSColor
-        let requestType: RequestType = .contactDefaultIcon(backgroundColor: backgroundColor)
-        let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
-                              isDarkThemeEnabled: isDarkThemeEnabled,
-                              shouldBlurAvatar: shouldBlurAvatar)
-        let avatarContentType: AvatarContentType = .contactDefaultIcon(backgroundColor: backgroundColor)
-        let avatarContent = AvatarContent(request: request,
-                                          contentType: avatarContentType,
-                                          failoverContentType: nil,
-                                          diameterPixels: request.diameterPixels,
-                                          isDarkThemeEnabled: request.isDarkThemeEnabled,
-                                          shouldBlurAvatar: request.shouldBlurAvatar)
-        return avatarImage(forRequest: request, avatarContent: avatarContent)
+        return defaultAvatarImageForLocalUser(
+            diameterPixels: UInt(diameterPixels),
+            transaction: transaction
+        )
+    }
+
+    public func defaultAvatarImageForLocalUser(
+        diameterPixels: UInt,
+        transaction: SDSAnyReadTransaction
+    ) -> UIImage? {
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing local address")
+            return nil
+        }
+
+        let theme = AvatarTheme.forAddress(localAddress)
+        let nameComponents = Self.contactsManager.nameComponents(for: localAddress, transaction: transaction)
+
+        let requestType: RequestType = {
+            if let nameComponents = nameComponents,
+               let initials = Self.contactInitials(forPersonNameComponents: nameComponents) {
+                return .text(text: initials, theme: theme)
+            } else {
+                return .contactDefaultIcon(theme: theme)
+            }
+        }()
+        let request = Request(
+            requestType: requestType,
+            diameterPixels: CGFloat(diameterPixels),
+            shouldBlurAvatar: false
+        )
+        return avatarImage(forRequest: request, transaction: transaction)
+    }
+
+    public func avatarImage(model: AvatarModel, diameterPoints: UInt) -> UIImage? {
+        let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
+        return avatarImage(model: model, diameterPixels: UInt(diameterPixels))
+    }
+
+    public func avatarImage(model: AvatarModel, diameterPixels: UInt) -> UIImage? {
+        let request = Request(
+            requestType: .model(model),
+            diameterPixels: CGFloat(diameterPixels),
+            shouldBlurAvatar: false
+        )
+
+        let avatarContentType: AvatarContentType
+        switch model.type {
+        case .icon(let icon):
+            avatarContentType = .avatarIcon(icon: icon, theme: model.theme)
+        case .image(let url):
+            avatarContentType = .file(fileUrl: url, shouldValidate: false)
+        case .text(let text):
+            avatarContentType = .text(text: text, theme: model.theme)
+        }
+
+        let avatarContent = AvatarContent(
+            request: request,
+            contentType: avatarContentType,
+            failoverContentType: nil,
+            diameterPixels: request.diameterPixels,
+            shouldBlurAvatar: request.shouldBlurAvatar
+        )
+
+        return avatarImage(
+            forRequest: request,
+            avatarContent: avatarContent
+        )
     }
 
     // MARK: - Requests
 
     public enum RequestType {
         case contactAddress(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode)
-        case contactInitials(initials: String, backgroundColor: OWSColor)
-        case contactDefaultIcon(backgroundColor: OWSColor)
+        case text(text: String, theme: AvatarTheme)
+        case contactDefaultIcon(theme: AvatarTheme)
         case group(groupId: Data, avatarData: Data, digestString: String)
-        case groupDefault(groupId: Data)
+        case groupDefaultIcon(groupId: Data)
+        case model(AvatarModel)
 
         fileprivate var cacheKey: String? {
             switch self {
@@ -288,14 +340,23 @@ public class AvatarBuilder: NSObject {
                     return nil
                 }
                 return "contactAddress.\(serviceIdentifier).\(localUserDisplayMode.rawValue)"
-            case .contactInitials(let initials, let backgroundColor):
-                return "contactInitials.\(initials).\(backgroundColor)"
-            case .contactDefaultIcon(let backgroundColor):
-                return "contactDefaultIcon.\(backgroundColor)"
+            case .text(let text, let theme):
+                return "text.\(text).\(theme.rawValue)"
+            case .contactDefaultIcon(let theme):
+                return "contactDefaultIcon.\(theme.rawValue)"
             case .group(let groupId, _, let digestString):
                 return "group.\(groupId.hexadecimalString).\(digestString)"
-            case .groupDefault(let groupId):
-                return "groupDefault.\(groupId.hexadecimalString)"
+            case .groupDefaultIcon(let groupId):
+                return "groupDefaultIcon.\(groupId.hexadecimalString)"
+            case .model(let avatarModel):
+                switch avatarModel.type {
+                case .icon(let icon):
+                    return "icon.\(icon.rawValue).\(avatarModel.theme.rawValue)"
+                case .text(let text):
+                    return "text.\(text).\(avatarModel.theme.rawValue)"
+                case .image(let url):
+                    return "file.\(url.path)"
+                }
             }
         }
     }
@@ -303,7 +364,6 @@ public class AvatarBuilder: NSObject {
     public struct Request {
         let requestType: RequestType
         let diameterPixels: CGFloat
-        let isDarkThemeEnabled: Bool
         let shouldBlurAvatar: Bool
 
         fileprivate var cacheKey: String? {
@@ -311,7 +371,7 @@ public class AvatarBuilder: NSObject {
                 owsFailDebug("Missing typeKey.")
                 return nil
             }
-            return "\(typeKey).\(diameterPixels).\(isDarkThemeEnabled).\(shouldBlurAvatar)"
+            return "\(typeKey).\(diameterPixels).\(shouldBlurAvatar)"
         }
     }
 
@@ -319,8 +379,6 @@ public class AvatarBuilder: NSObject {
                               diameterPixels: CGFloat,
                               localUserDisplayMode: LocalUserDisplayMode,
                               transaction: SDSAnyReadTransaction) -> Request? {
-
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
 
         func buildRequestType() -> (RequestType, Bool)? {
             if let contactThread = thread as? TSContactThread {
@@ -346,7 +404,6 @@ public class AvatarBuilder: NSObject {
         }
         return Request(requestType: requestType,
                        diameterPixels: diameterPixels,
-                       isDarkThemeEnabled: isDarkThemeEnabled,
                        shouldBlurAvatar: shouldBlurAvatar)
     }
 
@@ -359,7 +416,7 @@ public class AvatarBuilder: NSObject {
                 let digestString = avatarData.sha1Base64DigestString
                 return .group(groupId: groupThread.groupId, avatarData: avatarData, digestString: digestString)
             } else {
-                return .groupDefault(groupId: groupThread.groupId)
+                return .groupDefaultIcon(groupId: groupThread.groupId)
             }
         }
         if let latestGroupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThread.uniqueId,
@@ -399,10 +456,21 @@ public class AvatarBuilder: NSObject {
     private enum AvatarContentType: Equatable {
         case file(fileUrl: URL, shouldValidate: Bool)
         case data(imageData: Data, digestString: String, shouldValidate: Bool)
-        case contactInitials(initials: String, backgroundColor: OWSColor)
-        case contactDefaultIcon(backgroundColor: OWSColor)
-        case noteToSelf(backgroundColor: OWSColor)
-        case groupDefault(backgroundColor: OWSColor)
+        case text(text: String, theme: AvatarTheme)
+        case tintedImage(name: String, theme: AvatarTheme)
+        case avatarIcon(icon: AvatarIcon, theme: AvatarTheme)
+
+        static func noteToSelf(theme: AvatarTheme) -> Self {
+            return .tintedImage(name: "note-resizable", theme: theme)
+        }
+
+        static func groupDefault(theme: AvatarTheme) -> Self {
+            return .tintedImage(name: "group-outline-resizable", theme: theme)
+        }
+
+        static func contactDefaultIcon(theme: AvatarTheme) -> Self {
+            return .tintedImage(name: "contact-outline-resizable", theme: theme)
+        }
 
         fileprivate var cacheKey: String {
             switch self {
@@ -410,14 +478,12 @@ public class AvatarBuilder: NSObject {
                 return "file.\(fileUrl.path)"
             case .data(_, let digestString, _):
                 return "data.\(digestString)"
-            case .contactInitials(let initials, let backgroundColor):
-                return "contactInitials.\(initials).\(backgroundColor.description)"
-            case .contactDefaultIcon(let backgroundColor):
-                return "contactDefaultIcon.\(backgroundColor.description)"
-            case .noteToSelf(let backgroundColor):
-                return "noteToSelf.\(backgroundColor.description)"
-            case .groupDefault(let backgroundColor):
-                return "groupDefault.\(backgroundColor.description)"
+            case .text(let text, let theme):
+                return "text.\(text).\(theme.rawValue)"
+            case .tintedImage(let name, let theme):
+                return "tintedImage.\(name).\(theme.rawValue)"
+            case .avatarIcon(let icon, let theme):
+                return "avatarIcon.\(icon.rawValue).\(theme.rawValue)"
             }
         }
     }
@@ -429,25 +495,22 @@ public class AvatarBuilder: NSObject {
         let contentType: AvatarContentType
         let failoverContentType: AvatarContentType?
         let diameterPixels: CGFloat
-        let isDarkThemeEnabled: Bool
         let shouldBlurAvatar: Bool
 
         init(request: Request,
              contentType: AvatarContentType,
              failoverContentType: AvatarContentType?,
              diameterPixels: CGFloat,
-             isDarkThemeEnabled: Bool,
              shouldBlurAvatar: Bool) {
             self.request = request
             self.contentType = contentType
             self.failoverContentType = failoverContentType
             self.diameterPixels = diameterPixels
-            self.isDarkThemeEnabled = isDarkThemeEnabled
             self.shouldBlurAvatar = shouldBlurAvatar
         }
 
         fileprivate var cacheKey: String {
-            "\(contentType.cacheKey).\(diameterPixels).\(isDarkThemeEnabled).\(shouldBlurAvatar)"
+            "\(contentType.cacheKey).\(diameterPixels).\(shouldBlurAvatar)"
         }
     }
 
@@ -528,17 +591,16 @@ public class AvatarBuilder: NSObject {
             case .contactAddress(let address, let localUserDisplayMode):
                 guard address.isValid else {
                     owsFailDebug("Invalid address.")
-                    let backgroundColor = ChatColors.defaultAvatarColor.asOWSColor
-                    return AvatarContentTypes(contentType: .contactDefaultIcon(backgroundColor: backgroundColor),
+                    return AvatarContentTypes(contentType: .contactDefaultIcon(theme: .default),
                                               failoverContentType: nil)
                 }
 
-                let backgroundColor = ChatColors.avatarColor(forAddress: address).asOWSColor
+                let theme = AvatarTheme.forAddress(address)
 
                 if address.isLocalAddress,
                    localUserDisplayMode == .noteToSelf {
-                    return AvatarContentTypes(contentType: .noteToSelf(backgroundColor: backgroundColor),
-                                              failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
+                    return AvatarContentTypes(contentType: .noteToSelf(theme: theme),
+                                              failoverContentType: .contactDefaultIcon(theme: theme))
                 } else if let imageData = Self.contactsManagerImpl.avatarImageData(forAddress: address,
                                                                                    shouldValidate: true,
                                                                                    transaction: transaction) {
@@ -546,33 +608,49 @@ public class AvatarBuilder: NSObject {
                     return AvatarContentTypes(contentType: .data(imageData: imageData,
                                                                  digestString: digestString,
                                                                  shouldValidate: false),
-                                              failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
+                                              failoverContentType: .contactDefaultIcon(theme: theme))
                 } else if let nameComponents = Self.contactsManager.nameComponents(for: address, transaction: transaction),
                           let contactInitials = Self.contactInitials(forPersonNameComponents: nameComponents) {
-                    return AvatarContentTypes(contentType: .contactInitials(initials: contactInitials,
-                                                                            backgroundColor: backgroundColor),
-                                              failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
+                    return AvatarContentTypes(contentType: .text(text: contactInitials, theme: theme),
+                                              failoverContentType: .contactDefaultIcon(theme: theme))
                 } else {
-                    return AvatarContentTypes(contentType: .contactDefaultIcon(backgroundColor: backgroundColor),
+                    return AvatarContentTypes(contentType: .contactDefaultIcon(theme: theme),
                                               failoverContentType: nil)
                 }
-            case .contactInitials(let initials, let backgroundColor):
-                return AvatarContentTypes(contentType: .contactInitials(initials: initials,
-                                                                        backgroundColor: backgroundColor),
-                                          failoverContentType: .contactDefaultIcon(backgroundColor: backgroundColor))
-            case .contactDefaultIcon(let backgroundColor):
-                return AvatarContentTypes(contentType: .contactDefaultIcon(backgroundColor: backgroundColor),
+            case .text(let text, let theme):
+                return AvatarContentTypes(contentType: .text(text: text, theme: theme),
+                                          failoverContentType: .contactDefaultIcon(theme: theme))
+            case .contactDefaultIcon(let theme):
+                return AvatarContentTypes(contentType: .contactDefaultIcon(theme: theme),
                                           failoverContentType: nil)
             case .group(let groupId, let avatarData, let digestString):
-                let backgroundColor = ChatColors.avatarColor(forGroupId: groupId).asOWSColor
+                let theme = AvatarTheme.forGroupId(groupId)
                 return AvatarContentTypes(contentType: .data(imageData: avatarData,
                                                              digestString: digestString,
                                                              shouldValidate: false),
-                                          failoverContentType: .groupDefault(backgroundColor: backgroundColor))
-            case .groupDefault(let groupId):
-                let backgroundColor = ChatColors.avatarColor(forGroupId: groupId).asOWSColor
-                return AvatarContentTypes(contentType: .groupDefault(backgroundColor: backgroundColor),
+                                          failoverContentType: .groupDefault(theme: theme))
+            case .groupDefaultIcon(let groupId):
+                let theme = AvatarTheme.forGroupId(groupId)
+                return AvatarContentTypes(contentType: .groupDefault(theme: theme),
                                           failoverContentType: nil)
+            case .model(let model):
+                switch model.type {
+                case .icon(let icon):
+                    return AvatarContentTypes(
+                        contentType: .avatarIcon(icon: icon, theme: model.theme),
+                        failoverContentType: nil
+                    )
+                case .image(let url):
+                    return AvatarContentTypes(
+                        contentType: .file(fileUrl: url, shouldValidate: false),
+                        failoverContentType: nil
+                    )
+                case .text(let text):
+                    return AvatarContentTypes(
+                        contentType: .text(text: text, theme: model.theme),
+                        failoverContentType: nil
+                    )
+                }
             }
         }
         let contentTypes = buildAvatarContentTypes()
@@ -580,7 +658,6 @@ public class AvatarBuilder: NSObject {
                              contentType: contentTypes.contentType,
                              failoverContentType: contentTypes.failoverContentType,
                              diameterPixels: request.diameterPixels,
-                             isDarkThemeEnabled: request.isDarkThemeEnabled,
                              shouldBlurAvatar: request.shouldBlurAvatar)
     }
 
@@ -592,26 +669,23 @@ public class AvatarBuilder: NSObject {
         func buildOrLoadWithContentType(_ contentType: AvatarContentType) -> UIImage? {
             switch contentType {
             case .file(let fileUrl, let shouldValidate):
-                return Self.loadAndResizeAvatarFile(avatarContent: avatarContent,
-                                                    fileUrl: fileUrl,
-                                                    shouldValidate: shouldValidate)
+                return loadAndResizeAvatarFile(
+                    avatarContent: avatarContent,
+                    fileUrl: fileUrl,
+                    shouldValidate: shouldValidate
+                )
             case .data(let imageData, _, let shouldValidate):
-                return Self.loadAndResizeAvatarImageData(avatarContent: avatarContent,
-                                                         imageData: imageData,
-                                                         shouldValidate: shouldValidate)
-            case .contactInitials(let initials, let backgroundColor):
-                return Self.buildAvatar(avatarContent: avatarContent,
-                                        initials: initials,
-                                        backgroundColor: backgroundColor.asUIColor)
-            case .contactDefaultIcon(let backgroundColor):
-                return Self.buildAvatarWithDefaultContactIcon(avatarContent: avatarContent,
-                                                              backgroundColor: backgroundColor.asUIColor)
-            case .noteToSelf(let backgroundColor):
-                return Self.buildNoteToSelfImage(diameterPixels: avatarContent.diameterPixels,
-                                                 backgroundColor: backgroundColor.asUIColor)
-            case .groupDefault(let backgroundColor):
-                return Self.buildAvatarDefaultGroup(avatarContent: avatarContent,
-                                                    backgroundColor: backgroundColor.asUIColor)
+                return loadAndResizeAvatarImageData(
+                    avatarContent: avatarContent,
+                    imageData: imageData,
+                    shouldValidate: shouldValidate
+                )
+            case .text(let text, let theme):
+                return buildAvatar(avatarContent: avatarContent, text: text, theme: theme)
+            case .tintedImage(let name, let theme):
+                return buildAvatar(avatarContent: avatarContent, tintedImageName: name, theme: theme)
+            case .avatarIcon(let icon, let theme):
+                return buildAvatar(avatarContent: avatarContent, avatarIcon: icon, theme: theme)
             }
         }
         func buildOrLoad() -> UIImage? {
@@ -726,118 +800,106 @@ public class AvatarBuilder: NSObject {
         }
     }
 
-    private static func buildAvatar(avatarContent: AvatarContent,
-                                    initials: String,
-                                    backgroundColor: UIColor) -> UIImage? {
+    private static func buildAvatar(
+        avatarContent: AvatarContent,
+        text: String,
+        theme: AvatarTheme
+    ) -> UIImage? {
         let diameterPixels = avatarContent.diameterPixels
-        let isDarkThemeEnabled = avatarContent.isDarkThemeEnabled
-        let textColor = Self.avatarForegroundColor(isDarkThemeEnabled: isDarkThemeEnabled)
-        return buildAvatar(initials: initials,
-                           textColor: textColor,
-                           backgroundColor: backgroundColor,
-                           diameterPixels: diameterPixels)
+        return buildAvatar(
+            text: text,
+            textColor: theme.foregroundColor,
+            backgroundColor: theme.backgroundColor,
+            diameterPixels: diameterPixels
+        )
     }
 
-    private static func buildAvatarWithDefaultContactIcon(avatarContent: AvatarContent,
-                                                          backgroundColor: UIColor) -> UIImage? {
+    private static func buildAvatar(
+        avatarContent: AvatarContent,
+        tintedImageName: String,
+        theme: AvatarTheme
+    ) -> UIImage? {
+        guard let image = UIImage(named: tintedImageName) else {
+            owsFailDebug("Missing icon with name \(tintedImageName)")
+            return nil
+        }
+
         let diameterPixels = avatarContent.diameterPixels
-        let isDarkThemeEnabled = avatarContent.isDarkThemeEnabled
 
-        // We don't have a name for this contact, so we can't make an "initials" image.
+        let margin = avatarMargins(diameter: diameterPixels)
+        let totalIconDiamterPixels = diameterPixels - margin.totalWidth
 
-        let iconName = (diameterPixels > Self.standardAvatarSizePixels
-                            ? "contact-avatar-1024"
-                            : "contact-avatar-84")
-        guard let icon = UIImage(named: iconName) else {
-            owsFailDebug("Missing asset.")
-            return nil
-        }
-        let assetWidthPixels = CGFloat(icon.pixelWidth)
-        // The contact-avatar asset is designed to be 28pt if the avatar is AvatarBuilder.standardAvatarSizePoints.
-        // Adjust its size to reflect the actual output diameter.
-        // We use an oversize 1024px version of the asset to ensure quality results for larger avatars.
-        //
-        // NOTE: We mix units here, but they cancel out.
-        let assetSizePoints: CGFloat = 28
-        let scaling = (diameterPixels / CGFloat(Self.standardAvatarSizePoints)) * (assetSizePoints / assetWidthPixels)
-
-        let iconSizePixels = CGSizeScale(icon.size, scaling)
-        let iconColor = Self.avatarForegroundColor(isDarkThemeEnabled: isDarkThemeEnabled)
-        return Self.buildAvatar(icon: icon,
-                                iconSizePixels: iconSizePixels,
-                                iconColor: iconColor,
-                                backgroundColor: backgroundColor,
-                                diameterPixels: diameterPixels)
-    }
-
-    private static func buildNoteToSelfImage(diameterPixels: CGFloat, backgroundColor: UIColor) -> UIImage? {
-        guard let iconImage = UIImage(named: "note-112")?.asTintedImage(color: .ows_white)?.cgImage else {
-            owsFailDebug("Missing icon.")
-            return nil
-        }
-
-        UIGraphicsBeginImageContextWithOptions(.square(diameterPixels), false, 1)
-        guard let context = UIGraphicsGetCurrentContext() else {
-            owsFailDebug("Missing context.")
-            return nil
-        }
-        defer { UIGraphicsEndImageContext() }
-
-        context.setFillColor(backgroundColor.cgColor)
-        context.fill(CGRect(origin: .zero, size: .square(diameterPixels)))
-
-        let iconWidthPixels = diameterPixels * 0.625
-        let iconOffset = (diameterPixels - iconWidthPixels) / 2
-        let iconRect = CGRect(origin: CGPoint(x: iconOffset, y: iconOffset),
-                              size: .square(iconWidthPixels))
-        context.draw(iconImage, in: iconRect)
-
-        guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-            owsFailDebug("Missing image.")
-            return nil
-        }
-        return image
-    }
-
-    private static func avatarForegroundColor(isDarkThemeEnabled: Bool) -> UIColor {
-        isDarkThemeEnabled ? .ows_gray05 : .ows_white
-    }
-
-    private static func avatarTextFont(forDiameterPixels diameterPixels: CGFloat) -> UIFont {
-        // Adapt the font size to reflect the diameter.
-        // The exact size doesn't matter since we scale the text to fit the avatar.
-        // We just need a size large enough to be within the realm of reason and avoid edge cases.
-        let fontSizePoints = (diameterPixels / Self.standardAvatarSizePixels) * 20 / UIScreen.main.scale
-        return UIFont.ows_semiboldFont(withSize: fontSizePoints)
-    }
-
-    private static func buildAvatar(initials: String,
-                                    textColor: UIColor,
-                                    backgroundColor: UIColor,
-                                    diameterPixels: CGFloat) -> UIImage? {
-        let font = avatarTextFont(forDiameterPixels: diameterPixels)
-        return Self.buildAvatar(diameterPixels: diameterPixels,
-                                backgroundColor: backgroundColor) { context in
-            Self.drawInitialsInAvatar(initials: initials,
-                                      textColor: textColor,
-                                      font: font,
-                                      diameterPixels: diameterPixels,
-                                      context: context)
+        return buildAvatar(
+            diameterPixels: diameterPixels,
+            backgroundColor: theme.backgroundColor
+        ) { context in
+            drawIconInAvatar(
+                icon: image,
+                iconSizePixels: CGSize(square: totalIconDiamterPixels),
+                iconColor: theme.foregroundColor,
+                diameterPixels: diameterPixels,
+                context: context
+            )
         }
     }
 
-    private static func buildAvatar(icon: UIImage,
-                                    iconSizePixels: CGSize,
-                                    iconColor: UIColor,
-                                    backgroundColor: UIColor,
-                                    diameterPixels: CGFloat) -> UIImage? {
-        Self.buildAvatar(diameterPixels: diameterPixels,
-                         backgroundColor: backgroundColor) { context in
-            Self.drawIconInAvatar(icon: icon,
-                                  iconSizePixels: iconSizePixels,
-                                  iconColor: iconColor,
-                                  diameterPixels: diameterPixels,
-                                  context: context)
+    private static func buildAvatar(
+        avatarContent: AvatarContent,
+        avatarIcon: AvatarIcon,
+        theme: AvatarTheme
+    ) -> UIImage? {
+        let diameterPixels = avatarContent.diameterPixels
+
+        return buildAvatar(
+            diameterPixels: diameterPixels,
+            backgroundColor: theme.backgroundColor
+        ) { context in
+            drawIconInAvatar(
+                icon: avatarIcon.image,
+                iconSizePixels: CGSize(square: diameterPixels),
+                diameterPixels: diameterPixels,
+                context: context
+            )
+        }
+    }
+
+    private static func buildAvatar(
+        text: String,
+        textColor: UIColor,
+        backgroundColor: UIColor,
+        diameterPixels: CGFloat
+    ) -> UIImage? {
+        return buildAvatar(
+            diameterPixels: diameterPixels,
+            backgroundColor: backgroundColor
+        ) { context in
+            drawTextInAvatar(
+                text: text,
+                textColor: textColor,
+                diameterPixels: diameterPixels,
+                context: context
+            )
+        }
+    }
+
+    private static func buildAvatar(
+        icon: UIImage,
+        iconSizePixels: CGSize,
+        iconColor: UIColor,
+        backgroundColor: UIColor,
+        diameterPixels: CGFloat
+    ) -> UIImage? {
+        buildAvatar(
+            diameterPixels: diameterPixels,
+            backgroundColor: backgroundColor
+        ) { context in
+            drawIconInAvatar(
+                icon: icon,
+                iconSizePixels: iconSizePixels,
+                iconColor: iconColor,
+                diameterPixels: diameterPixels,
+                context: context
+            )
         }
     }
 
@@ -862,26 +924,6 @@ public class AvatarBuilder: NSObject {
         context.setFillColor(backgroundColor.cgColor)
         context.fill(frame)
 
-        // Gradient
-        let colorspace = CGColorSpaceCreateDeviceRGB()
-        let gradientLocations: [CGFloat] = [ 0, 1 ]
-        guard let gradient = CGGradient(colorsSpace: colorspace,
-                                        colors: [
-                                            UIColor(white: 0, alpha: 0.0).cgColor,
-                                            UIColor(white: 0, alpha: 0.15).cgColor
-                                        ] as CFArray,
-                                        locations: gradientLocations) else {
-            owsFailDebug("Missing gradient.")
-            return nil
-        }
-        let startPoint = CGPoint(x: diameterPixels * 0.5, y: 0)
-        let endPoint = CGPoint(x: diameterPixels * 0.5, y: diameterPixels)
-        let options: CGGradientDrawingOptions = [ .drawsBeforeStartLocation, .drawsAfterEndLocation ]
-        context.drawLinearGradient(gradient,
-                                   start: startPoint,
-                                   end: endPoint,
-                                   options: options)
-
         context.saveGState()
         drawBlock(context)
         context.restoreGState()
@@ -894,13 +936,27 @@ public class AvatarBuilder: NSObject {
         return normalizeImageScale(image)
     }
 
-    private static func drawInitialsInAvatar(initials: String,
-                                             textColor: UIColor,
-                                             font: UIFont,
-                                             diameterPixels: CGFloat,
-                                             context: CGContext) {
-        guard let initials = initials.strippedOrNil else {
-            owsFailDebug("Invalid initials.")
+    public static func avatarMaxFont(diameter: CGFloat) -> UIFont {
+        // We use the "Inter" font for text based avatars, so they look
+        // the same across all platforms. The font is scaled relative to
+        // the height of the avatar. By sizing it to half the dimater, it
+        // will always be at least big enough to scale down to fit within
+        // the avatar.
+        return UIFont(name: "Inter", size: diameter * 0.5)!
+    }
+
+    public static func avatarMargins(diameter: CGFloat) -> UIEdgeInsets {
+        UIEdgeInsets(margin: diameter * 0.2)
+    }
+
+    private static func drawTextInAvatar(
+        text: String,
+        textColor: UIColor,
+        diameterPixels: CGFloat,
+        context: CGContext
+    ) {
+        guard let text = text.strippedOrNil else {
+            owsFailDebug("Invalid text.")
             return
         }
         guard diameterPixels > 0 else {
@@ -909,47 +965,47 @@ public class AvatarBuilder: NSObject {
         }
 
         let frame = CGRect(origin: .zero, size: .square(diameterPixels))
+        let font = avatarMaxFont(diameter: diameterPixels)
+        let margins = avatarMargins(diameter: diameterPixels)
 
         let textAttributesForMeasurement: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: textColor
         ]
         let options: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
-        let textSizeUnscaled = (initials).boundingRect(with: frame.size,
-                                                                   options: options,
-                                                                   attributes: textAttributesForMeasurement,
-                                                                   context: nil).size
+        let baseTextSize = (text).boundingRect(
+            with: CGSize(width: .max, height: .max),
+            options: options,
+            attributes: textAttributesForMeasurement,
+            context: nil
+        ).size
         // Ensure that the text fits within the avatar bounds, with a margin.
-        guard textSizeUnscaled.isNonEmpty else {
+        guard baseTextSize.isNonEmpty else {
             owsFailDebug("Text has invalid bounds.")
             return
         }
 
-        // For "wide" text, ensure 10% margin between text and diameter of the avatar.
-        let maxTextDiameterPixels = diameterPixels * 0.9
-        let textDiameterUnscaledPixels = CGFloat(sqrt(textSizeUnscaled.width.sqr + textSizeUnscaled.height.sqr))
-        let diameterScaling = maxTextDiameterPixels / textDiameterUnscaledPixels
-        // For "tall" text, cap text height with respect to the diameter of the avatar.
-        let maxTextHeightPixels = diameterPixels * 0.5
-        let heightScaling = maxTextHeightPixels / textSizeUnscaled.height
-        // Scale font
-        let scaling = min(diameterScaling, heightScaling)
-        let font = font.withSize(font.pointSize * scaling)
+        let maxTextDiameterPixels = diameterPixels - margins.totalWidth
+        let textSizePixels = baseTextSize.largerAxis
+        let scaling = maxTextDiameterPixels / textSizePixels
+
         let textAttributesForDrawing: [NSAttributedString.Key: Any] = [
-            .font: font,
+            .font: font.withSize(font.pointSize * scaling),
             .foregroundColor: textColor
         ]
-        let textSizeScaled = (initials).boundingRect(with: frame.size,
-                                                                 options: options,
-                                                                 attributes: textAttributesForDrawing,
-                                                                 context: nil).size
+        let textSizeScaled = (text).boundingRect(
+            with: frame.size,
+            options: options,
+            attributes: textAttributesForDrawing,
+            context: nil
+        ).size
         let locationPixels = (frame.size.asPoint - textSizeScaled.asPoint) * 0.5
-        (initials).draw(at: locationPixels, withAttributes: textAttributesForDrawing)
+        (text).draw(at: locationPixels, withAttributes: textAttributesForDrawing)
     }
 
     private static func drawIconInAvatar(icon: UIImage,
                                          iconSizePixels: CGSize,
-                                         iconColor: UIColor,
+                                         iconColor: UIColor? = nil,
                                          diameterPixels: CGFloat,
                                          context: CGContext) {
         context.saveGState()
@@ -973,37 +1029,25 @@ public class AvatarBuilder: NSObject {
         let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: diameterPixels)
         context.concatenate(flipVertical)
 
-        let diameterSizePixels = CGSize.square(diameterPixels)
-        let imageRect = CGRect(origin: .zero, size: diameterSizePixels)
+        if let iconColor = iconColor {
+            let diameterSizePixels = CGSize.square(diameterPixels)
 
-        // The programmatic equivalent of UIImageRenderingModeAlwaysTemplate/tintColor.
-        context.setBlendMode(.normal)
-        let offsetPixels = (diameterSizePixels.asPoint - iconSizePixels.asPoint) * 0.5
-        let maskRect = CGRect(origin: offsetPixels, size: iconSizePixels)
-        context.clip(to: maskRect, mask: icon)
-        context.setFillColor(iconColor.cgColor)
-        context.fill(imageRect)
-    }
-
-    // Default Group Avatars
-
-    private static func buildAvatarDefaultGroup(avatarContent: AvatarContent,
-                                                backgroundColor: UIColor) -> UIImage? {
-        let diameterPixels = avatarContent.diameterPixels
-        let isDarkThemeEnabled = avatarContent.isDarkThemeEnabled
-
-        let icon = UIImage(named: "group-outline-256")!
-        // Adjust asset size to reflect the output diameter.
-        let scaling = diameterPixels * 0.003
-        let iconSizePixels = icon.size * scaling
-        let iconColor = Self.avatarForegroundColor(isDarkThemeEnabled: isDarkThemeEnabled)
-        return Self.buildAvatar(diameterPixels: diameterPixels,
-                                backgroundColor: backgroundColor) { context in
-            Self.drawIconInAvatar(icon: icon,
-                                  iconSizePixels: iconSizePixels,
-                                  iconColor: iconColor,
-                                  diameterPixels: diameterPixels,
-                                  context: context)
+            // The programmatic equivalent of UIImageRenderingModeAlwaysTemplate/tintColor.
+            context.setBlendMode(.normal)
+            let offsetPixels = (diameterSizePixels.asPoint - iconSizePixels.asPoint) * 0.5
+            let maskRect = CGRect(origin: offsetPixels, size: iconSizePixels)
+            context.clip(to: maskRect, mask: icon)
+            context.setFillColor(iconColor.cgColor)
+            context.fill(CGRect(origin: .zero, size: diameterSizePixels))
+        } else {
+            let iconRect = CGRect(
+                origin: CGPoint(
+                    x: (diameterPixels - iconSizePixels.width) / 2,
+                    y: (diameterPixels - iconSizePixels.height) / 2
+                ),
+                size: iconSizePixels
+            )
+            context.draw(icon, in: iconRect)
         }
     }
 }
@@ -1073,20 +1117,22 @@ extension AvatarBuilder {
         let face = "\(randomEyebrow)\(randomEye)\(randomMouth)"
 
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        let backgroundColor = UIColor(rgbHex: 0xaca6633)
-        let font = avatarTextFont(forDiameterPixels: diameterPixels)
-        let isDarkThemeEnabled = Theme.isDarkThemeEnabled
-        let textColor = Self.avatarForegroundColor(isDarkThemeEnabled: isDarkThemeEnabled)
-        return Self.buildAvatar(diameterPixels: diameterPixels,
-                                backgroundColor: backgroundColor) { context in
+
+        let theme = AvatarTheme.allCases.randomElement()!
+
+        return buildAvatar(
+            diameterPixels: diameterPixels,
+            backgroundColor: theme.backgroundColor
+        ) { context in
             context.translateBy(x: +diameterPixels / 2, y: +diameterPixels / 2)
             context.rotate(by: CGFloat.halfPi)
             context.translateBy(x: -diameterPixels / 2, y: -diameterPixels / 2)
-            Self.drawInitialsInAvatar(initials: face,
-                                      textColor: textColor,
-                                      font: font,
-                                      diameterPixels: diameterPixels,
-                                      context: context)
+            drawTextInAvatar(
+                text: face,
+                textColor: theme.foregroundColor,
+                diameterPixels: diameterPixels,
+                context: context
+            )
         }
     }
 }

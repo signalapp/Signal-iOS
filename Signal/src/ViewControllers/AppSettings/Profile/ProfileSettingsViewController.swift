@@ -19,8 +19,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private var bio: String?
     private var bioEmoji: String?
 
-    private let avatarViewHelper = AvatarViewHelper()
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -29,8 +27,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         title = NSLocalizedString("PROFILE_VIEW_TITLE", comment: "Title for the profile view.")
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
-
-        avatarViewHelper.delegate = self
 
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
         avatarData = snapshot.avatarData
@@ -62,7 +58,18 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             return self.avatarCell()
         },
             actionBlock: { [weak self] in
-                self?.avatarViewHelper.showChangeAvatarUI()
+                let currentAvatarImage: UIImage? = {
+                    guard let avatarData = self?.avatarData else { return nil }
+                    return UIImage(data: avatarData)
+                }()
+
+                let vc = AvatarSettingsViewController(
+                    context: .profile,
+                    currentAvatarImage: currentAvatarImage
+                ) { [weak self] newAvatarImage in
+                    self?.setAvatarImage(newAvatarImage)
+                }
+                self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
         contents.addSection(avatarSection)
@@ -234,10 +241,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         if let avatarData = avatarData {
             avatarImageView.image = UIImage(data: avatarData)
         } else {
-            let localAddress = tsAccountManager.localAddress!
-            let avatar = Self.avatarBuilder.avatarImageForContactDefault(address: localAddress,
-                                                                         diameterPoints: avatarDiameter)
-            avatarImageView.image = avatar
+            avatarImageView.image = databaseStorage.read { transaction in
+                avatarBuilder.defaultAvatarImageForLocalUser(diameterPoints: avatarDiameter, transaction: transaction)
+            }
         }
         avatarImageView.clipsToBounds = true
         avatarImageView.layer.cornerRadius = CGFloat(avatarDiameter) / 2
@@ -297,36 +303,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         self.avatarData = avatarData
 
         updateTableContents()
-    }
-}
-
-extension ProfileSettingsViewController: AvatarViewHelperDelegate {
-    public func avatarActionSheetTitle() -> String? {
-        NSLocalizedString("PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE",
-                          comment: "Action Sheet title prompting the user for a profile avatar")
-    }
-
-    public func avatarDidChange(_ image: UIImage) {
-        AssertIsOnMainThread()
-
-        setAvatarImage(image.resizedImage(toFillPixelSize: .square(CGFloat(kOWSProfileManager_MaxAvatarDiameterPixels))))
-    }
-
-    public func fromViewController() -> UIViewController {
-        self
-    }
-
-    public func hasClearAvatarAction() -> Bool {
-        avatarData != nil
-    }
-
-    public func clearAvatar() {
-        setAvatarImage(nil)
-    }
-
-    public func clearAvatarActionLabel() -> String {
-        return NSLocalizedString("PROFILE_VIEW_CLEAR_AVATAR",
-                                 comment: "Label for action that clear's the user's profile avatar")
     }
 }
 
