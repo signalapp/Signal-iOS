@@ -935,6 +935,8 @@
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
+		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
+		F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -2129,6 +2131,8 @@
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
 		EBA1F323BC6D9256EF83C605 /* Pods-NotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuInteraction.swift; sourceTree = "<group>"; };
+		F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuConfiguration.swift; sourceTree = "<group>"; };
 		F1F5EEB86B2B807C24D790CC /* Pods-SignalPerformanceTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -2905,6 +2909,7 @@
 		34B3F8331E8DF1700035BE1A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				F0B872B4269CF01E00D26481 /* Context Menus */,
 				3490D57E25ADE49800F5F96C /* ActionSheetContentBuilder.swift */,
 				452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */,
 				340FC87A204DAC8C007AEB0F /* AppSettings */,
@@ -4131,6 +4136,15 @@
 				882F8DE5251AB23600AA4359 /* Settings.bundle */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F0B872B4269CF01E00D26481 /* Context Menus */ = {
+			isa = PBXGroup;
+			children = (
+				F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */,
+				F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */,
+			);
+			path = "Context Menus";
 			sourceTree = "<group>";
 		};
 		FCFA64B11A24F29E0007FB87 /* UI Categories */ = {
@@ -5761,6 +5775,7 @@
 				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
 				4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */,
 				329E631F25D64971002ED315 /* OnboardingProfileCreationViewController.swift in Sources */,
+				F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */,
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
 				887B381125F05F3100685845 /* PrivacySettingsViewController.swift in Sources */,
@@ -5803,6 +5818,7 @@
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				32ECD09F24C1153000EDDED0 /* TextViewWithPlaceholder.swift in Sources */,
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,
+				F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
 				4CBBFE4A2306F5D300B37450 /* LogViewController.swift in Sources */,
