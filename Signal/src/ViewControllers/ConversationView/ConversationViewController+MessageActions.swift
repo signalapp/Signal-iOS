@@ -14,31 +14,40 @@ extension ConversationViewController {
             owsFailDebug("Missing window or navigationController.")
             return
         }
-        let messageActionsViewController = MessageActionsViewController(itemViewModel: itemViewModel,
-                                                                        focusedView: cell,
-                                                                        actions: messageActions)
-        messageActionsViewController.delegate = self
+        if FeatureFlags.contextMenus {
+            let interaction = TranscriptContextMenuInteraction.init(delegate: self, itemViewModel: itemViewModel, messageActions: messageActions)
+            interaction.transcriptDelegate = self
+            cell.addInteraction(interaction)
+            let cellCenterPoint = cell.frame.center
+            let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
+            interaction.presentMenu(locationInView: screenPoint)
+        } else {
+            let messageActionsViewController = MessageActionsViewController(itemViewModel: itemViewModel,
+                                                                            focusedView: cell,
+                                                                            actions: messageActions)
+            messageActionsViewController.delegate = self
 
-        self.messageActionsViewController = messageActionsViewController
+            self.messageActionsViewController = messageActionsViewController
 
-        setupMessageActionsState(forCell: cell)
+            setupMessageActionsState(forCell: cell)
 
-        messageActionsViewController.present(on: window,
-                                             prepareConstraints: {
-                                                // In order to ensure the bottom bar remains above the keyboard, we pin it
-                                                // to our bottom bar which follows the inputAccessoryView
-                                                messageActionsViewController.bottomBar.autoPinEdge(.bottom,
-                                                                                                   to: .bottom,
-                                                                                                   of: self.bottomBar)
+            messageActionsViewController.present(on: window,
+                                                 prepareConstraints: {
+                                                    // In order to ensure the bottom bar remains above the keyboard, we pin it
+                                                    // to our bottom bar which follows the inputAccessoryView
+                                                    messageActionsViewController.bottomBar.autoPinEdge(.bottom,
+                                                                                                       to: .bottom,
+                                                                                                       of: self.bottomBar)
 
-                                                // We only want the message actions to show up over the detail view, in
-                                                // the case where we are expanded. So match its edges to our nav controller.
-                                                messageActionsViewController.view.autoPinEdges(toEdgesOf: navigationController.view)
-                                             },
-                                             animateAlongside: {
-                                                self.bottomBar.alpha = 0
-                                             },
-                                             completion: nil)
+                                                    // We only want the message actions to show up over the detail view, in
+                                                    // the case where we are expanded. So match its edges to our nav controller.
+                                                    messageActionsViewController.view.autoPinEdges(toEdgesOf: navigationController.view)
+                                                 },
+                                                 animateAlongside: {
+                                                    self.bottomBar.alpha = 0
+                                                 },
+                                                 completion: nil)
+        }
     }
 
     func updateMessageActionsState(forCell cell: UIView) {
@@ -171,4 +180,34 @@ extension ConversationViewController {
             self.reactionsDetailSheet = nil
         }
     }
+}
+
+extension ConversationViewController: ContextMenuInteractionDelegate {
+
+    func contextMenuInteraction(
+        _ interaction: ContextMenuInteraction,
+        configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
+
+        return ContextMenuConfiguration.init(identifier: UUID() as NSCopying, actionProvider: { _ in
+            return ContextMenu.init()
+        })
+    }
+
+    func contextMenuInteraction(
+        _ interaction: ContextMenuInteraction,
+        previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
+        // Implementation TBD
+        return nil
+    }
+
+}
+
+extension ConversationViewController: TranscriptContextMenuInteractionDelegate {
+
+    func contextMenuInteraction(
+        _ interaction: TranscriptContextMenuInteraction,
+        accessoryViewsForContextMenuWIthWithConfiguration configuration: ContextMenuConfiguration) -> [ContextMenuTargetedPreview.ContextMenuTargetedPreviewAccessory]? {
+        return nil
+    }
+
 }
