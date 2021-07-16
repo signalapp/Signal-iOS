@@ -38,6 +38,12 @@ class AvatarEditViewController: OWSTableViewController2 {
         updateFooterView()
     }
 
+    override func themeDidChange() {
+        super.themeDidChange()
+
+        updateFooterViewLayout(forceUpdate: true)
+    }
+
     @objc
     func didTapCancel() {
         guard model != originalModel else { return dismiss(animated: true) }
@@ -238,9 +244,9 @@ class AvatarEditViewController: OWSTableViewController2 {
     }
 
     private var previousSizeReference: CGSize?
-    private func updateFooterViewLayout() {
+    private func updateFooterViewLayout(forceUpdate: Bool = false) {
         // Update theme options layout only when the view size changes.
-        guard view.frame.size != previousSizeReference else { return }
+        guard view.frame.size != previousSizeReference || forceUpdate else { return }
         previousSizeReference = view.frame.size
 
         segmentedControlContainer.layoutMargins = cellOuterInsetsWithMargin(top: 12, bottom: 10)
