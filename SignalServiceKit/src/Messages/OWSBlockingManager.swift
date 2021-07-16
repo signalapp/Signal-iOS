@@ -35,14 +35,6 @@ public class OWSBlockingManager: NSObject {
         // A map of group id-to-group model.
         let blockedGroupMap: [Data: TSGroupModel]
 
-        //        required init(blockedPhoneNumbers: Set<String>,
-        //              blockedUUIDSet: Set<String>,
-        //              blockedGroupMap: [Data: TSGroupModel]) {
-        //            self.blockedPhoneNumbers = blockedPhoneNumbers
-        //            self.blockedUUIDSet = blockedUUIDSet
-        //            self.blockedGroupMap = blockedGroupMap
-        //        }
-
         static var empty: State {
             State(blockedPhoneNumbers: Set(),
                   blockedUUIDStrings: Set(),
@@ -331,17 +323,6 @@ public class OWSBlockingManager: NSObject {
         return blockedAddresses
     }
 
-//    @objc
-//    public func addBlockedAddressWithSneakyTransaction(_ address: SignalServiceAddress,
-//                                                       blockMode: BlockMode) {
-//        guard !isAddressBlocked(address) else {
-//            return
-//        }
-//        databaseStorage.write { transaction in
-//            addBlockedAddress(address, blockMode: blockMode, transaction: transaction)
-//        }
-//    }
-
     @objc
     public func addBlockedAddress(_ address: SignalServiceAddress,
                                   blockMode: BlockMode,
@@ -403,8 +384,6 @@ public class OWSBlockingManager: NSObject {
             return
         }
 
-        Logger.info("removeBlockedAddress: \(address)")
-
         let state: State? = unfairLock.withLock {
             let oldState = self.currentState
 
@@ -435,6 +414,8 @@ public class OWSBlockingManager: NSObject {
             // No changes.
             return
         }
+
+        Logger.info("removeBlockedAddress: \(address)")
 
         if wasLocallyInitiated {
             // The block state changed, schedule a backup with the storage service
@@ -484,25 +465,12 @@ public class OWSBlockingManager: NSObject {
         unfairLock.withLock { self.currentState.blockedGroupMap[groupId] }
     }
 
-//    @objc
-//    public func addBlockedGroupWithSneakyTransaction(groupModel: TSGroupModel,
-//                                                       blockMode: BlockMode) {
-//        guard !isGroupIdBlocked(groupModel.groupId) else {
-//            return
-//        }
-//        databaseStorage.write { transaction in
-//            addBlockedGroup(groupModel: groupModel, blockMode: blockMode, transaction: transaction)
-//        }
-//    }
-
     @objc
     public func addBlockedGroup(groupModel: TSGroupModel,
                                 blockMode: BlockMode,
                                 transaction: SDSAnyWriteTransaction) {
         let groupId = groupModel.groupId
         owsAssertDebug(GroupManager.isValidGroupIdOfAnyKind(groupId))
-
-        Logger.info("groupId: \(groupId.hexadecimalString)")
 
         let state: State? = unfairLock.withLock {
             let oldState = self.currentState
@@ -528,6 +496,8 @@ public class OWSBlockingManager: NSObject {
             // Already blocked.
             return
         }
+
+        Logger.info("groupId: \(groupId.hexadecimalString)")
 
         TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
@@ -652,16 +622,6 @@ public class OWSBlockingManager: NSObject {
         }
     }
 
-    //    - (void)addBlockedThread:(TSThread *)thread blockMode:(BlockMode)blockMode
-    //    {
-    //    if ([self isThreadBlocked:thread]) {
-    //    return
-    //    }
-    //    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-    //    [self addBlockedThread:thread blockMode:blockMode transaction:transaction]
-    //    })
-    //    }
-
     @objc
     public func removeBlockedThread(_ thread: TSThread,
                                     wasLocallyInitiated: Bool,
@@ -678,16 +638,6 @@ public class OWSBlockingManager: NSObject {
             owsFailDebug("Invalid thread: \(type(of: thread))")
         }
     }
-
-    //    - (void)removeBlockedThread:(TSThread *)thread wasLocallyInitiated:(BOOL)wasLocallyInitiated
-    //    {
-    //    if (![self isThreadBlocked:thread]) {
-    //    return
-    //    }
-    //    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-    //    [self removeBlockedThread:thread wasLocallyInitiated:wasLocallyInitiated transaction:transaction]
-    //    })
-    //    }
 
     // MARK: - Updates
 
