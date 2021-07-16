@@ -145,8 +145,8 @@ public class ConversationSearchViewController: UITableViewController {
         AssertIsOnMainThread()
 
         self.tableView.separatorStyle = (searchResultSet.isEmpty
-            ? UITableViewCell.SeparatorStyle.none
-            : UITableViewCell.SeparatorStyle.singleLine)
+                                            ? UITableViewCell.SeparatorStyle.none
+                                            : UITableViewCell.SeparatorStyle.singleLine)
     }
 
     // MARK: UITableViewDelegate
@@ -490,21 +490,21 @@ public class ConversationSearchViewController: UITableViewController {
             guard let strongSelf = self else { return }
             searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
         },
-                                            completion: { [weak self] in
-                                                AssertIsOnMainThread()
-                                                guard let self = self else { return }
+        completion: { [weak self] in
+            AssertIsOnMainThread()
+            guard let self = self else { return }
 
-                                                guard let results = searchResults else {
-                                                    owsFailDebug("searchResults was unexpectedly nil")
-                                                    return
-                                                }
-                                                guard self.lastSearchText == searchText else {
-                                                    // Discard results from stale search.
-                                                    return
-                                                }
+            guard let results = searchResults else {
+                owsFailDebug("searchResults was unexpectedly nil")
+                return
+            }
+            guard self.lastSearchText == searchText else {
+                // Discard results from stale search.
+                return
+            }
 
-                                                self.searchResultSet = results
-                                                self.reloadTableData()
+            self.searchResultSet = results
+            self.reloadTableData()
         })
     }
 
