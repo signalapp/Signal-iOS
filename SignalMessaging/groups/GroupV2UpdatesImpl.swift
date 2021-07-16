@@ -17,14 +17,18 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.refreshGroupsOnLaunch()
+            self.autoRefreshGroupOnLaunch()
         }
     }
 
     // MARK: -
 
+    // This tracks the last time that groups were updated to the current
+    // revision.
+    private static let groupRefreshStore = SDSKeyValueStore(collection: "groupRefreshStore")
+
     // On launch, we refresh a few randomly-selected groups.
-    private func refreshGroupsOnLaunch() {
+    private func autoRefreshGroupOnLaunch() {
         guard CurrentAppContext().isMainApp,
               tsAccountManager.isRegisteredAndReady,
               reachabilityManager.isReachable,
@@ -35,37 +39,84 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         firstly(on: .global()) { () -> Promise<Void> in
             self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.then(on: .global()) { _ -> Promise<Void> in
-            struct GroupInfo {
-                let groupId: Data
-                let groupSecretParamsData: Data
-            }
-            var groupInfos = [GroupInfo]()
-            Self.databaseStorage.read { transaction in
-                TSGroupThread.anyEnumerate(transaction: transaction,
-                                           batched: true) { (thread, _ ) in
-                    guard let groupThread = thread as? TSGroupThread,
-                          let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                        return
-                    }
-                    groupInfos.append(GroupInfo(groupId: groupThread.groupId,
-                                                groupSecretParamsData: groupModel.secretParamsData))
-                }
-            }
-            guard !groupInfos.isEmpty else {
+            guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
+                // We didn't find a group to refresh; abort.
                 return Promise.value(())
             }
-            // Update N randomly-selected groups.
-            let maxUpdateCount: Int = 1
-            groupInfos = Array(groupInfos.shuffled().prefix(maxUpdateCount))
-            let promises = groupInfos.map { groupInfo in
-                self.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupInfo.groupId,
-                                                                       groupSecretParamsData: groupInfo.groupSecretParamsData).asVoid()
+            let groupId = groupInfoToRefresh.groupId
+            let groupSecretParamsData = groupInfoToRefresh.groupSecretParamsData
+            if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
+                let duration = OWSFormat.formatDurationSeconds(Int(abs(lastRefreshDate.timeIntervalSinceNow)))
+                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(duration).")
+            } else {
+                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which has never been refreshed.")
             }
-            return when(resolved: promises).asVoid()
+            return self.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
+                                                                          groupSecretParamsData: groupSecretParamsData).asVoid()
         }.done(on: .global()) { _ in
             Logger.verbose("Complete.")
         }.catch(on: .global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
+        }
+    }
+
+    private func didUpdateGroupToCurrentRevision(groupId: Data) {
+        Logger.verbose("Refreshed group to current revision: \(groupId.hexadecimalString).")
+        let storeKey = groupId.hexadecimalString
+        Self.databaseStorage.write { transaction in
+            Self.groupRefreshStore.setDate(Date(), key: storeKey, transaction: transaction)
+        }
+    }
+
+    private struct GroupInfo {
+        let groupId: Data
+        let groupSecretParamsData: Data
+        let lastRefreshDate: Date?
+    }
+
+    private static func findGroupToAutoRefresh() -> GroupInfo? {
+        // Enumerate the all v2 groups, trying to find the "best" one to refresh.
+        // The "best" is the group that hasn't been refreshed in the longest
+        // time.
+        Self.databaseStorage.read { transaction in
+            var groupInfoToRefresh: GroupInfo?
+            TSGroupThread.anyEnumerate(transaction: transaction,
+                                       batched: true) { (thread, stop ) in
+                guard let groupThread = thread as? TSGroupThread,
+                      let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                    return
+                }
+                let storeKey = groupThread.groupId.hexadecimalString
+                guard let lastRefreshDate: Date = Self.groupRefreshStore.getDate(storeKey,
+                                                                                 transaction: transaction) else {
+                    // If we find a group that we have no record of refreshing,
+                    // pick that one immediately.
+                    groupInfoToRefresh = GroupInfo(groupId: groupThread.groupId,
+                                                   groupSecretParamsData: groupModel.secretParamsData,
+                                                   lastRefreshDate: nil)
+                    stop.pointee = true
+                    return
+                }
+
+                // Don't auto-refresh groups more than once a week.
+                let maxRefreshFrequencyInternal: TimeInterval = kWeekInterval * 1
+                guard abs(lastRefreshDate.timeIntervalSinceNow) > maxRefreshFrequencyInternal else {
+                    return
+                }
+
+                if let otherGroupInfo = groupInfoToRefresh,
+                   let otherLastRefreshDate = otherGroupInfo.lastRefreshDate,
+                   otherLastRefreshDate < lastRefreshDate {
+                    // We already found another group with an older refresh
+                    // date, so prefer that one.
+                    return
+                }
+
+                groupInfoToRefresh = GroupInfo(groupId: groupThread.groupId,
+                                               groupSecretParamsData: groupModel.secretParamsData,
+                                               lastRefreshDate: lastRefreshDate)
+            }
+            return groupInfoToRefresh
         }
     }
 
@@ -77,8 +128,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         lastSuccessfulRefreshMap[groupId]
     }
 
-    private func groupRefreshDidSucceed(forGroupId groupId: Data) {
+    private func groupRefreshDidSucceed(forGroupId groupId: Data,
+                                        groupUpdateMode: GroupUpdateMode) {
         lastSuccessfulRefreshMap[groupId] = Date()
+
+        if groupUpdateMode.shouldUpdateToCurrentRevision {
+            didUpdateGroupToCurrentRevision(groupId: groupId)
+        }
     }
 
     // MARK: -
@@ -181,7 +237,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         operation.promise.done(on: .global()) { _ in
             Logger.verbose("Group refresh succeeded.")
 
-            self.groupRefreshDidSucceed(forGroupId: groupId)
+            self.groupRefreshDidSucceed(forGroupId: groupId, groupUpdateMode: groupUpdateMode)
         }.catch(on: .global()) { error in
             Logger.verbose("Group refresh failed: \(error).")
         }

@@ -252,6 +252,15 @@ public enum GroupUpdateMode {
             return nil
         }
     }
+
+    public var shouldUpdateToCurrentRevision: Bool {
+        switch self {
+        case .upToSpecificRevisionImmediately:
+            return false
+        default:
+            return true
+        }
+    }
 }
 
 // MARK: -
