@@ -510,6 +510,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             } else {
                 popPercentDrivenTransition?.cancel()
             }
+            popPercentDrivenTransition = nil
         case .cancelled, .failed:
             popPercentDrivenTransition?.cancel()
             popPercentDrivenTransition = nil
