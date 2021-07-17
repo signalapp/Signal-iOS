@@ -88,6 +88,14 @@ public extension NSObject {
     static var signalApp: SignalApp {
         .shared()
     }
+
+    var avatarHistoryManager: AvatarHistoryManager {
+        AppEnvironment.shared.avatarHistorManagerRef
+    }
+
+    static var avatarHistoryManager: AvatarHistoryManager {
+        AppEnvironment.shared.avatarHistorManagerRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -171,6 +179,14 @@ public extension Dependencies {
 
     static var signalApp: SignalApp {
         .shared()
+    }
+
+    var avatarHistoryManager: AvatarHistoryManager {
+        AppEnvironment.shared.avatarHistorManagerRef
+    }
+
+    static var avatarHistoryManager: AvatarHistoryManager {
+        AppEnvironment.shared.avatarHistorManagerRef
     }
 }
 

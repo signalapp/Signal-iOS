@@ -93,7 +93,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
         if let model = model {
             databaseStorage.asyncWrite { [context] transaction in
-                AvatarHistoryManager.touchedModel(model, in: context, transaction: transaction)
+                Self.avatarHistoryManager.touchedModel(model, in: context, transaction: transaction)
             }
             guard let newAvatar = avatarBuilder.avatarImage(
                 model: model,
@@ -246,7 +246,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         vStackView.autoPinEdgesToSuperviewMargins()
 
         let avatars: [(model: AvatarModel, image: UIImage)] = databaseStorage.read { transaction in
-            let models = AvatarHistoryManager.models(for: context, transaction: transaction)
+            let models = Self.avatarHistoryManager.models(for: context, transaction: transaction)
             return models.compactMap { model in
                 guard let image = avatarBuilder.avatarImage(
                     model: model,
@@ -369,7 +369,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                     let vc = AvatarEditViewController(model: model) { [weak self] editedModel in
                         self?.databaseStorage.asyncWrite { transaction in
                             guard let self = self else { return }
-                            AvatarHistoryManager.touchedModel(
+                            self.avatarHistoryManager.touchedModel(
                                 editedModel,
                                 in: self.context,
                                 transaction: transaction
@@ -474,7 +474,7 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
             let vc = CropScaleImageViewController(srcImage: originalImage) { croppedImage in
                 guard let self = self else { return }
                 let imageModel = self.databaseStorage.write { transaction in
-                    AvatarHistoryManager.recordModelForImage(
+                    self.avatarHistoryManager.recordModelForImage(
                         croppedImage,
                         in: self.context,
                         transaction: transaction
@@ -501,7 +501,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
 
         let vc = AvatarEditViewController(model: model) { [weak self, context] editedModel in
             self?.databaseStorage.asyncWrite { transaction in
-                AvatarHistoryManager.touchedModel(
+                Self.avatarHistoryManager.touchedModel(
                     editedModel,
                     in: context,
                     transaction: transaction
@@ -517,7 +517,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
     fileprivate func didDeleteOptionView(_ optionView: OptionView, model: AvatarModel) {
         owsAssertDebug(model.type.isDeletable)
         databaseStorage.asyncWrite { [context] transaction in
-            AvatarHistoryManager.deletedModel(
+            Self.avatarHistoryManager.deletedModel(
                 model,
                 in: context,
                 transaction: transaction
