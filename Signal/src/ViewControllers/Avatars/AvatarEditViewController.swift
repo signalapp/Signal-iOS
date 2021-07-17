@@ -417,7 +417,7 @@ private class OptionView: UIView {
         )
 
         if isSelected {
-            layer.borderColor = (theme?.backgroundColor ?? Theme.primaryTextColor).cgColor
+            layer.borderColor = Theme.primaryTextColor.cgColor
             layer.borderWidth = 2.5
         } else {
             layer.borderColor = nil
