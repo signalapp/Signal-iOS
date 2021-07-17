@@ -494,7 +494,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     func presentAvatarViewController() {
         guard let avatarView = avatarView, avatarView.image != nil else { return }
         guard let vc = databaseStorage.read(block: { readTx in
-            AvatarViewController(thread: self.thread, readTx: readTx)
+            AvatarViewController(thread: self.thread, renderLocalUserAsNoteToSelf: true, readTx: readTx)
         }) else {
             return
         }

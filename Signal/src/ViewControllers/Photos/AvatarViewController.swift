@@ -29,11 +29,14 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     }()
 
     @objc
-    init?(thread: TSThread, readTx: SDSAnyReadTransaction) {
+    init?(thread: TSThread, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
+        let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
+                                                            ? .noteToSelf
+                                                            : .asUser)
         guard let avatarImage = Self.avatarBuilder.avatarImage(
                 forThread: thread,
                 diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
-                localUserDisplayMode: .asUser,
+                localUserDisplayMode: localUserDisplayMode,
                 transaction: readTx) else { return nil }
 
         self.avatarImage = avatarImage
