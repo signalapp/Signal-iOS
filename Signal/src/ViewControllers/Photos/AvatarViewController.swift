@@ -23,6 +23,8 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         return imageView
     }()
 
+    private let circleView = CircleView()
+
     private let closeButton: OWSButton = {
         let button = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor)
         return button
@@ -78,18 +80,20 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     override func loadView() {
         let view = UIView()
         view.backgroundColor = Theme.darkThemeBackgroundColor
-        view.addSubview(imageView)
+        view.addSubview(circleView)
         view.addSubview(closeButton)
 
-        let imageRatio = CGFloat(avatarImage.pixelWidth) / CGFloat(avatarImage.pixelHeight)
+        circleView.clipsToBounds = true
+        circleView.addSubview(imageView)
+        imageView.autoPinEdgesToSuperviewEdges()
 
-        imageView.autoCenterInSuperview()
-        imageView.autoPin(toAspectRatio: imageRatio)
+        circleView.autoCenterInSuperview()
+        circleView.autoPinToSquareAspectRatio()
 
-        imageView.autoMatch(.width, to: .width, of: view).priority = .defaultHigh
-        imageView.autoMatch(.width, to: .width, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        imageView.autoMatch(.height, to: .height, of: view).priority = .defaultHigh
-        imageView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
+        circleView.autoMatch(.width, to: .width, of: view, withOffset: -48).priority = .defaultHigh
+        circleView.autoMatch(.width, to: .width, of: view, withOffset: -48, relation: .lessThanOrEqual)
+        circleView.autoMatch(.height, to: .height, of: view, withOffset: -48).priority = .defaultHigh
+        circleView.autoMatch(.height, to: .height, of: view, withOffset: -48, relation: .lessThanOrEqual)
 
         closeButton.autoPinTopToSuperviewMargin(withInset: 8)
         closeButton.autoPinLeadingToSuperviewMargin()
@@ -119,7 +123,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
 extension AvatarViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
-        return MediaPresentationContext(mediaView: imageView, presentationFrame: imageView.frame, cornerRadius: 0)
+        return MediaPresentationContext(mediaView: circleView, presentationFrame: circleView.frame, cornerRadius: circleView.layer.cornerRadius)
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
