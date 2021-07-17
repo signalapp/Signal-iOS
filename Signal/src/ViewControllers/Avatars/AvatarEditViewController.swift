@@ -38,6 +38,12 @@ class AvatarEditViewController: OWSTableViewController2 {
         updateFooterView()
     }
 
+    override func themeDidChange() {
+        super.themeDidChange()
+
+        updateFooterViewLayout(forceUpdate: true)
+    }
+
     @objc
     func didTapCancel() {
         guard model != originalModel else { return dismiss(animated: true) }
@@ -150,7 +156,6 @@ class AvatarEditViewController: OWSTableViewController2 {
         let topSpacer = UIView.vStretchingSpacer()
         topHeaderStack.addArrangedSubview(topSpacer)
 
-        headerTextField.font = AvatarBuilder.avatarMaxFont(diameter: Self.headerAvatarSize)
         headerTextField.adjustsFontSizeToFitWidth = true
         headerTextField.textAlignment = .center
         headerTextField.delegate = self
@@ -159,7 +164,7 @@ class AvatarEditViewController: OWSTableViewController2 {
         headerTextField.autocorrectionType = .no
         headerTextField.spellCheckingType = .no
         headerImageView.addSubview(headerTextField)
-        headerTextField.autoPinEdgesToSuperviewEdges(with: AvatarBuilder.avatarMargins(diameter: Self.headerAvatarSize))
+        headerTextField.autoPinEdgesToSuperviewEdges(with: AvatarBuilder.avatarTextMargins(diameter: Self.headerAvatarSize))
         headerTextField.isHidden = true
 
         headerImageView.autoSetDimensions(to: CGSize(square: Self.headerAvatarSize))
@@ -186,6 +191,10 @@ class AvatarEditViewController: OWSTableViewController2 {
         case .text(let text):
             headerTextField.isHidden = false
             headerTextField.textColor = model.theme.foregroundColor
+            headerTextField.font = AvatarBuilder.avatarMaxFont(
+                diameter: Self.headerAvatarSize,
+                isEmojiOnly: text.containsOnlyEmoji
+            )
             if !headerTextField.isFirstResponder { headerTextField.text = text }
             headerImageView.image = .init(color: model.theme.backgroundColor)
         case .image:
@@ -238,9 +247,9 @@ class AvatarEditViewController: OWSTableViewController2 {
     }
 
     private var previousSizeReference: CGSize?
-    private func updateFooterViewLayout() {
+    private func updateFooterViewLayout(forceUpdate: Bool = false) {
         // Update theme options layout only when the view size changes.
-        guard view.frame.size != previousSizeReference else { return }
+        guard view.frame.size != previousSizeReference || forceUpdate else { return }
         previousSizeReference = view.frame.size
 
         segmentedControlContainer.layoutMargins = cellOuterInsetsWithMargin(top: 12, bottom: 10)
@@ -317,7 +326,7 @@ extension AvatarEditViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string,
-            maxGlyphCount: 4
+            maxGlyphCount: 3
         )
     }
 
@@ -408,7 +417,7 @@ private class OptionView: UIView {
         )
 
         if isSelected {
-            layer.borderColor = (theme?.backgroundColor ?? Theme.primaryTextColor).cgColor
+            layer.borderColor = Theme.primaryTextColor.cgColor
             layer.borderWidth = 2.5
         } else {
             layer.borderColor = nil

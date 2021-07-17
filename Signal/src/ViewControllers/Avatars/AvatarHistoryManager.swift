@@ -16,11 +16,63 @@ enum AvatarContext {
     }
 }
 
-enum AvatarHistoryManager {
-
+@objc
+public class AvatarHistoryManager: NSObject {
     static let keyValueStore = SDSKeyValueStore(collection: "AvatarHistory")
+    static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+    static let imageHistoryDirectory = URL(fileURLWithPath: "AvatarHistory", isDirectory: true, relativeTo: appSharedDataDirectory)
 
-    static func models(for context: AvatarContext, transaction: SDSAnyReadTransaction) -> [AvatarModel] {
+    @objc
+    override init() {
+        super.init()
+        SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            DispatchQueue.global().async {
+                self.cleanupOrphanedImages()
+            }
+        }
+    }
+
+    func cleanupOrphanedImages() {
+        owsAssertDebug(!Thread.isMainThread)
+
+        guard OWSFileSystem.fileOrFolderExists(url: Self.imageHistoryDirectory) else { return }
+
+        let allRecords: [[AvatarRecord]] = databaseStorage.read { transaction in
+            do {
+                return try Self.keyValueStore.allCodableValues(transaction: transaction)
+            } catch {
+                owsFailDebug("Failed to decode avatar history for orphan cleanup \(error)")
+                return []
+            }
+        }
+
+        let filesToKeep = allRecords.flatMap { $0.compactMap { $0.imageUrl?.path } }
+
+        let filesInDirectory: [String]
+        do {
+            filesInDirectory = try OWSFileSystem.recursiveFilesInDirectory(Self.imageHistoryDirectory.path)
+        } catch {
+            owsFailDebug("Failed to lookup files in image history directory \(error)")
+            return
+        }
+
+        var orphanCount = 0
+        for file in filesInDirectory where !filesToKeep.contains(file) {
+            guard OWSFileSystem.deleteFile(file) else {
+                owsFailDebug("Failed to delete orphaned avatar image file \(file)")
+                continue
+            }
+            orphanCount += 1
+        }
+
+        if orphanCount > 0 {
+            Logger.info("Deleted \(orphanCount) orphaned avatar images.")
+        }
+    }
+
+    func models(for context: AvatarContext, transaction: SDSAnyReadTransaction) -> [AvatarModel] {
         var (models, icons) = persisted(for: context, transaction: transaction)
 
         let defaultIcons: [AvatarIcon]
@@ -30,17 +82,17 @@ enum AvatarHistoryManager {
         }
 
         // Insert models for default icons that aren't persisted
-        for icon in Set(defaultIcons).subtracting(icons).sorted(by: { $0.rawValue > $1.rawValue }) {
+        for icon in defaultIcons.filter({ !icons.contains($0) }) {
             models.append(.init(
                 type: .icon(icon),
-                theme: .forSeed(icon.rawValue)
+                theme: .forIcon(icon)
             ))
         }
 
         return models
     }
 
-    static func touchedModel(_ model: AvatarModel, in context: AvatarContext, transaction: SDSAnyWriteTransaction) {
+    func touchedModel(_ model: AvatarModel, in context: AvatarContext, transaction: SDSAnyWriteTransaction) {
         var (models, _) = persisted(for: context, transaction: transaction)
 
         models.removeAll { $0.identifier == model.identifier }
@@ -59,13 +111,13 @@ enum AvatarHistoryManager {
         }
 
         do {
-            try keyValueStore.setCodable(records, key: context.key, transaction: transaction)
+            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
     }
 
-    static func deletedModel(_ model: AvatarModel, in context: AvatarContext, transaction: SDSAnyWriteTransaction) {
+    func deletedModel(_ model: AvatarModel, in context: AvatarContext, transaction: SDSAnyWriteTransaction) {
         var (models, _) = persisted(for: context, transaction: transaction)
 
         models.removeAll { $0.identifier == model.identifier }
@@ -87,22 +139,18 @@ enum AvatarHistoryManager {
         }
 
         do {
-            try keyValueStore.setCodable(records, key: context.key, transaction: transaction)
+            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
     }
 
-    static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
-    static let imageHistoryDirectory = URL(fileURLWithPath: "AvatarHistory", isDirectory: true, relativeTo: appSharedDataDirectory)
-
-    static func recordModelForImage(_ image: UIImage, in context: AvatarContext, transaction: SDSAnyWriteTransaction) -> AvatarModel? {
-        OWSFileSystem.ensureDirectoryExists(imageHistoryDirectory.path)
+    func recordModelForImage(_ image: UIImage, in context: AvatarContext, transaction: SDSAnyWriteTransaction) -> AvatarModel? {
+        OWSFileSystem.ensureDirectoryExists(Self.imageHistoryDirectory.path)
 
         let identifier = UUID().uuidString
-        let url = URL(fileURLWithPath: identifier + ".jpg", relativeTo: imageHistoryDirectory)
+        let url = URL(fileURLWithPath: identifier + ".jpg", relativeTo: Self.imageHistoryDirectory)
 
-        // TODO: Make sure orphan data is cleaned up correctly
         let avatarData = OWSProfileManager.avatarData(forAvatarImage: image)
         do {
             try avatarData.write(to: url)
@@ -116,14 +164,14 @@ enum AvatarHistoryManager {
         return model
     }
 
-    private static func persisted(
+    private func persisted(
         for context: AvatarContext,
         transaction: SDSAnyReadTransaction
     ) -> (models: [AvatarModel], persistedIcons: Set<AvatarIcon>) {
         let records: [AvatarRecord]?
 
         do {
-            records = try keyValueStore.getCodableValue(forKey: context.key, transaction: transaction)
+            records = try Self.keyValueStore.getCodableValue(forKey: context.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to load persisted avatar records \(error)")
             records = nil

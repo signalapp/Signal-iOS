@@ -38,7 +38,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
         self.editAction = editAction
         self.attributesDelegate = delegate
 
-        self.helper = GroupAttributesEditorHelper(groupModel: groupThread.groupModel)
+        self.helper = GroupAttributesEditorHelper(groupModel: groupThread.groupModel, renderDefaultAvatarWhenCleared: true)
 
         super.init()
     }

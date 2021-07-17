@@ -51,6 +51,9 @@ public class AppEnvironment: NSObject {
     let deviceTransferServiceRef = DeviceTransferService()
 
     @objc
+    let avatarHistorManagerRef = AvatarHistoryManager()
+
+    @objc
     let cvAudioPlayerRef = CVAudioPlayer()
 
     private override init() {

@@ -50,6 +50,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         self.avatarChangeCallback = avatarChangeCallback
         super.init()
         createTopHeader()
+
+        // We only support portrait on non-iPad devices, but if we're
+        // already in landscape we need to force the device to rotate.
+        // TODO: There might be a better spot to do this, but generally
+        // this should never be initialized unless about to be shown.
+        if !UIDevice.current.isIPad { UIDevice.current.ows_setOrientation(.portrait) }
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -61,6 +67,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
         updateTableContents()
         updateNavigation()
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+
+        updateHeaderViewLayout(forceUpdate: true)
     }
 
     @objc
@@ -81,7 +93,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
         if let model = model {
             databaseStorage.asyncWrite { [context] transaction in
-                AvatarHistoryManager.touchedModel(model, in: context, transaction: transaction)
+                Self.avatarHistoryManager.touchedModel(model, in: context, transaction: transaction)
             }
             guard let newAvatar = avatarBuilder.avatarImage(
                 model: model,
@@ -92,23 +104,8 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             }
             avatarChangeCallback(newAvatar)
         } else {
-            // Avatar was cleared, upload the default avatar.
-            switch context {
-            case .profile:
-                guard let defaultAvatar = databaseStorage.read(block: { transaction in
-                    avatarBuilder.defaultAvatarImageForLocalUser(
-                        diameterPixels: kOWSProfileManager_MaxAvatarDiameterPixels,
-                        transaction: transaction
-                    )
-                }) else { return owsFailDebug("Failed to prepare default avatar") }
-
-                avatarChangeCallback(defaultAvatar)
-            case .groupId(let groupId):
-                avatarChangeCallback(avatarBuilder.avatarImage(
-                    forGroupId: groupId,
-                    diameterPixels: kOWSProfileManager_MaxAvatarDiameterPixels
-                ))
-            }
+            // Avatar was cleared.
+            avatarChangeCallback(nil)
         }
     }
 
@@ -136,9 +133,9 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private lazy var clearButton = UIView()
+    private let xImageView = UIImageView()
     private func createClearButton() {
         clearButton.autoSetDimensions(to: CGSize.square(32))
-        clearButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray15 : UIColor(rgbHex: 0xf8f9f9)
         clearButton.layer.cornerRadius = 16
 
         clearButton.layer.shadowColor = UIColor.black.cgColor
@@ -155,7 +152,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         clearButton.addSubview(secondaryShadowView)
         secondaryShadowView.autoPinEdgesToSuperviewEdges()
 
-        let xImageView = UIImageView.withTemplateImageName("x-20", tintColor: Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_black)
+        xImageView.image = #imageLiteral(resourceName: "x-20").withRenderingMode(.alwaysTemplate)
         xImageView.autoSetDimensions(to: CGSize.square(20))
         xImageView.contentMode = .scaleAspectFit
 
@@ -249,7 +246,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         vStackView.autoPinEdgesToSuperviewMargins()
 
         let avatars: [(model: AvatarModel, image: UIImage)] = databaseStorage.read { transaction in
-            let models = AvatarHistoryManager.models(for: context, transaction: transaction)
+            let models = Self.avatarHistoryManager.models(for: context, transaction: transaction)
             return models.compactMap { model in
                 guard let image = avatarBuilder.avatarImage(
                     model: model,
@@ -309,9 +306,9 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private var previousSizeReference: CGSize?
-    private func updateHeaderViewLayout() {
+    private func updateHeaderViewLayout(forceUpdate: Bool = false) {
         // Update button layout only when the view size changes.
-        guard view.frame.size != previousSizeReference else { return }
+        guard view.frame.size != previousSizeReference || forceUpdate else { return }
         previousSizeReference = view.frame.size
 
         topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: 24, bottom: 13)
@@ -321,72 +318,79 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Header Buttons
     private let headerButtonStack = UIStackView()
-    private lazy var headerButtons = [
-        buildHeaderButton(
-            icon: .cameraButton,
-            text: NSLocalizedString(
-                "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON",
-                comment: "Text indicating the user can select an avatar from their camera"
-            ),
-            action: { [weak self] in
-                guard let self = self else { return }
-                self.ows_askForCameraPermissions { granted in
-                    guard granted else { return }
-                    let picker = OWSImagePickerController()
-                    picker.delegate = self
-                    picker.allowsEditing = false
-                    picker.sourceType = .camera
-                    picker.mediaTypes = [kUTTypeImage as String]
-                    self.present(picker, animated: true)
-                }
-            }
-        ),
-        buildHeaderButton(
-            icon: .settingsAllMedia,
-            text: NSLocalizedString(
-                "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON",
-                comment: "Text indicating the user can select an avatar from their photos"
-            ),
-            action: { [weak self] in
-                guard let self = self else { return }
-                self.ows_askForMediaLibraryPermissions { granted in
-                    guard granted else { return }
-                    let picker = OWSImagePickerController()
-                    picker.delegate = self
-                    picker.sourceType = .photoLibrary
-                    picker.mediaTypes = [kUTTypeImage as String]
-                    self.present(picker, animated: true)
-                }
-            }
-        ),
-        buildHeaderButton(
-            icon: .text24,
-            text: NSLocalizedString(
-                "AVATAR_SETTINGS_VIEW_TEXT_BUTTON",
-                comment: "Text indicating the user can create a new avatar with text"
-            ),
-            action: { [weak self] in
-                let model = AvatarModel(type: .text(""), theme: .default)
-                let vc = AvatarEditViewController(model: model) { [weak self] editedModel in
-                    self?.databaseStorage.asyncWrite { transaction in
-                        guard let self = self else { return }
-                        AvatarHistoryManager.touchedModel(
-                            editedModel,
-                            in: self.context,
-                            transaction: transaction
-                        )
-                    } completion: {
-                        self?.state = .new(editedModel)
-                        self?.updateTableContents()
+
+    private func buildHeaderButtons() -> [UIView] {
+        return [
+            buildHeaderButton(
+                icon: .cameraButton,
+                text: NSLocalizedString(
+                    "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON",
+                    comment: "Text indicating the user can select an avatar from their camera"
+                ),
+                action: { [weak self] in
+                    guard let self = self else { return }
+                    self.ows_askForCameraPermissions { granted in
+                        guard granted else { return }
+                        let picker = OWSImagePickerController()
+                        picker.delegate = self
+                        picker.allowsEditing = false
+                        picker.sourceType = .camera
+                        picker.mediaTypes = [kUTTypeImage as String]
+                        self.present(picker, animated: true)
                     }
                 }
-                self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-            }
-        )
-    ]
+            ),
+            buildHeaderButton(
+                icon: .settingsAllMedia,
+                text: NSLocalizedString(
+                    "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON",
+                    comment: "Text indicating the user can select an avatar from their photos"
+                ),
+                action: { [weak self] in
+                    guard let self = self else { return }
+                    self.ows_askForMediaLibraryPermissions { granted in
+                        guard granted else { return }
+                        let picker = OWSImagePickerController()
+                        picker.delegate = self
+                        picker.sourceType = .photoLibrary
+                        picker.mediaTypes = [kUTTypeImage as String]
+                        self.present(picker, animated: true)
+                    }
+                }
+            ),
+            buildHeaderButton(
+                icon: .text24,
+                text: NSLocalizedString(
+                    "AVATAR_SETTINGS_VIEW_TEXT_BUTTON",
+                    comment: "Text indicating the user can create a new avatar with text"
+                ),
+                action: { [weak self] in
+                    let model = AvatarModel(type: .text(""), theme: .default)
+                    let vc = AvatarEditViewController(model: model) { [weak self] editedModel in
+                        self?.databaseStorage.asyncWrite { transaction in
+                            guard let self = self else { return }
+                            self.avatarHistoryManager.touchedModel(
+                                editedModel,
+                                in: self.context,
+                                transaction: transaction
+                            )
+                        } completion: {
+                            self?.state = .new(editedModel)
+                            self?.updateTableContents()
+                        }
+                    }
+                    self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }
+            )
+        ]
+    }
 
     private func updateHeaderButtons() {
+        clearButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray15 : UIColor(rgbHex: 0xf8f9f9)
+        xImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_black
+
         headerButtonStack.removeAllSubviews()
+        let headerButtons = buildHeaderButtons()
 
         let spacerWidth: CGFloat = 8
         let totalSpacerWidth = CGFloat(headerButtons.count - 1) * spacerWidth
@@ -470,7 +474,7 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
             let vc = CropScaleImageViewController(srcImage: originalImage) { croppedImage in
                 guard let self = self else { return }
                 let imageModel = self.databaseStorage.write { transaction in
-                    AvatarHistoryManager.recordModelForImage(
+                    self.avatarHistoryManager.recordModelForImage(
                         croppedImage,
                         in: self.context,
                         transaction: transaction
@@ -497,7 +501,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
 
         let vc = AvatarEditViewController(model: model) { [weak self, context] editedModel in
             self?.databaseStorage.asyncWrite { transaction in
-                AvatarHistoryManager.touchedModel(
+                Self.avatarHistoryManager.touchedModel(
                     editedModel,
                     in: context,
                     transaction: transaction
@@ -513,12 +517,16 @@ extension AvatarSettingsViewController: OptionViewDelegate {
     fileprivate func didDeleteOptionView(_ optionView: OptionView, model: AvatarModel) {
         owsAssertDebug(model.type.isDeletable)
         databaseStorage.asyncWrite { [context] transaction in
-            AvatarHistoryManager.deletedModel(
+            Self.avatarHistoryManager.deletedModel(
                 model,
                 in: context,
                 transaction: transaction
             )
         } completion: { [weak self] in
+            // If we just deleted the selected avatar, also clear it.
+            if self?.selectedAvatarModel == model {
+                self?.state = .new(nil)
+            }
             self?.updateTableContents()
         }
     }

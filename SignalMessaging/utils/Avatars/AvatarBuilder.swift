@@ -830,7 +830,7 @@ public class AvatarBuilder: NSObject {
 
         let diameterPixels = avatarContent.diameterPixels
 
-        let margin = avatarMargins(diameter: diameterPixels)
+        let margin = avatarImageMargins(diameter: diameterPixels)
         let totalIconDiamterPixels = diameterPixels - margin.totalWidth
 
         return buildAvatar(
@@ -940,17 +940,21 @@ public class AvatarBuilder: NSObject {
         return normalizeImageScale(image)
     }
 
-    public static func avatarMaxFont(diameter: CGFloat) -> UIFont {
+    public static func avatarMaxFont(diameter: CGFloat, isEmojiOnly: Bool) -> UIFont {
         // We use the "Inter" font for text based avatars, so they look
         // the same across all platforms. The font is scaled relative to
         // the height of the avatar. By sizing it to half the dimater, it
         // will always be at least big enough to scale down to fit within
         // the avatar.
-        return UIFont(name: "Inter", size: diameter * 0.5)!
+        return UIFont(name: "Inter", size: diameter * (isEmojiOnly ? 0.6 : 0.45))!
     }
 
-    public static func avatarMargins(diameter: CGFloat) -> UIEdgeInsets {
+    public static func avatarImageMargins(diameter: CGFloat) -> UIEdgeInsets {
         UIEdgeInsets(margin: diameter * 0.2)
+    }
+
+    public static func avatarTextMargins(diameter: CGFloat) -> UIEdgeInsets {
+        UIEdgeInsets(margin: diameter * 0.1)
     }
 
     private static func drawTextInAvatar(
@@ -969,8 +973,8 @@ public class AvatarBuilder: NSObject {
         }
 
         let frame = CGRect(origin: .zero, size: .square(diameterPixels))
-        let font = avatarMaxFont(diameter: diameterPixels)
-        let margins = avatarMargins(diameter: diameterPixels)
+        let font = avatarMaxFont(diameter: diameterPixels, isEmojiOnly: text.containsOnlyEmoji)
+        let margins = avatarTextMargins(diameter: diameterPixels)
 
         let textAttributesForMeasurement: [NSAttributedString.Key: Any] = [
             .font: font,
@@ -991,7 +995,7 @@ public class AvatarBuilder: NSObject {
 
         let maxTextDiameterPixels = diameterPixels - margins.totalWidth
         let textSizePixels = baseTextSize.largerAxis
-        let scaling = maxTextDiameterPixels / textSizePixels
+        let scaling = (maxTextDiameterPixels / textSizePixels).clamp01()
 
         let textAttributesForDrawing: [NSAttributedString.Key: Any] = [
             .font: font.withSize(font.pointSize * scaling),
@@ -1023,17 +1027,29 @@ public class AvatarBuilder: NSObject {
             owsFailDebug("Invalid diameter.")
             return
         }
-        guard let icon = icon.cgImage else {
-            owsFailDebug("Invalid icon.")
-            return
-        }
-
-        // UIKit uses an ULO coordinate system (upper-left-origin).
-        // Core Graphics uses an LLO coordinate system (lower-left-origin).
-        let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: diameterPixels)
-        context.concatenate(flipVertical)
 
         if let iconColor = iconColor {
+            // There is a bug with "Preserve Vector Data" when operating
+            // on the underlying cgImage rather than drawing the UIImage
+            // object directly (as we do in the untinted path below) that
+            // results in the image rendering fuzzy when rendered at sizes
+            // larger than the original, even though vector data is available.
+            // To combat this, we draw the UIImage into a UIImage of the size
+            // we actually need before proceeding to create the mask with the
+            // underlying cgImage. This ensures a sharp output at a small additional
+            // perf cost.
+            let resizedImage = icon.resizedImage(toFillPixelSize: iconSizePixels)
+
+            guard let icon = resizedImage.cgImage else {
+                owsFailDebug("Invalid icon.")
+                return
+            }
+
+            // UIKit uses an ULO coordinate system (upper-left-origin).
+            // Core Graphics uses an LLO coordinate system (lower-left-origin).
+            let flipVertical = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: diameterPixels)
+            context.concatenate(flipVertical)
+
             let diameterSizePixels = CGSize.square(diameterPixels)
 
             // The programmatic equivalent of UIImageRenderingModeAlwaysTemplate/tintColor.
@@ -1051,7 +1067,7 @@ public class AvatarBuilder: NSObject {
                 ),
                 size: iconSizePixels
             )
-            context.draw(icon, in: iconRect)
+            icon.draw(in: iconRect)
         }
     }
 }

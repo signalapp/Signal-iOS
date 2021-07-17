@@ -338,10 +338,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     // MARK: - Actions
 
     func tappedAvatar() {
-        guard avatarView != nil, !thread.isGroupThread || (thread as? TSGroupThread)?.groupModel.groupAvatarData != nil else {
-            return // Not a valid avatar
-        }
-
+        guard avatarView != nil else { return }
         presentAvatarViewController()
     }
 
@@ -494,7 +491,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     func presentAvatarViewController() {
         guard let avatarView = avatarView, avatarView.image != nil else { return }
         guard let vc = databaseStorage.read(block: { readTx in
-            AvatarViewController(thread: self.thread, readTx: readTx)
+            AvatarViewController(thread: self.thread, renderLocalUserAsNoteToSelf: true, readTx: readTx)
         }) else {
             return
         }
@@ -1010,7 +1007,7 @@ extension ConversationSettingsViewController: MediaPresentationContextProvider {
 
         let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
 
-        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: 0)
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: mediaView.layer.cornerRadius)
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
