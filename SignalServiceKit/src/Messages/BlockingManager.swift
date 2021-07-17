@@ -14,7 +14,7 @@ public enum BlockMode: UInt {
 // MARK: -
 
 @objc
-public class OWSBlockingManager: NSObject {
+public class BlockingManager: NSObject {
 
     @objc
     public static let blockListDidChange = Notification.Name("blockListDidChange")

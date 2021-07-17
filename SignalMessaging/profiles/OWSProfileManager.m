@@ -143,7 +143,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
-                                                 name:OWSBlockingManager.blockListDidChange
+                                                 name:BlockingManager.blockListDidChange
                                                object:nil];
 }
 

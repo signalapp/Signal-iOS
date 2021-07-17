@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id<ProfileManagerProtocol> profileManagerRef;
 @property (nonatomic) TSNetworkManager *networkManagerRef;
 @property (nonatomic) OWSMessageManager *messageManagerRef;
-@property (nonatomic) OWSBlockingManager *blockingManagerRef;
+@property (nonatomic) BlockingManager *blockingManagerRef;
 @property (nonatomic) OWSIdentityManager *identityManagerRef;
 @property (nonatomic) id<OWSUDManager> udManagerRef;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypterRef;

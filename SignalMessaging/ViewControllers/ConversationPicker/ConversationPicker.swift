@@ -110,7 +110,7 @@ open class ConversationPickerViewController: OWSViewController {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
-                                               name: OWSBlockingManager.blockListDidChange,
+                                               name: BlockingManager.blockListDidChange,
                                                object: nil)
     }
 

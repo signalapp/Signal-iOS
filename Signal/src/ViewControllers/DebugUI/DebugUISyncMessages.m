@@ -81,9 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSIdentityManager shared];
 }
 
-+ (OWSBlockingManager *)blockingManager
++ (BlockingManager *)blockingManager
 {
-    return [OWSBlockingManager shared];
+    return [BlockingManager shared];
 }
 
 + (OWSProfileManager *)profileManager

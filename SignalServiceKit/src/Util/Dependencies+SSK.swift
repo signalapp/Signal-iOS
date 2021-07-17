@@ -22,11 +22,11 @@ public extension NSObject {
         SSKEnvironment.shared.attachmentDownloadsRef
     }
 
-    final var blockingManager: OWSBlockingManager {
+    final var blockingManager: BlockingManager {
         .shared
     }
 
-    static var blockingManager: OWSBlockingManager {
+    static var blockingManager: BlockingManager {
         .shared
     }
 
@@ -471,11 +471,11 @@ public extension Dependencies {
         SSKEnvironment.shared.attachmentDownloadsRef
     }
 
-    var blockingManager: OWSBlockingManager {
+    var blockingManager: BlockingManager {
         .shared
     }
 
-    static var blockingManager: OWSBlockingManager {
+    static var blockingManager: BlockingManager {
         .shared
     }
 
@@ -1001,8 +1001,8 @@ public extension Dependencies {
 // MARK: -
 
 @objc
-public extension OWSBlockingManager {
-    static var shared: OWSBlockingManager {
+public extension BlockingManager {
+    static var shared: BlockingManager {
         SSKEnvironment.shared.blockingManagerRef
     }
 }

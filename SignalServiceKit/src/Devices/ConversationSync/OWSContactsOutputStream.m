@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
         [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
     }
 
-    if ([OWSBlockingManager.shared isAddressBlocked:signalAccount.recipientAddress]) {
+    if ([BlockingManager.shared isAddressBlocked:signalAccount.recipientAddress]) {
         [contactBuilder setBlocked:YES];
     }
 

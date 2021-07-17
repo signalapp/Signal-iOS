@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
-                                                 name:OWSBlockingManager.blockListDidChange
+                                                 name:BlockingManager.blockListDidChange
                                                object:nil];
 }
 

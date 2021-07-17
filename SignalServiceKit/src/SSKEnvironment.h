@@ -8,6 +8,7 @@ extern NSNotificationName const WarmCachesNotification;
 
 @class AccountServiceClient;
 @class AppExpiry;
+@class BlockingManager;
 @class BulkProfileFetch;
 @class BulkUUIDLookup;
 @class EarlyMessageManager;
@@ -19,7 +20,6 @@ extern NSNotificationName const WarmCachesNotification;
 @class ModelReadCaches;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
-@class OWSBlockingManager;
 @class OWSDisappearingMessagesJob;
 @class OWSIdentityManager;
 @class OWSLinkPreviewManager;
@@ -71,7 +71,7 @@ extern NSNotificationName const WarmCachesNotification;
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
-                        blockingManager:(OWSBlockingManager *)blockingManager
+                        blockingManager:(BlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
                     remoteConfigManager:(id<RemoteConfigManager>)remoteConfigManager
                            sessionStore:(SSKSessionStore *)sessionStore
@@ -131,7 +131,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManagerRef;
 @property (nonatomic, readonly) TSNetworkManager *networkManagerRef;
 @property (nonatomic, readonly) OWSMessageManager *messageManagerRef;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManagerRef;
+@property (nonatomic, readonly) BlockingManager *blockingManagerRef;
 @property (nonatomic, readonly) OWSIdentityManager *identityManagerRef;
 @property (nonatomic, readonly) id<RemoteConfigManager> remoteConfigManagerRef;
 @property (nonatomic, readonly) SSKSessionStore *sessionStoreRef;

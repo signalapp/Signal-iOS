@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
         id<PendingReceiptRecorder> pendingReceiptRecorder = [MessageRequestPendingReceipts new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
         OWSMessageManager *messageManager = [OWSMessageManager new];
-        OWSBlockingManager *blockingManager = [OWSBlockingManager new];
+        BlockingManager *blockingManager = [BlockingManager new];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
         id<RemoteConfigManager> remoteConfigManager = [ServiceRemoteConfigManager new];
         SSKSessionStore *sessionStore = [SSKSessionStore new];

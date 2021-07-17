@@ -93,7 +93,7 @@ public class ConversationSearchViewController: UITableViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
-                                               name: OWSBlockingManager.blockListDidChange,
+                                               name: BlockingManager.blockListDidChange,
                                                object: nil)
 
         applyTheme()
