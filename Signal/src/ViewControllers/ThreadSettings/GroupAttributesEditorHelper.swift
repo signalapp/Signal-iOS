@@ -64,6 +64,8 @@ class GroupAttributesEditorHelper: NSObject {
 
     var avatarCurrent: GroupAvatar?
 
+    private let renderDefaultAvatarWhenCleared: Bool
+
     var hasUnsavedChanges: Bool {
         return (groupNameOriginal != groupNameCurrent ||
                     groupDescriptionOriginal != groupDescriptionCurrent ||
@@ -72,7 +74,8 @@ class GroupAttributesEditorHelper: NSObject {
 
     public convenience init(
         groupModel: TSGroupModel,
-        iconViewSize: UInt = AvatarBuilder.largeAvatarSizePoints
+        iconViewSize: UInt = AvatarBuilder.largeAvatarSizePoints,
+        renderDefaultAvatarWhenCleared: Bool = false
     ) {
         self.init(
             groupModelOriginal: groupModel,
@@ -80,17 +83,20 @@ class GroupAttributesEditorHelper: NSObject {
             groupNameOriginal: groupModel.groupName,
             groupDescriptionOriginal: (groupModel as? TSGroupModelV2)?.descriptionText,
             avatarOriginalData: groupModel.groupAvatarData,
-            iconViewSize: iconViewSize
+            iconViewSize: iconViewSize,
+            renderDefaultAvatarWhenCleared: renderDefaultAvatarWhenCleared
         )
     }
 
-    public required init(groupModelOriginal: TSGroupModel? = nil,
-                         groupId: Data,
-                         groupNameOriginal: String?,
-                         groupDescriptionOriginal: String? = nil,
-                         avatarOriginalData: Data?,
-                         iconViewSize: UInt) {
-
+    public required init(
+        groupModelOriginal: TSGroupModel? = nil,
+        groupId: Data,
+        groupNameOriginal: String?,
+        groupDescriptionOriginal: String? = nil,
+        avatarOriginalData: Data?,
+        iconViewSize: UInt,
+        renderDefaultAvatarWhenCleared: Bool = false
+    ) {
         self.groupModelOriginal = groupModelOriginal
         self.groupId = groupId
         self.groupNameOriginal = groupNameOriginal?.nilIfEmpty?.filterStringForDisplay()
@@ -98,6 +104,7 @@ class GroupAttributesEditorHelper: NSObject {
         self.avatarOriginal = GroupAvatar.build(imageData: avatarOriginalData)
         self.avatarCurrent = avatarOriginal
         self.iconViewSize = iconViewSize
+        self.renderDefaultAvatarWhenCleared = renderDefaultAvatarWhenCleared
 
         super.init()
     }
@@ -186,6 +193,12 @@ class GroupAttributesEditorHelper: NSObject {
     private func updateAvatarView(groupAvatar: GroupAvatar?) {
         if let groupAvatar = groupAvatar {
             avatarImageView.image = groupAvatar.image
+            avatarImageView.layer.borderWidth = 0
+            avatarImageView.layer.borderColor = nil
+            cameraButton.isHidden = true
+            cameraCornerButton.isHidden = false
+        } else if renderDefaultAvatarWhenCleared {
+            avatarImageView.image = avatarBuilder.avatarImage(forGroupId: groupId, diameterPoints: iconViewSize)
             avatarImageView.layer.borderWidth = 0
             avatarImageView.layer.borderColor = nil
             cameraButton.isHidden = true
