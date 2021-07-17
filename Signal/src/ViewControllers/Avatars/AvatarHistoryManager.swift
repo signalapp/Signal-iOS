@@ -30,10 +30,10 @@ enum AvatarHistoryManager {
         }
 
         // Insert models for default icons that aren't persisted
-        for icon in Set(defaultIcons).subtracting(icons).sorted(by: { $0.rawValue > $1.rawValue }) {
+        for icon in defaultIcons.filter({ !icons.contains($0) }) {
             models.append(.init(
                 type: .icon(icon),
-                theme: .forSeed(icon.rawValue)
+                theme: .forIcon(icon)
             ))
         }
 

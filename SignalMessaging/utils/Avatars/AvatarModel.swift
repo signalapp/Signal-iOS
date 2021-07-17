@@ -47,27 +47,67 @@ public enum AvatarType: Equatable {
 }
 
 public enum AvatarIcon: String, CaseIterable {
-    case face1
-    case face2
+    case abstract01
+    case abstract02
+    case abstract03
     case cat
+    case dinosaur
+    case dog
     case fox
+    case ghost
+    case incognito
+    case pig
+    case sloth
+    case tucan
+
+    case heart
+    case house
+    case melon
+    case drink
+    case celebration
+    case balloon
+    case book
+    case briefcase
+    case sunset
+    case surfboard
+    case soccerball
+    case football
 
     public var image: UIImage { UIImage(named: imageName)! }
 
-    public var imageName: String {
-        switch self {
-        case .face1: return "avatar-illustration-face1"
-        case .face2: return "avatar-illustration-face2"
-        case .cat: return "avatar-illustration-cat"
-        case .fox: return "avatar-illustration-fox"
-        }
-    }
+    public var imageName: String { "avatar_\(rawValue)"}
 
     // todo: real names / final icons
 
-    public static var defaultGroupIcons: [AvatarIcon] = allCases
+    public static var defaultGroupIcons: [AvatarIcon] = [
+        .heart,
+        .house,
+        .melon,
+        .drink,
+        .celebration,
+        .balloon,
+        .book,
+        .briefcase,
+        .sunset,
+        .surfboard,
+        .soccerball,
+        .football
+    ]
 
-    public static var defaultProfileIcons: [AvatarIcon] = allCases
+    public static var defaultProfileIcons: [AvatarIcon] = [
+        .abstract01,
+        .abstract02,
+        .abstract03,
+        .cat,
+        .dog,
+        .fox,
+        .tucan,
+        .sloth,
+        .dinosaur,
+        .pig,
+        .incognito,
+        .ghost
+    ]
 }
 
 public enum AvatarTheme: String, CaseIterable {
@@ -157,6 +197,35 @@ public extension AvatarTheme {
             return Self.default
         }
         return forData(data)
+    }
+
+    static func forIcon(_ icon: AvatarIcon) -> AvatarTheme {
+        switch icon {
+        case .abstract01: return .A130
+        case .abstract02: return .A120
+        case .abstract03: return .A170
+        case .cat: return .A190
+        case .dog: return .A140
+        case .fox: return .A190
+        case .tucan: return .A120
+        case .sloth: return .A160
+        case .dinosaur: return .A130
+        case .pig: return .A180
+        case .incognito: return .A210
+        case .ghost: return .A100
+        case .heart: return .A180
+        case .house: return .A120
+        case .melon: return .A110
+        case .drink: return .A170
+        case .celebration: return .A100
+        case .balloon: return .A210
+        case .book: return .A100
+        case .briefcase: return .A180
+        case .sunset: return .A120
+        case .surfboard: return .A110
+        case .soccerball: return .A130
+        case .football: return .A210
+        }
     }
 
     private static func forData(_ data: Data) -> AvatarTheme {
