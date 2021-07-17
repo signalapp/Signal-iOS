@@ -43,7 +43,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @interface HomeViewController () <UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
-    OWSBlockListCacheDelegate,
     CameraFirstCaptureDelegate,
     OWSGetStartedBannerViewControllerDelegate>
 
@@ -85,8 +84,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _viewState = [HVViewState new];
     self.tableDataSource.viewController = self;
     self.loadCoordinator.viewController = self;
-
-    [self.blocklistCache startObservingAndSyncStateWithDelegate:self];
 
     return self;
 }
@@ -1099,14 +1096,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     } else {
         OWSLogDebug(@"not requesting review");
     }
-}
-
-#pragma mark - OWSBlockListCacheDelegate
-
-- (void)blockListCacheDidUpdate:(OWSBlockListCache *_Nonnull)blocklistCache
-{
-    OWSLogVerbose(@"");
-    [self reloadTableViewData];
 }
 
 #pragma mark - CameraFirstCaptureDelegate

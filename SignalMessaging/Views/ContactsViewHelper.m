@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactsViewHelper () <OWSBlockListCacheDelegate>
+@interface ContactsViewHelper ()
 
 @property (nonatomic) NSHashTable<id<ContactsViewHelperObserver>> *observers;
 
@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
 
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
-
-@property (nonatomic, readonly) OWSBlockListCache *blockListCache;
 
 @end
 
@@ -45,7 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _observers = [NSHashTable weakObjectsHashTable];
-    _blockListCache = [OWSBlockListCache new];
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         // setup() - especially updateContacts() - can
@@ -77,7 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (CurrentAppContext().isNSE) {
         return;
     }
-    [self.blockListCache startObservingAndSyncStateWithDelegate:self];
     [self updateContacts];
     [self observeNotifications];
 }
@@ -91,6 +87,10 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationNameProfileWhitelistDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(blockListDidChange:)
+                                                 name:OWSBlockingManager.blockListDidChange
                                                object:nil];
 }
 
@@ -127,6 +127,14 @@ NS_ASSUME_NONNULL_BEGIN
     for (id<ContactsViewHelperObserver> delegate in self.observers) {
         [delegate contactsViewHelperDidUpdateContacts];
     }
+}
+
+- (void)blockListDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(!CurrentAppContext().isNSE);
+
+    [self updateContacts];
 }
 
 #pragma mark - Contacts
@@ -178,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
-    return [self.blockListCache isAddressBlocked:address];
+    return [self.blockingManager isAddressBlocked:address];
 }
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
@@ -186,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
-    return [self.blockListCache isGroupIdBlocked:groupId];
+    return [self.blockingManager isGroupIdBlocked:groupId];
 }
 
 - (BOOL)isThreadBlocked:(TSThread *)thread
@@ -552,14 +560,6 @@ NS_ASSUME_NONNULL_BEGIN
     contactViewController.view.backgroundColor = Theme.backgroundColor;
 
     return contactViewController;
-}
-
-- (void)blockListCacheDidUpdate:(OWSBlockListCache *)blocklistCache
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    [self updateContacts];
 }
 
 @end

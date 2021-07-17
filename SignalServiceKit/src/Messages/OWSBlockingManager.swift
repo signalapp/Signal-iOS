@@ -205,10 +205,8 @@ public class OWSBlockingManager: NSObject {
     private func loadStateOnLaunch() {
         AssertIsOnMainThread()
 
-        // TODO: Revisit locking.
         unfairLock.withLock {
             _currentState = nil
-            // TODO: Rename.
             loadState()
         }
     }
@@ -226,7 +224,6 @@ public class OWSBlockingManager: NSObject {
                                     transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
-        // TODO: Audit this notification's usage.
         transaction.addAsyncCompletionOnMain {
             NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
         }
@@ -387,9 +384,6 @@ public class OWSBlockingManager: NSObject {
         let state: State? = unfairLock.withLock {
             let oldState = self.currentState
 
-            // TODO: Should we consult "didChange" or "isBlockedAfter != isBlockedBefore".
-            // What if isBlocked didn't change but now we know one of the address components
-            // that we didn't before?
             guard oldState.isBlocked(address: address) else {
                 return nil
             }
@@ -460,8 +454,7 @@ public class OWSBlockingManager: NSObject {
         unfairLock.withLock { self.currentState.isBlocked(groupId: groupId) }
     }
 
-    // TODO: cachedGroupDetailsWithGroupId
-    public func cachedGroupModel(forGroupId groupId: Data) -> TSGroupModel? {
+    private func cachedGroupModel(forGroupId groupId: Data) -> TSGroupModel? {
         unfairLock.withLock { self.currentState.blockedGroupMap[groupId] }
     }
 
@@ -672,7 +665,7 @@ public class OWSBlockingManager: NSObject {
                 }
             }
 
-            // TODO: Include information about changes?
+            Logger.info("blockListDidChange")
             NotificationCenter.default.postNotificationNameAsync(Self.blockListDidChange, object: nil)
         }
     }
