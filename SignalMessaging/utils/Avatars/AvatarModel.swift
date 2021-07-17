@@ -44,6 +44,22 @@ public enum AvatarType: Equatable {
         case .text: return true
         }
     }
+
+    public static func ==(lhs: AvatarType, rhs: AvatarType) -> Bool {
+        switch (lhs, rhs) {
+        case (.image(let lhs), .image(let rhs)):
+            // We implement a custom "Equatable", since two URLs
+            // are equatated with object equality, and even with
+            // the same URL treated as different objects with the
+            // compiler synthesized function.
+            return lhs.path == rhs.path
+        case (.icon(let lhs), .icon(let rhs)):
+            return lhs == rhs
+        case (.text(let lhs), .text(let rhs)):
+            return lhs == rhs
+        default: return false
+        }
+    }
 }
 
 public enum AvatarIcon: String, CaseIterable {
