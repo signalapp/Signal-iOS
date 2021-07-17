@@ -104,23 +104,8 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             }
             avatarChangeCallback(newAvatar)
         } else {
-            // Avatar was cleared, upload the default avatar.
-            switch context {
-            case .profile:
-                guard let defaultAvatar = databaseStorage.read(block: { transaction in
-                    avatarBuilder.defaultAvatarImageForLocalUser(
-                        diameterPixels: kOWSProfileManager_MaxAvatarDiameterPixels,
-                        transaction: transaction
-                    )
-                }) else { return owsFailDebug("Failed to prepare default avatar") }
-
-                avatarChangeCallback(defaultAvatar)
-            case .groupId(let groupId):
-                avatarChangeCallback(avatarBuilder.avatarImage(
-                    forGroupId: groupId,
-                    diameterPixels: kOWSProfileManager_MaxAvatarDiameterPixels
-                ))
-            }
+            // Avatar was cleared.
+            avatarChangeCallback(nil)
         }
     }
 
