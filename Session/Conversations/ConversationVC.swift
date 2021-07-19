@@ -55,6 +55,16 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
     
+    lazy var mnemonic: String = {
+        let identityManager = OWSIdentityManager.shared()
+        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
+        var hexEncodedSeed: String! = databaseConnection.object(forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection) as! String?
+        if hexEncodedSeed == nil {
+            hexEncodedSeed = identityManager.identityKeyPair()!.hexEncodedPrivateKey // Legacy account
+        }
+        return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
+    }()
+    
     lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: focusedMessageID, delegate: self)
     
     lazy var mediaCache: NSCache<NSString, AnyObject> = {

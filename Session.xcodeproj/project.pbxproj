@@ -237,6 +237,7 @@
 		B8AE75A425A6C6A6001A84D2 /* Data+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */; };
 		B8AE760B25ABFB5A001A84D2 /* GeneralUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */; };
 		B8AE761425ABFBB9001A84D2 /* GeneralUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B8AF4BB426A5204600583500 /* SendSeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AF4BB326A5204600583500 /* SendSeedModal.swift */; };
 		B8B32021258B1A650020074B /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32020258B1A650020074B /* Contact.swift */; };
 		B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32032258B235D0020074B /* Storage+Contacts.swift */; };
 		B8B3204E258C15C80020074B /* ContactsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32044258C117C0020074B /* ContactsMigration.swift */; };
@@ -1197,6 +1198,7 @@
 		B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Trimming.swift"; sourceTree = "<group>"; };
 		B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneralUtilities.h; sourceTree = "<group>"; };
 		B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneralUtilities.m; sourceTree = "<group>"; };
+		B8AF4BB326A5204600583500 /* SendSeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendSeedModal.swift; sourceTree = "<group>"; };
 		B8B32020258B1A650020074B /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		B8B32032258B235D0020074B /* Storage+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Contacts.swift"; sourceTree = "<group>"; };
 		B8B32044258C117C0020074B /* ContactsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsMigration.swift; sourceTree = "<group>"; };
@@ -2109,6 +2111,7 @@
 				B8F5F72225F1B4CA003BF8D4 /* DownloadAttachmentModal.swift */,
 				C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */,
 				B821494525D4D6FF009C0F2A /* URLModal.swift */,
+				B8AF4BB326A5204600583500 /* SendSeedModal.swift */,
 				B8758859264503A6000E60D0 /* JoinOpenGroupModal.swift */,
 				B821494E25D4E163009C0F2A /* BodyTextView.swift */,
 				B82149B725D60393009C0F2A /* BlockedModal.swift */,
@@ -4820,6 +4823,7 @@
 				B82B408E239DC00D00A248E7 /* DisplayNameVC.swift in Sources */,
 				B8214A2B25D63EB9009C0F2A /* MessagesTableView.swift in Sources */,
 				B835246E25C38ABF0089A44F /* ConversationVC.swift in Sources */,
+				B8AF4BB426A5204600583500 /* SendSeedModal.swift in Sources */,
 				B821494625D4D6FF009C0F2A /* URLModal.swift in Sources */,
 				C374EEEB25DA3CA70073A857 /* ConversationTitleView.swift in Sources */,
 				B88FA7F2260C3EB10049422F /* OpenGroupSuggestionGrid.swift in Sources */,
