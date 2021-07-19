@@ -1,5 +1,5 @@
-• Thanks to the new animations that appear when you select, reply, send, or receive a message, even an uninspiring conversation can still be quite moving.
-• Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly on iOS 14.5+.
-• Receive an unwanted message? You can now report it as spam when you tap block.
+• Dank der neuen Animationen, die beim Auswählen, Antworten, Senden oder Empfangen von Nachrichten erscheinen, kann auch eine langweilige Unterhaltung wieder Fahrt aufnehmen.
+• Akkulaufzeit ist kostbar, also haben wir mehrere Änderungen beim Umgang mit Benachrichtigungen der App gemacht, welche den Akkuverbrauch unter iOS 14.5+ deutlich senken.
+Erhältst du eine unerwünschte Nachricht? Diese kann jetzt als Spam gemeldet werden, wenn du auf Blockieren tippst.
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+Möchtest du zur Verbesserung von Signal beitragen? Wir stellen ein. Besuche https://signal.org/workworkwork, um mehr zu erfahren.

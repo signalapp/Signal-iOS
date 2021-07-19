@@ -2,4 +2,4 @@
 • Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly on iOS 14.5+.
 • Receive an unwanted message? You can now report it as spam when you tap block.
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+สนใจช่วยปรับปรุง Signal ให้หรือขึ้นอยู่หรือ? เรากำลังจ้างคนเพิ่ม ดู https://signal.org/workworkwork เพื่อเรียนรู้เพิ่มเติม

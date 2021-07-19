@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jangan Sekarang";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Tentang Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Terima Nomor Keamanan Baru";
@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Tambahkan ke Grup";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Tambah \"%1$@\" ke \"%2$@\"?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Tambahkan Anggota Baru";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ditambahkan ke %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "Tambahkan ke Grup";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda kepada pengguna ini?";
@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "Simpan";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Anda tidak punya grup yang sama dengan orang ini. Tinjau permintaan dengan seksama sebelum menerima untuk menghindari pesan tidak diinginkan.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Anda tidak punya anggota yang sama dengan grup ini. Tinjau permintaan dengan seksama sebelum menerima untuk menghindari pesan tidak diinginkan.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Tentang Permintaan Pesan";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Jawab";
@@ -322,6 +322,27 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Pengeras Suara";
 
+/* Text prompting the user to choose a color when editing their avatar */
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+
+/* Segment indicating the user can edit the color of the avatar */
+"AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Warna";
+
+/* Segment indicating the user can edit the text of the avatar */
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+
+/* Text indicating the user can select an avatar from their camera */
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+
+/* Text indicating the user can select an avatar from their photos */
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+
+/* Title for the previously used and preset avatar section. */
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
 /* return to the previous screen */
 "BACK_BUTTON" = "Kembali";
 
@@ -413,7 +434,7 @@
 "BUTTON_DONE" = "Selesai";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "Duplikat";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Sunting";
@@ -431,7 +452,7 @@
 "BUTTON_OKAY" = "Oke";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "Sebelumnya";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Pilih";
@@ -443,7 +464,7 @@
 "BUTTON_SHARE" = "Bagikan";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "Mulai";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Kirimkan";
@@ -835,6 +856,9 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Hapus Pesan?";
 
+/* Message indicating that only administrators can send message to an announcement-only group. */
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Anda tidak dapat memilih lebih dari %@ percakapan.";
 
@@ -1026,6 +1050,18 @@
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+
+/* Label for button that sets 'send messages permission' for a group to 'all members'. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Semua Anggota";
+
+/* Footer for the 'send messages' section in conversation settings permissions view. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+
+/* Label for 'send messages' action in conversation settings permissions view. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+
+/* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Hanya Admin";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Buka Blokir Grup";
@@ -1426,9 +1462,6 @@
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Butuh Akses Kontak untuk Mengubah Informasi Kontak";
 
-/* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Hapus Foto";
-
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Ubah Grup";
 
@@ -1735,6 +1768,12 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ diblokir";
 
+/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+
+/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ diblokir";
 
@@ -1992,6 +2031,24 @@
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "Undang Anggota";
+
+/* Message indicating that 'announcement-only' mode was disabled. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+
+/* Message indicating that 'announcement-only' mode was disabled by the local user. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+
+/* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+
+/* Message indicating that 'announcement-only' mode was enabled. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+
+/* Message indicating that 'announcement-only' mode was enabled by the local user. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+
+/* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Tautan grup ini tidak lagi valid.";
@@ -2418,6 +2475,15 @@
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Anda telah keluar dari group";
+
+/* Label for group administrators in the 'announcement-only' group UI. */
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+
+/* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+
+/* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Pilih admin baru untuk grup ini sebelum Anda keluar.";
@@ -2905,12 +2971,6 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Semua Media";
 
-/* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
-
-/* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Pustaka Foto";
-
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Hapus %d Pesan";
 
@@ -3291,9 +3351,6 @@
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Temukan lewat Nomor Telepon";
-
-/* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Atur Foto Grup";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Grup Baru";
@@ -4228,12 +4285,6 @@
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nama Pengguna";
 
-/* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Atur Foto Profil";
-
-/* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Hapus Foto";
-
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Nama belakang Anda terlalu panjang.";
 
@@ -4356,6 +4407,9 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Pengguna tidak dapat dipilih.";
+
+/* Error message indicating that a user can't be selected until they upgrade their app. */
+"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "Pengguna ini tidak dapat ditambahkan ke dalam grup sampai dia memperbarui Signal.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Saya lupa PIN saya.";

@@ -1,4 +1,4 @@
-• Thanks to the new animations that appear when you select, reply, send, or receive a message, even an uninspiring conversation can still be quite moving.
+• Datorită noilor animații care apar atunci când selectați, răspundeți, trimiteți sau primiți un mesaj, chiar și o conversație neinspirată poate fi în continuare destul de emoționantă.
 • Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly on iOS 14.5+.
 • Receive an unwanted message? You can now report it as spam when you tap block.
 

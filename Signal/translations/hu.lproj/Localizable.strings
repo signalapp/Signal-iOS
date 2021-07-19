@@ -322,6 +322,27 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Hangszóró";
 
+/* Text prompting the user to choose a color when editing their avatar */
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+
+/* Segment indicating the user can edit the color of the avatar */
+"AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Szín";
+
+/* Segment indicating the user can edit the text of the avatar */
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+
+/* Text indicating the user can select an avatar from their camera */
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+
+/* Text indicating the user can select an avatar from their photos */
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+
+/* Title for the previously used and preset avatar section. */
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
 /* return to the previous screen */
 "BACK_BUTTON" = "Vissza";
 
@@ -835,6 +856,9 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Törlöd a beszélgetést?";
 
+/* Message indicating that only administrators can send message to an announcement-only group. */
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "A maximálisan kijelölhető beszélgetések száma %@.";
 
@@ -1026,6 +1050,18 @@
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "keresés";
+
+/* Label for button that sets 'send messages permission' for a group to 'all members'. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Minden felhasználó";
+
+/* Footer for the 'send messages' section in conversation settings permissions view. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+
+/* Label for 'send messages' action in conversation settings permissions view. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+
+/* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Csak adminok";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Csoport tiltás feloldása";
@@ -1426,9 +1462,6 @@
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "A Signalnak hozzáférésre van szüksége Kontakt listádhoz hogy szerkeszthesd az elemeit";
 
-/* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Avatár eltávolítása";
-
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Csoport szerkesztése";
 
@@ -1735,6 +1768,12 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ letiltva";
 
+/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+
+/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ letiltva";
 
@@ -1992,6 +2031,24 @@
 
 /* The title for the 'group invites' view. */
 "GROUP_INVITES_VIEW_TITLE" = "Tagsági meghívók";
+
+/* Message indicating that 'announcement-only' mode was disabled. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+
+/* Message indicating that 'announcement-only' mode was disabled by the local user. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+
+/* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+
+/* Message indicating that 'announcement-only' mode was enabled. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+
+/* Message indicating that 'announcement-only' mode was enabled by the local user. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+
+/* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ez a csoporthivatkozás már érvénytelen.";
@@ -2418,6 +2475,15 @@
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Elhagytad a csoportot.";
+
+/* Label for group administrators in the 'announcement-only' group UI. */
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+
+/* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+
+/* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Válassz egy új csoport admint mielőtt kilépsz.";
@@ -2905,12 +2971,6 @@
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Minden média";
 
-/* media picker option to take photo or video */
-"MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
-
-/* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Fotógaléria";
-
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d üzenet törlése";
 
@@ -3291,9 +3351,6 @@
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Keresés telefonszám alapján";
-
-/* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Csoport borítókép beállítása";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Új csoport";
@@ -4228,12 +4285,6 @@
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Felhasználónév";
 
-/* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profilkép beállítása";
-
-/* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Avatár eltávolítása";
-
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Az utónév túl hosszú";
 
@@ -4356,6 +4407,9 @@
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "A felhasználó nem kiválasztható.";
+
+/* Error message indicating that a user can't be selected until they upgrade their app. */
+"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "A felhasználó nem adható a csoporthoz, amíg nem frissíti a Signalt.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Elfelejtettem a PIN kódom.";

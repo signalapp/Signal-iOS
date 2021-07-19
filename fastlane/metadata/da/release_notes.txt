@@ -1,5 +1,5 @@
-• Thanks to the new animations that appear when you select, reply, send, or receive a message, even an uninspiring conversation can still be quite moving.
+• Takket være de nye animationer, der vises, når du vælger, besvarer, sender eller modtager en besked, kan selv en uinspirerende samtale stadig være ret bevægende.
 • Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly on iOS 14.5+.
 • Receive an unwanted message? You can now report it as spam when you tap block.
 
-Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
+Er du interesseret i at hjælpe med at forbedre Signal? Vi ansætter folk. Besøg https://signal.org/workworkwork for at lære mere.
