@@ -80,13 +80,13 @@ class NSEEnvironment: Dependencies {
     // MARK: - Setup
 
     private var isSetup = AtomicBool(false)
-    func setupIfNecessary() {
-        guard isSetup.tryToSetFlag() else { return }
-        DispatchQueue.main.sync { setup() }
+    func setupIfNecessary() -> UNNotificationContent? {
+        guard isSetup.tryToSetFlag() else { return nil }
+        return DispatchQueue.main.sync { setup() }
     }
 
     private var areVersionMigrationsComplete = false
-    private func setup() {
+    private func setup() -> UNNotificationContent? {
         AssertIsOnMainThread()
 
         // This should be the first thing we do.
@@ -105,7 +105,9 @@ class NSEEnvironment: Dependencies {
 
         Cryptography.seedRandom()
 
-        verifyDBKeysAvailableOrExit()
+        if let errorContent = verifyDBKeysAvailable() {
+            return errorContent
+        }
 
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
@@ -134,33 +136,24 @@ class NSEEnvironment: Dependencies {
         OWSAnalytics.appLaunchDidBegin()
 
         listenForMainAppLaunch()
+
+        return nil
     }
 
-    private func verifyDBKeysAvailableOrExit() {
+    private func verifyDBKeysAvailable() -> UNNotificationContent? {
         AssertIsOnMainThread()
 
         guard !StorageCoordinator.hasGrdbFile || !GRDBDatabaseStorageAdapter.isKeyAccessible else { return }
 
-        Logger.info("Exiting because database password is not accessible.")
+        Logger.info("Database password is not accessible, posting generic notification.")
 
         let content = UNMutableNotificationContent()
         let notificationFormat = NSLocalizedString(
             "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
             comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
         )
-        content.title = String(format: notificationFormat, UIDevice.current.localizedModel)
-        let request = UNNotificationRequest(
-            identifier: "unlock-database",
-            content: content,
-            trigger: nil
-        )
-
-        // Remove any existing notifications to avoid stacking.
-        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["unlock-database"])
-        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
-
-        Logger.flush()
-        exit(0)
+        content.body = String(format: notificationFormat, UIDevice.current.localizedModel)
+        return content
     }
 
     @objc
