@@ -45,8 +45,8 @@ public final class PushNotificationAPI : NSObject {
             SNLog("Couldn't unregister from push notifications.")
         }
         // Unsubscribe from all closed groups
-        Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroup in
-            performOperation(.unsubscribe, for: closedGroup, publicKey: getUserHexEncodedPublicKey())
+        Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroupPublicKey in
+            performOperation(.unsubscribe, for: closedGroupPublicKey, publicKey: getUserHexEncodedPublicKey())
         }
         return promise
     }
@@ -87,8 +87,14 @@ public final class PushNotificationAPI : NSObject {
             SNLog("Couldn't register device token.")
         }
         // Subscribe to all closed groups
-        Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroup in
-            performOperation(.subscribe, for: closedGroup, publicKey: publicKey)
+        Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroupPublicKey in
+            let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(closedGroupPublicKey)
+            let threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID))
+            if threadOrNil?.isMuted == true {
+                // Do nothing
+            } else {
+                performOperation(.subscribe, for: closedGroupPublicKey, publicKey: publicKey)
+            }
         }
         return promise
     }
