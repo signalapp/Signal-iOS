@@ -189,6 +189,10 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 reusableMediaView.owner = nil
             }
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
 

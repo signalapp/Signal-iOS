@@ -180,5 +180,9 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
             typingIndicatorView.reset()
             typingIndicatorView.removeFromSuperview()
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }

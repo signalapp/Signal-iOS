@@ -242,6 +242,10 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             footerOverlayView?.reset()
             footerOverlayView = nil
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
 

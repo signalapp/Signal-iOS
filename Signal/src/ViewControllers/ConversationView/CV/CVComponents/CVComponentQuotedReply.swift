@@ -101,6 +101,10 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         public func reset() {
             quotedMessageView.reset()
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
 

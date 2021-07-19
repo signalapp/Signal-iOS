@@ -80,5 +80,9 @@ public class CVComponentReactions: CVComponentBase, CVComponent {
         public func reset() {
             reactionCountsView.reset()
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }

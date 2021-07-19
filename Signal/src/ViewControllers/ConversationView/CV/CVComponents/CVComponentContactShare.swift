@@ -72,6 +72,10 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
         public func reset() {
             contactShareView.reset()
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
 

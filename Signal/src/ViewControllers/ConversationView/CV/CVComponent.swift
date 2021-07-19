@@ -57,6 +57,8 @@ public protocol CVComponent: AnyObject {
                               messageSwipeActionState: CVMessageSwipeActionState)
 
     func updateScrollingContent(componentView: CVComponentView)
+
+    func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]?
 }
 
 // MARK: -
@@ -148,6 +150,10 @@ public class CVComponentBase: NSObject {
                                      renderItem: CVRenderItem,
                                      messageSwipeActionState: CVMessageSwipeActionState) {
         // Do nothing.
+    }
+
+    public func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]? {
+        return nil
     }
 
     var isShowingSelectionUI: Bool {
@@ -284,6 +290,8 @@ public protocol CVComponentView {
     func setIsCellVisible(_ isCellVisible: Bool)
 
     func reset()
+
+    func contextMenuContentView() -> UIView?
 }
 
 // MARK: -

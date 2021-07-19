@@ -4,6 +4,7 @@
 
 import Foundation
 
+/// UIContextMenuInteractionDelegate analog
 protocol ContextMenuInteractionDelegate: AnyObject {
     func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
@@ -13,8 +14,11 @@ protocol ContextMenuInteractionDelegate: AnyObject {
         previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview?
 }
 
+/// UIContextMenuInteraction analog
 class ContextMenuInteraction: NSObject, UIInteraction {
+
     weak var delegate: ContextMenuInteractionDelegate?
+    private var contextMenuController: ContextMenuController?
 
     private var longPressGestureRecognizer: UIGestureRecognizer = {
         let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressRecognized(sender:)))
@@ -22,25 +26,25 @@ class ContextMenuInteraction: NSObject, UIInteraction {
         return recognizer
     }()
 
-    private var contextMenuController: ContextMenuController?
-
     // MARK: UIInteraction
     public var view: UIView?
 
-    public func willMove(to view: UIView?) {
+    func willMove(to view: UIView?) {
         if view != self.view {
             self.view?.removeGestureRecognizer(longPressGestureRecognizer)
         }
     }
 
-    public func didMove(to view: UIView?) {
+    func didMove(to view: UIView?) {
         if view != self.view {
             self.view = view
             self.view?.addGestureRecognizer(longPressGestureRecognizer)
         }
     }
 
-    public init(delegate: ContextMenuInteractionDelegate) {
+    public init(
+        delegate: ContextMenuInteractionDelegate
+    ) {
         self.delegate = delegate
         super.init()
     }
@@ -96,20 +100,22 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate {
 
 }
 
-protocol TranscriptContextMenuInteractionDelegate: AnyObject {
-    func contextMenuInteraction(
-        _ interaction: TranscriptContextMenuInteraction,
-        accessoryViewsForContextMenuWIthWithConfiguration configuration: ContextMenuConfiguration) -> [ContextMenuTargetedPreview.ContextMenuTargetedPreviewAccessory]?
-}
-
-// Custom subclass for transcript CVC interactions
-class TranscriptContextMenuInteraction: ContextMenuInteraction {
-    weak var transcriptDelegate: TranscriptContextMenuInteractionDelegate?
+// Custom subclass for chat history CVC interactions
+class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
 
     public let itemViewModel: CVItemViewModelImpl
     public let messageActions: [MessageAction]
 
-    public init(delegate: ContextMenuInteractionDelegate, itemViewModel: CVItemViewModelImpl, messageActions: [MessageAction]) {
+    /// Default initializer
+    /// - Parameters:
+    ///   - delegate: ContextMenuInteraction delegate
+    ///   - itemViewModel: CVItemViewModelImpl related to context menu item
+    ///   - messageActions: Message actions related to context menu item
+    public init (
+        delegate: ContextMenuInteractionDelegate,
+        itemViewModel: CVItemViewModelImpl,
+        messageActions: [MessageAction]
+    ) {
         self.itemViewModel = itemViewModel
         self.messageActions = messageActions
         super.init(delegate: delegate)
@@ -119,26 +125,5 @@ class TranscriptContextMenuInteraction: ContextMenuInteraction {
 
     public override func didMove(to view: UIView?) {
         self.view = view
-    }
-
-    public override func presentMenu(locationInView: CGPoint) {
-
-        guard let view = self.view else {
-            owsFailDebug("Missing view")
-            return
-        }
-
-        let configuration = ContextMenuConfiguration(identifier: nil, actionProvider: nil)
-
-        let accessoryViews: [ContextMenuTargetedPreview.ContextMenuTargetedPreviewAccessory]?
-        if let delegate = self.transcriptDelegate {
-            accessoryViews = delegate.contextMenuInteraction(self, accessoryViewsForContextMenuWIthWithConfiguration: configuration)
-        } else {
-            accessoryViews = nil
-        }
-
-        let targetedPreview = ContextMenuTargetedPreview(view: view, accessoryViews: accessoryViews)
-
-        presentMenu(locationInView: locationInView, contextMenuConfiguration: configuration, targetedPreview: targetedPreview)
     }
 }
