@@ -1,5 +1,3 @@
-• Dank der neuen Animationen, die beim Auswählen, Antworten, Senden oder Empfangen von Nachrichten erscheinen, kann auch eine langweilige Unterhaltung wieder Fahrt aufnehmen.
-• Akkulaufzeit ist kostbar, also haben wir mehrere Änderungen beim Umgang mit Benachrichtigungen der App gemacht, welche den Akkuverbrauch unter iOS 14.5+ deutlich senken.
-Erhältst du eine unerwünschte Nachricht? Diese kann jetzt als Spam gemeldet werden, wenn du auf Blockieren tippst.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Möchtest du zur Verbesserung von Signal beitragen? Wir stellen ein. Besuche https://signal.org/workworkwork, um mehr zu erfahren.

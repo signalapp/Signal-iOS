@@ -1,5 +1,3 @@
-• הודות להנפשות החדשות שמופיעות כאשר אתה בוחר, משיב, שולח או מקבל הודעה, אפילו שיחה משעממת יכולה להיות קצת מרגשת.
-• חיי סוללה הם מצרך יקר, לכן ביצענו מספר שינויים אל הדרך שבה התראות מטופלות ביישום מה שמפחית שימוש בסוללה באופן משמעותי על iOS 14.5+.
-• קיבלת הודעה בלתי רצויה? אתה יכול עכשיו לדווח עליה כזבל כשתלחץ על חסום.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 מעוניין לעזור לשפר את Signal? אנחנו מגייסים. בקר בכתובת https://signal.org/workworkwork כדי ללמוד עוד.

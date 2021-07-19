@@ -1,5 +1,3 @@
-• Завдяки новим анімаціям, які з'являються коли ви обираєте, відповідаєте, відправляєте або отримуєте повідомлення, навіть бесіда, що не дуже надихає, все ще може бути доволі зворушливою.
-• Рівень заряду батареї є дуже важливим, отже ми зробили декілька змін в обробці сповіщень застосунком, що суттєво зменшує використання батареї на iOS 14.5+.
-• Отримали небажане повідомлення? Відтепер можна повідомити про спам, коли натиснете на повідомлення, щоб його заблокувати.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Бажаєте допомогти у покращенні Signal? У нас є вакансії. Завітайте по деталі на https://signal.org/workworkwork.

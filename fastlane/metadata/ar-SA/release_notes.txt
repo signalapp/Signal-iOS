@@ -1,5 +1,3 @@
-• ستصبح محادثاتك المعتادة أكثر حيوية بفضل الرسوم المتحركة التي ستظهر لك عند تحديد رسالة، أو خلال الإجابة عليها، أو عند إرسالها، أو عند استلامها.
-• Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly on iOS 14.5+.
-• Receive an unwanted message? You can now report it as spam when you tap block.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

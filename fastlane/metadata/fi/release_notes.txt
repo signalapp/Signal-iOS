@@ -1,5 +1,3 @@
-• Uusien viestin valitsemis-, vastaamis-, lähettämis- ja vastaanottamisanimaatioiden ansiosta myös hitaamman puoleiset keskustelut saavat hieman liikettä.
-• Battery life is precious, so we’ve made several changes to the way notifications are handled in the app which reduces battery usage significantly on iOS 14.5+.
-• Receive an unwanted message? You can now report it as spam when you tap block.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Haluatko auttaa Signalin kehittämisessä ammattilaisena? Tutustu meihin työnantajana osoitteessa https://signal.org/workworkwork.

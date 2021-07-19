@@ -1,5 +1,3 @@
-• Grazie alle nuove animazioni che compaiono quando selezioni, rispondi, invii o ricevi un messaggio, anche una conversazione poco interessante può essere ancora abbastanza emozionante.
-• La durata della batteria è preziosa, quindi abbiamo apportato diverse modifiche al modo in cui le notifiche vengono gestite nell'app che riduce significativamente l'utilizzo della batteria su iOS 14.5+. 
-• Hai ricevuto un messaggio indesiderato? Ora puoi segnalarlo come spam quando clicchi blocca.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Interessato ad aiutare a migliorare Signal? Stiamo assumendo. Visita https://signal.org/workworkwork per saperne di più.

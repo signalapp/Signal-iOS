@@ -1,5 +1,3 @@
-•感謝新動畫功能，當你選擇回覆，傳送或接收訊息時，即使是平淡無奇的對話也仍然可以動起來。
-• 電池壽命非常寶貴，因此我們對應用程式中處理通知的方式進行了多項變更，從而降低了 iOS 14.5 + 版本的電池使用量。
-• 收到不需要的訊息？你現在可以在點擊封鎖時將其回報為垃圾訊息。
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 有興趣幫助改進 Signal？ 我們正在招聘。 連到 https://signal.org/workworkwork 了解更多資訊。

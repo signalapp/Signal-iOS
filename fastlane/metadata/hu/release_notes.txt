@@ -1,5 +1,3 @@
-• A kijelölés, válasz és küldés műveletek esetén új animációkat adtunk hozzá, amik még egy unalmas beszélgetést is felrázhatnak.
-• Az akkumulátor nem mindegy, meddig húzza, így számos változtatást eszközöltünk az értesítések kezelésében, ezek iOS 14.5-től felfelé számottevően csökkentik az energiafogyasztást.
-• Kéretlen üzeneteket kapsz? Mostantól már spam-ként is megjelölheted őket, mikor a Letiltás opciót választod.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Jobbá tennéd a Signalt? Munkatársakat keresünk. Keresd fel a https://signal.org/workworkwork oldalt a részletekért.

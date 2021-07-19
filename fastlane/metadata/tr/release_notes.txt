@@ -1,5 +1,3 @@
-• Bir iletiyi seçtiğinizde, yanıtladığınızda, gönderdiğinizde veya aldığınızda görünen yeni animasyonlar sayesinde, hareketsiz geçen bir sohbete bile hareket katabilirsiniz.
-• Pil ömrü değerli, bu nedenle iOS 14.5+'da pil kullanımını kayda değer bir şekilde azaltacak şekilde bildirimlerde önemli değişiklikler yaptık.
-• İstenmeyen bir ileti mi aldınız? Artık bu iletilerde engelleye dokunduğunuzda istenmeyen olarak bildirebilirsiniz.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.

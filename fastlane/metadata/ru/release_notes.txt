@@ -1,5 +1,3 @@
-• При выборе, отправке или получении сообщений или ответе на них будут появляться новые анимации.
-• Мы сделали несколько изменений в способе обработки уведомлений, которые значительно уменьшают использование аккумулятора на iOS 14.5 и новее.
-• Получили нежелательное сообщение? Теперь вы можете сообщить о спаме, когда нажимаете «Заблокировать».
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Вам интересно помогать улучшать Signal? Мы нанимаем на работу. Посетите https://signal.org/workworkwork, чтобы узнать больше.

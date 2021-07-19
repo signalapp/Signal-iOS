@@ -1,5 +1,3 @@
-• Dzięki nowym animacjom, widocznym, gdy wybierasz, wysyłasz, otrzymujesz lub odpowiadasz na wiadomość, nawet nieciekawa rozmowa może być poruszająca.
-• Pojemność baterii jest cenna, dlatego dokonaliśmy kilku zmian w aplikacji, w sposobie obsługi powiadomień, co znacząco zmniejsza zużycie baterii na iOS14.5+.
-• Otrzymujesz niechciane wiadomości? Teraz możesz zgłosić je, jako spam, stukając zablokuj.
+• Give your profile and group photos a makeover. Whether you want to upload a “picture worth a thousand words”, just type a few letters, or select from one our colorful new defaults, it’s easier than ever to create the perfect photo.
 
 Interested in helping improve Signal? We're hiring. Visit https://signal.org/workworkwork to learn more.
