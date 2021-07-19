@@ -267,6 +267,10 @@ public class EarlyMessageManager: NSObject {
             }
             identifier = MessageIdentifier(timestamp: message.timestamp, author: localAddress)
         } else if let message = message as? TSIncomingMessage {
+            guard message.authorUUID != nil else {
+                return owsFailDebug("Attempted to apply pending messages for message missing sender uuid with type \(message.interactionType()) from \(message.authorAddress)")
+            }
+
             identifier = MessageIdentifier(timestamp: message.timestamp, author: message.authorAddress)
         } else {
             // We only support early envelopes for incoming + outgoing message types, for now.
