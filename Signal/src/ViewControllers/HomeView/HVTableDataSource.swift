@@ -25,7 +25,6 @@ public class HVTableDataSource: NSObject {
         super.init()
     }
 
-    // TODO: Move elsewhere?
     func configure(viewState: HVViewState) {
         AssertIsOnMainThread()
 
@@ -71,7 +70,6 @@ extension HVTableDataSource {
 
 // MARK: -
 
-// TODO: Revisit
 @objc
 public enum HomeViewMode: Int, CaseIterable {
     case archive
@@ -398,7 +396,6 @@ extension HVTableDataSource: UITableViewDataSource {
                                 ? CommonStrings.archiveAction
                                 : CommonStrings.unarchiveAction)
 
-        // TODO: Test selector.
         let performAccessibilityCustomActionSelector = #selector(HomeViewController.performAccessibilityCustomAction)
 
         let archiveAction = HVCellAccessibilityCustomAction(name: archiveTitle,
@@ -424,7 +421,6 @@ extension HVTableDataSource: UITableViewDataSource {
                                                                   target: viewController,
                                                                   selector: performAccessibilityCustomActionSelector))
 
-        // TODO: Did we fix a bug here?
         let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
         let pinnedAction = (isThreadPinned
                                 ? HVCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
@@ -582,7 +578,6 @@ extension HVTableDataSource: UITableViewDataSource {
                                           font: UIFont.systemFont(ofSize: 13),
                                           color: .ows_white,
                                           maxTitleWidth: 68,
-                                          // TODO: Did we fix a bug here?
                                           minimumScaleFactor: CGFloat(8) / CGFloat(13),
                                           spacing: 4) else {
             owsFailDebug("Missing image.")
@@ -704,4 +699,29 @@ public class HVTableView: UITableView {
         lastReloadDate = Date()
         super.reloadData()
     }
+}
+
+// MARK: -
+
+public class HVCellAccessibilityCustomAction: UIAccessibilityCustomAction {
+
+    var type: HVCellAccessibilityCustomActionType
+    var threadViewModel: ThreadViewModel
+
+    init(name: String, type: HVCellAccessibilityCustomActionType, threadViewModel: ThreadViewModel, target: Any?, selector: Selector) {
+        self.type = type
+        self.threadViewModel = threadViewModel
+        super.init(name: name, target: target, selector: selector)
+    }
+}
+
+// MARK: -
+
+public enum HVCellAccessibilityCustomActionType: Int {
+    case delete
+    case archive
+    case markRead
+    case markUnread
+    case pin
+    case unpin
 }

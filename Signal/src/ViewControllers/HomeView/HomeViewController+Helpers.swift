@@ -36,7 +36,9 @@ public extension HomeViewController {
             viewState.hasVisibleReminders = newValue
 
             // If the reminders show/hide, reload the table.
-            reloadTableData()
+            if self.isViewLoaded {
+                reloadTableData()
+            }
         }
     }
 
@@ -72,7 +74,6 @@ public extension HomeViewController {
         let homeView = HomeViewController()
         homeView.homeViewMode = .archive
 
-        // TODO: What is this?
         self.show(homeView, sender: self)
     }
 
@@ -171,13 +172,20 @@ public extension HomeViewController {
     // MARK: -
 
     // Returns YES IFF this value changes.
-    func updateHasArchivedThreadsRow() -> Bool {
+    @discardableResult
+    func updateHasArchivedThreadsRow(shouldReloadIfChanged: Bool) -> Bool {
         let hasArchivedThreadsRow = (homeViewMode == .inbox &&
                                         self.numberOfArchivedThreads > 0)
         if self.hasArchivedThreadsRow == hasArchivedThreadsRow {
             return false
         }
         self.hasArchivedThreadsRow = hasArchivedThreadsRow
+
+        // If the state changed, reload the table.
+        if shouldReloadIfChanged,
+           self.isViewLoaded {
+            reloadTableDataAndResetCellMeasurementCache()
+        }
         return true
     }
 }

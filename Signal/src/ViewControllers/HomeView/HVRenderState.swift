@@ -7,7 +7,6 @@ import Foundation
 @objc
 public class HVRenderState: NSObject {
 
-    // TODO: What collection type should we use here?
     let pinnedThreads: OrderedDictionary<String, TSThread>
     let unpinnedThreads: [TSThread]
 

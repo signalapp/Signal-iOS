@@ -68,7 +68,7 @@ extension HomeViewController {
         tableDataSource.renderState = renderState
         threadViewModelCache.clear()
         cellMeasurementCache.clear()
-        _ = updateHasArchivedThreadsRow()
+        updateHasArchivedThreadsRow(shouldReloadIfChanged: false)
         reloadTableData()
         updateViewState()
     }
@@ -108,8 +108,7 @@ extension HomeViewController {
             return
         }
 
-        if updateHasArchivedThreadsRow() {
-            reloadTableData()
+        if updateHasArchivedThreadsRow(shouldReloadIfChanged: true) {
             return
         }
 
@@ -167,6 +166,14 @@ extension HomeViewController {
 
 // MARK: -
 
+private enum HVLoadType {
+    case resetAll
+    case incrementalDiff
+    case reloadTableOnly
+}
+
+// MARK: -
+
 @objc
 public class HVLoadCoordinator: NSObject {
     @objc
@@ -176,6 +183,12 @@ public class HVLoadCoordinator: NSObject {
         // TODO: Review this state.
         var shouldResetAll = false
         var dirtyThreadUniqueIds = Set<String>()
+
+        var loadType: HVLoadType {
+            if shouldResetAll {
+                return .resetAll
+            }
+        }
     }
     private var nextLoadInfo = HVLoadInfo()
 

@@ -102,8 +102,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [super themeDidChange];
 
     [self reloadTableDataAndResetCellMeasurementCache];
-
-    self.hasThemeChanged = YES;
 }
 
 - (void)applyTheme
@@ -538,12 +536,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self applyDefaultBackButton];
 
-    // TODO:
-    if (self.hasThemeChanged) {
-        [self reloadTableData];
-        self.hasThemeChanged = NO;
-    }
-
     // Whether or not the theme has changed, always ensure
     // the right theme is applied. The initial collapsed
     // state of the split view controller is determined between
@@ -793,6 +785,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    [self updateHasArchivedThreadsRowWithShouldReloadIfChanged:NO];
+
     self.isViewVisible = YES;
 
     BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
@@ -817,9 +812,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self updateViewState];
     [self applyDefaultBackButton];
-    if ([self updateHasArchivedThreadsRow]) {
-        [self reloadTableData];
-    }
 
     [self.searchResultsController viewWillAppear:animated];
 

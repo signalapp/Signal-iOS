@@ -29,11 +29,7 @@ public class HVViewState: NSObject {
     public var isViewVisible = false
     public var hasEverAppeared = false
 
-    // TODO: Review.
     public var hasArchivedThreadsRow = false
-    // TODO: Review.
-    public var hasThemeChanged = false
-    // TODO: Review.
     public var hasVisibleReminders = false
 
     // MARK: - Initializer
@@ -83,9 +79,5 @@ public extension HomeViewController {
     var hasArchivedThreadsRow: Bool {
         get { viewState.hasArchivedThreadsRow }
         set { viewState.hasArchivedThreadsRow = newValue }
-    }
-    var hasThemeChanged: Bool {
-        get { viewState.hasThemeChanged }
-        set { viewState.hasThemeChanged = newValue }
     }
 }
