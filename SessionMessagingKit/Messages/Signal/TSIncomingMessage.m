@@ -147,6 +147,11 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL areAllAttachmentsDownloaded = YES;
     for (NSString *attachmentId in self.attachmentIds) {
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        // If the attachment download is failed, we can mark this message as read.
+        // Otherwise, this message will never be marked as read.
+        if ([attachment isKindOfClass:[TSAttachmentPointer class]] && ((TSAttachmentPointer *)attachment).state == TSAttachmentPointerStateFailed) {
+            continue;
+        }
         areAllAttachmentsDownloaded = areAllAttachmentsDownloaded && attachment.isDownloaded;
         if (!areAllAttachmentsDownloaded) break;
     }
