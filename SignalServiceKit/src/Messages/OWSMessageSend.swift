@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,6 +14,13 @@ import PromiseKit
 public class OWSMessageSend: NSObject {
     @objc
     public let message: TSOutgoingMessage
+
+    @objc
+    public var plaintextContent: Data?
+
+    @objc(plaintextPayloadId) @available(swift, obsoleted: 1.0)
+    public var plaintextPayloadIdObjc: NSNumber? { plaintextPayloadId.map { NSNumber(value: $0) } }
+    public var plaintextPayloadId: Int64?
 
     @objc
     public let thread: TSThread
@@ -67,12 +74,16 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public init(message: TSOutgoingMessage,
+                plaintextContent: Data?,
+                plaintextPayloadId: NSNumber?,
                 thread: TSThread,
                 address: SignalServiceAddress,
                 udSendingAccess: OWSUDSendingAccess?,
                 localAddress: SignalServiceAddress,
                 sendErrorBlock: ((Error) -> Void)?) {
         self.message = message
+        self.plaintextContent = plaintextContent
+        self.plaintextPayloadId = plaintextPayloadId?.int64Value
         self.thread = thread
         self.address = address
         self.localAddress = localAddress

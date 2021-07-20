@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalClient
 
 // Every time we add a new property to TSOutgoingMessage, we should:
 //
@@ -141,4 +142,25 @@ public extension TSOutgoingMessage {
             .compactMap { $0.value.errorCode?.intValue }
             .allSatisfy { $0 != OWSErrorCode.senderKeyUnavailable.rawValue }
     }
+}
+
+// MARK: Message Send Log
+extension TSOutgoingMessage {
+    var date: Date {
+        Date(millisecondsSince1970: self.timestamp)
+    }
+
+    @objc
+    var relatedUniqueIds: Set<String> {
+        // Sender Key TODO: Subclasses should specify related uniqueIds
+        Set([self.uniqueId])
+    }
+
+    var contentHint: UnidentifiedSenderMessageContent.ContentHint {
+        // Sender Key TODO: Subclasses should specify their content hint
+        .default
+    }
+
+    @objc
+    var shouldRecordSendLog: Bool { true }
 }

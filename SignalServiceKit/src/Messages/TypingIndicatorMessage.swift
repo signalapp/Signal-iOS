@@ -57,8 +57,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     @objc
-    public override func buildPlainTextData(_ address: SignalServiceAddress?,
-                                            thread: TSThread,
+    public override func buildPlainTextData(_ thread: TSThread,
                                             transaction: SDSAnyReadTransaction) -> Data? {
 
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
@@ -92,4 +91,8 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     public override var debugDescription: String {
         return "typingIndicatorMessage"
     }
+
+    // Message Send Log overrides
+    @objc
+    override var shouldRecordSendLog: Bool { false }
 }

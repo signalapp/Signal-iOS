@@ -316,7 +316,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 @interface MessageSender (ImplementedInSwift)
 - (nullable NSDictionary *)encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
                                                  deviceId:(int)deviceId
-                                                plainText:(NSData *)plainText
                                               transaction:(SDSAnyWriteTransaction *)transaction
                                                     error:(NSError **)error;
 @end
@@ -599,7 +598,17 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     OWSAssertDebug(message);
     OWSAssertDebug(thread);
 
-    // 1. gather "ud sending access" using a single write transaction.
+    // 1. Build the plaintext message content.
+    __block NSData *_Nullable plaintext = nil;
+    __block NSNumber *_Nullable plaintextPayloadId = nil;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTx) {
+        // Record plaintext
+        plaintext = [message buildPlainTextData:thread transaction:writeTx];
+        plaintextPayloadId = [MessageSendLog recordPayload:plaintext for:message transaction:writeTx];
+    });
+    OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plaintext.length);
+
+    // 2. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificates != nil) {
         for (SignalServiceAddress *address in addresses) {
@@ -611,7 +620,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }
     }
 
-    // 2. If we have any participants that support sender key, build a promise for their send.
+    // 3. If we have any participants that support sender key, build a promise for their send.
     NSArray<SignalServiceAddress *> *senderKeyAddresses = [self senderKeyParticipantsWithThread:thread
                                                                              intendedRecipients:addresses
                                                                                     udAccessMap:sendingAccessMap];
@@ -626,6 +635,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             filter:^BOOL(SignalServiceAddress *_Nonnull item) { return ![senderKeyAddresses containsObject:item]; }];
 
         senderKeyMessagePromise = [self senderKeyMessageSendPromiseWithMessage:message
+                                                              plaintextContent:plaintext
+                                                                     payloadId:plaintextPayloadId
                                                                         thread:groupThread
                                                                     recipients:senderKeyAddresses
                                                                    udAccessMap:sendingAccessMap
@@ -647,12 +658,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
     OWSAssertDebug((fanoutSendAddresses.count + senderKeyAddresses.count) == addresses.count);
 
-    // 3. Build a "OWSMessageSend" for each non-senderKey recipient.
+    // 4. Build a "OWSMessageSend" for each non-senderKey recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
     for (SignalServiceAddress *address in fanoutSendAddresses) {
         OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[address];
         OWSMessageSend *messageSend =
             [[OWSMessageSend alloc] initWithMessage:message
+                                   plaintextContent:plaintext
+                                 plaintextPayloadId:plaintextPayloadId
                                              thread:thread
                                             address:address
                                     udSendingAccess:udSendingAccess
@@ -661,17 +674,17 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         [messageSends addObject:messageSend];
     }
 
-    // 4. Before kicking of the per-recipient message sends, try
+    // 5. Before kicking of the per-recipient message sends, try
     // to ensure sessions for all recipient devices in parallel.
     return
         [MessageSender ensureSessionsforMessageSendsObjc:messageSends ignoreErrors:YES].thenInBackground(^(id value) {
-            // 5. Perform the per-recipient message sends.
+            // 6. Perform the per-recipient message sends.
             NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
             for (OWSMessageSend *messageSend in messageSends) {
                 [self sendMessageToRecipient:messageSend];
                 [sendPromises addObject:messageSend.asAnyPromise];
             }
-            // 6. Add the sender-key promise
+            // 7. Add the sender-key promise
             if (senderKeyMessagePromise != nil) {
                 [sendPromises addObject:senderKeyMessagePromise];
             }
@@ -1248,9 +1261,20 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     // we send a sync transcript to the "local thread".
     __block TSThread *_Nullable localThread;
     __block TSThread *_Nullable messageThread;
+    __block OWSOutgoingSentMessageTranscript *sentMessageTranscript;
+    __block NSData *_Nullable plaintext;
+    __block NSNumber *_Nullable plaintextPayloadId;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         localThread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
         messageThread = [self threadForMessage:message transaction:transaction];
+        sentMessageTranscript = [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
+                                                                                messageThread:messageThread
+                                                                              outgoingMessage:message
+                                                                            isRecipientUpdate:isRecipientUpdate];
+        plaintext = [sentMessageTranscript buildPlainTextData:localThread transaction:transaction];
+        plaintextPayloadId = [MessageSendLog recordPayload:plaintext
+                                                       for:sentMessageTranscript
+                                               transaction:transaction];
     });
     if (localThread == nil) {
         return failure(OWSErrorMakeAssertionError(@"Missing local thread"));
@@ -1258,14 +1282,13 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     if (messageThread == nil) {
         return failure(OWSErrorMakeAssertionError(@"Missing message thread"));
     }
-
-    OWSOutgoingSentMessageTranscript *sentMessageTranscript =
-        [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
-                                                        messageThread:messageThread
-                                                      outgoingMessage:message
-                                                    isRecipientUpdate:isRecipientUpdate];
+    if (plaintext == nil) {
+        return failure(OWSErrorMakeAssertionError(@"Missing proto"));
+    }
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
+                                                         plaintextContent:plaintext
+                                                       plaintextPayloadId:plaintextPayloadId
                                                                    thread:localThread
                                                                   address:localAddress
                                                           udSendingAccess:nil
@@ -1296,13 +1319,9 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     OWSAssertDebug(messageSend.address.isValid);
 
     __block SignalRecipient *recipient;
-    __block NSData *_Nullable plainText;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         recipient = [SignalRecipient getRecipientForAddress:messageSend.address
                                             mustHaveDevices:NO
-                                                transaction:transaction];
-        plainText = [messageSend.message buildPlainTextData:messageSend.address
-                                                     thread:messageSend.thread
                                                 transaction:transaction];
     }];
 
@@ -1310,18 +1329,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         OWSRaiseException(InvalidMessageException, @"Unexpectedly missing recipient");
     }
 
-    if (!plainText) {
-        OWSRaiseException(InvalidMessageException, @"Failed to build message proto");
+    if (!messageSend.plaintextContent) {
+        OWSRaiseException(InvalidMessageException, @"No message proto");
     }
 
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices.array mutableCopy];
     OWSAssertDebug(deviceIds);
 
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:deviceIds.count];
-
-    OWSLogDebug(
-        @"built message: %@ plainTextData.length: %lu", [messageSend.message class], (unsigned long)plainText.length);
-
     OWSLogVerbose(@"building device messages for: %@ %@ (isLocalAddress: %d, isUDSend: %d)",
         recipient.address,
         deviceIds,
@@ -1358,7 +1373,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         for (NSNumber *deviceId in deviceIds) {
             NSDictionary *_Nullable messageDict = [self encryptedMessageForMessageSend:messageSend
                                                                               deviceId:deviceId.intValue
-                                                                             plainText:plainText
                                                                            transaction:transaction
                                                                                  error:&encryptionError];
             if (!messageDict) {

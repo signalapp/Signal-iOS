@@ -927,6 +927,23 @@ public extension MessageSender {
         }
 
         Self.databaseStorage.write { transaction in
+            deviceMessages.forEach { messageDict in
+                guard let uuidString = messageDict["destination"] as? String,
+                      let uuid = UUID(uuidString: uuidString),
+                      let deviceId = messageDict["destinationDeviceId"] as? Int64,
+                      uuid == messageSend.address.uuid else {
+                    owsFailDebug("")
+                    return
+                }
+
+                if let payloadId = messageSend.plaintextPayloadId {
+                    MessageSendLog.recordPendingDelivery(
+                        payloadId: payloadId,
+                        recipientUuid: uuid,
+                        recipientDeviceId: deviceId,
+                        transaction: transaction)
+                }
+            }
             message.update(withSentRecipient: address, wasSentByUD: wasSentByUD, transaction: transaction)
 
             // If we've just delivered a message to a user, we know they
@@ -1195,10 +1212,9 @@ extension MessageSender {
         case missingSession(recipientAddress: SignalServiceAddress, deviceId: Int32)
     }
 
-    @objc(encryptedMessageForMessageSend:deviceId:plainText:transaction:error:)
+    @objc(encryptedMessageForMessageSend:deviceId:transaction:error:)
     private func encryptedMessage(for messageSend: OWSMessageSend,
                                   deviceId: Int32,
-                                  plainText: Data,
                                   transaction: SDSAnyWriteTransaction) throws -> NSDictionary {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -1209,6 +1225,9 @@ extension MessageSender {
                                                       deviceId: deviceId,
                                                       transaction: transaction) else {
             throw EncryptionError.missingSession(recipientAddress: recipientAddress, deviceId: deviceId)
+        }
+        guard let plainText = messageSend.plaintextContent else {
+            throw OWSAssertionError("Missing message content")
         }
 
         let paddedPlaintext = (plainText as NSData).paddedMessageBody()
@@ -1280,6 +1299,35 @@ extension MessageSender {
 
 extension MessageSender {
 
+    // SenderKey TODO: A better queue
+    private var senderKeyQueue: DispatchQueue { .global(qos: .utility) }
+
+    struct Recipient {
+        let address: SignalServiceAddress
+        let devices: [UInt32]
+        var protocolAddresses: [ProtocolAddress] {
+            devices.compactMap {
+                do {
+                    return try ProtocolAddress(from: address, deviceId: $0)
+                } catch {
+                    owsFailDebug("\(error)")
+                    return nil
+                }
+            }
+        }
+
+        init(address: SignalServiceAddress, transaction readTx: SDSAnyReadTransaction) {
+            self.address = address
+            let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: readTx)
+
+            if let deviceSet = recipient?.devices.array as? [NSNumber] {
+                devices = deviceSet.map { $0.uint32Value }
+            } else {
+                devices = []
+            }
+        }
+    }
+
     private enum SenderKeyError: OperationError {
         case invalidAuthHeader
         case invalidRecipient
@@ -1324,6 +1372,7 @@ extension MessageSender {
 
         return databaseStorage.read { readTx in
             intendedRecipients
+                .filter { thread.recipientAddresses.contains($0) }
                 .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
                 .filter { !$0.isLocalAddress }
                 .filter { udAccessMap[$0]?.udAccess.udAccessMode == UnidentifiedAccessMode.enabled } // Sender Key TODO: Revisit?
@@ -1334,6 +1383,8 @@ extension MessageSender {
     @objc @available(swift, obsoleted: 1.0)
     func senderKeyMessageSendPromise(
         message: TSOutgoingMessage,
+        plaintextContent: Data?,
+        payloadId: NSNumber?,
         thread: TSGroupThread,
         recipients: [SignalServiceAddress],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
@@ -1344,6 +1395,8 @@ extension MessageSender {
         AnyPromise(
             senderKeyMessageSendPromise(
                 message: message,
+                plaintextContent: plaintextContent,
+                payloadId: payloadId?.int64Value,
                 thread: thread,
                 recipients: recipients,
                 udAccessMap: udAccessMap,
@@ -1354,6 +1407,8 @@ extension MessageSender {
 
     func senderKeyMessageSendPromise(
         message: TSOutgoingMessage,
+        plaintextContent: Data?,
+        payloadId: Int64?,
         thread: TSGroupThread,
         recipients: [SignalServiceAddress],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
@@ -1385,29 +1440,27 @@ extension MessageSender {
                 thread: thread,
                 udAccessMap: udAccessMap,
                 sendErrorBlock: wrappedSendErrorBlock)
-        }.then { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
+        }.then(on: senderKeyQueue) { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
             guard senderKeyRecipients.count > 0 else {
                 // Something went wrong with the SKDM promise. Exit early.
                 owsAssertDebug(didHitAnyFailure.get())
                 return .init()
             }
+
             return firstly {
                 // SenderKey TODO: PreKey fetch? Start sessions?
                 self.sendSenderKeyRequest(
                     message: message,
+                    plaintext: plaintextContent,
                     thread: thread,
                     addresses: senderKeyRecipients,
                     udAccessMap: udAccessMap,
                     senderCertificate: senderCertificates.uuidOnlyCert)
-            }.done { unregisteredAddresses in
-                // When (partially) successful, the above promise returns a list of any addresses the server marked as
-                // unregistered. In this step, we mark those addresses unregistered. For everything else,
-                // we mark it as successful.
-                let unregisteredAddresses = Set(unregisteredAddresses)
-                let successAddresses = Set(senderKeyRecipients).subtracting(unregisteredAddresses)
+            }.done(on: self.senderKeyQueue) { sendResult in
+                try self.databaseStorage.write { writeTx in
 
-                self.databaseStorage.write { writeTx in
-                    unregisteredAddresses.forEach { address in
+                    sendResult.unregistered.forEach { recipient in
+                        let address = recipient.address
                         self.markAddressAsUnregistered(address, message: message, thread: thread, transaction: writeTx)
 
                         let error = OWSErrorMakeNoSuchSignalRecipientError() as NSError
@@ -1416,13 +1469,27 @@ extension MessageSender {
                         wrappedSendErrorBlock(address, error)
                     }
 
-                    successAddresses.forEach { address in
-                        message.update(withSentRecipient: address, wasSentByUD: true, transaction: writeTx)
-                        SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .low, transaction: writeTx)
-                        self.profileManager.didSendOrReceiveMessage(from: address, transaction: writeTx)
+                    try sendResult.success.forEach { recipient in
+                        guard let uuid = recipient.address.uuid else {
+                            throw OWSAssertionError("")
+                        }
+
+                        message.update(withSentRecipient: recipient.address, wasSentByUD: true, transaction: writeTx)
+                        SignalRecipient.mark(asRegisteredAndGet: recipient.address, trustLevel: .low, transaction: writeTx)
+                        self.profileManager.didSendOrReceiveMessage(from: recipient.address, transaction: writeTx)
+
+                        guard let payloadId = payloadId else { return }
+                        recipient.devices.forEach { deviceId in
+                            MessageSendLog.recordPendingDelivery(
+                                payloadId: payloadId,
+                                recipientUuid: uuid,
+                                recipientDeviceId: Int64(deviceId),
+                                transaction: writeTx)
+                        }
                     }
                 }
-            }.recover { error in
+
+            }.recover(on: self.senderKeyQueue) { error in
                 // If the sender key message failed to send, fail each recipient that we hoped to send it to.
                 senderKeyRecipients.forEach { wrappedSendErrorBlock($0, error) }
             }
@@ -1482,21 +1549,33 @@ extension MessageSender {
                     thread: contactThread,
                     senderKeyDistributionMessageBytes: skdmBytes)
 
+                let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
+                let payloadId: NSNumber?
+
+                if let plaintext = plaintext {
+                    payloadId = MessageSendLog.recordPayload(
+                        plaintext, for: skdmMessage, transaction: writeTx)
+                } else {
+                    payloadId = nil
+                }
+
                 return OWSMessageSend(
                     message: skdmMessage,
+                    plaintextContent: plaintext,
+                    plaintextPayloadId: payloadId,
                     thread: contactThread,
                     address: address,
                     udSendingAccess: udAccessMap[address],
                     localAddress: localAddress,
                     sendErrorBlock: nil)
             }
-        }.then { skdmSends in
+        }.then(on: senderKeyQueue) { skdmSends in
             // First, we double check we have sessions for these message sends
             // Then, we send the message. If it's successful, great! If not, we invoke the sendErrorBlock
             // to *also* fail the original message send.
             firstly { () -> Promise<Void> in
                 MessageSender.ensureSessions(forMessageSends: skdmSends, ignoreErrors: true)
-            }.then { _ -> Guarantee<[Result<SignalServiceAddress>]> in
+            }.then(on: self.senderKeyQueue) { _ -> Guarantee<[Result<SignalServiceAddress>]> in
                 // For each SKDM request we kick off a sendMessage promise.
                 // - If it succeeds, great! Record a successful delivery
                 // - Otherwise, invoke the sendErrorBlock
@@ -1506,7 +1585,7 @@ extension MessageSender {
                     return firstly { () -> Promise<Any?> in
                         self.sendMessage(toRecipient: messageSend)
                         return Promise(messageSend.asAnyPromise)
-                    }.map { _ -> SignalServiceAddress in
+                    }.map(on: self.senderKeyQueue) { _ -> SignalServiceAddress in
                         try self.databaseStorage.write { writeTx in
                             try self.senderKeyStore.recordSenderKeyDelivery(
                                 for: thread,
@@ -1514,7 +1593,7 @@ extension MessageSender {
                                 writeTx: writeTx)
                         }
                         return messageSend.address
-                    }.recover { error -> Promise<SignalServiceAddress> in
+                    }.recover(on: self.senderKeyQueue) { error -> Promise<SignalServiceAddress> in
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
                         let wrappedError = SenderKeyError.recipientSKDMFailed(error)
@@ -1523,7 +1602,7 @@ extension MessageSender {
                     }
                 })
             }
-        }.map { resultArray -> [SignalServiceAddress] in
+        }.map(on: self.senderKeyQueue) { resultArray -> [SignalServiceAddress] in
             // We only want to pass along recipients capable of receiving a senderKey message
             return Array(recipientsNotNeedingSKDM) + resultArray.compactMap { result in
                 switch result {
@@ -1531,7 +1610,7 @@ extension MessageSender {
                 case .rejected: return nil
                 }
             }
-        }.recover { error in
+        }.recover(on: senderKeyQueue) { error in
             // If we hit *any* error that we haven't handled, we should fail the send
             // for everyone.
             let wrappedError = SenderKeyError.recipientSKDMFailed(error)
@@ -1540,48 +1619,47 @@ extension MessageSender {
         }
     }
 
+    struct SenderKeySendResult {
+        let success: [Recipient]
+        let unregistered: [Recipient]
+    }
+
     // Encrypts and sends the message using SenderKey
     // If the Promise is successful, the message was sent to every provided address *except* those returned
     // in the promise. The server reported those addresses as unregistered.
     func sendSenderKeyRequest(
         message: TSOutgoingMessage,
+        plaintext: Data?,
         thread: TSGroupThread,
         addresses: [SignalServiceAddress],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificate: SenderCertificate
-    ) -> Promise<[SignalServiceAddress]> {
-        return firstly { () -> Promise<OWSHTTPResponse> in
-            let ciphertext = try senderKeyMessageBody(
-                message: message,
-                thread: thread,
-                addresses: addresses,
-                senderCertificate: senderCertificate)
+    ) -> Promise<SenderKeySendResult> {
+        guard let plaintext = plaintext else {
+            return .init(error: OWSAssertionError("Nil content"))
+        }
 
-            return _sendSenderKeyRequest(
+        return self.databaseStorage.write(.promise) { writeTx -> ([Recipient], Data) in
+            let recipients = addresses.map { Recipient(address: $0, transaction: writeTx) }
+            let ciphertext = try self.senderKeyMessageBody(
+                plaintext: plaintext,
+                contentHint: message.contentHint,
+                thread: thread,
+                recipients: recipients,
+                senderCertificate: senderCertificate,
+                transaction: writeTx)
+            return (recipients, ciphertext)
+
+        }.then(on: senderKeyQueue) { (recipients: [Recipient], ciphertext: Data) -> Promise<SenderKeySendResult> in
+            self._sendSenderKeyRequest(
                 encryptedMessageBody: ciphertext,
                 timestamp: message.timestamp,
                 isOnline: message.isOnline,
                 thread: thread,
-                addresses: addresses,
+                recipients: recipients,
                 udAccessMap: udAccessMap,
                 senderCertificate: senderCertificate,
-                remainingAttempts: 3
-            )
-        }.map { response -> [SignalServiceAddress] in
-            guard response.statusCode == 200 else { throw
-                OWSAssertionError("Unhandled error")
-            }
-
-            struct SuccessPayload: Decodable {
-                let uuids404: [UUID]
-            }
-            // SenderKey TODO: Verify robustness of JSONDecoder
-            guard let responseBody = response.responseData,
-                  let response = try? JSONDecoder().decode(SuccessPayload.self, from: responseBody) else {
-                throw OWSAssertionError("Failed to decode 200 response body")
-            }
-
-            return response.uuids404.map { SignalServiceAddress(uuid: $0) }
+                remainingAttempts: 3)
         }
     }
 
@@ -1591,28 +1669,49 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         thread: TSGroupThread,
-        addresses: [SignalServiceAddress],
+        recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificate: SenderCertificate,
         remainingAttempts: UInt
-    ) -> Promise<OWSHTTPResponse> {
+    ) -> Promise<SenderKeySendResult> {
         return firstly { () -> Promise<OWSHTTPResponse> in
             try self.performSenderKeySend(
                 ciphertext: encryptedMessageBody,
                 timestamp: timestamp,
                 isOnline: isOnline,
                 thread: thread,
-                addresses: addresses,
+                recipients: recipients,
                 udAccessMap: udAccessMap)
-        }.recover { error -> Promise<OWSHTTPResponse> in
-            let retryIfPossible = { () throws -> Promise<OWSHTTPResponse> in
+        }.map(on: senderKeyQueue) { response -> SenderKeySendResult in
+            guard response.statusCode == 200 else { throw
+                OWSAssertionError("Unhandled error")
+            }
+
+            // SenderKey TODO: Verify robustness of JSONDecoder
+            struct SuccessPayload: Decodable {
+                let uuids404: [UUID]
+            }
+            guard let responseBody = response.responseData,
+                  let response = try? JSONDecoder().decode(SuccessPayload.self, from: responseBody) else {
+                throw OWSAssertionError("Failed to decode 200 response body")
+            }
+            let uuids404 = response.uuids404.reduce(into: Set()) {
+                $0.insert(SignalServiceAddress(uuid: $1))
+            }
+
+            return SenderKeySendResult(
+                success: recipients.filter { uuids404.contains($0.address) == false },
+                unregistered: recipients.filter { uuids404.contains($0.address) == true }
+            )
+        }.recover(on: senderKeyQueue) { error -> Promise<SenderKeySendResult> in
+            let retryIfPossible = { () throws -> Promise<SenderKeySendResult> in
                 if remainingAttempts > 0 {
                     return self._sendSenderKeyRequest(
                         encryptedMessageBody: encryptedMessageBody,
                         timestamp: timestamp,
                         isOnline: isOnline,
                         thread: thread,
-                        addresses: addresses,
+                        recipients: recipients,
                         udAccessMap: udAccessMap,
                         senderCertificate: senderCertificate,
                         remainingAttempts: remainingAttempts-1
@@ -1638,16 +1737,14 @@ extension MessageSender {
                 case 409:
                     // Update the device set for added/removed devices.
                     // This is retryable
-                    struct ResponseBody409: Decodable {
+                    typealias ResponseBody409 = [Account409]
+                    struct Account409: Decodable {
+                        let uuid: UUID
+                        let devices: DeviceSet
                         struct DeviceSet: Decodable {
                             let missingDevices: [UInt32]
                             let extraDevices: [UInt32]
                         }
-                        struct Account: Decodable {
-                            let uuid: UUID
-                            let devices: DeviceSet
-                        }
-                        let accounts: [Account]
                     }
 
                     // SenderKey TODO: Verify robustness of JSONDecoder
@@ -1657,7 +1754,7 @@ extension MessageSender {
                     }
 
                     self.databaseStorage.write { writeTx in
-                        for account in responseBody.accounts {
+                        for account in responseBody {
                             MessageSender.updateDevices(
                                 address: SignalServiceAddress(uuid: account.uuid),
                                 devicesToAdd: account.devices.missingDevices.map { NSNumber(value: $0) },
@@ -1670,15 +1767,13 @@ extension MessageSender {
                 case 410:
                     // Server reports stale devices. We should reset our session and forget that we resent
                     // a senderKey.
-                    struct ResponseBody410: Decodable {
+                    typealias ResponseBody410 = [Account410]
+                    struct Account410: Decodable {
+                        let uuid: UUID
+                        let devices: DeviceSet
                         struct DeviceSet: Decodable {
                             let staleDevices: [UInt32]
                         }
-                        struct Account: Decodable {
-                            let uuid: UUID
-                            let devices: DeviceSet
-                        }
-                        let accounts: [Account]
                     }
 
                     // SenderKey TODO: Verify robustness of JSONDecoder
@@ -1687,14 +1782,14 @@ extension MessageSender {
                         throw OWSAssertionError("Invalid 410 response body")
                     }
 
-                    for account in responseBody.accounts {
+                    for account in responseBody {
                         let address = SignalServiceAddress(uuid: account.uuid)
                         self.handleStaleDevices(
                             staleDevices: account.devices.staleDevices.map { Int($0) },
                             address: address)
 
                         self.databaseStorage.write { writeTx in
-                            self.senderKeyStore.resetSenderKeyDeliverRecord(for: thread, address: address, writeTx: writeTx)
+                            self.senderKeyStore.resetSenderKeyDeliveryRecord(for: thread, address: address, writeTx: writeTx)
                         }
                     }
                     throw SenderKeyError.staleDevices
@@ -1714,7 +1809,7 @@ extension MessageSender {
                                 resolver.reject(error)
                             }
                         }
-                    }.then {
+                    }.then(on: self.senderKeyQueue) {
                         try retryIfPossible()
                     }
                 default:
@@ -1729,11 +1824,14 @@ extension MessageSender {
     }
 
     func senderKeyMessageBody(
-        message: TSOutgoingMessage,
+        plaintext: Data,
+        contentHint: UnidentifiedSenderMessageContent.ContentHint,
         thread: TSGroupThread,
-        addresses: [SignalServiceAddress],
-        senderCertificate: SenderCertificate
+        recipients: [Recipient],
+        senderCertificate: SenderCertificate,
+        transaction writeTx: SDSAnyWriteTransaction
     ) throws -> Data {
+        let protocolAddresses = recipients.flatMap { $0.protocolAddresses }
         let secretCipher = try SMKSecretSessionCipher(
             sessionStore: Self.sessionStore,
             preKeyStore: Self.preKeyStore,
@@ -1741,28 +1839,15 @@ extension MessageSender {
             identityStore: Self.identityKeyStore,
             senderKeyStore: Self.senderKeyStore)
 
-        let ciphertext: Data = try self.databaseStorage.write { (writeTx) throws -> Data in
-            let protocolAddresses = try addresses
-                .compactMap { SignalRecipient.get(address: $0, mustHaveDevices: false, transaction: writeTx) }
-                .flatMap { recipient -> [ProtocolAddress] in
-                    guard let deviceArray = recipient.devices.array as? [NSNumber] else { return [] }
-                    return try deviceArray.compactMap { try ProtocolAddress(from: recipient.address, deviceId: $0.uint32Value) }
-                }
-
-            guard let plaintext = message.buildPlainTextData(nil, thread: thread, transaction: writeTx) else {
-                throw OWSAssertionError("Failed construct plaintext")
-            }
-            let distributionId = senderKeyStore.distributionIdForSendingToThread(thread, writeTx: writeTx)
-
-            return try secretCipher.groupEncryptMessage(
-                recipients: protocolAddresses,
-                paddedPlaintext: (plaintext as NSData).paddedMessageBody(),
-                senderCertificate: senderCertificate,
-                groupId: thread.groupId,
-                distributionId: distributionId,
-                contentHint: .default,          // SenderKey TODO: Revisit this
-                protocolContext: writeTx)
-        }
+        let distributionId = senderKeyStore.distributionIdForSendingToThread(thread, writeTx: writeTx)
+        let ciphertext = try secretCipher.groupEncryptMessage(
+            recipients: protocolAddresses,
+            paddedPlaintext: (plaintext as NSData).paddedMessageBody(),
+            senderCertificate: senderCertificate,
+            groupId: thread.groupId,
+            distributionId: distributionId,
+            contentHint: .default,          // SenderKey TODO: Revisit this
+            protocolContext: writeTx)
 
         guard ciphertext.count <= MessageProcessor.largeEnvelopeWarningByteCount else {
             Logger.error("serializedMessage: \(ciphertext.count) > \(MessageProcessor.largeEnvelopeWarningByteCount)")
@@ -1776,13 +1861,13 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         thread: TSGroupThread,
-        addresses: [SignalServiceAddress],
+        recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
     ) throws -> Promise<OWSHTTPResponse> {
 
         // Sender key messages use an access key composed of every recipient's individual access key.
-        let allAccessKeys = addresses.compactMap { udAccessMap[$0]?.udAccess.udAccessKey }
-        guard addresses.count == allAccessKeys.count else {
+        let allAccessKeys = recipients.compactMap { udAccessMap[$0.address]?.udAccess.udAccessKey }
+        guard recipients.count == allAccessKeys.count else {
             throw OWSAssertionError("Incomplete access key set")
         }
         guard let firstKey = allAccessKeys.first else {

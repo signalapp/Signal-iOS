@@ -133,12 +133,10 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(nullable SignalServiceAddress *)address
-                                 thread:(TSThread *)thread
-                            transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
-    builder.callMessage = [self buildCallMessage:address thread:thread transaction:transaction];
+    builder.callMessage = [self buildCallMessage:thread transaction:transaction];
 
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
@@ -149,9 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
     return data;
 }
 
-- (nullable SSKProtoCallMessage *)buildCallMessage:(nullable SignalServiceAddress *)address
-                                            thread:(TSThread *)thread
-                                       transaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoCallMessage *)buildCallMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessage builder];
 
@@ -188,7 +184,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [ProtoUtils addLocalProfileKeyIfNecessary:thread
-                                      address:address
                            callMessageBuilder:builder
                                   transaction:transaction];
 
@@ -233,6 +228,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [NSString stringWithFormat:@"%@ with payload: %@", className, payload];
+}
+
+#pragma mark - TSOutgoingMessage: Message Send Log Overrides
+
+- (BOOL)shouldRecordSendLog
+{
+    return NO;
 }
 
 @end

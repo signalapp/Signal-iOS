@@ -61,8 +61,15 @@ extension OWSMessageManager {
                 }
             }
 
-            // Sender Key TODO: perform the resend
             Logger.warn("Attempt to retry message \(errorMessage)")
+            let resendResponse = OWSOutgoingResendResponse(
+                address: sourceAddress,
+                deviceId: Int64(sourceDeviceId),
+                failedTimestamp: Int64(errorMessage.timestamp),
+                transaction: writeTx
+            )
+            messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: writeTx)
+
         } catch {
             owsFailDebug("Failed to process decryption error message \(error)")
         }

@@ -56,18 +56,14 @@ NS_ASSUME_NONNULL_BEGIN
     
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Send empty message"
-                                     actionBlock:^{
-                                         [DebugUIStress sendStressMessage:thread
-                                                                    block:^(SignalServiceAddress *_Nullable address) {
-                                                                        return [NSData new];
-                                                                    }];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Send empty message"
+                           actionBlock:^{ [DebugUIStress sendStressMessage:thread block:^{ return [NSData new]; }]; }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send random noise message"
                                      actionBlock:^{
                                          [DebugUIStress
                                              sendStressMessage:thread
-                                                         block:^(SignalServiceAddress *_Nullable address) {
+                                                         block:^{
                                                              NSUInteger contentLength = arc4random_uniform(32);
                                                              return [Cryptography generateRandomBytes:contentLength];
                                                          }];
@@ -75,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Send no payload message"
                                      actionBlock:^{
                                          [DebugUIStress sendStressMessage:thread
-                                                                    block:^(SignalServiceAddress *_Nullable address) {
+                                                                    block:^{
                                                                         SSKProtoContentBuilder *contentBuilder =
                                                                             [SSKProtoContent builder];
                                                                         return [[contentBuilder buildIgnoringErrors]
@@ -85,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty null message"
                                      actionBlock:^{
                                          [DebugUIStress sendStressMessage:thread
-                                                                    block:^(SignalServiceAddress *_Nullable address) {
+                                                                    block:^{
                                                                         SSKProtoContentBuilder *contentBuilder =
                                                                             [SSKProtoContent builder];
                                                                         SSKProtoNullMessageBuilder *nullMessageBuilder =
@@ -100,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIStress
                                              sendStressMessage:thread
-                                                         block:^(SignalServiceAddress *_Nullable address) {
+                                                         block:^{
                                                              SSKProtoContentBuilder *contentBuilder =
                                                                  [SSKProtoContent builder];
                                                              SSKProtoNullMessageBuilder *nullMessageBuilder =
@@ -117,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty sync message"
                                      actionBlock:^{
                                          [DebugUIStress sendStressMessage:thread
-                                                                    block:^(SignalServiceAddress *_Nullable address) {
+                                                                    block:^{
                                                                         SSKProtoContentBuilder *contentBuilder =
                                                                             [SSKProtoContent builder];
                                                                         SSKProtoSyncMessageBuilder *syncMessageBuilder =
@@ -131,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty sync sent message"
                                      actionBlock:^{
                                          [DebugUIStress sendStressMessage:thread
-                                                                    block:^(SignalServiceAddress *_Nullable address) {
+                                                                    block:^{
                                                                         SSKProtoContentBuilder *contentBuilder =
                                                                             [SSKProtoContent builder];
                                                                         SSKProtoSyncMessageBuilder *syncMessageBuilder =
@@ -151,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
                            actionBlock:^{
                                [DebugUIStress
                                    sendStressMessage:thread
-                                               block:^(SignalServiceAddress *_Nullable address) {
+                                               block:^{
                                                    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                    SSKProtoDataMessageBuilder *dataBuilder =
                                                        [SSKProtoDataMessage builder];
@@ -167,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
                            actionBlock:^{
                                [DebugUIStress
                                    sendStressMessage:thread
-                                               block:^(SignalServiceAddress *_Nullable address) {
+                                               block:^{
                                                    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                    SSKProtoDataMessageBuilder *dataBuilder =
                                                        [SSKProtoDataMessage builder];
@@ -189,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
                            actionBlock:^{
                                [DebugUIStress
                                    sendStressMessage:thread
-                                               block:^(SignalServiceAddress *_Nullable address) {
+                                               block:^{
                                                    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                    SSKProtoDataMessageBuilder *dataBuilder =
                                                        [SSKProtoDataMessage builder];
@@ -209,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 [DebugUIStress
                                     sendStressMessage:thread
                                             timestamp:timestamp
-                                                block:^(SignalServiceAddress *_Nullable address) {
+                                                block:^{
                                                     SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                     SSKProtoDataMessageBuilder *dataBuilder =
                                                         [SSKProtoDataMessage builder];
@@ -229,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
                                [DebugUIStress
                                    sendStressMessage:thread
                                            timestamp:timestamp
-                                               block:^(SignalServiceAddress *_Nullable address) {
+                                               block:^{
                                                    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                    SSKProtoDataMessageBuilder *dataBuilder =
                                                        [SSKProtoDataMessage builder];
@@ -249,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
                                [DebugUIStress
                                    sendStressMessage:thread
                                            timestamp:timestamp
-                                               block:^(SignalServiceAddress *_Nullable address) {
+                                               block:^{
                                                    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                    SSKProtoDataMessageBuilder *dataBuilder =
                                                        [SSKProtoDataMessage builder];
@@ -269,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
                                [DebugUIStress
                                    sendStressMessage:thread
                                            timestamp:timestamp
-                                               block:^(SignalServiceAddress *_Nullable address) {
+                                               block:^{
                                                    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                    SSKProtoDataMessageBuilder *dataBuilder =
                                                        [SSKProtoDataMessage builder];
@@ -294,12 +290,9 @@ NS_ASSUME_NONNULL_BEGIN
                                          uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
 
                                          for (int i = 0; i < 3; i++) {
-                                             [DebugUIStress
-                                                 sendStressMessage:thread
-                                                         timestamp:timestamp
-                                                             block:^(SignalServiceAddress *_Nullable address) {
-                                                                 return data;
-                                                             }];
+                                             [DebugUIStress sendStressMessage:thread
+                                                                    timestamp:timestamp
+                                                                        block:^{ return data; }];
                                          }
                                      }]];
     [items
@@ -308,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIStress
                                 sendStressMessage:thread
-                                            block:^(SignalServiceAddress *_Nullable address) {
+                                            block:^{
                                                 SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                 SSKProtoSyncMessageBuilder *syncMessageBuilder =
                                                     [SSKProtoSyncMessage builder];
@@ -330,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIStress
                                 sendStressMessage:thread
-                                            block:^(SignalServiceAddress *_Nullable address) {
+                                            block:^{
                                                 SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                 SSKProtoSyncMessageBuilder *syncMessageBuilder =
                                                     [SSKProtoSyncMessage builder];
@@ -352,7 +345,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIStress
                                 sendStressMessage:thread
-                                            block:^(SignalServiceAddress *_Nullable address) {
+                                            block:^{
                                                 SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                 SSKProtoSyncMessageBuilder *syncMessageBuilder =
                                                     [SSKProtoSyncMessage builder];
@@ -375,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIStress
                                 sendStressMessage:thread
-                                            block:^(SignalServiceAddress *_Nullable address) {
+                                            block:^{
                                                 SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                 SSKProtoSyncMessageBuilder *syncMessageBuilder =
                                                     [SSKProtoSyncMessage builder];
@@ -402,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIStress
                                 sendStressMessage:thread
-                                            block:^(SignalServiceAddress *_Nullable address) {
+                                            block:^{
                                                 SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
                                                 SSKProtoSyncMessageBuilder *syncMessageBuilder =
                                                     [SSKProtoSyncMessage builder];
@@ -426,7 +419,7 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty sync sent message 6"
                                      actionBlock:^{
                                          [DebugUIStress sendStressMessage:thread
-                                                                    block:^(SignalServiceAddress *_Nullable address) {
+                                                                    block:^{
                                                                         SSKProtoContentBuilder *contentBuilder =
                                                                             [SSKProtoContent builder];
                                                                         SSKProtoSyncMessageBuilder *syncMessageBuilder =

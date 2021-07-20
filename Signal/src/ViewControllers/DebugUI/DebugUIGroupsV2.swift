@@ -677,7 +677,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return try! groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
         }
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             // Other user is not in the group.
             let masterKeyData = missingOtherUserGroupContextInfo.masterKeyData
@@ -695,7 +695,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             // Local user is not in the group.
             let masterKeyData = missingLocalUserGroupContextInfo.masterKeyData
@@ -713,7 +713,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             let masterKeyData = validGroupContextInfo.masterKeyData
             // Non-existent revision.
@@ -730,7 +730,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             var masterKeyData = validGroupContextInfo.masterKeyData
             // Truncate the master key.
@@ -749,7 +749,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             var masterKeyData = validGroupContextInfo.masterKeyData
             // Append garbage to the master key.
@@ -768,7 +768,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             var masterKeyData = validGroupContextInfo.masterKeyData
             // Replace master key with zeroes.
@@ -787,7 +787,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             let masterKeyData = validGroupContextInfo.masterKeyData
 
@@ -802,7 +802,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real revision.
             let revision: UInt32 = 0
 
@@ -817,7 +817,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Valid-looking group id/master key/secret params, but doesn't
             // correspond to an actual group on the service.
             let groupV2ContextInfo: GroupV2ContextInfo = buildValidGroupContextInfo()
@@ -835,7 +835,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) {
             // Real and valid group id/master key/secret params.
             let masterKeyData = validGroupContextInfo.masterKeyData
             // Real revision.
@@ -868,7 +868,7 @@ class DebugUIGroupsV2: DebugUIPage {
         let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
         let groupContextInfo = try! self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
 
-        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) {
             // Real and valid group id/master key/secret params.
             let masterKeyData = groupContextInfo.masterKeyData
             // Real revision.
@@ -889,7 +889,7 @@ class DebugUIGroupsV2: DebugUIPage {
             return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
-        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) { (_: SignalServiceAddress?) -> Data in
+        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) {
             // Real and valid group id/master key/secret params.
             let masterKeyData = groupContextInfo.masterKeyData
             // Real revision.
@@ -927,7 +927,7 @@ class DebugUIGroupsV2: DebugUIPage {
 
         let groupModel = groupThread.groupModel
         let timestamp = NSDate.ows_millisecondTimeStamp()
-        let message = OWSDynamicOutgoingMessage(thread: groupThread) { (_: SignalServiceAddress?) -> Data in
+        let message = OWSDynamicOutgoingMessage(thread: groupThread) {
             let groupContextBuilder = SSKProtoGroupContext.builder(id: groupModel.groupId)
             groupContextBuilder.setType(.update)
             groupContextBuilder.addMembersE164(localAddress.phoneNumber!)

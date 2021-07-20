@@ -296,6 +296,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         [fetchedThread updateWithRemovedMessage:self transaction:transaction];
     }
 
+    [MessageSendLog deleteAllPayloadsForInteraction:self transaction:transaction];
     [self.modelReadCaches.interactionReadCache didRemoveInteraction:self transaction:transaction];
 }
 

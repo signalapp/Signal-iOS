@@ -44,9 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable NSData *)buildPlainTextData:(nullable SignalServiceAddress *)address
-                                 thread:(TSThread *)thread
-                            transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     builder.decryptionErrorMessage = self.decryptionErrorData;

@@ -106,6 +106,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addViewedToInteractions
         case createThreadAssociatedData
         case addServerGuidToInteractions
+        case addMessageSendLog
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1137,6 +1138,113 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "serverGuid", .text)
                 }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addMessageSendLog.rawValue) { db in
+            do {
+                // Records all sent payloads
+                // The sentTimestamp is the timestamp of the outgoing payload
+                try db.create(table: "MessageSendLog_Payload") { table in
+                    table.autoIncrementedPrimaryKey("payloadId")
+                        .notNull()
+                    table.column("plaintextContent", .blob)
+                        .notNull()
+                    table.column("contentHint", .integer)
+                        .notNull()
+                    table.column("sentTimestamp", .date)
+                        .notNull()
+                    table.column("uniqueThreadId", .text)
+                        .notNull()
+                }
+
+                // This table tracks a many-to-many relationship mapping
+                // TSInteractions to related payloads. This is tracked so
+                // when a given interaction is deleted, all related payloads
+                // can be queried and deleted.
+                //
+                // An interaction can have multiple payloads (e.g. the message,
+                // reactions, read receipts).
+                // A payload can have multiple associated interactions (e.g.
+                // a single receipt message marking multiple messages as read).
+                try db.create(table: "MessageSendLog_Message") { table in
+                    table.column("payloadId", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+
+                    table.primaryKey(["payloadId", "uniqueId"])
+                    table.foreignKey(
+                        ["payloadId"],
+                        references: "MessageSendLog_Payload",
+                        columns: ["payloadId"],
+                        onDelete: .cascade,
+                        onUpdate: .cascade)
+                }
+
+                // Records all intended recipients for an intended payload
+                // A trigger will ensure that once all recipients have acked,
+                // the corresponding payload is deleted.
+                try db.create(table: "MessageSendLog_Recipient") { table in
+                    table.column("payloadId", .integer)
+                        .notNull()
+                    table.column("recipientUUID", .text)
+                        .notNull()
+                    table.column("recipientDeviceId", .integer)
+                        .notNull()
+
+                    table.primaryKey(["payloadId", "recipientUUID", "recipientDeviceId"])
+                    table.foreignKey(
+                        ["payloadId"],
+                        references: "MessageSendLog_Payload",
+                        columns: ["payloadId"],
+                        onDelete: .cascade,
+                        onUpdate: .cascade)
+                }
+
+                // This trigger ensures that once every intended recipient of
+                // a payload has responded with a delivery receipt that the
+                // payload is deleted.
+                try db.execute(sql: """
+                    CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
+                    AFTER DELETE ON MessageSendLog_Recipient
+                    WHEN 0 == (
+                        SELECT COUNT(*) FROM MessageSendLog_Recipient
+                        WHERE payloadId == old.payloadId
+                    )
+                    BEGIN
+                        DELETE FROM MessageSendLog_Payload
+                        WHERE payloadId == old.payloadId;
+                    END;
+                """)
+
+                // This trigger ensures that if a given interaction is deleted,
+                // all associated payloads are also deleted.
+                try db.execute(sql: """
+                    CREATE TRIGGER MSLMessage_payloadCleanup
+                    AFTER DELETE ON MessageSendLog_Message
+                    BEGIN
+                        DELETE FROM MessageSendLog_Payload WHERE payloadId == old.payloadId;
+                    END;
+                """)
+
+                // When we receive a decryption failure message, we need to look up
+                // the content proto based on the date sent
+                try db.create(
+                    index: "MSLPayload_sentTimestampIndex",
+                    on: "MessageSendLog_Payload",
+                    columns: ["sentTimestamp"]
+                )
+
+                // When deleting an interaction, we'll need to be able to lookup all
+                // payloads associated with that interaction.
+                try db.create(
+                    index: "MSLMessage_relatedMessageId",
+                    on: "MessageSendLog_Message",
+                    columns: ["uniqueId"]
+                )
             } catch {
                 owsFail("Error: \(error)")
             }

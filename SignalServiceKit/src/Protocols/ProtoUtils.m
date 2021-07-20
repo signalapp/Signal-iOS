@@ -21,28 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 + (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread
-                                 address:(SignalServiceAddress *_Nullable)address
                              transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
-    // For 1:1 threads, we want to include the profile key IFF the
-    // contact is in the whitelist.
-    //
-    // For Group threads, we want to include the profile key IFF the
-    // recipient OR the group is in the whitelist.
-    if (address.isValid && [self.profileManager isUserInProfileWhitelist:address transaction:transaction]) {
-        return YES;
-    } else if ([self.profileManager isThreadInProfileWhitelist:thread transaction:transaction]) {
-        return YES;
-    }
-
-    return NO;
+    // Group threads will return YES if the group is in the whitelist
+    // Contact threads will return YES if the contact is in the whitelist.
+    return [self.profileManager isThreadInProfileWhitelist:thread transaction:transaction];
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                              address:(SignalServiceAddress *_Nullable)address
                    dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
                           transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -50,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(dataMessageBuilder);
     OWSAssertDebug(transaction);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread transaction:transaction]) {
         [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
     }
 }
@@ -63,7 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                              address:(nullable SignalServiceAddress *)address
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
                           transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -71,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(callMessageBuilder);
     OWSAssertDebug(transaction);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread transaction:transaction]) {
         [callMessageBuilder setProfileKey:self.localProfileKey.keyData];
     }
 }
