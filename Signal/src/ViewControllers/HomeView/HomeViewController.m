@@ -717,15 +717,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         }
     }
 
-    [self updateViewState];
     [self applyDefaultBackButton];
 
     [self.searchResultsController viewWillAppear:animated];
 
     [self updateUnreadPaymentNotificationsCountWithSneakyTransaction];
-
-    // TODO: This should be redundant.
-    [self loadIfNecessary];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
