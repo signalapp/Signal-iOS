@@ -135,13 +135,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
     outgoingMessage.attachmentIds = [attachmentIds copy];
 
-    if (!transcript.thread.isGroupV2Thread) {
-        SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
-        if (localAddress == nil) {
-            OWSFailDebug(@"Missing localAddress.");
-            return;
-        }
+    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+    if (localAddress == nil) {
+        OWSFailDebug(@"Missing localAddress.");
+        return;
+    }
 
+    if (!transcript.thread.isGroupV2Thread) {
         [GroupManager remoteUpdateDisappearingMessagesWithContactOrV1GroupThread:transcript.thread
                                                         disappearingMessageToken:transcript.disappearingMessageToken
                                                         groupUpdateSourceAddress:localAddress
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [outgoingMessage anyInsertWithTransaction:transaction];
+    [outgoingMessage insertOrReplacePlaceholderFrom:localAddress transaction:transaction];
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:transcript.udRecipientAddresses
                                                        nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
                                                                   isSentUpdate:NO

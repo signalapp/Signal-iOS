@@ -86,33 +86,39 @@ extension TSInteraction {
                 },
                 transaction: transaction
             )
+            guard !placeholders.isEmpty else {
+                return false
+            }
+
+            Logger.info("Fetched placeholder with timestamp: \(timestamp) from sender: \(sender). Performing replacement...")
 
             if let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) {
                 owsAssertDebug(placeholders.count == 1)
                 placeholder.replaceWithInteraction(self, writeTx: transaction)
                 return true
+            } else {
+                owsFailDebug("Unexpected interaction type")
+                return false
             }
         } catch {
-            owsFailDebug("\(error)")
+            owsFailDebug("Failed to replace placeholder interaction: \(error)")
+            return false
         }
-        return false
     }
 
     @objc
     public func insertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
         if replacePlaceholder(from: sender, transaction: transaction) {
-            // Done!
+            Logger.info("Successfully replaced placeholder with interaction: \(timestamp)")
         } else {
             anyInsert(transaction: transaction)
-        }
-    }
 
-    @objc
-    public func upsertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        if replacePlaceholder(from: sender, transaction: transaction) {
-            // Done!
-        } else {
-            anyUpsert(transaction: transaction)
+            // Replaced interactions will inherit the existing sortId
+            // Inserted interactions will be assigned a sortId from SQLite, but
+            // we need to fetch from the database.
+            owsAssertDebug(sortId == 0)
+            fillInMissingSortIdForJustInsertedInteraction(transaction: transaction)
+            owsAssertDebug(sortId > 0)
         }
     }
 }

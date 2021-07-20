@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSYapDatabaseObject ()
 
+@property (nonatomic, nullable) NSString *uniqueId;
 @property (atomic, nullable) NSNumber *grdbId;
 
 @end
@@ -142,6 +143,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearRowId
 {
     self.grdbId = nil;
+}
+
+- (void)replaceRowId:(int64_t)rowId uniqueId:(NSString *)uniqueId
+{
+    self.grdbId = @(rowId);
+    self.uniqueId = [uniqueId copy];
 }
 
 @end

@@ -267,6 +267,16 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.unwrappedType);
             break;
     }
+
+    // If we reach here, we were able to successfully handle the message.
+    // We need to check to make sure that we clear any placeholders that may have been
+    // inserted for this message. This would happen if:
+    // - This is a resend of a message that we had previously failed to decrypt
+    // - The message does not result in an inserted TSIncomingMessage or TSOutgoingMessage
+    // For example, a read receipt. In that case, we should just clear the placeholder
+    if (plaintextData && envelope.timestamp > 0 && envelope.sourceAddress) {
+        [self clearLeftoverPlaceholders:envelope.timestamp sender:envelope.sourceAddress transaction:transaction];
+    }
 }
 
 - (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope transaction:(SDSAnyWriteTransaction *)transaction
@@ -2003,7 +2013,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
-    // Sender Key TODO: Insert sortId?
     [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
     [self.earlyMessageManager applyPendingMessagesFor:message transaction:transaction];
 
@@ -2054,6 +2063,37 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                sender:sender
                                                                       protocolVersion:protocolVersion];
     [message anyInsertWithTransaction:transaction];
+}
+
+- (void)clearLeftoverPlaceholders:(uint64_t)timestamp
+                           sender:(SignalServiceAddress *)address
+                      transaction:(SDSAnyWriteTransaction *)transaction
+{
+    NSError *_Nullable error = nil;
+    NSArray<TSInteraction *> *placeholders = nil;
+
+    placeholders = [InteractionFinder
+        interactionsWithTimestamp:timestamp
+                           filter:^BOOL(TSInteraction *interaction) {
+                               if ([interaction isKindOfClass:[OWSRecoverableDecryptionPlaceholder class]]) {
+                                   OWSRecoverableDecryptionPlaceholder *placeholder
+                                       = (OWSRecoverableDecryptionPlaceholder *)interaction;
+                                   return [placeholder.sender isEqualToAddress:address];
+                               } else {
+                                   return false;
+                               }
+                           }
+                      transaction:transaction
+                            error:&error];
+
+    if (!error) {
+        OWSAssertDebug(placeholders.count <= 1);
+        for (OWSRecoverableDecryptionPlaceholder *placeholder in placeholders) {
+            [placeholder anyRemoveWithTransaction:transaction];
+        }
+    } else {
+        OWSFailDebug(@"Failed to fetch placeholders: %@", error);
+    }
 }
 
 #pragma mark -

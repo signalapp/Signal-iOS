@@ -70,15 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (self.isVisible) {
-        NSString *formatString = NSLocalizedString(
-            @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{senders name}}.");
+    // Sender Key TODO: Update how this looks depending on visibility
+    NSString *formatString = NSLocalizedString(
+        @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{senders name}}.");
 
-        NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
-        return [[NSString alloc] initWithFormat:formatString, senderName];
-    } else {
-        return @""; // Sender Key TODO: Should conversation list walk backwards to find the last interaction with a preview?
-    }
+    NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
+    return [[NSString alloc] initWithFormat:formatString, senderName];
 }
 
 @end
