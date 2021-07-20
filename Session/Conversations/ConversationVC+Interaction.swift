@@ -198,11 +198,19 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         sendMessage()
     }
 
-    func sendMessage() {
+    func sendMessage(hasPermissionToSendSeed: Bool = false) {
         guard !showBlockedModalIfNeeded() else { return }
         let text = replaceMentions(in: snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines))
         let thread = self.thread
         guard !text.isEmpty else { return }
+        if text.contains(mnemonic) && !thread.isNoteToSelf() && !hasPermissionToSendSeed {
+            // Warn the user if they're about to send their seed to someone
+            let modal = SendSeedModal()
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            modal.proceed = { self.sendMessage(hasPermissionToSendSeed: true) }
+            return present(modal, animated: true, completion: nil)
+        }
         let message = VisibleMessage()
         message.sentTimestamp = NSDate.millisecondTimestamp()
         message.text = text

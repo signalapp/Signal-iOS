@@ -159,15 +159,6 @@ static NSTimeInterval launchStartedAt;
     // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
-#if RELEASE
-    // ensureIsReadyForAppExtensions may have changed the state of the logging
-    // preference (due to [NSUserDefaults migrateToSharedUserDefaults]), so honor
-    // that change if necessary.
-    if (isLoggingEnabled && !OWSPreferences.isLoggingEnabled) {
-        [DebugLogger.sharedLogger disableFileLogging];
-    }
-#endif
-
     [AppVersion sharedInstance];
 
     // Prevent the device from sleeping during database view async registration
