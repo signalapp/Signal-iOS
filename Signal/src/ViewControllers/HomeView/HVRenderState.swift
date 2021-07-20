@@ -7,27 +7,31 @@ import Foundation
 @objc
 public class HVRenderState: NSObject {
 
+    let viewInfo: HVViewInfo
+
     let pinnedThreads: OrderedDictionary<String, TSThread>
     let unpinnedThreads: [TSThread]
 
-    let archiveCount: UInt
-    let inboxCount: UInt
+    var archiveCount: UInt { viewInfo.archiveCount }
+    var inboxCount: UInt { viewInfo.inboxCount }
 
-    public init(pinnedThreads: OrderedDictionary<String, TSThread>,
-                unpinnedThreads: [TSThread],
-                archiveCount: UInt,
-                inboxCount: UInt) {
+    var hasArchivedThreadsRow: Bool { viewInfo.hasArchivedThreadsRow }
+    var hasVisibleReminders: Bool { viewInfo.hasVisibleReminders }
+
+    // MARK: -
+
+    public init(viewInfo: HVViewInfo,
+                pinnedThreads: OrderedDictionary<String, TSThread>,
+                unpinnedThreads: [TSThread]) {
+        self.viewInfo = viewInfo
         self.pinnedThreads = pinnedThreads
         self.unpinnedThreads = unpinnedThreads
-        self.archiveCount = archiveCount
-        self.inboxCount = inboxCount
     }
 
     public static var empty: HVRenderState {
-        HVRenderState(pinnedThreads: OrderedDictionary(),
-                      unpinnedThreads: [],
-                      archiveCount: 0,
-                      inboxCount: 0)
+        HVRenderState(viewInfo: .empty,
+                      pinnedThreads: OrderedDictionary(),
+                      unpinnedThreads: [])
     }
 
     public var hasPinnedAndUnpinnedThreads: Bool {
@@ -122,6 +126,43 @@ public class HVRenderState: NSObject {
             return IndexPath(item: index - 1, section: section.rawValue)
         } else {
             return nil
+        }
+    }
+}
+
+// MARK: -
+
+public struct HVViewInfo: Equatable {
+    let homeViewMode: HomeViewMode
+    let archiveCount: UInt
+    let inboxCount: UInt
+    let hasArchivedThreadsRow: Bool
+    let hasVisibleReminders: Bool
+
+    static var empty: HVViewInfo {
+        HVViewInfo(homeViewMode: .inbox,
+                   archiveCount: 0,
+                   inboxCount: 0,
+                   hasArchivedThreadsRow: false,
+                   hasVisibleReminders: false)
+    }
+
+    static func build(homeViewMode: HomeViewMode,
+                      hasVisibleReminders: Bool,
+                      transaction: SDSAnyReadTransaction) -> HVViewInfo {
+        do {
+            let threadFinder = AnyThreadFinder()
+            let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
+            let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
+            let hasArchivedThreadsRow = (homeViewMode == .inbox && archiveCount > 0)
+            return HVViewInfo(homeViewMode: homeViewMode,
+                              archiveCount: archiveCount,
+                               inboxCount: inboxCount,
+                               hasArchivedThreadsRow: hasArchivedThreadsRow,
+                               hasVisibleReminders: hasVisibleReminders)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return .empty
         }
     }
 }

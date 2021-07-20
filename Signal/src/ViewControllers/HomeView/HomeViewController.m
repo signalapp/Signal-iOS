@@ -54,18 +54,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 @property (nonatomic, nullable) OWSGetStartedBannerViewController *getStartedBanner;
 
-// Views
-
-@property (nonatomic, readonly) UIStackView *reminderStackView;
-@property (nonatomic, readonly) ExpirationNagView *expiredView;
-@property (nonatomic, readonly) UIView *deregisteredView;
-@property (nonatomic, readonly) UIView *outageView;
-@property (nonatomic, readonly) UIView *archiveReminderView;
-@property (nonatomic, readonly) UIView *paymentsReminderView;
-
-@property (nonatomic) NSUInteger unreadPaymentNotificationsCount;
-@property (nonatomic, nullable) TSPaymentModel *firstUnreadPaymentModel;
-
 @end
 
 #pragma mark -
@@ -84,6 +72,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _viewState = [HVViewState new];
     self.tableDataSource.viewController = self;
     self.loadCoordinator.viewController = self;
+    self.reminderViews.viewController = self;
+    [self.viewState configure];
 
     return self;
 }
@@ -171,57 +161,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)loadView
 {
     [super loadView];
-
-    UIStackView *reminderStackView = [UIStackView new];
-    _reminderStackView = reminderStackView;
-    reminderStackView.axis = UILayoutConstraintAxisVertical;
-    reminderStackView.spacing = 0;
-    self.reminderViewCell.selectionStyle = UITableViewCellSelectionStyleNone;
-    [self.reminderViewCell.contentView addSubview:reminderStackView];
-    [reminderStackView autoPinEdgesToSuperviewEdges];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, self.reminderViewCell);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, reminderStackView);
-
-    __weak HomeViewController *weakSelf = self;
-    ReminderView *deregisteredView = [ReminderView
-        nagWithText:TSAccountManager.shared.isPrimaryDevice
-            ? NSLocalizedString(@"DEREGISTRATION_WARNING", @"Label warning the user that they have been de-registered.")
-            : NSLocalizedString(
-                @"UNLINKED_WARNING", @"Label warning the user that they have been unlinked from their primary device.")
-          tapAction:^{
-              HomeViewController *strongSelf = weakSelf;
-              if (!strongSelf) {
-                  return;
-              }
-              [RegistrationUtils showReregistrationUIFromViewController:strongSelf];
-          }];
-    _deregisteredView = deregisteredView;
-    [reminderStackView addArrangedSubview:deregisteredView];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, deregisteredView);
-
-    ExpirationNagView *expiredView = [ExpirationNagView new];
-    _expiredView = expiredView;
-    [reminderStackView addArrangedSubview:expiredView];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, expiredView);
-
-    ReminderView *outageView = [ReminderView
-        nagWithText:NSLocalizedString(@"OUTAGE_WARNING", @"Label warning the user that the Signal service may be down.")
-          tapAction:nil];
-    _outageView = outageView;
-    [reminderStackView addArrangedSubview:outageView];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, outageView);
-
-    ReminderView *archiveReminderView =
-        [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
-                                              @"Label reminding the user that they are in archive mode.")];
-    _archiveReminderView = archiveReminderView;
-    [reminderStackView addArrangedSubview:archiveReminderView];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, archiveReminderView);
-
-    UIView *paymentsReminderView = [UIView new];
-    _paymentsReminderView = paymentsReminderView;
-    [reminderStackView addArrangedSubview:paymentsReminderView];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, paymentsReminderView);
 
     [self.view addSubview:self.tableView];
     [self.tableView autoPinEdgesToSuperviewEdges];
@@ -428,36 +367,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     self.firstConversationLabel.attributedText = [attributedString copy];
-}
-
-- (void)updateReminderViews
-{
-    self.archiveReminderView.hidden = self.homeViewMode != HomeViewModeArchive;
-    self.deregisteredView.hidden
-        = !TSAccountManager.shared.isDeregistered || TSAccountManager.shared.isTransferInProgress;
-    self.outageView.hidden = !OutageDetection.shared.hasOutage;
-
-    self.expiredView.hidden = !AppExpiry.shared.isExpiringSoon;
-    [self.expiredView updateText];
-
-    if (self.unreadPaymentNotificationsCount == 0 || self.firstUnreadPaymentModel == nil) {
-        self.paymentsReminderView.hidden = YES;
-    } else if (self.unreadPaymentNotificationsCount == 1 && self.firstUnreadPaymentModel != nil) {
-        self.paymentsReminderView.hidden = NO;
-
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [self configureUnreadPaymentsBannerSingle:self.paymentsReminderView
-                                         paymentModel:self.firstUnreadPaymentModel
-                                          transaction:transaction];
-        }];
-    } else {
-        self.paymentsReminderView.hidden = NO;
-        [self configureUnreadPaymentsBannerMultiple:self.paymentsReminderView
-                                        unreadCount:self.unreadPaymentNotificationsCount];
-    }
-
-    self.hasVisibleReminders = (!self.archiveReminderView.isHidden || !self.deregisteredView.isHidden
-        || !self.outageView.isHidden || !self.expiredView.isHidden || !self.paymentsReminderView.isHidden);
 }
 
 - (void)viewDidLoad
@@ -786,8 +695,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewWillAppear:animated];
 
-    [self updateHasArchivedThreadsRowWithShouldReloadIfChanged:NO];
-
     self.isViewVisible = YES;
 
     BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
@@ -816,6 +723,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewWillAppear:animated];
 
     [self updateUnreadPaymentNotificationsCountWithSneakyTransaction];
+
+    // TODO: This should be redundant.
+    [self loadIfNecessary];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -990,37 +900,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
      commitViewController:(UIViewController *)viewControllerToCommit
 {
     [self commitPreviewController:viewControllerToCommit];
-}
-
-#pragma mark Shared
-
-- (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction
-{
-    if (!self.payments.arePaymentsEnabled) {
-        self.unreadPaymentNotificationsCount = 0;
-        self.firstUnreadPaymentModel = nil;
-
-        [self updateBarButtonItems];
-        [self updateReminderViews];
-        return;
-    }
-
-    __block NSUInteger unreadPaymentNotificationsCount;
-    __block TSPaymentModel *_Nullable firstUnreadPaymentModel;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        unreadPaymentNotificationsCount = [PaymentFinder unreadCountWithTransaction:transaction];
-        firstUnreadPaymentModel = [PaymentFinder firstUnreadPaymentModelWithTransaction:transaction];
-    }];
-    if (self.unreadPaymentNotificationsCount == unreadPaymentNotificationsCount &&
-        [NSObject isNullableObject:self.firstUnreadPaymentModel equalTo:firstUnreadPaymentModel]) {
-        return;
-    }
-
-    self.unreadPaymentNotificationsCount = unreadPaymentNotificationsCount;
-    self.firstUnreadPaymentModel = firstUnreadPaymentModel;
-
-    [self updateBarButtonItems];
-    [self updateReminderViews];
 }
 
 #pragma mark -

@@ -297,25 +297,34 @@ extension HVTableDataSource: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         AssertIsOnMainThread()
 
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return 0
+        }
+
         guard let section = HomeViewSection(rawValue: section) else {
             owsFailDebug("Invalid section: \(section).")
             return 0
         }
         switch section {
         case .reminders:
-            return viewState.hasVisibleReminders ? 1 : 0
+            return viewController.hasVisibleReminders ? 1 : 0
         case .pinned:
             return renderState.pinnedThreads.count
         case .unpinned:
             return renderState.unpinnedThreads.count
         case .archiveButton:
-            return viewState.hasArchivedThreadsRow ? 1 : 0
+            return viewController.hasArchivedThreadsRow ? 1 : 0
         }
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return UITableViewCell()
+        }
         guard let section = HomeViewSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return UITableViewCell()
@@ -324,7 +333,7 @@ extension HVTableDataSource: UITableViewDataSource {
         let cell: UITableViewCell = {
             switch section {
             case .reminders:
-                return viewState.reminderViewCell
+                return viewController.reminderViewCell
             case .pinned, .unpinned:
                 return buildConversationCell(tableView: tableView, indexPath: indexPath)
             case .archiveButton:

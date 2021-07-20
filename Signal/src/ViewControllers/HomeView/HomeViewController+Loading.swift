@@ -31,7 +31,24 @@ extension HomeViewController {
         }
     }
 
-    public func updateShouldBeUpdatingView() {
+    @objc
+    public var hasVisibleReminders: Bool {
+        renderState.hasVisibleReminders
+    }
+
+    @objc
+    public var hasArchivedThreadsRow: Bool {
+        renderState.hasArchivedThreadsRow
+    }
+
+    // MARK: -
+
+    @objc
+    public func loadIfNecessary() {
+        loadCoordinator.loadIfNecessary()
+    }
+
+    func updateShouldBeUpdatingView() {
         AssertIsOnMainThread()
 
         let isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive()
@@ -40,75 +57,67 @@ extension HomeViewController {
 
     // MARK: -
 
-    // TODO: Make async.
-    fileprivate func reloadEverythingAndReloadTable() {
+    fileprivate func loadNewRenderState(viewInfo: HVViewInfo,
+                                        transaction: SDSAnyReadTransaction) -> HVLoadResult {
         AssertIsOnMainThread()
 
-        BenchManager.bench(title: "HomeViewController#reloadEverythingAndReloadTable") {
-            guard let renderState = tryToLoadRenderState() else {
-                owsFailDebug("Could not update renderState.")
-                return
-            }
-            applyNewRenderState(renderState)
+        return Bench(title: "loadNewRenderState") {
+            HVLoader.loadRenderState(viewInfo: viewInfo, transaction: transaction)
         }
     }
 
-    private func tryToLoadRenderState() -> HVRenderState? {
+    fileprivate func loadNewRenderStateWithDiff(viewInfo: HVViewInfo,
+                                                updatedThreadIds: Set<String>,
+                                                transaction: SDSAnyReadTransaction) -> HVLoadResult {
         AssertIsOnMainThread()
 
-        return Self.databaseStorage.read { transaction in
-            HVLoader.loadRenderState(isViewingArchive: isViewingArchive,
-                                     transaction: transaction)
+        guard !updatedThreadIds.isEmpty else {
+            owsFailDebug("Empty updatedThreadIds.")
+            // Ignoring irrelevant update.
+            return .noChanges
+        }
+
+        return HVLoader.loadRenderStateAndDiff(viewInfo: viewInfo,
+                                               updatedItemIds: updatedThreadIds,
+                                               lastRenderState: renderState,
+                                               transaction: transaction)
+    }
+
+    fileprivate func applyLoadResult(_ loadResult: HVLoadResult,
+                                     isAnimated: Bool) {
+        AssertIsOnMainThread()
+
+        switch loadResult {
+        case .newRenderState(let renderState):
+            tableDataSource.renderState = renderState
+            threadViewModelCache.clear()
+            cellMeasurementCache.clear()
+            reloadTableData()
+            updateViewState()
+        case .newRenderStateWithDiff(let renderState, let rowChanges):
+            applyPartialLoadResult(renderState: renderState,
+                                   rowChanges: rowChanges,
+                                   isAnimated: isAnimated)
+        case .reloadTable:
+            reloadTableData()
+            updateViewState()
+        case .noChanges:
+            updateViewState()
         }
     }
 
-    private func applyNewRenderState(_ renderState: HVRenderState) {
+    fileprivate func applyPartialLoadResult(renderState: HVRenderState,
+                                            rowChanges: [HVRowChange],
+                                            isAnimated: Bool) {
         AssertIsOnMainThread()
 
         tableDataSource.renderState = renderState
-        threadViewModelCache.clear()
-        cellMeasurementCache.clear()
-        updateHasArchivedThreadsRow(shouldReloadIfChanged: false)
-        reloadTableData()
-        updateViewState()
-    }
-
-    private var isViewingArchive: Bool { self.homeViewMode == .archive }
-
-    fileprivate func updateRenderStateWithDiff(updatedThreadIds updatedItemIds: Set<String>,
-                                               isAnimated: Bool) {
-        AssertIsOnMainThread()
-
-        guard !updatedItemIds.isEmpty else {
-            // Ignoring irrelevant update.
-            updateViewState()
-            return
-        }
-
-        let mappingDiff = Self.databaseStorage.read { transaction in
-            HVLoader.loadRenderStateAndDiff(isViewingArchive: isViewingArchive,
-                                            updatedItemIds: updatedItemIds,
-                                            lastRenderState: renderState,
-                                            transaction: transaction)
-        }
-        guard let mappingDiff = mappingDiff else {
-            owsFailDebug("Could not update.")
-            // Diffing failed, reload to get back to a known good state.
-            reloadEverythingAndReloadTable()
-            return
-        }
-
-        tableDataSource.renderState = mappingDiff.renderState
 
         // We want this regardless of if we're currently viewing the archive.
         // So we run it before the early return
         updateViewState()
 
-        if mappingDiff.rowChanges.isEmpty {
-            return
-        }
-
-        if updateHasArchivedThreadsRow(shouldReloadIfChanged: true) {
+        guard !rowChanges.isEmpty else {
             return
         }
 
@@ -118,7 +127,7 @@ extension HomeViewController {
         let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
         let applyChanges = {
             tableView.beginUpdates()
-            for rowChange in mappingDiff.rowChanges {
+            for rowChange in rowChanges {
 
                 threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
                 cellMeasurementCache.removeObject(forKey: rowChange.threadUniqueId)
@@ -168,8 +177,9 @@ extension HomeViewController {
 
 private enum HVLoadType {
     case resetAll
-    case incrementalDiff
+    case incrementalDiff(dirtyThreadUniqueIds: Set<String>)
     case reloadTableOnly
+    case none
 }
 
 // MARK: -
@@ -179,28 +189,45 @@ public class HVLoadCoordinator: NSObject {
     @objc
     public weak var viewController: HomeViewController?
 
-    private class HVLoadInfo {
-        // TODO: Review this state.
+    private struct HVLoadInfo {
+        let viewInfo: HVViewInfo
+        let loadType: HVLoadType
+    }
+    private class HVLoadInfoBuilder {
         var shouldResetAll = false
         var dirtyThreadUniqueIds = Set<String>()
 
-        var loadType: HVLoadType {
-            if shouldResetAll {
-                return .resetAll
+        func build(homeViewMode: HomeViewMode,
+                   hasVisibleReminders: Bool,
+                   lastViewInfo: HVViewInfo,
+                   transaction: SDSAnyReadTransaction) -> HVLoadInfo {
+            let viewInfo = HVViewInfo.build(homeViewMode: homeViewMode,
+                                            hasVisibleReminders: hasVisibleReminders,
+                                            transaction: transaction)
+            if shouldResetAll ||
+                viewInfo.hasArchivedThreadsRow != lastViewInfo.hasArchivedThreadsRow ||
+                viewInfo.hasVisibleReminders != lastViewInfo.hasVisibleReminders {
+                return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
+            } else if !dirtyThreadUniqueIds.isEmpty {
+                return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(dirtyThreadUniqueIds: dirtyThreadUniqueIds))
+            } else if viewInfo != lastViewInfo {
+                return HVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
+            } else {
+                return HVLoadInfo(viewInfo: viewInfo, loadType: .none)
             }
         }
     }
-    private var nextLoadInfo = HVLoadInfo()
+    private var loadInfoBuilder = HVLoadInfoBuilder()
 
     @objc
     public override required init() {
-        nextLoadInfo.shouldResetAll = true
+        loadInfoBuilder.shouldResetAll = true
     }
 
     public func scheduleHardReset() {
         AssertIsOnMainThread()
 
-        nextLoadInfo.shouldResetAll = true
+        loadInfoBuilder.shouldResetAll = true
 
         loadIfNecessary()
     }
@@ -209,7 +236,7 @@ public class HVLoadCoordinator: NSObject {
         AssertIsOnMainThread()
         owsAssertDebug(!updatedThreadIds.isEmpty)
 
-        nextLoadInfo.dirtyThreadUniqueIds.formUnion(updatedThreadIds)
+        loadInfoBuilder.dirtyThreadUniqueIds.formUnion(updatedThreadIds)
 
         loadIfNecessary()
     }
@@ -226,14 +253,34 @@ public class HVLoadCoordinator: NSObject {
         }
 
         // Copy the "current" load info, reset "next" load info.
-        let currentLoadInfo = self.nextLoadInfo
-        self.nextLoadInfo = HVLoadInfo()
 
-        if currentLoadInfo.shouldResetAll {
-            viewController.reloadEverythingAndReloadTable()
-        } else {
-            viewController.updateRenderStateWithDiff(updatedThreadIds: currentLoadInfo.dirtyThreadUniqueIds,
-                                                     isAnimated: !suppressAnimations)
+        let reminderViews = viewController.viewState.reminderViews
+        let hasVisibleReminders = reminderViews.hasVisibleReminders
+
+        let loadResult: HVLoadResult = databaseStorage.read { transaction in
+            let loadInfo = loadInfoBuilder.build(homeViewMode: viewController.homeViewMode,
+                                                 hasVisibleReminders: hasVisibleReminders,
+                                                 lastViewInfo: viewController.renderState.viewInfo,
+                                                 transaction: transaction)
+            // Reset the builder.
+            loadInfoBuilder = HVLoadInfoBuilder()
+
+            switch loadInfo.loadType {
+            case .resetAll:
+                return viewController.loadNewRenderState(viewInfo: loadInfo.viewInfo,
+                                                         transaction: transaction)
+            case .incrementalDiff(let dirtyThreadUniqueIds):
+                return viewController.loadNewRenderStateWithDiff(viewInfo: loadInfo.viewInfo,
+                                                                 updatedThreadIds: dirtyThreadUniqueIds,
+                                                                 transaction: transaction)
+            case .reloadTableOnly:
+                return .reloadTable
+            case .none:
+                return .noChanges
+            }
         }
+
+        let isAnimated = !suppressAnimations
+        viewController.applyLoadResult(loadResult, isAnimated: isAnimated)
     }
 }

@@ -84,6 +84,7 @@ public class BlockingManager: NSObject {
             load(phoneNumbersKey: blockedPhoneNumbersKey,
                  uuidStringsKey: blockedUUIDsKey,
                  groupsKey: blockedGroupMapKey,
+                 shouldStoreGroupModels: true,
                  transaction: transaction)
         }
 
@@ -91,12 +92,14 @@ public class BlockingManager: NSObject {
             load(phoneNumbersKey: syncedBlockedPhoneNumbersKey,
                  uuidStringsKey: syncedBlockedUUIDsKey,
                  groupsKey: syncedBlockedGroupIdsKey,
+                 shouldStoreGroupModels: false,
                  transaction: transaction)
         }
 
         private static func load(phoneNumbersKey: String,
                                  uuidStringsKey: String,
                                  groupsKey: String,
+                                 shouldStoreGroupModels: Bool,
                                  transaction: SDSAnyReadTransaction) -> State {
             let state: State = {
                 let keyValueStore = Self.keyValueStore
@@ -104,8 +107,24 @@ public class BlockingManager: NSObject {
                                                                             transaction: transaction) as? [String] ?? []
                 let blockedUUIDStrings: [String] = keyValueStore.getObject(forKey: uuidStringsKey,
                                                                            transaction: transaction) as? [String] ?? []
-                let blockedGroupMap: [Data: TSGroupModel] = keyValueStore.getObject(forKey: groupsKey,
-                                                                                    transaction: transaction) as? [Data: TSGroupModel] ?? [:]
+                let blockedGroupMap: [Data: TSGroupModel]
+                if shouldStoreGroupModels {
+                    blockedGroupMap = keyValueStore.getObject(forKey: groupsKey,
+                                                              transaction: transaction) as? [Data: TSGroupModel] ?? [:]
+                } else {
+                    // For "synced" state we only store group ids,
+                    // not the group models.  So we fill in fake
+                    // group models as necessary.
+                    let blockedGroupIds: [Data] = keyValueStore.getObject(forKey: groupsKey,
+                                                                          transaction: transaction) as? [Data] ?? []
+                    var fakeBlockedGroupMap = [Data: TSGroupModel]()
+                    for groupId in blockedGroupIds {
+                        let groupModel = GroupManager.fakeGroupModel(groupId: groupId,
+                                                                     transaction: transaction)
+                        fakeBlockedGroupMap[groupId] = groupModel
+                    }
+                    blockedGroupMap = fakeBlockedGroupMap
+                }
                 return State(blockedPhoneNumbers: Set(blockedPhoneNumbers),
                              blockedUUIDStrings: Set(blockedUUIDStrings),
                              blockedGroupMap: blockedGroupMap)
@@ -127,6 +146,7 @@ public class BlockingManager: NSObject {
             save(phoneNumbersKey: Self.blockedPhoneNumbersKey,
                  uuidStringsKey: Self.blockedUUIDsKey,
                  groupsKey: Self.blockedGroupMapKey,
+                 shouldStoreGroupModels: true,
                  transaction: transaction)
         }
 
@@ -134,12 +154,14 @@ public class BlockingManager: NSObject {
             save(phoneNumbersKey: Self.syncedBlockedPhoneNumbersKey,
                  uuidStringsKey: Self.syncedBlockedUUIDsKey,
                  groupsKey: Self.syncedBlockedGroupIdsKey,
+                 shouldStoreGroupModels: false,
                  transaction: transaction)
         }
 
         private func save(phoneNumbersKey: String,
                           uuidStringsKey: String,
                           groupsKey: String,
+                          shouldStoreGroupModels: Bool,
                           transaction: SDSAnyWriteTransaction) {
             let keyValueStore = Self.keyValueStore
             keyValueStore.setObject(Array(blockedPhoneNumbers),
@@ -148,9 +170,17 @@ public class BlockingManager: NSObject {
             keyValueStore.setObject(Array(blockedUUIDStrings),
                                     key: uuidStringsKey,
                                     transaction: transaction)
-            keyValueStore.setObject(blockedGroupMap,
-                                    key: groupsKey,
-                                    transaction: transaction)
+            if shouldStoreGroupModels {
+                // Store "group id-to-group model" map.
+                keyValueStore.setObject(blockedGroupMap,
+                                        key: groupsKey,
+                                        transaction: transaction)
+            } else {
+                // Store "group id" array.
+                keyValueStore.setObject(Array(blockedGroupMap.keys),
+                                        key: groupsKey,
+                                        transaction: transaction)
+            }
         }
     }
 

@@ -4,7 +4,8 @@
 
 import UIKit
 
-class ExpirationNagView: ReminderView {
+@objc
+public class ExpirationNagView: ReminderView {
     private static let updateLink = URL(string: "itms-apps://itunes.apple.com/app/id874139669")!
 
     @objc convenience init() {

@@ -32,11 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // For use by Swift extension.
 - (void)updateBarButtonItems;
-- (void)updateReminderViews;
 - (void)updateViewState;
 - (void)updateFirstConversationLabel;
 - (void)presentGetStartedBannerIfNecessary;
-- (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction;
 
 @property (nonatomic) UIView *firstConversationCueView;
 
