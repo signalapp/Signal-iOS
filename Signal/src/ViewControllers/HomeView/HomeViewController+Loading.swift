@@ -93,31 +93,26 @@ extension HomeViewController {
             threadViewModelCache.clear()
             cellMeasurementCache.clear()
             reloadTableData()
-            updateViewState()
         case .newRenderStateWithDiff(let renderState, let rowChanges):
-            applyPartialLoadResult(renderState: renderState,
-                                   rowChanges: rowChanges,
+            tableDataSource.renderState = renderState
+            applyPartialLoadResult(rowChanges: rowChanges,
                                    isAnimated: isAnimated)
         case .reloadTable:
             reloadTableData()
-            updateViewState()
         case .noChanges:
-            updateViewState()
+            break
         }
+
+        // We need to perform this regardless of the load result type.
+        updateViewState()
     }
 
-    fileprivate func applyPartialLoadResult(renderState: HVRenderState,
-                                            rowChanges: [HVRowChange],
+    fileprivate func applyPartialLoadResult(rowChanges: [HVRowChange],
                                             isAnimated: Bool) {
         AssertIsOnMainThread()
 
-        tableDataSource.renderState = renderState
-
-        // We want this regardless of if we're currently viewing the archive.
-        // So we run it before the early return
-        updateViewState()
-
         guard !rowChanges.isEmpty else {
+            owsFailDebug("Empty rowChanges.")
             return
         }
 
