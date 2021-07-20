@@ -145,8 +145,6 @@ public class MessageSendLog: NSObject {
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         do {
-            // Insert or replace? Yes if we insert recipient before send,
-            // no if we insert recipient after send.
             try Recipient(
                 payloadId: payloadId,
                 recipientUUID: recipientUuid,

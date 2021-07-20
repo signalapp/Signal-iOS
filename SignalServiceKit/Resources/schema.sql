@@ -1120,7 +1120,7 @@ CREATE
             ,"plaintextContent" BLOB NOT NULL
             ,"contentHint" INTEGER NOT NULL
             ,"sentTimestamp" DATE NOT NULL
-            ,uniqueThreadId TEXT
+            ,"uniqueThreadId" TEXT NOT NULL
         )
 ;
 

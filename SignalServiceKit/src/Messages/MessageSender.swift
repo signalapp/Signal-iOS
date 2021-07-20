@@ -1846,7 +1846,7 @@ extension MessageSender {
             senderCertificate: senderCertificate,
             groupId: thread.groupId,
             distributionId: distributionId,
-            contentHint: .default,          // SenderKey TODO: Revisit this
+            contentHint: contentHint,
             protocolContext: writeTx)
 
         guard ciphertext.count <= MessageProcessor.largeEnvelopeWarningByteCount else {
