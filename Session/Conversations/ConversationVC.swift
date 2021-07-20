@@ -223,7 +223,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 unreadCount = self.thread.unreadMessageCount(transaction: transaction)
             }
             DispatchQueue.main.async {
-                if unreadCount > 0, let viewItem = self.viewItems[ifValid: self.viewItems.count - Int(unreadCount)], let interactionID = viewItem.interaction.uniqueId {
+                let unreadIndicatorIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue ?? (self.viewItems.count - self.unreadViewItems.count)
+                print("Ryan Test: \(unreadIndicatorIndex)")
+                if unreadCount > 0, let viewItem = self.viewItems[ifValid: unreadIndicatorIndex], let interactionID = viewItem.interaction.uniqueId {
                     self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
                     self.unreadCountView.alpha = self.scrollButton.alpha
                 } else {
