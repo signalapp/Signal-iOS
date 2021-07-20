@@ -8,6 +8,8 @@ import Foundation
 public class HVTableDataSource: NSObject {
     private var viewState: HVViewState!
 
+    public let tableView = HVTableView(frame: .zero, style: .grouped)
+
     @objc
     public weak var viewController: HomeViewController?
 
@@ -17,7 +19,8 @@ public class HVTableDataSource: NSObject {
 
     private let kArchivedConversationsReuseIdentifier = "kArchivedConversationsReuseIdentifier"
 
-    @objc
+    fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
+
     public required override init() {
         super.init()
     }
@@ -28,7 +31,6 @@ public class HVTableDataSource: NSObject {
 
         self.viewState = viewState
 
-        let tableView = viewState.tableView
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
@@ -368,9 +370,9 @@ extension HVTableDataSource: UITableViewDataSource {
         //
         // TODO: We should add an explicit "isReloadingAll" flag to HomeViewController.
         let avatarAsyncLoadInterval: TimeInterval = kSecondInterval * 1
-        let lastReloadInterval: TimeInterval = abs(viewState.lastReloadDate?.timeIntervalSinceNow ?? 0)
+        let lastReloadInterval: TimeInterval = abs(lastReloadDate?.timeIntervalSinceNow ?? 0)
         let shouldLoadAvatarAsync = (viewState.hasEverAppeared
-                                        && (viewState.lastReloadDate == nil ||
+                                        && (lastReloadDate == nil ||
                                                 lastReloadInterval > avatarAsyncLoadInterval))
         let isBlocked = blockingManager.isThreadBlocked(thread)
         let cellMeasurementCache = viewController.cellMeasurementCache
@@ -686,5 +688,20 @@ extension HVTableDataSource: UITableViewDataSource {
             // The first action will be auto-performed for "very long swipes".
             return UISwipeActionsConfiguration(actions: [ readStateAction, pinnedStateAction ])
         }
+    }
+}
+
+// MARK: -
+
+public class HVTableView: UITableView {
+
+    fileprivate var lastReloadDate: Date?
+
+    @objc
+    public override func reloadData() {
+        AssertIsOnMainThread()
+
+        lastReloadDate = Date()
+        super.reloadData()
     }
 }

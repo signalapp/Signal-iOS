@@ -64,14 +64,15 @@ extension HomeViewController {
     private func preferContactAvatarsPreferenceDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateAvatars()
+        reloadTableDataAndResetCellMeasurementCache()
     }
 
     @objc
     private func signalAccountsDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        reloadTableViewData()
+        // This is wasteful but this event is very rare.
+        reloadTableDataAndResetCellMeasurementCache()
 
         if !firstConversationCueView.isHidden {
             updateFirstConversationLabel()
@@ -161,7 +162,8 @@ extension HomeViewController {
     private func blockListDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        reloadTableViewData()
+        // This is wasteful but this event is very rare.
+        reloadTableDataAndResetCellMeasurementCache()
     }
 }
 

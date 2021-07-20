@@ -93,16 +93,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark -
-
-- (void)updateAvatars
-{
-    OWSAssertIsOnMainThread();
-
-    self.lastReloadDate = [NSDate new];
-    [self.tableView reloadData];
-}
-
 #pragma mark - Theme
 
 - (void)themeDidChange
@@ -111,8 +101,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [super themeDidChange];
 
-    self.lastReloadDate = [NSDate new];
-    [self.tableView reloadData];
+    [self reloadTableDataAndResetCellMeasurementCache];
 
     self.hasThemeChanged = YES;
 }
@@ -158,16 +147,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // transition. We reload in the right places accordingly.
 
     if (UIDevice.currentDevice.isIPad) {
-        self.lastReloadDate = [NSDate new];
-        [self.tableView reloadData];
+        [self reloadTableDataAndResetCellMeasurementCache];
     }
 
     [coordinator
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             [self applyTheme];
             if (!UIDevice.currentDevice.isIPad) {
-                self.lastReloadDate = [NSDate new];
-                [self.tableView reloadData];
+                [self reloadTableDataAndResetCellMeasurementCache];
             }
 
             // The Get Started banner will occupy most of the screen in landscape
@@ -551,9 +538,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self applyDefaultBackButton];
 
+    // TODO:
     if (self.hasThemeChanged) {
-        self.lastReloadDate = [NSDate new];
-        [self.tableView reloadData];
+        [self reloadTableData];
         self.hasThemeChanged = NO;
     }
 
@@ -831,8 +818,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateViewState];
     [self applyDefaultBackButton];
     if ([self updateHasArchivedThreadsRow]) {
-        self.lastReloadDate = [NSDate new];
-        [self.tableView reloadData];
+        [self reloadTableData];
     }
 
     [self.searchResultsController viewWillAppear:animated];
