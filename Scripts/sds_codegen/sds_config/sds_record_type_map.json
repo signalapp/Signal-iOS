@@ -31,7 +31,6 @@
     "OWSMessageContentJob": 15, 
     "OWSMessageDecryptJob": 8, 
     "OWSOutgoingPaymentMessage": 68, 
-    "OWSOutgoingResendRequest": 71, 
     "OWSReaction": 62, 
     "OWSRecipientIdentity": 38, 
     "OWSRecoverableDecryptionPlaceholder": 70, 
