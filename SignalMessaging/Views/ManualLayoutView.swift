@@ -30,7 +30,7 @@ open class ManualLayoutView: UIView, CVView {
     private var layoutBlocks = [LayoutBlock]()
     private var transformBlocks = [TransformBlock]()
 
-    public var name: String { accessibilityLabel ?? "Unknown" }
+    public let name: String
 
     override open class var layerClass: AnyClass {
         CATransformLayer.self
@@ -38,6 +38,8 @@ open class ManualLayoutView: UIView, CVView {
 
     @objc
     public required init(name: String) {
+        self.name = name
+
         super.init(frame: .zero)
 
         translatesAutoresizingMaskIntoConstraints = false
