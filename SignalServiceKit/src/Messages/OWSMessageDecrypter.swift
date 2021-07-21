@@ -344,13 +344,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                         groupId: groupId,
                         with: transaction)
                 case .resendable:
-                    // If resendable, insert a placeholder and delay showing the error until later
-                    OWSRecoverableDecryptionPlaceholder(
+                    // If resendable, insert a placeholder
+                    errorMessage = OWSRecoverableDecryptionPlaceholder(
                         failedEnvelope: envelope,
                         groupId: groupId,
-                        transaction: transaction
-                    )?.anyInsert(transaction: transaction)
-                    errorMessage = nil
+                        transaction: transaction)
                 case .implicit:
                     errorMessage = nil
                 default:
@@ -415,7 +413,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                            transaction: SDSAnyWriteTransaction) {
         let resendRequest = OWSOutgoingResendRequest(
             failedEnvelope: envelope,
-            cipherType: UInt32(cipherType.rawValue),
+            cipherType: cipherType.rawValue,
             transaction: transaction)
         messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
     }
@@ -640,54 +638,24 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 localDeviceId: Int32(localDeviceId),
                 protocolContext: transaction
             )
-        } catch let error as SecretSessionKnownSenderError {
-            let underlyingError = error.underlyingError
-
-            if isSecretSessionSelfSentMessageError(underlyingError) || !isSignalClientError(underlyingError) {
-                return .failure(underlyingError)
-            } else {
-                // Let's rebuild the envelope with the known sender info
-                let senderAddress = SignalServiceAddress(
-                    uuid: error.senderAddress.uuid,
-                    phoneNumber: error.senderAddress.e164,
-                    trustLevel: .high)
-
-                owsAssert(senderAddress.isValid)
-
-                let identifiedEnvelopeBuilder = envelope.asBuilder()
-                senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
-                senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
-                identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
-
-                let identifiedEnvelope: SSKProtoEnvelope
-                do {
-                    identifiedEnvelope = try identifiedEnvelopeBuilder.build()
-                } catch {
-                    owsFail("failure identifiedEnvelopeBuilderError: \(error)")
-                }
-                let wrappedError = processError(
-                    underlyingError,
-                    envelope: identifiedEnvelope,
-                    groupId: error.groupId,
-                    cipherType: error.cipherType,
-                    contentHint: error.contentHint,
-                    transaction: transaction)
-                return .failure(wrappedError)
-            }
+        } catch let outerError as SecretSessionKnownSenderError {
+            return .failure(handleUnidentifiedSenderDecryptionError(
+                error: outerError.underlyingError,
+                envelope: envelope.buildIdentifiedCopy(using: outerError),
+                groupId: outerError.groupId,
+                cipherType: outerError.cipherType,
+                contentHint: outerError.contentHint,
+                transaction: transaction)
+            )
         } catch {
-            if isSecretSessionSelfSentMessageError(error) || !isSignalClientError(error) {
-                return .failure(error)
-            } else {
-                let wrappedError = processError(
-                    error,
-                    envelope: envelope,
-                    groupId: nil,
-                    cipherType: .plaintext,
-                    contentHint: .default,
-                    transaction: transaction)
-
-                return .failure(wrappedError)
-            }
+            return .failure(handleUnidentifiedSenderDecryptionError(
+                error: error,
+                envelope: envelope,
+                groupId: nil,
+                cipherType: .plaintext,
+                contentHint: .default,
+                transaction: transaction)
+            )
         }
 
         if decryptResult.messageType == .prekey {
@@ -737,6 +705,51 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             ))
         } catch {
             return .failure(error)
+        }
+    }
+
+    func handleUnidentifiedSenderDecryptionError(
+        error: Error,
+        envelope: SSKProtoEnvelope,
+        groupId: Data?,
+        cipherType: CiphertextMessage.MessageType,
+        contentHint: UnidentifiedSenderMessageContent.ContentHint,
+        transaction: SDSAnyWriteTransaction
+    ) -> Error {
+        if isSecretSessionSelfSentMessageError(error) {
+            // Self-sent messages can be safely discarded. Return as-is.
+            return error
+        } else if isSignalClientError(error) {
+            return processError(error,
+                                envelope: envelope,
+                                groupId: groupId,
+                                cipherType: cipherType,
+                                contentHint: contentHint,
+                                transaction: transaction)
+        } else {
+            owsFailDebug("Could not decrypt UD message: \(error), identified envelope: \(description(for: envelope))")
+            return error
+        }
+    }
+}
+
+private extension SSKProtoEnvelope {
+    func buildIdentifiedCopy(using error: SecretSessionKnownSenderError) -> SSKProtoEnvelope {
+        let senderAddress = SignalServiceAddress(
+            uuid: error.senderAddress.uuid,
+            phoneNumber: error.senderAddress.e164,
+            trustLevel: .high)
+        owsAssert(senderAddress.isValid)
+
+        let identifiedEnvelopeBuilder = asBuilder()
+        senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
+        senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
+        identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
+
+        do {
+            return try identifiedEnvelopeBuilder.build()
+        } catch {
+            owsFail("failure identifiedEnvelopeBuilderError: \(error)")
         }
     }
 }

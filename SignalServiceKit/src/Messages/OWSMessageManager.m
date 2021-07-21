@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
     // - This is a resend of a message that we had previously failed to decrypt
     // - The message does not result in an inserted TSIncomingMessage or TSOutgoingMessage
     // For example, a read receipt. In that case, we should just clear the placeholder
-    if (plaintextData && envelope.timestamp > 0 && envelope.sourceAddress) {
+    if (envelope.timestamp > 0 && envelope.sourceAddress) {
         [self clearLeftoverPlaceholders:envelope.timestamp sender:envelope.sourceAddress transaction:transaction];
     }
 }

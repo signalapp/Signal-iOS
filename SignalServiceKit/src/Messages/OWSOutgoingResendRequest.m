@@ -7,13 +7,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSOutgoingResendRequest()
+@property (strong, nonatomic, readonly) NSData *decryptionErrorData;
+@end
+
 @implementation OWSOutgoingResendRequest
 
 - (instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                            cipherType:(uint32_t)cipherType
+                            cipherType:(uint8_t)cipherType
                            transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(envelope);
+    OWSAssertDebug(envelope.content);
     OWSAssertDebug(transaction);
 
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithUuidString:envelope.sourceUuid];
@@ -21,15 +25,21 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid UUID");
         return nil;
     }
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:sender transaction:transaction];
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:sender
+                                                                       transaction:transaction];
+    NSData *errorData = [self buildDecryptionErrorFrom:envelope.content
+                                                  type:cipherType
+                              originalMessageTimestamp:envelope.timestamp
+                                        senderDeviceId:envelope.sourceDevice];
+    if (!errorData) {
+        OWSFailDebug(@"Couldn't build DecryptionErrorMessage");
+        return nil;
+    }
 
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     self = [super initOutgoingMessageWithBuilder:builder];
     if (self) {
-        _originalMessageBytes = envelope.content;
-        _cipherType = cipherType;
-        _originalMessageTimestamp = envelope.timestamp;
-        _senderDeviceId = envelope.sourceDevice;
+        _decryptionErrorData = errorData;
     }
     return self;
 }
@@ -38,14 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
                                  thread:(TSThread *)thread
                             transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSData *decryptionErrorData = [self buildDecryptionError];
-    if (!decryptionErrorData) {
-        OWSFailDebug(@"");
-        return nil;
-    }
-
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
-    builder.decryptionErrorMessage = decryptionErrorData;
+    builder.decryptionErrorMessage = self.decryptionErrorData;
 
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];

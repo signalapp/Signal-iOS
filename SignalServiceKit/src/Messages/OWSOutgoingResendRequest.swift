@@ -7,9 +7,12 @@ import SignalClient
 extension OWSOutgoingResendRequest {
 
     @objc
-    func buildDecryptionError() -> Data? {
+    func buildDecryptionError(from originalMessageBytes: Data,
+                              type cipherType: UInt8,
+                              originalMessageTimestamp: UInt64,
+                              senderDeviceId: UInt32) -> Data? {
         do {
-            let cipherType = CiphertextMessage.MessageType(rawValue: UInt8(self.cipherType))
+            let cipherType = CiphertextMessage.MessageType(rawValue: cipherType)
             guard [.whisper, .senderKey, .preKey, .plaintext].contains(cipherType) else {
                 owsFailDebug("Invalid message type")
                 return nil

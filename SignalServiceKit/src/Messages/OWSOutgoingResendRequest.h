@@ -11,13 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingResendRequest : TSOutgoingMessage
 
 - (instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                            cipherType:(uint32_t)cipherType
+                            cipherType:(uint8_t)cipherType
                            transaction:(SDSAnyWriteTransaction *)transaction;
-
-@property (strong, nonatomic, readonly) NSData *originalMessageBytes;
-@property (assign, nonatomic, readonly) uint32_t cipherType;
-@property (assign, nonatomic, readonly) uint64_t originalMessageTimestamp;
-@property (assign, nonatomic, readonly) uint32_t senderDeviceId;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId

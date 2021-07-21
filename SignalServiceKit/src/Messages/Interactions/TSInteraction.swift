@@ -77,8 +77,9 @@ extension TSInteraction {
         from sender: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> Bool {
+        let placeholders: [TSInteraction]
         do {
-            let placeholders = try InteractionFinder.interactions(
+            placeholders = try InteractionFinder.interactions(
                 withTimestamp: timestamp,
                 filter: { candidate in
                     guard let placeholder = candidate as? OWSRecoverableDecryptionPlaceholder else { return false }
@@ -86,22 +87,23 @@ extension TSInteraction {
                 },
                 transaction: transaction
             )
-            guard !placeholders.isEmpty else {
-                return false
-            }
-
-            Logger.info("Fetched placeholder with timestamp: \(timestamp) from sender: \(sender). Performing replacement...")
-
-            if let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) {
-                owsAssertDebug(placeholders.count == 1)
-                placeholder.replaceWithInteraction(self, writeTx: transaction)
-                return true
-            } else {
-                owsFailDebug("Unexpected interaction type")
-                return false
-            }
         } catch {
-            owsFailDebug("Failed to replace placeholder interaction: \(error)")
+            owsFailDebug("Failed to fetch placeholder interaction: \(error)")
+            return false
+        }
+
+        guard !placeholders.isEmpty else {
+            return false
+        }
+
+        Logger.info("Fetched placeholder with timestamp: \(timestamp) from sender: \(sender). Performing replacement...")
+
+        if let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) {
+            owsAssertDebug(placeholders.count == 1)
+            placeholder.replaceWithInteraction(self, writeTx: transaction)
+            return true
+        } else {
+            owsFailDebug("Unexpected interaction type")
             return false
         }
     }
