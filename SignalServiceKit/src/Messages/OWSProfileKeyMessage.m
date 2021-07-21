@@ -55,6 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
     return dataProto;
 }
 
+- (SealedSenderContentHint)contentHint
+{
+    return SealedSenderContentHintImplicit;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

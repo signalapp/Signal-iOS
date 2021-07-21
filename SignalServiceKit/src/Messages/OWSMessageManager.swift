@@ -4,6 +4,32 @@
 
 import SignalClient
 
+@objc
+public enum SealedSenderContentHint: Int {
+    case `default` = 0
+    case resendable
+    case implicit
+
+    init(_ signalClientHint: UnidentifiedSenderMessageContent.ContentHint) {
+        switch signalClientHint {
+        case .default: self = .default
+        case .resendable: self = .resendable
+        case .implicit: self = .implicit
+        default:
+            owsFailDebug("Unspecified case \(signalClientHint)")
+            self = .default
+        }
+    }
+
+    public var signalClientHint: UnidentifiedSenderMessageContent.ContentHint {
+        switch self {
+        case .default: return .default
+        case .resendable: return .resendable
+        case .implicit: return .implicit
+        }
+    }
+}
+
 extension OWSMessageManager {
 
     @objc

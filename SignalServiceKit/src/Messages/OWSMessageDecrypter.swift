@@ -295,7 +295,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         envelope: SSKProtoEnvelope,
         groupId: Data?,
         cipherType: CiphertextMessage.MessageType,
-        contentHint: UnidentifiedSenderMessageContent.ContentHint,
+        contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
     ) -> Error {
         let logString = "Error while decrypting \(Self.description(forEnvelopeType: envelope)) message: \(error)"
@@ -644,7 +644,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 envelope: envelope.buildIdentifiedCopy(using: outerError),
                 groupId: outerError.groupId,
                 cipherType: outerError.cipherType,
-                contentHint: outerError.contentHint,
+                contentHint: SealedSenderContentHint(outerError.contentHint),
                 transaction: transaction)
             )
         } catch {
@@ -713,7 +713,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         envelope: SSKProtoEnvelope,
         groupId: Data?,
         cipherType: CiphertextMessage.MessageType,
-        contentHint: UnidentifiedSenderMessageContent.ContentHint,
+        contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
     ) -> Error {
         if isSecretSessionSelfSentMessageError(error) {

@@ -55,6 +55,12 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
+// Sender Key: TODO
+- (NSSet<NSString *> *)relatedUniqueIds
+{
+    return [super relatedUniqueIds];
+}
+
 @end
 
 @interface OWSLinkedDeviceViewedReceipt ()

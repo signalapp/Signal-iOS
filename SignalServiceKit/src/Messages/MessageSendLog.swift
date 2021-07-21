@@ -14,13 +14,13 @@ public class MessageSendLog: NSObject {
 
         var payloadId: Int64?
         let plaintextContent: Data
-        let contentHint: UnidentifiedSenderMessageContent.ContentHint
+        let contentHint: SealedSenderContentHint
         let sentTimestamp: Date
         let uniqueThreadId: String
 
         init(
             plaintextContent: Data,
-            contentHint: UnidentifiedSenderMessageContent.ContentHint,
+            contentHint: SealedSenderContentHint,
             sentTimestamp: Date,
             uniqueThreadId: String
         ) {
@@ -193,4 +193,4 @@ public class MessageSendLog: NSObject {
     }
 }
 
-extension UnidentifiedSenderMessageContent.ContentHint: Codable {}
+extension SealedSenderContentHint: Codable {}

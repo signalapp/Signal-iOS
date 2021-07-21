@@ -48,4 +48,9 @@
     return builder;
 }
 
+- (SealedSenderContentHint)contentHint
+{
+    return SealedSenderContentHintDefault;
+}
+
 @end

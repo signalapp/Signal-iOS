@@ -142,6 +142,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (NSSet<NSString *> *)relatedUniqueIds
+{
+    return [[super relatedUniqueIds] setByAddingObjectsFromArray:@[ self.messageUniqueId ]];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

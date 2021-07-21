@@ -1825,7 +1825,7 @@ extension MessageSender {
 
     func senderKeyMessageBody(
         plaintext: Data,
-        contentHint: UnidentifiedSenderMessageContent.ContentHint,
+        contentHint: SealedSenderContentHint,
         thread: TSGroupThread,
         recipients: [Recipient],
         senderCertificate: SenderCertificate,
@@ -1846,7 +1846,7 @@ extension MessageSender {
             senderCertificate: senderCertificate,
             groupId: thread.groupId,
             distributionId: distributionId,
-            contentHint: contentHint,
+            contentHint: contentHint.signalClientHint,
             protocolContext: writeTx)
 
         guard ciphertext.count <= MessageProcessor.largeEnvelopeWarningByteCount else {

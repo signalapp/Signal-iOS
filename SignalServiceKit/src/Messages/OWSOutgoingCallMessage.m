@@ -230,11 +230,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithFormat:@"%@ with payload: %@", className, payload];
 }
 
-#pragma mark - TSOutgoingMessage: Message Send Log Overrides
-
 - (BOOL)shouldRecordSendLog
 {
     return NO;
+}
+
+- (SealedSenderContentHint)contentHint
+{
+    return SealedSenderContentHintDefault;
 }
 
 @end

@@ -199,6 +199,11 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
+- (NSSet<NSString *> *)relatedUniqueIds
+{
+    return [[super relatedUniqueIds] setByAddingObjectsFromArray:@[ self.message.uniqueId ]];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

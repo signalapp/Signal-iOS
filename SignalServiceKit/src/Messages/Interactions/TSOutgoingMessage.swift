@@ -145,20 +145,25 @@ public extension TSOutgoingMessage {
 }
 
 // MARK: Message Send Log
-extension TSOutgoingMessage {
-    var date: Date {
-        Date(millisecondsSince1970: self.timestamp)
-    }
 
+extension TSOutgoingMessage {
+
+    // Subclasses should override to include any related interaction ids
+    // This is used to help prune the Message Send Log. eg. deleting a message
+    // will trigger a delete of a reaction payload for that message.
     @objc
     var relatedUniqueIds: Set<String> {
-        // Sender Key TODO: Subclasses should specify related uniqueIds
         Set([self.uniqueId])
     }
 
-    var contentHint: UnidentifiedSenderMessageContent.ContentHint {
-        // Sender Key TODO: Subclasses should specify their content hint
-        .default
+    // Most messages are resendable by default
+    // `.default` should be used if the message contains content but will most
+    // likely not be resent (e.g. a call message)
+    // `.implicit` should be used if the message contains no user-visible content
+    // and will not be resent (e.g. sync requests)
+    @objc
+    var contentHint: SealedSenderContentHint {
+        .resendable
     }
 
     @objc

@@ -92,7 +92,9 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         return "typingIndicatorMessage"
     }
 
-    // Message Send Log overrides
     @objc
     override var shouldRecordSendLog: Bool { false }
+
+    @objc
+    override var contentHint: SealedSenderContentHint { .implicit }
 }
