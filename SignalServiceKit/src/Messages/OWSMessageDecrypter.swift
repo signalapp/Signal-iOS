@@ -331,11 +331,17 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let errorMessage: TSErrorMessage?
         if envelope.hasSourceUuid {
-            let supportsModernResend = GroupManager.doesUserHaveSenderKeyCapability(
+            let remoteUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
                 address: sourceAddress,
                 transaction: transaction)
+            let localUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
+                address: sourceAddress,
+                transaction: transaction)
+            let supportsModernResend = remoteUserSupportsSenderKey && localUserSupportsSenderKey
 
             if supportsModernResend {
+                Logger.info("Performing modern resend of \(contentHint) content with timestamp \(envelope.timestamp)")
+
                 switch contentHint {
                 case .default:
                     // If default, insert an error message right away
@@ -361,6 +367,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 // the session.
                 sendResendRequest(envelope: envelope, cipherType: cipherType, transaction: transaction)
             } else {
+                Logger.info("Performing legacy session reset of \(contentHint) content with timestamp \(envelope.timestamp)")
+
                 let didReset = resetSessionIfNecessary(
                     envelope: envelope,
                     contactThread: contactThread,

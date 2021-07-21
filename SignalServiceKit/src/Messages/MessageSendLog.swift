@@ -8,7 +8,13 @@ import GRDB
 @objc
 public class MessageSendLog: NSObject {
 
-    struct Payload: Codable, FetchableRecord, MutablePersistableRecord {
+    private static let payloadLifetime = -kDayInterval
+    private static var payloadExpirationDate: Date {
+        Date(timeIntervalSinceNow: payloadLifetime)
+    }
+
+    @objc
+    class Payload: NSObject, Codable, FetchableRecord, MutablePersistableRecord {
         static let databaseTableName = "MessageSendLog_Payload"
         static let recipient = hasMany(Recipient.self)
 
@@ -30,8 +36,8 @@ public class MessageSendLog: NSObject {
             self.uniqueThreadId = uniqueThreadId
         }
 
-        mutating func didInsert(with rowID: Int64, for column: String?) {
-            guard column == "payloadId" else { return owsFailDebug("") }
+        func didInsert(with rowID: Int64, for column: String?) {
+            guard column == "payloadId" else { return owsFailDebug("Expected payloadId") }
             payloadId = rowID
         }
     }
@@ -75,7 +81,7 @@ public class MessageSendLog: NSObject {
         var payload = Payload(
             plaintextContent: plaintext,
             contentHint: message.contentHint,
-            sentTimestamp: message.date,
+            sentTimestamp: Date(millisecondsSince1970: message.timestamp),
             uniqueThreadId: message.uniqueThreadId)
 
         do {
@@ -91,7 +97,7 @@ public class MessageSendLog: NSObject {
 
         } catch {
             // We don't anticipate any other error.
-            owsFailDebug("")
+            owsFailDebug("Unexpected MSL payload insertion error \(error)")
             return nil
         }
 
@@ -107,7 +113,7 @@ public class MessageSendLog: NSObject {
             }
             return NSNumber(value: payloadId)
         } catch {
-            owsFailDebug("")
+            owsFailDebug("Unexpected message relation error \(error)")
             return nil
         }
     }
@@ -118,6 +124,11 @@ public class MessageSendLog: NSObject {
         timestamp: Date,
         transaction readTx: SDSAnyReadTransaction
     ) -> Payload? {
+        guard timestamp.isAfter(payloadExpirationDate) else {
+            Logger.info("Ignoring payload lookup for timestamp before expiration")
+            return nil
+        }
+
         do {
             let recipientAlias = TableAlias()
             let request = Payload
@@ -151,7 +162,7 @@ public class MessageSendLog: NSObject {
                 recipientDeviceId: recipientDeviceId
             ).insert(writeTx.unwrapGrdbWrite.database)
         } catch {
-            owsFailDebug("")
+            owsFailDebug("Failed to record pending delivery \(error)")
         }
     }
 
@@ -170,7 +181,7 @@ public class MessageSendLog: NSObject {
                 .filter(Column("recipientDeviceId") == recipientDeviceId)
                 .deleteAll(writeTx.unwrapGrdbWrite.database)
         } catch {
-            owsFailDebug("")
+            owsFailDebug("Failed to record successful delivery \(error)")
         }
     }
 
@@ -179,12 +190,13 @@ public class MessageSendLog: NSObject {
         _ interaction: TSInteraction,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
+        Logger.info("Deleting all MSL payload entries related to \(interaction.uniqueId)")
         do {
             try Recipient
                 .filter(Column("uniqueId") == interaction.uniqueId)
                 .deleteAll(writeTx.unwrapGrdbWrite.database)
         } catch {
-            owsFailDebug("")
+            owsFailDebug("Failed to delete payloads for interaction(\(interaction.uniqueId)): \(error)")
         }
     }
 

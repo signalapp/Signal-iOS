@@ -70,8 +70,7 @@ extension OWSMessageManager {
         do {
             let errorMessage = try DecryptionErrorMessage(bytes: bytes)
             guard errorMessage.deviceId == tsAccountManager.storedDeviceId() else {
-                // Not for this device. Let the other device handle this.
-                Logger.info("")
+                Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }
             let protocolAddress = try ProtocolAddress(name: sourceUuid, deviceId: sourceDeviceId)
@@ -81,13 +80,16 @@ extension OWSMessageManager {
             if let ratchetKey = errorMessage.ratchetKey {
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
+                    Logger.info("Decryption error included ratchet key. Archiving...")
                     sessionStore.archiveSession(for: sourceAddress,
                                                 deviceId: Int32(sourceDeviceId),
                                                 transaction: writeTx)
+                } else {
+                    Logger.info("Ratchet key mismatch. Leaving session as-is.")
                 }
             }
 
-            Logger.warn("Attempt to retry message \(errorMessage)")
+            Logger.warn("Performing message resend of timestamp \(errorMessage.timestamp)")
             let resendResponse = OWSOutgoingResendResponse(
                 address: sourceAddress,
                 deviceId: Int64(sourceDeviceId),

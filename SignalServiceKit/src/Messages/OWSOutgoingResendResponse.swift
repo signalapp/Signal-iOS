@@ -4,10 +4,14 @@
 
 import Foundation
 
+@objc
 class OWSOutgoingResendResponse: TSOutgoingMessage {
-    var originalPayload: MessageSendLog.Payload?
-    var originalThread: TSThread?
+    @objc
+    let originalPayload: MessageSendLog.Payload?
+    @objc
+    let originalThread: TSThread?
 
+    @objc
     init(address: SignalServiceAddress,
          deviceId: Int64,
          failedTimestamp: Int64,
@@ -21,6 +25,8 @@ class OWSOutgoingResendResponse: TSOutgoingMessage {
 
         if let originalThreadId = originalPayload?.uniqueThreadId {
             originalThread = TSThread.anyFetch(uniqueId: originalThreadId, transaction: transaction)
+        } else {
+            originalThread = nil
         }
 
         if let groupThread = originalThread as? TSGroupThread {
@@ -39,24 +45,22 @@ class OWSOutgoingResendResponse: TSOutgoingMessage {
             builder.timestamp = originalTimestamp.ows_millisecondsSince1970
         }
         super.init(outgoingMessageWithBuilder: builder)
+        Logger.info("Did \(originalPayload == nil ? "not ": "")fetch an MSL entry for timestamp \(failedTimestamp)")
     }
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
 
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
+    required init(dictionary dictionaryValue: [String : Any]!) throws {
+        fatalError("init(dictionary:) has not been implemented")
     }
 
-    override var shouldBeSaved: Bool { false }
-    override func shouldSyncTranscript() -> Bool { false }
-
+    @objc
     public override func buildPlainTextData(
         _ thread: TSThread,
         transaction: SDSAnyReadTransaction
     ) -> Data? {
-
         let originalProto: SSKProtoContent?
         do {
             if let originalPlaintext = originalPayload?.plaintextContent {
@@ -104,4 +108,6 @@ class OWSOutgoingResendResponse: TSOutgoingMessage {
     }
 
     override var shouldRecordSendLog: Bool { false }
+    override var shouldBeSaved: Bool { false }
+    override func shouldSyncTranscript() -> Bool { false }
 }

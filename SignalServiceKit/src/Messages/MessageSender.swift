@@ -932,7 +932,7 @@ public extension MessageSender {
                       let uuid = UUID(uuidString: uuidString),
                       let deviceId = messageDict["destinationDeviceId"] as? Int64,
                       uuid == messageSend.address.uuid else {
-                    owsFailDebug("")
+                    owsFailDebug("Expected a destination deviceId")
                     return
                 }
 
@@ -1371,7 +1371,16 @@ extension MessageSender {
         guard thread.isGroupV2Thread else { return [] }
 
         return databaseStorage.read { readTx in
-            intendedRecipients
+            guard let localAddress = self.tsAccountManager.localAddress else {
+                owsFailDebug("No local address. Sender key not supported")
+                return []
+            }
+            guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: readTx) else {
+                Logger.info("Local user does not have sender key capability. Sender key not supported.")
+                return []
+            }
+
+            return intendedRecipients
                 .filter { thread.recipientAddresses.contains($0) }
                 .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
                 .filter { !$0.isLocalAddress }
@@ -1457,6 +1466,7 @@ extension MessageSender {
                     udAccessMap: udAccessMap,
                     senderCertificate: senderCertificates.uuidOnlyCert)
             }.done(on: self.senderKeyQueue) { sendResult in
+                Logger.info("Sender key message sent. Success/Unregistered: \(sendResult.success.count)/\(sendResult.unregistered.count)")
                 try self.databaseStorage.write { writeTx in
 
                     sendResult.unregistered.forEach { recipient in
@@ -1491,6 +1501,7 @@ extension MessageSender {
 
             }.recover(on: self.senderKeyQueue) { error in
                 // If the sender key message failed to send, fail each recipient that we hoped to send it to.
+                Logger.error("Sender key send failed: \(error)")
                 senderKeyRecipients.forEach { wrappedSendErrorBlock($0, error) }
             }
         }
@@ -1544,6 +1555,7 @@ extension MessageSender {
             }
 
             return recipientsNeedingSKDM.map { address in
+                Logger.info("Sending SKDM to \(address) for thread \(thread.groupId)")
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: writeTx)
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
