@@ -309,7 +309,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             }
             let newThreadViewModel = ThreadViewModel(
                 thread: newThread,
-                forConversationList: false,
+                forHomeView: false,
                 transaction: transaction
             )
             self.threadViewModel = newThreadViewModel

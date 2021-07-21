@@ -5,12 +5,12 @@
 import UIKit
 
 @objc
-public class ConversationListCell: UITableViewCell {
+public class HomeViewCell: UITableViewCell {
 
     @objc
-    public static let reuseIdentifier = "ConversationListCell"
+    public static let reuseIdentifier = "HomeViewCell"
 
-    private let avatarView = ConversationAvatarView(diameterPoints: ConversationListCell.avatarSize,
+    private let avatarView = ConversationAvatarView(diameterPoints: HomeViewCell.avatarSize,
                                                     localUserDisplayMode: .noteToSelf,
                                                     shouldLoadAsync: false)
 
@@ -52,7 +52,7 @@ public class ConversationListCell: UITableViewCell {
         ]
     }
 
-    @objc(ConversationListCellConfiguration)
+    @objc(HomeViewCellConfiguration)
     public class Configuration: NSObject {
         let thread: ThreadViewModel
         let shouldLoadAvatarAsync: Bool
@@ -166,7 +166,7 @@ public class ConversationListCell: UITableViewCell {
         avatarView.shouldLoadAsync = configuration.shouldLoadAvatarAsync
         avatarView.configureWithSneakyTransaction(thread: thread.threadRecord)
 
-        typingIndicatorView.configureForConversationList()
+        typingIndicatorView.configureForHomeView()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(otherUsersProfileDidChange(notification:)),
@@ -179,7 +179,7 @@ public class ConversationListCell: UITableViewCell {
 
         // Avatar
 
-        let avatarSize: CGSize = .square(CGFloat(ConversationListCell.avatarSize))
+        let avatarSize: CGSize = .square(CGFloat(HomeViewCell.avatarSize))
         let avatarStackSize = avatarStack.configure(config: ManualStackView.Config(axis: .horizontal,
                                                                                    alignment: .center,
                                                                                    spacing: 0,
@@ -472,7 +472,7 @@ public class ConversationListCell: UITableViewCell {
             // If you haven't accepted the message request for this thread, don't show the latest message
 
             // For group threads, show who we think added you (if we know)
-            if let addedToGroupByName = thread.conversationListInfo?.addedToGroupByName {
+            if let addedToGroupByName = thread.homeViewInfo?.addedToGroupByName {
                 let addedToGroupFormat = NSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
                                                            comment: "Table cell subtitle label for a group the user has been added to. {Embeds inviter name}")
                 snippetText.append(String(format: addedToGroupFormat, addedToGroupByName),
@@ -491,7 +491,7 @@ public class ConversationListCell: UITableViewCell {
                                    ])
             }
         } else {
-            if let draftText = thread.conversationListInfo?.draftText?.nilIfEmpty,
+            if let draftText = thread.homeViewInfo?.draftText?.nilIfEmpty,
                !hasUnreadStyle {
                 snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
                                                      comment: "A prefix indicating that a message preview is a draft"),
@@ -504,7 +504,7 @@ public class ConversationListCell: UITableViewCell {
                                     .font: snippetFont,
                                     .foregroundColor: snippetColor
                                    ])
-            } else if thread.conversationListInfo?.hasVoiceMemoDraft == true,
+            } else if thread.homeViewInfo?.hasVoiceMemoDraft == true,
                       !hasUnreadStyle {
                 snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
                                                      comment: "A prefix indicating that a message preview is a draft"),
@@ -529,8 +529,8 @@ public class ConversationListCell: UITableViewCell {
                                     .foregroundColor: snippetColor
                                    ])
             } else {
-                if let lastMessageText = thread.conversationListInfo?.lastMessageText.filterStringForDisplay().nilIfEmpty {
-                    if let senderName = thread.conversationListInfo?.lastMessageSenderName {
+                if let lastMessageText = thread.homeViewInfo?.lastMessageText.filterStringForDisplay().nilIfEmpty {
+                    if let senderName = thread.homeViewInfo?.lastMessageSenderName {
                         snippetText.append(senderName,
                                            attributes: [
                                             .font: snippetFont.ows_medium,
@@ -566,7 +566,7 @@ public class ConversationListCell: UITableViewCell {
     private func dateTimeLabelConfig(configuration: Configuration) -> CVLabelConfig {
         let thread = configuration.thread
         var text: String = ""
-        if let labelDate = configuration.overrideDate ?? thread.conversationListInfo?.lastMessageDate {
+        if let labelDate = configuration.overrideDate ?? thread.homeViewInfo?.lastMessageDate {
             text = DateUtil.formatDateShort(labelDate)
         }
         if hasUnreadStyle {

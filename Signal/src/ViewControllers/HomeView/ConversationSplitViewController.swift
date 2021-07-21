@@ -10,10 +10,10 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
 
-    private let conversationListVC = ConversationListViewController()
+    private let homeVC = HomeViewController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
-    private lazy var primaryNavController = OWSNavigationController(rootViewController: conversationListVC)
+    private lazy var primaryNavController = OWSNavigationController(rootViewController: homeVC)
     private lazy var detailNavController = OWSNavigationController()
     private lazy var lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
 
@@ -171,11 +171,11 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         // Update the last viewed thread on the conversation list so it
         // can maintain its scroll position when navigating back.
-        conversationListVC.lastViewedThread = thread
+        homeVC.lastViewedThread = thread
 
         let threadViewModel = databaseStorage.read {
             return ThreadViewModel(thread: thread,
-                                   forConversationList: false,
+                                   forHomeView: false,
                                    transaction: $0)
         }
         let vc = ConversationViewController(threadViewModel: threadViewModel, action: action, focusMessageId: focusMessageId)
@@ -413,39 +413,39 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     }
 
     @objc func showNewConversationView() {
-        conversationListVC.showNewConversationView()
+        homeVC.showNewConversationView()
     }
 
     @objc func showNewGroupView() {
-        conversationListVC.showNewGroupView()
+        homeVC.showNewGroupView()
     }
 
     @objc func showAppSettings() {
-        conversationListVC.showAppSettings()
+        homeVC.showAppSettings()
     }
 
     func showAppSettingsWithMode(_ mode: ShowAppSettingsMode) {
-        conversationListVC.showAppSettings(mode: mode)
+        homeVC.showAppSettings(mode: mode)
     }
 
     @objc func focusSearch() {
-        conversationListVC.focusSearch()
+        homeVC.focusSearch()
     }
 
     @objc func selectPreviousConversation() {
-        conversationListVC.selectPreviousConversation()
+        homeVC.selectPreviousConversation()
     }
 
     @objc func selectNextConversation(_ sender: UIKeyCommand) {
-        conversationListVC.selectNextConversation()
+        homeVC.selectNextConversation()
     }
 
     @objc func archiveSelectedConversation() {
-        conversationListVC.archiveSelectedConversation()
+        homeVC.archiveSelectedConversation()
     }
 
     @objc func unarchiveSelectedConversation() {
-        conversationListVC.unarchiveSelectedConversation()
+        homeVC.unarchiveSelectedConversation()
     }
 
     @objc func openConversationSettings() {
@@ -554,7 +554,7 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         // If we're collapsed and navigating to a list VC (either inbox or archive)
         // the current conversation is no longer selected.
-        guard isCollapsed, viewController is ConversationListViewController else { return }
+        guard isCollapsed, viewController is HomeViewController else { return }
         selectedConversationViewController = nil
     }
 
@@ -575,7 +575,7 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
     }
 }
 
-@objc extension ConversationListViewController {
+@objc extension HomeViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController
     }

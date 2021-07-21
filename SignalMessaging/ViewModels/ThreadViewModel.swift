@@ -47,12 +47,12 @@ public class ThreadViewModel: NSObject {
     @objc
     public let lastMessageForInbox: TSInteraction?
 
-    // This property is only set if forConversationList is true.
+    // This property is only set if forHomeView is true.
     @objc
-    public let conversationListInfo: ConversationListInfo?
+    public let homeViewInfo: HomeViewInfo?
 
     @objc
-    public init(thread: TSThread, forConversationList: Bool, transaction: SDSAnyReadTransaction) {
+    public init(thread: TSThread, forHomeView: Bool, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
         self.disappearingMessagesConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
 
@@ -81,12 +81,12 @@ public class ThreadViewModel: NSObject {
 
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
 
-        if forConversationList {
-            conversationListInfo = ConversationListInfo(thread: thread,
+        if forHomeView {
+            homeViewInfo = HomeViewInfo(thread: thread,
                                                         lastMessageForInbox: lastMessageForInbox,
                                                         transaction: transaction)
         } else {
-            conversationListInfo = nil
+            homeViewInfo = nil
         }
 
         self.hasWallpaper = Wallpaper.exists(for: thread, transaction: transaction)
@@ -105,7 +105,7 @@ public class ThreadViewModel: NSObject {
 // MARK: -
 
 @objc
-public class ConversationListInfo: NSObject {
+public class HomeViewInfo: NSObject {
 
     @objc
     public let draftText: String?

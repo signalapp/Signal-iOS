@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension ConversationListViewController {
+extension HomeViewController {
 
     @objc
     public func observeNotifications() {
@@ -156,7 +156,7 @@ extension ConversationListViewController {
 
 // MARK: - Notifications
 
-extension ConversationListViewController: DatabaseChangeDelegate {
+extension HomeViewController: DatabaseChangeDelegate {
     public func databaseChangesWillUpdate() {
         AssertIsOnMainThread()
 

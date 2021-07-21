@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public extension ConversationListViewController {
+public extension HomeViewController {
 
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
                                              paymentModel: TSPaymentModel,
@@ -185,7 +185,7 @@ public enum ShowAppSettingsMode {
 
 // MARK: -
 
-public extension ConversationListViewController {
+public extension HomeViewController {
 
     @objc
     func showAppSettings() {

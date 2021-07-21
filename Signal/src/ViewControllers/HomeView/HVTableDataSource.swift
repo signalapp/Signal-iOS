@@ -9,7 +9,7 @@ public class HVTableDataSource: NSObject {
     private var viewState: HVViewState!
 
     @objc
-    public weak var viewController: ConversationListViewController?
+    public weak var viewController: HomeViewController?
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
@@ -33,7 +33,7 @@ public class HVTableDataSource: NSObject {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.separatorColor = Theme.cellSeparatorColor
-        tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.reuseIdentifier)
+        tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.reuseIdentifier)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: kArchivedConversationsReuseIdentifier)
         tableView.tableFooterView = UIView()
     }
@@ -48,7 +48,7 @@ extension HVTableDataSource {
             return value
         }
         let threadViewModel = databaseStorage.read { transaction in
-            ThreadViewModel(thread: thread, forConversationList: true, transaction: transaction)
+            ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
         }
         threadViewModelCache.set(key: thread.uniqueId, value: threadViewModel)
         return threadViewModel
@@ -71,7 +71,7 @@ extension HVTableDataSource {
 
 // TODO: Revisit
 @objc
-public enum ConversationListMode: Int, CaseIterable {
+public enum HomeViewMode: Int, CaseIterable {
     case archive
     case inbox
 }
@@ -252,7 +252,7 @@ extension HVTableDataSource: UITableViewDelegate {
         // defer data source updates until the transition completes but, as far as I can tell, we aren't
         // notified when this happens.
 
-        guard let cell = tableView.cellForRow(at: indexPath) as? ConversationListCell else {
+        guard let cell = tableView.cellForRow(at: indexPath) as? HomeViewCell else {
             owsFailDebug("Invalid cell.")
             return nil
         }
@@ -347,7 +347,7 @@ extension HVTableDataSource: UITableViewDataSource {
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationListCell.reuseIdentifier) as? ConversationListCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
@@ -366,14 +366,14 @@ extension HVTableDataSource: UITableViewDataSource {
         // but subsequent avatar loads (e.g. from scrolling) should
         // be async.
         //
-        // TODO: We should add an explicit "isReloadingAll" flag to ConversationListViewController.
+        // TODO: We should add an explicit "isReloadingAll" flag to HomeViewController.
         let avatarAsyncLoadInterval: TimeInterval = kSecondInterval * 1
         let lastReloadInterval: TimeInterval = abs(viewState.lastReloadDate?.timeIntervalSinceNow ?? 0)
         let shouldLoadAvatarAsync = (viewState.hasEverAppeared
                                         && (viewState.lastReloadDate == nil ||
                                                 lastReloadInterval > avatarAsyncLoadInterval))
         let isBlocked = viewState.blocklistCache.isBlocked(thread: thread)
-        let configuration = ConversationListCell.Configuration(thread: threadViewModel,
+        let configuration = HomeViewCell.Configuration(thread: threadViewModel,
                                                                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                                                                isBlocked: isBlocked)
         cell.configure(configuration)
@@ -390,12 +390,12 @@ extension HVTableDataSource: UITableViewDataSource {
         }()
         cell.accessibilityIdentifier = cellName
 
-        let archiveTitle = (viewState.conversationListMode == .inbox
+        let archiveTitle = (viewState.homeViewMode == .inbox
                                 ? CommonStrings.archiveAction
                                 : CommonStrings.unarchiveAction)
 
         // TODO: Test selector.
-        let performAccessibilityCustomActionSelector = #selector(ConversationListViewController.performAccessibilityCustomAction)
+        let performAccessibilityCustomActionSelector = #selector(HomeViewController.performAccessibilityCustomAction)
 
         let archiveAction = HVCellAccessibilityCustomAction(name: archiveTitle,
                                                             type: .archive,
@@ -550,7 +550,7 @@ extension HVTableDataSource: UITableViewDataSource {
                 completion(false)
             }
 
-            let archiveTitle = (viewController.conversationListMode == .inbox
+            let archiveTitle = (viewController.homeViewMode == .inbox
                                     ? CommonStrings.archiveAction
                                     : CommonStrings.unarchiveAction)
 

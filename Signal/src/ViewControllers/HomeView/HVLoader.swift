@@ -385,7 +385,7 @@ public class HVLoader: NSObject {
 
         // We then check for items that moved within the same section.
         // UICollectionView cannot reload and move an item in the same
-        // PerformBatchUpdates, so ConversationListViewController
+        // PerformBatchUpdates, so HomeViewController
         // performs these moves using an insert and a delete to ensure
         // that the moved item is reloaded. This is how UICollectionView
         // performs reloads internally.

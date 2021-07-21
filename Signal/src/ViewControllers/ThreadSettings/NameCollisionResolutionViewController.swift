@@ -73,7 +73,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     func updateModel() {
         cellModels = databaseStorage.read(block: { readTx in
             if self.groupViewHelper == nil, self.thread.isGroupThread {
-                let threadViewModel = ThreadViewModel(thread: self.thread, forConversationList: false, transaction: readTx)
+                let threadViewModel = ThreadViewModel(thread: self.thread, forHomeView: false, transaction: readTx)
                 self.groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
                 self.groupViewHelper?.delegate = self
             }

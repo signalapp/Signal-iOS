@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class HVViewState;
 @class TSThread;
 
-@interface ConversationListViewController : OWSViewController
+@interface HomeViewController : OWSViewController
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated;
 
