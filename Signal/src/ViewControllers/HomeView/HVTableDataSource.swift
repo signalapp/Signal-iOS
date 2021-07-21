@@ -373,9 +373,11 @@ extension HVTableDataSource: UITableViewDataSource {
                                         && (viewState.lastReloadDate == nil ||
                                                 lastReloadInterval > avatarAsyncLoadInterval))
         let isBlocked = viewState.blocklistCache.isBlocked(thread: thread)
+        let cellMeasurementCache = viewController.cellMeasurementCache
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
-                                                               shouldLoadAvatarAsync: shouldLoadAvatarAsync,
-                                                               isBlocked: isBlocked)
+                                                       shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                                                       isBlocked: isBlocked,
+                                                       cellMeasurementCache: cellMeasurementCache)
         cell.configure(configuration)
 
         let cellName: String = {

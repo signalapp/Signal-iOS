@@ -75,6 +75,7 @@ extension HomeViewController {
 
         tableDataSource.renderState = renderState
         threadViewModelCache.clear()
+        cellMeasurementCache.clear()
         _ = updateHasArchivedThreadsRow()
         reloadTableViewData()
         updateViewState()
@@ -122,12 +123,14 @@ extension HomeViewController {
 
         let tableView = self.tableView
         let threadViewModelCache = self.threadViewModelCache
+        let cellMeasurementCache = self.cellMeasurementCache
         let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
         let applyChanges = {
             tableView.beginUpdates()
             for rowChange in mappingDiff.rowChanges {
 
                 threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
+                cellMeasurementCache.removeObject(forKey: rowChange.threadUniqueId)
 
                 switch rowChange.type {
                 case .delete(let oldIndexPath):

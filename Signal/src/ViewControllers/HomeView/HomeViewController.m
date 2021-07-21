@@ -313,13 +313,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [layerView.layer addSublayer:shapeLayer];
     layerView.layoutCallback = ^(UIView *view) {
         UIBezierPath *bezierPath = [UIBezierPath new];
-
+        
         // Bubble
         CGRect bubbleBounds = view.bounds;
         bubbleBounds.origin.y += kTailHeight;
         bubbleBounds.size.height -= kTailHeight;
         [bezierPath appendPath:[UIBezierPath bezierPathWithRoundedRect:bubbleBounds cornerRadius:8]];
-
+        
         // Tail
         CGPoint tailTop = CGPointMake(kTailHMargin + kTailWidth * 0.5f, 0.f);
         CGPoint tailLeft = CGPointMake(kTailHMargin, kTailHeight);

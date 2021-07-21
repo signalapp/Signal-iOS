@@ -118,7 +118,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // Without this fix, the space between the primary and detail view has a
         // hairline of the wrong color, most apparent in dark mode.
         guard !hasHiddenExtraSubivew, let firstSubview = view.subviews.first,
-            !viewControllers.map({ $0.view }).contains(firstSubview) else { return }
+              !viewControllers.map({ $0.view }).contains(firstSubview) else { return }
         hasHiddenExtraSubivew = true
         firstSubview.isHidden = true
     }
@@ -228,7 +228,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             // The normal behavior of `showDetailViewController` pushes on
             // top of it in collapsed mode.
             if let currentDetailVC = currentDetailViewController,
-                let detailVCIndex = viewControllersToDisplay.firstIndex(of: currentDetailVC) {
+               let detailVCIndex = viewControllersToDisplay.firstIndex(of: currentDetailVC) {
                 viewControllersToDisplay = Array(viewControllersToDisplay[0..<detailVCIndex])
             }
             viewControllersToDisplay.append(vc)
@@ -522,8 +522,8 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         // show the placeholder view as no conversation is selected. The conversation
         // was likely popped from the stack while the split view was collapsed.
         guard let currentConversationVC = selectedConversationViewController,
-            let conversationVCIndex = primaryNavController.viewControllers.firstIndex(of: currentConversationVC) else {
-                self.selectedConversationViewController = nil
+              let conversationVCIndex = primaryNavController.viewControllers.firstIndex(of: currentConversationVC) else {
+            self.selectedConversationViewController = nil
             return detailPlaceholderVC
         }
 

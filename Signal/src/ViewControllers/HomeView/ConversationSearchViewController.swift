@@ -20,6 +20,7 @@ public class ConversationSearchViewController: UITableViewController {
 
     private var viewHasAppeared = false
     private var lastReloadDate: Date?
+    private let cellMeasurementCache = LRUCache<String, HVCellMeasurement>(maxSize: 256)
 
     @objc
     public var searchText = "" {
@@ -100,6 +101,12 @@ public class ConversationSearchViewController: UITableViewController {
         updateSeparators()
     }
 
+    private func reloadTableData() {
+        self.lastReloadDate = Date()
+        self.cellMeasurementCache.clear()
+        self.tableView.reloadData()
+    }
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -109,8 +116,7 @@ public class ConversationSearchViewController: UITableViewController {
         hasThemeChanged = false
 
         applyTheme()
-        self.lastReloadDate = Date()
-        self.tableView.reloadData()
+        reloadTableData()
         self.viewHasAppeared = true
     }
 
@@ -123,8 +129,7 @@ public class ConversationSearchViewController: UITableViewController {
         AssertIsOnMainThread()
 
         applyTheme()
-        self.lastReloadDate = Date()
-        self.tableView.reloadData()
+        reloadTableData()
 
         hasThemeChanged = true
     }
@@ -140,8 +145,8 @@ public class ConversationSearchViewController: UITableViewController {
         AssertIsOnMainThread()
 
         self.tableView.separatorStyle = (searchResultSet.isEmpty
-            ? UITableViewCell.SeparatorStyle.none
-            : UITableViewCell.SeparatorStyle.singleLine)
+                                            ? UITableViewCell.SeparatorStyle.none
+                                            : UITableViewCell.SeparatorStyle.singleLine)
     }
 
     // MARK: UITableViewDelegate
@@ -240,6 +245,7 @@ public class ConversationSearchViewController: UITableViewController {
             let avatarAsyncLoadInterval = kSecondInterval * 1
             return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
         }()
+        let cellMeasurementCache = self.cellMeasurementCache
 
         switch searchSection {
         case .noResults:
@@ -271,7 +277,8 @@ public class ConversationSearchViewController: UITableViewController {
             cell.configure(.init(
                 thread: searchResult.thread,
                 shouldLoadAvatarAsync: shouldLoadAvatarAsync,
-                isBlocked: isBlocked(thread: searchResult.thread)
+                isBlocked: isBlocked(thread: searchResult.thread),
+                cellMeasurementCache: cellMeasurementCache
             ))
             return cell
         case .groupThreads:
@@ -290,7 +297,8 @@ public class ConversationSearchViewController: UITableViewController {
                 shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
-                overrideDate: nil
+                overrideDate: nil,
+                cellMeasurementCache: cellMeasurementCache
             ))
             return cell
         case .contacts:
@@ -342,7 +350,8 @@ public class ConversationSearchViewController: UITableViewController {
                 shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
-                overrideDate: overrideDate
+                overrideDate: overrideDate,
+                cellMeasurementCache: cellMeasurementCache
             ))
 
             return cell
@@ -466,8 +475,7 @@ public class ConversationSearchViewController: UITableViewController {
         guard searchText.count > 0 else {
             searchResultSet = HomeScreenSearchResultSet.empty
             lastSearchText = nil
-            self.lastReloadDate = Date()
-            tableView.reloadData()
+            reloadTableData()
             return
         }
         guard lastSearchText != searchText else {
@@ -482,22 +490,21 @@ public class ConversationSearchViewController: UITableViewController {
             guard let strongSelf = self else { return }
             searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
         },
-                                            completion: { [weak self] in
-                                                AssertIsOnMainThread()
-                                                guard let self = self else { return }
+        completion: { [weak self] in
+            AssertIsOnMainThread()
+            guard let self = self else { return }
 
-                                                guard let results = searchResults else {
-                                                    owsFailDebug("searchResults was unexpectedly nil")
-                                                    return
-                                                }
-                                                guard self.lastSearchText == searchText else {
-                                                    // Discard results from stale search.
-                                                    return
-                                                }
+            guard let results = searchResults else {
+                owsFailDebug("searchResults was unexpectedly nil")
+                return
+            }
+            guard self.lastSearchText == searchText else {
+                // Discard results from stale search.
+                return
+            }
 
-                                                self.searchResultSet = results
-                                                self.lastReloadDate = Date()
-                                                self.tableView.reloadData()
+            self.searchResultSet = results
+            self.reloadTableData()
         })
     }
 
