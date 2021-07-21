@@ -172,7 +172,24 @@ struct ConversationHeaderBuilder: Dependencies {
             let formattedPhoneNumber =
                 PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
             if threadName != formattedPhoneNumber {
-                builder.addSubtitleLabel(text: formattedPhoneNumber)
+                func copyContactPhoneNumber(delegate: ConversationHeaderDelegate?) {
+                    guard let delegate = delegate else {
+                        owsFailDebug("Missing delegate.")
+                        return
+                    }
+                    UIPasteboard.general.string = recipientAddress.phoneNumber
+
+                    let toast = NSLocalizedString("COPIED_TO_CLIPBOARD",
+                                                  comment: "Indicator that a value has been copied to the clipboard.")
+                    delegate.tableViewController.presentToast(text: toast)
+                }
+                let label = builder.addSubtitleLabel(text: formattedPhoneNumber)
+                label.addTapGesture { [weak delegate] in
+                    copyContactPhoneNumber(delegate: delegate)
+                }
+                label.addLongPressGesture { [weak delegate] in
+                    copyContactPhoneNumber(delegate: delegate)
+                }
             }
         }
 
@@ -440,14 +457,14 @@ struct ConversationHeaderBuilder: Dependencies {
     }
 
     @discardableResult
-    mutating func addSubtitleLabel(text: String) -> UILabel {
+    mutating func addSubtitleLabel(text: String) -> OWSLabel {
         addSubtitleLabel(attributedText: NSAttributedString(string: text))
     }
 
     private var hasSubtitleLabel = false
 
     @discardableResult
-    mutating func addSubtitleLabel(attributedText: NSAttributedString) -> UILabel {
+    mutating func addSubtitleLabel(attributedText: NSAttributedString) -> OWSLabel {
         subviews.append(UIView.spacer(withHeight: hasSubtitleLabel ? 4 : 8))
         let label = buildHeaderSubtitleLabel(attributedText: attributedText)
         subviews.append(label)
@@ -470,8 +487,8 @@ struct ConversationHeaderBuilder: Dependencies {
         subviews.append(legacyGroupView)
     }
 
-    func buildHeaderSubtitleLabel(attributedText: NSAttributedString) -> UILabel {
-        let label = UILabel()
+    func buildHeaderSubtitleLabel(attributedText: NSAttributedString) -> OWSLabel {
+        let label = OWSLabel()
 
         // Defaults need to be set *before* assigning the attributed text,
         // or the attributes will get overriden
@@ -499,6 +516,8 @@ struct ConversationHeaderBuilder: Dependencies {
     }
 }
 
+// MARK: -
+
 protocol ConversationHeaderDelegate: UIViewController, Dependencies {
     var tableViewController: OWSTableViewController2 { get }
 
@@ -524,6 +543,8 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies {
 
     func didTapAddGroupDescription()
 }
+
+// MARK: -
 
 extension ConversationHeaderDelegate {
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
@@ -617,5 +638,60 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
 extension ConversationSettingsViewController: GroupDescriptionViewControllerDelegate {
     func groupDescriptionViewControllerDidComplete(groupDescription: String?) {
         reloadThreadAndUpdateContent()
+    }
+}
+
+// MARK: -
+
+@objc
+public class OWSLabel: UILabel {
+
+    // MARK: - Tap
+
+    public typealias TapBlock = () -> Void
+    private var tapBlock: TapBlock?
+
+    public func addTapGesture(_ tapBlock: @escaping TapBlock) {
+        AssertIsOnMainThread()
+        owsAssertDebug(self.tapBlock == nil)
+
+        self.tapBlock = tapBlock
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
+    }
+
+    @objc
+    private func didTap() {
+        guard let tapBlock = tapBlock else {
+            owsFailDebug("Missing tapBlock.")
+            return
+        }
+        tapBlock()
+    }
+
+    // MARK: - Long Press
+
+    public typealias LongPressBlock = () -> Void
+    private var longPressBlock: LongPressBlock?
+
+    public func addLongPressGesture(_ longPressBlock: @escaping LongPressBlock) {
+        AssertIsOnMainThread()
+        owsAssertDebug(self.longPressBlock == nil)
+
+        self.longPressBlock = longPressBlock
+        isUserInteractionEnabled = true
+        addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPress)))
+    }
+
+    @objc
+    private func didLongPress(sender: UIGestureRecognizer) {
+        guard sender.state == .began else {
+            return
+        }
+        guard let longPressBlock = longPressBlock else {
+            owsFailDebug("Missing longPressBlock.")
+            return
+        }
+        longPressBlock()
     }
 }
