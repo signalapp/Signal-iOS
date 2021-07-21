@@ -17,7 +17,6 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>

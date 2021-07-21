@@ -10,7 +10,6 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSTableViewController.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
@@ -82,9 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSIdentityManager shared];
 }
 
-+ (OWSBlockingManager *)blockingManager
++ (BlockingManager *)blockingManager
 {
-    return [OWSBlockingManager shared];
+    return [BlockingManager shared];
 }
 
 + (OWSProfileManager *)profileManager

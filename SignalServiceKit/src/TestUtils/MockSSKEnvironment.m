@@ -6,7 +6,6 @@
 #import <SignalServiceKit/MockSSKEnvironment.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFakeCallMessageHandler.h>
 #import <SignalServiceKit/OWSFakeMessageSender.h>
@@ -54,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
 
     OWSMessageManager *messageManager = [OWSMessageManager new];
-    OWSBlockingManager *blockingManager = [OWSBlockingManager new];
+    BlockingManager *blockingManager = [BlockingManager new];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
     id<RemoteConfigManager> remoteConfigManager = [StubbableRemoteConfigManager new];
     SSKSessionStore *sessionStore = [SSKSessionStore new];

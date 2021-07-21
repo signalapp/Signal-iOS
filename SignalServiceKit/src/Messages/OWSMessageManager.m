@@ -16,7 +16,6 @@
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NotificationsProtocol.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSDevice.h>
@@ -1668,6 +1667,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleSyncedBlockList:(SSKProtoSyncMessageBlocked *)blocked transaction:(SDSAnyWriteTransaction *)transaction
 {
+    NSSet<NSString *> *blockedPhoneNumbers = [NSSet setWithArray:blocked.numbers];
     NSMutableSet<NSUUID *> *blockedUUIDs = [NSMutableSet new];
     for (NSString *uuidString in blocked.uuids) {
         NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
@@ -1682,7 +1682,7 @@ NS_ASSUME_NONNULL_BEGIN
         [TSGroupThread ensureGroupIdMappingForGroupId:groupId transaction:transaction];
     }
 
-    [self.blockingManager processIncomingSyncWithBlockedPhoneNumbers:[NSSet setWithArray:blocked.numbers]
+    [self.blockingManager processIncomingSyncWithBlockedPhoneNumbers:blockedPhoneNumbers
                                                         blockedUUIDs:blockedUUIDs
                                                      blockedGroupIds:groupIds
                                                          transaction:transaction];

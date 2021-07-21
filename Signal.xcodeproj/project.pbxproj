@@ -653,7 +653,6 @@
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
 		4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */; };
-		4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C948FF62146EB4800349F0D /* BlockListCache.swift */; };
 		4C9C50FE22F36FA50054A33F /* OutboundMessage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FD22F36FA40054A33F /* OutboundMessage+OWS.swift */; };
 		4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */; };
 		4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
@@ -1754,7 +1753,6 @@
 		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalBaseTest+Swift.swift"; sourceTree = "<group>"; };
 		4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaZoomAnimationController.swift; sourceTree = "<group>"; };
 		4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInteractiveDismiss.swift; sourceTree = "<group>"; };
-		4C948FF62146EB4800349F0D /* BlockListCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListCache.swift; sourceTree = "<group>"; };
 		4C9C50FD22F36FA40054A33F /* OutboundMessage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OutboundMessage+OWS.swift"; sourceTree = "<group>"; };
 		4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BroadcastMediaMessageJob.swift; sourceTree = "<group>"; };
 		4C9CA25C217E676900607C63 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = ThirdParty/Carthage/Build/iOS/ZXingObjC.framework; sourceTree = "<group>"; };
@@ -2506,7 +2504,6 @@
 			children = (
 				349ED991221EE80D008045B0 /* AppPreferences.swift */,
 				883A7FD0269F640D00841DF9 /* Avatars */,
-				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
 				3466087120E550F300AFFE73 /* ConversationStyle.swift */,
@@ -5474,7 +5471,6 @@
 				340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */,
 				3464451122B7F97100A957B1 /* DateUtil.m in Sources */,
 				4C38E501230374D700E464B9 /* UIViewController+Permissions.m in Sources */,
-				4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */,
 				34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */,
 				88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */,
 				34AC09ED211B39B100997B47 /* ContactFieldView.swift in Sources */,

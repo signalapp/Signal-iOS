@@ -11,7 +11,6 @@
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSTableViewController.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSCall.h>
@@ -360,8 +359,15 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
 }
 
++ (SDSKeyValueStore *)randomKeyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"randomKeyValueStore"];
+}
+
 + (void)populateRandomKeyValueStores:(NSUInteger)keyCount
 {
+    SDSKeyValueStore *store = self.randomKeyValueStore;
+
     const NSUInteger kBatchSize = 1000;
     const NSUInteger batchCount = keyCount / kBatchSize;
     OWSLogVerbose(@"keyCount: %i", (int)keyCount);
@@ -371,8 +377,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         @autoreleasepool {
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
-                
                 // Set three values at a time.
                 for (NSUInteger keyIndex = 0; keyIndex < kBatchSize; keyIndex += 3) {
                     NSData *value = [Randomness generateRandomBytes:4096];
@@ -389,8 +393,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearRandomKeyValueStores
 {
+    SDSKeyValueStore *store = self.randomKeyValueStore;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
         [store removeAllWithTransaction:transaction];
     });
 }

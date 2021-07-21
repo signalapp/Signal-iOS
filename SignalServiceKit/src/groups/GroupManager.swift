@@ -1962,7 +1962,9 @@ public class GroupManager: NSObject {
             profileManager.addThread(toProfileWhitelist: groupThreadV2)
         }
         if isBlocked {
-            blockingManager.addBlockedGroup(newGroupModelV2, blockMode: .remote, transaction: transaction)
+            blockingManager.addBlockedGroup(groupModel: newGroupModelV2,
+                                            blockMode: .remote,
+                                            transaction: transaction)
         }
 
         // Always insert a "group update" info message.

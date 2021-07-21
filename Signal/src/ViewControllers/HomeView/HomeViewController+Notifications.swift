@@ -50,6 +50,10 @@ extension HomeViewController {
                                                selector: #selector(preferContactAvatarsPreferenceDidChange),
                                                name: SSKPreferences.preferContactAvatarsPreferenceDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(blockListDidChange),
+                                               name: BlockingManager.blockListDidChange,
+                                               object: nil)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -151,6 +155,13 @@ extension HomeViewController {
         if let threadId = changedThreadId {
             self.loadCoordinator.scheduleLoad(updatedThreadIds: Set([threadId]))
         }
+    }
+
+    @objc
+    private func blockListDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        reloadTableViewData()
     }
 }
 

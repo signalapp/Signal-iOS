@@ -55,8 +55,6 @@ public class ConversationSearchViewController: UITableViewController {
 
     private var hasThemeChanged = false
 
-    var blockListCache: BlockListCache!
-
     static let matchSnippetStyle = StringStyle(
         .color(Theme.secondaryTextAndIconColor),
         .xmlRules([
@@ -77,9 +75,6 @@ public class ConversationSearchViewController: UITableViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        blockListCache = BlockListCache()
-        blockListCache.startObservingAndSyncState(delegate: self)
-
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         tableView.separatorColor = .clear
@@ -95,6 +90,10 @@ public class ConversationSearchViewController: UITableViewController {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
                                                name: .ThemeDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(blockListDidChange),
+                                               name: BlockingManager.blockListDidChange,
                                                object: nil)
 
         applyTheme()
@@ -132,6 +131,13 @@ public class ConversationSearchViewController: UITableViewController {
         reloadTableData()
 
         hasThemeChanged = true
+    }
+
+    @objc
+    private func blockListDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        refreshSearchResults()
     }
 
     private func applyTheme() {
@@ -511,16 +517,7 @@ public class ConversationSearchViewController: UITableViewController {
     // MARK: -
 
     private func isBlocked(thread: ThreadViewModel) -> Bool {
-        return self.blockListCache.isBlocked(thread: thread.threadRecord)
-    }
-}
-
-// MARK: -
-
-extension ConversationSearchViewController: BlockListCacheDelegate {
-
-    public func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
-        refreshSearchResults()
+        blockingManager.isThreadBlocked(thread.threadRecord)
     }
 }
 

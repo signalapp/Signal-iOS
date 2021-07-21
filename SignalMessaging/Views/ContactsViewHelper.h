@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,11 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
-// This method is faster than OWSBlockingManager but
+// This method is faster than BlockingManager but
 // is only safe to be called on the main thread.
 - (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address;
 
-// This method is faster than OWSBlockingManager but
+// This method is faster than BlockingManager but
 // is only safe to be called on the main thread.
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 

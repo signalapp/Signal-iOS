@@ -39,7 +39,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
-            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid(),
+            NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .OWSSyncManagerKeysSyncDidComplete).asVoid()
         ])
     }
@@ -177,7 +177,7 @@ public extension OWSSyncManager {
             NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
             NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds),
-            NotificationCenter.default.observe(once: .OWSBlockingManagerBlockedSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds)
+            NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds)
         )
 
         return notificationsPromise.map { (newContactThreads, newGroupThreads, _, _) -> [String] in

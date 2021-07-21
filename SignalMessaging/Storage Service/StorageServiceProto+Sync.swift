@@ -304,9 +304,9 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         // If our local blocked state differs from the service state, use the service's value.
         if blocked != localIsBlocked {
             if blocked {
-                blockingManager.addBlockedGroupId(id, blockMode: .remote, transaction: transaction)
+                blockingManager.addBlockedGroup(groupId: id, blockMode: .remote, transaction: transaction)
             } else {
-                blockingManager.removeBlockedGroupId(id, wasLocallyInitiated: false, transaction: transaction)
+                blockingManager.removeBlockedGroup(groupId: id, wasLocallyInitiated: false, transaction: transaction)
             }
         }
 
@@ -451,9 +451,9 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         // If our local blocked state differs from the service state, use the service's value.
         if blocked != localIsBlocked {
             if blocked {
-                blockingManager.addBlockedGroupId(groupId, blockMode: .remote, transaction: transaction)
+                blockingManager.addBlockedGroup(groupId: groupId, blockMode: .remote, transaction: transaction)
             } else {
-                blockingManager.removeBlockedGroupId(groupId, wasLocallyInitiated: false, transaction: transaction)
+                blockingManager.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: false, transaction: transaction)
             }
         }
 

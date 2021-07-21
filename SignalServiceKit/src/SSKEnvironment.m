@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -22,7 +21,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<ProfileManagerProtocol> profileManagerRef;
 @property (nonatomic) TSNetworkManager *networkManagerRef;
 @property (nonatomic) OWSMessageManager *messageManagerRef;
-@property (nonatomic) OWSBlockingManager *blockingManagerRef;
+@property (nonatomic) BlockingManager *blockingManagerRef;
 @property (nonatomic) OWSIdentityManager *identityManagerRef;
 @property (nonatomic) id<OWSUDManager> udManagerRef;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypterRef;
@@ -73,7 +72,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
-                        blockingManager:(OWSBlockingManager *)blockingManager
+                        blockingManager:(BlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
                     remoteConfigManager:(id<RemoteConfigManager>)remoteConfigManager
                            sessionStore:(SSKSessionStore *)sessionStore

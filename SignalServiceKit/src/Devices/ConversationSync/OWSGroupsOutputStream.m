@@ -4,7 +4,6 @@
 
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -62,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setMembersE164:membersE164];
     [groupBuilder setMembers:members];
 
-    if ([OWSBlockingManager.shared isGroupIdBlocked:group.groupId]) {
+    if ([BlockingManager.shared isGroupIdBlocked:group.groupId]) {
         [groupBuilder setBlocked:YES];
     }
 

@@ -74,7 +74,11 @@ extension ConversationViewController: MessageRequestDelegate {
 
     func blockThread() {
         // Leave the group while blocking the thread.
-        blockingManager.addBlockedThread(thread, blockMode: .localShouldLeaveGroups)
+        databaseStorage.write { transaction in
+            blockingManager.addBlockedThread(thread,
+                                             blockMode: .localShouldLeaveGroups,
+                                             transaction: transaction)
+        }
         syncManager.sendMessageRequestResponseSyncMessage(thread: thread,
                                                           responseType: .block)
     }
@@ -83,14 +87,22 @@ extension ConversationViewController: MessageRequestDelegate {
         // Do not leave the group while blocking the thread; we'll
         // that below so that we can surface an error to the user
         // if leaving the group fails.
-        blockingManager.addBlockedThread(thread, blockMode: .localShouldNotLeaveGroups)
+        databaseStorage.write { transaction in
+            blockingManager.addBlockedThread(thread,
+                                             blockMode: .localShouldNotLeaveGroups,
+                                             transaction: transaction)
+        }
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
                                                           responseType: .blockAndDelete)
         leaveAndSoftDeleteThread()
     }
 
     func blockThreadAndReportSpam() {
-        blockingManager.addBlockedThread(thread, blockMode: .localShouldNotLeaveGroups)
+        databaseStorage.write { transaction in
+            blockingManager.addBlockedThread(thread,
+                                             blockMode: .localShouldNotLeaveGroups,
+                                             transaction: transaction)
+        }
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .block)
         reportSpam()
 
@@ -163,7 +175,11 @@ extension ConversationViewController: MessageRequestDelegate {
         // Do not leave the group while blocking the thread; we'll
         // that below so that we can surface an error to the user
         // if leaving the group fails.
-        blockingManager.addBlockedAddress(address, blockMode: .localShouldNotLeaveGroups)
+        databaseStorage.write { transaction in
+            blockingManager.addBlockedAddress(address,
+                                              blockMode: .localShouldNotLeaveGroups,
+                                              transaction: transaction)
+        }
         syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
                                                           responseType: .delete)
         leaveAndSoftDeleteThread()
@@ -175,7 +191,9 @@ extension ConversationViewController: MessageRequestDelegate {
                 // Do not leave the group while blocking the thread; we'll
                 // that below so that we can surface an error to the user
                 // if leaving the group fails.
-                self.blockingManager.addBlockedGroup(groupThread.groupModel, blockMode: .localShouldNotLeaveGroups, transaction: transaction)
+                self.blockingManager.addBlockedGroup(groupModel: groupThread.groupModel,
+                                                     blockMode: .localShouldNotLeaveGroups,
+                                                     transaction: transaction)
             } else {
                 owsFailDebug("Invalid thread.")
             }

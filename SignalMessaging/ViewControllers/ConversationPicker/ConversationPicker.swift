@@ -97,7 +97,6 @@ open class ConversationPickerViewController: OWSViewController {
         super.viewDidLoad()
 
         title = Strings.title
-        blockListCache.startObservingAndSyncState(delegate: self)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsMultipleSelection = true
@@ -108,6 +107,11 @@ open class ConversationPickerViewController: OWSViewController {
 
         conversationCollection = buildConversationCollection()
         restoreSelection(tableView: tableView)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(blockListDidChange),
+                                               name: BlockingManager.blockListDidChange,
+                                               object: nil)
     }
 
     // MARK: - ConversationCollection
@@ -128,8 +132,6 @@ open class ConversationPickerViewController: OWSViewController {
         updateUIForCurrentSelection(animated: false)
     }
 
-    let blockListCache = BlockListCache()
-
     func buildSearchResults(searchText: String) -> Promise<ComposeScreenSearchResultSet?> {
         guard searchText.count > 1 else {
             return Promise.value(nil)
@@ -145,7 +147,7 @@ open class ConversationPickerViewController: OWSViewController {
     }
 
     func buildGroupItem(_ groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> GroupConversationItem {
-        let isBlocked = self.blockListCache.isBlocked(thread: groupThread)
+        let isBlocked = self.blockingManager.isThreadBlocked(groupThread)
         let dmConfig = groupThread.disappearingMessagesConfiguration(with: transaction)
         return GroupConversationItem(groupThreadId: groupThread.uniqueId,
                                      isBlocked: isBlocked,
@@ -153,7 +155,7 @@ open class ConversationPickerViewController: OWSViewController {
     }
 
     func buildContactItem(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ContactConversationItem {
-        let isBlocked = self.blockListCache.isBlocked(address: address)
+        let isBlocked = self.blockingManager.isAddressBlocked(address)
         let dmConfig = TSContactThread.getWithContactAddress(address, transaction: transaction)?.disappearingMessagesConfiguration(with: transaction)
 
         let contactName = contactsManager.displayName(for: address,
@@ -352,13 +354,11 @@ open class ConversationPickerViewController: OWSViewController {
     @objc func onTouchCancelButton() {
         delegate?.conversationPickerDidCancel(self)
     }
-}
 
-// MARK: -
+    @objc
+    private func blockListDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
 
-extension ConversationPickerViewController: BlockListCacheDelegate {
-    public func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
-        Logger.debug("")
         self.conversationCollection = buildConversationCollection()
     }
 }

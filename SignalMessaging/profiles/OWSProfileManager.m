@@ -16,7 +16,6 @@
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSSignalService.h>
@@ -144,7 +143,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
-                                                 name:kNSNotificationNameBlockListDidChange
+                                                 name:BlockingManager.blockListDidChange
                                                object:nil];
 }
 
@@ -585,9 +584,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             OWSFailDebug(@"Missing localUUID");
         }
 
-        NSSet<NSString *> *blockedPhoneNumbers = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];
-        NSSet<NSString *> *blockedUUIDs = [NSSet setWithArray:self.blockingManager.blockedUUIDs];
-        NSSet<NSData *> *blockedGroupIds = [NSSet setWithArray:self.blockingManager.blockedGroupIds];
+        NSSet<NSString *> *blockedPhoneNumbers = self.blockingManager.blockedPhoneNumbers;
+        NSSet<NSString *> *blockedUUIDs = self.blockingManager.blockedUUIDStrings;
+        NSSet<NSData *> *blockedGroupIds = self.blockingManager.blockedGroupIds;
 
         // Find the users and groups which are both a) blocked b) may have our current profile key.
         NSMutableSet<NSString *> *intersectingPhoneNumbers = [blockedPhoneNumbers mutableCopy];
