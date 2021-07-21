@@ -496,9 +496,12 @@ public class HVLoader: NSObject {
                                           threadUniqueId: updatedThreadId))
         }
 
+        owsAssertDebug(!rowChanges.isEmpty)
         return .newRenderStateWithDiff(renderState: newRenderState, rowChanges: rowChanges)
     }
 }
+
+// MARK: -
 
 extension Collection where Element: Equatable {
     func firstIndexAsInt(of element: Element) -> Int? {

@@ -253,6 +253,7 @@ public class HVLoadCoordinator: NSObject {
         let hasVisibleReminders = reminderViews.hasVisibleReminders
 
         let loadResult: HVLoadResult = databaseStorage.read { transaction in
+            // Decide what kind of load we prefer.
             let loadInfo = loadInfoBuilder.build(homeViewMode: viewController.homeViewMode,
                                                  hasVisibleReminders: hasVisibleReminders,
                                                  lastViewInfo: viewController.renderState.viewInfo,
@@ -260,11 +261,15 @@ public class HVLoadCoordinator: NSObject {
             // Reset the builder.
             loadInfoBuilder = HVLoadInfoBuilder()
 
+            // Perform the load.
+            //
+            // NOTE: we might not receive the kind of load that we requested.
             switch loadInfo.loadType {
             case .resetAll:
                 return viewController.loadNewRenderState(viewInfo: loadInfo.viewInfo,
                                                          transaction: transaction)
             case .incrementalDiff(let dirtyThreadUniqueIds):
+                owsAssertDebug(!dirtyThreadUniqueIds.isEmpty)
                 return viewController.loadNewRenderStateWithDiff(viewInfo: loadInfo.viewInfo,
                                                                  updatedThreadIds: dirtyThreadUniqueIds,
                                                                  transaction: transaction)
@@ -275,6 +280,7 @@ public class HVLoadCoordinator: NSObject {
             }
         }
 
+        // Apply the load to the view.
         let isAnimated = !suppressAnimations
         viewController.applyLoadResult(loadResult, isAnimated: isAnimated)
     }
