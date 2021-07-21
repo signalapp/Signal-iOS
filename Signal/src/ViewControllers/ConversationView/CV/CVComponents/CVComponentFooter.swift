@@ -409,10 +409,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             chatColorView.removeFromSuperview()
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
-
         fileprivate func animateSpinningIcon() {
             let animation = CABasicAnimation.init(keyPath: "transform.rotation.z")
             animation.toValue = CGFloat.pi * 2

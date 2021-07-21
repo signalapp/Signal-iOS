@@ -356,10 +356,14 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
 
     public func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
                                              shouldShowReactionPickerForInteraction: TSInteraction) -> Bool {
+        return self.shouldShowReactionPickerForInteraction(messageActionsViewController.focusedInteraction)
+    }
+
+    public func shouldShowReactionPickerForInteraction(_ interaction: TSInteraction) -> Bool {
         guard !threadViewModel.hasPendingMessageRequest else { return false }
         guard threadViewModel.isLocalUserFullMemberOfThread else { return false }
 
-        switch messageActionsViewController.focusedInteraction {
+        switch interaction {
         case let outgoingMessage as TSOutgoingMessage:
             if outgoingMessage.wasRemotelyDeleted { return false }
 

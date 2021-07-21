@@ -291,7 +291,7 @@ public protocol CVComponentView {
 
     func reset()
 
-    func contextMenuContentView() -> UIView?
+    @objc optional func contextMenuContentView() -> UIView?
 }
 
 // MARK: -

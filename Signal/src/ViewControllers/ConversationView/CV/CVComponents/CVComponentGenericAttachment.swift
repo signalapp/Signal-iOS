@@ -359,9 +359,6 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             iconImageView.image = nil
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }
 

@@ -190,9 +190,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             }
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }
 

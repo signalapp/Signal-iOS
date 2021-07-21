@@ -15,7 +15,7 @@ extension ConversationViewController {
             return
         }
         if FeatureFlags.contextMenus {
-            let interaction = ChatHistoryContextMenuInteraction.init(delegate: self, itemViewModel: itemViewModel, messageActions: messageActions)
+            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, messageActions: messageActions)
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
             let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
@@ -211,10 +211,23 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             return nil
         }
 
-        // TODO Add in reaction bar accessory as needed
-        let accessories = cell.rootComponent?.contextMenuAccessoryViews(componentView: componentView)
+        var accessories = cell.rootComponent?.contextMenuAccessoryViews(componentView: componentView) ?? []
 
-        if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView() {
+        // Add reaction bar if necessary
+        if thread.canSendReactionToThread && shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
+            let reactionBarAccessory = ContextMenuRectionBarAccessory.init(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
+            reactionBarAccessory.didSelectReactionHandler = {(message: TSMessage, reaction: String, isRemoving: Bool) in
+                self.databaseStorage.asyncWrite { transaction in
+                    ReactionManager.localUserReactedWithDurableSend(to: message,
+                                                                    emoji: reaction,
+                                                                    isRemoving: isRemoving,
+                                                                    transaction: transaction)
+                }
+            }
+            accessories.append(reactionBarAccessory)
+        }
+
+        if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {
             return ContextMenuTargetedPreview(view: contentView, accessoryViews: accessories)
         } else {
             return ContextMenuTargetedPreview(view: cell, accessoryViews: accessories)

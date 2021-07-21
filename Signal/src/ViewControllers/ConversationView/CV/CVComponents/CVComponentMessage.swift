@@ -1656,10 +1656,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
             avatarView.image = componentView.avatarView.image
             avatarView.frame = componentView.avatarView.bounds
-
-            let size = componentView.avatarView.bounds.size
-
-            let avatarViewAccessory = ContextMenuTargetedPreviewAccessory(accessoryView: avatarView, edgeAlignment: [.trailing, .bottom], alignmentOffset: CGPoint(x: -8, y: 0), size: size)
+            let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.leading, .exterior), (.bottom, .interior)], alignmentOffset: CGPoint(x: -8, y: 0))
+            let avatarViewAccessory = ContextMenuTargetedPreviewAccessory(accessoryView: avatarView, accessoryAlignment: alignment)
             return [avatarViewAccessory]
         } else {
             return nil
