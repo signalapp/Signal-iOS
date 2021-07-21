@@ -30,7 +30,7 @@ public class GroupsInputStream {
         var groupDataLength: UInt32 = 0
         try inputStream.decodeSingularUInt32Field(value: &groupDataLength)
         guard groupDataLength > 0 else {
-//            owsFailDebug("Empty groupDataLength.")
+            owsFailDebug("Empty groupDataLength.")
             return nil
         }
 
