@@ -564,7 +564,7 @@ extension HVTableDataSource: UITableViewDataSource {
                                     : CommonStrings.unarchiveAction)
 
             archiveAction.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray25
-            deleteAction.image = self.actionImage(name: "archive-solid-24",
+            archiveAction.image = self.actionImage(name: "archive-solid-24",
                                                   title: archiveTitle)
             archiveAction.accessibilityLabel = archiveTitle
 
