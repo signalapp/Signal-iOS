@@ -40,14 +40,6 @@ extension HomeViewController {
 
     // MARK: -
 
-    @objc
-    public func reloadTableViewData() {
-        AssertIsOnMainThread()
-
-        self.lastReloadDate = Date()
-        tableView.reloadData()
-    }
-
     // TODO: Make async.
     fileprivate func reloadEverythingAndReloadTable() {
         AssertIsOnMainThread()
@@ -77,7 +69,7 @@ extension HomeViewController {
         threadViewModelCache.clear()
         cellMeasurementCache.clear()
         _ = updateHasArchivedThreadsRow()
-        reloadTableViewData()
+        reloadTableData()
         updateViewState()
     }
 
@@ -117,7 +109,7 @@ extension HomeViewController {
         }
 
         if updateHasArchivedThreadsRow() {
-            reloadTableViewData()
+            reloadTableData()
             return
         }
 

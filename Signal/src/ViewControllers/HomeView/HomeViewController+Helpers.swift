@@ -36,8 +36,7 @@ public extension HomeViewController {
             viewState.hasVisibleReminders = newValue
 
             // If the reminders show/hide, reload the table.
-            self.lastReloadDate = Date()
-            tableView.reloadData()
+            reloadTableData()
         }
     }
 

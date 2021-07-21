@@ -36,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateViewState;
 - (void)updateFirstConversationLabel;
 - (void)presentGetStartedBannerIfNecessary;
-- (void)updateAvatars;
 - (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction;
 
 @property (nonatomic) UIView *firstConversationCueView;

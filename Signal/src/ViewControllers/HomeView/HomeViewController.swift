@@ -7,6 +7,19 @@ import Foundation
 @objc
 public extension HomeViewController {
 
+    func reloadTableDataAndResetCellMeasurementCache() {
+        AssertIsOnMainThread()
+
+        cellMeasurementCache.clear()
+        reloadTableData()
+    }
+
+    func reloadTableData() {
+        AssertIsOnMainThread()
+
+        tableView.reloadData()
+    }
+
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
                                              paymentModel: TSPaymentModel,
                                              transaction: SDSAnyReadTransaction) {

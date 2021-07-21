@@ -15,7 +15,6 @@ public class HVViewState: NSObject {
 
     // MARK: - Views
 
-    public let tableView = UITableView(frame: .zero, style: .grouped)
     public let reminderViewCell = UITableViewCell()
     public let searchBar = OWSSearchBar()
     public let searchResultsController = ConversationSearchViewController()
@@ -29,7 +28,6 @@ public class HVViewState: NSObject {
 
     public var isViewVisible = false
     public var hasEverAppeared = false
-    public var lastReloadDate: Date?
 
     // TODO: Review.
     public var hasArchivedThreadsRow = false
@@ -65,7 +63,7 @@ public extension HomeViewController {
 
     // MARK: - Views
 
-    var tableView: UITableView { viewState.tableView }
+    var tableView: HVTableView { tableDataSource.tableView }
     var reminderViewCell: UITableViewCell { viewState.reminderViewCell }
     var searchBar: OWSSearchBar { viewState.searchBar }
     var searchResultsController: ConversationSearchViewController { viewState.searchResultsController }
@@ -80,10 +78,6 @@ public extension HomeViewController {
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }
         set { viewState.hasEverAppeared = newValue }
-    }
-    var lastReloadDate: Date? {
-        get { viewState.lastReloadDate }
-        set { viewState.lastReloadDate = newValue }
     }
 
     var hasArchivedThreadsRow: Bool {
