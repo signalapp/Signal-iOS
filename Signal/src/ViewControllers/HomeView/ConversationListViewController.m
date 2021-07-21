@@ -29,72 +29,43 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
-
-typedef NS_ENUM(NSInteger, ConversationListMode) {
-    ConversationListMode_Archive,
-    ConversationListMode_Inbox,
-};
-
-// The bulk of the content in this view is driven by ThreadMapping.
+// The bulk of the content in this view is driven by HVRenderState.
 // However, we also want to optionally include ReminderView's at the top
 // and an "Archived Conversations" button at the bottom. Rather than introduce
 // index-offsets into the Mapping calculation, we introduce two pseudo groups
 // to add a top and bottom section to the content, and create cells for those
-// sections without consulting the ThreadMapping.
+// sections without consulting the HVRenderState.
 // This is a bit of a hack, but it consolidates the hacks into the Reminder/Archive section
 // and allows us to leaves the bulk of the content logic on the happy path.
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
 NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
-@interface ConversationListViewController () <UITableViewDelegate,
-    UITableViewDataSource,
-    UIViewControllerPreviewingDelegate,
+@interface ConversationListViewController () <UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
     OWSBlockListCacheDelegate,
     CameraFirstCaptureDelegate,
     OWSGetStartedBannerViewControllerDelegate>
 
-@property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIView *emptyInboxView;
 
 @property (nonatomic) UILabel *firstConversationLabel;
-
-@property (nonatomic, readonly) ThreadMapping *threadMapping;
-@property (nonatomic) ConversationListMode conversationListMode;
-@property (nonatomic, readonly) AnyLRUCache *threadViewModelCache;
-@property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL hasEverAppeared;
 
 // Get Started banner
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 @property (nonatomic, nullable) OWSGetStartedBannerViewController *getStartedBanner;
 
-// Mark: Search
-
-@property (nonatomic, readonly) OWSSearchBar *searchBar;
-@property (nonatomic) ConversationSearchViewController *searchResultsController;
-
-@property (nonatomic, readonly) OWSBlockListCache *blocklistCache;
-
 // Views
 
 @property (nonatomic, readonly) UIStackView *reminderStackView;
-@property (nonatomic, readonly) UITableViewCell *reminderViewCell;
 @property (nonatomic, readonly) ExpirationNagView *expiredView;
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
 @property (nonatomic, readonly) UIView *paymentsReminderView;
 
-@property (nonatomic) BOOL hasArchivedThreadsRow;
-@property (nonatomic) BOOL hasThemeChanged;
-@property (nonatomic) BOOL hasVisibleReminders;
-
 @property (nonatomic) NSUInteger unreadPaymentNotificationsCount;
 @property (nonatomic, nullable) TSPaymentModel *firstUnreadPaymentModel;
-@property (nonatomic, nullable) NSDate *lastReloadDate;
 
 @end
 
@@ -111,7 +82,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return self;
     }
 
-    _conversationListMode = ConversationListMode_Inbox;
+    _viewState = [HVViewState new];
+    self.tableDataSource.viewController = self;
 
     [self commonInit];
 
@@ -120,12 +92,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)commonInit
 {
-    _blocklistCache = [OWSBlockListCache new];
-    [_blocklistCache startObservingAndSyncStateWithDelegate:self];
-    _threadViewModelCache = [[AnyLRUCache alloc] initWithMaxSize:32
-                                                      nseMaxSize:0
-                                      shouldEvacuateInBackground:NO];
-    _threadMapping = [ThreadMapping new];
+    [self.blocklistCache startObservingAndSyncStateWithDelegate:self];
 }
 
 - (void)dealloc
@@ -231,11 +198,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _reminderStackView = reminderStackView;
     reminderStackView.axis = UILayoutConstraintAxisVertical;
     reminderStackView.spacing = 0;
-    _reminderViewCell = [UITableViewCell new];
     self.reminderViewCell.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.reminderViewCell.contentView addSubview:reminderStackView];
     [reminderStackView autoPinEdgesToSuperviewEdges];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _reminderViewCell);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, self.reminderViewCell);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, reminderStackView);
 
     __weak ConversationListViewController *weakSelf = self;
@@ -279,18 +245,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [reminderStackView addArrangedSubview:paymentsReminderView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, paymentsReminderView);
 
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.separatorColor = Theme.cellSeparatorColor;
-    [self.tableView registerClass:[ConversationListCell class]
-           forCellReuseIdentifier:ConversationListCell.reuseIdentifier];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kArchivedConversationsReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinEdgesToSuperviewEdges];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _tableView);
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _searchBar);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, self.tableView);
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, self.searchBar);
 
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
@@ -495,7 +453,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateReminderViews
 {
-    self.archiveReminderView.hidden = self.conversationListMode != ConversationListMode_Archive;
+    self.archiveReminderView.hidden = self.conversationListMode != ConversationListModeArchive;
     self.deregisteredView.hidden
         = !TSAccountManager.shared.isDeregistered || TSAccountManager.shared.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.shared.hasOutage;
@@ -523,32 +481,20 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         || !self.outageView.isHidden || !self.expiredView.isHidden || !self.paymentsReminderView.isHidden);
 }
 
-- (void)setHasVisibleReminders:(BOOL)hasVisibleReminders
-{
-    if (_hasVisibleReminders == hasVisibleReminders) {
-        return;
-    }
-    _hasVisibleReminders = hasVisibleReminders;
-    // If the reminders show/hide, reload the table.
-    self.lastReloadDate = [NSDate new];
-    [self.tableView reloadData];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
     [self observeNotifications];
     [self resetMappings];
-    [self tableViewSetUp];
 
     switch (self.conversationListMode) {
-        case ConversationListMode_Inbox:
+        case ConversationListModeInbox:
             // TODO: Should our app name be translated?  Probably not.
             self.title
                 = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the conversation list's default mode.");
             break;
-        case ConversationListMode_Archive:
+        case ConversationListModeArchive:
             self.title
                 = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the conversation list's 'archive' mode.");
             break;
@@ -569,7 +515,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UIView *searchBarContainer = [UIView new];
     searchBarContainer.layoutMargins = UIEdgeInsetsMake(0, 8, 0, 8);
 
-    _searchBar = [OWSSearchBar new];
     self.searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
     self.searchBar.delegate = self;
@@ -581,56 +526,25 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [searchBarContainer addSubview:self.searchBar];
     [self.searchBar autoPinEdgesToSuperviewMargins];
 
-
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
     OWSAssertDebug(self.tableView.tableHeaderView == nil);
     self.tableView.tableHeaderView = searchBarContainer;
     // Hide search bar by default.  User can pull down to search.
     self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
 
-    ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
-    searchResultsController.delegate = self;
-    self.searchResultsController = searchResultsController;
-    [self addChildViewController:searchResultsController];
-    [self.view addSubview:searchResultsController.view];
-    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
-    searchResultsController.view.hidden = YES;
+    self.searchResultsController.delegate = self;
+    [self addChildViewController:self.searchResultsController];
+    [self.view addSubview:self.searchResultsController.view];
+    [self.searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
+    self.searchResultsController.view.hidden = YES;
 
     [self updateReminderViews];
     [self updateBarButtonItems];
 
     [self applyTheme];
-}
-
-- (void)applyDefaultBackButton
-{
-    // We don't show any text for the back button, so there's no need to localize it. But because we left align the
-    // conversation title view, we add a little tappable padding after the back button, by having a title of spaces.
-    // Admittedly this is kind of a hack and not super fine grained, but it's simple and results in the interactive pop
-    // gesture animating our title view nicely vs. creating our own back button bar item with custom padding, which does
-    // not properly animate with the "swipe to go back" or "swipe left for info" gestures.
-    NSUInteger paddingLength = 3;
-    NSString *paddingString = [@"" stringByPaddingToLength:paddingLength withString:@" " startingAtIndex:0];
-
-    self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:paddingString
-                                         style:UIBarButtonItemStylePlain
-                                        target:nil
-                                        action:nil
-                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
-}
-
-- (void)applyArchiveBackButton
-{
-    self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.backButton
-                                         style:UIBarButtonItemStylePlain
-                                        target:nil
-                                        action:nil
-                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -686,7 +600,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateBarButtonItems
 {
-    if (self.conversationListMode != ConversationListMode_Inbox) {
+    if (self.conversationListMode != ConversationListModeInbox) {
         return;
     }
 
@@ -811,48 +725,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchBar becomeFirstResponder];
 }
 
-- (void)selectPreviousConversation
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"");
-
-    // If we have presented a conversation list (the archive) navigate through that instead.
-    if (self.presentedConversationListViewController) {
-        [self.presentedConversationListViewController selectPreviousConversation];
-        return;
-    }
-
-    TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
-    NSIndexPath *_Nullable previousIndexPath = [self.threadMapping indexPathBeforeThread:currentThread];
-    if (previousIndexPath) {
-        [self presentThread:[self threadForIndexPath:previousIndexPath] action:ConversationViewActionCompose animated:YES];
-        [self.tableView selectRowAtIndexPath:previousIndexPath
-                                    animated:YES
-                              scrollPosition:UITableViewScrollPositionNone];
-    }
-}
-
-- (void)selectNextConversation
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"");
-
-    // If we have presented a conversation list (the archive) navigate through that instead.
-    if (self.presentedConversationListViewController) {
-        [self.presentedConversationListViewController selectNextConversation];
-        return;
-    }
-
-    TSThread *_Nullable currentThread = self.conversationSplitViewController.selectedThread;
-    NSIndexPath *_Nullable nextIndexPath = [self.threadMapping indexPathAfterThread:currentThread];
-    if (nextIndexPath) {
-        [self presentThread:[self threadForIndexPath:nextIndexPath] action:ConversationViewActionCompose animated:YES];
-        [self.tableView selectRowAtIndexPath:nextIndexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
-    }
-}
-
 - (void)archiveSelectedConversation
 {
     OWSAssertIsOnMainThread();
@@ -955,7 +827,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // visible.  The threads often change ordering while in conversation view due
         // to incoming & outgoing messages.
         NSIndexPath *_Nullable indexPathOfLastThread =
-            [self.threadMapping indexPathForUniqueId:self.lastViewedThread.uniqueId];
+            [self.renderState indexPathForUniqueId:self.lastViewedThread.uniqueId];
         if (indexPathOfLastThread) {
             [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
                                   atScrollPosition:UITableViewScrollPositionNone
@@ -984,13 +856,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewWillDisappear:animated];
 }
 
-- (void)setIsViewVisible:(BOOL)isViewVisible
-{
-    _isViewVisible = isViewVisible;
-
-    [self updateShouldObserveDBModifications];
-}
-
 - (void)updateShouldObserveDBModifications
 {
     BOOL isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive;
@@ -1010,348 +875,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-- (void)reloadTableViewData
-{
-    OWSAssertIsOnMainThread();
-
-    // PERF: come up with a more nuanced cache clearing scheme
-    [self.threadViewModelCache removeAllObjects];
-    self.lastReloadDate = [NSDate new];
-    [self.tableView reloadData];
-}
-
-- (void)resetMappings
-{
-    [BenchManager benchWithTitle:@"ConversationListViewController#resetMappings"
-                           block:^{
-                               [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                                   [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                                                      transaction:transaction];
-                               }];
-
-                               [self updateHasArchivedThreadsRow];
-                               [self reloadTableViewData];
-
-                               [self updateViewState];
-                           }];
-}
-
-- (BOOL)isViewingArchive
-{
-    return self.conversationListMode == ConversationListMode_Archive;
-}
-
-#pragma mark - startup
-
-- (void)tableViewSetUp
-{
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-}
-
-#pragma mark - Table View Data Source
-
-// Returns YES IFF this value changes.
-- (BOOL)updateHasArchivedThreadsRow
-{
-    BOOL hasArchivedThreadsRow
-        = (self.conversationListMode == ConversationListMode_Inbox && self.numberOfArchivedThreads > 0);
-    if (self.hasArchivedThreadsRow == hasArchivedThreadsRow) {
-        return NO;
-    }
-    self.hasArchivedThreadsRow = hasArchivedThreadsRow;
-
-    return YES;
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 4;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)aSection
-{
-    ConversationListViewControllerSection section = (ConversationListViewControllerSection)aSection;
-    switch (section) {
-        case ConversationListViewControllerSectionReminders:
-            return self.hasVisibleReminders ? 1 : 0;
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned:
-            return [self.threadMapping numberOfItemsInSection:section];
-        case ConversationListViewControllerSectionArchiveButton:
-            return self.hasArchivedThreadsRow ? 1 : 0;
-    }
-
-    OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
-    return 0;
-}
-
-- (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
-{
-    TSThread *threadRecord = [self threadForIndexPath:indexPath];
-    OWSAssertDebug(threadRecord);
-
-    ThreadViewModel *_Nullable cachedThreadViewModel
-        = (ThreadViewModel *)[self.threadViewModelCache objectForKey:threadRecord.uniqueId];
-    if (cachedThreadViewModel) {
-        return cachedThreadViewModel;
-    }
-
-    __block ThreadViewModel *_Nullable newThreadViewModel;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord
-                                                 forConversationList:YES
-                                                         transaction:transaction];
-    }];
-    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
-    return newThreadViewModel;
-}
-
-- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    switch (section) {
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned: {
-            UIView *container = [UIView new];
-            container.layoutMargins = UIEdgeInsetsMake(14, 16, 8, 16);
-
-            UILabel *label = [UILabel new];
-            [container addSubview:label];
-            [label autoPinEdgesToSuperviewMargins];
-            label.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
-            label.textColor = Theme.primaryTextColor;
-            label.text = section == ConversationListViewControllerSectionPinned
-                ? NSLocalizedString(
-                    @"PINNED_SECTION_TITLE", @"The title for pinned conversation section on the conversation list")
-                : NSLocalizedString(
-                    @"UNPINNED_SECTION_TITLE", @"The title for unpinned conversation section on the conversation list");
-
-            return container;
-        }
-        default:
-            return [UIView new];
-    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    switch (section) {
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned:
-            if (!self.threadMapping.hasPinnedAndUnpinnedThreads) {
-                return FLT_EPSILON;
-            }
-
-            return UITableViewAutomaticDimension;
-        default:
-            // Without returning a header with a non-zero height, Grouped
-            // table view will use a default spacing between sections. We
-            // do not want that spacing so we use the smallest possible height.
-            return FLT_EPSILON;
-    }
-}
-
-- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    return [UIView new];
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    // Without returning a footer with a non-zero height, Grouped
-    // table view will use a default spacing between sections. We
-    // do not want that spacing so we use the smallest possible height.
-    return FLT_EPSILON;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
-
-    UITableViewCell *_Nullable cell;
-
-    switch (section) {
-        case ConversationListViewControllerSectionReminders: {
-            OWSAssert(self.reminderStackView);
-            cell = self.reminderViewCell;
-            break;
-        }
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned: {
-            cell = [self tableView:tableView cellForConversationAtIndexPath:indexPath];
-            break;
-        }
-        case ConversationListViewControllerSectionArchiveButton: {
-            cell = [self cellForArchivedConversationsRow:tableView];
-            break;
-        }
-    }
-
-    if (!cell) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
-        cell = [UITableViewCell new];
-    }
-
-    if (!self.splitViewController.isCollapsed) {
-        cell.selectedBackgroundView.backgroundColor
-            = Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray15Color;
-        cell.backgroundColor = Theme.secondaryBackgroundColor;
-    }
-
-    return cell;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath
-{
-    ConversationListCell *cell =
-        [self.tableView dequeueReusableCellWithIdentifier:ConversationListCell.reuseIdentifier];
-    OWSAssertDebug(cell);
-
-    ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
-
-    // We want initial loads and reloads to load avatars sync,
-    // but subsequent avatar loads (e.g. from scrolling) should
-    // be async.
-    const NSTimeInterval avatarAsyncLoadInterval = kSecondInterval * 1;
-    BOOL shouldLoadAvatarAsync = (self.hasEverAppeared
-        && (self.lastReloadDate == nil || fabs(self.lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval));
-    BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
-    [cell configure:[[ConversationListCellConfiguration alloc] initWithThread:thread
-                                                        shouldLoadAvatarAsync:shouldLoadAvatarAsync
-                                                                    isBlocked:isBlocked
-                                                              overrideSnippet:nil
-                                                                 overrideDate:nil]];
-
-    NSString *cellName;
-    if (thread.threadRecord.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread.threadRecord;
-        cellName = [NSString stringWithFormat:@"cell-group-%@", groupThread.groupModel.groupName];
-    } else {
-        TSContactThread *contactThread = (TSContactThread *)thread.threadRecord;
-        cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactAddress.stringForDisplay];
-    }
-    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
-
-    NSString *archiveTitle;
-    if (self.conversationListMode == ConversationListMode_Inbox) {
-      archiveTitle = CommonStrings.archiveAction;
-    } else {
-      archiveTitle = CommonStrings.unarchiveAction;
-    }
-
-    OWSCellAccessibilityCustomAction *archiveAction =
-        [[OWSCellAccessibilityCustomAction alloc] initWithName:archiveTitle
-                                                          type:OWSCellAccessibilityCustomActionTypeArchive
-                                               threadViewModel:thread
-                                                        target:self
-                                                      selector:@selector(performAccessibilityCustomAction:)];
-
-    OWSCellAccessibilityCustomAction *deleteAction =
-        [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.deleteButton
-                                                          type:OWSCellAccessibilityCustomActionTypeDelete
-                                               threadViewModel:thread
-                                                        target:self
-                                                      selector:@selector(performAccessibilityCustomAction:)];
-
-    OWSCellAccessibilityCustomAction *unreadAction;
-    if (thread.hasUnreadMessages) {
-        unreadAction =
-            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.readAction
-                                                              type:OWSCellAccessibilityCustomActionTypeMarkRead
-                                                   threadViewModel:thread
-                                                            target:self
-                                                          selector:@selector(performAccessibilityCustomAction:)];
-    } else {
-        unreadAction =
-            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unreadAction
-                                                              type:OWSCellAccessibilityCustomActionTypeMarkUnread
-                                                   threadViewModel:thread
-                                                            target:self
-                                                          selector:@selector(performAccessibilityCustomAction:)];
-    }
-
-    OWSCellAccessibilityCustomAction *pinnedAction;
-    if ([self isThreadPinned:thread]) {
-        pinnedAction =
-            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unpinAction
-                                                              type:OWSCellAccessibilityCustomActionTypePin
-                                                   threadViewModel:thread
-                                                            target:self
-                                                          selector:@selector(performAccessibilityCustomAction:)];
-    } else {
-        pinnedAction =
-            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.pinAction
-                                                              type:OWSCellAccessibilityCustomActionTypeUnpin
-                                                   threadViewModel:thread
-                                                            target:self
-                                                          selector:@selector(performAccessibilityCustomAction:)];
-    }
-
-    cell.accessibilityCustomActions = @[ archiveAction, deleteAction, unreadAction, pinnedAction ];
-
-
-    if ([self isConversationActiveForThread:thread.threadRecord]) {
-        [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-    } else {
-        [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    }
-
-    return cell;
-}
-
-- (UITableViewCell *)cellForArchivedConversationsRow:(UITableView *)tableView
-{
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kArchivedConversationsReuseIdentifier];
-    OWSAssertDebug(cell);
-    [OWSTableItem configureCell:cell];
-
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-    for (UIView *subview in cell.contentView.subviews) {
-        [subview removeFromSuperview];
-    }
-
-    UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
-    OWSAssertDebug(disclosureImage);
-    UIImageView *disclosureImageView = [UIImageView new];
-    disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    disclosureImageView.tintColor = [UIColor colorWithRGBHex:0xd1d1d6];
-    [disclosureImageView setContentHuggingHigh];
-    [disclosureImageView setCompressionResistanceHigh];
-
-    UILabel *label = [UILabel new];
-    label.text = NSLocalizedString(@"HOME_VIEW_ARCHIVED_CONVERSATIONS", @"Label for 'archived conversations' button.");
-    label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont ows_dynamicTypeBodyFont];
-    label.textColor = Theme.primaryTextColor;
-
-    UIStackView *stackView = [UIStackView new];
-    stackView.axis = UILayoutConstraintAxisHorizontal;
-    stackView.spacing = 5;
-    // If alignment isn't set, UIStackView uses the height of
-    // disclosureImageView, even if label has a higher desired height.
-    stackView.alignment = UIStackViewAlignmentCenter;
-    [stackView addArrangedSubview:label];
-    [stackView addArrangedSubview:disclosureImageView];
-    [cell.contentView addSubview:stackView];
-    [stackView autoCenterInSuperview];
-    // Constrain to cell margins.
-    [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
-    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
-    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop];
-    [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
-
-    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"archived_conversations");
-
-    return cell;
-}
-
-- (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath
-{
-    OWSAssertDebug(indexPath.section == ConversationListViewControllerSectionPinned
-        || indexPath.section == ConversationListViewControllerSectionUnpinned);
-
-    return [self.threadMapping threadForIndexPath:indexPath];
-}
+#pragma mark -
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
@@ -1370,193 +894,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             OWSLogInfo(@"ending refreshing.");
             [refreshControl endRefreshing];
         });
-}
-
-#pragma mark - Edit Actions
-
-- (void)tableView:(UITableView *)tableView
-    commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-     forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return;
-}
-
-- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
-    trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
-    switch (section) {
-        case ConversationListViewControllerSectionReminders:
-            return nil;
-        case ConversationListViewControllerSectionArchiveButton:
-            return nil;
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned: {
-            ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
-
-            UIContextualAction *deleteAction =
-                [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
-                                                        title:nil
-                                                      handler:^(UIContextualAction *action,
-                                                          __kindof UIView *sourceView,
-                                                          void (^completionHandler)(BOOL)) {
-                                                          [self deleteThreadWithConfirmation:threadViewModel];
-                                                          completionHandler(NO);
-                                                      }];
-            deleteAction.backgroundColor = UIColor.ows_accentRedColor;
-            deleteAction.image = [self actionImageNamed:@"trash-solid-24" withTitle:CommonStrings.deleteButton];
-            deleteAction.accessibilityLabel = CommonStrings.deleteButton;
-
-            UIContextualAction *archiveAction =
-                [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
-                                                        title:nil
-                                                      handler:^(UIContextualAction *action,
-                                                          __kindof UIView *sourceView,
-                                                          void (^completionHandler)(BOOL)) {
-                                                          [self archiveThread:threadViewModel];
-                                                          completionHandler(NO);
-                                                      }];
-
-            NSString *archiveTitle;
-            if (self.conversationListMode == ConversationListMode_Inbox) {
-                archiveTitle = CommonStrings.archiveAction;
-            } else {
-                archiveTitle = CommonStrings.unarchiveAction;
-            }
-
-            archiveAction.backgroundColor
-                = Theme.isDarkThemeEnabled ? UIColor.ows_gray45Color : UIColor.ows_gray25Color;
-            archiveAction.image = [self actionImageNamed:@"archive-solid-24" withTitle:archiveTitle];
-            archiveAction.accessibilityLabel = archiveTitle;
-
-            // The first action will be auto-performed for "very long swipes".
-            return [UISwipeActionsConfiguration configurationWithActions:@[ archiveAction, deleteAction ]];
-        }
-    }
-}
-
-- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
-    leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
-    switch (section) {
-        case ConversationListViewControllerSectionReminders:
-            return nil;
-        case ConversationListViewControllerSectionArchiveButton:
-            return nil;
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned: {
-
-            ThreadViewModel *model = [self threadViewModelForIndexPath:indexPath];
-
-            UIContextualAction *pinnedStateAction;
-            if ([self isThreadPinned:model]) {
-                pinnedStateAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
-                                                                            title:nil
-                                                                          handler:^(UIContextualAction *action,
-                                                                              __kindof UIView *sourceView,
-                                                                              void (^completionHandler)(BOOL)) {
-                                                                              completionHandler(NO);
-                                                                              [self unpinThread:model];
-                                                                          }];
-
-                pinnedStateAction.backgroundColor = [UIColor colorWithRGBHex:0xff990a];
-                pinnedStateAction.accessibilityLabel = CommonStrings.unpinAction;
-                pinnedStateAction.image = [self actionImageNamed:@"unpin-solid-24"
-                                                       withTitle:pinnedStateAction.accessibilityLabel];
-            } else {
-                pinnedStateAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
-                                                                            title:nil
-                                                                          handler:^(UIContextualAction *action,
-                                                                              __kindof UIView *sourceView,
-                                                                              void (^completionHandler)(BOOL)) {
-                                                                              completionHandler(NO);
-                                                                              [self pinThread:model];
-                                                                          }];
-
-                pinnedStateAction.backgroundColor = [UIColor colorWithRGBHex:0xff990a];
-                pinnedStateAction.accessibilityLabel = CommonStrings.pinAction;
-                pinnedStateAction.image = [self actionImageNamed:@"pin-solid-24"
-                                                       withTitle:pinnedStateAction.accessibilityLabel];
-            }
-
-            UIContextualAction *readStateAction;
-            if (model.hasUnreadMessages) {
-                readStateAction = [UIContextualAction
-                    contextualActionWithStyle:UIContextualActionStyleDestructive
-                                        title:nil
-                                      handler:^(UIContextualAction *action,
-                                          __kindof UIView *sourceView,
-                                          void (^completionHandler)(BOOL)) {
-                                          completionHandler(NO);
-                                          // We delay here so the animation can play out before we
-                                          // reload the cell
-                                          dispatch_after(
-                                              dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.65 * NSEC_PER_SEC)),
-                                              dispatch_get_main_queue(),
-                                              ^{ [self markThreadAsRead:model]; });
-                                      }];
-
-                readStateAction.backgroundColor = UIColor.ows_accentBlueColor;
-                readStateAction.accessibilityLabel = CommonStrings.readAction;
-                readStateAction.image = [self actionImageNamed:@"read-solid-24"
-                                                     withTitle:readStateAction.accessibilityLabel];
-            } else {
-                readStateAction =
-                    [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
-                                                            title:nil
-                                                          handler:^(UIContextualAction *action,
-                                                              __kindof UIView *sourceView,
-                                                              void (^completionHandler)(BOOL)) {
-                                                              completionHandler(NO);
-                                                              // We delay here so the animation can play out before we
-                                                              // reload the cell
-                                                              dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                                                                 (int64_t)(0.65 * NSEC_PER_SEC)),
-                                                                  dispatch_get_main_queue(),
-                                                                  ^{ [self markThreadAsUnread:model]; });
-                                                          }];
-
-                readStateAction.backgroundColor = UIColor.ows_accentBlueColor;
-                readStateAction.accessibilityLabel = CommonStrings.unreadAction;
-                readStateAction.image = [self actionImageNamed:@"unread-solid-24"
-                                                     withTitle:readStateAction.accessibilityLabel];
-            }
-
-            // The first action will be auto-performed for "very long swipes".
-            return [UISwipeActionsConfiguration configurationWithActions:@[ readStateAction, pinnedStateAction ]];
-        }
-    }
-}
-
-- (nullable UIImage *)actionImageNamed:(NSString *)imageName withTitle:(NSString *)title
-{
-    // We need to bake the title text into the image because `UIContextualAction`
-    // only displays title + image when the cell's height > 91. We want to always
-    // show both.
-    return [[[UIImage imageNamed:imageName] withTitle:title
-                                                 font:[UIFont systemFontOfSize:13]
-                                                color:UIColor.ows_whiteColor
-                                        maxTitleWidth:68
-                                   minimumScaleFactor:8 / 13
-                                              spacing:4] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
-    switch (section) {
-        case ConversationListViewControllerSectionReminders: {
-            return NO;
-        }
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned: {
-            return YES;
-        }
-        case ConversationListViewControllerSectionArchiveButton: {
-            return NO;
-        }
-    }
 }
 
 #pragma mark - UISearchBarDelegate
@@ -1632,12 +969,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.tableView setContentOffset:CGPointMake(0, -topInset) animated:isAnimated];
 }
 
-- (void)dismissSearchKeyboard
-{
-    [self.searchBar resignFirstResponder];
-    OWSAssertDebug(!self.searchBar.isFirstResponder);
-}
-
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -1654,162 +985,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)deleteThreadWithConfirmation:(ThreadViewModel *)threadViewModel
-{
-    __weak ConversationListViewController *weakSelf = self;
-    ActionSheetController *alert = [[ActionSheetController alloc]
-        initWithTitle:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
-                          @"Title for the 'conversation delete confirmation' alert.")
-              message:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
-                          @"Message for the 'conversation delete confirmation' alert.")];
-    [alert addAction:[[ActionSheetAction alloc]
-                         initWithTitle:CommonStrings.deleteButton
-                                 style:ActionSheetActionStyleDestructive
-                               handler:^(ActionSheetAction *action) { [weakSelf deleteThread:threadViewModel]; }]];
-    [alert addAction:[OWSActionSheets cancelAction]];
-
-    [self presentActionSheet:alert];
-}
-
-- (void)performAccessibilityCustomAction:(OWSCellAccessibilityCustomAction *)action
-{
-    switch(action.type){
-        case OWSCellAccessibilityCustomActionTypeArchive:
-            [self archiveThread:action.threadViewModel];
-            break;
-        case OWSCellAccessibilityCustomActionTypeDelete:
-            [self deleteThreadWithConfirmation:action.threadViewModel];
-            break;
-        case OWSCellAccessibilityCustomActionTypeMarkRead:
-            [self markThreadAsRead:action.threadViewModel];
-            break;
-        case OWSCellAccessibilityCustomActionTypeMarkUnread:
-            [self markThreadAsUnread:action.threadViewModel];
-            break;
-        case OWSCellAccessibilityCustomActionTypePin:
-            [self pinThread:action.threadViewModel];
-            break;
-        case OWSCellAccessibilityCustomActionTypeUnpin:
-            [self unpinThread:action.threadViewModel];
-            break;
-    }
-}
-
-- (void)deleteThread:(ThreadViewModel *)threadViewModel
-{
-    // If this conversation is currently selected, close it.
-    if ([self.conversationSplitViewController.selectedThread.uniqueId
-            isEqualToString:threadViewModel.threadRecord.uniqueId]) {
-        [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
-    }
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [threadViewModel.threadRecord softDeleteThreadWithTransaction:transaction];
-    });
-
-    [self updateViewState];
-}
-
-- (void)markThreadAsRead:(ThreadViewModel *)threadViewModel
-{
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [threadViewModel.threadRecord markAllAsReadAndUpdateStorageService:YES transaction:transaction];
-    });
-}
-
-- (void)markThreadAsUnread:(ThreadViewModel *)threadViewModel
-{
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [threadViewModel.associatedData updateWithIsMarkedUnread:YES updateStorageService:YES transaction:transaction];
-    });
-}
-
-- (void)pinThread:(ThreadViewModel *)threadViewModel
-{
-    __block NSError *error;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [PinnedThreadManager pinThread:threadViewModel.threadRecord
-                  updateStorageService:YES
-                           transaction:transaction
-                                 error:&error];
-    });
-
-    if (error == PinnedThreadManager.tooManyPinnedThreadsError) {
-        [OWSActionSheets showActionSheetWithTitle:
-                             NSLocalizedString(@"PINNED_CONVERSATION_LIMIT",
-                                 @"An explanation that you have already pinned the maximum number of conversations.")];
-    } else if (error) {
-        OWSFailDebug(@"Encountered unexpected error while pinning thread %@", error);
-    }
-}
-
-- (void)unpinThread:(ThreadViewModel *)threadViewModel
-{
-    __block NSError *error;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [PinnedThreadManager unpinThread:threadViewModel.threadRecord
-                    updateStorageService:YES
-                             transaction:transaction
-                                   error:&error];
-    });
-
-    if (error) {
-        OWSFailDebug(@"Encountered unexpected error while unpinning thread %@", error);
-    }
-}
-
 - (BOOL)isThreadPinned:(ThreadViewModel *)threadViewModel
 {
     return [PinnedThreadManager isThreadPinned:threadViewModel.threadRecord];
-}
-
-- (void)archiveThread:(ThreadViewModel *)threadViewModel
-{
-    // If this conversation is currently selected, close it.
-    if ([self.conversationSplitViewController.selectedThread.uniqueId
-            isEqualToString:threadViewModel.threadRecord.uniqueId]) {
-        [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
-    }
-
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        switch (self.conversationListMode) {
-            case ConversationListMode_Inbox:
-                [threadViewModel.associatedData updateWithIsArchived:YES
-                                                updateStorageService:YES
-                                                         transaction:transaction];
-                break;
-            case ConversationListMode_Archive:
-                [threadViewModel.associatedData updateWithIsArchived:NO
-                                                updateStorageService:YES
-                                                         transaction:transaction];
-                break;
-        }
-    });
-    [self updateViewState];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    OWSLogInfo(@"%ld %ld", (long)indexPath.row, (long)indexPath.section);
-
-    [self dismissSearchKeyboard];
-
-    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
-    switch (section) {
-        case ConversationListViewControllerSectionReminders: {
-            break;
-        }
-        case ConversationListViewControllerSectionPinned:
-        case ConversationListViewControllerSectionUnpinned: {
-            TSThread *thread = [self threadForIndexPath:indexPath];
-            [self presentThread:thread action:ConversationViewActionNone animated:YES];
-            break;
-        }
-        case ConversationListViewControllerSectionArchiveButton: {
-            [self showArchivedConversations];
-            break;
-        }
-    }
 }
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated
@@ -1842,38 +1020,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return [self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId];
 }
 
-#pragma mark - Groupings
-
-- (void)showArchivedConversations
-{
-    OWSAssertDebug(self.conversationListMode == ConversationListMode_Inbox);
-
-    // When showing archived conversations, we want to use a conventional "back" button
-    // to return to the "inbox" conversation list.
-    [self applyArchiveBackButton];
-
-    // Push a separate instance of this view using "archive" mode.
-    ConversationListViewController *conversationList = [ConversationListViewController new];
-    conversationList.conversationListMode = ConversationListMode_Archive;
-    [self showViewController:conversationList sender:self];
-}
-
-- (nullable ConversationListViewController *)presentedConversationListViewController
-{
-    UIViewController *_Nullable topViewController = self.navigationController.topViewController;
-    if (topViewController == self) {
-        return nil;
-    }
-
-    if (![topViewController isKindOfClass:[ConversationListViewController class]]) {
-        return nil;
-    }
-
-    return (ConversationListViewController *)topViewController;
-}
-
-#pragma mark - Previewing
-
 #pragma mark Old Style
 
 - (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -1894,132 +1040,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self commitPreviewController:viewControllerToCommit];
 }
 
-#pragma mark New Style
-
-- (nullable UIContextMenuConfiguration *)tableView:(UITableView *)tableView
-         contextMenuConfigurationForRowAtIndexPath:(nonnull NSIndexPath *)indexPath
-                                             point:(CGPoint)point API_AVAILABLE(ios(13.0))
-{
-    if ([self canPresentPreviewFromIndexPath:indexPath] == NO) {
-        return nil;
-    }
-    NSString *threadId = [self threadForIndexPath:indexPath].uniqueId;
-    if (!threadId) {
-        return nil;
-    }
-
-    __weak typeof(self) wSelf = self;
-    return [UIContextMenuConfiguration configurationWithIdentifier:threadId
-        previewProvider:^UIViewController *_Nullable { return [wSelf createPreviewControllerAtIndexPath:indexPath]; }
-        actionProvider:^UIMenu *_Nullable(NSArray<UIMenuElement *> *_Nonnull suggestedActions) {
-            // nil for now. But we may want to add options like "Pin" or "Mute" in the future
-            return nil;
-        }];
-}
-
-- (nullable UITargetedPreview *)tableView:(UITableView *)tableView
-    previewForDismissingContextMenuWithConfiguration:(UIContextMenuConfiguration *)configuration
-    API_AVAILABLE(ios(13.0))
-{
-
-    NSString *threadId = (NSString *)configuration.identifier;
-    if (![threadId isKindOfClass:[NSString class]]) {
-        OWSFailDebug(@"Unexpected context menu configuration identifier");
-        return nil;
-    }
-    NSIndexPath *indexPath = [self.threadMapping indexPathForUniqueId:threadId];
-    if (!indexPath) {
-        OWSLogWarn(@"No index path for threadId %@", threadId);
-        return nil;
-    }
-
-    // Below is a partial workaround for database updates causing cells to reload mid-transition:
-    // When the conversation view controller is dismissed, it touches the database which causes
-    // the row to update.
-    //
-    // The way this *should* appear is that during presentation and dismissal, the row animates
-    // into and out of the platter. Currently, it looks like UIKit uses a portal view to accomplish
-    // this. It seems the row stays in its original position and is occluded by context menu internals
-    // while the portal view is translated.
-    //
-    // But in our case, when the table view is updated the old cell will be removed and hidden by
-    // UITableView. So mid-transition, the cell appears to disappear. What's left is the background
-    // provided by UIPreviewParameters. By default this is opaque and the end result is that an empty
-    // row appears while dismissal completes.
-    //
-    // A straightforward way to work around this is to just set the background color to clear. When
-    // the row is updated because of a database change, it will appear to snap into position instead
-    // of properly animating. This isn't *too* much of an issue since the row is usually occluded by
-    // the platter anyway. This avoids the empty row issue. A better solution would probably be to
-    // defer data source updates until the transition completes but, as far as I can tell, we aren't
-    // notified when this happens.
-
-    ConversationListCell *cell = (ConversationListCell *)[tableView cellForRowAtIndexPath:indexPath];
-    CGRect cellFrame = [tableView rectForRowAtIndexPath:indexPath];
-    CGPoint center = CGPointMake(CGRectGetMidX(cellFrame), CGRectGetMidY(cellFrame));
-
-    UIPreviewTarget *target = [[UIPreviewTarget alloc] initWithContainer:tableView center:center];
-    UIPreviewParameters *params = [[UIPreviewParameters alloc] init];
-    params.backgroundColor = UIColor.clearColor;
-    return [[UITargetedPreview alloc] initWithView:cell parameters:params target:target];
-}
-
-- (void)tableView:(UITableView *)tableView
-    willPerformPreviewActionForMenuWithConfiguration:(UIContextMenuConfiguration *)configuration
-                                            animator:(id<UIContextMenuInteractionCommitAnimating>)animator
-    API_AVAILABLE(ios(13.0))
-{
-    UIViewController *vc = animator.previewViewController;
-    __weak typeof(self) wSelf = self;
-    [animator addAnimations:^{ [wSelf commitPreviewController:vc]; }];
-}
-
 #pragma mark Shared
-
-- (BOOL)canPresentPreviewFromIndexPath:(nullable NSIndexPath *)indexPath
-{
-    NSString *currentSelectedThreadId = self.conversationSplitViewController.selectedThread.uniqueId;
-    if (!indexPath) {
-        return NO;
-    } else {
-        switch (indexPath.section) {
-            case ConversationListViewControllerSectionPinned:
-            case ConversationListViewControllerSectionUnpinned:
-                if ([[self threadForIndexPath:indexPath].uniqueId isEqual:currentSelectedThreadId]) {
-                    // Currently, no previewing the currently selected thread.
-                    // Though, in a scene-aware, multiwindow world, we may opt to permit this.
-                    // If only to allow the user to pick up and drag a conversation to a new window.
-                    return NO;
-                } else {
-                    return YES;
-                }
-            default:
-                return NO;
-        }
-    }
-}
-
-- (UIViewController *)createPreviewControllerAtIndexPath:(NSIndexPath *)indexPath
-{
-    ThreadViewModel *threadViewModel = [self threadViewModelForIndexPath:indexPath];
-    self.lastViewedThread = threadViewModel.threadRecord;
-    ConversationViewController *vc =
-        [[ConversationViewController alloc] initWithThreadViewModel:threadViewModel
-                                                             action:ConversationViewActionNone
-                                                     focusMessageId:nil];
-    [vc previewSetup];
-    return vc;
-}
-
-- (void)commitPreviewController:(UIViewController *)previewController
-{
-    if ([previewController isKindOfClass:[ConversationViewController class]]) {
-        ConversationViewController *vc = (ConversationViewController *)previewController;
-        [self presentThread:vc.thread action:ConversationViewActionNone animated:NO];
-    } else {
-        OWSFailDebug(@"Unexpected preview controller %@", previewController);
-    }
-}
 
 - (void)updateUnreadPaymentNotificationsCountWithSneakyTransaction
 {
@@ -2050,118 +1071,17 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateReminderViews];
 }
 
-#pragma mark AnyDB Update
-
-- (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds
-{
-    OWSAssertIsOnMainThread();
-
-    if (updatedItemIds.count < 1) {
-        // Ignoring irrelevant update.
-        [self updateViewState];
-        return;
-    }
-
-    __block ThreadMappingDiff *_Nullable mappingDiff;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        mappingDiff =
-            [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                                            updatedItemIds:updatedItemIds
-                                                                               transaction:transaction];
-    }];
-
-    // We want this regardless of if we're currently viewing the archive.
-    // So we run it before the early return
-    [self updateViewState];
-
-    if (mappingDiff == nil) {
-        // Diffing failed, reload to get back to a known good state.
-        self.lastReloadDate = [NSDate new];
-        [self.tableView reloadData];
-        return;
-    }
-
-    if (mappingDiff.sectionChanges.count == 0 && mappingDiff.rowChanges.count == 0) {
-        return;
-    }
-
-    if ([self updateHasArchivedThreadsRow]) {
-        self.lastReloadDate = [NSDate new];
-        [self.tableView reloadData];
-        return;
-    }
-
-    [self.tableView beginUpdates];
-
-    OWSAssertDebug(mappingDiff.sectionChanges.count == 0);
-    for (ThreadMappingRowChange *rowChange in mappingDiff.rowChanges) {
-        NSString *key = rowChange.uniqueRowId;
-        OWSAssertDebug(key);
-        [self.threadViewModelCache removeObjectForKey:key];
-
-        switch (rowChange.type) {
-            case ThreadMappingChangeDelete: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case ThreadMappingChangeInsert: {
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case ThreadMappingChangeMove: {
-                // NOTE: if we're moving within the same section, we perform
-                //       moves using a "delete" and "insert" rather than a "move".
-                //       This ensures that moved items are also reloaded. This is
-                //       how UICollectionView performs reloads internally. We can't
-                //       do this when changing sections, because it results in a weird
-                //       animation. This should generally be safe, because you'll only
-                //       move between sections when pinning / unpinning which doesn't
-                //       require the moved item to be reloaded.
-                if (rowChange.oldIndexPath.section != rowChange.newIndexPath.section) {
-                    [self.tableView moveRowAtIndexPath:rowChange.oldIndexPath toIndexPath:rowChange.newIndexPath];
-                } else {
-                    [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
-                                          withRowAnimation:UITableViewRowAnimationAutomatic];
-                    [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                          withRowAnimation:UITableViewRowAnimationAutomatic];
-                }
-                break;
-            }
-            case ThreadMappingChangeUpdate: {
-                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationNone];
-                break;
-            }
-        }
-    }
-
-    [self.tableView endUpdates];
-    [BenchManager completeEventWithEventId:@"uiDatabaseUpdate"];
-}
-
 #pragma mark -
-
-- (NSUInteger)numberOfInboxThreads
-{
-    return self.threadMapping.inboxCount;
-}
-
-- (NSUInteger)numberOfArchivedThreads
-{
-    return self.threadMapping.archiveCount;
-}
 
 - (void)updateViewState
 {
     if (self.shouldShowEmptyInboxView) {
-        [_tableView setHidden:YES];
+        [self.tableView setHidden:YES];
         [self.emptyInboxView setHidden:NO];
         [self.firstConversationCueView setHidden:!self.shouldShowFirstConversationCue];
         [self updateFirstConversationLabel];
     } else {
-        [_tableView setHidden:NO];
+        [self.tableView setHidden:NO];
         [self.emptyInboxView setHidden:YES];
         [self.firstConversationCueView setHidden:YES];
     }
@@ -2179,7 +1099,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)shouldShowEmptyInboxView
 {
-    return self.conversationListMode == ConversationListMode_Inbox && self.numberOfInboxThreads == 0
+    return self.conversationListMode == ConversationListModeInbox && self.numberOfInboxThreads == 0
         && self.numberOfArchivedThreads == 0;
 }
 
@@ -2230,7 +1150,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)presentGetStartedBannerIfNecessary
 {
-    if (self.getStartedBanner || self.conversationListMode != ConversationListMode_Inbox) {
+    if (self.getStartedBanner || self.conversationListMode != ConversationListModeInbox) {
         return;
     }
 

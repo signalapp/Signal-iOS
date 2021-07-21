@@ -4,44 +4,25 @@
 
 import Foundation
 
-@objc
-public enum ThreadMappingChange: Int {
+enum HVRowChangeType {
     case delete, insert, update, move
 }
 
-@objc
-public class ThreadMappingSectionChange: NSObject {
+// MARK: -
 
-    @objc
-    public let type: ThreadMappingChange
+struct HVRowChange {
 
-    @objc
-    public let index: UInt
+    public let type: HVRowChangeType
 
-    init(type: ThreadMappingChange, index: UInt) {
-        self.type = type
-        self.index = index
-    }
-}
-
-@objc
-public class ThreadMappingRowChange: NSObject {
-
-    @objc
-    public let type: ThreadMappingChange
-
-    @objc
-    public let uniqueRowId: String
+    public let threadUniqueId: String
 
     /// Will be nil for inserts
-    @objc
     public let oldIndexPath: IndexPath?
 
     /// Will be nil for deletes
-    @objc
     public let newIndexPath: IndexPath?
 
-    init(type: ThreadMappingChange, uniqueRowId: String, oldIndexPath: IndexPath?, newIndexPath: IndexPath?) {
+    init(type: HVRowChangeType, threadUniqueId: String, oldIndexPath: IndexPath?, newIndexPath: IndexPath?) {
         #if DEBUG
         switch type {
         case .delete:
@@ -60,186 +41,73 @@ public class ThreadMappingRowChange: NSObject {
         #endif
 
         self.type = type
-        self.uniqueRowId = uniqueRowId
+        self.threadUniqueId = threadUniqueId
         self.oldIndexPath = oldIndexPath
         self.newIndexPath = newIndexPath
     }
 }
 
-@objc
-public class ThreadMappingDiff: NSObject {
+// MARK: -
 
-    @objc
-    let sectionChanges: [ThreadMappingSectionChange]
-
-    @objc
-    let rowChanges: [ThreadMappingRowChange]
-
-    init(sectionChanges: [ThreadMappingSectionChange], rowChanges: [ThreadMappingRowChange]) {
-        self.sectionChanges = sectionChanges
-        self.rowChanges = rowChanges
-    }
+struct HVRenderStateWithDiff {
+    public let renderState: HVRenderState
+    public let rowChanges: [HVRowChange]
 }
 
 // MARK: -
 
-@objc
-class ThreadMapping: NSObject {
+public class HVLoader: NSObject {
 
-    private var pinnedThreads = OrderedDictionary<String, TSThread>()
-    private var unpinnedThreads: [TSThread] = []
+    static func loadRenderState(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) -> HVRenderState? {
+        AssertIsOnMainThread()
 
-    private let pinnedSection: Int = ConversationListViewControllerSection.pinned.rawValue
-    private let unpinnedSection: Int = ConversationListViewControllerSection.unpinned.rawValue
-
-    @objc
-    let numberOfSections: Int = 1
-
-    @objc
-    var archiveCount: UInt = 0
-
-    @objc
-    var inboxCount: UInt = 0
-
-    @objc
-    var hasPinnedAndUnpinnedThreads: Bool { !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty }
-
-    @objc
-    var pinnedThreadIds: [String] { pinnedThreads.orderedKeys }
-
-    @objc(indexPathForUniqueId:)
-    func indexPath(uniqueId: String) -> IndexPath? {
-        if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
-            return IndexPath(item: index, section: unpinnedSection)
-        } else if let index = (pinnedThreads.orderedKeys.firstIndex { $0 == uniqueId}) {
-            return IndexPath(item: index, section: pinnedSection)
-        } else {
-            return nil
-        }
-    }
-
-    @objc
-    func numberOfItems(inSection section: Int) -> Int {
-        if section == pinnedSection {
-            return pinnedThreads.count
-        } else if section == unpinnedSection {
-            return unpinnedThreads.count
-        } else {
-            owsFailDebug("section had unexpected value: \(section)")
-            return 0
-        }
-    }
-
-    @objc(threadForIndexPath:)
-    func thread(indexPath: IndexPath) -> TSThread? {
-        switch indexPath.section {
-        case pinnedSection:
-            return pinnedThreads[safe: indexPath.item]?.value
-        case unpinnedSection:
-            return unpinnedThreads[safe: indexPath.item]
-        default:
-            owsFailDebug("Unexpected index path \(indexPath)")
-            return nil
-        }
-    }
-
-    @objc(indexPathAfterThread:)
-    func indexPath(after thread: TSThread?) -> IndexPath? {
-        let isPinnedThread: Bool
-        if let thread = thread, pinnedThreads.orderedKeys.contains(thread.uniqueId) {
-            isPinnedThread = true
-        } else {
-            isPinnedThread = false
-        }
-
-        let section = isPinnedThread ? pinnedSection : unpinnedSection
-        let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
-
-        guard !threadsInSection.isEmpty else { return nil }
-
-        let firstIndexPath = IndexPath(item: 0, section: section)
-
-        guard let thread = thread else { return firstIndexPath }
-        guard let index = threadsInSection.firstIndex(where: { $0.uniqueId == thread.uniqueId}) else { return firstIndexPath }
-
-        if index < (threadsInSection.count - 1) {
-            return IndexPath(item: index + 1, section: section)
-        } else {
-            return nil
-        }
-    }
-
-    @objc(indexPathBeforeThread:)
-    func indexPath(before thread: TSThread?) -> IndexPath? {
-        let isPinnedThread: Bool
-        if let thread = thread, pinnedThreads.orderedKeys.contains(thread.uniqueId) {
-            isPinnedThread = true
-        } else {
-            isPinnedThread = false
-        }
-
-        let section = isPinnedThread ? pinnedSection : unpinnedSection
-        let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
-
-        guard !threadsInSection.isEmpty else { return nil }
-
-        let lastIndexPath = IndexPath(item: threadsInSection.count - 1, section: section)
-
-        guard let thread = thread else { return lastIndexPath }
-        guard let index = threadsInSection.firstIndex(where: { $0.uniqueId == thread.uniqueId}) else { return lastIndexPath }
-
-        if index > 0 {
-            return IndexPath(item: index - 1, section: section)
-        } else {
-            return nil
-        }
-    }
-
-    let threadFinder = AnyThreadFinder()
-
-    @objc
-    func updateSwallowingErrors(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) {
         do {
-            try update(isViewingArchive: isViewingArchive, transaction: transaction)
+            return try Bench(title: "update thread mapping (\(isViewingArchive ? "archive" : "inbox"))") {
+                try Self.loadRenderStateInternal(isViewingArchive: isViewingArchive, transaction: transaction)
+            }
         } catch {
             owsFailDebug("error: \(error)")
+            return nil
         }
     }
 
-    func update(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws {
-        try Bench(title: "update thread mapping (\(isViewingArchive ? "archive" : "inbox"))") {
-            archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
-            inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
-            try self.loadThreads(isViewingArchive: isViewingArchive, transaction: transaction)
-        }
-    }
+    private static func loadRenderStateInternal(isViewingArchive: Bool,
+                                                transaction: SDSAnyReadTransaction) throws -> HVRenderState {
 
-    private func loadThreads(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws {
+        let threadFinder = AnyThreadFinder()
+        let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
+        let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
 
         var pinnedThreads = [TSThread]()
         var threads = [TSThread]()
 
         let pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
 
-        defer {
+        func buildRenderState() -> HVRenderState {
             // Pinned threads are always ordered in the order they were pinned.
+            let pinnedThreadsFinal: OrderedDictionary<String, TSThread>
             if isViewingArchive {
-                self.pinnedThreads = OrderedDictionary()
+                pinnedThreadsFinal = OrderedDictionary()
             } else {
                 let existingPinnedThreadIds = pinnedThreads.map { $0.uniqueId }
-                self.pinnedThreads = OrderedDictionary(
+                pinnedThreadsFinal = OrderedDictionary(
                     keyValueMap: Dictionary(uniqueKeysWithValues: pinnedThreads.map { ($0.uniqueId, $0) }),
                     orderedKeys: pinnedThreadIds.filter { existingPinnedThreadIds.contains($0) }
                 )
             }
-            self.unpinnedThreads = threads
+            let unpinnedThreadsFinal = threads
+
+            return HVRenderState(pinnedThreads: pinnedThreadsFinal,
+                                 unpinnedThreads: unpinnedThreadsFinal,
+                                 archiveCount: archiveCount,
+                                 inboxCount: inboxCount)
         }
 
         // This method is a perf hotspot. To improve perf, we try to leverage
         // the model cache. If any problems arise, we fall back to using
         // threadFinder.enumerateVisibleThreads() which is robust but expensive.
         func loadWithoutCache() throws {
-            try self.threadFinder.enumerateVisibleThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
+            try threadFinder.enumerateVisibleThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
                 if pinnedThreadIds.contains(thread.uniqueId) {
                     pinnedThreads.append(thread)
                 } else {
@@ -252,7 +120,9 @@ class ThreadMapping: NSObject {
         //
         // 1. Fetch the uniqueIds for the visible threads.
         let threadIds = try threadFinder.visibleThreadIds(isArchived: isViewingArchive, transaction: transaction)
-        guard !threadIds.isEmpty else { return }
+        guard !threadIds.isEmpty else {
+            return buildRenderState()
+        }
 
         // 2. Try to pull as many threads as possible from the cache.
         var threadIdToModelMap: [String: TSThread] = modelReadCaches.threadReadCache.getThreadsIfInCache(forUniqueIds: threadIds,
@@ -267,7 +137,7 @@ class ThreadMapping: NSObject {
         //       We use kMaxIncrementalRowChanges to limit query size.
         guard threadsToLoad.count <= DatabaseChangeObserver.kMaxIncrementalRowChanges else {
             try loadWithoutCache()
-            return
+            return buildRenderState()
         }
 
         if !threadsToLoad.isEmpty {
@@ -275,7 +145,7 @@ class ThreadMapping: NSObject {
             guard loadedThreads.count == threadsToLoad.count else {
                 owsFailDebug("Loading threads failed.")
                 try loadWithoutCache()
-                return
+                return buildRenderState()
             }
             for thread in loadedThreads {
                 threadIdToModelMap[thread.uniqueId] = thread
@@ -285,7 +155,7 @@ class ThreadMapping: NSObject {
         guard threadIds.count == threadIdToModelMap.count else {
             owsFailDebug("Missing threads.")
             try loadWithoutCache()
-            return
+            return buildRenderState()
         }
 
         // 4. Build the ordered list of threads.
@@ -293,7 +163,7 @@ class ThreadMapping: NSObject {
             guard let thread = threadIdToModelMap[threadId] else {
                 owsFailDebug("Couldn't read thread: \(threadId)")
                 try loadWithoutCache()
-                return
+                return buildRenderState()
             }
 
             if pinnedThreadIds.contains(thread.uniqueId) {
@@ -302,26 +172,29 @@ class ThreadMapping: NSObject {
                 threads.append(thread)
             }
         }
+
+        return buildRenderState()
     }
 
-    @objc
-    func updateAndCalculateDiffSwallowingErrors(isViewingArchive: Bool,
-                                                updatedItemIds: Set<String>,
-                                                transaction: SDSAnyReadTransaction) -> ThreadMappingDiff? {
+    static func loadRenderStateAndDiff(isViewingArchive: Bool,
+                                       updatedItemIds: Set<String>,
+                                       lastRenderState: HVRenderState,
+                                       transaction: SDSAnyReadTransaction) -> HVRenderStateWithDiff? {
         do {
-            return try updateAndCalculateDiff(isViewingArchive: isViewingArchive,
-                                              updatedItemIds: updatedItemIds,
-                                              transaction: transaction)
+            return try loadRenderStateAndDiffInternal(isViewingArchive: isViewingArchive,
+                                                      updatedItemIds: updatedItemIds,
+                                                      lastRenderState: lastRenderState,
+                                                      transaction: transaction)
         } catch {
             owsFailDebug("error: \(error)")
             return nil
         }
     }
 
-    @objc
-    func updateAndCalculateDiff(isViewingArchive: Bool,
-                                updatedItemIds allUpdatedItemIds: Set<String>,
-                                transaction: SDSAnyReadTransaction) throws -> ThreadMappingDiff {
+    private static func loadRenderStateAndDiffInternal(isViewingArchive: Bool,
+                                                       updatedItemIds allUpdatedItemIds: Set<String>,
+                                                       lastRenderState: HVRenderState,
+                                                       transaction: SDSAnyReadTransaction) throws -> HVRenderStateWithDiff? {
 
         // Ignore updates to non-visible threads.
         var updatedItemIds = Set<String>()
@@ -335,11 +208,13 @@ class ThreadMapping: NSObject {
             }
         }
 
-        let oldPinnedThreadIds: [String] = pinnedThreads.orderedKeys
-        let oldUnpinnedThreadIds: [String] = unpinnedThreads.map { $0.uniqueId }
-        try update(isViewingArchive: isViewingArchive, transaction: transaction)
-        let newPinnedThreadIds: [String] = pinnedThreads.orderedKeys
-        let newUnpinnedThreadIds: [String] = unpinnedThreads.map { $0.uniqueId }
+        let newRenderState = try loadRenderStateInternal(isViewingArchive: isViewingArchive,
+                                                         transaction: transaction)
+
+        let oldPinnedThreadIds: [String] = lastRenderState.pinnedThreads.orderedKeys
+        let oldUnpinnedThreadIds: [String] = lastRenderState.unpinnedThreads.map { $0.uniqueId }
+        let newPinnedThreadIds: [String] = newRenderState.pinnedThreads.orderedKeys
+        let newUnpinnedThreadIds: [String] = newRenderState.unpinnedThreads.map { $0.uniqueId }
 
         let allNewThreadIds = Set(newPinnedThreadIds + newUnpinnedThreadIds)
 
@@ -354,7 +229,9 @@ class ThreadMapping: NSObject {
         var naivePinnedThreadIdOrdering = oldPinnedThreadIds
         var naiveUnpinnedThreadIdOrdering = oldUnpinnedThreadIds
 
-        var rowChanges: [ThreadMappingRowChange] = []
+        let pinnedSection: Int = HomeViewSection.pinned.rawValue
+        let unpinnedSection: Int = HomeViewSection.unpinned.rawValue
+        var rowChanges: [HVRowChange] = []
 
         // 1. Deletes - Always perform deletes before inserts and updates.
         //
@@ -376,10 +253,10 @@ class ThreadMapping: NSObject {
             owsAssertDebug(newPinnedThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
             owsAssertDebug(newUnpinnedThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
 
-            rowChanges.append(ThreadMappingRowChange(type: .delete,
-                                                     uniqueRowId: deletedThreadId,
-                                                     oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
-                                                     newIndexPath: nil))
+            rowChanges.append(HVRowChange(type: .delete,
+                                          threadUniqueId: deletedThreadId,
+                                          oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
+                                          newIndexPath: nil))
 
             func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
                 if oldIndex >= 0 && oldIndex < naiveThreadIdOrdering.count {
@@ -415,10 +292,10 @@ class ThreadMapping: NSObject {
             guard let newIndex = newThreadIds.firstIndexAsInt(of: insertedThreadId) else {
                 throw OWSAssertionError("newIndex was unexpectedly nil")
             }
-            rowChanges.append(ThreadMappingRowChange(type: .insert,
-                                               uniqueRowId: insertedThreadId,
-                                               oldIndexPath: nil,
-                                               newIndexPath: IndexPath(row: newIndex, section: newSection)))
+            rowChanges.append(HVRowChange(type: .insert,
+                                          threadUniqueId: insertedThreadId,
+                                          oldIndexPath: nil,
+                                          newIndexPath: IndexPath(row: newIndex, section: newSection)))
 
             func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
                 if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
@@ -473,10 +350,10 @@ class ThreadMapping: NSObject {
             let oldSection = wasPinned ? pinnedSection : unpinnedSection
             let newSection = isPinned ? pinnedSection : unpinnedSection
 
-            rowChanges.append(ThreadMappingRowChange(type: .move,
-                                                     uniqueRowId: threadId,
-                                                     oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
-                                                     newIndexPath: IndexPath(row: newIndex, section: newSection)))
+            rowChanges.append(HVRowChange(type: .move,
+                                          threadUniqueId: threadId,
+                                          oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
+                                          newIndexPath: IndexPath(row: newIndex, section: newSection)))
 
             // Update naive ordering.
             if wasPinned {
@@ -546,10 +423,10 @@ class ThreadMapping: NSObject {
                 continue
             }
 
-            rowChanges.append(ThreadMappingRowChange(type: .move,
-                                                     uniqueRowId: threadId,
-                                                     oldIndexPath: IndexPath(row: oldIndex, section: section),
-                                                     newIndexPath: IndexPath(row: newIndex, section: section)))
+            rowChanges.append(HVRowChange(type: .move,
+                                          threadUniqueId: threadId,
+                                          oldIndexPath: IndexPath(row: oldIndex, section: section),
+                                          newIndexPath: IndexPath(row: newIndex, section: section)))
             movedThreadIds.append(threadId)
 
             func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
@@ -627,13 +504,14 @@ class ThreadMapping: NSObject {
             guard let oldIndex = oldThreadIds.firstIndexAsInt(of: updatedThreadId) else {
                 throw OWSAssertionError("oldIndex was unexpectedly nil")
             }
-            rowChanges.append(ThreadMappingRowChange(type: .update,
-                                                     uniqueRowId: updatedThreadId,
-                                                     oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
-                                                     newIndexPath: nil))
+            rowChanges.append(HVRowChange(type: .update,
+                                          threadUniqueId: updatedThreadId,
+                                          oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
+                                          newIndexPath: nil))
         }
 
-        return ThreadMappingDiff(sectionChanges: [], rowChanges: rowChanges)
+        return HVRenderStateWithDiff(renderState: newRenderState,
+                                     rowChanges: rowChanges)
     }
 }
 

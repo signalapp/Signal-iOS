@@ -4,14 +4,14 @@
 
 import Foundation
 
+public enum PinnedThreadError: Error {
+    case tooManyPinnedThreads
+}
+
+// MARK: -
+
 @objc
 public class PinnedThreadManager: NSObject {
-    @objc
-    static let tooManyPinnedThreadsError = NSError(
-        domain: "PinnedThreadManager",
-        code: 1,
-        userInfo: [NSLocalizedDescriptionKey: "Pinned thread count would exceed maximum pinned threads."]
-    )
 
     @objc
     public static let maxPinnedThreads = 4
@@ -108,7 +108,7 @@ public class PinnedThreadManager: NSObject {
             throw OWSGenericError("Attempted to pin thread that is already pinned.")
         }
 
-        guard pinnedThreadIds.count < maxPinnedThreads else { throw tooManyPinnedThreadsError }
+        guard pinnedThreadIds.count < maxPinnedThreads else { throw PinnedThreadError.tooManyPinnedThreads }
 
         pinnedThreadIds.append(thread.uniqueId)
         updatePinnedThreadIds(pinnedThreadIds, transaction: transaction)
