@@ -25,7 +25,6 @@ public class HVTableDataSource: NSObject {
         super.init()
     }
 
-    // TODO: Move elsewhere?
     func configure(viewState: HVViewState) {
         AssertIsOnMainThread()
 
@@ -71,7 +70,6 @@ extension HVTableDataSource {
 
 // MARK: -
 
-// TODO: Revisit
 @objc
 public enum HomeViewMode: Int, CaseIterable {
     case archive
@@ -299,25 +297,34 @@ extension HVTableDataSource: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         AssertIsOnMainThread()
 
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return 0
+        }
+
         guard let section = HomeViewSection(rawValue: section) else {
             owsFailDebug("Invalid section: \(section).")
             return 0
         }
         switch section {
         case .reminders:
-            return viewState.hasVisibleReminders ? 1 : 0
+            return viewController.hasVisibleReminders ? 1 : 0
         case .pinned:
             return renderState.pinnedThreads.count
         case .unpinned:
             return renderState.unpinnedThreads.count
         case .archiveButton:
-            return viewState.hasArchivedThreadsRow ? 1 : 0
+            return viewController.hasArchivedThreadsRow ? 1 : 0
         }
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return UITableViewCell()
+        }
         guard let section = HomeViewSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return UITableViewCell()
@@ -326,7 +333,7 @@ extension HVTableDataSource: UITableViewDataSource {
         let cell: UITableViewCell = {
             switch section {
             case .reminders:
-                return viewState.reminderViewCell
+                return viewController.reminderViewCell
             case .pinned, .unpinned:
                 return buildConversationCell(tableView: tableView, indexPath: indexPath)
             case .archiveButton:
@@ -398,7 +405,6 @@ extension HVTableDataSource: UITableViewDataSource {
                                 ? CommonStrings.archiveAction
                                 : CommonStrings.unarchiveAction)
 
-        // TODO: Test selector.
         let performAccessibilityCustomActionSelector = #selector(HomeViewController.performAccessibilityCustomAction)
 
         let archiveAction = HVCellAccessibilityCustomAction(name: archiveTitle,
@@ -424,7 +430,6 @@ extension HVTableDataSource: UITableViewDataSource {
                                                                   target: viewController,
                                                                   selector: performAccessibilityCustomActionSelector))
 
-        // TODO: Did we fix a bug here?
         let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
         let pinnedAction = (isThreadPinned
                                 ? HVCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
@@ -582,7 +587,6 @@ extension HVTableDataSource: UITableViewDataSource {
                                           font: UIFont.systemFont(ofSize: 13),
                                           color: .ows_white,
                                           maxTitleWidth: 68,
-                                          // TODO: Did we fix a bug here?
                                           minimumScaleFactor: CGFloat(8) / CGFloat(13),
                                           spacing: 4) else {
             owsFailDebug("Missing image.")
@@ -704,4 +708,29 @@ public class HVTableView: UITableView {
         lastReloadDate = Date()
         super.reloadData()
     }
+}
+
+// MARK: -
+
+public class HVCellAccessibilityCustomAction: UIAccessibilityCustomAction {
+
+    var type: HVCellAccessibilityCustomActionType
+    var threadViewModel: ThreadViewModel
+
+    init(name: String, type: HVCellAccessibilityCustomActionType, threadViewModel: ThreadViewModel, target: Any?, selector: Selector) {
+        self.type = type
+        self.threadViewModel = threadViewModel
+        super.init(name: name, target: target, selector: selector)
+    }
+}
+
+// MARK: -
+
+public enum HVCellAccessibilityCustomActionType: Int {
+    case delete
+    case archive
+    case markRead
+    case markUnread
+    case pin
+    case unpin
 }

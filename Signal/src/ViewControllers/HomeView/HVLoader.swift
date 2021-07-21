@@ -25,34 +25,38 @@ struct HVRowChange {
 
 // MARK: -
 
-struct HVRenderStateWithDiff {
-    public let renderState: HVRenderState
-    public let rowChanges: [HVRowChange]
+enum HVLoadResult {
+    case newRenderState(renderState: HVRenderState)
+    case newRenderStateWithDiff(renderState: HVRenderState, rowChanges: [HVRowChange])
+    case reloadTable
+    case noChanges
 }
 
 // MARK: -
 
 public class HVLoader: NSObject {
 
-    static func loadRenderState(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) -> HVRenderState? {
+    static func loadRenderState(viewInfo: HVViewInfo,
+                                transaction: SDSAnyReadTransaction) -> HVLoadResult {
         AssertIsOnMainThread()
 
         do {
-            return try Bench(title: "loadRenderState for reset (\(isViewingArchive ? "archive" : "inbox"))") {
-                try Self.loadRenderStateInternal(isViewingArchive: isViewingArchive, transaction: transaction)
+            return try Bench(title: "loadRenderState for reset (\(viewInfo.homeViewMode))") {
+                let renderState = try Self.loadRenderStateInternal(viewInfo: viewInfo,
+                                                                   transaction: transaction)
+                return HVLoadResult.newRenderState(renderState: renderState)
             }
         } catch {
             owsFailDebug("error: \(error)")
-            return nil
+            return .reloadTable
         }
     }
 
-    private static func loadRenderStateInternal(isViewingArchive: Bool,
+    private static func loadRenderStateInternal(viewInfo: HVViewInfo,
                                                 transaction: SDSAnyReadTransaction) throws -> HVRenderState {
 
         let threadFinder = AnyThreadFinder()
-        let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
-        let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
+        let isViewingArchive = viewInfo.homeViewMode == .archive
 
         var pinnedThreads = [TSThread]()
         var threads = [TSThread]()
@@ -73,10 +77,9 @@ public class HVLoader: NSObject {
             }
             let unpinnedThreadsFinal = threads
 
-            return HVRenderState(pinnedThreads: pinnedThreadsFinal,
-                                 unpinnedThreads: unpinnedThreadsFinal,
-                                 archiveCount: archiveCount,
-                                 inboxCount: inboxCount)
+            return HVRenderState(viewInfo: viewInfo,
+                                 pinnedThreads: pinnedThreadsFinal,
+                                 unpinnedThreads: unpinnedThreadsFinal)
         }
 
         // This method is a perf hotspot. To improve perf, we try to leverage
@@ -152,25 +155,26 @@ public class HVLoader: NSObject {
         return buildRenderState()
     }
 
-    static func loadRenderStateAndDiff(isViewingArchive: Bool,
+    static func loadRenderStateAndDiff(viewInfo: HVViewInfo,
                                        updatedItemIds: Set<String>,
                                        lastRenderState: HVRenderState,
-                                       transaction: SDSAnyReadTransaction) -> HVRenderStateWithDiff? {
+                                       transaction: SDSAnyReadTransaction) -> HVLoadResult {
         do {
-            return try loadRenderStateAndDiffInternal(isViewingArchive: isViewingArchive,
+            return try loadRenderStateAndDiffInternal(viewInfo: viewInfo,
                                                       updatedItemIds: updatedItemIds,
                                                       lastRenderState: lastRenderState,
                                                       transaction: transaction)
         } catch {
-            owsFailDebug("error: \(error)")
-            return nil
+            owsFailDebug("Error: \(error)")
+            // Fail over to reloading the table view with a new render state.
+            return loadRenderState(viewInfo: viewInfo, transaction: transaction)
         }
     }
 
-    private static func loadRenderStateAndDiffInternal(isViewingArchive: Bool,
+    private static func loadRenderStateAndDiffInternal(viewInfo: HVViewInfo,
                                                        updatedItemIds allUpdatedItemIds: Set<String>,
                                                        lastRenderState: HVRenderState,
-                                                       transaction: SDSAnyReadTransaction) throws -> HVRenderStateWithDiff? {
+                                                       transaction: SDSAnyReadTransaction) throws -> HVLoadResult {
 
         // Ignore updates to non-visible threads.
         var updatedItemIds = Set<String>()
@@ -184,8 +188,8 @@ public class HVLoader: NSObject {
             }
         }
 
-        let newRenderState = try Bench(title: "loadRenderState for diff (\(isViewingArchive ? "archive" : "inbox"))") {
-            try Self.loadRenderStateInternal(isViewingArchive: isViewingArchive, transaction: transaction)
+        let newRenderState = try Bench(title: "loadRenderState for diff (\(viewInfo.homeViewMode))") {
+            try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
         }
 
         let oldPinnedThreadIds: [String] = lastRenderState.pinnedThreads.orderedKeys
@@ -492,10 +496,12 @@ public class HVLoader: NSObject {
                                           threadUniqueId: updatedThreadId))
         }
 
-        return HVRenderStateWithDiff(renderState: newRenderState,
-                                     rowChanges: rowChanges)
+        owsAssertDebug(!rowChanges.isEmpty)
+        return .newRenderStateWithDiff(renderState: newRenderState, rowChanges: rowChanges)
     }
 }
+
+// MARK: -
 
 extension Collection where Element: Equatable {
     func firstIndexAsInt(of element: Element) -> Int? {

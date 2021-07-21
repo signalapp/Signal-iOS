@@ -15,9 +15,9 @@ public class HVViewState: NSObject {
 
     // MARK: - Views
 
-    public let reminderViewCell = UITableViewCell()
     public let searchBar = OWSSearchBar()
     public let searchResultsController = ConversationSearchViewController()
+    public let reminderViews = HVReminderViews()
 
     // MARK: - State
 
@@ -29,19 +29,18 @@ public class HVViewState: NSObject {
     public var isViewVisible = false
     public var hasEverAppeared = false
 
-    // TODO: Review.
-    public var hasArchivedThreadsRow = false
-    // TODO: Review.
-    public var hasThemeChanged = false
-    // TODO: Review.
-    public var hasVisibleReminders = false
+    public var unreadPaymentNotificationsCount: UInt = 0
+    public var firstUnreadPaymentModel: TSPaymentModel?
 
     // MARK: - Initializer
 
     @objc
     public override required init() {
         super.init()
+    }
 
+    @objc
+    public func configure() {
         tableDataSource.configure(viewState: self)
     }
 }
@@ -64,7 +63,6 @@ public extension HomeViewController {
     // MARK: - Views
 
     var tableView: HVTableView { tableDataSource.tableView }
-    var reminderViewCell: UITableViewCell { viewState.reminderViewCell }
     var searchBar: OWSSearchBar { viewState.searchBar }
     var searchResultsController: ConversationSearchViewController { viewState.searchResultsController }
 
@@ -78,14 +76,5 @@ public extension HomeViewController {
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }
         set { viewState.hasEverAppeared = newValue }
-    }
-
-    var hasArchivedThreadsRow: Bool {
-        get { viewState.hasArchivedThreadsRow }
-        set { viewState.hasArchivedThreadsRow = newValue }
-    }
-    var hasThemeChanged: Bool {
-        get { viewState.hasThemeChanged }
-        set { viewState.hasThemeChanged = newValue }
     }
 }

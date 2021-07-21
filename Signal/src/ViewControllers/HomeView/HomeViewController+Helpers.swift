@@ -25,21 +25,6 @@ public extension HomeViewController {
     var numberOfInboxThreads: UInt { renderState.inboxCount }
     var numberOfArchivedThreads: UInt { renderState.archiveCount }
 
-    // MARK: - Accessors with side effects
-
-    var hasVisibleReminders: Bool {
-        get { viewState.hasVisibleReminders }
-        set {
-            guard viewState.hasVisibleReminders != newValue else {
-                return
-            }
-            viewState.hasVisibleReminders = newValue
-
-            // If the reminders show/hide, reload the table.
-            reloadTableData()
-        }
-    }
-
     // MARK: -
 
     func isConversationActive(forThread thread: TSThread) -> Bool {
@@ -72,7 +57,6 @@ public extension HomeViewController {
         let homeView = HomeViewController()
         homeView.homeViewMode = .archive
 
-        // TODO: What is this?
         self.show(homeView, sender: self)
     }
 
@@ -166,18 +150,5 @@ public extension HomeViewController {
             return
         }
         present(previewController.thread, action: .none, animated: false)
-    }
-
-    // MARK: -
-
-    // Returns YES IFF this value changes.
-    func updateHasArchivedThreadsRow() -> Bool {
-        let hasArchivedThreadsRow = (homeViewMode == .inbox &&
-                                        self.numberOfArchivedThreads > 0)
-        if self.hasArchivedThreadsRow == hasArchivedThreadsRow {
-            return false
-        }
-        self.hasArchivedThreadsRow = hasArchivedThreadsRow
-        return true
     }
 }
