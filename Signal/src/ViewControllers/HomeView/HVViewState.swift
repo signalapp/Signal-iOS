@@ -13,6 +13,8 @@ public class HVViewState: NSObject {
     // TODO: Rework OWSBlockListCache.
     public let blocklistCache = BlockListCache()
 
+    public let loadCoordinator = HVLoadCoordinator()
+
     // MARK: - Views
 
     public let tableView = UITableView(frame: .zero, style: .grouped)
@@ -24,6 +26,8 @@ public class HVViewState: NSObject {
 
     // TODO: We should make this a let.
     public var homeViewMode: HomeViewMode = .inbox
+
+    public var shouldBeUpdatingView = false
 
     public var isViewVisible = false
     public var hasEverAppeared = false
@@ -57,6 +61,8 @@ public extension HomeViewController {
     var threadViewModelCache: LRUCache<String, ThreadViewModel> { viewState.threadViewModelCache }
 
     var blocklistCache: BlockListCache { viewState.blocklistCache }
+
+    var loadCoordinator: HVLoadCoordinator { viewState.loadCoordinator }
 
     // MARK: - Views
 

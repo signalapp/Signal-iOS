@@ -113,7 +113,7 @@ extension HomeViewController {
     private func applicationDidBecomeActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateShouldObserveDBModifications()
+        updateShouldBeUpdatingView()
 
         if !ExperienceUpgradeManager.presentNext(fromViewController: self) {
             OWSActionSheets.showIOSUpgradeNagIfNecessary()
@@ -125,7 +125,7 @@ extension HomeViewController {
     private func applicationWillResignActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateShouldObserveDBModifications()
+        updateShouldBeUpdatingView()
     }
 
     @objc
@@ -149,7 +149,7 @@ extension HomeViewController {
         }
 
         if let threadId = changedThreadId {
-            updateRenderStateWithDiff(updatedThreadIds: Set<String>([threadId]))
+            self.loadCoordinator.scheduleLoad(updatedThreadIds: Set([threadId]))
         }
     }
 }
@@ -170,11 +170,9 @@ extension HomeViewController: DatabaseChangeDelegate {
             updateUnreadPaymentNotificationsCountWithSneakyTransaction()
         }
 
-        guard shouldObserveDBModifications else {
-            return
+        if !databaseChanges.threadUniqueIds.isEmpty {
+            self.loadCoordinator.scheduleLoad(updatedThreadIds: databaseChanges.threadUniqueIds)
         }
-
-        updateRenderStateWithDiff(updatedThreadIds: databaseChanges.threadUniqueIds)
     }
 
     public func databaseChangesDidUpdateExternally() {
@@ -182,24 +180,19 @@ extension HomeViewController: DatabaseChangeDelegate {
 
         Logger.verbose("")
 
-        if shouldObserveDBModifications {
-            // External database modifications can't be converted into incremental updates,
-            // so rebuild everything.  This is expensive and usually isn't necessary, but
-            // there's no alternative.
-            //
-            // We don't need to do this if we're not observing db modifications since we'll
-            // do it when we resume.
-            resetMappings()
-        }
+        // External database modifications can't be converted into incremental updates,
+        // so rebuild everything.  This is expensive and usually isn't necessary, but
+        // there's no alternative.
+        self.loadCoordinator.scheduleHardReset()
     }
 
     public func databaseChangesDidReset() {
         AssertIsOnMainThread()
 
-        if shouldObserveDBModifications {
-            // We don't need to do this if we're not observing db modifications since we'll
-            // do it when we resume.
-            resetMappings()
-        }
+        // This should only happen if we need to recover from an error in the
+        // database change observation pipeline.  This should never occur,
+        // but when it does we need to rebuild everything.  This is expensive,
+        // but there's no alternative.
+        self.loadCoordinator.scheduleHardReset()
     }
 }

@@ -5,45 +5,21 @@
 import Foundation
 
 enum HVRowChangeType {
-    case delete, insert, update, move
+    case delete(oldIndexPath: IndexPath)
+    case insert(newIndexPath: IndexPath)
+    case update(oldIndexPath: IndexPath)
+    case move(oldIndexPath: IndexPath, newIndexPath: IndexPath)
 }
 
 // MARK: -
 
 struct HVRowChange {
-
     public let type: HVRowChangeType
-
     public let threadUniqueId: String
 
-    /// Will be nil for inserts
-    public let oldIndexPath: IndexPath?
-
-    /// Will be nil for deletes
-    public let newIndexPath: IndexPath?
-
-    init(type: HVRowChangeType, threadUniqueId: String, oldIndexPath: IndexPath?, newIndexPath: IndexPath?) {
-        #if DEBUG
-        switch type {
-        case .delete:
-            assert(oldIndexPath != nil)
-            assert(newIndexPath == nil)
-        case .insert:
-            assert(oldIndexPath == nil)
-            assert(newIndexPath != nil)
-        case .update:
-            assert(oldIndexPath != nil)
-            assert(newIndexPath == nil)
-        case .move:
-            assert(oldIndexPath != nil)
-            assert(newIndexPath != nil)
-        }
-        #endif
-
+    init(type: HVRowChangeType, threadUniqueId: String) {
         self.type = type
         self.threadUniqueId = threadUniqueId
-        self.oldIndexPath = oldIndexPath
-        self.newIndexPath = newIndexPath
     }
 }
 
@@ -62,7 +38,7 @@ public class HVLoader: NSObject {
         AssertIsOnMainThread()
 
         do {
-            return try Bench(title: "update thread mapping (\(isViewingArchive ? "archive" : "inbox"))") {
+            return try Bench(title: "loadRenderState for reset (\(isViewingArchive ? "archive" : "inbox"))") {
                 try Self.loadRenderStateInternal(isViewingArchive: isViewingArchive, transaction: transaction)
             }
         } catch {
@@ -208,8 +184,9 @@ public class HVLoader: NSObject {
             }
         }
 
-        let newRenderState = try loadRenderStateInternal(isViewingArchive: isViewingArchive,
-                                                         transaction: transaction)
+        let newRenderState = try Bench(title: "loadRenderState for diff (\(isViewingArchive ? "archive" : "inbox"))") {
+            try Self.loadRenderStateInternal(isViewingArchive: isViewingArchive, transaction: transaction)
+        }
 
         let oldPinnedThreadIds: [String] = lastRenderState.pinnedThreads.orderedKeys
         let oldUnpinnedThreadIds: [String] = lastRenderState.unpinnedThreads.map { $0.uniqueId }
@@ -253,10 +230,9 @@ public class HVLoader: NSObject {
             owsAssertDebug(newPinnedThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
             owsAssertDebug(newUnpinnedThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
 
-            rowChanges.append(HVRowChange(type: .delete,
-                                          threadUniqueId: deletedThreadId,
-                                          oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
-                                          newIndexPath: nil))
+            let oldIndexPath = IndexPath(row: oldIndex, section: oldSection)
+            rowChanges.append(HVRowChange(type: .delete(oldIndexPath: oldIndexPath),
+                                          threadUniqueId: deletedThreadId))
 
             func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
                 if oldIndex >= 0 && oldIndex < naiveThreadIdOrdering.count {
@@ -292,10 +268,9 @@ public class HVLoader: NSObject {
             guard let newIndex = newThreadIds.firstIndexAsInt(of: insertedThreadId) else {
                 throw OWSAssertionError("newIndex was unexpectedly nil")
             }
-            rowChanges.append(HVRowChange(type: .insert,
-                                          threadUniqueId: insertedThreadId,
-                                          oldIndexPath: nil,
-                                          newIndexPath: IndexPath(row: newIndex, section: newSection)))
+            let newIndexPath = IndexPath(row: newIndex, section: newSection)
+            rowChanges.append(HVRowChange(type: .insert(newIndexPath: newIndexPath),
+                                          threadUniqueId: insertedThreadId))
 
             func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
                 if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
@@ -350,10 +325,11 @@ public class HVLoader: NSObject {
             let oldSection = wasPinned ? pinnedSection : unpinnedSection
             let newSection = isPinned ? pinnedSection : unpinnedSection
 
-            rowChanges.append(HVRowChange(type: .move,
-                                          threadUniqueId: threadId,
-                                          oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
-                                          newIndexPath: IndexPath(row: newIndex, section: newSection)))
+            let oldIndexPath = IndexPath(row: oldIndex, section: oldSection)
+            let newIndexPath = IndexPath(row: newIndex, section: newSection)
+            rowChanges.append(HVRowChange(type: .move(oldIndexPath: oldIndexPath,
+                                                      newIndexPath: newIndexPath),
+                                          threadUniqueId: threadId))
 
             // Update naive ordering.
             if wasPinned {
@@ -423,10 +399,11 @@ public class HVLoader: NSObject {
                 continue
             }
 
-            rowChanges.append(HVRowChange(type: .move,
-                                          threadUniqueId: threadId,
-                                          oldIndexPath: IndexPath(row: oldIndex, section: section),
-                                          newIndexPath: IndexPath(row: newIndex, section: section)))
+            let oldIndexPath = IndexPath(row: oldIndex, section: section)
+            let newIndexPath = IndexPath(row: newIndex, section: section)
+            rowChanges.append(HVRowChange(type: .move(oldIndexPath: oldIndexPath,
+                                                      newIndexPath: newIndexPath),
+                                          threadUniqueId: threadId))
             movedThreadIds.append(threadId)
 
             func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
@@ -466,6 +443,9 @@ public class HVLoader: NSObject {
             logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
             logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
             logThreadIds(movedThreadIds, name: "movedThreadIds")
+            for rowChange in rowChanges {
+                Logger.verbose("rowChange: \(rowChange)")
+            }
             throw OWSAssertionError("Could not reorder pinned contents.")
         }
 
@@ -483,6 +463,9 @@ public class HVLoader: NSObject {
             logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
             logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
             logThreadIds(movedThreadIds, name: "movedThreadIds")
+            for rowChange in rowChanges {
+                Logger.verbose("rowChange: \(rowChange)")
+            }
             throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 
@@ -504,10 +487,9 @@ public class HVLoader: NSObject {
             guard let oldIndex = oldThreadIds.firstIndexAsInt(of: updatedThreadId) else {
                 throw OWSAssertionError("oldIndex was unexpectedly nil")
             }
-            rowChanges.append(HVRowChange(type: .update,
-                                          threadUniqueId: updatedThreadId,
-                                          oldIndexPath: IndexPath(row: oldIndex, section: oldSection),
-                                          newIndexPath: nil))
+            let oldIndexPath = IndexPath(row: oldIndex, section: oldSection)
+            rowChanges.append(HVRowChange(type: .update(oldIndexPath: oldIndexPath),
+                                          threadUniqueId: updatedThreadId))
         }
 
         return HVRenderStateWithDiff(renderState: newRenderState,
