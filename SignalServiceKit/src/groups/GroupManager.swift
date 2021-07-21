@@ -170,7 +170,18 @@ public class GroupManager: NSObject {
         do {
             var builder = TSGroupModelBuilder()
             builder.groupId = groupId
-            builder.groupsVersion = .V1
+
+            if let groupId = groupId {
+                if GroupManager.isV1GroupId(groupId) {
+                    builder.groupsVersion = .V1
+                } else if GroupManager.isV2GroupId(groupId) {
+                    builder.groupsVersion = .V2
+                } else {
+                    throw OWSAssertionError("Invalid group id: \(groupId).")
+                }
+            } else {
+                builder.groupsVersion = .V1
+            }
             return try builder.build(transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
