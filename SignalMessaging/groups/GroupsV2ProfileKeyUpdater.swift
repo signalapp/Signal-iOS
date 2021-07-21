@@ -162,6 +162,9 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 case GroupsV2Error.redundantChange:
                     // If the update is no longer necessary, skip it.
                     self.markAsComplete(groupId: groupId)
+                case GroupsV2Error.localUserNotInGroup:
+                    // If the update is no longer necessary, skip it.
+                    self.markAsComplete(groupId: groupId)
                 case is NetworkManagerError:
                     if let statusCode = error.httpStatusCode,
                        400 <= statusCode && statusCode <= 599 {

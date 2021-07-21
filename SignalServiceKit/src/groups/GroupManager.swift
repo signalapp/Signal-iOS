@@ -163,14 +163,21 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Models
 
-    // This should only be used for certain legacy edge cases.
     @objc
-    public static func fakeGroupModel(groupId: Data?,
+    public static func fakeGroupModel(groupId: Data,
                                       transaction: SDSAnyReadTransaction) -> TSGroupModel? {
         do {
             var builder = TSGroupModelBuilder()
             builder.groupId = groupId
-            builder.groupsVersion = .V1
+
+            if GroupManager.isV1GroupId(groupId) {
+                builder.groupsVersion = .V1
+            } else if GroupManager.isV2GroupId(groupId) {
+                builder.groupsVersion = .V2
+            } else {
+                throw OWSAssertionError("Invalid group id: \(groupId).")
+            }
+
             return try builder.build(transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")

@@ -26,8 +26,9 @@ struct HVRowChange {
 // MARK: -
 
 enum HVLoadResult {
-    case newRenderState(renderState: HVRenderState)
-    case newRenderStateWithDiff(renderState: HVRenderState, rowChanges: [HVRowChange])
+    case renderStateForReset(renderState: HVRenderState)
+    case renderStateWithRowChanges(renderState: HVRenderState, rowChanges: [HVRowChange])
+    case renderStateWithoutRowChanges(renderState: HVRenderState)
     case reloadTable
     case noChanges
 }
@@ -36,15 +37,15 @@ enum HVLoadResult {
 
 public class HVLoader: NSObject {
 
-    static func loadRenderState(viewInfo: HVViewInfo,
-                                transaction: SDSAnyReadTransaction) -> HVLoadResult {
+    static func loadRenderStateForReset(viewInfo: HVViewInfo,
+                                        transaction: SDSAnyReadTransaction) -> HVLoadResult {
         AssertIsOnMainThread()
 
         do {
             return try Bench(title: "loadRenderState for reset (\(viewInfo.homeViewMode))") {
                 let renderState = try Self.loadRenderStateInternal(viewInfo: viewInfo,
                                                                    transaction: transaction)
-                return HVLoadResult.newRenderState(renderState: renderState)
+                return HVLoadResult.renderStateForReset(renderState: renderState)
             }
         } catch {
             owsFailDebug("error: \(error)")
@@ -167,7 +168,7 @@ public class HVLoader: NSObject {
         } catch {
             owsFailDebug("Error: \(error)")
             // Fail over to reloading the table view with a new render state.
-            return loadRenderState(viewInfo: viewInfo, transaction: transaction)
+            return loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
         }
     }
 
@@ -496,8 +497,11 @@ public class HVLoader: NSObject {
                                           threadUniqueId: updatedThreadId))
         }
 
-        owsAssertDebug(!rowChanges.isEmpty)
-        return .newRenderStateWithDiff(renderState: newRenderState, rowChanges: rowChanges)
+        if rowChanges.isEmpty {
+            return .renderStateWithoutRowChanges(renderState: newRenderState)
+        } else {
+            return .renderStateWithRowChanges(renderState: newRenderState, rowChanges: rowChanges)
+        }
     }
 }
 

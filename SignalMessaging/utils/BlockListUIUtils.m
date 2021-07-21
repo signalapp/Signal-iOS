@@ -208,40 +208,49 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     OWSAssertDebug(groupThread);
     OWSAssertDebug(fromViewController);
 
-    [GroupManager
-        leaveGroupOrDeclineInviteAsyncWithUIWithGroupThread:groupThread
-                                         fromViewController:fromViewController
-                                       replacementAdminUuid:nil
-                                                    success:^{
-                                                        // block the group regardless of the ability to deliver the
-                                                        // "leave group" message.
-                                                        DatabaseStorageWrite(self.databaseStorage,
-                                                            ^(SDSAnyWriteTransaction *transaction) {
-                                                                [self.blockingManager
-                                                                    addBlockedGroupWithGroupModel:groupThread.groupModel
-                                                                                        blockMode:
-                                                                                            BlockModeLocalShouldLeaveGroups
-                                                                                      transaction:transaction];
-                                                            });
+    if (!groupThread.isLocalUserMemberOfAnyKind) {
+        [self blockGroupStep2:groupThread fromViewController:fromViewController completionBlock:completionBlock];
+        return;
+    }
 
-                                                        NSString *alertTitle = NSLocalizedString(
-                                                            @"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
-                                                            @"The title of the 'group blocked' alert.");
-                                                        NSString *alertBodyFormat = NSLocalizedString(
-                                                            @"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
-                                                            @"The message format of the 'conversation blocked' alert. "
-                                                            @"Embeds the "
-                                                            @"{{conversation title}}.");
-                                                        NSString *alertBody =
-                                                            [NSString stringWithFormat:alertBodyFormat,
-                                                                      [self formatDisplayNameForAlertMessage:
-                                                                                groupThread.groupNameOrDefault]];
+    [GroupManager leaveGroupOrDeclineInviteAsyncWithUIWithGroupThread:groupThread
+                                                   fromViewController:fromViewController
+                                                 replacementAdminUuid:nil
+                                                              success:^{
+                                                                  [self blockGroupStep2:groupThread
+                                                                      fromViewController:fromViewController
+                                                                         completionBlock:completionBlock];
+                                                              }];
+}
 
-                                                        [self showOkAlertWithTitle:alertTitle
-                                                                           message:alertBody
-                                                                fromViewController:fromViewController
-                                                                   completionBlock:completionBlock];
-                                                    }];
++ (void)blockGroupStep2:(TSGroupThread *)groupThread
+     fromViewController:(UIViewController *)fromViewController
+        completionBlock:(BlockAlertCompletionBlock)completionBlock
+{
+    OWSAssertDebug(groupThread);
+    OWSAssertDebug(fromViewController);
+
+    // block the group regardless of the ability to deliver the
+    // "leave group" message.
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.blockingManager addBlockedGroupWithGroupModel:groupThread.groupModel
+                                                  blockMode:BlockModeLocalShouldLeaveGroups
+                                                transaction:transaction];
+    });
+
+    NSString *alertTitle
+        = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");
+    NSString *alertBodyFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+        @"The message format of the 'conversation blocked' alert. "
+        @"Embeds the "
+        @"{{conversation title}}.");
+    NSString *alertBody = [NSString
+        stringWithFormat:alertBodyFormat, [self formatDisplayNameForAlertMessage:groupThread.groupNameOrDefault]];
+
+    [self showOkAlertWithTitle:alertTitle
+                       message:alertBody
+            fromViewController:fromViewController
+               completionBlock:completionBlock];
 }
 
 #pragma mark - Unblock

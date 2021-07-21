@@ -573,6 +573,13 @@ class ConversationSettingsViewController: OWSTableViewController2 {
         navigationController?.pushViewController(replaceAdminViewController, animated: true)
     }
 
+    private var canLocalUserLeaveThreadWithoutChoosingNewAdmin: Bool {
+        guard thread is TSGroupThread else {
+            return true
+        }
+        return canLocalUserLeaveGroupWithoutChoosingNewAdmin
+    }
+
     private var canLocalUserLeaveGroupWithoutChoosingNewAdmin: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
@@ -649,7 +656,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             owsFailDebug("Already blocked.")
             return
         }
-        guard canLocalUserLeaveGroupWithoutChoosingNewAdmin else {
+        guard canLocalUserLeaveThreadWithoutChoosingNewAdmin else {
             showReplaceAdminAlert()
             return
         }
