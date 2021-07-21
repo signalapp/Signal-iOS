@@ -19,9 +19,12 @@ public class MessageSendLog: NSObject {
         static let recipient = hasMany(Recipient.self)
 
         var payloadId: Int64?
+        @objc
         let plaintextContent: Data
         let contentHint: SealedSenderContentHint
+        @objc
         let sentTimestamp: Date
+        @objc
         let uniqueThreadId: String
 
         init(
@@ -118,6 +121,7 @@ public class MessageSendLog: NSObject {
         }
     }
 
+    @objc
     static func fetchPayload(
         address: SignalServiceAddress,
         deviceId: Int64,

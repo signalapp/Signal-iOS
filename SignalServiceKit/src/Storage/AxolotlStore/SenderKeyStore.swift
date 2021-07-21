@@ -99,6 +99,7 @@ public class SenderKeyStore: NSObject {
         }
     }
 
+    @objc
     public func resetSenderKeyDeliveryRecord(
         for thread: TSGroupThread,
         address: SignalServiceAddress,

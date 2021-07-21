@@ -77,6 +77,7 @@ extension OWSMessageManager {
 
             // If a ratchet key is included, this was a 1:1 session message
             // Archive the session if the current key matches.
+            let didPerformSessionReset: Bool
             if let ratchetKey = errorMessage.ratchetKey {
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
@@ -84,9 +85,13 @@ extension OWSMessageManager {
                     sessionStore.archiveSession(for: sourceAddress,
                                                 deviceId: Int32(sourceDeviceId),
                                                 transaction: writeTx)
+                    didPerformSessionReset = true
                 } else {
                     Logger.info("Ratchet key mismatch. Leaving session as-is.")
+                    didPerformSessionReset = false
                 }
+            } else {
+                didPerformSessionReset = false
             }
 
             Logger.warn("Performing message resend of timestamp \(errorMessage.timestamp)")
@@ -94,9 +99,13 @@ extension OWSMessageManager {
                 address: sourceAddress,
                 deviceId: Int64(sourceDeviceId),
                 failedTimestamp: Int64(errorMessage.timestamp),
+                didResetSession: didPerformSessionReset,
                 transaction: writeTx
             )
-            messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: writeTx)
+
+            if let resendResponse = resendResponse {
+                messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: writeTx)
+            }
 
         } catch {
             owsFailDebug("Failed to process decryption error message \(error)")

@@ -1164,18 +1164,18 @@ CREATE
 
 CREATE
     TRIGGER MSLRecipient_deliveryReceiptCleanup AFTER DELETE
-                ON MessageSendLog_Recipient WHEN 0 = = (
+                ON MessageSendLog_Recipient WHEN 0 = (
                 SELECT
                         COUNT( * )
                     FROM
                         MessageSendLog_Recipient
                     WHERE
-                        payloadId = = old.payloadId
+                        payloadId = old.payloadId
             ) BEGIN DELETE
                 FROM
                     MessageSendLog_Payload
                 WHERE
-                    payloadId = = old.payloadId
+                    payloadId = old.payloadId
 ;
 
 END
@@ -1187,7 +1187,7 @@ CREATE
                 FROM
                     MessageSendLog_Payload
                 WHERE
-                    payloadId = = old.payloadId
+                    payloadId = old.payloadId
 ;
 
 END

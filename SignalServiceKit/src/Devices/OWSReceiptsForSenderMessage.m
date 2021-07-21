@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 // We might want to consider initing the receipt message with the uniqueIds
 // as well as the timestamp. That'll require a migrating change to our receipt store
 // model. For now this should be fine.
-@property (nonatomic, strong, nullable) NSArray<NSString *> *messageUniqueIds;
+@property (nonatomic, strong, nullable) NSSet<NSString *> *messageUniqueIds;
 
 @end
 
@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
                           transaction:transaction
                                 error:&error];
 
-        OWSAssertDebug(interactions.count == 1);
+        OWSAssertDebug(interactions.count <= 1);
         for (TSInteraction *interaction in interactions) {
             [messageUniqueIds addObject:interaction.uniqueId];
         }
@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSSet<NSString *> *)relatedUniqueIds
 {
-    return [[super relatedUniqueIds] setByAddingObjectsFromArray:self.messageUniqueIds];
+    return [[super relatedUniqueIds] setByAddingObjectsFromSet:self.messageUniqueIds];
 }
 
 @end

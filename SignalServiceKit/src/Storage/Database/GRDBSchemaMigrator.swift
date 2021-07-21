@@ -1210,13 +1210,13 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.execute(sql: """
                     CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
                     AFTER DELETE ON MessageSendLog_Recipient
-                    WHEN 0 == (
+                    WHEN 0 = (
                         SELECT COUNT(*) FROM MessageSendLog_Recipient
-                        WHERE payloadId == old.payloadId
+                        WHERE payloadId = old.payloadId
                     )
                     BEGIN
                         DELETE FROM MessageSendLog_Payload
-                        WHERE payloadId == old.payloadId;
+                        WHERE payloadId = old.payloadId;
                     END;
                 """)
 
@@ -1226,7 +1226,7 @@ public class GRDBSchemaMigrator: NSObject {
                     CREATE TRIGGER MSLMessage_payloadCleanup
                     AFTER DELETE ON MessageSendLog_Message
                     BEGIN
-                        DELETE FROM MessageSendLog_Payload WHERE payloadId == old.payloadId;
+                        DELETE FROM MessageSendLog_Payload WHERE payloadId = old.payloadId;
                     END;
                 """)
 
