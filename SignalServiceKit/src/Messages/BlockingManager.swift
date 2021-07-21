@@ -35,11 +35,11 @@ public class BlockingManager: NSObject {
         // A map of group id-to-group model.
         let blockedGroupMap: [Data: TSGroupModel]
 
-        static var empty: State {
+        static let empty: State = {
             State(blockedPhoneNumbers: Set(),
                   blockedUUIDStrings: Set(),
                   blockedGroupMap: [:])
-        }
+        }()
 
         func isBlocked(address: SignalServiceAddress) -> Bool {
             if let phoneNumber = address.phoneNumber,
@@ -595,7 +595,7 @@ public class BlockingManager: NSObject {
             return (newState, blockedGroupModel)
         }
         guard let (newState, blockedGroupModel) = result else {
-            // Not blocked.
+            owsFailDebug("Group not blocked.")
             return
         }
 

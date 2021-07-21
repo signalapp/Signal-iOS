@@ -8,7 +8,7 @@ import Foundation
 public class HVTableDataSource: NSObject {
     private var viewState: HVViewState!
 
-    public let tableView = HVTableView(frame: .zero, style: .grouped)
+    public let tableView = HVTableView()
 
     @objc
     public weak var viewController: HomeViewController?
@@ -405,46 +405,6 @@ extension HVTableDataSource: UITableViewDataSource {
                                 ? CommonStrings.archiveAction
                                 : CommonStrings.unarchiveAction)
 
-        let performAccessibilityCustomActionSelector = #selector(HomeViewController.performAccessibilityCustomAction)
-
-        let archiveAction = HVCellAccessibilityCustomAction(name: archiveTitle,
-                                                            type: .archive,
-                                                            threadViewModel: threadViewModel,
-                                                            target: viewController,
-                                                            selector: performAccessibilityCustomActionSelector)
-        let deleteAction = HVCellAccessibilityCustomAction(name: CommonStrings.deleteButton,
-                                                           type: .delete,
-                                                           threadViewModel: threadViewModel,
-                                                           target: viewController,
-                                                           selector: performAccessibilityCustomActionSelector)
-
-        let unreadAction = (threadViewModel.hasUnreadMessages
-                                ? HVCellAccessibilityCustomAction(name: CommonStrings.readAction,
-                                                                  type: .markRead,
-                                                                  threadViewModel: threadViewModel,
-                                                                  target: viewController,
-                                                                  selector: performAccessibilityCustomActionSelector)
-                                : HVCellAccessibilityCustomAction(name: CommonStrings.unreadAction,
-                                                                  type: .markUnread,
-                                                                  threadViewModel: threadViewModel,
-                                                                  target: viewController,
-                                                                  selector: performAccessibilityCustomActionSelector))
-
-        let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
-        let pinnedAction = (isThreadPinned
-                                ? HVCellAccessibilityCustomAction(name: CommonStrings.unpinAction,
-                                                                  type: .unpin,
-                                                                  threadViewModel: threadViewModel,
-                                                                  target: viewController,
-                                                                  selector: performAccessibilityCustomActionSelector)
-                                : HVCellAccessibilityCustomAction(name: CommonStrings.pinAction,
-                                                                  type: .pin,
-                                                                  threadViewModel: threadViewModel,
-                                                                  target: viewController,
-                                                                  selector: performAccessibilityCustomActionSelector))
-
-        cell.accessibilityCustomActions = [ archiveAction, deleteAction, unreadAction, pinnedAction ]
-
         if isConversationActive(forThread: thread) {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         } else {
@@ -708,29 +668,15 @@ public class HVTableView: UITableView {
         lastReloadDate = Date()
         super.reloadData()
     }
-}
 
-// MARK: -
-
-public class HVCellAccessibilityCustomAction: UIAccessibilityCustomAction {
-
-    var type: HVCellAccessibilityCustomActionType
-    var threadViewModel: ThreadViewModel
-
-    init(name: String, type: HVCellAccessibilityCustomActionType, threadViewModel: ThreadViewModel, target: Any?, selector: Selector) {
-        self.type = type
-        self.threadViewModel = threadViewModel
-        super.init(name: name, target: target, selector: selector)
+    @objc
+    public required init() {
+        super.init(frame: .zero, style: .grouped)
     }
-}
 
-// MARK: -
-
-public enum HVCellAccessibilityCustomActionType: Int {
-    case delete
-    case archive
-    case markRead
-    case markUnread
-    case pin
-    case unpin
+    @available(*, unavailable, message: "use other constructor instead.")
+    required init?(coder: NSCoder) {
+        notImplemented()
+        fatalError("init(coder:) has not been implemented")
+    }
 }
