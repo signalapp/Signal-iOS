@@ -530,6 +530,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             button?.removeFromSuperview()
             button = nil
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
 

@@ -358,6 +358,10 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             fileTypeLabel.text = nil
             iconImageView.image = nil
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
 

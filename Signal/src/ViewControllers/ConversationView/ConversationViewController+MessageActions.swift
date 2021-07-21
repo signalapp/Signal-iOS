@@ -15,8 +15,7 @@ extension ConversationViewController {
             return
         }
         if FeatureFlags.contextMenus {
-            let interaction = TranscriptContextMenuInteraction.init(delegate: self, itemViewModel: itemViewModel, messageActions: messageActions)
-            interaction.transcriptDelegate = self
+            let interaction = ChatHistoryContextMenuInteraction.init(delegate: self, itemViewModel: itemViewModel, messageActions: messageActions)
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
             let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
@@ -196,18 +195,31 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
     func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
-        // Implementation TBD
-        return nil
-    }
 
-}
+        guard let contextInteraction = interaction as? ChatHistoryContextMenuInteraction else {
+            owsFailDebug("Expected ChatHistoryContextMenuInteraction.")
+            return nil
+        }
 
-extension ConversationViewController: TranscriptContextMenuInteractionDelegate {
+        guard let cell = contextInteraction.view as? CVCell else {
+            owsFailDebug("Expected context interaction view to be of CVCell type")
+            return nil
+        }
 
-    func contextMenuInteraction(
-        _ interaction: TranscriptContextMenuInteraction,
-        accessoryViewsForContextMenuWIthWithConfiguration configuration: ContextMenuConfiguration) -> [ContextMenuTargetedPreview.ContextMenuTargetedPreviewAccessory]? {
-        return nil
+        guard let componentView = cell.componentView else {
+            owsFailDebug("Expected cell to have component view")
+            return nil
+        }
+
+        // TODO Add in reaction bar accessory as needed
+        let accessories = cell.rootComponent?.contextMenuAccessoryViews(componentView: componentView)
+
+        if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView() {
+            return ContextMenuTargetedPreview(view: contentView, accessoryViews: accessories)
+        } else {
+            return ContextMenuTargetedPreview(view: cell, accessoryViews: accessories)
+
+        }
     }
 
 }

@@ -1483,6 +1483,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
+        public func contextMenuContentView() -> UIView? {
+            return chatColorView
+        }
+
         fileprivate func removeSwipeActionAnimations() {
             for swipeToReplyWrapper in swipeToReplyWrappers {
                 swipeToReplyWrapper.layer.removeAllAnimations()
@@ -1640,6 +1644,26 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return
         }
         tryToApplySwipeAction(componentView: componentView, isAnimated: false)
+    }
+
+    public override func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]? {
+        if hasSenderAvatar {
+            guard let componentView = componentView as? CVComponentViewMessage else {
+                owsFailDebug("Unexpected componentView.")
+                return nil
+            }
+
+            let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
+            avatarView.image = componentView.avatarView.image
+            avatarView.frame = componentView.avatarView.bounds
+
+            let size = componentView.avatarView.bounds.size
+
+            let avatarViewAccessory = ContextMenuTargetedPreviewAccessory(accessoryView: avatarView, edgeAlignment: [.trailing, .bottom], alignmentOffset: CGPoint(x: -8, y: 0), size: size)
+            return [avatarViewAccessory]
+        } else {
+            return nil
+        }
     }
 
     private let swipeActionOffsetThreshold: CGFloat = 55

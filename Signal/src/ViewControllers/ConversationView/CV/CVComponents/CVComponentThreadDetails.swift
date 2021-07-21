@@ -587,5 +587,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             wallpaperBlurView?.removeFromSuperview()
             wallpaperBlurView?.resetContentAndConfiguration()
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }

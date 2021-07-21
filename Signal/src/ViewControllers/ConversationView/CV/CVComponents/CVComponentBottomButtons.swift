@@ -118,5 +118,9 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
             buttonViews.removeAll()
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }

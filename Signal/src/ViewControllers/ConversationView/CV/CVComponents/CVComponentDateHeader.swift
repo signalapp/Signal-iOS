@@ -236,5 +236,9 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             }
             titleLabel.text = nil
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }

@@ -442,6 +442,10 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             innerShadowView?.removeFromSuperview()
             innerShadowView = nil
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
 

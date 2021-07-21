@@ -214,5 +214,9 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 isDarkThemeEnabled = false
             }
         }
+
+        public func contextMenuContentView() -> UIView? {
+            return nil
+        }
     }
 }
