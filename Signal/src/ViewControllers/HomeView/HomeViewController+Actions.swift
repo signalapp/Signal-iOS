@@ -5,25 +5,6 @@
 import Foundation
 
 extension HomeViewController {
-    @objc
-    public func performAccessibilityCustomAction(_ action: HVCellAccessibilityCustomAction) {
-        AssertIsOnMainThread()
-
-        switch action.type {
-        case .archive:
-            archiveThread(threadViewModel: action.threadViewModel)
-        case .delete:
-            deleteThreadWithConfirmation(threadViewModel: action.threadViewModel)
-        case .markRead:
-            markThreadAsRead(threadViewModel: action.threadViewModel)
-        case .markUnread:
-            markThreadAsUnread(threadViewModel: action.threadViewModel)
-        case .pin:
-            pinThread(threadViewModel: action.threadViewModel)
-        case .unpin:
-            unpinThread(threadViewModel: action.threadViewModel)
-        }
-    }
 
     func archiveThread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
@@ -105,7 +86,6 @@ extension HomeViewController {
             }
         } catch {
             if case PinnedThreadError.tooManyPinnedThreads = error {
-                //            if (error == PinnedThreadManager.tooManyPinnedThreadsError) {
                 OWSActionSheets.showActionSheet(title: NSLocalizedString("PINNED_CONVERSATION_LIMIT",
                                                                          comment: "An explanation that you have already pinned the maximum number of conversations."))
             } else {
