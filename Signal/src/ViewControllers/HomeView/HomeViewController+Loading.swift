@@ -57,12 +57,12 @@ extension HomeViewController {
 
     // MARK: -
 
-    fileprivate func loadNewRenderState(viewInfo: HVViewInfo,
-                                        transaction: SDSAnyReadTransaction) -> HVLoadResult {
+    fileprivate func loadRenderStateForReset(viewInfo: HVViewInfo,
+                                             transaction: SDSAnyReadTransaction) -> HVLoadResult {
         AssertIsOnMainThread()
 
         return Bench(title: "loadNewRenderState") {
-            HVLoader.loadRenderState(viewInfo: viewInfo, transaction: transaction)
+            HVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
         }
     }
 
@@ -88,15 +88,17 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         switch loadResult {
-        case .newRenderState(let renderState):
+        case .renderStateForReset(renderState: let renderState):
             tableDataSource.renderState = renderState
             threadViewModelCache.clear()
             cellMeasurementCache.clear()
             reloadTableData()
-        case .newRenderStateWithDiff(let renderState, let rowChanges):
+        case .renderStateWithRowChanges(renderState: let renderState, let rowChanges):
             tableDataSource.renderState = renderState
             applyPartialLoadResult(rowChanges: rowChanges,
                                    isAnimated: isAnimated)
+        case .renderStateWithoutRowChanges(let renderState):
+            tableDataSource.renderState = renderState
         case .reloadTable:
             reloadTableData()
         case .noChanges:
@@ -172,7 +174,7 @@ extension HomeViewController {
 
 private enum HVLoadType {
     case resetAll
-    case incrementalDiff(dirtyThreadUniqueIds: Set<String>)
+    case incrementalDiff(updatedThreadIds: Set<String>)
     case reloadTableOnly
     case none
 }
@@ -190,7 +192,7 @@ public class HVLoadCoordinator: NSObject {
     }
     private class HVLoadInfoBuilder {
         var shouldResetAll = false
-        var dirtyThreadUniqueIds = Set<String>()
+        var updatedThreadIds = Set<String>()
 
         func build(homeViewMode: HomeViewMode,
                    hasVisibleReminders: Bool,
@@ -203,8 +205,8 @@ public class HVLoadCoordinator: NSObject {
                 viewInfo.hasArchivedThreadsRow != lastViewInfo.hasArchivedThreadsRow ||
                 viewInfo.hasVisibleReminders != lastViewInfo.hasVisibleReminders {
                 return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
-            } else if !dirtyThreadUniqueIds.isEmpty {
-                return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(dirtyThreadUniqueIds: dirtyThreadUniqueIds))
+            } else if !updatedThreadIds.isEmpty {
+                return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
             } else if viewInfo != lastViewInfo {
                 return HVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
             } else {
@@ -231,7 +233,7 @@ public class HVLoadCoordinator: NSObject {
         AssertIsOnMainThread()
         owsAssertDebug(!updatedThreadIds.isEmpty)
 
-        loadInfoBuilder.dirtyThreadUniqueIds.formUnion(updatedThreadIds)
+        loadInfoBuilder.updatedThreadIds.formUnion(updatedThreadIds)
 
         loadIfNecessary()
     }
@@ -266,12 +268,12 @@ public class HVLoadCoordinator: NSObject {
             // NOTE: we might not receive the kind of load that we requested.
             switch loadInfo.loadType {
             case .resetAll:
-                return viewController.loadNewRenderState(viewInfo: loadInfo.viewInfo,
-                                                         transaction: transaction)
-            case .incrementalDiff(let dirtyThreadUniqueIds):
-                owsAssertDebug(!dirtyThreadUniqueIds.isEmpty)
+                return viewController.loadRenderStateForReset(viewInfo: loadInfo.viewInfo,
+                                                              transaction: transaction)
+            case .incrementalDiff(let updatedThreadIds):
+                owsAssertDebug(!updatedThreadIds.isEmpty)
                 return viewController.loadNewRenderStateWithDiff(viewInfo: loadInfo.viewInfo,
-                                                                 updatedThreadIds: dirtyThreadUniqueIds,
+                                                                 updatedThreadIds: updatedThreadIds,
                                                                  transaction: transaction)
             case .reloadTableOnly:
                 return .reloadTable
