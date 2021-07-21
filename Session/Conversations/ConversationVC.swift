@@ -222,8 +222,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             Storage.read { transaction in
                 unreadCount = self.thread.unreadMessageCount(transaction: transaction)
             }
+            // When the unread message count is more than the number of a page of viewItems,
+            // the screen will scroll to bottom instead of the correct first unread message.
+            // The unreadIndicatorIndex is calculated during loading the viewItems, it is
+            // supposed to be accurate.
             DispatchQueue.main.async {
-                if unreadCount > 0, let viewItem = self.viewItems[ifValid: self.viewItems.count - Int(unreadCount)], let interactionID = viewItem.interaction.uniqueId {
+                let unreadIndicatorIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue ?? (self.viewItems.count - self.unreadViewItems.count)
+                if unreadCount > 0, let viewItem = self.viewItems[ifValid: unreadIndicatorIndex], let interactionID = viewItem.interaction.uniqueId {
                     self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
                     self.unreadCountView.alpha = self.scrollButton.alpha
                 } else {

@@ -18,7 +18,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func handleScrollToBottomButtonTapped() {
-        scrollToBottom(isAnimated: true)
+        // The tableview's content size will be calculated by the estimated height of cells,
+        // so the result may be inaccurate before all the cells are loaded.
+        // Use this scroll to the last row instead.
+        messagesTableView.scrollToRow(at: IndexPath(row: viewItems.count-1, section: 0), at: .top, animated: true)
     }
 
     // MARK: Blocking
