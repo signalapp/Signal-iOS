@@ -451,7 +451,7 @@ public class HVLoader: NSObject {
             for rowChange in rowChanges {
                 Logger.verbose("rowChange: \(rowChange)")
             }
-            throw OWSGenericError("Could not reorder pinned contents.")
+            throw OWSAssertionError("Could not reorder pinned contents.")
         }
 
         guard newUnpinnedThreadIds == naiveUnpinnedThreadIdOrdering else {
@@ -471,7 +471,7 @@ public class HVLoader: NSObject {
             for rowChange in rowChanges {
                 Logger.verbose("rowChange: \(rowChange)")
             }
-            throw OWSGenericError("Could not reorder unpinned contents.")
+            throw OWSAssertionError("Could not reorder unpinned contents.")
         }
 
         // 4. Updates
