@@ -531,9 +531,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             button = nil
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }
 

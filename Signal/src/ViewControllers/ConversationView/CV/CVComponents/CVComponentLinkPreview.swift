@@ -83,8 +83,5 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
             linkPreviewView.reset()
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }

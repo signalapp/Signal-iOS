@@ -900,9 +900,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             _bodyTextLabel?.reset()
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }
 

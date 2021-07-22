@@ -11,6 +11,7 @@ protocol MessageReactionPickerDelegate: AnyObject {
 
 class MessageReactionPicker: UIStackView {
     static let anyEmojiName = "any"
+    weak var delegate: MessageReactionPickerDelegate?
 
     let pickerDiameter: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 50 : 56
     let reactionFontSize: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 30 : 32
@@ -20,9 +21,8 @@ class MessageReactionPicker: UIStackView {
 
     private var buttonForEmoji = [String: OWSFlatButton]()
     private var selectedEmoji: EmojiWithSkinTones?
-    private weak var delegate: MessageReactionPickerDelegate?
     private var backgroundView: UIView?
-    init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate) {
+    init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate?) {
         if let selectedEmoji = selectedEmoji {
             self.selectedEmoji = EmojiWithSkinTones(rawValue: selectedEmoji)
             owsAssertDebug(self.selectedEmoji != nil)

@@ -42,29 +42,62 @@ class ContextMenu {
     public let children: [ContextMenuAction] = []
 }
 
+protocol ContextMenuTargetedPreviewAccessoryInteractionDelegate: AnyObject {
+    func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory)
+    func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(_ accessory: ContextMenuTargetedPreviewAccessory, completion: @escaping (String) -> Void)
+}
+
 /// Encapsulates an accessory view with relevant layout information
-public struct ContextMenuTargetedPreviewAccessory {
+public class ContextMenuTargetedPreviewAccessory {
 
-    struct AccessoryAlignment: OptionSet {
-        public let rawValue: UInt
+    public struct AccessoryAlignment {
+        public enum Edge {
+            case top
+            case trailing
+            case leading
+            case bottom
+        }
 
-        public static let top = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(rawValue: 1 << 0)
-        public static let trailing = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(rawValue: 1 << 1)
-        public static let leading = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(rawValue: 1 << 2)
-        public static let bottom = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(rawValue: 1 << 3)
+        public enum Origin {
+            case interior
+            case exterior
+        }
+
+        /// Accessory frame edge alignment relative to preview frame.
+        /// Processed in-order
+        let alignments: [(Edge, Origin)]
+        let alignmentOffset: CGPoint
     }
 
     /// Accessory view
     var accessoryView: UIView
 
-    /// Accessory frame edge alignment relative to preview frame
-    var edgeAlignment: AccessoryAlignment
+    // Defines accessory layout relative to preview view
+    var accessoryAlignment: AccessoryAlignment
 
-    /// Additional absolute offset to apply to final accessory view frame
-    var alignmentOffset: CGPoint = CGPoint.zero
+    weak var delegate: ContextMenuTargetedPreviewAccessoryInteractionDelegate?
 
-    /// Size of accessory view
-    var size: CGSize
+    init(
+        accessoryView: UIView,
+        accessoryAlignment: AccessoryAlignment
+    ) {
+        self.accessoryView = accessoryView
+        self.accessoryAlignment = accessoryAlignment
+    }
+
+    func animateIn(
+        duration: TimeInterval,
+        completion: @escaping () -> Void
+    ) {
+        completion()
+    }
+
+    func animateOut(
+        duration: TimeInterval,
+        completion: @escaping () -> Void
+    ) {
+        completion()
+    }
 }
 
 // UITargetedPreview analog

@@ -358,6 +358,9 @@ public class DebugFlags: BaseFlags {
     public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
 
     @objc
+    public static let showContextMenuDebugRects = build.includes(.dev)
+
+    @objc
     public static let verboseNotificationLogging = build.includes(.qa)
 
     @objc

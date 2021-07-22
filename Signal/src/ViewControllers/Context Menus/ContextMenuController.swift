@@ -13,7 +13,6 @@ protocol ContextMenuViewDelegate: AnyObject {
 }
 
 class ContextMenuHostView: UIView {
-    let showDebugRects = true
 
     weak var delegate: ContextMenuViewDelegate?
 
@@ -32,9 +31,8 @@ class ContextMenuHostView: UIView {
             if let view = previewView {
                 addSubview(view)
 
-                if showDebugRects {
-                    view.layer.borderColor = UIColor.red.cgColor
-                    view.layer.borderWidth = 1
+                if DebugFlags.showContextMenuDebugRects {
+                    view.addBorder(with: UIColor.blue)
                 }
             }
         }
@@ -52,9 +50,8 @@ class ContextMenuHostView: UIView {
                 for accessory in newAccessoryViews {
                     addSubview(accessory.accessoryView)
 
-                    if showDebugRects {
-                        accessory.accessoryView.layer.borderColor = UIColor.blue.cgColor
-                        accessory.accessoryView.layer.borderWidth = 1
+                    if DebugFlags.showContextMenuDebugRects {
+                        accessory.accessoryView.addRedBorder()
                     }
                 }
             }
@@ -83,25 +80,31 @@ class ContextMenuHostView: UIView {
         }
 
         var accessoryFrame = CGRect.zero
-        accessoryFrame.size = accessory.size
+        accessory.accessoryView.sizeToFit()
+        accessoryFrame.size = accessory.accessoryView.frame.size
 
-        if accessory.edgeAlignment.contains(.top) {
-            accessoryFrame.y = previewFrame.y
+        for (edgeAlignment, originAlignment) in accessory.accessoryAlignment.alignments {
+            switch (edgeAlignment, originAlignment) {
+            case (.top, .exterior):
+                accessoryFrame.y = previewFrame.y - accessoryFrame.height
+            case (.top, .interior):
+                accessoryFrame.y = previewFrame.y
+            case (.trailing, .exterior):
+                accessoryFrame.x = previewFrame.x + previewFrame.width
+            case (.trailing, .interior):
+                accessoryFrame.x = previewFrame.x + previewFrame.width  - accessoryFrame.width
+            case (.leading, .exterior):
+                accessoryFrame.x = previewFrame.x - accessoryFrame.width
+            case (.leading, .interior):
+                accessoryFrame.x = previewFrame.x
+            case (.bottom, .exterior):
+                accessoryFrame.y = previewFrame.y + previewFrame.height
+            case (.bottom, .interior):
+                accessoryFrame.y = previewFrame.y + previewFrame.height - accessoryFrame.height
+            }
         }
 
-        if accessory.edgeAlignment.contains(.trailing) {
-            accessoryFrame.x = previewFrame.x - accessoryFrame.size.width
-        }
-
-        if accessory.edgeAlignment.contains(.leading) {
-            accessoryFrame.x = previewFrame.x + previewFrame.width + accessoryFrame.width
-        }
-
-        if accessory.edgeAlignment.contains(.bottom) {
-            accessoryFrame.y = previewFrame.y + previewFrame.height - accessoryFrame.height
-        }
-
-        accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, accessory.alignmentOffset)
+        accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, accessory.accessoryAlignment.alignmentOffset)
 
         accessory.accessoryView.frame = accessoryFrame
     }
@@ -117,6 +120,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
         let effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
         return UIVisualEffectView(effect: effect)
     }()
+
+    private var emojiPickerSheet: EmojiPickerSheet?
 
     init (
         configuration: ContextMenuConfiguration, preview: ContextMenuTargetedPreview
@@ -149,7 +154,37 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        blurView.bounds = view.bounds
+        blurView.frame = view.bounds
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        for accessory in contextMenuPreview.accessoryViews {
+            accessory.animateIn(duration: 0.2) { }
+        }
+    }
+
+    // MARK: Public
+
+    public func showEmojiSheet(completion: @escaping (String) -> Void) {
+        let picker = EmojiPickerSheet { [weak self] emoji in
+            guard let self = self else { return }
+
+            guard let emojiString = emoji?.rawValue else {
+                self.delegate?.contextMenuControllerRequestsDismissal(self)
+                return
+            }
+
+            completion(emojiString)
+        }
+        picker.externalBackdropView = blurView
+        emojiPickerSheet = picker
+        present(picker, animated: true)
+    }
+
+    public func dismissEmojiSheet(animated: Bool, completion: @escaping () -> Void) {
+        emojiPickerSheet?.dismiss(animated: true, completion: completion)
     }
 
     // MARK: ContextMenuViewDelegate

@@ -212,9 +212,6 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             label.text = nil
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }
 

@@ -215,8 +215,5 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             }
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }

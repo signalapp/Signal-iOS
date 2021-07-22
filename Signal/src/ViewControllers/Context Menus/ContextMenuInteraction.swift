@@ -68,6 +68,10 @@ class ContextMenuInteraction: NSObject, UIInteraction {
 
         let targetedPreview = delegate.contextMenuInteraction(self, previewForHighlightingMenuWithConfiguration: contextMenuConfiguration) ?? ContextMenuTargetedPreview(view: view, accessoryViews: nil)
 
+        for accessory in targetedPreview.accessoryViews {
+            accessory.delegate = self
+        }
+
         presentMenu(locationInView: locationInView, contextMenuConfiguration: contextMenuConfiguration, targetedPreview: targetedPreview)
     }
 
@@ -75,6 +79,7 @@ class ContextMenuInteraction: NSObject, UIInteraction {
         let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
+        ImpactHapticFeedback.impactOccured(style: .light)
         OWSWindowManager.shared.presentContextMenu(contextMenuController)
     }
 
@@ -92,10 +97,25 @@ class ContextMenuInteraction: NSObject, UIInteraction {
     }
 }
 
-extension ContextMenuInteraction: ContextMenuControllerDelegate {
+extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTargetedPreviewAccessoryInteractionDelegate {
+
+    func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory) {
+        dismissMenu()
+    }
 
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController) {
         dismissMenu()
+    }
+
+    func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
+        _ accessory: ContextMenuTargetedPreviewAccessory,
+        completion: @escaping (String) -> Void
+    ) {
+        contextMenuController?.showEmojiSheet(completion: { emojiString in
+            self.contextMenuController?.dismissEmojiSheet(animated: true, completion: {
+                completion(emojiString)
+            })
+        })
     }
 
 }

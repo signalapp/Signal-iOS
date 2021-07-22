@@ -139,8 +139,5 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
             label.text = nil
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }

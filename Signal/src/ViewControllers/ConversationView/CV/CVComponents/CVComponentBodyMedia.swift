@@ -443,9 +443,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             innerShadowView = nil
         }
 
-        public func contextMenuContentView() -> UIView? {
-            return nil
-        }
     }
 }
 
