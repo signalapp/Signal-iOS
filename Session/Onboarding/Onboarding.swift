@@ -8,7 +8,12 @@ enum Onboarding {
         func preregister(with seed: Data, ed25519KeyPair: Sign.KeyPair, x25519KeyPair: ECKeyPair) {
             let userDefaults = UserDefaults.standard
             KeyPairUtilities.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
-            TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519KeyPair.hexEncodedPublicKey
+            let x25519PublicKey = x25519KeyPair.hexEncodedPublicKey
+            TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519PublicKey
+            Storage.writeSync { transaction in
+                let user = Contact(sessionID: x25519PublicKey)
+                Storage.shared.setContact(user, using: transaction)
+            }
             switch self {
             case .register:
                 userDefaults[.hasViewedSeed] = false

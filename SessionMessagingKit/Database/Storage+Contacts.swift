@@ -25,11 +25,17 @@ extension Storage {
         transaction.setObject(contact, forKey: contact.sessionID, inCollection: Storage.contactCollection)
         transaction.addCompletionQueue(DispatchQueue.main) {
             // Delete old profile picture if needed
-            if let oldProfilePictureFileName = oldContact?.profilePictureFileName {
+            if let oldProfilePictureFileName = oldContact?.profilePictureFileName,
+                oldProfilePictureFileName != contact.profilePictureFileName {
                 let path = OWSUserProfile.profileAvatarFilepath(withFilename: oldProfilePictureFileName)
                 DispatchQueue.global(qos: .default).async {
                     OWSFileSystem.deleteFileIfExists(path)
                 }
+            }
+            // Download new profile picture if needed
+            if contact.profilePictureURL != nil && contact.profilePictureURL != oldContact?.profilePictureURL {
+                let profileManager = SSKEnvironment.shared.profileManager
+                profileManager.downloadAvatar(forUserProfile: contact)
             }
             // Post notification
             let notificationCenter = NotificationCenter.default
