@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSAES256Key *)localProfileKey
 {
-    return [[LKStorage.shared getUser] profilePictureEncryptionKey];
+    return [[LKStorage.shared getUser] profileEncryptionKey];
 }
 
 #pragma mark -

@@ -145,7 +145,7 @@ public final class MessageSender : NSObject {
         // Attach the user's profile if needed
         if let message = message as? VisibleMessage {
             guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
-            if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+            if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
                 message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
             } else {
                 message.profile = VisibleMessage.Profile(displayName: name)
@@ -285,7 +285,7 @@ public final class MessageSender : NSObject {
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
         // Attach the user's profile
         guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
-        if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+        if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
             message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
         } else {
             message.profile = VisibleMessage.Profile(displayName: name)

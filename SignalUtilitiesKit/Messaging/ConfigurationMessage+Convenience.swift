@@ -6,7 +6,7 @@ extension ConfigurationMessage {
         guard let user = storage.getUser() else { return nil }
         let displayName = user.name
         let profilePictureURL = user.profilePictureURL
-        let profileKey = user.profilePictureEncryptionKey?.keyData
+        let profileKey = user.profileEncryptionKey?.keyData
         var closedGroups: Set<ClosedGroup> = []
         var openGroups: Set<String> = []
         var contacts: Set<Contact> = []
@@ -39,7 +39,7 @@ extension ConfigurationMessage {
                 guard let thread = TSContactThread.fetch(uniqueId: threadID, transaction: transaction), thread.shouldBeVisible
                     && !SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey) else { return }
                 let profilePictureURL = contact.profilePictureURL
-                let profileKey = contact.profilePictureEncryptionKey?.keyData
+                let profileKey = contact.profileEncryptionKey?.keyData
                 let contact = ConfigurationMessage.Contact(publicKey: publicKey, displayName: contact.name ?? publicKey,
                     profilePictureURL: profilePictureURL, profileKey: profileKey)
                 contacts.insert(contact)

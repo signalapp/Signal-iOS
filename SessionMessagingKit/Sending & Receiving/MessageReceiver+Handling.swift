@@ -195,7 +195,7 @@ extension MessageReceiver {
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
                 let contact = Contact(sessionID: sessionID)
-                contact.profilePictureEncryptionKey = given(contactInfo.profileKey) { OWSAES256Key(data: $0)! }
+                contact.profileEncryptionKey = given(contactInfo.profileKey) { OWSAES256Key(data: $0)! }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
                 Storage.shared.setContact(contact, using: transaction)
@@ -321,7 +321,7 @@ extension MessageReceiver {
         }
         // Profile picture & profile key
         if let profileKey = profileKey, let profilePictureURL = profilePictureURL, profileKey.keyData.count == kAES256_KeyByteLength,
-            profileKey != contact.profilePictureEncryptionKey {
+            profileKey != contact.profileEncryptionKey {
             let shouldUpdate: Bool
             if isCurrentUser {
                 shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
@@ -333,7 +333,7 @@ extension MessageReceiver {
                     userDefaults[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: TimeInterval(sentTimestamp / 1000))
                 }
                 contact.profilePictureURL = profilePictureURL
-                contact.profilePictureEncryptionKey = profileKey
+                contact.profileEncryptionKey = profileKey
             }
         }
         // Persist changes

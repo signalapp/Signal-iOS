@@ -275,7 +275,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 [NSUserDefaults.standardUserDefaults setObject:[NSDate new] forKey:@"lastProfilePictureUpload"];
                 
                 SNContact *user = [LKStorage.shared getUser];
-                user.profilePictureEncryptionKey = newProfileKey;
+                user.profileEncryptionKey = newProfileKey;
                 [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [LKStorage.shared setContact:user usingTransaction:transaction];
                 } completion:^{
@@ -288,7 +288,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 // is a quick and dirty workaround.
                 if ([result isKindOfClass:NSString.class]) {
                     SNContact *user = [LKStorage.shared getUser];
-                    user.profilePictureEncryptionKey = newProfileKey;
+                    user.profileEncryptionKey = newProfileKey;
                     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [LKStorage.shared setContact:user usingTransaction:transaction];
                     } completion:^{
@@ -301,7 +301,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         } else {
             // Update our profile key and set the url to nil if avatar data is nil
             SNContact *user = [LKStorage.shared getUser];
-            user.profilePictureEncryptionKey = newProfileKey;
+            user.profileEncryptionKey = newProfileKey;
             user.profilePictureURL = nil;
             user.profilePictureFileName = nil;
             [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -363,7 +363,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     SNContact *contact = [LKStorage.shared getContactWithSessionID:userPublicKey];
-    contact.profilePictureEncryptionKey = [OWSAES256Key generateRandomKey];
+    contact.profileEncryptionKey = [OWSAES256Key generateRandomKey];
     contact.profilePictureURL = nil;
     contact.profilePictureFileName = nil;
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -387,12 +387,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
         
         OWSAssertDebug(contact);
-        if (contact.profilePictureEncryptionKey != nil && [contact.profilePictureEncryptionKey.keyData isEqual:profileKey.keyData]) {
+        if (contact.profileEncryptionKey != nil && [contact.profileEncryptionKey.keyData isEqual:profileKey.keyData]) {
             // Ignore redundant update.
             return;
         }
         
-        contact.profilePictureEncryptionKey = profileKey;
+        contact.profileEncryptionKey = profileKey;
         contact.profilePictureURL = nil;
         contact.profilePictureFileName = nil;
         
@@ -426,7 +426,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
     OWSAssertDebug(contact);
 
-    return contact.profilePictureEncryptionKey;
+    return contact.profileEncryptionKey;
 }
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId
@@ -478,12 +478,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
         NSString *_Nullable avatarUrlPathAtStart = contact.profilePictureURL;
 
-        BOOL hasProfileEncryptionKey = (contact.profilePictureEncryptionKey != nil && contact.profilePictureEncryptionKey.keyData.length > 0);
+        BOOL hasProfileEncryptionKey = (contact.profileEncryptionKey != nil && contact.profileEncryptionKey.keyData.length > 0);
         if (!hasProfileEncryptionKey || !hasProfilePictureURL) {
             return;
         }
         
-        OWSAES256Key *profileKeyAtStart = contact.profilePictureEncryptionKey;
+        OWSAES256Key *profileKeyAtStart = contact.profileEncryptionKey;
 
         NSString *fileName = [self generateAvatarFilename];
         NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
@@ -522,9 +522,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             
             SNContact *latestContact = [LKStorage.shared getContactWithSessionID:contact.sessionID];
 
-            BOOL hasProfileEncryptionKey = (latestContact.profilePictureEncryptionKey != nil
-                && latestContact.profilePictureEncryptionKey.keyData.length > 0);
-            if (!hasProfileEncryptionKey || ![latestContact.profilePictureEncryptionKey isEqual:contact.profilePictureEncryptionKey]) {
+            BOOL hasProfileEncryptionKey = (latestContact.profileEncryptionKey != nil
+                && latestContact.profileEncryptionKey.keyData.length > 0);
+            if (!hasProfileEncryptionKey || ![latestContact.profileEncryptionKey isEqual:contact.profileEncryptionKey]) {
                 OWSLogWarn(@"Ignoring avatar download for obsolete user profile.");
             } else if (![avatarUrlPathAtStart isEqualToString:latestContact.profilePictureURL]) {
                 OWSLogInfo(@"avatar url has changed during download");
@@ -563,13 +563,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
 
-        if (!contact.profilePictureEncryptionKey) { return; }
+        if (!contact.profileEncryptionKey) { return; }
 
         NSString *_Nullable profileName =
-            [self decryptProfileNameData:profileNameEncrypted profileKey:contact.profilePictureEncryptionKey];
+            [self decryptProfileNameData:profileNameEncrypted profileKey:contact.profileEncryptionKey];
         
         contact.name = profileName;
         contact.profilePictureURL = avatarUrlPath;
+        
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKStorage.shared setContact:contact usingTransaction:transaction];
+        }];
 
         // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
         // So if avatarUrlPath is set and avatarFileName is not set, we should to
@@ -659,7 +663,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSData *)encryptProfileData:(nullable NSData *)data
 {
-    OWSAES256Key *localProfileKey = [LKStorage.shared getUser].profilePictureEncryptionKey;
+    OWSAES256Key *localProfileKey = [LKStorage.shared getUser].profileEncryptionKey;
     
     return [self encryptProfileData:data profileKey:localProfileKey];
 }
@@ -688,7 +692,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [paddedNameData increaseLengthBy:paddingByteCount];
     OWSAssertDebug(paddedNameData.length == kOWSProfileManager_NameDataLength);
 
-    OWSAES256Key *localProfileKey = [LKStorage.shared getUser].profilePictureEncryptionKey;
+    OWSAES256Key *localProfileKey = [LKStorage.shared getUser].profileEncryptionKey;
     
     return [self encryptProfileData:[paddedNameData copy] profileKey:localProfileKey];
 }
