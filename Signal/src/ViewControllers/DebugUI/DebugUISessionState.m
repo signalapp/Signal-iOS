@@ -82,11 +82,12 @@ NS_ASSUME_NONNULL_BEGIN
         TSGroupThread *groupThread = (TSGroupThread *)threadParameter;
         [items addObject:[OWSTableItem itemWithTitle:@"Rotate sender key"
                                          actionBlock:^{
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                [self.senderKeyStore resetSenderKeySessionFor:groupThread
-                                                  transaction:transaction];
-            });
-        }]];
+                                             DatabaseStorageWrite(
+                                                 self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                                     [self.senderKeyStore resetSenderKeySessionFor:groupThread
+                                                                                       transaction:transaction];
+                                                 });
+                                         }]];
     }
 
     if (threadParameter) {
@@ -101,10 +102,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Clear sender key store"
                                      actionBlock:^{
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [self.senderKeyStore resetSenderKeyStoreWithTransaction:transaction];
-        });
-    }]];
+                                         DatabaseStorageWrite(
+                                             self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                                 [self.senderKeyStore resetSenderKeyStoreWithTransaction:transaction];
+                                             });
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }

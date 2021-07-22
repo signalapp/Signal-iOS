@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSOutgoingResendRequest()
+@interface OWSOutgoingResendRequest ()
 @property (strong, nonatomic, readonly) NSData *decryptionErrorData;
 @end
 
@@ -25,8 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid UUID");
         return nil;
     }
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:sender
-                                                                       transaction:transaction];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:sender transaction:transaction];
     NSData *errorData = [self buildDecryptionErrorFrom:envelope.content
                                                   type:cipherType
                               originalMessageTimestamp:envelope.timestamp

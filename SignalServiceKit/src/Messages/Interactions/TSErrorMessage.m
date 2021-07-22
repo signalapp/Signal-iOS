@@ -318,7 +318,8 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     if (!thread) {
         return nil;
     }
-    TSErrorMessageBuilder *builder = [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+    TSErrorMessageBuilder *builder =
+        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
     builder.senderAddress = sender;
     builder.timestamp = envelope.timestamp;
     return [builder build];

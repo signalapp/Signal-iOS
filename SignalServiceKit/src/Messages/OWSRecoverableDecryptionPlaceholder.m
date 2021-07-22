@@ -32,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!thread) {
         return nil;
     }
-    TSErrorMessageBuilder *builder = [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+    TSErrorMessageBuilder *builder =
+        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
     builder.timestamp = envelope.timestamp;
     builder.senderAddress = sender;
 
