@@ -4,24 +4,28 @@
 
 import Foundation
 
-typealias ContextMenuActionHandler = (ContextMenuAction) -> Void
+public typealias ContextMenuActionHandler = (ContextMenuAction) -> Void
 
 // UIAction analog
-class ContextMenuAction {
+public class ContextMenuAction {
 
     public struct Attributes: OptionSet {
         public let rawValue: UInt
 
+        public init(rawValue: UInt) {
+            self.rawValue = rawValue
+        }
+
         public static let disabled = ContextMenuAction.Attributes(rawValue: 1 << 0)
         public static let destructive = ContextMenuAction.Attributes(rawValue: 1 << 1)
-        public static let hidden = ContextMenuAction.Attributes(rawValue: 1 << 2)
+        public static let highlighted = ContextMenuAction.Attributes(rawValue: 1 << 2)
     }
 
     public let title: String
     public let image: UIImage?
     public let attributes: Attributes
 
-    private let handler: ContextMenuActionHandler
+    public let handler: ContextMenuActionHandler
 
     public init (
         title: String = "",
@@ -38,8 +42,14 @@ class ContextMenuAction {
 }
 
 /// UIMenu analog, supports single depth menus only
-class ContextMenu {
-    public let children: [ContextMenuAction] = []
+public class ContextMenu {
+    public let children: [ContextMenuAction]
+
+    public init(
+        _ children: [ContextMenuAction]
+    ) {
+        self.children = children
+    }
 }
 
 protocol ContextMenuTargetedPreviewAccessoryInteractionDelegate: AnyObject {
@@ -150,12 +160,12 @@ public class ContextMenuTargetedPreview {
     }
 }
 
-typealias ContextMenuActionProvider = ([ContextMenuAction]) -> ContextMenu?
+public typealias ContextMenuActionProvider = ([ContextMenuAction]) -> ContextMenu?
 
 // UIContextMenuConfiguration analog
-class ContextMenuConfiguration {
+public class ContextMenuConfiguration {
     public let identifier: NSCopying
-    private let actionProvider: ContextMenuActionProvider?
+    public let actionProvider: ContextMenuActionProvider?
 
     public init (
         identifier: NSCopying?,

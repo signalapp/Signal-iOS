@@ -114,7 +114,15 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
     weak var delegate: ContextMenuControllerDelegate?
 
     let contextMenuPreview: ContextMenuTargetedPreview
-    let contextMenuConfiguration: ContextMenuConfiguration // Do we want this or a UIMenu
+    let contextMenuConfiguration: ContextMenuConfiguration
+    let menuAccessory: ContextMenuActionsAccessory?
+    var accessoryViews: [ContextMenuTargetedPreviewAccessory] {
+        var accessories = contextMenuPreview.accessoryViews
+        if let menuAccessory = self.menuAccessory {
+            accessories.append(menuAccessory)
+        }
+        return accessories
+    }
 
     lazy var blurView: UIVisualEffectView = {
         let effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
@@ -124,10 +132,13 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
     private var emojiPickerSheet: EmojiPickerSheet?
 
     init (
-        configuration: ContextMenuConfiguration, preview: ContextMenuTargetedPreview
+        configuration: ContextMenuConfiguration,
+        preview: ContextMenuTargetedPreview,
+        menuAccessory: ContextMenuActionsAccessory?
     ) {
         self.contextMenuConfiguration = configuration
         self.contextMenuPreview = preview
+        self.menuAccessory = menuAccessory
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -146,7 +157,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
 
         contextMenuView.blurView = blurView
         contextMenuView.previewView = contextMenuPreview.snapshot
-        contextMenuView.accessoryViews = contextMenuPreview.accessoryViews
+        contextMenuView.accessoryViews = accessoryViews
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecogznied(sender:)))
         view.addGestureRecognizer(tapGesture)
@@ -160,7 +171,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        for accessory in contextMenuPreview.accessoryViews {
+        for accessory in accessoryViews {
             accessory.animateIn(duration: 0.2) { }
         }
     }
