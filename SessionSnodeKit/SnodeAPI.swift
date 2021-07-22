@@ -520,18 +520,21 @@ public final class SnodeAPI : NSObject {
     }
     
     private static func removeDuplicates(from rawMessages: [JSON], associatedWith publicKey: String) -> [JSON] {
-        var receivedMessages = SNSnodeKitConfiguration.shared.storage.getReceivedMessages(for: publicKey)
+        let oldReceivedMessages = SNSnodeKitConfiguration.shared.storage.getReceivedMessages(for: publicKey)
+        var newReceivedMessages = oldReceivedMessages
         let result = rawMessages.filter { rawMessage in
             guard let hash = rawMessage["hash"] as? String else {
                 SNLog("Missing hash value for message: \(rawMessage).")
                 return false
             }
-            let isDuplicate = receivedMessages.contains(hash)
-            receivedMessages.insert(hash)
+            let isDuplicate = newReceivedMessages.contains(hash)
+            newReceivedMessages.insert(hash)
             return !isDuplicate
         }
-        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-            SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: receivedMessages, for: publicKey, using: transaction)
+        if oldReceivedMessages != newReceivedMessages {
+            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
+                SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: newReceivedMessages, for: publicKey, using: transaction)
+            }
         }
         return result
     }
