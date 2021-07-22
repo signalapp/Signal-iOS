@@ -2108,8 +2108,20 @@ public class GroupManager: NSObject {
                                                          newConfiguration: oldConfiguration)
         }
 
-        // Step 3: Update group in database, if necessary.
+        // Step 3: If any member was removed, make sure we rotate our sender key session
         let oldGroupModel = groupThread.groupModel
+        if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
+           let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
+
+            let oldMembers = oldGroupModelV2.membership.allMembersOfAnyKind
+            let newMembers = newGroupModelV2.membership.allMembersOfAnyKind
+
+            if oldMembers.subtracting(newMembers).isEmpty == false {
+                senderKeyStore.resetSenderKeySession(for: groupThread, transaction: transaction)
+            }
+        }
+
+        // Step 4: Update group in database, if necessary.
         let updateThreadResult: UpsertGroupResult = {
             if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
                let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
@@ -2261,6 +2273,7 @@ public class GroupManager: NSObject {
     private static let groupsV2CapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2Capability")
     private static let groupsV2MigrationCapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2MigrationCapability")
     private static let announcementOnlyGroupsCapabilityStore = SDSKeyValueStore(collection: "GroupManager.announcementOnlyGroupsCapability")
+    private static let senderKeyCapabilityStore = SDSKeyValueStore(collection: "GroupManager.senderKeyCapability")
 
     @objc
     public static func doesUserHaveGroupsV2Capability(address: SignalServiceAddress,
@@ -2296,10 +2309,20 @@ public class GroupManager: NSObject {
     }
 
     @objc
+    public static func doesUserHaveSenderKeyCapability(address: SignalServiceAddress,
+                                                       transaction: SDSAnyReadTransaction) -> Bool {
+        guard let uuid = address.uuid else {
+            return false
+        }
+        return senderKeyCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
+    }
+
+    @objc
     public static func setUserCapabilities(address: SignalServiceAddress,
                                            hasGroupsV2Capability: Bool,
                                            hasGroupsV2MigrationCapability: Bool,
                                            hasAnnouncementOnlyGroupsCapability: Bool,
+                                           hasSenderKeyCapability: Bool,
                                            transaction: SDSAnyWriteTransaction) {
         guard let uuid = address.uuid else {
             Logger.warn("Address without uuid: \(address)")
@@ -2318,6 +2341,10 @@ public class GroupManager: NSObject {
                                                                defaultValue: false,
                                                                key: key,
                                                                transaction: transaction)
+        senderKeyCapabilityStore.setBoolIfChanged(hasSenderKeyCapability,
+                                                  defaultValue: false,
+                                                  key: key,
+                                                  transaction: transaction)
     }
 
     // MARK: - Profiles

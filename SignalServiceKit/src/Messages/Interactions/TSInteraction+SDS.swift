@@ -589,6 +589,69 @@ extension TSInteraction {
                                              paymentNotification: paymentNotification,
                                              paymentRequest: paymentRequest)
 
+        case .recoverableDecryptionPlaceholder:
+
+            let uniqueId: String = record.uniqueId
+            let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = UInt64(recordId)
+            let timestamp: UInt64 = record.timestamp
+            let uniqueThreadId: String = record.threadUniqueId
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let body: String? = record.body
+            let bodyRangesSerialized: Data? = record.bodyRanges
+            let bodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(bodyRangesSerialized, name: "bodyRanges")
+            let contactShareSerialized: Data? = record.contactShare
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let isViewOnceComplete: Bool = try SDSDeserialization.required(record.isViewOnceComplete, name: "isViewOnceComplete")
+            let isViewOnceMessage: Bool = try SDSDeserialization.required(record.isViewOnceMessage, name: "isViewOnceMessage")
+            let linkPreviewSerialized: Data? = record.linkPreview
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
+            let messageStickerSerialized: Data? = record.messageSticker
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let quotedMessageSerialized: Data? = record.quotedMessage
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
+            guard let errorType: TSErrorMessageType = record.errorType else {
+               throw SDSError.missingRequiredField
+            }
+            let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let recipientAddressSerialized: Data? = record.recipientAddress
+            let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let senderSerialized: Data? = record.sender
+            let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
+            let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
+
+            return OWSRecoverableDecryptionPlaceholder(grdbId: recordId,
+                                                       uniqueId: uniqueId,
+                                                       receivedAtTimestamp: receivedAtTimestamp,
+                                                       sortId: sortId,
+                                                       timestamp: timestamp,
+                                                       uniqueThreadId: uniqueThreadId,
+                                                       attachmentIds: attachmentIds,
+                                                       body: body,
+                                                       bodyRanges: bodyRanges,
+                                                       contactShare: contactShare,
+                                                       expireStartedAt: expireStartedAt,
+                                                       expiresAt: expiresAt,
+                                                       expiresInSeconds: expiresInSeconds,
+                                                       isViewOnceComplete: isViewOnceComplete,
+                                                       isViewOnceMessage: isViewOnceMessage,
+                                                       linkPreview: linkPreview,
+                                                       messageSticker: messageSticker,
+                                                       quotedMessage: quotedMessage,
+                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                       wasRemotelyDeleted: wasRemotelyDeleted,
+                                                       errorType: errorType,
+                                                       read: read,
+                                                       recipientAddress: recipientAddress,
+                                                       sender: sender,
+                                                       wasIdentityVerified: wasIdentityVerified)
+
         case .unknownContactBlockOfferMessage:
 
             let uniqueId: String = record.uniqueId
@@ -622,6 +685,8 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let senderSerialized: Data? = record.sender
+            let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
             let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
 
             return OWSUnknownContactBlockOfferMessage(grdbId: recordId,
@@ -647,6 +712,7 @@ extension TSInteraction {
                                                       errorType: errorType,
                                                       read: read,
                                                       recipientAddress: recipientAddress,
+                                                      sender: sender,
                                                       wasIdentityVerified: wasIdentityVerified)
 
         case .unknownProtocolVersionMessage:
@@ -847,6 +913,8 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let senderSerialized: Data? = record.sender
+            let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
             let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
 
             return TSErrorMessage(grdbId: recordId,
@@ -872,6 +940,7 @@ extension TSInteraction {
                                   errorType: errorType,
                                   read: read,
                                   recipientAddress: recipientAddress,
+                                  sender: sender,
                                   wasIdentityVerified: wasIdentityVerified)
 
         case .incomingMessage:
@@ -1052,6 +1121,8 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let senderSerialized: Data? = record.sender
+            let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
             let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
 
             return TSInvalidIdentityKeyErrorMessage(grdbId: recordId,
@@ -1077,6 +1148,7 @@ extension TSInteraction {
                                                     errorType: errorType,
                                                     read: read,
                                                     recipientAddress: recipientAddress,
+                                                    sender: sender,
                                                     wasIdentityVerified: wasIdentityVerified)
 
         case .invalidIdentityKeyReceivingErrorMessage:
@@ -1112,6 +1184,8 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let senderSerialized: Data? = record.sender
+            let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
             let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
             let authorId: String = try SDSDeserialization.required(record.authorId, name: "authorId")
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
@@ -1139,6 +1213,7 @@ extension TSInteraction {
                                                              errorType: errorType,
                                                              read: read,
                                                              recipientAddress: recipientAddress,
+                                                             sender: sender,
                                                              wasIdentityVerified: wasIdentityVerified,
                                                              authorId: authorId,
                                                              envelopeData: envelopeData)
@@ -1176,6 +1251,8 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(recipientAddressSerialized, name: "recipientAddress")
+            let senderSerialized: Data? = record.sender
+            let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
             let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
             let messageId: String = try SDSDeserialization.required(record.messageId, name: "messageId")
             let preKeyBundleSerialized: Data? = record.preKeyBundle
@@ -1204,6 +1281,7 @@ extension TSInteraction {
                                                            errorType: errorType,
                                                            read: read,
                                                            recipientAddress: recipientAddress,
+                                                           sender: sender,
                                                            wasIdentityVerified: wasIdentityVerified,
                                                            messageId: messageId,
                                                            preKeyBundle: preKeyBundle)
@@ -1407,6 +1485,9 @@ extension TSInteraction: SDSModel {
         case let model as OWSUnknownContactBlockOfferMessage:
             assert(type(of: model) == OWSUnknownContactBlockOfferMessage.self)
             return OWSUnknownContactBlockOfferMessageSerializer(model: model)
+        case let model as OWSRecoverableDecryptionPlaceholder:
+            assert(type(of: model) == OWSRecoverableDecryptionPlaceholder.self)
+            return OWSRecoverableDecryptionPlaceholderSerializer(model: model)
         case let model as TSErrorMessage:
             assert(type(of: model) == TSErrorMessage.self)
             return TSErrorMessageSerializer(model: model)
@@ -2881,6 +2962,19 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let sender: SignalServiceAddress?
+            if let senderForCopy = modelToCopy.sender {
+               sender = try DeepCopies.deepCopy(senderForCopy)
+            } else {
+               sender = nil
+            }
             let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
             let messageId: String = modelToCopy.messageId
             // NOTE: If this generates build errors, you made need to
@@ -2910,6 +3004,7 @@ extension TSInteraction: DeepCopyable {
                                                            errorType: errorType,
                                                            read: read,
                                                            recipientAddress: recipientAddress,
+                                                           sender: sender,
                                                            wasIdentityVerified: wasIdentityVerified,
                                                            messageId: messageId,
                                                            preKeyBundle: preKeyBundle)
@@ -3013,6 +3108,19 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let sender: SignalServiceAddress?
+            if let senderForCopy = modelToCopy.sender {
+               sender = try DeepCopies.deepCopy(senderForCopy)
+            } else {
+               sender = nil
+            }
             let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
             let authorId: String = modelToCopy.authorId
             let envelopeData: Data? = modelToCopy.envelopeData
@@ -3040,6 +3148,7 @@ extension TSInteraction: DeepCopyable {
                                                              errorType: errorType,
                                                              read: read,
                                                              recipientAddress: recipientAddress,
+                                                             sender: sender,
                                                              wasIdentityVerified: wasIdentityVerified,
                                                              authorId: authorId,
                                                              envelopeData: envelopeData)
@@ -3143,6 +3252,19 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let sender: SignalServiceAddress?
+            if let senderForCopy = modelToCopy.sender {
+               sender = try DeepCopies.deepCopy(senderForCopy)
+            } else {
+               sender = nil
+            }
             let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
 
             return TSInvalidIdentityKeyErrorMessage(grdbId: id,
@@ -3168,6 +3290,7 @@ extension TSInteraction: DeepCopyable {
                                                     errorType: errorType,
                                                     read: read,
                                                     recipientAddress: recipientAddress,
+                                                    sender: sender,
                                                     wasIdentityVerified: wasIdentityVerified)
         }
 
@@ -3269,6 +3392,19 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let sender: SignalServiceAddress?
+            if let senderForCopy = modelToCopy.sender {
+               sender = try DeepCopies.deepCopy(senderForCopy)
+            } else {
+               sender = nil
+            }
             let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
 
             return OWSUnknownContactBlockOfferMessage(grdbId: id,
@@ -3294,7 +3430,148 @@ extension TSInteraction: DeepCopyable {
                                                       errorType: errorType,
                                                       read: read,
                                                       recipientAddress: recipientAddress,
+                                                      sender: sender,
                                                       wasIdentityVerified: wasIdentityVerified)
+        }
+
+        if let modelToCopy = self as? OWSRecoverableDecryptionPlaceholder {
+            assert(type(of: modelToCopy) == OWSRecoverableDecryptionPlaceholder.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let receivedAtTimestamp: UInt64 = modelToCopy.receivedAtTimestamp
+            let sortId: UInt64 = modelToCopy.sortId
+            let timestamp: UInt64 = modelToCopy.timestamp
+            let uniqueThreadId: String = modelToCopy.uniqueThreadId
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let attachmentIds: [String] = try DeepCopies.deepCopy(modelToCopy.attachmentIds)
+            let body: String? = modelToCopy.body
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let bodyRanges: MessageBodyRanges?
+            if let bodyRangesForCopy = modelToCopy.bodyRanges {
+               bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
+            } else {
+               bodyRanges = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let contactShare: OWSContact?
+            if let contactShareForCopy = modelToCopy.contactShare {
+               contactShare = try DeepCopies.deepCopy(contactShareForCopy)
+            } else {
+               contactShare = nil
+            }
+            let expireStartedAt: UInt64 = modelToCopy.expireStartedAt
+            let expiresAt: UInt64 = modelToCopy.expiresAt
+            let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
+            let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
+            let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let linkPreview: OWSLinkPreview?
+            if let linkPreviewForCopy = modelToCopy.linkPreview {
+               linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
+            } else {
+               linkPreview = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let messageSticker: MessageSticker?
+            if let messageStickerForCopy = modelToCopy.messageSticker {
+               messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
+            } else {
+               messageSticker = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let quotedMessage: TSQuotedMessage?
+            if let quotedMessageForCopy = modelToCopy.quotedMessage {
+               quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
+            } else {
+               quotedMessage = nil
+            }
+            let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
+            let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
+            let errorType: TSErrorMessageType = modelToCopy.errorType
+            let read: Bool = modelToCopy.wasRead
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let recipientAddress: SignalServiceAddress?
+            if let recipientAddressForCopy = modelToCopy.recipientAddress {
+               recipientAddress = try DeepCopies.deepCopy(recipientAddressForCopy)
+            } else {
+               recipientAddress = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let sender: SignalServiceAddress?
+            if let senderForCopy = modelToCopy.sender {
+               sender = try DeepCopies.deepCopy(senderForCopy)
+            } else {
+               sender = nil
+            }
+            let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
+
+            return OWSRecoverableDecryptionPlaceholder(grdbId: id,
+                                                       uniqueId: uniqueId,
+                                                       receivedAtTimestamp: receivedAtTimestamp,
+                                                       sortId: sortId,
+                                                       timestamp: timestamp,
+                                                       uniqueThreadId: uniqueThreadId,
+                                                       attachmentIds: attachmentIds,
+                                                       body: body,
+                                                       bodyRanges: bodyRanges,
+                                                       contactShare: contactShare,
+                                                       expireStartedAt: expireStartedAt,
+                                                       expiresAt: expiresAt,
+                                                       expiresInSeconds: expiresInSeconds,
+                                                       isViewOnceComplete: isViewOnceComplete,
+                                                       isViewOnceMessage: isViewOnceMessage,
+                                                       linkPreview: linkPreview,
+                                                       messageSticker: messageSticker,
+                                                       quotedMessage: quotedMessage,
+                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                       wasRemotelyDeleted: wasRemotelyDeleted,
+                                                       errorType: errorType,
+                                                       read: read,
+                                                       recipientAddress: recipientAddress,
+                                                       sender: sender,
+                                                       wasIdentityVerified: wasIdentityVerified)
         }
 
         if let modelToCopy = self as? TSErrorMessage {
@@ -3395,6 +3672,19 @@ extension TSInteraction: DeepCopyable {
             } else {
                recipientAddress = nil
             }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let sender: SignalServiceAddress?
+            if let senderForCopy = modelToCopy.sender {
+               sender = try DeepCopies.deepCopy(senderForCopy)
+            } else {
+               sender = nil
+            }
             let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
 
             return TSErrorMessage(grdbId: id,
@@ -3420,6 +3710,7 @@ extension TSInteraction: DeepCopyable {
                                   errorType: errorType,
                                   read: read,
                                   recipientAddress: recipientAddress,
+                                  sender: sender,
                                   wasIdentityVerified: wasIdentityVerified)
         }
 

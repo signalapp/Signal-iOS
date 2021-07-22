@@ -239,6 +239,8 @@ NS_ASSUME_NONNULL_BEGIN
         case SSKProtoEnvelopeTypeCiphertext:
         case SSKProtoEnvelopeTypePrekeyBundle:
         case SSKProtoEnvelopeTypeUnidentifiedSender:
+        case SSKProtoEnvelopeTypeSenderkeyMessage:
+        case SSKProtoEnvelopeTypePlaintextContent:
             if (!plaintextData) {
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
                 return;
@@ -264,6 +266,16 @@ NS_ASSUME_NONNULL_BEGIN
         default:
             OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.unwrappedType);
             break;
+    }
+
+    // If we reach here, we were able to successfully handle the message.
+    // We need to check to make sure that we clear any placeholders that may have been
+    // inserted for this message. This would happen if:
+    // - This is a resend of a message that we had previously failed to decrypt
+    // - The message does not result in an inserted TSIncomingMessage or TSOutgoingMessage
+    // For example, a read receipt. In that case, we should just clear the placeholder
+    if (envelope.timestamp > 0 && envelope.sourceAddress) {
+        [self clearLeftoverPlaceholders:envelope.timestamp sender:envelope.sourceAddress transaction:transaction];
     }
 }
 
@@ -416,6 +428,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
 
+        // SKDM's are not mutually exclusive.
+        // They can be sent in isolation or along with another message type
+        if (contentProto.hasSenderKeyDistributionMessage) {
+            [self handleIncomingEnvelope:envelope
+                withSenderKeyDistributionMessage:contentProto.senderKeyDistributionMessage
+                                     transaction:transaction];
+        }
+
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
@@ -458,7 +478,13 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope
                       withReceiptMessage:contentProto.receiptMessage
                              transaction:transaction];
-        } else {
+        } else if (contentProto.decryptionErrorMessage) {
+            [self handleIncomingEnvelope:envelope
+                withDecryptionErrorMessage:contentProto.decryptionErrorMessage
+                               transaction:transaction];
+        } else if (!contentProto.hasSenderKeyDistributionMessage) {
+            // An SKDM can be sent in isolation. Only warn if we don't have any
+            // of the above messages *and* no sender key
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
         }
     } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.
@@ -1985,12 +2011,9 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [message anyInsertWithTransaction:transaction];
-
-    OWSAssertDebug(message.sortId == 0);
-    [message fillInMissingSortIdForJustInsertedInteractionWithTransaction:transaction];
-    OWSAssertDebug(message.sortId > 0);
-
+    // Check for any placeholders inserted because of a previously undecryptable message
+    // The sender may have resent the message. If so, we should swap it in place of the placeholder
+    [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
     [self.earlyMessageManager applyPendingMessagesFor:message transaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
@@ -2040,6 +2063,37 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                sender:sender
                                                                       protocolVersion:protocolVersion];
     [message anyInsertWithTransaction:transaction];
+}
+
+- (void)clearLeftoverPlaceholders:(uint64_t)timestamp
+                           sender:(SignalServiceAddress *)address
+                      transaction:(SDSAnyWriteTransaction *)transaction
+{
+    NSError *_Nullable error = nil;
+    NSArray<TSInteraction *> *placeholders = nil;
+
+    placeholders = [InteractionFinder
+        interactionsWithTimestamp:timestamp
+                           filter:^BOOL(TSInteraction *interaction) {
+                               if ([interaction isKindOfClass:[OWSRecoverableDecryptionPlaceholder class]]) {
+                                   OWSRecoverableDecryptionPlaceholder *placeholder
+                                       = (OWSRecoverableDecryptionPlaceholder *)interaction;
+                                   return [placeholder.sender isEqualToAddress:address];
+                               } else {
+                                   return false;
+                               }
+                           }
+                      transaction:transaction
+                            error:&error];
+
+    if (!error) {
+        OWSAssertDebug(placeholders.count <= 1);
+        for (OWSRecoverableDecryptionPlaceholder *placeholder in placeholders) {
+            [placeholder anyRemoveWithTransaction:transaction];
+        }
+    } else {
+        OWSFailDebug(@"Failed to fetch placeholders: %@", error);
+    }
 }
 
 #pragma mark -

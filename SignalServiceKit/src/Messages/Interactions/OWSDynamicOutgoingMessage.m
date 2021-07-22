@@ -44,11 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
-                                 thread:(TSThread *)thread
-                            transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSData *plainTextData = self.block(address);
+    NSData *plainTextData = self.block();
     OWSAssertDebug(plainTextData);
     return plainTextData;
 }

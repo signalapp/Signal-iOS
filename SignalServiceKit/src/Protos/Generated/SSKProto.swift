@@ -22,6 +22,8 @@ public enum SSKProtoEnvelopeType: Int32 {
     case prekeyBundle = 3
     case receipt = 5
     case unidentifiedSender = 6
+    case senderkeyMessage = 7
+    case plaintextContent = 8
 }
 
 private func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelopeType {
@@ -32,6 +34,8 @@ private func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.Type
     case .prekeyBundle: return .prekeyBundle
     case .receipt: return .receipt
     case .unidentifiedSender: return .unidentifiedSender
+    case .senderkeyMessage: return .senderkeyMessage
+    case .plaintextContent: return .plaintextContent
     }
 }
 
@@ -43,6 +47,8 @@ private func SSKProtoEnvelopeTypeUnwrap(_ value: SSKProtoEnvelopeType) -> Signal
     case .prekeyBundle: return .prekeyBundle
     case .receipt: return .receipt
     case .unidentifiedSender: return .unidentifiedSender
+    case .senderkeyMessage: return .senderkeyMessage
+    case .plaintextContent: return .plaintextContent
     }
 }
 
@@ -696,6 +702,12 @@ public class SSKProtoContent: NSObject, Codable {
         if let _value = typingMessage {
             builder.setTypingMessage(_value)
         }
+        if let _value = senderKeyDistributionMessage {
+            builder.setSenderKeyDistributionMessage(_value)
+        }
+        if let _value = decryptionErrorMessage {
+            builder.setDecryptionErrorMessage(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -776,6 +788,28 @@ public class SSKProtoContent: NSObject, Codable {
             proto.typingMessage = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setSenderKeyDistributionMessage(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.senderKeyDistributionMessage = valueParam
+        }
+
+        public func setSenderKeyDistributionMessage(_ valueParam: Data) {
+            proto.senderKeyDistributionMessage = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDecryptionErrorMessage(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.decryptionErrorMessage = valueParam
+        }
+
+        public func setDecryptionErrorMessage(_ valueParam: Data) {
+            proto.decryptionErrorMessage = valueParam
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -810,6 +844,30 @@ public class SSKProtoContent: NSObject, Codable {
 
     @objc
     public let typingMessage: SSKProtoTypingMessage?
+
+    @objc
+    public var senderKeyDistributionMessage: Data? {
+        guard hasSenderKeyDistributionMessage else {
+            return nil
+        }
+        return proto.senderKeyDistributionMessage
+    }
+    @objc
+    public var hasSenderKeyDistributionMessage: Bool {
+        return proto.hasSenderKeyDistributionMessage
+    }
+
+    @objc
+    public var decryptionErrorMessage: Data? {
+        guard hasDecryptionErrorMessage else {
+            return nil
+        }
+        return proto.decryptionErrorMessage
+    }
+    @objc
+    public var hasDecryptionErrorMessage: Bool {
+        return proto.hasDecryptionErrorMessage
+    }
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -14923,6 +14981,178 @@ extension SSKProtoPaymentAddress {
 extension SSKProtoPaymentAddress.SSKProtoPaymentAddressBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoPaymentAddress? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoDecryptionErrorMessage
+
+@objc
+public class SSKProtoDecryptionErrorMessage: NSObject, Codable {
+
+    // MARK: - SSKProtoDecryptionErrorMessageBuilder
+
+    @objc
+    public static func builder() -> SSKProtoDecryptionErrorMessageBuilder {
+        return SSKProtoDecryptionErrorMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDecryptionErrorMessageBuilder {
+        let builder = SSKProtoDecryptionErrorMessageBuilder()
+        if let _value = ratchetKey {
+            builder.setRatchetKey(_value)
+        }
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        if hasDeviceID {
+            builder.setDeviceID(deviceID)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDecryptionErrorMessageBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DecryptionErrorMessage()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRatchetKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.ratchetKey = valueParam
+        }
+
+        public func setRatchetKey(_ valueParam: Data) {
+            proto.ratchetKey = valueParam
+        }
+
+        @objc
+        public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        @objc
+        public func setDeviceID(_ valueParam: UInt32) {
+            proto.deviceID = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDecryptionErrorMessage {
+            return try SSKProtoDecryptionErrorMessage(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDecryptionErrorMessage(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DecryptionErrorMessage
+
+    @objc
+    public var ratchetKey: Data? {
+        guard hasRatchetKey else {
+            return nil
+        }
+        return proto.ratchetKey
+    }
+    @objc
+    public var hasRatchetKey: Bool {
+        return proto.hasRatchetKey
+    }
+
+    @objc
+    public var timestamp: UInt64 {
+        return proto.timestamp
+    }
+    @objc
+    public var hasTimestamp: Bool {
+        return proto.hasTimestamp
+    }
+
+    @objc
+    public var deviceID: UInt32 {
+        return proto.deviceID
+    }
+    @objc
+    public var hasDeviceID: Bool {
+        return proto.hasDeviceID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DecryptionErrorMessage) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DecryptionErrorMessage(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DecryptionErrorMessage) throws {
+        // MARK: - Begin Validation Logic for SSKProtoDecryptionErrorMessage -
+
+        // MARK: - End Validation Logic for SSKProtoDecryptionErrorMessage -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDecryptionErrorMessage {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDecryptionErrorMessage.SSKProtoDecryptionErrorMessageBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDecryptionErrorMessage? {
         return try! self.build()
     }
 }

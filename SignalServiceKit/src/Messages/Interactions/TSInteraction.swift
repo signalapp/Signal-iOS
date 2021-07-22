@@ -72,4 +72,55 @@ extension TSInteraction {
             return true
         }
     }
+
+    private func replacePlaceholder(
+        from sender: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) -> Bool {
+        let placeholders: [TSInteraction]
+        do {
+            placeholders = try InteractionFinder.interactions(
+                withTimestamp: timestamp,
+                filter: { candidate in
+                    guard let placeholder = candidate as? OWSRecoverableDecryptionPlaceholder else { return false }
+                    return placeholder.sender == sender && placeholder.timestamp == self.timestamp
+                },
+                transaction: transaction
+            )
+        } catch {
+            owsFailDebug("Failed to fetch placeholder interaction: \(error)")
+            return false
+        }
+
+        guard !placeholders.isEmpty else {
+            return false
+        }
+
+        Logger.info("Fetched placeholder with timestamp: \(timestamp) from sender: \(sender). Performing replacement...")
+
+        if let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) {
+            owsAssertDebug(placeholders.count == 1)
+            placeholder.replaceWithInteraction(self, writeTx: transaction)
+            return true
+        } else {
+            owsFailDebug("Unexpected interaction type")
+            return false
+        }
+    }
+
+    @objc
+    public func insertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        if replacePlaceholder(from: sender, transaction: transaction) {
+            Logger.info("Successfully replaced placeholder with interaction: \(timestamp)")
+        } else {
+            anyInsert(transaction: transaction)
+
+            // Replaced interactions will inherit the existing sortId
+            // Inserted interactions will be assigned a sortId from SQLite, but
+            // we need to fetch from the database.
+            owsAssertDebug(sortId == 0)
+            fillInMissingSortIdForJustInsertedInteraction(transaction: transaction)
+            owsAssertDebug(sortId > 0)
+        }
+    }
 }

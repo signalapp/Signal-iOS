@@ -69,6 +69,8 @@
 		"OWSOutgoingNullMessage",
 		"OWSOutgoingCallMessage",
 		"OWSOutgoingGroupCallMessage",
+		"OWSOutgoingSenderKeyDistributionMessage",
+		"OWSOutgoingResendRequest",
 		"OWSReceiptsForSenderMessage",
 		"OWSUnknownDBObject",
 		"TSOutgoingDeleteMessage"

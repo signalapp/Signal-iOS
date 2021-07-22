@@ -1219,7 +1219,8 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             .invalidMessage,
             .duplicateMessage,
             .groupCreationFailed,
-            .sessionRefresh
+            .sessionRefresh,
+            .decryptionFailure
         ]
 
         let interactionTypes: [SDSRecordType] = [

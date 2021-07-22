@@ -15,6 +15,8 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
     @objc
     public var recipientAddress: SignalServiceAddress?
     @objc
+    public var senderAddress: SignalServiceAddress?
+    @objc
     public var wasIdentityVerified: Bool
 
     public required init(thread: TSThread,
@@ -29,10 +31,12 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
                          messageSticker: MessageSticker? = nil,
                          isViewOnceMessage: Bool = false,
                          errorType: TSErrorMessageType,
+                         senderAddress: SignalServiceAddress? = nil,
                          recipientAddress: SignalServiceAddress? = nil,
                          wasIdentityVerified: Bool = false) {
 
         self.errorType = errorType
+        self.senderAddress = senderAddress
         self.recipientAddress = recipientAddress
         self.wasIdentityVerified = wasIdentityVerified
 

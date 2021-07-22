@@ -26,6 +26,7 @@ public class SignalServiceProfile: NSObject {
     public let supportsGroupsV2: Bool
     public let supportsGroupsV2Migration: Bool
     public let supportsAnnouncementOnlyGroups: Bool
+    public let supportsSenderKey: Bool
     public let credential: Data?
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
@@ -81,6 +82,9 @@ public class SignalServiceProfile: NSObject {
         self.supportsAnnouncementOnlyGroups = Self.parseCapabilityFlag(capabilityKey: "announcementGroup",
                                                                        params: params,
                                                                        requireCapability: true)
+        self.supportsSenderKey = Self.parseCapabilityFlag(capabilityKey: "senderKey",
+                                                          params: params,
+                                                          requireCapability: true)
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
     }

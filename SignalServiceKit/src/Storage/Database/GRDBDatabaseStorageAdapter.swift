@@ -127,7 +127,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         ThreadAssociatedData.self,
         PendingReadReceiptRecord.self,
         PendingViewedReceiptRecord.self,
-        MediaGalleryRecord.self
+        MediaGalleryRecord.self,
+        MessageSendLog.Payload.self,
+        MessageSendLog.Recipient.self,
+        MessageSendLog.Message.self
     ]
 
     // MARK: - DatabaseChangeObserver

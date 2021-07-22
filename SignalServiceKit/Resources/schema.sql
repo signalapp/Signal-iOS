@@ -1112,3 +1112,95 @@ CREATE
     ,"isArchived"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "MessageSendLog_Payload" (
+            "payloadId" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"plaintextContent" BLOB NOT NULL
+            ,"contentHint" INTEGER NOT NULL
+            ,"sentTimestamp" DATE NOT NULL
+            ,"uniqueThreadId" TEXT NOT NULL
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "MessageSendLog_Message" (
+            "payloadId" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL
+            ,PRIMARY KEY (
+                "payloadId"
+                ,"uniqueId"
+            )
+            ,FOREIGN KEY ("payloadId") REFERENCES "MessageSendLog_Payload"("payloadId"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "MessageSendLog_Recipient" (
+            "payloadId" INTEGER NOT NULL
+            ,"recipientUUID" TEXT NOT NULL
+            ,"recipientDeviceId" INTEGER NOT NULL
+            ,PRIMARY KEY (
+                "payloadId"
+                ,"recipientUUID"
+                ,"recipientDeviceId"
+            )
+            ,FOREIGN KEY ("payloadId") REFERENCES "MessageSendLog_Payload"("payloadId"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+)
+;
+
+CREATE
+    TRIGGER MSLRecipient_deliveryReceiptCleanup AFTER DELETE
+                ON MessageSendLog_Recipient WHEN 0 = (
+                SELECT
+                        COUNT( * )
+                    FROM
+                        MessageSendLog_Recipient
+                    WHERE
+                        payloadId = old.payloadId
+            ) BEGIN DELETE
+                FROM
+                    MessageSendLog_Payload
+                WHERE
+                    payloadId = old.payloadId
+;
+
+END
+;
+
+CREATE
+    TRIGGER MSLMessage_payloadCleanup AFTER DELETE
+                ON MessageSendLog_Message BEGIN DELETE
+                FROM
+                    MessageSendLog_Payload
+                WHERE
+                    payloadId = old.payloadId
+;
+
+END
+;
+
+CREATE
+    INDEX "MSLPayload_sentTimestampIndex"
+        ON "MessageSendLog_Payload"("sentTimestamp"
+)
+;
+
+CREATE
+    INDEX "MSLMessage_relatedMessageId"
+        ON "MessageSendLog_Message"("uniqueId"
+)
+;

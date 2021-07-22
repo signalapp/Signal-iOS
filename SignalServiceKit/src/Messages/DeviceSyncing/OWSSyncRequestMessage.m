@@ -59,6 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
     return builder;
 }
 
+- (SealedSenderContentHint)contentHint
+{
+    return SealedSenderContentHintImplicit;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -109,6 +109,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                          sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
@@ -136,6 +137,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                          errorType:errorType
                               read:read
                   recipientAddress:recipientAddress
+                            sender:sender
                wasIdentityVerified:wasIdentityVerified];
 
     if (!self) {

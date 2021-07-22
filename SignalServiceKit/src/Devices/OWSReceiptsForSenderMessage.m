@@ -12,8 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSReceiptsForSenderMessage ()
 
 @property (nonatomic, readonly) NSArray<NSNumber *> *messageTimestamps;
-
 @property (nonatomic, readonly) SSKProtoReceiptMessageType receiptType;
+
+// The uniqueIds for the timestamps included in the receipt message
+// Assembled when building the receipt proto. Not valid until then.
+//
+// We might want to consider initing the receipt message with the uniqueIds
+// as well as the timestamp. That'll require a migrating change to our receipt store
+// model. For now this should be fine.
+@property (nonatomic, strong, nullable) NSSet<NSString *> *messageUniqueIds;
 
 @end
 
@@ -68,13 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
-                                 thread:(TSThread *)thread
-                            transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(address.isValid);
-
-    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage];
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessageWithTransaction:transaction];
     if (!receiptMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
@@ -92,17 +95,40 @@ NS_ASSUME_NONNULL_BEGIN
     return contentData;
 }
 
-- (nullable SSKProtoReceiptMessage *)buildReceiptMessage
+- (nullable SSKProtoReceiptMessage *)buildReceiptMessageWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertDebug(self.recipientAddresses.count == 1);
+    OWSAssertDebug(self.messageTimestamps.count > 0);
+    NSError *_Nullable error = nil;
+    NSMutableSet<NSString *> *messageUniqueIds = [[NSMutableSet alloc] init];
+
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
     [builder setType:self.receiptType];
 
-    OWSAssertDebug(self.messageTimestamps.count > 0);
     for (NSNumber *messageTimestamp in self.messageTimestamps) {
         [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];
-    }
 
-    NSError *error;
+        NSArray<TSInteraction *> *interactions = [InteractionFinder
+            interactionsWithTimestamp:messageTimestamp.unsignedLongLongValue
+                               filter:^BOOL(TSInteraction *interaction) {
+                                   if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                       TSIncomingMessage *message = (TSIncomingMessage *)interaction;
+                                       return
+                                           [message.authorAddress isEqualToAddress:self.recipientAddresses.firstObject];
+                                   } else {
+                                       return NO;
+                                   }
+                               }
+                          transaction:transaction
+                                error:&error];
+
+        OWSAssertDebug(interactions.count <= 1);
+        for (TSInteraction *interaction in interactions) {
+            [messageUniqueIds addObject:interaction.uniqueId];
+        }
+    }
+    self.messageUniqueIds = [messageUniqueIds copy];
+
     SSKProtoReceiptMessage *_Nullable receiptMessage = [builder buildAndReturnError:&error];
     if (error || !receiptMessage) {
         OWSFailDebug(@"could not build protobuf: %@", error);
@@ -122,6 +148,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return [NSString
         stringWithFormat:@"%@ with message timestamps: %lu", self.logTag, (unsigned long)self.messageTimestamps.count];
+}
+
+- (NSSet<NSString *> *)relatedUniqueIds
+{
+    return [[super relatedUniqueIds] setByAddingObjectsFromSet:self.messageUniqueIds];
 }
 
 @end

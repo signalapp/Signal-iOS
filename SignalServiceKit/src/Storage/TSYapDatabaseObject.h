@@ -50,8 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)collection;
 
-// This method should only ever be called within a GRDB write transaction.
+// These methods should only ever be called within a GRDB write transaction.
 - (void)clearRowId;
+// This method is used to facilitate a database object replacement. See:
+// OWSRecoverableDecryptionPlaceholder.
+- (void)replaceRowId:(int64_t)rowId uniqueId:(NSString *)uniqueId;
 
 @property (nonatomic, readonly) NSString *transactionFinalizationKey;
 

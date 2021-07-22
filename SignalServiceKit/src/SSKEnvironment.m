@@ -54,6 +54,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<Payments> paymentsRef;
 @property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
 @property (nonatomic) SpamChallengeResolver *spamChallengeResolverRef;
+@property (nonatomic) SenderKeyStore *senderKeyStoreRef;
 
 @end
 
@@ -112,6 +113,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                                payments:(id<Payments>)payments
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
+                         senderKeyStore:(SenderKeyStore *)senderKeyStore
 {
     self = [super init];
     if (!self) {
@@ -166,6 +168,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _paymentsRef = payments;
     _paymentsCurrenciesRef = paymentsCurrencies;
     _spamChallengeResolverRef = spamResolver;
+    _senderKeyStoreRef = senderKeyStore;
 
     return self;
 }

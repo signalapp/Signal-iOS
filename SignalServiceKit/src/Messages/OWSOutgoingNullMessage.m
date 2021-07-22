@@ -45,9 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
-                                 thread:(TSThread *)thread
-                            transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 
@@ -94,6 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldBeSaved
 {
     return NO;
+}
+
+- (SealedSenderContentHint)contentHint
+{
+    return SealedSenderContentHintImplicit;
 }
 
 @end

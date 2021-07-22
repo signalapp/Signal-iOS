@@ -53,6 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
+- (SealedSenderContentHint)contentHint
+{
+    return SealedSenderContentHintImplicit;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

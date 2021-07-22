@@ -255,7 +255,10 @@ extension SSKSessionStore: SessionStore {
         for addresses: [ProtocolAddress],
         context: StoreContext
     ) throws -> [SessionRecord] {
-        try addresses.compactMap { try loadSession(for: $0, context: context) }
+
+        try addresses.compactMap {
+            try loadSession(for: $0, context: context)
+        }
     }
 
     public func storeSession(_ record: SessionRecord, for address: ProtocolAddress, context: StoreContext) throws {

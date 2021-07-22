@@ -156,7 +156,19 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
         case .unidentifiedSender:
             return decryptUnidentifiedSenderEnvelope(envelope, transaction: transaction)
-        default:
+        case .senderkeyMessage:
+            return decrypt(
+                envelope,
+                envelopeData: envelopeData,
+                cipherType: .senderKey,
+                transaction: transaction)
+        case .plaintextContent:
+            return decrypt(
+                envelope,
+                envelopeData: envelopeData,
+                cipherType: .plaintext,
+                transaction: transaction)
+        @unknown default:
             Logger.warn("Received unhandled envelope type: \(envelope.unwrappedType)")
             return .failure(OWSGenericError("Received unhandled envelope type: \(envelope.unwrappedType)"))
         }
@@ -278,10 +290,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    @objc
     private func processError(
         _ error: Error,
         envelope: SSKProtoEnvelope,
+        groupId: Data?,
+        cipherType: CiphertextMessage.MessageType,
+        contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
     ) -> Error {
         let logString = "Error while decrypting \(Self.description(forEnvelopeType: envelope)) message: \(error)"
@@ -316,35 +330,56 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                               transaction: transaction)
 
         let errorMessage: TSErrorMessage?
-        if let sourceUuid = envelope.sourceUuid {
-            // Since the message failed to decrypt, we want to reset our session
-            // with this device to ensure future messages we receive are decryptable.
-            // We achieve this by archiving our current session with this device.
-            // It's important we don't do this if we've already recently reset the
-            // session for a given device, for example if we're processing a backlog
-            // of 50 message from Alice that all fail to decrypt we don't want to
-            // reset the session 50 times. We acomplish this by tracking the UUID +
-            // device ID pair that we have recently reset, so we can skip subsequent
-            // resets. When the message decrypt queue is drained, the list of recently
-            // reset IDs is cleared.
+        if envelope.hasSourceUuid {
+            let remoteUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
+                address: sourceAddress,
+                transaction: transaction)
+            let localUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
+                address: sourceAddress,
+                transaction: transaction)
+            let supportsModernResend = remoteUserSupportsSenderKey && localUserSupportsSenderKey
 
-            let senderId = "\(sourceUuid).\(envelope.sourceDevice)"
-            if !senderIdsResetDuringCurrentBatch.contains(senderId) {
-                senderIdsResetDuringCurrentBatch.add(senderId)
+            if supportsModernResend {
+                Logger.info("Performing modern resend of \(contentHint) content with timestamp \(envelope.timestamp)")
 
-                Logger.warn("Archiving session for undecryptable message from \(senderId)")
-                Self.sessionStore.archiveSession(for: sourceAddress,
-                                                                  deviceId: Int32(envelope.sourceDevice),
-                                                                  transaction: transaction)
+                switch contentHint {
+                case .default:
+                    // If default, insert an error message right away
+                    errorMessage = TSErrorMessage.failedDecryption(
+                        for: envelope,
+                        groupId: groupId,
+                        with: transaction)
+                case .resendable:
+                    // If resendable, insert a placeholder
+                    errorMessage = OWSRecoverableDecryptionPlaceholder(
+                        failedEnvelope: envelope,
+                        groupId: groupId,
+                        transaction: transaction)
+                case .implicit:
+                    errorMessage = nil
+                default:
+                    owsFailDebug("Unexpected content hint")
+                    errorMessage = nil
+                }
 
-                // Always notify the user that we have performed an automatic archive.
-                errorMessage = TSErrorMessage.sessionRefresh(with: envelope, with: transaction)
-
-                trySendNullMessage(in: contactThread, senderId: senderId, transaction: transaction)
+                // We always send a resend request, even if the contentHint indicates the sender
+                // won't be able to fulfill the request. This will notify the sender to reset
+                // the session.
+                sendResendRequest(envelope: envelope, cipherType: cipherType, transaction: transaction)
             } else {
-                Logger.warn("Skipping session reset for undecryptable message from \(senderId), " +
-                                "already reset during this batch")
-                errorMessage = nil
+                Logger.info("Performing legacy session reset of \(contentHint) content with timestamp \(envelope.timestamp)")
+
+                let didReset = resetSessionIfNecessary(
+                    envelope: envelope,
+                    contactThread: contactThread,
+                    transaction: transaction)
+
+                if didReset {
+                    // Always notify the user that we have performed an automatic archive.
+                    errorMessage = TSErrorMessage.sessionRefresh(with: envelope, with: transaction)
+                } else {
+                    errorMessage = nil
+                }
             }
         } else {
             owsFailDebug("Received envelope missing UUID \(sourceAddress).\(envelope.sourceDevice)")
@@ -379,6 +414,53 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         return wrappedError
+    }
+
+    func sendResendRequest(envelope: SSKProtoEnvelope,
+                           cipherType: CiphertextMessage.MessageType,
+                           transaction: SDSAnyWriteTransaction) {
+        let resendRequest = OWSOutgoingResendRequest(
+            failedEnvelope: envelope,
+            cipherType: cipherType.rawValue,
+            transaction: transaction)
+        messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
+    }
+
+    func resetSessionIfNecessary(envelope: SSKProtoEnvelope,
+                                 contactThread: TSContactThread,
+                                 transaction: SDSAnyWriteTransaction) -> Bool {
+        // Since the message failed to decrypt, we want to reset our session
+        // with this device to ensure future messages we receive are decryptable.
+        // We achieve this by archiving our current session with this device.
+        // It's important we don't do this if we've already recently reset the
+        // session for a given device, for example if we're processing a backlog
+        // of 50 message from Alice that all fail to decrypt we don't want to
+        // reset the session 50 times. We acomplish this by tracking the UUID +
+        // device ID pair that we have recently reset, so we can skip subsequent
+        // resets. When the message decrypt queue is drained, the list of recently
+        // reset IDs is cleared.
+        guard let sourceAddress = envelope.sourceAddress,
+              let sourceUuid = envelope.sourceUuid else {
+            owsFailDebug("Expected UUID")
+            return false
+        }
+
+        let senderId = "\(sourceUuid).\(envelope.sourceDevice)"
+        if !senderIdsResetDuringCurrentBatch.contains(senderId) {
+            senderIdsResetDuringCurrentBatch.add(senderId)
+
+            Logger.warn("Archiving session for undecryptable message from \(senderId)")
+            Self.sessionStore.archiveSession(for: sourceAddress,
+                                             deviceId: Int32(envelope.sourceDevice),
+                                             transaction: transaction)
+
+            trySendNullMessage(in: contactThread, senderId: senderId, transaction: transaction)
+            return true
+        } else {
+            Logger.warn("Skipping session reset for undecryptable message from \(senderId), " +
+                            "already reset during this batch")
+            return false
+        }
     }
 
     @objc
@@ -475,9 +557,18 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                     preKeyStore: Self.preKeyStore,
                                                     signedPreKeyStore: Self.signedPreKeyStore,
                                                     context: transaction)
+            case .senderKey:
+                plaintext = try groupDecrypt(
+                    encryptedData,
+                    from: protocolAddress,
+                    store: Self.senderKeyStore,
+                    context: transaction)
+            case .plaintext:
+                let plaintextMessage = try PlaintextContent(bytes: encryptedData)
+                plaintext = plaintextMessage.body
 
-            // FIXME: return this to @unknown default once SenderKey messages are handled.
-            // (Right now CiphertextMessage.MessageType erroneously includes SenderKeyDistributionMessage.)
+            // FIXME: return this to @unknown default once cipherType is represented
+            // as a finite enum.
             default:
                 owsFailDebug("Unexpected ciphertext type: \(cipherType.rawValue)")
                 throw OWSErrorWithCodeDescription(.failedToDecryptMessage,
@@ -499,6 +590,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             let wrappedError = processError(
                 error,
                 envelope: envelope,
+                groupId: nil,
+                cipherType: cipherType,
+                contentHint: .default,
                 transaction: transaction
             )
 
@@ -533,7 +627,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 sessionStore: Self.sessionStore,
                 preKeyStore: Self.preKeyStore,
                 signedPreKeyStore: Self.signedPreKeyStore,
-                identityStore: Self.identityManager
+                identityStore: Self.identityManager,
+                senderKeyStore: Self.senderKeyStore
             )
         } catch {
             owsFailDebug("Could not create secret session cipher \(error)")
@@ -551,61 +646,24 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 localDeviceId: Int32(localDeviceId),
                 protocolContext: transaction
             )
+        } catch let outerError as SecretSessionKnownSenderError {
+            return .failure(handleUnidentifiedSenderDecryptionError(
+                error: outerError.underlyingError,
+                envelope: envelope.buildIdentifiedCopy(using: outerError),
+                groupId: outerError.groupId,
+                cipherType: outerError.cipherType,
+                contentHint: SealedSenderContentHint(outerError.contentHint),
+                transaction: transaction)
+            )
         } catch {
-            // Decrypt Failure Part 1: Unwrap failure details
-
-            let nsError = error as NSError
-
-            let underlyingError: Error
-            let identifiedEnvelope: SSKProtoEnvelope
-
-            if nsError.domain == "SignalMetadataKit.SecretSessionKnownSenderError" {
-                underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as! Error
-
-                let senderE164 = nsError.userInfo[SecretSessionKnownSenderError.kSenderE164Key] as? String
-                let senderUuid = nsError.userInfo[SecretSessionKnownSenderError.kSenderUuidKey] as? UUID
-                let senderAddress = SignalServiceAddress(uuid: senderUuid, phoneNumber: senderE164, trustLevel: .high)
-                owsAssert(senderAddress.isValid)
-
-                let senderDeviceId = nsError.userInfo[SecretSessionKnownSenderError.kSenderDeviceIdKey] as! NSNumber
-
-                let identifiedEnvelopeBuilder = envelope.asBuilder()
-                if let sourceE164 = senderAddress.phoneNumber {
-                    identifiedEnvelopeBuilder.setSourceE164(sourceE164)
-                }
-                if let sourceUuid = senderAddress.uuidString {
-                    identifiedEnvelopeBuilder.setSourceUuid(sourceUuid)
-                }
-                identifiedEnvelopeBuilder.setSourceDevice(senderDeviceId.uint32Value)
-
-                do {
-                    identifiedEnvelope = try identifiedEnvelopeBuilder.build()
-                } catch {
-                    owsFail("failure identifiedEnvelopeBuilderError: \(error)")
-                }
-            } else {
-                underlyingError = error
-                identifiedEnvelope = envelope
-            }
-
-            // Decrypt Failure Part 2: Handle unwrapped failure details
-
-            guard !isSignalClientError(underlyingError) else {
-                let wrappedError = processError(
-                    underlyingError,
-                    envelope: identifiedEnvelope,
-                    transaction: transaction
-                )
-                return .failure(wrappedError)
-            }
-
-            guard !isSecretSessionSelfSentMessageError(underlyingError) else {
-                // Self-sent messages can be safely discarded.
-                return .failure(underlyingError)
-            }
-
-            owsFailDebug("Could not decrypt UD message: \(underlyingError), identified envelope: \(description(for: identifiedEnvelope))")
-            return .failure(underlyingError)
+            return .failure(handleUnidentifiedSenderDecryptionError(
+                error: error,
+                envelope: envelope,
+                groupId: nil,
+                cipherType: .plaintext,
+                contentHint: .default,
+                transaction: transaction)
+            )
         }
 
         if decryptResult.messageType == .prekey {
@@ -655,6 +713,51 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             ))
         } catch {
             return .failure(error)
+        }
+    }
+
+    func handleUnidentifiedSenderDecryptionError(
+        error: Error,
+        envelope: SSKProtoEnvelope,
+        groupId: Data?,
+        cipherType: CiphertextMessage.MessageType,
+        contentHint: SealedSenderContentHint,
+        transaction: SDSAnyWriteTransaction
+    ) -> Error {
+        if isSecretSessionSelfSentMessageError(error) {
+            // Self-sent messages can be safely discarded. Return as-is.
+            return error
+        } else if isSignalClientError(error) {
+            return processError(error,
+                                envelope: envelope,
+                                groupId: groupId,
+                                cipherType: cipherType,
+                                contentHint: contentHint,
+                                transaction: transaction)
+        } else {
+            owsFailDebug("Could not decrypt UD message: \(error), identified envelope: \(description(for: envelope))")
+            return error
+        }
+    }
+}
+
+private extension SSKProtoEnvelope {
+    func buildIdentifiedCopy(using error: SecretSessionKnownSenderError) -> SSKProtoEnvelope {
+        let senderAddress = SignalServiceAddress(
+            uuid: error.senderAddress.uuid,
+            phoneNumber: error.senderAddress.e164,
+            trustLevel: .high)
+        owsAssert(senderAddress.isValid)
+
+        let identifiedEnvelopeBuilder = asBuilder()
+        senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
+        senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
+        identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
+
+        do {
+            return try identifiedEnvelopeBuilder.build()
+        } catch {
+            owsFail("failure identifiedEnvelopeBuilderError: \(error)")
         }
     }
 }

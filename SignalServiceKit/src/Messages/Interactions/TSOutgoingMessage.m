@@ -738,6 +738,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
 
+    // Sender Key TODO: Remove pending send
+
     // Ignore receipts for messages that have been deleted.
     // They are no longer relevant to this message.
     if (self.wasRemotelyDeleted) {
@@ -1394,9 +1396,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
-- (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
-                                            thread:(TSThread *)thread
-                                       transaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoDataMessage *)buildDataMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug([thread.uniqueId isEqualToString:self.uniqueThreadId]);
@@ -1407,7 +1407,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     [ProtoUtils addLocalProfileKeyIfNecessary:thread
-                                      address:address
                            dataMessageBuilder:builder
                                   transaction:transaction];
 
@@ -1420,12 +1419,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return dataProto;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalServiceAddress *)address
-                                 thread:(TSThread *)thread
-                            transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     NSError *error;
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:address thread:thread transaction:transaction];
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:thread transaction:transaction];
     if (error || !dataMessage) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;

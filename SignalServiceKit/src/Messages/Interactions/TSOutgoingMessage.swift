@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalClient
 
 // Every time we add a new property to TSOutgoingMessage, we should:
 //
@@ -126,4 +127,45 @@ public extension TSOutgoingMessage {
             return state.state == .failed && state.errorCode?.intValue == errorCode.rawValue
         }.map { $0.key }
     }
+
+    @objc
+    var canSendWithSenderKey: Bool {
+        // Sometimes we can fail to send a SenderKey message for an unknown reason. For example,
+        // the server may reject the message because one of our recipients has an invalid access
+        // token, but we don't know which recipient is the culprit. If we ever hit any of these
+        // non-transient failures, we should not send this message with sender key.
+        //
+        // By sending the message with traditional fanout, this *should* put things in order so
+        // that our next SenderKey message will send successfully.
+        guard let states = recipientAddressStates else { return true }
+        return states
+            .compactMap { $0.value.errorCode?.intValue }
+            .allSatisfy { $0 != OWSErrorCode.senderKeyUnavailable.rawValue }
+    }
+}
+
+// MARK: Message Send Log
+
+extension TSOutgoingMessage {
+
+    // Subclasses should override to include any related interaction ids
+    // This is used to help prune the Message Send Log. eg. deleting a message
+    // will trigger a delete of a reaction payload for that message.
+    @objc
+    var relatedUniqueIds: Set<String> {
+        Set([self.uniqueId])
+    }
+
+    // Most messages are resendable by default
+    // `.default` should be used if the message contains content but will most
+    // likely not be resent (e.g. a call message)
+    // `.implicit` should be used if the message contains no user-visible content
+    // and will not be resent (e.g. sync requests)
+    @objc
+    var contentHint: SealedSenderContentHint {
+        .resendable
+    }
+
+    @objc
+    var shouldRecordSendLog: Bool { true }
 }

@@ -134,6 +134,8 @@ struct SignalServiceProtos_Envelope {
     case prekeyBundle // = 3
     case receipt // = 5
     case unidentifiedSender // = 6
+    case senderkeyMessage // = 7
+    case plaintextContent // = 8
 
     init() {
       self = .unknown
@@ -147,6 +149,8 @@ struct SignalServiceProtos_Envelope {
       case 3: self = .prekeyBundle
       case 5: self = .receipt
       case 6: self = .unidentifiedSender
+      case 7: self = .senderkeyMessage
+      case 8: self = .plaintextContent
       default: return nil
       }
     }
@@ -159,6 +163,8 @@ struct SignalServiceProtos_Envelope {
       case .prekeyBundle: return 3
       case .receipt: return 5
       case .unidentifiedSender: return 6
+      case .senderkeyMessage: return 7
+      case .plaintextContent: return 8
       }
     }
 
@@ -321,6 +327,26 @@ struct SignalServiceProtos_Content {
   /// Clears the value of `typingMessage`. Subsequent reads from it will return its default value.
   mutating func clearTypingMessage() {self._typingMessage = nil}
 
+  /// Serialized SKDM
+  var senderKeyDistributionMessage: Data {
+    get {return _senderKeyDistributionMessage ?? Data()}
+    set {_senderKeyDistributionMessage = newValue}
+  }
+  /// Returns true if `senderKeyDistributionMessage` has been explicitly set.
+  var hasSenderKeyDistributionMessage: Bool {return self._senderKeyDistributionMessage != nil}
+  /// Clears the value of `senderKeyDistributionMessage`. Subsequent reads from it will return its default value.
+  mutating func clearSenderKeyDistributionMessage() {self._senderKeyDistributionMessage = nil}
+
+  /// Serialized decryption error
+  var decryptionErrorMessage: Data {
+    get {return _decryptionErrorMessage ?? Data()}
+    set {_decryptionErrorMessage = newValue}
+  }
+  /// Returns true if `decryptionErrorMessage` has been explicitly set.
+  var hasDecryptionErrorMessage: Bool {return self._decryptionErrorMessage != nil}
+  /// Clears the value of `decryptionErrorMessage`. Subsequent reads from it will return its default value.
+  mutating func clearDecryptionErrorMessage() {self._decryptionErrorMessage = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -331,6 +357,8 @@ struct SignalServiceProtos_Content {
   fileprivate var _nullMessage: SignalServiceProtos_NullMessage?
   fileprivate var _receiptMessage: SignalServiceProtos_ReceiptMessage?
   fileprivate var _typingMessage: SignalServiceProtos_TypingMessage?
+  fileprivate var _senderKeyDistributionMessage: Data?
+  fileprivate var _decryptionErrorMessage: Data?
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -4040,6 +4068,47 @@ struct SignalServiceProtos_PaymentAddress {
   fileprivate var _mobileCoin: SignalServiceProtos_PaymentAddress.MobileCoin?
 }
 
+struct SignalServiceProtos_DecryptionErrorMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var ratchetKey: Data {
+    get {return _ratchetKey ?? Data()}
+    set {_ratchetKey = newValue}
+  }
+  /// Returns true if `ratchetKey` has been explicitly set.
+  var hasRatchetKey: Bool {return self._ratchetKey != nil}
+  /// Clears the value of `ratchetKey`. Subsequent reads from it will return its default value.
+  mutating func clearRatchetKey() {self._ratchetKey = nil}
+
+  var timestamp: UInt64 {
+    get {return _timestamp ?? 0}
+    set {_timestamp = newValue}
+  }
+  /// Returns true if `timestamp` has been explicitly set.
+  var hasTimestamp: Bool {return self._timestamp != nil}
+  /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+  mutating func clearTimestamp() {self._timestamp = nil}
+
+  var deviceID: UInt32 {
+    get {return _deviceID ?? 0}
+    set {_deviceID = newValue}
+  }
+  /// Returns true if `deviceID` has been explicitly set.
+  var hasDeviceID: Bool {return self._deviceID != nil}
+  /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
+  mutating func clearDeviceID() {self._deviceID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _ratchetKey: Data?
+  fileprivate var _timestamp: UInt64?
+  fileprivate var _deviceID: UInt32?
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 private let _protobuf_package = "SignalServiceProtos"
@@ -4137,7 +4206,9 @@ extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     2: .same(proto: "KEY_EXCHANGE"),
     3: .same(proto: "PREKEY_BUNDLE"),
     5: .same(proto: "RECEIPT"),
-    6: .same(proto: "UNIDENTIFIED_SENDER")
+    6: .same(proto: "UNIDENTIFIED_SENDER"),
+    7: .same(proto: "SENDERKEY_MESSAGE"),
+    8: .same(proto: "PLAINTEXT_CONTENT")
   ]
 }
 
@@ -4200,7 +4271,9 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     3: .same(proto: "callMessage"),
     4: .same(proto: "nullMessage"),
     5: .same(proto: "receiptMessage"),
-    6: .same(proto: "typingMessage")
+    6: .same(proto: "typingMessage"),
+    7: .same(proto: "senderKeyDistributionMessage"),
+    8: .same(proto: "decryptionErrorMessage")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4215,6 +4288,8 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
       case 4: try { try decoder.decodeSingularMessageField(value: &self._nullMessage) }()
       case 5: try { try decoder.decodeSingularMessageField(value: &self._receiptMessage) }()
       case 6: try { try decoder.decodeSingularMessageField(value: &self._typingMessage) }()
+      case 7: try { try decoder.decodeSingularBytesField(value: &self._senderKeyDistributionMessage) }()
+      case 8: try { try decoder.decodeSingularBytesField(value: &self._decryptionErrorMessage) }()
       default: break
       }
     }
@@ -4239,6 +4314,12 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if let v = self._typingMessage {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }
+    if let v = self._senderKeyDistributionMessage {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 7)
+    }
+    if let v = self._decryptionErrorMessage {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4249,6 +4330,8 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if lhs._nullMessage != rhs._nullMessage {return false}
     if lhs._receiptMessage != rhs._receiptMessage {return false}
     if lhs._typingMessage != rhs._typingMessage {return false}
+    if lhs._senderKeyDistributionMessage != rhs._senderKeyDistributionMessage {return false}
+    if lhs._decryptionErrorMessage != rhs._decryptionErrorMessage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7945,6 +8028,50 @@ extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, 
   static func ==(lhs: SignalServiceProtos_PaymentAddress.MobileCoin, rhs: SignalServiceProtos_PaymentAddress.MobileCoin) -> Bool {
     if lhs._publicAddress != rhs._publicAddress {return false}
     if lhs._signature != rhs._signature {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DecryptionErrorMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".DecryptionErrorMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "ratchetKey"),
+    2: .same(proto: "timestamp"),
+    3: .same(proto: "deviceId")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._ratchetKey) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._deviceID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._ratchetKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    if let v = self._timestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    }
+    if let v = self._deviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DecryptionErrorMessage, rhs: SignalServiceProtos_DecryptionErrorMessage) -> Bool {
+    if lhs._ratchetKey != rhs._ratchetKey {return false}
+    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._deviceID != rhs._deviceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

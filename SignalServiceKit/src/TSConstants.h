@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
     TSPreKeyWhisperMessageType = 3,
     TSUnencryptedWhisperMessageType = 4,
     TSUnidentifiedSenderMessageType = 6,
+    TSPlaintextMessageType = 7,
 };
 
 #pragma mark Server Address

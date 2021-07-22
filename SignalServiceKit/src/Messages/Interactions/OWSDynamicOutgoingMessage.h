@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalServiceAddress *);
+typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(void);
 
 /// This class is only used in debug tools
 @interface OWSDynamicOutgoingMessage : TSOutgoingMessage

@@ -53,7 +53,7 @@ public enum HTTPMethod {
 // MARK: -
 
 public enum OWSHTTPError: Error {
-    case requestError(statusCode: Int, httpUrlResponse: HTTPURLResponse)
+    case requestError(statusCode: Int, httpUrlResponse: HTTPURLResponse, responseData: Data?)
 }
 
 // MARK: -
@@ -342,7 +342,7 @@ public class OWSURLSession: NSObject {
                     Logger.verbose("Status code: \(statusCode)")
                     #endif
 
-                    throw OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse)
+                    throw OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse, responseData: responseData)
                 }
             }
 

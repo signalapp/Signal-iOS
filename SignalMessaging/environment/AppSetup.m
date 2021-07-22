@@ -89,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
         SSKPreferences *sskPreferences = [SSKPreferences new];
         id<GroupsV2> groupsV2 = [GroupsV2Impl new];
         id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
+        SenderKeyStore *senderKeyStore = [[SenderKeyStore alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
@@ -177,7 +178,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  messageProcessor:messageProcessor
                                                                          payments:payments
                                                                paymentsCurrencies:paymentsCurrencies
-                                                            spamChallengeResolver:spamChallengeResolver]];
+                                                            spamChallengeResolver:spamChallengeResolver
+                                                                   senderKeyStore:senderKeyStore]];
 
         appSpecificSingletonBlock();
 
