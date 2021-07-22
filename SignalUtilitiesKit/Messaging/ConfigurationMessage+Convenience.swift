@@ -31,18 +31,18 @@ extension ConfigurationMessage {
                 default: break
                 }
             }
-            OWSUserProfile.enumerateCollectionObjects(with: transaction) { object, stop in
-                guard let profile = object as? OWSUserProfile, let displayName = profile.profileName else { return }
-                let publicKey = profile.recipientId
+            var truncatedContacts = storage.getAllContacts()
+            if truncatedContacts.count > 200 { truncatedContacts = Set(Array(truncatedContacts)[0..<200]) }
+            truncatedContacts.forEach { contact in
+                let publicKey = contact.sessionID
                 let threadID = TSContactThread.threadID(fromContactSessionID: publicKey)
                 guard let thread = TSContactThread.fetch(uniqueId: threadID, transaction: transaction), thread.shouldBeVisible
                     && !SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey) else { return }
-                let profilePictureURL = profile.avatarUrlPath
-                let profileKey = profile.profileKey?.keyData
-                let contact = ConfigurationMessage.Contact(publicKey: publicKey, displayName: displayName,
+                let profilePictureURL = contact.profilePictureURL
+                let profileKey = contact.profilePictureEncryptionKey?.keyData
+                let contact = ConfigurationMessage.Contact(publicKey: publicKey, displayName: contact.name ?? publicKey,
                     profilePictureURL: profilePictureURL, profileKey: profileKey)
                 contacts.insert(contact)
-                guard contactCount < 200 else { stop.pointee = true; return }
                 contactCount += 1
             }
         }

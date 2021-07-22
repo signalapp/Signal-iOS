@@ -40,16 +40,6 @@ extension Storage {
         var result: Contact?
         Storage.read { transaction in
             result = Storage.shared.getContact(with: userPublicKey)
-            // HACK: Apparently it's still possible for the user's contact info to be missing
-            if result == nil, let profile = OWSUserProfile.fetch(uniqueId: kLocalProfileUniqueId, transaction: transaction),
-                let userPublicKey = Storage.shared.getUserPublicKey() {
-                let user = Contact(sessionID: userPublicKey)
-                user.name = profile.profileName
-                user.profilePictureURL = profile.avatarUrlPath
-                user.profilePictureFileName = profile.avatarFileName
-                user.profilePictureEncryptionKey = profile.profileKey
-                result = user
-            }
         }
         return result
     }

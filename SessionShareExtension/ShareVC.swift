@@ -103,9 +103,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         Logger.debug("")
 
-        // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
-        OWSProfileManager.shared().ensureLocalProfileCached()
-
         // Note that this does much more than set a flag;
         // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
@@ -122,8 +119,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
-
-        OWSProfileManager.shared().ensureLocalProfileCached()
 
         // We don't need to use OWSOrphanDataCleaner in the SAE.
 

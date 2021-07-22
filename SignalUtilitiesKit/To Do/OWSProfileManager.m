@@ -46,9 +46,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 // This property can be accessed on any thread, while synchronized on self.
-@property (atomic, readonly) OWSUserProfile *localUserProfile;
-
-// This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSCache<NSString *, UIImage *> *profileAvatarImageCache;
 
 // This property can be accessed on any thread, while synchronized on self.
@@ -61,8 +58,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 // Access to most state should happen while synchronized on the profile manager.
 // Writes should happen off the main thread, wherever possible.
 @implementation OWSProfileManager
-
-@synthesize localUserProfile = _localUserProfile;
 
 + (instancetype)sharedManager
 {
@@ -87,26 +82,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self rotateLocalProfileKeyIfNecessary];
-    }];
-
-    [self observeNotifications];
-
     return self;
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)observeNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockListDidChange:)
-                                                 name:kNSNotificationName_BlockListDidChange
-                                               object:nil];
 }
 
 #pragma mark - Dependencies
@@ -124,78 +105,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (OWSBlockingManager *)blockingManager
 {
     return SSKEnvironment.shared.blockingManager;
-}
-
-#pragma mark - User Profile Accessor
-
-- (void)ensureLocalProfileCached
-{
-    // Since localUserProfile can create a transaction, we want to make sure it's not called for the first
-    // time unexpectedly (e.g. in a nested transaction.)
-    __unused OWSUserProfile *profile = [self localUserProfile];
-}
-
-#pragma mark - Local Profile
-
-- (OWSUserProfile *)localUserProfile
-{
-    if (_localUserProfile) { return _localUserProfile; }
-
-    __block OWSUserProfile *userProfile;
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        userProfile = [self getLocalUserProfileWithTransaction:transaction];
-    }];
-    return userProfile;
-}
-
-- (OWSUserProfile *)getLocalUserProfileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    @synchronized(self)
-    {
-        if (!_localUserProfile) {
-            _localUserProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:kLocalProfileUniqueId transaction:transaction];
-        }
-    }
-
-    OWSAssertDebug(_localUserProfile.profileKey);
-
-    return _localUserProfile;
-}
-
-- (BOOL)localProfileExists
-{
-    return [OWSUserProfile localUserProfileExists:self.dbConnection];
-}
-
-- (OWSAES256Key *)localProfileKey
-{
-    OWSAssertDebug(self.localUserProfile.profileKey.keyData.length == kAES256_KeyByteLength);
-
-    return self.localUserProfile.profileKey;
-}
-
-- (BOOL)hasLocalProfile
-{
-    return (self.localProfileName.length > 0 || self.localProfileAvatarImage != nil);
-}
-
-- (nullable NSString *)localProfileName
-{
-    return self.localUserProfile.profileName;
-}
-
-- (nullable UIImage *)localProfileAvatarImage
-{
-    return [self loadProfileAvatarWithFilename:self.localUserProfile.avatarFileName];
-}
-
-- (nullable NSData *)localProfileAvatarData
-{
-    NSString *_Nullable filename = self.localUserProfile.avatarFileName;
-    if (filename.length < 1) {
-        return nil;
-    }
-    return [self loadProfileDataWithFilename:filename];
 }
 
 - (void)updateLocalProfileName:(nullable NSString *)profileName
@@ -232,27 +141,29 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [self updateServiceWithProfileName:profileName
                                  avatarUrl:avatarUrlPath
             success:^{
-                OWSUserProfile *userProfile = self.localUserProfile;
+                SNContact *userProfile = [LKStorage.shared getUser];
                 OWSAssertDebug(userProfile);
 
-                [userProfile updateWithProfileName:profileName
-                                     avatarUrlPath:avatarUrlPath
-                                    avatarFileName:avatarFileName
-                                      dbConnection:self.dbConnection
-                                        completion:^{
-                                            if (avatarFileName) {
-                                                [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
-                                            }
-
-                                            successBlock();
-                                        }];
+                userProfile.name = profileName;
+                userProfile.profilePictureURL = avatarUrlPath;
+                userProfile.profilePictureFileName = avatarFileName;
+                
+                [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [LKStorage.shared setContact:userProfile usingTransaction:transaction];
+                } completion:^{
+                    if (avatarFileName != nil) {
+                        [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
+                    }
+                    
+                    successBlock();
+                }];
             }
             failure:^(NSError *error) {
                 failureBlock(error);
             }];
     };
 
-    OWSUserProfile *userProfile = self.localUserProfile;
+    SNContact *userProfile = [LKStorage.shared getUser];
     OWSAssertDebug(userProfile);
     
     if (avatarImage) {
@@ -277,7 +188,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             failure:^(NSError *error) {
                 failureBlock(error);
             }];
-    } else if (userProfile.avatarUrlPath) {
+    } else if (userProfile.profilePictureURL) {
         OWSLogVerbose(@"Updating local profile on service with cleared avatar.");
         [self uploadAvatarToService:nil
             success:^(NSString *_Nullable avatarUrlPath) {
@@ -290,11 +201,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogVerbose(@"Updating local profile on service with no avatar.");
         tryToUpdateService(nil, nil);
     }
-}
-
-- (nullable NSString *)profilePictureURL
-{
-    return self.localUserProfile.avatarUrlPath;
 }
 
 - (void)writeAvatarToDisk:(UIImage *)avatar
@@ -367,8 +273,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [promise.thenOn(dispatch_get_main_queue(), ^(NSString *fileID) {
                 NSString *downloadURL = [NSString stringWithFormat:@"%@/files/%@", SNFileServerAPIV2.server, fileID];
                 [NSUserDefaults.standardUserDefaults setObject:[NSDate new] forKey:@"lastProfilePictureUpload"];
-                [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
-                   successBlock(downloadURL);
+                
+                SNContact *user = [LKStorage.shared getUser];
+                user.profilePictureEncryptionKey = newProfileKey;
+                [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [LKStorage.shared setContact:user usingTransaction:transaction];
+                } completion:^{
+                    successBlock(downloadURL);
                 }];
             })
             .catchOn(dispatch_get_main_queue(), ^(id result) {
@@ -376,7 +287,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 // to be invoked with the fulfilled promise's value as the error. The below
                 // is a quick and dirty workaround.
                 if ([result isKindOfClass:NSString.class]) {
-                    [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
+                    SNContact *user = [LKStorage.shared getUser];
+                    user.profilePictureEncryptionKey = newProfileKey;
+                    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [LKStorage.shared setContact:user usingTransaction:transaction];
+                    } completion:^{
                         successBlock(result);
                     }];
                 } else {
@@ -385,7 +300,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             }) retainUntilComplete];
         } else {
             // Update our profile key and set the url to nil if avatar data is nil
-            [self.localUserProfile updateWithProfileKey:newProfileKey dbConnection:self.dbConnection completion:^{
+            SNContact *user = [LKStorage.shared getUser];
+            user.profilePictureEncryptionKey = newProfileKey;
+            user.profilePictureURL = nil;
+            user.profilePictureFileName = nil;
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKStorage.shared setContact:user usingTransaction:transaction];
+            } completion:^{
                 successBlock(nil);
             }];
         }
@@ -438,217 +359,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return [groupId copy];
 }
 
-- (void)rotateLocalProfileKeyIfNecessary {
-    [self rotateLocalProfileKeyIfNecessaryWithSuccess:^{ } failure:^(NSError *error) { }];
-}
-
-- (void)rotateLocalProfileKeyIfNecessaryWithSuccess:(dispatch_block_t)success
-                                            failure:(ProfileManagerFailureBlock)failure {
-    OWSAssertDebug(AppReadiness.isAppReady);
-
-    if (!self.tsAccountManager.isRegistered) {
-        success();
-        return;
-    }
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableSet<NSString *> *whitelistedRecipientIds = [NSMutableSet new];
-        NSMutableSet<NSData *> *whitelistedGroupIds = [NSMutableSet new];
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [whitelistedRecipientIds
-                addObjectsFromArray:[transaction allKeysInCollection:kOWSProfileManager_UserWhitelistCollection]];
-
-            NSArray<NSString *> *whitelistedGroupKeys =
-                [transaction allKeysInCollection:kOWSProfileManager_GroupWhitelistCollection];
-            for (NSString *groupKey in whitelistedGroupKeys) {
-                NSData *_Nullable groupId = [self groupIdForGroupKey:groupKey];
-                if (!groupId) {
-                    OWSFailDebug(@"Couldn't parse group key: %@.", groupKey);
-                    continue;
-                }
-
-                [whitelistedGroupIds addObject:groupId];
-
-                // Note we don't add `group.recipientIds` to the `whitelistedRecipientIds`.
-                //
-                // Whenever we message a contact, be it in a 1:1 thread or in a group thread,
-                // we add them to the contact whitelist, so there's no reason to redundnatly
-                // add them here.
-                //
-                // Furthermore, doing so would cause the following problem:
-                // - Alice is in group Book Club
-                // - Add Book Club to your profile white list
-                // - Message Book Club, which also adds Alice to your profile whitelist.
-                // - Block Alice, but not Book Club
-                //
-                // Now, at this point we'd want to rotate our profile key once, since Alice has
-                // it via BookClub.
-                //
-                // However, after we did. The next time we check if we should rotate our profile
-                // key, adding all `group.recipientIds` to `whitelistedRecipientIds` here, would
-                // include Alice, and we'd rotate our profile key every time this method is called.
-            }
-        }];
-
-        NSString *_Nullable localNumber = [TSAccountManager localNumber];
-        if (localNumber) {
-            [whitelistedRecipientIds removeObject:localNumber];
-        } else {
-            OWSFailDebug(@"Missing localNumber");
-        }
-
-        NSSet<NSString *> *blockedRecipientIds = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];
-        NSSet<NSData *> *blockedGroupIds = [NSSet setWithArray:self.blockingManager.blockedGroupIds];
-
-        // Find the users and groups which are both a) blocked b) may have our current profile key.
-        NSMutableSet<NSString *> *intersectingRecipientIds = [blockedRecipientIds mutableCopy];
-        [intersectingRecipientIds intersectSet:whitelistedRecipientIds];
-        NSMutableSet<NSData *> *intersectingGroupIds = [blockedGroupIds mutableCopy];
-        [intersectingGroupIds intersectSet:whitelistedGroupIds];
-
-        BOOL isProfileKeySharedWithBlocked = (intersectingRecipientIds.count > 0 || intersectingGroupIds.count > 0);
-        if (!isProfileKeySharedWithBlocked) {
-            // No need to rotate the profile key.
-            return success();
-        }
-        [self rotateProfileKeyWithIntersectingRecipientIds:intersectingRecipientIds
-                                      intersectingGroupIds:intersectingGroupIds
-                                                   success:success
-                                                   failure:failure];
-    });
-}
-
-- (void)rotateProfileKeyWithIntersectingRecipientIds:(NSSet<NSString *> *)intersectingRecipientIds
-                                intersectingGroupIds:(NSSet<NSData *> *)intersectingGroupIds
-                                             success:(dispatch_block_t)success
-                                             failure:(ProfileManagerFailureBlock)failure {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // Rotate the profile key
-        OWSLogInfo(@"Rotating the profile key.");
-
-        // Make copies of the current local profile state.
-        OWSUserProfile *localUserProfile = self.localUserProfile;
-        NSString *_Nullable oldProfileName = localUserProfile.profileName;
-        NSString *_Nullable oldAvatarFileName = localUserProfile.avatarFileName;
-        NSData *_Nullable oldAvatarData = [self profileAvatarDataForRecipientId:self.tsAccountManager.localNumber];
-
-        // Rotate the stored profile key.
-        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            [self.localUserProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                                           dbConnection:self.dbConnection
-                                             completion:^{
-                                                 // The value doesn't matter, we just need any non-NSError value.
-                                                 resolve(@(1));
-                                             }];
-        }];
-
-        // Try to re-upload our profile name, if any.
-        //
-        // This may fail.
-        promise = promise.then(^(id value) {
-            if (oldProfileName.length < 1) {
-                return [AnyPromise promiseWithValue:@(1)];
-            }
-            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                [self updateServiceWithProfileName:oldProfileName
-                 avatarUrl:localUserProfile.avatarUrlPath
-                    success:^{
-                        OWSLogInfo(@"Update to profile name succeeded.");
-
-                        // The value doesn't matter, we just need any non-NSError value.
-                        resolve(@(1));
-                    }
-                    failure:^(NSError *error) {
-                        resolve(error);
-                    }];
-            }];
-        });
-
-        // Try to re-upload our profile avatar, if any.
-        //
-        // This may fail.
-        promise = promise.then(^(id value) {
-            if (oldAvatarData.length < 1 || oldAvatarFileName.length < 1) {
-                return [AnyPromise promiseWithValue:@(1)];
-            }
-            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                [self uploadAvatarToService:oldAvatarData
-                    success:^(NSString *_Nullable avatarUrlPath) {
-                        OWSLogInfo(@"Update to profile avatar after profile key rotation succeeded.");
-                        // The profile manager deletes the underlying file when updating a profile URL
-                        // So we need to copy the underlying file to a new location.
-                        NSString *oldPath = [OWSUserProfile profileAvatarFilepathWithFilename:oldAvatarFileName];
-                        NSString *newAvatarFilename = [self generateAvatarFilename];
-                        NSString *newPath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFilename];
-                        NSError *error;
-                        [NSFileManager.defaultManager copyItemAtPath:oldPath toPath:newPath error:&error];
-                        OWSAssertDebug(!error);
-
-                        [self.localUserProfile updateWithAvatarUrlPath:avatarUrlPath
-                                                        avatarFileName:newAvatarFilename
-                                                          dbConnection:self.dbConnection
-                                                            completion:^{
-                                                                // The value doesn't matter, we just need any
-                                                                // non-NSError value.
-                                                                resolve(@(1));
-                                                            }];
-                    }
-                    failure:^(NSError *error) {
-                        OWSLogInfo(@"Update to profile avatar after profile key rotation failed.");
-                        resolve(error);
-                    }];
-            }];
-        });
-
-        // Try to re-upload our profile avatar, if any.
-        //
-        // This may fail.
-        promise = promise.then(^(id value) {
-            // Remove blocked users and groups from profile whitelist.
-            //
-            // This will always succeed.
-            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [transaction removeObjectsForKeys:intersectingRecipientIds.allObjects
-                                     inCollection:kOWSProfileManager_UserWhitelistCollection];
-                for (NSData *groupId in intersectingGroupIds) {
-                    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
-                    [transaction removeObjectForKey:groupIdKey
-                                       inCollection:kOWSProfileManager_GroupWhitelistCollection];
-                }
-            }];
-            return @(1);
-        });
-
-        // Update account attributes.
-        //
-        // This may fail.
-        promise = promise.then(^(id value) {
-            return [self.tsAccountManager updateAccountAttributes];
-        });
-
-        promise = promise.then(^(id value) {
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange
-                                                                     object:nil
-                                                                   userInfo:nil];
-
-            success();
-        });
-        promise = promise.catch(^(NSError *error) {
-            if ([error isKindOfClass:[NSError class]]) {
-                failure(error);
-            } else {
-                failure(OWSErrorMakeAssertionError(@"Profile key rotation failure missing error."));
-            }
-        });
-        [promise retainUntilComplete];
-    });
-}
-
 - (void)regenerateLocalProfile
 {
-    OWSUserProfile *userProfile = self.localUserProfile;
-    [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey] dbConnection:self.dbConnection completion:nil];
-    [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+    NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:userPublicKey];
+    contact.profilePictureEncryptionKey = [OWSAES256Key generateRandomKey];
+    contact.profilePictureURL = nil;
+    contact.profilePictureFileName = nil;
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage.shared setContact:contact usingTransaction:transaction];
+    } completion:^{
+        [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+    }];
 }
 
 #pragma mark - Other Users' Profiles
@@ -662,22 +384,27 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             return;
         }
         
-        OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+        SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
         
-        OWSAssertDebug(userProfile);
-        if (userProfile.profileKey && [userProfile.profileKey.keyData isEqual:profileKey.keyData]) {
+        OWSAssertDebug(contact);
+        if (contact.profilePictureEncryptionKey != nil && [contact.profilePictureEncryptionKey.keyData isEqual:profileKey.keyData]) {
             // Ignore redundant update.
             return;
         }
         
-        [userProfile clearWithProfileKey:profileKey
-                            dbConnection:self.dbConnection
-                              completion:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [userProfile updateWithAvatarUrlPath:avatarURL avatarFileName:nil dbConnection:self.dbConnection completion:^{
-                    [self downloadAvatarForUserProfile:userProfile];
-                }];
-            });
+        contact.profilePictureEncryptionKey = profileKey;
+        contact.profilePictureURL = nil;
+        contact.profilePictureFileName = nil;
+        
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKStorage.shared setContact:contact usingTransaction:transaction];
+        } completion:^{
+            contact.profilePictureURL = avatarURL;
+            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKStorage.shared setContact:contact usingTransaction:transaction];
+            } completion:^{
+                [self downloadAvatarForUserProfile:contact];
+            }];
         }];
     });
 }
@@ -696,42 +423,24 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertDebug(recipientId.length > 0);
     
-    // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
-    OWSAssertDebug(userProfile);
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
+    OWSAssertDebug(contact);
 
-    return userProfile.profileKey;
-}
-
-- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(recipientID.length > 0);
-
-    // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = [self.tsAccountManager.localNumber isEqualToString:recipientID]
-                                  ? [self getLocalUserProfileWithTransaction:transaction]
-                                  : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientID transaction:transaction];
-
-    return userProfile.profileName;
+    return contact.profilePictureEncryptionKey;
 }
 
 - (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId
 {
     OWSAssertDebug(recipientId.length > 0);
 
-    // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
-
-    if (userProfile.avatarFileName.length > 0) {
-        return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
+    
+    if (contact.profilePictureFileName != nil && contact.profilePictureFileName.length > 0) {
+        return [self loadProfileAvatarWithFilename:contact.profilePictureFileName];
     }
 
-    if (userProfile.avatarUrlPath.length > 0) {
-        [self downloadAvatarForUserProfile:userProfile];
+    if (contact.profilePictureURL != nil && contact.profilePictureURL.length > 0) {
+        [self downloadAvatarForUserProfile:contact];
     }
 
     return nil;
@@ -741,13 +450,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertDebug(recipientId.length > 0);
 
-    // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
 
-    if (userProfile.avatarFileName.length > 0) {
-        return [self loadProfileDataWithFilename:userProfile.avatarFileName];
+    if (contact.profilePictureFileName != nil && contact.profilePictureFileName.length > 0) {
+        return [self loadProfileDataWithFilename:contact.profilePictureFileName];
     }
 
     return nil;
@@ -758,40 +464,42 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
 }
 
-- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile
+- (void)downloadAvatarForUserProfile:(SNContact *)contact
 {
-    OWSAssertDebug(userProfile);
+    OWSAssertDebug(contact);
 
     __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (userProfile.avatarUrlPath.length < 1) {
-            OWSLogDebug(@"Skipping downloading avatar for %@ because url is not set", userProfile.recipientId);
+        BOOL hasProfilePictureURL = (contact.profilePictureURL != nil && contact.profilePictureURL.length > 0);
+        if (!hasProfilePictureURL) {
+            OWSLogDebug(@"Skipping downloading avatar for %@ because url is not set", contact.sessionID);
             return;
         }
-        NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;
+        NSString *_Nullable avatarUrlPathAtStart = contact.profilePictureURL;
 
-        if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrlPath.length < 1) {
+        BOOL hasProfileEncryptionKey = (contact.profilePictureEncryptionKey != nil && contact.profilePictureEncryptionKey.keyData.length > 0);
+        if (!hasProfileEncryptionKey || !hasProfilePictureURL) {
             return;
         }
         
-        OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
+        OWSAES256Key *profileKeyAtStart = contact.profilePictureEncryptionKey;
 
         NSString *fileName = [self generateAvatarFilename];
         NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
 
         @synchronized(self.currentAvatarDownloads)
         {
-            if ([self.currentAvatarDownloads containsObject:userProfile.recipientId]) {
+            if ([self.currentAvatarDownloads containsObject:contact.sessionID]) {
                 // Download already in flight; ignore.
                 return;
             }
-            [self.currentAvatarDownloads addObject:userProfile.recipientId];
+            [self.currentAvatarDownloads addObject:contact.sessionID];
         }
 
-        OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
+        OWSLogVerbose(@"downloading profile avatar: %@", contact.sessionID);
 
-        NSString *profilePictureURL = userProfile.avatarUrlPath;
+        NSString *profilePictureURL = contact.profilePictureURL;
         
         NSString *file = [profilePictureURL lastPathComponent];
         BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPIV2.oldServer];
@@ -800,7 +508,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [promise.then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)
             {
-                [self.currentAvatarDownloads removeObject:userProfile.recipientId];
+                [self.currentAvatarDownloads removeObject:contact.sessionID];
             }
             NSData *_Nullable encryptedData = data;
             NSData *_Nullable decryptedData = [self decryptProfileData:encryptedData profileKey:profileKeyAtStart];
@@ -812,24 +520,28 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 }
             }
             
-            OWSUserProfile *latestUserProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:userProfile.recipientId dbConnection:self.dbConnection];
+            SNContact *latestContact = [LKStorage.shared getContactWithSessionID:contact.sessionID];
 
-            if (latestUserProfile.profileKey.keyData.length < 1
-                || ![latestUserProfile.profileKey isEqual:userProfile.profileKey]) {
+            BOOL hasProfileEncryptionKey = (latestContact.profilePictureEncryptionKey != nil
+                && latestContact.profilePictureEncryptionKey.keyData.length > 0);
+            if (!hasProfileEncryptionKey || ![latestContact.profilePictureEncryptionKey isEqual:contact.profilePictureEncryptionKey]) {
                 OWSLogWarn(@"Ignoring avatar download for obsolete user profile.");
-            } else if (![avatarUrlPathAtStart isEqualToString:latestUserProfile.avatarUrlPath]) {
+            } else if (![avatarUrlPathAtStart isEqualToString:latestContact.profilePictureURL]) {
                 OWSLogInfo(@"avatar url has changed during download");
-                if (latestUserProfile.avatarUrlPath.length > 0) {
-                    [self downloadAvatarForUserProfile:latestUserProfile];
+                if (latestContact.profilePictureURL != nil && latestContact.profilePictureURL.length > 0) {
+                    [self downloadAvatarForUserProfile:latestContact];
                 }
             } else if (!encryptedData) {
-                OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.recipientId);
+                OWSLogError(@"avatar encrypted data for %@ could not be read.", contact.sessionID);
             } else if (!decryptedData) {
-                OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.recipientId);
+                OWSLogError(@"avatar data for %@ could not be decrypted.", contact.sessionID);
             } else if (!image) {
-                OWSLogError(@"avatar image for %@ could not be loaded.", userProfile.recipientId);
+                OWSLogError(@"avatar image for %@ could not be loaded.", contact.sessionID);
             } else {
-                [latestUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
+                latestContact.profilePictureFileName = fileName;
+                [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [LKStorage.shared setContact:latestContact usingTransaction:transaction];
+                }];
                 [self updateProfileAvatarCache:image filename:fileName];
             }
 
@@ -849,62 +561,26 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     // Ensure decryption, etc. off main thread.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OWSUserProfile *userProfile =
-            [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+        SNContact *contact = [LKStorage.shared getContactWithSessionID:recipientId];
 
-        NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
-        // If we're updating the profile that corresponds to our local number,
-        // make sure we're using the latest key.
-        if (localNumber && [localNumber isEqualToString:recipientId]) {
-            [userProfile updateWithProfileKey:self.localUserProfile.profileKey
-                                 dbConnection:self.dbConnection
-                                   completion:nil];
-        }
-
-        if (!userProfile.profileKey) {
-            return;
-        }
+        if (!contact.profilePictureEncryptionKey) { return; }
 
         NSString *_Nullable profileName =
-            [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
-
-        [userProfile updateWithProfileName:profileName
-                             avatarUrlPath:avatarUrlPath
-                              dbConnection:self.dbConnection
-                                completion:nil];
-
-        // If we're updating the profile that corresponds to our local number,
-        // update the local profile as well.
-        if (localNumber && [localNumber isEqualToString:recipientId]) {
-            OWSUserProfile *localUserProfile = self.localUserProfile;
-            OWSAssertDebug(localUserProfile);
-
-            [localUserProfile updateWithProfileName:profileName
-                                      avatarUrlPath:avatarUrlPath
-                                       dbConnection:self.dbConnection
-                                         completion:nil];
-        }
+            [self decryptProfileNameData:profileNameEncrypted profileKey:contact.profilePictureEncryptionKey];
+        
+        contact.name = profileName;
+        contact.profilePictureURL = avatarUrlPath;
 
         // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
         // So if avatarUrlPath is set and avatarFileName is not set, we should to
         // download this avatar. downloadAvatarForUserProfile will de-bounce
         // downloads.
-        if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
-            [self downloadAvatarForUserProfile:userProfile];
+        BOOL hasProfilePictureURL = (contact.profilePictureURL != nil && contact.profilePictureURL.length > 0);
+        BOOL hasProfilePictureFileName = (contact.profilePictureFileName != nil && contact.profilePictureFileName.length > 0);
+        if (hasProfilePictureURL && !hasProfilePictureFileName) {
+            [self downloadAvatarForUserProfile:contact];
         }
     });
-}
-
-- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
-    [userProfile updateWithProfileName:displayName avatarUrlPath:userProfile.avatarUrlPath avatarFileName:userProfile.avatarFileName transaction:transaction completion:nil];
-}
-
-- (void)ensureProfileCachedForContactWithID:(NSString *)contactID with:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
-    [userProfile saveWithTransaction:transaction];
 }
 
 - (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right
@@ -983,7 +659,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSData *)encryptProfileData:(nullable NSData *)data
 {
-    return [self encryptProfileData:data profileKey:self.localProfileKey];
+    OWSAES256Key *localProfileKey = [LKStorage.shared getUser].profilePictureEncryptionKey;
+    
+    return [self encryptProfileData:data profileKey:localProfileKey];
 }
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
@@ -1010,7 +688,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [paddedNameData increaseLengthBy:paddingByteCount];
     OWSAssertDebug(paddedNameData.length == kOWSProfileManager_NameDataLength);
 
-    return [self encryptProfileData:[paddedNameData copy] profileKey:self.localProfileKey];
+    OWSAES256Key *localProfileKey = [LKStorage.shared getUser].profilePictureEncryptionKey;
+    
+    return [self encryptProfileData:[paddedNameData copy] profileKey:localProfileKey];
 }
 
 #pragma mark - Avatar Disk Cache
@@ -1059,16 +739,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [self.profileAvatarImageCache removeObjectForKey:filename];
         }
     }
-}
-
-#pragma mark - Notifications
-
-- (void)blockListDidChange:(NSNotification *)notification {
-    OWSAssertIsOnMainThread();
-
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self rotateLocalProfileKeyIfNecessary];
-    }];
 }
 
 @end

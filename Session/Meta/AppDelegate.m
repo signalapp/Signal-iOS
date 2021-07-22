@@ -445,9 +445,6 @@ static NSTimeInterval launchStartedAt;
     
     [SNConfiguration performMainSetup];
 
-    // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
-    [self.profileManager ensureLocalProfileCached];
-
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
@@ -533,7 +530,6 @@ static NSTimeInterval launchStartedAt;
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];
-        [self.profileManager ensureLocalProfileCached];
 
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
