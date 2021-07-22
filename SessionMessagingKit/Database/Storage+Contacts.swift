@@ -32,11 +32,6 @@ extension Storage {
                     OWSFileSystem.deleteFileIfExists(path)
                 }
             }
-            // Download new profile picture if needed
-            if contact.profilePictureURL != nil && contact.profilePictureURL != oldContact?.profilePictureURL {
-                let profileManager = SSKEnvironment.shared.profileManager
-                profileManager.downloadAvatar(forUserProfile: contact)
-            }
             // Post notification
             let notificationCenter = NotificationCenter.default
             notificationCenter.post(name: .contactUpdated, object: contact.sessionID)

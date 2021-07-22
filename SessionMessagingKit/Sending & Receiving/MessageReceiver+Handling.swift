@@ -183,10 +183,6 @@ extension MessageReceiver {
         // Profile
         updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
             profileKey: given(message.profileKey) { OWSAES256Key(data: $0)! }, sentTimestamp: message.sentTimestamp!, transaction: transaction)
-        transaction.addCompletionQueue(DispatchQueue.main) {
-            let userProfile = storage.getUser() ?? Contact(sessionID: userPublicKey)
-            SSKEnvironment.shared.profileManager.downloadAvatar(forUserProfile: userProfile)
-        }
         // Initial configuration sync
         if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
             UserDefaults.standard[.hasSyncedInitialConfiguration] = true
@@ -320,8 +316,8 @@ extension MessageReceiver {
             }
         }
         // Profile picture & profile key
-        if let profileKey = profileKey, let profilePictureURL = profilePictureURL, profileKey.keyData.count == kAES256_KeyByteLength,
-            profileKey != contact.profileEncryptionKey {
+        if let profileKey = profileKey, let profilePictureURL = profilePictureURL,
+            profileKey.keyData.count == kAES256_KeyByteLength, profileKey != contact.profileEncryptionKey {
             let shouldUpdate: Bool
             if isCurrentUser {
                 shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
@@ -338,6 +334,10 @@ extension MessageReceiver {
         }
         // Persist changes
         Storage.shared.setContact(contact, using: transaction)
+        // Download the profile picture if needed
+        transaction.addCompletionQueue(DispatchQueue.main) {
+            SSKEnvironment.shared.profileManager.downloadAvatar(forUserProfile: contact)
+        }
     }
 
     
