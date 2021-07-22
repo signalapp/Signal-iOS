@@ -692,9 +692,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             return
         }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource,
-                                                     dataUTI: typeIdentifier,
-                                                     imageQuality: .medium)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier)
         showApprovalDialog(forAttachment: attachment)
     }
 

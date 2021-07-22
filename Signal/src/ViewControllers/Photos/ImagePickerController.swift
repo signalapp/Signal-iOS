@@ -197,7 +197,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 return
             }
 
-            let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset, imageQuality: imageQuality)
+            let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
             delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         case .deselect:
@@ -208,10 +208,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             delegate.imagePicker(self, didDeselectAsset: asset)
             collectionView.deselectItem(at: indexPath, animated: true)
         }
-    }
-
-    var imageQuality: TSImageQuality {
-        return .medium
     }
 
     override func viewWillLayoutSubviews() {
@@ -484,7 +480,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         let asset: PHAsset = photoCollectionContents.asset(at: indexPath.item)
-        let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset, imageQuality: imageQuality)
+        let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
         delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
 
         if !delegate.isInBatchSelectMode {

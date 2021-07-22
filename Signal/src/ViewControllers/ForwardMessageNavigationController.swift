@@ -507,7 +507,7 @@ extension TSAttachmentStream {
         if isVoiceMessage {
             signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: dataUTI)
         } else {
-            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI, imageQuality: .original)
+            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI)
         }
         signalAttachment.captionText = caption
         signalAttachment.isBorderless = isBorderless

@@ -784,6 +784,7 @@
 		886CB07C24E78F2200753909 /* Reflection.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 886CB07B24E78F2200753909 /* Reflection.m4r */; };
 		8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8871B16E25F007DE00D4E070 /* ProfileSettingsViewController.swift */; };
 		8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8871B17025F0139D00D4E070 /* ProfileNameViewController.swift */; };
+		8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */; };
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
 		887889B1247F2E72001B5FCF /* Emoji+Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889AF247F2E72001B5FCF /* Emoji+Category.swift */; };
 		887889B2247F2E72001B5FCF /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889B0247F2E72001B5FCF /* Emoji.swift */; };
@@ -1886,6 +1887,7 @@
 		8871B16E25F007DE00D4E070 /* ProfileSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewController.swift; sourceTree = "<group>"; };
 		8871B17025F0139D00D4E070 /* ProfileNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNameViewController.swift; sourceTree = "<group>"; };
 		8872409323E12DF500824D62 /* NotificationServiceExtension-AppStore.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "NotificationServiceExtension-AppStore.entitlements"; sourceTree = "<group>"; };
+		8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentMediaQualitySettingsViewController.swift; sourceTree = "<group>"; };
 		887889952474E199001B5FCF /* ga */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ga; path = translations/ga.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889972474E1BF001B5FCF /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = translations/gu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889992474E1DF001B5FCF /* ha */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ha; path = translations/ha.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -3745,6 +3747,7 @@
 				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
 				346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */,
 				346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */,
+				8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */,
 			);
 			path = "Data Usage";
 			sourceTree = "<group>";
@@ -5569,6 +5572,7 @@
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
 				348815C02553291300D4F4C4 /* CVComponentViewOnce.swift in Sources */,
+				8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */,
 				347C3830252CE69400F3D941 /* CVItemViewState.swift in Sources */,
 				348815C4255343FC00D4F4C4 /* CVComponentDelegate.swift in Sources */,
 				3470C8782555883600F5847C /* CVLoadContext.swift in Sources */,

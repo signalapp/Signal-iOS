@@ -214,6 +214,15 @@
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Saved";
 
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
+
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
 
@@ -4882,6 +4891,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Would you like to invite the following number to Signal: ";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "High";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "Standard";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
 
@@ -5007,6 +5022,15 @@
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Data Usage";
@@ -5619,6 +5643,12 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "App Security";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";

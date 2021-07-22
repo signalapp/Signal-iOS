@@ -495,10 +495,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             let dataSource = try DataSourcePath.dataSource(withFilePath: pathForConsumableFile,
                                                            shouldDeleteOnDeallocation: false)
 
-            let attachment = SignalAttachment.attachment(
-                dataSource: dataSource,
-                dataUTI: assetTypeIdentifier,
-                imageQuality: .original)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
             attachment.isLoopingVideo = attachment.isVideo
             return attachment
 

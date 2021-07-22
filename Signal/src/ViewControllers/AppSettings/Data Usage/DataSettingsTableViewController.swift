@@ -29,79 +29,118 @@ class DataSettingsTableViewController: OWSTableViewController2 {
 
     func updateTableContents() {
         let contents = OWSTableContents()
+        defer { self.contents = contents }
 
         let autoDownloadSection = OWSTableSection()
-        autoDownloadSection.headerTitle = NSLocalizedString("SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER",
-                                                            comment: "Header for the 'media auto-download' section in the data settings.")
-        autoDownloadSection.footerTitle = NSLocalizedString("SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER",
-                                                            comment: "Footer for the 'media auto-download' section in the data settings.")
+        autoDownloadSection.headerTitle = NSLocalizedString(
+            "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER",
+            comment: "Header for the 'media auto-download' section in the data settings."
+        )
+        autoDownloadSection.footerTitle = NSLocalizedString(
+            "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER",
+            comment: "Footer for the 'media auto-download' section in the data settings."
+        )
 
         let mediaDownloadTypes = MediaDownloadType.allCases.sorted { (left, right) in
             left.sortKey < right.sortKey
         }
-        databaseStorage.read { transaction in
-            var hasNonDefaultValue = false
-            for mediaDownloadType in mediaDownloadTypes {
-                let name = MediaDownloadSettingsViewController.name(forMediaDownloadType: mediaDownloadType)
-                let preference = OWSAttachmentDownloads.mediaBandwidthPreference(forMediaDownloadType: mediaDownloadType,
-                                                                                 transaction: transaction)
-                let preferenceName = MediaDownloadSettingsViewController.name(forMediaBandwidthPreference: preference)
+        var hasNonDefaultValue = false
+        for mediaDownloadType in mediaDownloadTypes {
+            let name = MediaDownloadSettingsViewController.name(forMediaDownloadType: mediaDownloadType)
+            let bandwidthPreference = databaseStorage.read { transaction in
+                OWSAttachmentDownloads.mediaBandwidthPreference(
+                    forMediaDownloadType: mediaDownloadType,
+                    transaction: transaction
+                )
+            }
+            let preferenceName = MediaDownloadSettingsViewController.name(forMediaBandwidthPreference: bandwidthPreference)
 
-                if preference != mediaDownloadType.defaultPreference {
-                    hasNonDefaultValue = true
-                }
-
-                autoDownloadSection.add(OWSTableItem.disclosureItem(withText: name,
-                                                                    detailText: preferenceName,
-                                                                    accessibilityIdentifier: mediaDownloadType.rawValue) { [weak self] in
-                    self?.showMediaDownloadView(forMediaDownloadType: mediaDownloadType)
-                })
+            if bandwidthPreference != mediaDownloadType.defaultPreference {
+                hasNonDefaultValue = true
             }
 
-            let resetCopy = NSLocalizedString("SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET",
-                                              comment: "Label for for the 'reset media auto-download settings' button in the data settings.")
-            let resetAccessibilityIdentifier = "reset-auto-download-settings"
-            if hasNonDefaultValue {
-                autoDownloadSection.add(OWSTableItem.item(name: resetCopy,
-                                                          textColor: Theme.accentBlueColor,
-                                                          accessibilityIdentifier: resetAccessibilityIdentifier) {
-                    Self.databaseStorage.asyncWrite { transaction in
-                        OWSAttachmentDownloads.resetMediaBandwidthPreferences(transaction: transaction)
-                    }
-                })
-            } else {
-                autoDownloadSection.add(OWSTableItem.item(name: resetCopy,
-                                                          textColor: Theme.secondaryTextAndIconColor,
-                                                          accessibilityIdentifier: resetAccessibilityIdentifier))
-            }
-
-            let callsSection = OWSTableSection()
-            callsSection.headerTitle = NSLocalizedString(
-                "SETTINGS_DATA_CALL_SECTION_HEADER",
-                comment: "Section header for the call section in data settings")
-            callsSection.footerTitle = NSLocalizedString(
-                "SETTINGS_DATA_CALL_SECTION_FOOTER",
-                comment: "Section footer for the call section in data settings")
-
-            let currentPreference = CallService.highBandwidthNetworkInterfaces(readTx: transaction).inverted
-            let currentPreferenceString = NetworkInterfacePreferenceViewController.name(forInterfaceSet: currentPreference)
-
-            callsSection.add(
-                OWSTableItem.disclosureItem(
-                    withText: NSLocalizedString(
-                        "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
-                        comment: "Item title for the low bandwidth call setting"),
-                    detailText: currentPreferenceString ?? "",
-                    actionBlock: { [weak self] in
-                        self?.showCallBandwidthPreferences()
-                    }
-                ))
-
-            contents.addSection(autoDownloadSection)
-            contents.addSection(callsSection)
+            autoDownloadSection.add(OWSTableItem.disclosureItem(
+                withText: name,
+                detailText: preferenceName,
+                accessibilityIdentifier: mediaDownloadType.rawValue
+            ) { [weak self] in
+                self?.showMediaDownloadView(forMediaDownloadType: mediaDownloadType)
+            })
         }
 
-        self.contents = contents
+        let resetCopy = NSLocalizedString(
+            "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET",
+            comment: "Label for for the 'reset media auto-download settings' button in the data settings."
+        )
+        let resetAccessibilityIdentifier = "reset-auto-download-settings"
+        if hasNonDefaultValue {
+            autoDownloadSection.add(OWSTableItem.item(
+                name: resetCopy,
+                textColor: Theme.accentBlueColor,
+                accessibilityIdentifier: resetAccessibilityIdentifier
+            ) {
+                Self.databaseStorage.asyncWrite { transaction in
+                    OWSAttachmentDownloads.resetMediaBandwidthPreferences(transaction: transaction)
+                }
+            })
+        } else {
+            autoDownloadSection.add(OWSTableItem.item(
+                name: resetCopy,
+                textColor: Theme.secondaryTextAndIconColor,
+                accessibilityIdentifier: resetAccessibilityIdentifier
+            ))
+        }
+        contents.addSection(autoDownloadSection)
+
+        let sentMediaSection = OWSTableSection()
+        sentMediaSection.headerTitle = NSLocalizedString(
+            "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER",
+            comment: "Section header for the sent media section in data settings"
+        )
+        sentMediaSection.footerTitle = NSLocalizedString(
+            "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER",
+            comment: "Section footer for the sent media section in data settings"
+        )
+        sentMediaSection.add(.disclosureItem(
+            withText: NSLocalizedString(
+                "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
+                comment: "Item title for the sent media quality setting"
+            ),
+            detailText: databaseStorage.read { ImageQualityLevel.default(transaction: $0) }.localizedString,
+            actionBlock: { [weak self] in
+                self?.showSentMediaQualityPreferences()
+            }
+        ))
+        contents.addSection(sentMediaSection)
+
+        let callsSection = OWSTableSection()
+        callsSection.headerTitle = NSLocalizedString(
+            "SETTINGS_DATA_CALL_SECTION_HEADER",
+            comment: "Section header for the call section in data settings"
+        )
+        callsSection.footerTitle = NSLocalizedString(
+            "SETTINGS_DATA_CALL_SECTION_FOOTER",
+            comment: "Section footer for the call section in data settings"
+        )
+
+        let currentCallBandwidthPreference = databaseStorage.read { transaction in
+            CallService.highBandwidthNetworkInterfaces(readTx: transaction).inverted
+        }
+        let currentCallBandwidthPreferenceString = NetworkInterfacePreferenceViewController.name(
+            forInterfaceSet: currentCallBandwidthPreference
+        )
+
+        callsSection.add(.disclosureItem(
+            withText: NSLocalizedString(
+                "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
+                comment: "Item title for the low bandwidth call setting"),
+            detailText: currentCallBandwidthPreferenceString ?? "",
+            actionBlock: { [weak self] in
+                self?.showCallBandwidthPreferences()
+            }
+        ))
+
+        contents.addSection(callsSection)
     }
 
     // MARK: - Events
@@ -124,6 +163,16 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         vc.title = NSLocalizedString(
             "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
             comment: "Item title for the low bandwidth call setting")
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func showSentMediaQualityPreferences() {
+        let vc = SentMediaQualitySettingsViewController { [weak self] newQualityLevel in
+            self?.databaseStorage.write { transaction in
+                ImageQualityLevel.setDefault(newQualityLevel, transaction: transaction)
+            }
+            self?.updateTableContents()
+        }
         navigationController?.pushViewController(vc, animated: true)
     }
 

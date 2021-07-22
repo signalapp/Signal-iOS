@@ -14,8 +14,10 @@ protocol AttachmentTextToolbarDelegate: MentionTextViewDelegate {
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar)
+    func attachmentTextToolbarDidTapQualityButton(_ attachmentTextToolbar: AttachmentTextToolbar)
 
     var isViewOnceEnabled: Bool { get set }
+    var outputQualityLevel: ImageQualityLevel { get }
 }
 
 // MARK: -
@@ -32,6 +34,10 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
 
     var isViewOnceEnabled: Bool {
         return options.contains(.canToggleViewOnce) && attachmentTextToolbarDelegate?.isViewOnceEnabled ?? false
+    }
+
+    var outputQualityLevel: ImageQualityLevel {
+        attachmentTextToolbarDelegate?.outputQualityLevel ?? .standard
     }
 
     var messageBody: MessageBody? {
@@ -55,6 +61,9 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
 
     private let viewOnceWrapper = UIView()
 
+    private let qualityLevelWrapper = UIView()
+    private let qualityLevelButton = OWSButton()
+
     // Layout Constants
 
     let kMinToolbarItemHeight: CGFloat = 40
@@ -65,7 +74,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
     var textViewHeightConstraint: NSLayoutConstraint?
-    let kToolbarMargin: CGFloat = 8
+    let kToolbarMargin: CGFloat = 12
 
     // MARK: - Initializers
 
@@ -91,18 +100,28 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         viewOnceButton.block = { [weak self] in
             self?.didTapViewOnceMessagesButton()
         }
-        // Vertically center and increase hit area of button, except on right side for symmetrical layout WRT the input text field
-        viewOnceButton.contentEdgeInsets =
-            UIEdgeInsets(top: 6,
-                         left: 8,
-                         bottom: (kMinToolbarItemHeight - timerHeight) / 2,
-                         right: 0)
+        qualityLevelButton.block = { [weak self] in
+            guard let self = self else { return }
+            self.attachmentTextToolbarDelegate?.attachmentTextToolbarDidTapQualityButton(self)
+        }
+
+        // Vertically center
+        for button in [qualityLevelButton, viewOnceButton] {
+            button.contentEdgeInsets =
+                UIEdgeInsets(
+                    top: 6,
+                    left: 0,
+                    bottom: (kMinToolbarItemHeight - timerHeight) / 2,
+                    right: 0
+                )
+        }
 
         // Layout
 
         let sendWrapper = UIView()
         sendWrapper.addSubview(sendButton)
         viewOnceWrapper.addSubview(viewOnceButton)
+        qualityLevelWrapper.addSubview(qualityLevelButton)
 
         let hStackView = UIStackView()
         hStackView.isLayoutMarginsRelativeArrangement = true
@@ -111,7 +130,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         hStackView.alignment = .bottom
         hStackView.spacing = kToolbarMargin
 
-        var views = [ viewOnceWrapper, viewOnceSpacer, viewOnceRecipientNamesLabelScrollView, textContainer, sendWrapper ]
+        var views = [ viewOnceWrapper, qualityLevelWrapper, viewOnceSpacer, viewOnceRecipientNamesLabelScrollView, textContainer, sendWrapper ]
         // UIStackView's horizontal layout is leading-to-trailing.
         // We want left-to-right ordering, so reverse if RTL.
         if CurrentAppContext().isRTL {
@@ -152,6 +171,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         }
         layoutButtonWithinWrapper(sendButton)
         layoutButtonWithinWrapper(viewOnceButton)
+        layoutButtonWithinWrapper(qualityLevelButton)
 
         updateContent()
     }
@@ -176,15 +196,19 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
     private func updateContent() {
         AssertIsOnMainThread()
 
-        let imageName = isViewOnceEnabled ? "view-once-24" : "view-infinite-24"
-        viewOnceButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
+        let viewOnceImageName = isViewOnceEnabled ? "view-once-24" : "view-infinite-24"
+        viewOnceButton.setTemplateImageName(viewOnceImageName, tintColor: Theme.darkThemePrimaryColor)
 
         textContainer.isHidden = isViewOnceEnabled
         viewOnceWrapper.isHidden = !options.contains(.canToggleViewOnce)
 
-        updateHeight(textView: textView)
-
         showViewOnceTooltipIfNecessary()
+
+        let qualityLevelImageName = outputQualityLevel == .high ? "hq-24" : "sq-24"
+        qualityLevelButton.setTemplateImageName(qualityLevelImageName, tintColor: Theme.darkThemePrimaryColor)
+        qualityLevelWrapper.isHidden = !options.contains(.canChangeQualityLevel)
+
+        updateHeight(textView: textView)
 
         updateRecipientNames()
     }

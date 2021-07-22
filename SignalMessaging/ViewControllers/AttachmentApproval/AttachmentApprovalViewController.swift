@@ -55,6 +55,7 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
     public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
     public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
     public static let canToggleViewOnce = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
+    public static let canChangeQualityLevel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 3)
 }
 
 // MARK: -
@@ -75,6 +76,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             options.insert(.canToggleViewOnce)
         }
 
+        if attachmentApprovalItemCollection.attachmentApprovalItems.filter({ $0.attachment.isValidImage }).count > 0 {
+            options.insert(.canChangeQualityLevel)
+        }
+
         return options
     }
 
@@ -83,6 +88,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     var isViewOnceEnabled = false
+    lazy var outputQualityLevel: ImageQualityLevel = databaseStorage.read { .default(transaction: $0) } {
+        didSet { updateContents(isApproved: false) }
+    }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
@@ -641,7 +649,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     func outputAttachmentsPromise() -> Promise<[SignalAttachment]> {
         var promises = [Promise<SignalAttachment>]()
         for attachmentApprovalItem in attachmentApprovalItems {
-            promises.append(outputAttachmentPromise(for: attachmentApprovalItem))
+            let outputQualityLevel = self.outputQualityLevel
+            promises.append(outputAttachmentPromise(for: attachmentApprovalItem).map(on: .global()) { attachment in
+                attachment.preparedForOutput(qualityLevel: outputQualityLevel)
+            })
         }
         return when(fulfilled: promises)
     }
@@ -709,7 +720,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
             dataSource.sourceFilename = filename
 
-            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
             if let attachmentError = dstAttachment.error {
                 owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
                 return attachmentApprovalItem.attachment
@@ -745,7 +756,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
             dataSource.sourceFilename = filename
 
-            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
+            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
             if let attachmentError = dstAttachment.error {
                 throw OWSAssertionError("Could not prepare attachment for output: \(attachmentError).")
             }
@@ -920,6 +931,96 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         if isViewOnceEnabled {
             attachmentTextToolbar.textView.stopTypingMention()
         }
+    }
+
+    func attachmentTextToolbarDidTapQualityButton(_ attachmentTextToolbar: AttachmentTextToolbar) {
+        AssertIsOnMainThread()
+
+        let actionSheet = ActionSheetController(theme: .translucentDark)
+        actionSheet.isCancelable = true
+
+        let buttonStack = UIStackView(arrangedSubviews: [
+            buildOutputQualityButton(
+                title: ImageQualityLevel.standard.localizedString,
+                subtitle: NSLocalizedString(
+                    "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
+                    comment: "Subtitle for the 'standard' option for media quality."
+                ),
+                isSelected: outputQualityLevel == .standard,
+                action: { [weak self] in
+                    self?.outputQualityLevel = .standard
+                    actionSheet.dismiss(animated: true)
+                }
+            ),
+            .hStretchingSpacer(),
+            buildOutputQualityButton(
+                title: ImageQualityLevel.high.localizedString,
+                subtitle: NSLocalizedString(
+                    "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE",
+                    comment: "Subtitle for the 'high' option for media quality."
+                ),
+                isSelected: outputQualityLevel == .high,
+                action: { [weak self] in
+                    self?.outputQualityLevel = .high
+                    actionSheet.dismiss(animated: true)
+                }
+            )
+        ])
+        buttonStack.isLayoutMarginsRelativeArrangement = true
+        buttonStack.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 24)
+        buttonStack.axis = .horizontal
+
+        let titleLabel = UILabel()
+        titleLabel.font = .ows_dynamicTypeSubheadlineClamped
+        titleLabel.textColor = Theme.darkThemePrimaryColor
+        titleLabel.textAlignment = .center
+        titleLabel.text = NSLocalizedString(
+            "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE",
+            comment: "Title for the attachment approval media quality sheet"
+        )
+
+        let headerStack = UIStackView(arrangedSubviews: [buttonStack, titleLabel])
+        headerStack.spacing = 4
+        headerStack.axis = .vertical
+
+        actionSheet.customHeader = headerStack
+
+        presentActionSheet(actionSheet)
+    }
+
+    func buildOutputQualityButton(title: String, subtitle: String, isSelected: Bool, action: @escaping () -> Void) -> UIView {
+        let button = OWSButton(block: action)
+
+        let titleLabel = UILabel()
+        titleLabel.font = .ows_dynamicTypeFootnoteClamped.ows_medium
+        titleLabel.textColor = Theme.darkThemePrimaryColor
+        titleLabel.text = title
+
+        let subtitleLabel = UILabel()
+        subtitleLabel.font = .ows_dynamicTypeCaption1Clamped
+        subtitleLabel.textColor = Theme.darkThemePrimaryColor
+        subtitleLabel.text = subtitle
+
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        stackView.spacing = 2
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 8)
+
+        button.addSubview(stackView)
+        stackView.isUserInteractionEnabled = false
+        stackView.autoPinEdgesToSuperviewEdges()
+
+        if isSelected {
+            button.layer.cornerRadius = 18
+            button.layer.borderWidth = 1
+            button.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
+        } else {
+            button.alpha = 0.7
+        }
+
+        return button
     }
 
     public func textViewDidBeginTypingMention(_ textView: MentionTextView) {

@@ -14,6 +14,7 @@ public class RemoteConfig: BaseFlags {
     private let valueFlags: [String: AnyObject]
     private let researchMegaphone: Bool
     private let donateMegaphone: Bool
+    private let standardMediaQualityLevel: ImageQualityLevel?
 
     init(isEnabledFlags: [String: Bool],
          valueFlags: [String: AnyObject]) {
@@ -21,6 +22,7 @@ public class RemoteConfig: BaseFlags {
         self.valueFlags = valueFlags
         self.researchMegaphone = Self.isCountryCodeBucketEnabled(.researchMegaphone, valueFlags: valueFlags)
         self.donateMegaphone = Self.isCountryCodeBucketEnabled(.donateMegaphone, valueFlags: valueFlags)
+        self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
     }
 
     @objc
@@ -205,6 +207,20 @@ public class RemoteConfig: BaseFlags {
         return DebugFlags.forceNotificationServiceExtension || isEnabled(.notificationServiceExtension)
     }
 
+    public static var standardMediaQualityLevel: ImageQualityLevel? {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return nil }
+        return remoteConfig.standardMediaQualityLevel
+    }
+
+    private static func determineStandardMediaQualityLevel(valueFlags: [String: AnyObject]) -> ImageQualityLevel? {
+        guard let stringValue = Self.countryCodeValue(.standardMediaQualityLevel, valueFlags: valueFlags),
+              let uintValue = UInt(stringValue),
+              let defaultMediaQuality = ImageQualityLevel(rawValue: uintValue) else {
+            return nil
+        }
+        return defaultMediaQuality
+    }
+
     // MARK: -
 
     private static func interval(
@@ -218,43 +234,41 @@ public class RemoteConfig: BaseFlags {
         return interval
     }
 
-    private static func isCountryCodeBucketEnabled(_ flag: Flags.SupportedValuesFlags, valueFlags: [String: AnyObject]) -> Bool {
+    private static func countryCodeValue(_ flag: Flags.SupportedValuesFlags, valueFlags: [String: AnyObject]) -> String? {
         let rawFlag = flag.rawFlag
-        guard let value = valueFlags[rawFlag] as? String else { return false }
+        guard let value = valueFlags[rawFlag] as? String else { return nil }
 
-        guard !value.isEmpty else { return false }
+        guard !value.isEmpty else { return nil }
 
         // The value should always be a comma-separated list of country codes colon-separated
-        // from how many buckets out of 1 million should be enabled in that country code. There
-        // will also optional be a wildcard "*" bucket that any unspecified country codes should
-        // use. If neither the local country code or the wildcard is specified, we assume the
-        // value is not enabled.
-        let countEnabledPerCountryCode = value
+        // from a value. There all may be an optional be a wildcard "*" country code that any
+        // unspecified country codes should use. If neither the local country code or the wildcard
+        // is specified, we assume the value is not set.
+        let countryCodeToValueMap = value
             .components(separatedBy: ",")
-            .reduce(into: [String: UInt64]()) { result, value in
+            .reduce(into: [String: String]()) { result, value in
                 let components = value.components(separatedBy: ":")
                 guard components.count == 2 else { return owsFailDebug("Invalid \(rawFlag) value \(value)")}
                 let countryCode = components[0]
-                let countEnabled = UInt64(components[1])
-                result[countryCode] = countEnabled
+                let countryValue = components[1]
+                result[countryCode] = countryValue
         }
 
-        guard !countEnabledPerCountryCode.isEmpty else { return false }
+        guard !countryCodeToValueMap.isEmpty else { return nil }
 
         guard let localE164 = TSAccountManager.shared.localNumber,
             let localCountryCode = PhoneNumber(fromE164: localE164)?.getCountryCode()?.stringValue else {
                 owsFailDebug("Missing local number")
-                return false
+                return nil
         }
 
-        let localCountEnabled = countEnabledPerCountryCode[localCountryCode]
-        let wildcardCountEnabled = countEnabledPerCountryCode["*"]
+        return countryCodeToValueMap[localCountryCode] ?? countryCodeToValueMap["*"]
+    }
 
-        if let countEnabled = localCountEnabled ?? wildcardCountEnabled {
-            return isBucketEnabled(key: rawFlag, countEnabled: countEnabled, bucketSize: 1_000_000)
-        } else {
-            return false
-        }
+    private static func isCountryCodeBucketEnabled(_ flag: Flags.SupportedValuesFlags, valueFlags: [String: AnyObject]) -> Bool {
+        guard let countryCodeValue = self.countryCodeValue(flag, valueFlags: valueFlags) else { return false }
+        guard let countEnabled = UInt64(countryCodeValue) else { return false }
+        return isBucketEnabled(key: flag.rawFlag, countEnabled: countEnabled, bucketSize: 1_000_000)
     }
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64) -> Bool {
@@ -420,6 +434,7 @@ private struct Flags {
         case donateMegaphone
         case donateMegaphoneSnoozeInterval
         case reactiveProfileKeyAttemptInterval
+        case standardMediaQualityLevel
     }
 }
 

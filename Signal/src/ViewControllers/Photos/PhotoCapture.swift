@@ -614,7 +614,7 @@ extension PhotoCapture: CaptureOutputDelegate {
         case .success(let photoData):
             let dataSource = DataSourceValue.dataSource(with: photoData, utiType: kUTTypeJPEG as String)
 
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
             delegate.photoCapture(self, didFinishProcessingAttachment: attachment)
         }
     }
@@ -634,7 +634,7 @@ extension PhotoCapture: CaptureOutputDelegate {
                 delegate.photoCapture(self, processingDidError: PhotoCaptureError.captureFailed)
                 return
             }
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String, imageQuality: .original)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
 
             BenchEventComplete(eventId: "Movie Processing")
             delegate.photoCapture(self, didFinishProcessingAttachment: attachment)

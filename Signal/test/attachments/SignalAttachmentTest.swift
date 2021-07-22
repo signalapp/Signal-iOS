@@ -11,8 +11,7 @@ class SignalAttachmentTest: SignalBaseTest {
 
         let dataSource = try DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false)
         let attachment = SignalAttachment.attachment(dataSource: dataSource,
-                                                     dataUTI: kUTTypeJPEG as String,
-                                                     imageQuality: .original)
+                                                     dataUTI: kUTTypeJPEG as String)
         let newSize = (attachment.data as NSData).imageMetadata(withPath: nil, mimeType: "image/jpeg").pixelSize
 
         XCTAssertEqual(newSize, size, "image dimensions changed for \(url.lastPathComponent)")

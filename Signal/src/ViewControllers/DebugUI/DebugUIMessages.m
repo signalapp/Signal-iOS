@@ -385,9 +385,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
     }
 
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                      dataUTI:utiType
-                                                                 imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
 
     NSString *messageBody = nil;
     if (hasCaption) {
@@ -1709,9 +1707,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                                            error:&error];
     OWSAssertDebug(dataSource != nil);
     [dataSource setSourceFilename:filename];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                      dataUTI:utiType
-                                                                 imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     if (arc4random_uniform(100) > 50) {
         attachment.captionText = [self randomCaptionText];
     }
@@ -3375,9 +3371,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length]
                                                                       utiType:uti];
-    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                      dataUTI:uti
-                                                                 imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti];
 
     if (arc4random_uniform(100) > 50) {
         // give 1/2 our attachments captions, and add a hint that it's a caption since we
@@ -4448,9 +4442,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         _Nullable id<DataSource> dataSource =
             [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength] utiType:utiType];
         [dataSource setSourceFilename:filename];
-        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                          dataUTI:utiType
-                                                                     imageQuality:TSImageQualityOriginal];
+        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
 
         OWSAssertDebug(attachment);
         if ([attachment hasError]) {
@@ -4776,8 +4768,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         OWSAssertDebug(error == nil);
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource
-                                               dataUTI:[MIMETypeUtil utiTypeForMIMEType:fakeAssetLoader.mimeType]
-                                          imageQuality:TSImageQualityOriginal];
+                                               dataUTI:[MIMETypeUtil utiTypeForMIMEType:fakeAssetLoader.mimeType]];
         if (arc4random_uniform(2) == 0) {
             attachment.captionText = [self randomText];
         }

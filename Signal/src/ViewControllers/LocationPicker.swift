@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 //  Originally based on https://github.com/almassapargali/LocationPicker
@@ -503,7 +503,7 @@ public class Location: NSObject {
             }
 
             let dataSource = DataSourceValue.dataSource(with: jpegData, utiType: kUTTypeJPEG as String)
-            return SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .original)
+            return SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
         }
     }
 

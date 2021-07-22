@@ -126,8 +126,7 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
 
         let asset = collectionContents.asset(at: indexPath.item)
         collectionContents.outgoingAttachment(
-            for: asset,
-            imageQuality: .medium
+            for: asset
         ).done { [weak self] attachment in
             self?.recentPhotosDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
         }.ensure { [weak self] in

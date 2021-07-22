@@ -896,14 +896,14 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 return promise
             }
 
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType, imageQuality: .medium)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType)
             return Promise.value(attachment)
         case .inMemoryImage(let image):
             guard let pngData = image.pngData() else {
                 return Promise(error: OWSAssertionError("pngData was unexpectedly nil"))
             }
             let dataSource = DataSourceValue.dataSource(with: pngData, fileExtension: "png")
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypePNG as String, imageQuality: .medium)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypePNG as String)
             return Promise.value(attachment)
         case .pdf(let pdf):
             let dataSource = DataSourceValue.dataSource(with: pdf, fileExtension: "pdf")
