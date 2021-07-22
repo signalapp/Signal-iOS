@@ -387,9 +387,7 @@ public final class SnodeAPI : NSObject {
         let (promise, seal) = RawResponsePromise.pending()
         let storage = SNSnodeKitConfiguration.shared.storage
         Threading.workQueue.async {
-            storage.writeSync { transaction in
-                storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey, using: transaction)
-            }
+            storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
             let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
             let parameters = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
             invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
@@ -403,9 +401,7 @@ public final class SnodeAPI : NSObject {
         Threading.workQueue.async {
             attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                 getTargetSnodes(for: publicKey).mapValues2 { targetSnode in
-                    storage.writeSync { transaction in
-                        storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey, using: transaction)
-                    }
+                    storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey)
                     let lastHash = storage.getLastMessageHash(for: targetSnode, associatedWith: publicKey) ?? ""
                     let parameters = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
                     return invoke(.getMessages, on: targetSnode, associatedWith: publicKey, parameters: parameters).map2 { rawResponse in

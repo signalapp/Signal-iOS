@@ -103,12 +103,14 @@ extension Storage {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(lastMessageHashInfo, forKey: key, inCollection: Storage.lastMessageHashCollection)
     }
 
-    public func pruneLastMessageHashInfoIfExpired(for snode: Snode, associatedWith publicKey: String, using transaction: Any) {
+    public func pruneLastMessageHashInfoIfExpired(for snode: Snode, associatedWith publicKey: String) {
         guard let lastMessageHashInfo = getLastMessageHashInfo(for: snode, associatedWith: publicKey),
             (lastMessageHashInfo["hash"] as? String) != nil, let expirationDate = (lastMessageHashInfo["expirationDate"] as? NSNumber)?.uint64Value else { return }
         let now = NSDate.millisecondTimestamp()
         if now >= expirationDate {
-            removeLastMessageHashInfo(for: snode, associatedWith: publicKey, using: transaction)
+            Storage.writeSync { transaction in
+                self.removeLastMessageHashInfo(for: snode, associatedWith: publicKey, using: transaction)
+            }
         }
     }
 
