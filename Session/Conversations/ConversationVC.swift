@@ -149,6 +149,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     static let scrollButtonFullVisibilityThreshold: CGFloat = 80
     /// The button will be invisible until the user has scrolled at least this amount from the bottom of the table view.
     static let scrollButtonNoVisibilityThreshold: CGFloat = 20
+    /// Automatically scroll to the bottom of the conversation when sending a message if the scroll distance from the bottom is less than this number.
+    static let scrollToBottomMargin: CGFloat = 40
     
     // MARK: Lifecycle
     init(thread: TSThread, focusedMessageID: String? = nil) {
@@ -222,13 +224,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             Storage.read { transaction in
                 unreadCount = self.thread.unreadMessageCount(transaction: transaction)
             }
-            // When the unread message count is more than the number of a page of viewItems,
-            // the screen will scroll to bottom instead of the correct first unread message.
-            // The unreadIndicatorIndex is calculated during loading the viewItems, it is
+            // When the unread message count is more than the number of view items of a page,
+            // the screen will scroll to the bottom instead of the first unread message.
+            // unreadIndicatorIndex is calculated during loading of the viewItems, so it's
             // supposed to be accurate.
             DispatchQueue.main.async {
-                let unreadIndicatorIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue ?? (self.viewItems.count - self.unreadViewItems.count)
-                if unreadCount > 0, let viewItem = self.viewItems[ifValid: unreadIndicatorIndex], let interactionID = viewItem.interaction.uniqueId {
+                let firstUnreadMessageIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue
+                    ?? (self.viewItems.count - self.unreadViewItems.count)
+                if unreadCount > 0, let viewItem = self.viewItems[ifValid: firstUnreadMessageIndex], let interactionID = viewItem.interaction.uniqueId {
                     self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
                     self.unreadCountView.alpha = self.scrollButton.alpha
                 } else {
@@ -350,11 +353,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                     if update.viewItem?.interaction is TSOutgoingMessage {
                         shouldScrollToBottom = true
                     } else {
-                        shouldScrollToBottom = (self.lastPageTop - self.messagesTableView.contentOffset.y) <= 0
+                        let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
+                        shouldScrollToBottom = margin <= ConversationVC.scrollToBottomMargin
                     }
                 case .update:
                     self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
-                    shouldScrollToBottom = (self.lastPageTop - self.messagesTableView.contentOffset.y) <= 0
+                    let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
+                    shouldScrollToBottom = margin <= ConversationVC.scrollToBottomMargin
                 default: preconditionFailure()
                 }
             }
