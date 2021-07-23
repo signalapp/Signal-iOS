@@ -517,7 +517,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     }
 
     capabilities[@"transfer"] = @(YES);
-    capabilities[@"senderKey"] = @(YES);
+
+    if (RemoteConfig.senderKey) {
+        capabilities[@"senderKey"] = @(YES);
+    }
 
     return [capabilities copy];
 }

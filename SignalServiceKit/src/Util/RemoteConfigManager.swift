@@ -221,6 +221,11 @@ public class RemoteConfig: BaseFlags {
         return defaultMediaQuality
     }
 
+    @objc
+    public static var senderKey: Bool {
+        DebugFlags.forceSenderKey || isEnabled(.senderKey)
+    }
+
     // MARK: -
 
     private static func interval(
@@ -411,6 +416,7 @@ private struct Flags {
         case viewedReceiptSending
         case announcementOnlyGroups
         case notificationServiceExtension
+        case senderKey
     }
 
     // Values defined in this array remain set once they are
