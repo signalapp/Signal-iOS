@@ -873,6 +873,7 @@
 		88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93D254CF712003142D9 /* group_call_leave.aiff */; };
 		88D6E940254CF712003142D9 /* group_call_join.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93E254CF712003142D9 /* group_call_join.aiff */; };
 		88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D6E94125535482003142D9 /* CVTextTest.swift */; };
+		88D7896926AB540E00086229 /* AvatarBuilderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7896826AB540E00086229 /* AvatarBuilderMegaphone.swift */; };
 		88D7BA9C266804C40088D1C2 /* NSECallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9B266804C40088D1C2 /* NSECallMessageHandler.swift */; };
 		88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
 		88D7BA9F266852050088D1C2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
@@ -2048,6 +2049,7 @@
 		88D6E93D254CF712003142D9 /* group_call_leave.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_leave.aiff; sourceTree = "<group>"; };
 		88D6E93E254CF712003142D9 /* group_call_join.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_join.aiff; sourceTree = "<group>"; };
 		88D6E94125535482003142D9 /* CVTextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVTextTest.swift; sourceTree = "<group>"; };
+		88D7896826AB540E00086229 /* AvatarBuilderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarBuilderMegaphone.swift; sourceTree = "<group>"; };
 		88D7BA9B266804C40088D1C2 /* NSECallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSECallMessageHandler.swift; sourceTree = "<group>"; };
 		88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageRelay.swift; sourceTree = "<group>"; };
 		88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDisappearingMessageTimerInteraction.swift; sourceTree = "<group>"; };
@@ -3808,6 +3810,7 @@
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
 				884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */,
 				888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */,
+				88D7896826AB540E00086229 /* AvatarBuilderMegaphone.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -5673,6 +5676,7 @@
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
+				88D7896926AB540E00086229 /* AvatarBuilderMegaphone.swift in Sources */,
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,

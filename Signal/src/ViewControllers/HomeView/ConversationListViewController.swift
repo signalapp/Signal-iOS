@@ -181,6 +181,7 @@ public enum ShowAppSettingsMode {
     case payment(paymentsHistoryItem: PaymentsHistoryItem)
     case paymentsTransferIn
     case appearance
+    case avatarBuilder
 }
 
 // MARK: -
@@ -197,6 +198,11 @@ public extension ConversationListViewController {
         showAppSettings(mode: .appearance)
     }
 
+    @objc
+    func showAppSettingsInAvatarBuilderMode() {
+        showAppSettings(mode: .avatarBuilder)
+    }
+
     func showAppSettings(mode: ShowAppSettingsMode) {
         AssertIsOnMainThread()
 
@@ -206,6 +212,8 @@ public extension ConversationListViewController {
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageActions(animated: true)
 
         let navigationController = AppSettingsViewController.inModalNavigationController()
+
+        var completion: (() -> Void)?
 
         var viewControllers = navigationController.viewControllers
         switch mode {
@@ -225,8 +233,12 @@ public extension ConversationListViewController {
         case .appearance:
             let appearance = AppearanceSettingsTableViewController()
             viewControllers += [ appearance ]
+        case .avatarBuilder:
+            let profile = ProfileSettingsViewController()
+            viewControllers += [ profile ]
+            completion = { profile.presentAvatarSettingsView() }
         }
         navigationController.setViewControllers(viewControllers, animated: false)
-        presentFormSheet(navigationController, animated: true)
+        presentFormSheet(navigationController, animated: true, completion: completion)
     }
 }

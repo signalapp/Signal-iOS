@@ -183,7 +183,8 @@ class ExperienceUpgradeManager: NSObject {
              .groupCallsMegaphone,
              .sharingSuggestions,
              .donateMegaphone,
-             .chatColors:
+             .chatColors,
+             .avatarBuilder:
             return true
         case .groupsV2AndMentionsSplash2:
             return false
@@ -214,6 +215,8 @@ class ExperienceUpgradeManager: NSObject {
             return DonateMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .chatColors:
             return ChatColorsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .avatarBuilder:
+            return AvatarBuilderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }
