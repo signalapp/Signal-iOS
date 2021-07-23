@@ -425,6 +425,9 @@ public class DebugFlags: BaseFlags {
     public static let forceNotificationServiceExtension = build.includes(.beta)
 
     @objc
+    public static let forceSenderKey = build.includes(.dev)
+
+    @objc
     public static let extraDebugLogs = build.includes(.openPreview)
 
     @objc
