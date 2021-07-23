@@ -30,13 +30,6 @@ const UIWindowLevel UIWindowLevel_CallView(void)
     return UIWindowLevelNormal + 2.f;
 }
 
-// In front of the root window, behind the screen blocking window and call window.
-const UIWindowLevel UIWindowLevel_ContextMenuView(void);
-const UIWindowLevel UIWindowLevel_ContextMenuView(void)
-{
-    return UIWindowLevelNormal + 1.f;
-}
-
 // In front of the status bar and CallView
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void);
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
@@ -91,16 +84,11 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 @property (nonatomic) UIWindow *callViewWindow;
 @property (nonatomic) UINavigationController *callNavigationController;
 
-// UIWindowLevel_ContextMenu
-@property (nonatomic) UIWindow *contextMenuWindow;
-@property (nonatomic, nullable) UINavigationController *contextMenuNavigationController;
-
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
 @property (nonatomic) UIWindow *screenBlockingWindow;
 
 @property (nonatomic) BOOL shouldShowCallView;
-@property (nonatomic) BOOL shouldShowContextMenu;
 
 @property (nonatomic, nullable) UIViewController<CallViewControllerWindowReference> *callViewController;
 
@@ -137,8 +125,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
     self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
     self.callViewWindow = [self createCallViewWindow:rootWindow];
-
-    self.contextMenuWindow = [self createContextMenuWindow:rootWindow];
 
     [self ensureWindowState];
 }
@@ -191,29 +177,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     return window;
 }
 
-- (UIWindow *)createContextMenuWindow:(UIWindow *)rootWindow
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(rootWindow);
-
-    UIWindow *window = [[OWSWindow alloc] initWithFrame:rootWindow.bounds];
-    window.hidden = YES;
-    window.windowLevel = UIWindowLevel_ContextMenuView();
-    window.opaque = YES;
-
-    UIViewController *viewController = [OWSWindowRootViewController new];
-
-    OWSWindowRootNavigationViewController *navigationController =
-        [[OWSWindowRootNavigationViewController alloc] initWithRootViewController:viewController];
-    navigationController.navigationBarHidden = YES;
-    OWSAssertDebug(!self.contextMenuNavigationController);
-    self.contextMenuNavigationController = navigationController;
-
-    window.rootViewController = navigationController;
-
-    return window;
-}
-
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive
 {
     OWSAssertIsOnMainThread();
@@ -232,7 +195,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssertDebug(window);
 
     return (window == self.rootWindow || window == self.returnToCallWindow || window == self.callViewWindow
-        || window == self.contextMenuWindow || window == self.screenBlockingWindow);
+        || window == self.screenBlockingWindow);
 }
 
 - (void)updateWindowFrames
@@ -242,37 +205,12 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     for (UIWindow *window in @[
              self.rootWindow,
              self.callViewWindow,
-             self.contextMenuWindow,
              self.screenBlockingWindow,
          ]) {
         if (!CGRectEqualToRect(window.frame, CurrentAppContext().frame)) {
             window.frame = CurrentAppContext().frame;
         }
     }
-}
-
-#pragma mark - Context Menu
-
-- (void)presentContextMenu:(UIViewController *)contextMenuController
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(contextMenuController);
-
-    // Attach contextMenuController to window.
-    [self.contextMenuNavigationController popToRootViewControllerAnimated:NO];
-    [self.contextMenuNavigationController pushViewController:contextMenuController animated:NO];
-    self.shouldShowContextMenu = YES;
-    [self ensureWindowState];
-}
-
-- (void)dismissContextMenu
-{
-    OWSAssertIsOnMainThread();
-
-    // Detach contextMenuController from window.
-    [self.contextMenuNavigationController popToRootViewControllerAnimated:NO];
-    self.shouldShowContextMenu = NO;
-    [self ensureWindowState];
 }
 
 #pragma mark - Calls
@@ -385,7 +323,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         [self ensureRootWindowHidden];
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
-        [self ensureContextMenuWindowHidden];
         [self ensureScreenBlockWindowShown];
     } else if (self.callViewController && self.shouldShowCallView) {
         // Show Call View.
@@ -393,7 +330,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         [self ensureRootWindowHidden];
         [self ensureCallViewWindowShown];
         [self ensureReturnToCallWindowHidden];
-        [self ensureContextMenuWindowHidden];
         [self ensureScreenBlockWindowHidden];
     } else {
         // Show Root Window
@@ -407,12 +343,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
             [self ensureReturnToCallWindowShown];
         } else {
             [self ensureReturnToCallWindowHidden];
-        }
-
-        if (self.shouldShowContextMenu) {
-            [self ensureContextMenuWindowShown];
-        } else {
-            [self ensureContextMenuWindowHidden];
         }
 
         [self ensureCallViewWindowHidden];
@@ -493,28 +423,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     }
 
     self.callViewWindow.hidden = YES;
-}
-
-- (void)ensureContextMenuWindowHidden
-{
-    OWSAssertIsOnMainThread();
-
-    if (!self.contextMenuWindow.hidden) {
-        OWSLogInfo(@"hiding context menu window.");
-    }
-
-    self.contextMenuWindow.hidden = YES;
-}
-
-- (void)ensureContextMenuWindowShown
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.contextMenuWindow.hidden) {
-        OWSLogInfo(@"hiding context menu window.");
-    }
-
-    [self.contextMenuWindow makeKeyAndVisible];
 }
 
 - (void)ensureScreenBlockWindowShown

@@ -123,7 +123,7 @@ public class CVViewState: NSObject {
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
     public let collectionViewLongPressGestureRecognizer = UILongPressGestureRecognizer()
     public let collectionViewPanGestureRecognizer = UIPanGestureRecognizer()
-
+    public var collectionViewActiveContextMenuInteraction: ChatHistoryContextMenuInteraction?
     public var longPressHandler: CVLongPressHandler?
     public var panHandler: CVPanHandler?
 
@@ -288,6 +288,11 @@ public extension ConversationViewController {
     }
     var collectionViewPanGestureRecognizer: UIPanGestureRecognizer {
         viewState.collectionViewPanGestureRecognizer
+    }
+
+    var collectionViewActiveContextMenuInteraction: ChatHistoryContextMenuInteraction? {
+        get { viewState.collectionViewActiveContextMenuInteraction }
+        set { viewState.collectionViewActiveContextMenuInteraction = newValue }
     }
 
     // MARK: - Message Actions

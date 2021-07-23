@@ -5,20 +5,24 @@
 import Foundation
 
 /// UIContextMenuInteractionDelegate analog
-protocol ContextMenuInteractionDelegate: AnyObject {
+public protocol ContextMenuInteractionDelegate: AnyObject {
     func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration?
     func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview?
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction,
+                                willEndForConfiguration: ContextMenuConfiguration)
+
 }
 
 /// UIContextMenuInteraction analog
-class ContextMenuInteraction: NSObject, UIInteraction {
+public class ContextMenuInteraction: NSObject, UIInteraction {
 
     weak var delegate: ContextMenuInteractionDelegate?
-    private var contextMenuController: ContextMenuController?
+    fileprivate var contextMenuController: ContextMenuController?
+    var configuration: ContextMenuConfiguration?
 
     private var longPressGestureRecognizer: UIGestureRecognizer = {
         let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressRecognized(sender:)))
@@ -29,13 +33,13 @@ class ContextMenuInteraction: NSObject, UIInteraction {
     // MARK: UIInteraction
     public var view: UIView?
 
-    func willMove(to view: UIView?) {
+    public func willMove(to view: UIView?) {
         if view != self.view {
             self.view?.removeGestureRecognizer(longPressGestureRecognizer)
         }
     }
 
-    func didMove(to view: UIView?) {
+    public func didMove(to view: UIView?) {
         if view != self.view {
             self.view = view
             self.view?.addGestureRecognizer(longPressGestureRecognizer)
@@ -61,10 +65,17 @@ class ContextMenuInteraction: NSObject, UIInteraction {
             return
         }
 
+        guard let window = view.window else {
+            owsFailDebug("View must be in a window!")
+            return
+        }
+
         guard let contextMenuConfiguration = delegate.contextMenuInteraction(self, configurationForMenuAtLocation: locationInView) else {
             owsFailDebug("Failed to get context menu configuration from delegate")
             return
         }
+
+        configuration = contextMenuConfiguration
 
         let targetedPreview = delegate.contextMenuInteraction(self, previewForHighlightingMenuWithConfiguration: contextMenuConfiguration) ?? ContextMenuTargetedPreview(view: view, accessoryViews: nil)
 
@@ -72,16 +83,22 @@ class ContextMenuInteraction: NSObject, UIInteraction {
             accessory.delegate = self
         }
 
-        presentMenu(locationInView: locationInView, contextMenuConfiguration: contextMenuConfiguration, targetedPreview: targetedPreview)
+        presentMenu(window: window, contextMenuConfiguration: contextMenuConfiguration, targetedPreview: targetedPreview)
     }
 
-    public func presentMenu(locationInView: CGPoint, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) {
+    public func presentMenu(window: UIWindow, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) {
         let menuAccessory = menuAccessory(configuration: contextMenuConfiguration)
-        let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, menuAccessory: menuAccessory)
+        let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, initiatingGestureRecognizer: initiatingGestureRecognizer(), menuAccessory: menuAccessory)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
-        ImpactHapticFeedback.impactOccured(style: .light)
-        OWSWindowManager.shared.presentContextMenu(contextMenuController)
+        ImpactHapticFeedback.impactOccured(style: .medium)
+
+        window.addSubview(contextMenuController.view)
+        contextMenuController.view.frame = window.bounds
+    }
+
+    public func initiatingGestureRecognizer() -> UIGestureRecognizer? {
+        return longPressGestureRecognizer
     }
 
     public func menuAccessory(configuration: ContextMenuConfiguration) -> ContextMenuActionsAccessory {
@@ -91,7 +108,11 @@ class ContextMenuInteraction: NSObject, UIInteraction {
     }
 
     public func dismissMenu() {
-        OWSWindowManager.shared.dismissContextMenu()
+        if let configuarion = self.configuration {
+            delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
+        }
+
+        contextMenuController?.view.removeFromSuperview()
         contextMenuController = nil
     }
 
@@ -128,11 +149,12 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
 }
 
 // Custom subclass for chat history CVC interactions
-class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
+public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
 
     public let itemViewModel: CVItemViewModelImpl
     public let thread: TSThread
     public let messageActions: [MessageAction]
+    public let chatHistoryLongPressGesture: UIGestureRecognizer?
 
     /// Default initializer
     /// - Parameters:
@@ -143,11 +165,13 @@ class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         delegate: ContextMenuInteractionDelegate,
         itemViewModel: CVItemViewModelImpl,
         thread: TSThread,
-        messageActions: [MessageAction]
+        messageActions: [MessageAction],
+        initiatingGestureRecognizer: UIGestureRecognizer?
     ) {
         self.itemViewModel = itemViewModel
         self.thread = thread
         self.messageActions = messageActions
+        self.chatHistoryLongPressGesture = initiatingGestureRecognizer
         super.init(delegate: delegate)
     }
 
@@ -155,6 +179,19 @@ class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
 
     public override func didMove(to view: UIView?) {
         self.view = view
+    }
+
+    public func initiatingGestureRecognizerDidChange() {
+        contextMenuController?.gestureDidChange()
+    }
+
+    public func initiatingGestureRecognizerDidEnd() {
+        contextMenuController?.gestureDidEnd()
+
+    }
+
+    public override func initiatingGestureRecognizer() -> UIGestureRecognizer? {
+        return chatHistoryLongPressGesture
     }
 
     public override func menuAccessory(configuration: ContextMenuConfiguration) -> ContextMenuActionsAccessory {

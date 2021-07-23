@@ -110,12 +110,15 @@ class ContextMenuHostView: UIView {
     }
 }
 
-class ContextMenuController: UIViewController, ContextMenuViewDelegate {
+class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestureRecognizerDelegate {
     weak var delegate: ContextMenuControllerDelegate?
 
     let contextMenuPreview: ContextMenuTargetedPreview
     let contextMenuConfiguration: ContextMenuConfiguration
     let menuAccessory: ContextMenuActionsAccessory?
+
+    var gestureRecognizer: UIGestureRecognizer?
+
     var accessoryViews: [ContextMenuTargetedPreviewAccessory] {
         var accessories = contextMenuPreview.accessoryViews
         if let menuAccessory = self.menuAccessory {
@@ -134,10 +137,12 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
     init (
         configuration: ContextMenuConfiguration,
         preview: ContextMenuTargetedPreview,
+        initiatingGestureRecognizer: UIGestureRecognizer?,
         menuAccessory: ContextMenuActionsAccessory?
     ) {
         self.contextMenuConfiguration = configuration
         self.contextMenuPreview = preview
+        self.gestureRecognizer = initiatingGestureRecognizer
         self.menuAccessory = menuAccessory
 
         super.init(nibName: nil, bundle: nil)
@@ -159,7 +164,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
         contextMenuView.previewView = contextMenuPreview.snapshot
         contextMenuView.accessoryViews = accessoryViews
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecogznied(sender:)))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
         view.addGestureRecognizer(tapGesture)
     }
 
@@ -178,6 +183,34 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
 
     // MARK: Public
 
+    // MARK: Gesture Recognizer Support
+    public func gestureDidChange() {
+        if let locationInView = gestureRecognizer?.location(in: view) {
+            for accessory in accessoryViews {
+                let locationInAccessory = view .convert(locationInView, to: accessory.accessoryView)
+                accessory.touchLocationInViewDidChange(locationInView: locationInAccessory)
+            }
+        }
+
+    }
+
+    public func gestureDidEnd() {
+        if let locationInView = gestureRecognizer?.location(in: view) {
+            for accessory in accessoryViews {
+                let locationInAccessory = view .convert(locationInView, to: accessory.accessoryView)
+                accessory.touchLocationInViewDidEnd(locationInView: locationInAccessory)
+            }
+        }
+
+        if let gestureRecognizer = self.gestureRecognizer {
+            view.removeGestureRecognizer(gestureRecognizer)
+        }
+        let newPanGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognized(sender:)))
+        view.addGestureRecognizer(newPanGesture)
+        gestureRecognizer = newPanGesture
+    }
+
+    // MARK: Emoji Sheet
     public func showEmojiSheet(completion: @escaping (String) -> Void) {
         let picker = EmojiPickerSheet { [weak self] emoji in
             guard let self = self else { return }
@@ -211,7 +244,17 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate {
     // MARK: Private
 
     @objc
-    private func tapGestureRecogznied(sender: UIGestureRecognizer) {
+    private func tapGestureRecognized(sender: UIGestureRecognizer) {
         delegate?.contextMenuControllerRequestsDismissal(self)
     }
+
+    @objc
+    private func panGestureRecognized(sender: UIGestureRecognizer) {
+        if sender.state == .began || sender.state == .changed {
+            gestureDidChange()
+        } else if sender.state == .ended {
+            gestureDidEnd()
+        }
+    }
+
 }

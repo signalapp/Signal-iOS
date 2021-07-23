@@ -15,7 +15,8 @@ extension ConversationViewController {
             return
         }
         if FeatureFlags.contextMenus {
-            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions)
+            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewLongPressGestureRecognizer)
+            collectionViewActiveContextMenuInteraction = interaction
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
             let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
@@ -183,7 +184,7 @@ extension ConversationViewController {
 
 extension ConversationViewController: ContextMenuInteractionDelegate {
 
-    func contextMenuInteraction(
+    public func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
 
@@ -196,8 +197,8 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                 Logger.debug("disabled state handler")
             })
 
-            let highlighted = ContextMenuAction.init(title: "Highlighted", image: Theme.iconImage(.messageActionDelete), attributes: [.highlighted], handler: { _ in
-                Logger.debug("highlighted state handler")
+            let highlighted = ContextMenuAction.init(title: "Default 2", image: Theme.iconImage(.messageActionForward), attributes: [], handler: { _ in
+                Logger.debug("default 2 state handler")
             })
 
             let destructive = ContextMenuAction.init(title: "Destructive", image: Theme.iconImage(.messageActionDelete), attributes: [.destructive], handler: { _ in
@@ -208,7 +209,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         })
     }
 
-    func contextMenuInteraction(
+    public func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
 
@@ -249,6 +250,10 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             return ContextMenuTargetedPreview(view: cell, accessoryViews: accessories)
 
         }
+    }
+
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {
+        collectionViewActiveContextMenuInteraction = nil
     }
 
 }

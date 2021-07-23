@@ -18,7 +18,6 @@ public class ContextMenuAction {
 
         public static let disabled = ContextMenuAction.Attributes(rawValue: 1 << 0)
         public static let destructive = ContextMenuAction.Attributes(rawValue: 1 << 1)
-        public static let highlighted = ContextMenuAction.Attributes(rawValue: 1 << 2)
     }
 
     public let title: String
@@ -107,6 +106,17 @@ public class ContextMenuTargetedPreviewAccessory {
         completion: @escaping () -> Void
     ) {
         completion()
+    }
+
+    /// Called when a current touch event changed location
+    /// - Parameter locationInView: location relative to accessoryView's coordinate space
+    func touchLocationInViewDidChange(locationInView: CGPoint) {
+
+    }
+    /// Called when a current touch event ended
+    /// - Parameter locationInView: location relative to accessoryView's coordinate space
+    func touchLocationInViewDidEnd(locationInView: CGPoint) {
+
     }
 }
 
