@@ -401,10 +401,6 @@ extension HVTableDataSource: UITableViewDataSource {
         }()
         cell.accessibilityIdentifier = cellName
 
-        let archiveTitle = (viewState.homeViewMode == .inbox
-                                ? CommonStrings.archiveAction
-                                : CommonStrings.unarchiveAction)
-
         if isConversationActive(forThread: thread) {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         } else {

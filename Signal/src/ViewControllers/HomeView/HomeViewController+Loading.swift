@@ -122,50 +122,42 @@ extension HomeViewController {
         let threadViewModelCache = self.threadViewModelCache
         let cellMeasurementCache = self.cellMeasurementCache
         let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
-        let applyChanges = {
-            tableView.beginUpdates()
-            for rowChange in rowChanges {
+        tableView.beginUpdates()
+        for rowChange in rowChanges {
 
-                threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
-                cellMeasurementCache.removeObject(forKey: rowChange.threadUniqueId)
+            threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
+            cellMeasurementCache.removeObject(forKey: rowChange.threadUniqueId)
 
-                switch rowChange.type {
-                case .delete(let oldIndexPath):
-                    Logger.verbose("----- delete: \(oldIndexPath)")
+            switch rowChange.type {
+            case .delete(let oldIndexPath):
+                Logger.verbose("----- delete: \(oldIndexPath)")
+                tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
+            case .insert(let newIndexPath):
+                Logger.verbose("----- insert: \(newIndexPath)")
+                tableView.insertRows(at: [newIndexPath], with: rowAnimation)
+            case .move(let oldIndexPath, let newIndexPath):
+                // NOTE: if we're moving within the same section, we perform
+                //       moves using a "delete" and "insert" rather than a "move".
+                //       This ensures that moved items are also reloaded. This is
+                //       how UICollectionView performs reloads internally. We can't
+                //       do this when changing sections, because it results in a weird
+                //       animation. This should generally be safe, because you'll only
+                //       move between sections when pinning / unpinning which doesn't
+                //       require the moved item to be reloaded.
+                Logger.verbose("----- move: \(oldIndexPath) -> \(newIndexPath)")
+                if oldIndexPath.section != newIndexPath.section {
+                    tableView.moveRow(at: oldIndexPath, to: newIndexPath)
+                } else {
                     tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
-                case .insert(let newIndexPath):
-                    Logger.verbose("----- insert: \(newIndexPath)")
                     tableView.insertRows(at: [newIndexPath], with: rowAnimation)
-                case .move(let oldIndexPath, let newIndexPath):
-                    // NOTE: if we're moving within the same section, we perform
-                    //       moves using a "delete" and "insert" rather than a "move".
-                    //       This ensures that moved items are also reloaded. This is
-                    //       how UICollectionView performs reloads internally. We can't
-                    //       do this when changing sections, because it results in a weird
-                    //       animation. This should generally be safe, because you'll only
-                    //       move between sections when pinning / unpinning which doesn't
-                    //       require the moved item to be reloaded.
-                    Logger.verbose("----- move: \(oldIndexPath) -> \(newIndexPath)")
-                    if oldIndexPath.section != newIndexPath.section {
-                        tableView.moveRow(at: oldIndexPath, to: newIndexPath)
-                    } else {
-                        tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
-                        tableView.insertRows(at: [newIndexPath], with: rowAnimation)
-                    }
-                case .update(let oldIndexPath):
-                    Logger.verbose("----- update: \(oldIndexPath)")
-                    tableView.reloadRows(at: [oldIndexPath], with: .none)
                 }
+            case .update(let oldIndexPath):
+                Logger.verbose("----- update: \(oldIndexPath)")
+                tableView.reloadRows(at: [oldIndexPath], with: .none)
             }
+        }
 
-            tableView.endUpdates()
-        }
-        if isAnimated {
-            applyChanges()
-        } else {
-            // Suppress animations.
-            UIView.animate(withDuration: 0, animations: applyChanges)
-        }
+        tableView.endUpdates()
         BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }
 }
@@ -196,6 +188,7 @@ public class HVLoadCoordinator: NSObject {
 
         func build(homeViewMode: HomeViewMode,
                    hasVisibleReminders: Bool,
+                   canAnimateRowChanges: Bool,
                    lastViewInfo: HVViewInfo,
                    transaction: SDSAnyReadTransaction) -> HVLoadInfo {
             let viewInfo = HVViewInfo.build(homeViewMode: homeViewMode,
@@ -206,7 +199,11 @@ public class HVLoadCoordinator: NSObject {
                 viewInfo.hasVisibleReminders != lastViewInfo.hasVisibleReminders {
                 return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
             } else if !updatedThreadIds.isEmpty {
-                return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
+                if canAnimateRowChanges {
+                    return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
+                } else {
+                    return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
+                }
             } else if viewInfo != lastViewInfo {
                 return HVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
             } else {
@@ -256,8 +253,10 @@ public class HVLoadCoordinator: NSObject {
 
         let loadResult: HVLoadResult = databaseStorage.read { transaction in
             // Decide what kind of load we prefer.
+            let canAnimateRowChanges = viewController.hasEverAppeared
             let loadInfo = loadInfoBuilder.build(homeViewMode: viewController.homeViewMode,
                                                  hasVisibleReminders: hasVisibleReminders,
+                                                 canAnimateRowChanges: canAnimateRowChanges,
                                                  lastViewInfo: viewController.renderState.viewInfo,
                                                  transaction: transaction)
             // Reset the builder.
@@ -283,7 +282,15 @@ public class HVLoadCoordinator: NSObject {
         }
 
         // Apply the load to the view.
-        let isAnimated = !suppressAnimations
-        viewController.applyLoadResult(loadResult, isAnimated: isAnimated)
+        let wasViewEmpty = viewController.tableDataSource.renderState.visibleThreadCount == 0
+        let isAnimated = !suppressAnimations && !wasViewEmpty && viewController.hasEverAppeared
+        if isAnimated {
+            viewController.applyLoadResult(loadResult, isAnimated: isAnimated)
+        } else {
+            // Suppress animations.
+            UIView.animate(withDuration: 0) {
+                viewController.applyLoadResult(loadResult, isAnimated: isAnimated)
+            }
+        }
     }
 }
