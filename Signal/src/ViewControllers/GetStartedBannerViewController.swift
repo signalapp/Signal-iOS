@@ -84,6 +84,11 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
             selector: #selector(activeCardsDidChange),
             name: Self.activeCardsDidChange,
             object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(localProfileDidChange),
+            name: .localProfileDidChange,
+            object: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -341,6 +346,13 @@ extension GetStartedBannerViewController: DatabaseChangeDelegate {
 
     @objc
     private func activeCardsDidChange() {
+        AssertIsOnMainThread()
+        owsAssertDebug(AppReadiness.isAppReady)
+        updateContent()
+    }
+
+    @objc
+    private func localProfileDidChange() {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
         updateContent()
