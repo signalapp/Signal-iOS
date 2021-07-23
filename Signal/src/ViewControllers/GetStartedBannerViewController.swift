@@ -10,6 +10,7 @@ protocol GetStartedBannerViewControllerDelegate: AnyObject {
     func getStartedBannerDidTapCreateGroup(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidTapAppearance(_ banner: GetStartedBannerViewController)
     func getStartedBannerDidDismissAllCards(_ banner: GetStartedBannerViewController, animated: Bool)
+    func getStartedBannerDidTapAvatarBuilder(_ banner: GetStartedBannerViewController)
 }
 
 @objc(OWSGetStartedBannerViewController)
@@ -163,6 +164,13 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
                 }
                 return []
             } else {
+                // Once you have an avatar, don't show the avatar builder card.
+                if Self.profileManager.localProfileAvatarData() != nil {
+                    Self.databaseStorage.asyncWrite { writeTx in
+                        Self.completeCard(.avatarBuilder, writeTx: writeTx)
+                    }
+                    return activeCards.filter { $0 != .avatarBuilder }
+                }
                 return activeCards
             }
         }
@@ -252,6 +260,8 @@ extension GetStartedBannerViewController: GetStartedBannerCellDelegate {
             delegate?.getStartedBannerDidTapCreateGroup(self)
         case .appearance:
             delegate?.getStartedBannerDidTapAppearance(self)
+        case .avatarBuilder:
+            delegate?.getStartedBannerDidTapAvatarBuilder(self)
         }
     }
 }

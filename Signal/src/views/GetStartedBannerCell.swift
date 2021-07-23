@@ -6,6 +6,7 @@ import Foundation
 
 enum GetStartedBannerEntry: String, CaseIterable {
     case newGroup
+    case avatarBuilder
     case inviteFriends
     case appearance
 
@@ -137,6 +138,8 @@ private extension GetStartedBannerEntry {
             return UIImage(named: "invite-friends-card")!
         case .appearance:
             return UIImage(named: "appearance-card")!
+        case .avatarBuilder:
+            return #imageLiteral(resourceName: "avatar_card")
         }
     }
 
@@ -148,6 +151,8 @@ private extension GetStartedBannerEntry {
             return NSLocalizedString("GET_STARTED_CARD_INVITE_FRIENDS", comment: "'Get Started' button directing users to invite friends")
         case .appearance:
             return NSLocalizedString("GET_STARTED_CARD_APPEARANCE", comment: "'Get Started' button directing users to appearance")
+        case .avatarBuilder:
+            return NSLocalizedString("GET_STARTED_CARD_AVATAR_BUILDER", comment: "'Get Started' button direction users to avatar builder")
         }
     }
 }
