@@ -396,9 +396,7 @@ public enum OnionRequestAPI {
                             let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
                             if let timestamp = body["t"] as? Int64 {
                                 let offset = timestamp - Int64(NSDate.millisecondTimestamp())
-                                if abs(offset) > 20 * 1000 { // If we're off by more than 20 seconds
-                                    SnodeAPI.clockOffset = offset
-                                }
+                                SnodeAPI.clockOffset = offset
                             }
                             guard 200...299 ~= statusCode else {
                                 return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination))
