@@ -41,6 +41,7 @@ class AvatarEditViewController: OWSTableViewController2 {
     override func themeDidChange() {
         super.themeDidChange()
 
+        optionViews.removeAll()
         updateFooterViewLayout(forceUpdate: true)
     }
 
