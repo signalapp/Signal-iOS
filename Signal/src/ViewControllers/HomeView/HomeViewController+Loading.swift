@@ -188,7 +188,6 @@ public class HVLoadCoordinator: NSObject {
 
         func build(homeViewMode: HomeViewMode,
                    hasVisibleReminders: Bool,
-                   canAnimateRowChanges: Bool,
                    lastViewInfo: HVViewInfo,
                    transaction: SDSAnyReadTransaction) -> HVLoadInfo {
             let viewInfo = HVViewInfo.build(homeViewMode: homeViewMode,
@@ -199,11 +198,7 @@ public class HVLoadCoordinator: NSObject {
                 viewInfo.hasVisibleReminders != lastViewInfo.hasVisibleReminders {
                 return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
             } else if !updatedThreadIds.isEmpty {
-                if canAnimateRowChanges {
-                    return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
-                } else {
-                    return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
-                }
+                return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
             } else if viewInfo != lastViewInfo {
                 return HVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
             } else {
@@ -253,10 +248,8 @@ public class HVLoadCoordinator: NSObject {
 
         let loadResult: HVLoadResult = databaseStorage.read { transaction in
             // Decide what kind of load we prefer.
-            let canAnimateRowChanges = viewController.hasEverAppeared
             let loadInfo = loadInfoBuilder.build(homeViewMode: viewController.homeViewMode,
                                                  hasVisibleReminders: hasVisibleReminders,
-                                                 canAnimateRowChanges: canAnimateRowChanges,
                                                  lastViewInfo: viewController.renderState.viewInfo,
                                                  transaction: transaction)
             // Reset the builder.

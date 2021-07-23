@@ -101,7 +101,7 @@ extension HVTableDataSource: UITableViewDelegate {
         switch section {
         case .pinned, .unpinned:
             if !renderState.hasPinnedAndUnpinnedThreads {
-                return CGFloat.ulpOfOne
+                return CGFloat.epsilon
             }
 
             return UITableView.automaticDimension
@@ -109,7 +109,7 @@ extension HVTableDataSource: UITableViewDelegate {
             // Without returning a header with a non-zero height, Grouped
             // table view will use a default spacing between sections. We
             // do not want that spacing so we use the smallest possible height.
-            return CGFloat.ulpOfOne
+            return CGFloat.epsilon
         }
     }
 
@@ -119,7 +119,7 @@ extension HVTableDataSource: UITableViewDelegate {
         // Without returning a footer with a non-zero height, Grouped
         // table view will use a default spacing between sections. We
         // do not want that spacing so we use the smallest possible height.
-        return CGFloat.ulpOfOne
+        return CGFloat.epsilon
     }
 
     public func tableView(_ tableView: UITableView,
