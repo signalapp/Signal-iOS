@@ -5,7 +5,7 @@
 "ABOUT_SECTION_TITLE" = "‫Signal ھەققىدە";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "يېڭى بىخەتەر نومۇرغا قوشۇل";
+"ACCEPT_NEW_IDENTITY_ACTION" = "يېڭى بىخەتەرلىك نومۇرىنى قوبۇل قىل";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "قوشۇمچە";
@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "ئالاقەداش";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%@نىڭ ئالاقە ئۇچۇرى";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "‏%@نىڭ ئالاقە ئۇچۇرى";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "ۋاسىتە";
@@ -322,26 +322,35 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ياڭراتقۇ";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "رەڭ تاللاڭ";
 
 /* Segment indicating the user can edit the color of the avatar */
-"AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Color";
+"AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "رەڭ";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "تېكىست";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "كامېرا";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
-
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "سۈرەت";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "باش سۈرەت تاللاڭ";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "تېكىست";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "قايت";
@@ -857,7 +866,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "سۆھبەتنى ئۆچۈرەمدۇ؟";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "گۇرۇپپىغا پەقەت باشقۇرغۇچىلارلا ئۇچۇر يوللىيالايدۇ.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "سىز %@ دىن كۆپ سۆھبەتنى تاللىيالمايسىز. ";
@@ -1055,10 +1064,10 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "ھەممە ئەزالار";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "گۇرۇپپىدا ئۇچۇر يوللاپ ۋە چاقىرىق قىلالايدىغانلارنى تاللاڭ";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "ئۇچۇر يوللا";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "باشقۇرغۇچىلارلا";
@@ -1098,6 +1107,9 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "تېخىمۇ كۆپ";
+
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "بۇ سۆزلەشكۈنى ئەسلىگە قايتۇرغاندىن كېيىن %@ نىڭ ئۇچۇرىنى تاپشۇرۇۋالالايدۇ، ئەمما بۇزۇلغان ئۇچۇرلارنى ئەسلىگە كەلتۈرەلمەيدۇ.";
@@ -1547,7 +1559,7 @@
 "ERROR_COULD_NOT_SAVE_VIDEO" = "سىننى ساقلىيالمىدى.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "ئۇچۇر ئەۋەتىش مەغلۇپ بولدى";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "ئۇچۇر ئەۋەتەلمىدى.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "ئېلخەت ئەپىنى ئاچقىلى بولمىدى";
@@ -1693,6 +1705,9 @@
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "كۆرۈنۈش";
 
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
 
@@ -1769,10 +1784,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ چەكلەندى";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "گۇرۇپپىدا پەقەت باشقۇرغىچىلارلا چاقىرىق قىلايدۇ.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "گۇرۇپپا چاقىرىقى باشلىتىلالمىدى";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ چەكلەندى";
@@ -2033,22 +2048,22 @@
 "GROUP_INVITES_VIEW_TITLE" = "ئەزالىق تەكلىپى";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "گۇرۇپپا تەڭشىكى ھەممە ئەزالار ئۇچۇر يوللىيالايدىغان قىلىپ ئۆزگەرتىلدى.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "گۇرۇپپا تەڭشىكىنى ھەممە ئەزالار ئۇچۇر يوللىيالايدىغان قىلىپ ئۆزگەرتتىڭىز.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "‏%@گۇرۇپپا تەڭشىكىنى ھەممە ئەزالار ئۇچۇر يوللىيالايدىغان قىلىپ ئۆزگەرتتى.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "گۇرۇپپا تەڭشىكى پەقەت باشقۇرغۇچىلارلا ئۇچۇر يوللىيالايدىغان قىلىپ ئۆزگەرتىلدى.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "گۇرۇپپا تەڭشىكىنى پەقەت باشقۇرغۇچىلارلا ئۇچۇر يوللىيالايدىغان قىلىپ ئۆزگەرتتىڭىز.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "‏%@گۇرۇپپا تەڭشىكىنى پەقەت باشقۇرغۇچىلارلا ئۇچۇر يوللىيالايدىغان قىلىپ ئۆزگەرتتى.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "بۇ گۇرۇپپا ئۇلانمىسىنى ئىشلەتكىلى بولمايدۇ.";
@@ -2477,13 +2492,13 @@
 "GROUP_YOU_LEFT" = "سىز گۇرۇپپىدىن ئايرىلدىڭىز.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "باشقۇرغۇچىلار";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "پەقەت %@ لا ئۇچۇر يوللىيالايدۇ";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "باشقۇرغۇچىغا ئۇچۇر يوللاڭ";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "ئايرىلىشتىن بۇرۇن بۇ گۇرۇپپىغا بىر يېڭى باشقۇرغۇچى تاللاڭ.";
@@ -2795,7 +2810,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "تېخى سۆھبەت يوق.\nدوستىڭىزغا ئۇچۇر يوللاشنى باشلاڭ.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ سىزنى چاقىردى";
+"INCOMING_CALL_FORMAT" = "‏%@ سىزنى چاقىردى";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "يانفون ياكى iPad تىن قەدەمداش ھالدا ئۇچۇر يوللاپ ياكى تاپشۇرۇۋالالايسىز. شەخسىيەت سەۋەبىدىن، سۆھبەت خاتىرىسى يېڭىدىن باغلانغان ئۈسكۈنىگە قەدەمداشلانمايدۇ.";
@@ -3656,7 +3671,7 @@
 "OUTAGE_WARNING" = "‫Signal دا تېخنىكىلىق قىيىنچىلىق كۆرۈلدى. بىز ئامالنىڭ بارىچە تىرىشىپ ئىشلەپ مۇلازىمەتنى ئەڭ تېز سۈرئەتتە ئەسلىگە كەلتۈرىمىز.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "%@ نى چاقىردىڭىز";
+"OUTGOING_CALL_FORMAT" = "‏%@ نى چاقىردىڭىز";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "رەت قىلىش ئىلتىماسى";
@@ -3734,7 +3749,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "چىقىم ئىقتىدارى ئۈچۈن Signal نى يېڭىلاڭ.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "چىقىم تېخى دەلىللەنمىدى";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "چىقىم قىلىشنى تاماملىيالمىدى. تور باغلىنىشىڭىزنى تەكشۈرۈپ ئاندىن قايتا سىناڭ.";

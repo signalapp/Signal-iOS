@@ -322,6 +322,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ਸਪੀਕਰ";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
@@ -337,11 +346,11 @@
 /* Text indicating the user can select an avatar from their photos */
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
 
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
-
 /* Title for the previously used and preset avatar section. */
 "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "ਵਾਪਸ";
@@ -1099,6 +1108,9 @@
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "ਹੋਰ ਪੜ੍ਹੋ";
 
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "ਤੁਹਾਡੇ ਸੈਸ਼ਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ ਤੁਸੀਂ %@ ਕੋਲੋਂ ਭਵਿੱਖ ਦੇ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਕਰ ਪਾਓਗੇ, ਪਰ ਇਸ ਨਾਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਕਰਪਟ ਹੋ ਚੁੱਕੇ ਸੁਨੇਹੇ ਬਹਾਲ ਨਹੀਂ ਹੋਣਗੇ.";
 
@@ -1692,6 +1704,9 @@
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "ਦਿਖਾਵਟ";
+
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "ਦੋਸਤਾਂ ਨੂੰ ਸੱਦਾ ਦਿਓ";
