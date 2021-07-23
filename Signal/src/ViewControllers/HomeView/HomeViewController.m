@@ -722,6 +722,20 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.searchResultsController viewWillAppear:animated];
 
     [self updateUnreadPaymentNotificationsCountWithSneakyTransaction];
+
+    // During main app launch, the home view becomes visible _before_
+    // app is foreground and active.  Therefore we need to make an
+    // exception and update the view contents; otherwise, the home
+    // view will briefly appear empty after launch. But to avoid
+    // hurting first launch perf, we only want to make an exception
+    // for a single load.
+    [self.loadCoordinator ensureFirstLoad];
+
+    NSIndexPath *_Nullable selectedIndexPath = self.tableView.indexPathForSelectedRow;
+    if (selectedIndexPath != nil) {
+        // Deselect row when swiping back/returning to home view.
+        [self.tableView deselectRowAtIndexPath:selectedIndexPath animated:NO];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated

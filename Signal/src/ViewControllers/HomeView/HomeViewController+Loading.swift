@@ -235,14 +235,29 @@ public class HVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    public func loadIfNecessary(suppressAnimations: Bool = false) {
+    @objc
+    public func ensureFirstLoad() {
+        loadIfNecessary(suppressAnimations: true, ensureFirstLoad: true)
+    }
+
+    public func loadIfNecessary(suppressAnimations: Bool = false,
+                                ensureFirstLoad: Bool = false) {
         AssertIsOnMainThread()
 
         guard let viewController = viewController else {
             owsFailDebug("Missing viewController.")
             return
         }
-        guard viewController.shouldBeUpdatingView else {
+
+        // During main app launch, the home view becomes visible _before_
+        // app is foreground and active.  Therefore we need to make an
+        // exception and update the view contents; otherwise, the home
+        // view will briefly appear empty after launch.
+        let shouldPerformFirstLoad = (ensureFirstLoad &&
+                                        !viewController.hasEverAppeared &&
+                                        viewController.tableDataSource.renderState.visibleThreadCount == 0)
+
+        guard viewController.shouldBeUpdatingView || shouldPerformFirstLoad else {
             return
         }
 
