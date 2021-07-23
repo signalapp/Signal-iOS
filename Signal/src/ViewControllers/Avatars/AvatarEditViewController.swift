@@ -246,11 +246,11 @@ class AvatarEditViewController: OWSTableViewController2 {
         updateFooterViewLayout()
     }
 
-    private var previousSizeReference: CGSize?
+    private var previousSizeReference: CGFloat?
     private func updateFooterViewLayout(forceUpdate: Bool = false) {
         // Update theme options layout only when the view size changes.
-        guard view.frame.size != previousSizeReference || forceUpdate else { return }
-        previousSizeReference = view.frame.size
+        guard view.width != previousSizeReference || forceUpdate else { return }
+        previousSizeReference = view.width
 
         segmentedControlContainer.layoutMargins = cellOuterInsetsWithMargin(top: 12, bottom: 10)
         bottomFooterStack.layoutMargins = cellOuterInsets

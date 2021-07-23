@@ -305,11 +305,11 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         updateHeaderViewLayout()
     }
 
-    private var previousSizeReference: CGSize?
+    private var previousSizeReference: CGFloat?
     private func updateHeaderViewLayout(forceUpdate: Bool = false) {
         // Update button layout only when the view size changes.
-        guard view.frame.size != previousSizeReference || forceUpdate else { return }
-        previousSizeReference = view.frame.size
+        guard view.width != previousSizeReference || forceUpdate else { return }
+        previousSizeReference = view.width
 
         topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: 24, bottom: 13)
 
