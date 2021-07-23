@@ -76,11 +76,18 @@ class ContextMenuInteraction: NSObject, UIInteraction {
     }
 
     public func presentMenu(locationInView: CGPoint, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) {
-        let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview)
+        let menuAccessory = menuAccessory(configuration: contextMenuConfiguration)
+        let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, menuAccessory: menuAccessory)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
         ImpactHapticFeedback.impactOccured(style: .light)
         OWSWindowManager.shared.presentContextMenu(contextMenuController)
+    }
+
+    public func menuAccessory(configuration: ContextMenuConfiguration) -> ContextMenuActionsAccessory {
+        let menu = configuration.actionProvider?([]) ?? ContextMenu([])
+        let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior)], alignmentOffset: CGPoint(x: 0, y: 12))
+        return ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
     }
 
     public func dismissMenu() {
@@ -124,6 +131,7 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
 class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
 
     public let itemViewModel: CVItemViewModelImpl
+    public let thread: TSThread
     public let messageActions: [MessageAction]
 
     /// Default initializer
@@ -134,9 +142,11 @@ class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     public init (
         delegate: ContextMenuInteractionDelegate,
         itemViewModel: CVItemViewModelImpl,
+        thread: TSThread,
         messageActions: [MessageAction]
     ) {
         self.itemViewModel = itemViewModel
+        self.thread = thread
         self.messageActions = messageActions
         super.init(delegate: delegate)
     }
@@ -145,5 +155,12 @@ class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
 
     public override func didMove(to view: UIView?) {
         self.view = view
+    }
+
+    public override func menuAccessory(configuration: ContextMenuConfiguration) -> ContextMenuActionsAccessory {
+        let menu = configuration.actionProvider?([]) ?? ContextMenu([])
+        let isIncomingMessage = itemViewModel.interaction.interactionType() == .incomingMessage
+        let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior), (isIncomingMessage ? .leading : .trailing, .interior)], alignmentOffset: CGPoint(x: 0, y: 12))
+        return ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
     }
 }

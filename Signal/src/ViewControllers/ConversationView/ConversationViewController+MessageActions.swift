@@ -15,7 +15,7 @@ extension ConversationViewController {
             return
         }
         if FeatureFlags.contextMenus {
-            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, messageActions: messageActions)
+            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions)
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
             let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
@@ -188,7 +188,23 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
 
         return ContextMenuConfiguration.init(identifier: UUID() as NSCopying, actionProvider: { _ in
-            return ContextMenu.init()
+            let defaultState = ContextMenuAction.init(title: "Default", image: Theme.iconImage(.messageActionReply), attributes: [], handler: { _ in
+                Logger.debug("default state handler")
+            })
+
+            let disabled = ContextMenuAction.init(title: "Disabled", image: Theme.iconImage(.messageActionSave), attributes: [.disabled], handler: { _ in
+                Logger.debug("disabled state handler")
+            })
+
+            let highlighted = ContextMenuAction.init(title: "Highlighted", image: Theme.iconImage(.messageActionDelete), attributes: [.highlighted], handler: { _ in
+                Logger.debug("highlighted state handler")
+            })
+
+            let destructive = ContextMenuAction.init(title: "Destructive", image: Theme.iconImage(.messageActionDelete), attributes: [.destructive], handler: { _ in
+                Logger.debug("destructive state handler")
+            })
+
+            return ContextMenu([defaultState, disabled, highlighted, destructive])
         })
     }
 

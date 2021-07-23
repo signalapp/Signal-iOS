@@ -946,6 +946,7 @@
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
+		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
 		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
 		F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */; };
 		F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */; };
@@ -2153,6 +2154,7 @@
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
 		EBA1F323BC6D9256EF83C605 /* Pods-NotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuActionsAccessory.swift; sourceTree = "<group>"; };
 		F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuInteraction.swift; sourceTree = "<group>"; };
 		F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuConfiguration.swift; sourceTree = "<group>"; };
 		F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuReactionBarAccessory.swift; sourceTree = "<group>"; };
@@ -4193,6 +4195,7 @@
 				F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */,
 				F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */,
 				F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */,
+				F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */,
 				F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */,
 			);
 			path = "Context Menus";
@@ -5845,6 +5848,7 @@
 				34DE9C02256575300080E4AF /* CVMessageMapping.swift in Sources */,
 				347C382C252CE69400F3D941 /* CVStackView.swift in Sources */,
 				4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */,
+				F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */,
 				34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */,
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
 				34E95C29269F6109004807EC /* HomeViewController+Helpers.swift in Sources */,
