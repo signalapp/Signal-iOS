@@ -6,8 +6,8 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     @objc public var profilePictureURL: String?
     /// The file name of the contact's profile picture on local storage.
     @objc public var profilePictureFileName: String?
-    /// The key with which the profile picture is encrypted.
-    @objc public var profilePictureEncryptionKey: OWSAES256Key?
+    /// The key with which the profile is encrypted.
+    @objc public var profileEncryptionKey: OWSAES256Key?
     /// The ID of the thread associated with this contact.
     @objc public var threadID: String?
     /// This flag is used to determine whether we should auto-download files sent by this contact.
@@ -49,8 +49,8 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
 
     // MARK: Validation
     public var isValid: Bool {
-        if profilePictureURL != nil { return (profilePictureEncryptionKey != nil) }
-        if profilePictureEncryptionKey != nil { return (profilePictureURL != nil) }
+        if profilePictureURL != nil { return (profileEncryptionKey != nil) }
+        if profileEncryptionKey != nil { return (profilePictureURL != nil) }
         return true
     }
     
@@ -63,7 +63,7 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         if let nickname = coder.decodeObject(forKey: "nickname") as! String? { self.nickname = nickname }
         if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
         if let profilePictureFileName = coder.decodeObject(forKey: "profilePictureFileName") as! String? { self.profilePictureFileName = profilePictureFileName }
-        if let profilePictureEncryptionKey = coder.decodeObject(forKey: "profilePictureEncryptionKey") as! OWSAES256Key? { self.profilePictureEncryptionKey = profilePictureEncryptionKey }
+        if let profileEncryptionKey = coder.decodeObject(forKey: "profilePictureEncryptionKey") as! OWSAES256Key? { self.profileEncryptionKey = profileEncryptionKey }
         if let threadID = coder.decodeObject(forKey: "threadID") as! String? { self.threadID = threadID }
     }
 
@@ -73,7 +73,7 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         coder.encode(nickname, forKey: "nickname")
         coder.encode(profilePictureURL, forKey: "profilePictureURL")
         coder.encode(profilePictureFileName, forKey: "profilePictureFileName")
-        coder.encode(profilePictureEncryptionKey, forKey: "profilePictureEncryptionKey")
+        coder.encode(profileEncryptionKey, forKey: "profilePictureEncryptionKey")
         coder.encode(threadID, forKey: "threadID")
         coder.encode(isTrusted, forKey: "isTrusted")
     }

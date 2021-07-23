@@ -35,8 +35,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
 
-- (OWSUserProfile *)getLocalUserProfileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
 // successfully updated.
@@ -61,11 +59,9 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                       avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
-- (void)ensureProfileCachedForContactWithID:(NSString *)contactID with:(YapDatabaseReadWriteTransaction *)transaction;
-
 #pragma mark - Other
 
-- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile;
+- (void)downloadAvatarForUserProfile:(SNContact *)contact;
 
 @end
 

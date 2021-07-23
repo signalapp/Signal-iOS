@@ -17,12 +17,22 @@ extension Storage {
     
     @objc(setContact:usingTransaction:)
     public func setContact(_ contact: Contact, using transaction: Any) {
+        let oldContact = getContact(with: contact.sessionID)
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         if contact.sessionID == getUserHexEncodedPublicKey() {
             contact.isTrusted = true // Always trust ourselves
         }
         transaction.setObject(contact, forKey: contact.sessionID, inCollection: Storage.contactCollection)
         transaction.addCompletionQueue(DispatchQueue.main) {
+            // Delete old profile picture if needed
+            if let oldProfilePictureFileName = oldContact?.profilePictureFileName,
+                oldProfilePictureFileName != contact.profilePictureFileName {
+                let path = OWSUserProfile.profileAvatarFilepath(withFilename: oldProfilePictureFileName)
+                DispatchQueue.global(qos: .default).async {
+                    OWSFileSystem.deleteFileIfExists(path)
+                }
+            }
+            // Post notification
             let notificationCenter = NotificationCenter.default
             notificationCenter.post(name: .contactUpdated, object: contact.sessionID)
             if contact.sessionID == getUserHexEncodedPublicKey() {
@@ -34,7 +44,7 @@ extension Storage {
         }
     }
     
-    public func getAllContacts() -> Set<Contact> {
+    @objc public func getAllContacts() -> Set<Contact> {
         var result: Set<Contact> = []
         Storage.read { transaction in
             transaction.enumerateRows(inCollection: Storage.contactCollection) { _, object, _, _ in

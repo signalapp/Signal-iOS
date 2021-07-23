@@ -5,7 +5,7 @@
 @class OWSAES256Key;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
-@class OWSUserProfile;
+@class SNContact;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Local Profile
 
-- (void)ensureLocalProfileCached;
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarURL:(nullable NSString *)avatarURL;
 
 #pragma mark - Other User's Profiles
@@ -21,12 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId avatarURL:(nullable NSString *)avatarURL;
-- (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)ensureProfileCachedForContactWithID:(NSString *)contactID with:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Other
 
-- (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile;
+- (void)downloadAvatarForUserProfile:(SNContact *)userProfile;
 
 @end
 

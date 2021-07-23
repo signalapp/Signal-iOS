@@ -145,7 +145,7 @@ public final class MessageSender : NSObject {
         // Attach the user's profile if needed
         if let message = message as? VisibleMessage {
             guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
-            if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+            if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
                 message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
             } else {
                 message.profile = VisibleMessage.Profile(displayName: name)
@@ -200,7 +200,8 @@ public final class MessageSender : NSObject {
         }
         // Send the result
         let base64EncodedData = wrappedMessage.base64EncodedString()
-        let snodeMessage = SnodeMessage(recipient: message.recipient!, data: base64EncodedData, ttl: message.ttl, timestamp: message.sentTimestamp!)
+        let timestamp = UInt64(Int64(message.sentTimestamp!) + SnodeAPI.clockOffset)
+        let snodeMessage = SnodeMessage(recipient: message.recipient!, data: base64EncodedData, ttl: message.ttl, timestamp: timestamp)
         SnodeAPI.sendMessage(snodeMessage).done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
             var isSuccess = false
             let promiseCount = promises.count
@@ -285,7 +286,7 @@ public final class MessageSender : NSObject {
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
         // Attach the user's profile
         guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
-        if let profileKey = storage.getUser()?.profilePictureEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+        if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
             message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
         } else {
             message.profile = VisibleMessage.Profile(displayName: name)

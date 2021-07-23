@@ -13,6 +13,11 @@ public final class SnodeAPI : NSObject {
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     internal static var snodePool: Set<Snode> = []
 
+    /// The offset between the user's clock and the Service Node's clock. Used in cases where the
+    /// user's clock is incorrect.
+    ///
+    /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
+    public static var clockOffset: Int64 = 0
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var swarmCache: [String:Set<Snode>] = [:]
 

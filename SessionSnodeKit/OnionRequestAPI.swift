@@ -310,7 +310,7 @@ public enum OnionRequestAPI {
     }
 
     /// Sends an onion request to `server`. Builds new paths as needed.
-    public static func sendOnionRequest(_ request: NSURLRequest, to server: String, target: String = "/loki/v3/lsrpc", using x25519PublicKey: String, isJSONRequired: Bool = true) -> Promise<JSON> {
+    public static func sendOnionRequest(_ request: NSURLRequest, to server: String, target: String = "/loki/v3/lsrpc", using x25519PublicKey: String) -> Promise<JSON> {
         var rawHeaders = request.allHTTPHeaderFields ?? [:]
         rawHeaders.removeValue(forKey: "User-Agent")
         var headers: JSON = rawHeaders.mapValues { value in
@@ -352,14 +352,14 @@ public enum OnionRequestAPI {
             "headers" : headers
         ]
         let destination = Destination.server(host: host, target: target, x25519PublicKey: x25519PublicKey, scheme: scheme, port: port)
-        let promise = sendOnionRequest(with: payload, to: destination, isJSONRequired: isJSONRequired)
+        let promise = sendOnionRequest(with: payload, to: destination)
         promise.catch2 { error in
             SNLog("Couldn't reach server: \(url) due to error: \(error).")
         }
         return promise
     }
 
-    public static func sendOnionRequest(with payload: JSON, to destination: Destination, isJSONRequired: Bool = true) -> Promise<JSON> {
+    public static func sendOnionRequest(with payload: JSON, to destination: Destination) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
@@ -386,28 +386,26 @@ public enum OnionRequestAPI {
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= AESGCM.ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
                     do {
                         let data = try AESGCM.decrypt(ivAndCiphertext, with: destinationSymmetricKey)
-                        // The old open group server and file server implementations put the status code in the JSON under the "status"
-                        // key, whereas the new implementations put it under the "status_code" key
                         guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
                             let statusCode = json["status_code"] as? Int ?? json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
                         if statusCode == 406 { // Clock out of sync
                             SNLog("The user's clock is out of sync with the service node network.")
                             seal.reject(SnodeAPI.Error.clockOutOfSync)
                         } else if let bodyAsString = json["body"] as? String {
-                            // This clause is only used by the old open group and file server implementations. The new implementations will
-                            // always go to the next clause.
-                            let body: JSON
-                            if !isJSONRequired {
-                                body = [ "result" : bodyAsString ]
-                            } else {
-                                guard let bodyAsData = bodyAsString.data(using: .utf8),
-                                let b = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
-                                body = b
+                            guard let bodyAsData = bodyAsString.data(using: .utf8),
+                            let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
+                            if let timestamp = body["t"] as? Int64 {
+                                let offset = timestamp - Int64(NSDate.millisecondTimestamp())
+                                SnodeAPI.clockOffset = offset
                             }
-                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination)) }
+                            guard 200...299 ~= statusCode else {
+                                return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination))
+                            }
                             seal.fulfill(body)
                         } else {
-                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json, destination: destination)) }
+                            guard 200...299 ~= statusCode else {
+                                return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json, destination: destination))
+                            }
                             seal.fulfill(json)
                         }
                     } catch {
