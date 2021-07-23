@@ -5,12 +5,6 @@
 import SignalClient
 import SignalMetadataKit
 
-private extension ProtocolAddress {
-    convenience init(from address: SignalServiceAddress, deviceId: UInt32) throws {
-        try self.init(name: address.uuidString ?? address.phoneNumber!, deviceId: deviceId)
-    }
-}
-
 @objcMembers
 public class OWSMessageDecryptResult: NSObject {
     public let envelopeData: Data

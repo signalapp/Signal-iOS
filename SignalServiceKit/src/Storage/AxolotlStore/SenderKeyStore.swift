@@ -315,16 +315,13 @@ fileprivate extension TSGroupThread {
     var threadUniqueId: ThreadUniqueId { uniqueId }
 }
 
-fileprivate extension ProtocolAddress {
+extension ProtocolAddress {
     convenience init(from recipientAddress: SignalServiceAddress, deviceId: UInt32) throws {
         try self.init(name: recipientAddress.uuidString ?? recipientAddress.phoneNumber!, deviceId: deviceId)
     }
 
-    var uuid: UUID {
-        UUID(uuidString: name) ?? {
-            owsFailDebug("Bad uuid string")
-            return UUID()
-        }()
+    var uuid: UUID! {
+        UUID(uuidString: name)
     }
 
     var isCurrentDevice: Bool {

@@ -85,7 +85,7 @@ extension MessageSender {
         let failure = AtomicUInt(0)
     }
 
-    private class func ensureSessions(forMessageSends messageSends: [OWSMessageSend],
+    class func ensureSessions(forMessageSends messageSends: [OWSMessageSend],
                                       ignoreErrors: Bool) -> Promise<Void> {
         let promise = firstly(on: .global()) { () -> Promise<Void> in
             var promises = [Promise<Void>]()
@@ -214,12 +214,6 @@ extension MessageSender {
 }
 
 // MARK: -
-
-fileprivate extension ProtocolAddress {
-    convenience init(from recipientAddress: SignalServiceAddress, deviceId: UInt32) throws {
-        try self.init(name: recipientAddress.uuidString ?? recipientAddress.phoneNumber!, deviceId: deviceId)
-    }
-}
 
 @objc
 public extension MessageSender {
@@ -1113,7 +1107,7 @@ public extension MessageSender {
         messageSend.failure(error)
     }
 
-    private func markAddressAsUnregistered(_ address: SignalServiceAddress,
+    func markAddressAsUnregistered(_ address: SignalServiceAddress,
                                              message: TSOutgoingMessage,
                                              thread: TSThread,
                                              transaction: SDSAnyWriteTransaction) {
@@ -1154,7 +1148,7 @@ extension MessageSender {
     }
 
     // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
-    private func handleStaleDevices(staleDevices devicesIn: [Int]?,
+    func handleStaleDevices(staleDevices devicesIn: [Int]?,
                                     address: SignalServiceAddress) {
         owsAssertDebug(!Thread.isMainThread)
         let staleDevices = devicesIn ?? []

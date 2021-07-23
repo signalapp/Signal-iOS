@@ -2,8 +2,11 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+import PromiseKit
+import SignalClient
+import SignalMetadataKit
+
 extension MessageSender {
-    // SenderKey TODO: A better queue
     private var senderKeyQueue: DispatchQueue { .global(qos: .utility) }
 
     struct Recipient {
@@ -88,7 +91,7 @@ extension MessageSender {
                 .filter { thread.recipientAddresses.contains($0) }
                 .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
                 .filter { !$0.isLocalAddress }
-                .filter { udAccessMap[$0]?.udAccess.udAccessMode == UnidentifiedAccessMode.enabled } // Sender Key TODO: Revisit?
+                .filter { udAccessMap[$0]?.udAccess.udAccessMode == UnidentifiedAccessMode.enabled }
                 .filter { $0.isValid }
         }
     }
@@ -134,6 +137,7 @@ extension MessageSender {
         // and isn't consulted.
         let didHitAnyFailure = AtomicBool(false)
         let wrappedSendErrorBlock = { (address: SignalServiceAddress, error: Error) -> Void in
+            Logger.info("Sender key send failed for \(address): \(error)")
             _ = didHitAnyFailure.tryToSetFlag()
 
             if let senderKeyError = error as? SenderKeyError {
@@ -160,21 +164,20 @@ extension MessageSender {
                 return .init()
             }
 
-            return firstly {
-                // SenderKey TODO: PreKey fetch? Start sessions?
-                self.sendSenderKeyRequest(
+            return firstly { () -> Promise<SenderKeySendResult> in
+                Logger.info("Sending sender key message to \(senderKeyRecipients)")
+                return self.sendSenderKeyRequest(
                     message: message,
                     plaintext: plaintextContent,
                     thread: thread,
                     addresses: senderKeyRecipients,
                     udAccessMap: udAccessMap,
                     senderCertificate: senderCertificates.uuidOnlyCert)
-            }.done(on: self.senderKeyQueue) { sendResult in
-                Logger.info("Sender key message sent. Success/Unregistered: \(sendResult.success.count)/\(sendResult.unregistered.count)")
-                try self.databaseStorage.write { writeTx in
+            }.done(on: self.senderKeyQueue) { (sendResult: SenderKeySendResult) in
+                Logger.info("Sender key message sent! Recipients: \(sendResult.successAddresses). Unregistered: \(sendResult.unregisteredAddresses)")
 
-                    sendResult.unregistered.forEach { recipient in
-                        let address = recipient.address
+                return try self.databaseStorage.write { writeTx in
+                    sendResult.unregisteredAddresses.forEach { address in
                         self.markAddressAsUnregistered(address, message: message, thread: thread, transaction: writeTx)
 
                         let error = OWSErrorMakeNoSuchSignalRecipientError() as NSError
@@ -185,7 +188,7 @@ extension MessageSender {
 
                     try sendResult.success.forEach { recipient in
                         guard let uuid = recipient.address.uuid else {
-                            throw OWSAssertionError("")
+                            throw OWSAssertionError("Invalid address")
                         }
 
                         message.update(withSentRecipient: recipient.address, wasSentByUD: true, transaction: writeTx)
@@ -202,7 +205,6 @@ extension MessageSender {
                         }
                     }
                 }
-
             }.recover(on: self.senderKeyQueue) { error in
                 // If the sender key message failed to send, fail each recipient that we hoped to send it to.
                 Logger.error("Sender key send failed: \(error)")
@@ -335,15 +337,18 @@ extension MessageSender {
         }
     }
 
-    struct SenderKeySendResult {
+    fileprivate struct SenderKeySendResult {
         let success: [Recipient]
         let unregistered: [Recipient]
+
+        var successAddresses: [SignalServiceAddress] { success.map { $0.address } }
+        var unregisteredAddresses: [SignalServiceAddress] { unregistered.map { $0.address } }
     }
 
     // Encrypts and sends the message using SenderKey
     // If the Promise is successful, the message was sent to every provided address *except* those returned
     // in the promise. The server reported those addresses as unregistered.
-    func sendSenderKeyRequest(
+    fileprivate func sendSenderKeyRequest(
         message: TSOutgoingMessage,
         plaintext: Data?,
         thread: TSGroupThread,
@@ -380,7 +385,7 @@ extension MessageSender {
     }
 
     // TODO: This is a similar pattern to RequestMaker. An opportunity to reduce duplication.
-    func _sendSenderKeyRequest(
+    fileprivate func _sendSenderKeyRequest(
         encryptedMessageBody: Data,
         timestamp: UInt64,
         isOnline: Bool,
@@ -402,23 +407,18 @@ extension MessageSender {
             guard response.statusCode == 200 else { throw
                 OWSAssertionError("Unhandled error")
             }
+            let response = try Self.decodeSuccessResponse(data: response.responseData)
+            let uuids404 = Set(response.uuids404)
 
-            // SenderKey TODO: Verify robustness of JSONDecoder
-            struct SuccessPayload: Decodable {
-                let uuids404: [UUID]
+            let successful = try recipients.filter {
+                guard let uuid = $0.address.uuid else { throw OWSAssertionError("Invalid address") }
+                return !uuids404.contains(uuid)
             }
-            guard let responseBody = response.responseData,
-                  let response = try? JSONDecoder().decode(SuccessPayload.self, from: responseBody) else {
-                throw OWSAssertionError("Failed to decode 200 response body")
+            let unregistered = try recipients.filter {
+                guard let uuid = $0.address.uuid else { throw OWSAssertionError("Invalid address") }
+                return uuids404.contains(uuid)
             }
-            let uuids404 = response.uuids404.reduce(into: Set()) {
-                $0.insert(SignalServiceAddress(uuid: $1))
-            }
-
-            return SenderKeySendResult(
-                success: recipients.filter { uuids404.contains($0.address) == false },
-                unregistered: recipients.filter { uuids404.contains($0.address) == true }
-            )
+            return SenderKeySendResult(success: successful, unregistered: unregistered)
         }.recover(on: senderKeyQueue) { error -> Promise<SenderKeySendResult> in
             let retryIfPossible = { () throws -> Promise<SenderKeySendResult> in
                 if remainingAttempts > 0 {
@@ -451,24 +451,8 @@ extension MessageSender {
                     Logger.warn("One of the recipients could not match an account. We don't know which. Falling back to fanout.")
                     throw SenderKeyError.invalidRecipient
                 case 409:
-                    // Update the device set for added/removed devices.
-                    // This is retryable
-                    typealias ResponseBody409 = [Account409]
-                    struct Account409: Decodable {
-                        let uuid: UUID
-                        let devices: DeviceSet
-                        struct DeviceSet: Decodable {
-                            let missingDevices: [UInt32]
-                            let extraDevices: [UInt32]
-                        }
-                    }
-
-                    // SenderKey TODO: Verify robustness of JSONDecoder
-                    guard let response = responseData,
-                          let responseBody = try? JSONDecoder().decode(ResponseBody409.self, from: response) else {
-                        throw OWSAssertionError("Failed to decode 409 response body")
-                    }
-
+                    // Incorrect device set. We should add/remove devices and try again.
+                    let responseBody = try Self.decode409Response(data: responseData)
                     self.databaseStorage.write { writeTx in
                         for account in responseBody {
                             MessageSender.updateDevices(
@@ -481,22 +465,9 @@ extension MessageSender {
                     throw SenderKeyError.deviceUpdate
 
                 case 410:
-                    // Server reports stale devices. We should reset our session and forget that we resent
-                    // a senderKey.
-                    typealias ResponseBody410 = [Account410]
-                    struct Account410: Decodable {
-                        let uuid: UUID
-                        let devices: DeviceSet
-                        struct DeviceSet: Decodable {
-                            let staleDevices: [UInt32]
-                        }
-                    }
-
-                    // SenderKey TODO: Verify robustness of JSONDecoder
-                    guard let response = responseData,
-                          let responseBody = try? JSONDecoder().decode(ResponseBody410.self, from: response) else {
-                        throw OWSAssertionError("Invalid 410 response body")
-                    }
+                    // Server reports stale devices. We should reset our session and
+                    // forget that we resent a senderKey.
+                    let responseBody = try Self.decode410Response(data: responseData)
 
                     for account in responseBody {
                         let address = SignalServiceAddress(uuid: account.uuid)
@@ -612,6 +583,53 @@ extension MessageSender {
             ],
             body: ciphertext
         )
+    }
+}
+
+extension MessageSender {
+
+    struct SuccessPayload: Decodable {
+        let uuids404: [UUID]
+    }
+
+    typealias ResponseBody409 = [Account409]
+    struct Account409: Decodable {
+        let uuid: UUID
+        let devices: DeviceSet
+        struct DeviceSet: Decodable {
+            let missingDevices: [UInt32]
+            let extraDevices: [UInt32]
+        }
+    }
+
+    typealias ResponseBody410 = [Account410]
+    struct Account410: Decodable {
+        let uuid: UUID
+        let devices: DeviceSet
+        struct DeviceSet: Decodable {
+            let staleDevices: [UInt32]
+        }
+    }
+
+    static func decodeSuccessResponse(data: Data?) throws -> SuccessPayload {
+        guard let data = data else {
+            throw OWSAssertionError("No data provided")
+        }
+        return try JSONDecoder().decode(SuccessPayload.self, from: data)
+    }
+
+    static func decode409Response(data: Data?) throws -> ResponseBody409 {
+        guard let data = data else {
+            throw OWSAssertionError("No data provided")
+        }
+        return try JSONDecoder().decode(ResponseBody409.self, from: data)
+    }
+
+    static func decode410Response(data: Data?) throws -> ResponseBody410 {
+        guard let data = data else {
+            throw OWSAssertionError("No data provided")
+        }
+        return try JSONDecoder().decode(ResponseBody410.self, from: data)
     }
 }
 
