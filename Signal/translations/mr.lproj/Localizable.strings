@@ -278,7 +278,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "एकदा आपण फोटो घेतले की, आपण येथे आपले अलीकडील पाठवू शकता.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "पेमेंट";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "संलग्न";
@@ -322,6 +322,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "स्पीकर";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
@@ -337,11 +346,11 @@
 /* Text indicating the user can select an avatar from their photos */
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
 
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
-
 /* Title for the previously used and preset avatar section. */
 "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "मागे";
@@ -800,10 +809,10 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "इतर";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "पेमेंट";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "पेमेंट";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "आम्ही कशी मदत करू शकतो?";
@@ -980,7 +989,7 @@
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
 
 /* Label for button to mute a thread forever. */
-"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Always";
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "नेहमी";
 
 /* Button to mute the chat */
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
@@ -1007,7 +1016,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 आठवडा";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Always";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS" = "नेहमी";
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
@@ -1099,6 +1108,9 @@
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "अधिक वाचा";
 
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "आपले सत्र पुनःप्रस्थापित केल्याने भविष्यात %@ कडून संदेश प्राप्त करण्याची अनुमती मिळेल, पण कुठलेही आधीपासून दूषित संदेश पुनर्स्थापित करणार नाही.";
 
@@ -1109,7 +1121,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "हलवा आणि स्केल करा";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
+"CURRENCY_PICKER_VIEW_TITLE" = "चलन सेट करा";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
@@ -1693,6 +1705,9 @@
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "स्वरूप";
 
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "मित्रांना आमंत्रित करा";
 
@@ -1913,7 +1928,7 @@
 "GROUP_CREATION_FAILED" = "सर्व सदस्य गटात जोडणे शक्य झाले नाही. पुन्हा प्रयत्न करण्यासाठी टॅप करा.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "more";
+"GROUP_DESCRIPTION_MORE" = "आणखी";
 
 /* Placeholder text for 'group description' field. */
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
@@ -2429,7 +2444,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "You changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "आपण गट विवरण बदलले आहे.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
@@ -3110,7 +3125,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "अपलोड करत आहे";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "यांनी बघितले";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "प्राप्त झाले";
@@ -3185,7 +3200,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "पुनरावलोकन विनंती";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Reported as spam and blocked.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "स्पॅम म्हणून रिपोर्ट केले आणि ब्लॉक केले.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "स्वीकार करा";
@@ -3251,7 +3266,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "अर्धवट पाठविले, तपशीलांसाठी टॅप करा";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "विराम दिलेले पाठवा";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Paused";
@@ -3713,7 +3728,7 @@
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "पे करा";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -3752,10 +3767,10 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "टीप घ्या";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "पे करा";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
@@ -5117,13 +5132,13 @@
 "SETTINGS_NOTIFICATIONS" = "सूचना";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "सक्रिय करा";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "सक्रिय करा";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
@@ -5159,16 +5174,16 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "रूपांतरण हा एक अंदाज असतो आणि तो कदाचित अचूक नसू शकतो.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "सर्व चलन";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "निष्क्रिय करा";
 
 /* Label for 'deactivate payments' button in the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
@@ -5177,7 +5192,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "पेमेंट निष्क्रिय करायचे?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
@@ -5258,13 +5273,13 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "नोंदणी केली नाही";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "पेमेंट सक्रिय करा";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "नवीन गोपनीयता केंद्रित डिजिटल चलन, MobileCoin पाठवण्यासाठी आणि प्राप्त करण्यासाठी Signal वापरा. चालू करण्यासाठी सक्रिय करा.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
@@ -5327,7 +5342,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "पेमेंट निष्क्रिय केले गेले.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "सर्व";
@@ -5342,7 +5357,7 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "आपण आपला PIN अक्षम करण्यापूर्वी, आपण आपले पेमेंट खाते रिकव्हर करू शकता हे सुनिश्चित करण्यासाठी आपण आपले पेमेंट रिकव्हरी फ्रेझ रेकॉर्ड करणे आवश्यक आहे.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
@@ -5384,7 +5399,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "रिकव्हरी फ्रेझ";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
@@ -5414,7 +5429,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "अवैध पत्ता";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR कोड स्कॅन करा";
@@ -5429,7 +5444,7 @@
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "पेमेंट";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
@@ -5444,7 +5459,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "हे करण्यासाठी: स्कॅन करा किंवा वॉलेट पत्ता प्रविष्ट करा";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
@@ -5504,10 +5519,10 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "पेमेंट (बिटा)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "आपला वॉलेट पत्ता";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "फोन नंबरवरून मला शोधा";
@@ -5738,7 +5753,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "सत्यापन पूर्ण करा";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "येत्या आठवड्यांमध्ये अस्तित्वात असलेल्या गटांना स्वयंचलितपणे हे वैशिष्ट्ये मिळतील.";
@@ -5867,10 +5882,10 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "कुठलेही गट सामाईक नाहीत. विनंत्यांचे काळजीपूर्वक पुनरावलोकन करा.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "या गटात कुठलेही संपर्क नाहीत. विनंत्यांचे काळजीपूर्वक पुनरावलोकन करा.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "हा संदेश हटविला गेला.";

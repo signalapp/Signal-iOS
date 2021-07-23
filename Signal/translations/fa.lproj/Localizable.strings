@@ -322,6 +322,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "بلندگو";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "برای حروف اول خود یک ظاهر و رنگ جدید انتخاب کنید.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "یک عکس پروفایل اضافه کنید";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
@@ -329,7 +338,7 @@
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "رنگ";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "متن";
 
 /* Text indicating the user can select an avatar from their camera */
 "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
@@ -337,11 +346,11 @@
 /* Text indicating the user can select an avatar from their photos */
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
 
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
-
 /* Title for the previously used and preset avatar section. */
 "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "بازگشت";
@@ -1099,6 +1108,9 @@
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "ادامه مطلب";
 
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "با راه‌اندازی دوباره نشست، قادر به دریافت پیام از %@ خواهید بود، اما پیام‌های قبلی بازگردانده نخواهند شد.";
 
@@ -1692,6 +1704,9 @@
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "ظاهر برنامه";
+
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "دعوت دوستان";

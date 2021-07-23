@@ -331,6 +331,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
@@ -1707,6 +1716,9 @@
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Appearance";
+
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Invite friends";

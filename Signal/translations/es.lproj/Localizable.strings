@@ -322,26 +322,35 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altavoz";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Selecciona un color y personaliza tus iniciales.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Añade una foto a tu perfil";
+
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Selecciona un color";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Color";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Texto";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "cámara";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
-
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "foto";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Selecciona un avatar";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "texto";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "Atrás";
@@ -857,7 +866,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "¿Eliminar chat?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Sólo admins pueden enviar mensajes en este grupo.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Imposible seleccionar más de %@ chats.";
@@ -1055,10 +1064,10 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Cualquiera";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Selecciona quién puede enviar mensajes e iniciar llamadas en este grupo.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Enviar mensajes";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Sólo admins";
@@ -1098,6 +1107,9 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Leer más";
+
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Reiniciar tu sesión te permitirá recibir mensajes de %@ pero no permitirá recuperar los mensajes corruptos ya recibidos.";
@@ -1693,6 +1705,9 @@
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Apariencia";
 
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Invitar amistades";
 
@@ -1769,10 +1784,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ está bloquead@";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Sólo admins del grupo pueden iniciar una llamada.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Imposible iniciar llamada de grupo";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ está bloquead@";
@@ -2033,22 +2048,22 @@
 "GROUP_INVITES_VIEW_TITLE" = "Invitaciones de participantes";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Los ajustes del grupo han cambiado para permitir a cualquiera enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para permitir a cualquiera enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ha modificado los ajustes del grupo para permitir a cualquiera enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Se han modificado los ajustes del grupo para permitir a cualquiera enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para sólo permitir a admins enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ ha modificado los ajustes del grupo para sólo permitir a admins enviar mensajes.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Este enlace de grupo es inválido.";
@@ -2480,10 +2495,10 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Sólo %@ pueden enviar mensajes";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Contactar con un admin";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Selecciona un(a) nuev@ admin antes de abandonar.";
@@ -3326,7 +3341,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Has alcanzado el número máximo de dispositivos que se pueden enlazar en tu cuenta. Desenlaza un dispositivo o prueba de nuevo más tarde.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Silenciada";
+"MUTED_BADGE" = "Silenciado";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Ha cambiado su nombre de %1$@ a %2$@ recientemente.";
@@ -3734,7 +3749,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualiza Signal para realizar pagos.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Todavía no se ha verificado el pago";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Fallo al completar el pago. Comprueba tu conexión e inténtalo de nuevo.";

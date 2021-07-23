@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "Chengeta";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Hauna nhengo dzakafanana ne munhu uyu.Cherechedza zvikumbiro usati wabvuma kuti usatumirwe tsamba dzausingade.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Hauna nhengo dzakafanana ne boka rino.Cherechedza zvikumbiro usati wabvuma kuti usatumirwe tsamba dzausingade.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Nezve Zvikumbiro zve Tsamba";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Daira";
@@ -322,26 +322,35 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Tepfenura";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Sarudza Ruvara";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Ruvara";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Mavara";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "kamera";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
-
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "mufananidzo";
 
 /* Title for the previously used and preset avatar section. */
 "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "mavara";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "Dzoka";
@@ -1099,6 +1108,9 @@
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Verenga zvakadzama";
 
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Kutangidza nguva kunokubvumira kugamuchira tsamba dzichazouya kubva %@,asi haidzore tsamba dzagara dzaipa.";
 
@@ -1692,6 +1704,9 @@
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Mamiriro  ";
+
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Invite friends";

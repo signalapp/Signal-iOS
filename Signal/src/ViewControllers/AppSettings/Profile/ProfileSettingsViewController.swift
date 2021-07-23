@@ -58,18 +58,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             return self.avatarCell()
         },
             actionBlock: { [weak self] in
-                let currentAvatarImage: UIImage? = {
-                    guard let avatarData = self?.avatarData else { return nil }
-                    return UIImage(data: avatarData)
-                }()
-
-                let vc = AvatarSettingsViewController(
-                    context: .profile,
-                    currentAvatarImage: currentAvatarImage
-                ) { [weak self] newAvatarImage in
-                    self?.setAvatarImage(newAvatarImage)
-                }
-                self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                self?.presentAvatarSettingsView()
             }
         ))
         contents.addSection(avatarSection)
@@ -129,6 +118,21 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         contents.addSection(mainSection)
 
         self.contents = contents
+    }
+
+    func presentAvatarSettingsView() {
+        let currentAvatarImage: UIImage? = {
+            guard let avatarData = avatarData else { return nil }
+            return UIImage(data: avatarData)
+        }()
+
+        let vc = AvatarSettingsViewController(
+            context: .profile,
+            currentAvatarImage: currentAvatarImage
+        ) { [weak self] newAvatarImage in
+            self?.setAvatarImage(newAvatarImage)
+        }
+        presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
     // MARK: - Event Handling

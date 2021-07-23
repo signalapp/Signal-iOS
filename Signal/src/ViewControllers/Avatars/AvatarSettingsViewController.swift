@@ -73,6 +73,8 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         super.themeDidChange()
 
         updateHeaderViewLayout(forceUpdate: true)
+        optionViews.removeAll()
+        updateTableContents()
     }
 
     @objc
@@ -305,11 +307,11 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         updateHeaderViewLayout()
     }
 
-    private var previousSizeReference: CGSize?
+    private var previousSizeReference: CGFloat?
     private func updateHeaderViewLayout(forceUpdate: Bool = false) {
         // Update button layout only when the view size changes.
-        guard view.frame.size != previousSizeReference || forceUpdate else { return }
-        previousSizeReference = view.frame.size
+        guard view.width != previousSizeReference || forceUpdate else { return }
+        previousSizeReference = view.width
 
         topHeaderStack.layoutMargins = cellOuterInsetsWithMargin(top: 24, bottom: 13)
 
@@ -540,9 +542,9 @@ private protocol OptionViewDelegate: AnyObject {
 }
 
 private class OptionView: UIView {
-    private let imageView = UIImageView()
+    private let imageView = AvatarImageView()
     private var imageViewInsetConstraints: [NSLayoutConstraint]?
-    private let editOverlayView = UIImageView()
+    private let editOverlayView = AvatarImageView()
 
     private weak var delegate: OptionViewDelegate?
 
@@ -558,15 +560,18 @@ private class OptionView: UIView {
 
         super.init(frame: .zero)
 
-        imageView.contentMode = .center
         addSubview(imageView)
+        imageView.autoPinEdgesToSuperviewEdges()
         updateSelectionState()
 
         editOverlayView.backgroundColor = .ows_blackAlpha20
         editOverlayView.image = #imageLiteral(resourceName: "compose-solid-24").tintedImage(color: .ows_white)
         editOverlayView.contentMode = .center
         imageView.addSubview(editOverlayView)
-        editOverlayView.autoPinEdgesToSuperviewEdges()
+        editOverlayView.autoPinEdgesToSuperviewEdges(
+            withInsets: UIEdgeInsets(margin: 2.5)
+        )
+        editOverlayView.layer.borderWidth = 1.5
         editOverlayView.isHidden = true
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
@@ -581,8 +586,7 @@ private class OptionView: UIView {
         super.layoutSubviews()
 
         layer.cornerRadius = width / 2
-        imageView.layer.cornerRadius = imageView.width / 2
-        imageView.clipsToBounds = true
+        layer.masksToBounds = true
     }
 
     @objc
@@ -623,11 +627,6 @@ private class OptionView: UIView {
     }
 
     func updateSelectionState() {
-        imageViewInsetConstraints?.forEach { $0.isActive = false }
-        imageViewInsetConstraints = imageView.autoPinEdgesToSuperviewEdges(
-            withInsets: isSelected ? UIEdgeInsets(margin: 4) : .zero
-        )
-
         if isSelected {
             layer.borderColor = Theme.primaryTextColor.cgColor
             layer.borderWidth = 2.5
@@ -637,6 +636,7 @@ private class OptionView: UIView {
         }
 
         editOverlayView.isHidden = true
+        editOverlayView.layer.borderColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true).cgColor
 
         guard let model = model else { return }
 

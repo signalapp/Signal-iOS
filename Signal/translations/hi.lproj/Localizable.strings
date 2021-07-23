@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "नया सदस्य जोड़ें";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "पहले से सदस्य हैं";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ पहले से ही %@ की मेंबर हैं";
@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "सेव करें";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "इस व्यक्ति के साथ आपका कोई समूह समान नहीं है। अवांछित संदेशों से बचने के लिए स्वीकार करने से पहले अनुरोधों की सावधानीपूर्वक समीक्षा करें।";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "संदेश अनुरोधों के बारे में";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "उत्तर";
@@ -322,6 +322,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "स्पीकर";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
@@ -337,11 +346,11 @@
 /* Text indicating the user can select an avatar from their photos */
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
 
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
-
 /* Title for the previously used and preset avatar section. */
 "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "पीछे जाएं";
@@ -434,7 +443,7 @@
 "BUTTON_DONE" = "पूर्ण";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "नक़ल";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "बदलें";
@@ -458,7 +467,7 @@
 "BUTTON_SELECT" = "चुनिए";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Set";
+"BUTTON_SET" = "सेट";
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "साझा करें";
@@ -581,13 +590,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "रंग केवल आपको दिखाई देता है।";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "रंग केवल आपको दिखाई देता है।";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "रंग केवल आपको दिखाई देता है।";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
@@ -953,7 +962,7 @@
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "आमंत्रण";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "अनुरोध और आमंत्रण";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "सदस्यों";
@@ -1099,6 +1108,9 @@
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "और पढ़ें";
 
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "अपना सेशन रीसेट करने से आपको %@ के आनेवाले मेसेज मिल जाऐंगे, पर इस से पहले से दूषित मेसेज दोबारा वापिस नहीं आ सकते।";
 
@@ -1112,19 +1124,19 @@
 "CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "ढाल";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "वर्ण";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "परिपूर्णता";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "ठोस";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "कस्टम रंग";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
@@ -1376,7 +1388,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "इस चैट में संदेश %@ के बाद ग़ायब हो जाएँगे।";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "कस्टम समय";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "days";
@@ -1693,6 +1705,9 @@
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "दिखावट";
 
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "मित्रों को आमंत्रित करें";
 
@@ -1916,10 +1931,10 @@
 "GROUP_DESCRIPTION_MORE" = "more";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "समूह विवरण जोड़ें...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Group descriptions will be visible to members of this group and people who have been invited.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "समूह विवरण इस समूह के सदस्यों और आमंत्रित किए गए लोगों के लिए दृश्यमान होंगे।";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
@@ -2387,7 +2402,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "आमंत्रण";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "अनुरोध और आमंत्रण";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ग्रुप अपडेट हो गया है।";
@@ -2417,19 +2432,19 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ने ग्रुप को अपडेट किया।";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "समूह विवरण हटा दिया गया था।";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "आपने समूह विवरण निकाल दिया है.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "समूह विवरण बदल दिया गया था।";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "You changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "आपने समूह विवरण बदल दिया है।";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
@@ -3131,7 +3146,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ब्लॉक करके डिलीट करें";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "स्पैम और ब्लॉक की रिपोर्ट करें";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ब्लॉक किए गए संपर्क अब न तो आपको संदेश भेज पाएँगे न ही आपको कॉल कर पाएँगे।";
@@ -3185,7 +3200,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "निवेदन की समीक्षा करें ";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Reported as spam and blocked.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "स्पैम के रूप में रिपोर्ट किया गया और अवरुद्ध कर दिया गया।";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "स्वीकृत ";
@@ -3251,7 +3266,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "आंशिक रूप से भेजा गया, विवरण के लिए टैप करें";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "भेजें रोका गया";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Paused";
@@ -5036,7 +5051,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "गायब होते मेसेज";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "आपके द्वारा शुरू की गई सभी नई चैट के लिए एक ग़ायब होने वाले संदेशों का समय सेट करें।";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal  को दान करें";
@@ -5720,13 +5735,13 @@
 "SOUNDS_NONE" = "कुछ नहीं";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "सत्यापन पूर्ण।";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "यदि आप सत्यापन को छोड़ना चुनते हैं, तो आप अन्य लोगों के संदेशों विफल हो सकते हैं और आपके संदेश भेजने में विफल हो सकते हैं।";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "सत्यापित किए बिना जारी रखें?";
 
 /* Body for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
@@ -5867,7 +5882,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "कोई समूह सामान्य नहीं है। अनुरोधों की सावधानीपूर्वक समीक्षा करें।";
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
@@ -6203,10 +6218,10 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Reset All Wallpapers";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "क्या आप सभी चैट रंगों को ओवरराइड करना चाहेंगे?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "चैट रंग रीसेट करें";
 
 /* Reset conversation chat color action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
@@ -6218,7 +6233,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "चैट रंग रीसेट करें";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";

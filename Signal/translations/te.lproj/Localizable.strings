@@ -8,7 +8,7 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "క్రొత్త భద్రతా సంఖ్యను అంగీకరించండి";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "అటాచ్మెంట్";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "జోడింపు";
 
 /* Accessibility label for audio. */
 "ACCESSIBILITY_LABEL_AUDIO" = "ఆడియో";
@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "సమూహంకి కలపండి";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "\"%2$@\" కు \"%1$@\" ను జోడించాలా?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "క్రొత్త సభ్యుడిని జోడించండి";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ను %@ కి చేర్చారు";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "సమూహానికి జోడించండి";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "మీరు మీ ప్రొఫైల్‌ను ఈ వినియోగదారుతో భాగస్వామ్యం చేయాలనుకుంటున్నారా?";
@@ -125,10 +125,10 @@
 "ALERT_SAVE" = "భద్రపరుచు";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "ఈ వ్యక్తితో మీకు సాధారణ సమూహాలు లేవు. అవాంఛిత సందేశాలను నివారించడానికి అంగీకరించే ముందు అభ్యర్థనలను జాగ్రత్తగా సమీక్షించండి.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "ఈ వ్యక్తితో మీకు సాధారణ సమూహాలు లేవు. అవాంఛిత సందేశాలను నివారించడానికి అంగీకరించే ముందు అభ్యర్థనలను జాగ్రత్తగా సమీక్షించండి.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "సందేశ అభ్యర్థనల గురించి";
@@ -200,7 +200,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "శీర్షిక";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "అటాచ్మెంట్ ఎగుమతి చేయడంలో విఫలమైంది";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "జోడింపు ఎగుమతి చేయడంలో విఫలమైంది";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "భద్రపరచడంలో విఫలమైంది.";
@@ -221,7 +221,7 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "పంపు";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "అటాచ్మెంట్";
+"ATTACHMENT_DEFAULT_FILENAME" = "జోడింపు";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "అటాచ్మెంట్ పంపడంలో లోపం";
@@ -272,16 +272,16 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "స్థానం";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "మీ చిత్రలను ఇక్కడ పంపించడానికి సెట్టింగ్‌లలో ప్రాప్యతను ఇవ్వండి.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "మీ చిత్రాలను ఇక్కడ పంపించడానికి సెట్టింగ్‌లలో ప్రాప్యతను ఇవ్వండి.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "మీరు చిత్రాలను తీసిన తర్వాత, మీరు మీ ఇటీవలిను ఇక్కడ పంపగలరు.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "చెల్లింపులు";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "అటాచ్మెంట్";
+"ATTACHMENT_LABEL" = "జోడింపు";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "పత్రాన్ని ఎన్నుకోవడంలో విఫలమైంది.";
@@ -322,26 +322,35 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "స్పీకర్";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "రంగును ఎంచుకోండి";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "రంగు ";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "వచనం";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "కెమెరా";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
-
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "చిత్రం ";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "అవతార్ ను ఎంచుకోండి";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "వచనం";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "తిరిగి";
@@ -434,7 +443,7 @@
 "BUTTON_DONE" = "పూర్తి";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "నకిలీ";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "సరిచేయు";
@@ -572,58 +581,58 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "దేశాన్ని ఎంచుకోండి";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "మాటామంతి రంగు యొక్క పూర్వప్రదర్శన ఇక్కడ ఉంది.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "మాటామంతి రంగు యొక్క పూర్వప్రదర్శన ఇక్కడ ఉంది.";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "మరో బుడగ.";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "రంగు మీకు మాత్రమే కనిపిస్తుంది.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "రంగు మీకు మాత్రమే కనిపిస్తుంది.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "రంగు మీకు మాత్రమే కనిపిస్తుంది.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+"CHAT_COLOR_SETTINGS_AUTO" = "దానంతట అదే";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "This custom color is used in 1 chat. Do you want to delete it?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "ఈ అనుకూల రంగు 1 మాటామంతిలలో ఉపయోగించబడుతుంది. మీరు దీన్ని తొలగించాలనుకుంటున్నారా?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "This custom color is used in %@ chats. Do you want to delete it for all chats?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "ఈ అనుకూల రంగు %@ మాటామంతిలలో ఉపయోగించబడుతుంది. మీరు అన్ని మాటామంతిల కోసం దీన్ని తొలగించాలనుకుంటున్నారా?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Delete Color";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "రంగును తొలగించండి";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "మాటామంతీ రంగు ";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edit Color";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "రంగును సవరించండి";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "ఈ రంగు %@ మాటామంతిలలో ఉపయోగించబడుతుంది. మీరు అన్ని మాటామంతిల కోసం మార్పులను సేవ్ చేయాలనుకుంటున్నారా?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "వాల్‌పేపర్‌కు రంగును స్వయంచాలకంగా సరిపోల్చుతుంది";
 
 /* Action text for char colors megaphone */
 "CHAT_COLORS_MEGAPHONE_ACTION" = "స్వరూపం";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "ఇప్పుడు మీరు మీ మాటామంతిలోని రంగులను ప్రవణతలతో మరియు మరెన్నో మార్చవచ్చు.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "అనుకూల మాటామంతి రంగులు";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "మాటామంతి కలర్ & వాల్‌పేపర్";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = " తాత్కాలికంగా  భద్రపరుచు ప్రదేశముతో పోల్చండి";
@@ -650,7 +659,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "మీ పరిచయాలలో Signal వినియోగదారులు ఎవరో చూడటానికి మీరు iOS సెట్టింగుల అనువర్తనంలో పరిచయాల ప్రాప్యతను ప్రారంభించవచ్చు.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "ఇది మీ సందేశాలను తొలగించడం ద్వారా అనువర్తనాన్ని రీసెట్ చేస్తుంది. ఈ ప్రక్రియ పూర్తయిన తర్వాత అనువర్తనం మూసివేయబడుతుంది.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "మీరు ఖచ్చితంగా అన్ని డేటాను తొలగించాలనుకుంటున్నారా?";
@@ -731,7 +740,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "సంస్థ";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "మీ మాటామంతీలో సంప్రదింపు పేర్లు మరియు ఫోటోలను చూడటానికి:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "మీ మాటామంతీలో సంప్రదింపు పేర్లు మరియు చిత్రాలను చూడటానికి:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "దిగువ “సెట్టింగ్‌లకు వెళ్ళు” నొక్కండి";
@@ -749,7 +758,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ఆరంభించండి";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "మీ మాటామంతీ‌లో సంప్రదింపు పేర్లు మరియు ఫోటోలను చూడండి.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "మీ మాటామంతీ‌లో సంప్రదింపు పేర్లు మరియు చిత్రాలను చూడండి.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "పరిచయాలను ప్రారంభించాలా?";
@@ -782,16 +791,16 @@
 "CONTACT_SUPPORT" = "మద్దతును సంప్రదించండి";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "నేను క్రొత్త లక్షణాన్ని అభ్యర్థించాలనుకుంటున్నాను";
 
 /* A brief localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "లక్షణ వినతి ";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "నాకు అనువర్తనంపై అభిప్రాయం ఉంది";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "అనువర్తన అభిప్రాయం";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "ఇంకేదో";
@@ -812,13 +821,13 @@
 "CONTACT_SUPPORT_FILTER_QUESTION" = "నాకు ఒక ప్రశ్న ఉంది";
 
 /* A brief localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "ప్రశ్న";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "ఏదో పనిచేయడం లేదు";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "ఏదో పనిచేయడం లేదు";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal మీ మద్దతు అభ్యర్థనను పూర్తి చేయలేకపోయింది.";
@@ -833,7 +842,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "డీబగ్ లాగ్‌ను సమర్పించాలా?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "కారణం ఎంచుకోండి";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "డీబగ్ లాగ్‌తో సమర్పించండి";
@@ -857,7 +866,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "మాటామంతీని తొలగించాలా?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "నిర్వాహకులు మాత్రమే ఈ గుంపుకు సందేశాలను పంపగలరు.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "మీరు %@ కంటే ఎక్కువ చాట్‌లను ఎంచుకోలేరు.";
@@ -905,10 +914,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "అచేతనం అయింది";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "సమూహ పేరు, చిత్రం, వివరణ మరియు అదృశ్యమగు సందేశాల టైమర్‌ను ఎవరు సవరించవచ్చో ఎంచుకోండి.";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ఆడియో";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "మీరు ఇకపై ఈ వినియోగదారు నుండి సందేశాలు లేదా నవీకరణలను స్వీకరించరు.";
@@ -926,7 +935,7 @@
 "CONVERSATION_SETTINGS_EDIT" = "సరిచేయు";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "సమూహ వివరణను సవరించండి";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "నిర్వాహకులు మాత్రమే";
@@ -974,19 +983,19 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ప్రస్తావనలు";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "సందేశం";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "దీని కోసం ఈ చాట్‌ను మ్యూట్ చేయండి ...";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "ఎల్లప్పుడూ";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "నిశబ్ధం";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 గంటలు";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "నిశబ్ధం";
@@ -1019,19 +1028,19 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "వరకు %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ వరకు మ్యూట్ చేయబడింది";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ సమూహాలు ఉమ్మడిగా ఉన్నాయి";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "క్రొత్త పరిచయాన్ని సృష్టించండి";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "సాధారణమైన సమూహాలు లేవు";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 సమూహం ఉమ్మడిగా ఉన్నాయి";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "అనుమతులు";
@@ -1049,16 +1058,16 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "సమూహ నిర్వాహకుడిగా %@ ను తొలగించాలా?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "వెతకండి";
 
 /* Label for button that sets 'send messages permission' for a group to 'all members'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "సభ్యులందరు";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "ఈ గుంపులో ఎవరు సందేశాలు పంపవచ్చో ఎంచుకోండి మరియు కాల్‌లను ప్రారంభించండి.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "సందేశాలను పంపండి";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "నిర్వాహకులు మాత్రమే";
@@ -1073,10 +1082,10 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "మ్యూట్ తీసివేయి";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "వీడియో";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "సంప్రదింపు వివరాలు";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "వ్యక్తిత్వవర్ణనను భాగస్వామ్యం చేయండి";
@@ -1099,6 +1108,9 @@
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "ఇంకా చదవండి";
 
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "మీ సెషన్‌ను రీసెట్ చేయడం వలన భవిష్యత్తులో సందేశాలను %@ నుండి స్వీకరించడానికి మిమ్మల్ని అనుమతిస్తుంది, అయితే ఇది ఇప్పటికే పాడైన సందేశాలను తిరిగి పొందదు.";
 
@@ -1109,25 +1121,25 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "తరలించు మరియు కొలుచు";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
+"CURRENCY_PICKER_VIEW_TITLE" = "కరెన్సీని సెట్ చేయండి";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "ప్రవణత";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "రంగు";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "సంతృప్తత";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "ఘన";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "అనుకూల రంగు";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "ప్రవణత దిశను మార్చడానికి లాగండి";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.";
@@ -1139,22 +1151,22 @@
 "DATE_HOURS_AGO_FORMAT" = "%@గం";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
+"DATE_HOURS_AGO_LONG_FORMAT" = "%@ గంటల క్రితం";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ ని";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ నిమిషాల క్రితం";
 
 /* The present; the current time. */
 "DATE_NOW" = "ఇప్పుడు";
 
 /* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+"DATE_ONE_HOUR_AGO_LONG" = "1 గంట క్రితం";
 
 /* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
+"DATE_ONE_MINUTE_AGO_LONG" = "1 నిమిషం క్రితం";
 
 /* The current day. */
 "DATE_TODAY" = "నేడు";
@@ -1208,7 +1220,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "ఖాతాను తొలగించండి";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "ఇది మీ Signal ఖాతాను తొలగిస్తుంది మరియు అప్లికేషన్‌ను రీసెట్ చేస్తుంది. ప్రక్రియ పూర్తయిన తర్వాత అనువర్తనం మూసివేయబడుతుంది.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "మీరు ఖచ్చితంగా మీ ఖాతాను తొలగించాలనుకుంటున్నారా?";
@@ -1217,28 +1229,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "దేశం కోడ్";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "ఖాతాను తొలగించడంలో విఫలమైంది. Wi-Fi లేదా మొబైల్ డేటా ఆన్ చేయబడిందని నిర్ధారించుకోండి, ఆపై మళ్లీ ప్రయత్నించండి.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "ఇది మీ ఖాతా సమాచారం, ప్రొఫైల్ మరియు మీ అన్ని సందేశాలను తొలగిస్తుంది.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "ఖాతాను తొలగిస్తోంది ...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "ఇంటర్నెట్ కనెక్షన్ లేదు. Wi-Fi లేదా మొబైల్ డేటా ఆన్ చేయబడిందని నిర్ధారించుకోండి, ఆపై మళ్లీ ప్రయత్నించండి.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ఫోను నంబరు";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "మీ Signal సంఖ్యను నిర్ధారించండి";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "ఖాతాను తొలగించండి";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "మీరు నమోదు చేసిన ఫోన్ నంబర్ మీ ఖాతాతో సరిపోలలేదు.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "మాటామంతీలోని అన్ని సందేశాలను తొలగించాలా?";
@@ -1259,10 +1271,10 @@
 "DEREGISTRATION_WARNING" = "పరికరం ఇకపై నమోదు కాలేదు. మీ ఫోన్ నంబర్ వేరే పరికరంలో Signal తో నమోదు చేయబడదిండి. తిరిగి నమోదు చేయడానికి నొక్కండి.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "చివరి క్రియాశీల %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "సంబంధించిన %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "పరికర జాబితాను నవీకరించడంలో విఫలమైంది.";
@@ -1376,13 +1388,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ఈ చాట్‌లోని సందేశాలు %@ తర్వాత కనిపించవు.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "అనుకూల సమయం";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "రోజులు";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "ప్రారంభించబడినప్పుడు, ఈ మాటామంతీ‌లో పంపిన మరియు స్వీకరించిన క్రొత్త సందేశాలు చూసిన తర్వాత అవి అదృశ్యమవుతాయి.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "ప్రస్తుతం సందేశాలు %@ తర్వాత అదృశ్యమవుతాయి";
@@ -1397,13 +1409,13 @@
 "DISAPPEARING_MESSAGES_MINUTES" = "నిముషాలు ";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "సెకన్లు";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "ప్రారంభించబడినప్పుడు, మీరు ప్రారంభించిన క్రొత్త సంభాషణలలో పంపిన మరియు స్వీకరించిన క్రొత్త సందేశాలు చూసిన తర్వాత అవి అదృశ్యమవుతాయి.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "వారాలు";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "రద్దుచేసే";
@@ -1424,37 +1436,37 @@
 "DONATION_MEGAPHONE_TITLE" = "Signal కు దానం చేయండి";
 
 /* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+"DONATION_VIEW_AMOUNT_LABEL" = "విరాళం మొత్తం";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "అనుకూల మొత్తాన్ని నమోదు చేయండి";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal కు విరాళం";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "దానం చేయడానికి ఇతర మార్గాలు";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "దానం చేయడానికి పెద్ద మొత్తాన్ని ఎంచుకోండి";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "దానం చేయడానికి చిన్న మొత్తాన్ని ఎంచుకోండి";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "విరాళం ఇవ్వడానికి మొత్తాన్ని ఎంచుకోండి";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "మీ మద్దతుకు ధన్యవాదాలు!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "Signal మీలాంటి వ్యక్తులచే ఆధారితం.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Signal వద్ద ఉన్న బృందం స్వేచ్ఛా వ్యక్తీకరణను రక్షించే మరియు సురక్షితమైన ప్రపంచ కమ్యూనికేషన్‌ను ప్రారంభించే ఓపెన్ సోర్స్ గోప్యతా సాంకేతిక పరిజ్ఞానాన్ని అభివృద్ధి చేసే లక్ష్యానికి కట్టుబడి ఉంది. మీ సహకారం ఈ కారణానికి ఇంధనం ఇస్తుంది. ప్రకటనలు లేవు. ట్రాకర్లు లేరు. తమాషా లేదు.\n\nప్రైవేట్ మరియు తక్షణ కమ్యూనికేషన్ కోసం ప్రపంచవ్యాప్తంగా మిలియన్ల మంది ఉపయోగించే అనువర్తనం యొక్క అభివృద్ధి, సర్వర్లు మరియు బ్యాండ్‌విడ్త్ కోసం చెల్లించడానికి మీ విరాళం సహాయపడుతుంది.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "ఎందుకు దానం చేయాలి?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "మీరు iOS అమరికల అనువర్తనంలో ప్రాప్యతను ప్రారంభించవచ్చు.";
@@ -1586,7 +1598,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "సర్వర్ లోపం. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "సందేశాన్ని పంపే ముందు సర్వర్‌కు వినియోగదారు ధృవీకరణ అవసరం.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "తెలియని లోపం సంభవించింది.";
@@ -1685,13 +1697,16 @@
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "పాత మీడియాను లోడ్ చేస్తోంది…";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "అటాచ్మెంట్";
+"GENERIC_ATTACHMENT_LABEL" = "జోడింపు";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "ప్రారంభించడానికి";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "స్వరూపం";
+
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "స్నేహితులను ఆహ్వానించండి";
@@ -1769,10 +1784,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ బ్లాక్ చేయబడింది";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "ఈ గుంపు యొక్క నిర్వాహకులు మాత్రమే కాల్ ప్రారంభించగలరు.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "సమూహ కాల్ ప్రారంభించలేరు";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ బ్లాక్ చేయబడింది";
@@ -1847,7 +1862,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ఈ కాల్‌లో ఉన్నారు";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ ప్రదర్శిస్తున్నారు";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "తిరిగి కనెక్ట్ చేస్తోంది";
@@ -1856,7 +1871,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "మారిన భద్రతా నంబర్‌తో ఎవరో ఈ కాల్‌లో చేరారు.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "స్క్రీన్ వాటాను వీక్షించడానికి పైకి స్వైప్ చేయండి";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "ఎవరో ఒక సమూహ కాల్ ప్రారంభించారు";
@@ -1913,19 +1928,19 @@
 "GROUP_CREATION_FAILED" = "సభ్యులందరినీ సమూహానికి చేర్చలేరు. మరోసారి ప్రయత్నిచేందుకు తట్టండి.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "more";
+"GROUP_DESCRIPTION_MORE" = "మరింత";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "సమూహ వివరణను జోడించండి ...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Group descriptions will be visible to members of this group and people who have been invited.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "సమూహ వివరణలు ఈ గుంపులోని సభ్యులకు మరియు ఆహ్వానించబడిన వ్యక్తులకు కనిపిస్తాయి.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "సమూహ వివరణ";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "సమూహ వివరణ (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "చెల్లని ఆహ్వానం జోడించబడింది.";
@@ -2033,22 +2048,22 @@
 "GROUP_INVITES_VIEW_TITLE" = "సభ్యుడు ఆహ్వానాలు ";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "సభ్యులందరికీ సందేశాలను పంపడానికి వీలుగా సమూహ సెట్టింగ్‌లు మార్చబడ్డాయి.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "సభ్యులందరికీ సందేశాలను పంపడానికి మీరు సమూహ సెట్టింగులను మార్చారు.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "సభ్యులందరికీ సందేశాలను పంపడానికి %@ సమూహ సెట్టింగులను మార్చారు.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "నిర్వాహకులను సందేశాలను పంపడానికి మాత్రమే అనుమతించడానికి సమూహ సెట్టింగ్‌లు మార్చబడ్డాయి.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "సందేశాలను పంపడానికి నిర్వాహకులను మాత్రమే అనుమతించడానికి మీరు సమూహ సెట్టింగులను మార్చారు.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "సందేశాలను పంపడానికి నిర్వాహకులను మాత్రమే అనుమతించడానికి %@ సమూహ సెట్టింగులను మార్చారు.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ఈ సమూహ లింక్ ఇకపై చెల్లదు.";
@@ -2240,7 +2255,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = " సభ్యులు";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ సమూహ సభ్యులకు అదే పేరు ఉంది.";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "సమీక్షించడానికి నొక్కండి";
@@ -2252,16 +2267,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "సభ్యులను సమీక్షించండి";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ మంది సమూహ సభ్యులకు ఒకే పేరు ఉంది, దిగువ సభ్యులను సమీక్షించండి మరియు చర్య తీసుకోవడానికి ఎంచుకోండి.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ మంది సమూహ సభ్యులకు ఒకే పేరు ఉంది, దిగువ సభ్యులను సమీక్షించండి మరియు చర్య తీసుకోవడానికి ఎంచుకోండి.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ సమూహ సభ్యులకు అదే పేరు ఉంది.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "సమూహం పేరు (అవసరం)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "సముహం పేరు";
@@ -2417,22 +2432,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ సమూహాన్ని నవీకరించారు.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "సమూహ వివరణ తొలగించబడింది.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "మీరు సమూహ వివరణను తొలగించారు.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ సమూహ వివరణను తొలగించారు.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "సమూహ వివరణ మార్చబడింది.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "You changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "మీరు సమూహ వివరణను మార్చారు.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ సమూహ వివరణను మార్చారు.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "సమూహం పేరు తొలగించబడింది.";
@@ -2477,13 +2492,13 @@
 "GROUP_YOU_LEFT" = "మీరు సమూహన్ని విడిచిపెట్టారు";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "నిర్వాహకులు";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "%@ మాత్రమే సందేశాలను పంపగలరు";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "నిర్వాహకుడికి సందేశం పంపండి";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "మీరు బయలుదేరే ముందు ఈ గుంపు కోసం క్రొత్త నిర్వాహకుడిని ఎంచుకోండి.";
@@ -2747,13 +2762,13 @@
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "మీరు %@ అంశాల కంటే ఎక్కువ భాగస్వామ్యం చేయలేరు.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "ఫోటోలను మార్చండి";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "చిత్రాలను మార్చండి";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "సెట్టింగులలో పూర్తి ప్రాప్యతను మంజూరు చేయండి లేదా Signal యాక్సెస్ చేయగల ఫోటోలను మార్చండి.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "సెట్టింగులలో పూర్తి ప్రాప్యతను మంజూరు చేయండి లేదా Signal యాక్సెస్ చేయగల చిత్రాలను మార్చండి.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "మీ ఫోటోలను చూడలేదా?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "మీ చిత్రాలను చూడలేదా?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "జోడింపును ఎంచుకోవడంలో విఫలమైంది.";
@@ -2807,7 +2822,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "స్టిక్కర్లు";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "రికార్డ్ చేయడానికి రెండుసార్లు నొక్కి పట్టుకోండి. పంపడానికి విడుదల లేదా రద్దు చేయడానికి ఎడమవైపుకి స్లయిడ్ చేయండి.రికార్డింగ్‌ని లాక్ చేయడానికి రెండుసార్లు నొక్కండి మరియు స్లైడ్ చేయండి. ";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "వాయిస్ సందేశం";
@@ -2909,7 +2924,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "మీరు లింక్ చేయదలిచిన పరికరంలో ప్రదర్శించబడే QR కోడ్‌ను స్కాన్ చేయండి.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "క్రొత్త పరికరాన్ని లింక్ చేయడానికి QR కోడ్‌ను స్కాన్ చేయండి.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "కొత్త పరికరాన్ని అనుసంధానించు";
@@ -2960,7 +2975,7 @@
 "LOGGING_SECTION" = "లాగింగ్";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "డీబగ్ లాగ్‌లు Signal సమస్యలను మరియు క్రాష్‌లను పరిష్కరించడంలో సహాయపడతాయి.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "సందేశం";
@@ -2978,7 +2993,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "సందేశాన్ని తొలగించు";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ ఛాయాచిత్రాలు ";
+"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ ఛాయాచిత్రాలు ";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
 "MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@అంశాలు";
@@ -3023,34 +3038,34 @@
 "MESSAGE_ACTION_DETAILS" = "మరింత సమాచారం";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "క్రొత్త ఇమెయిల్ సందేశం";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ఇమెయిల్ కాన్ఫిగర్ చేయబడలేదు.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "ఈ సందేశాన్ని ఫార్వార్డ్ చేయండి";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "ఓపెన్ సమూహం ఆహ్వానం";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "లింక్ తెరవండి";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "స్టిక్కర్ ప్యాక్ చూడండి";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "కాల్";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "ఫేస్‌టైమ్ ఆడియో";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "ఫేస్‌టైమ్ వీడియో";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "వచన సందేశం పంపండి";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ఈ సందేశానికి ప్రత్యుత్తరం ఇవ్వండి";
@@ -3062,7 +3077,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "మీడియాను భాగస్వామ్యం చేయండి";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "సమూహ ఆహ్వానం";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "స్టిక్కర్ ప్యాక్";
@@ -3074,7 +3089,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "కొత్త సందేశం";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "పంపిన సమయం కాపీ చేయబడింది";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "నుండి పంపబడింది";
@@ -3092,16 +3107,16 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "విఫలమైంది";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "పంపడం పాజ్ చేయబడింది";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "చదివిన వారు";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "కు పంపుతోంది";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "పంపాను";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "కు పంపబడింది";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "దాటవేయబడింది";
@@ -3110,7 +3125,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "అప్లోడ్";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "వీక్షించారు";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "అందుకున్న";
@@ -3122,7 +3137,7 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "పంక్తిపేరు";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
+"MESSAGE_METADATA_VIEW_TITLE" = "సందేశం వివరాలు";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "నిరోధించు";
@@ -3131,7 +3146,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "అడ్డగించు మరియు తొలగించు";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "స్పామ్ మరియు బ్లాక్‌ను నివేదించండి";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "నిరోధించిన వ్యక్తులు మీకు కాల్ చేయలేరు లేదా మీకు సందేశాలు పంపలేరు.";
@@ -3185,7 +3200,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "అభ్యర్థనను సమీక్షించండి";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Reported as spam and blocked.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "స్పామ్‌గా నివేదించబడింది మరియు నిరోధించబడింది.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "అంగీకరించండి";
@@ -3251,10 +3266,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "సందేశం కొంతమేర పంపబడింది, వివరాల కోసం నొక్కండి";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "పంపండి పాజ్ చేయబడింది";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "పాజ్ చేయబడింది";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "చదవండి";
@@ -3317,7 +3332,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "మీరు iOS సెట్టింగ్‌ల అనువర్తనంలో ఈ అనుమతిని ప్రారంభించవచ్చు.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "ఈ లక్షణం కోసం Signal కు మీ ఫోటోలకు ప్రాప్యత అవసరం.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "ఈ లక్షణం కోసం Signal కు మీ చిత్రాలకు ప్రాప్యత అవసరం.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "మీరు మరిన్ని పరికరాలను లింక్ చేయలేరు.";
@@ -3329,7 +3344,7 @@
 "MUTED_BADGE" = "మ్యూట్ చేయబడింది";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "ఇటీవల వారి ప్రొఫైల్ పేరును %1$@ నుండి %2$@ గా మార్చారు";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "దాటవేయి";
@@ -3518,10 +3533,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "మీ సందేశాలకు మానవత్వం యొక్క స్పర్శను జోడించండి";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "మీరు చాలా కాలం పాటు క్రియారహితంగా ఉన్నందున, సిగ్నల్ ఉపయోగించడానికి మీరు మళ్ళీ నమోదు చేసుకోవాలి.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+"ONBOARDING_DROPPED_YDB_TITLE" = "Signal కోసం నమోదు చేయండి";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ఐప్యాడ్ నమోదు";
@@ -3572,7 +3587,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE" = "మీ ఫోన్ నంబర్‌ను నమోదు చేయండి";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Your Phone Number";
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "మీ చరవాణి సంఖ్య";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "చెల్లని చరవాణి సంఖ్య. నమోదు చేయడానికి దయచేసి చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి.";
@@ -3659,61 +3674,61 @@
 "OUTGOING_CALL_FORMAT" = "మీరు %@ అని పిలిచారు";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "అభ్యర్థనను తిరస్కరించండి";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%2$@ వద్ద %1$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "మీరు తిరస్కరించినట్లు %@ కి తెలియజేయబడుతుంది.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "ఈ అభ్యర్థనను తిరస్కరించాలా?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "కాయిన్ క్లీనప్ ఫీజు";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "అభ్యర్థన రద్దు కాలేదు.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "అభ్యర్థన తిరస్కరించబడలేదు.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "విఫలమైంది";
 
 /* Status indicator for incoming payments which failed to verify. */
-"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "చెల్లదు";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_FAILURE_INVALID" = "Invalid";
+"PAYMENTS_FAILURE_INVALID" = "చెల్లదు";
 
 /* Status indicator for outgoing payments which failed. */
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "విఫలమైంది";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "తగినంత నిధులు";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "రశీదు గ్రహీతకు పంపబడలేదు";
 
 /* Status indicator for outgoing payments which failed to verify. */
-"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "చెల్లదు";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "గమనిక చేర్చు";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "అందుబాటులో ఉన్న బ్యాలెన్స్: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "చెల్లింపును నిర్ధారించండి";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "చెల్లించండి";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -3722,10 +3737,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "సేవను సంప్రదించలేకపోయాము";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "ఈ చెల్లింపును పూర్తి చేయడానికి మీకు తగినంత MOB లేదు.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "ఈ చెల్లింపును పూర్తి చేయడానికి మీకు తగినంత MOB లేదు. మీ ప్రస్తుత బ్యాలెన్స్ %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "లావాదేవీ చెల్లదు";
@@ -3734,61 +3749,61 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "చెల్లింపులను ఉపయోగించడానికి Signalను నవీకరించండి.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "చెల్లింపు ఇంకా ధృవీకరించబడలేదు";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "చెల్లింపు పూర్తి కాలేదు. మీ కనెక్షన్‌ను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "నెట్‌వర్క్ ఫీజు";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "అంచనా %@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "చెల్లని మొత్తం";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "గమనిక";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "చెల్లించండి";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "యావత్తు మొత్తం";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "ప్రవర్తనం";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "%@ వరకు";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "అభ్యర్థన";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1 కొత్త చెల్లింపు నోటిఫికేషన్";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ మీకు %2$@ పంపారు";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ కొత్త చెల్లింపు నోటిఫికేషన్‌లు";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "చెల్లింపు పూర్తయింది";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "ధృవీకరించబడలేదు";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "నిర్థారించబడింది";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "చెల్లింపు పూర్తయింది";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "పంపుతోంది ...";
@@ -3797,28 +3812,28 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "పంపిన";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "సిద్ధమవుతోంది";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "ధృవీకరించబడలేదు";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "నిర్థారించబడింది";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "తెలియని వైఫల్యం";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "పూర్తయింది";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "ధృవీకరించబడలేదు";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "నిర్థారించబడింది";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "పూర్తయింది";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "పంపుతోంది ...";
@@ -3827,43 +3842,43 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "పంపిన";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "సిద్ధమవుతోంది";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "ధృవీకరించబడలేదు";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "నిర్థారించబడింది";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "తెలియని వైఫల్యం";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "ఈ వినియోగదారుకు చెల్లింపును పంపడానికి వారు మీ నుండి సందేశ అభ్యర్థనను అంగీకరించాలి.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "ఈ వినియోగదారుకు చెల్లింపును పంపడానికి వారు మీ నుండి సందేశ అభ్యర్థనను అంగీకరించాలి. సందేశ అభ్యర్థనను సృష్టించడానికి వారికి సందేశం పంపండి.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "చెల్లింపు పంపలేరు";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "ఈ వ్యక్తి చెల్లింపులను సక్రియం చేయలేదు.";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Invalid Recipient";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "చెల్లని గ్రహీత";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "బయటికి బదిలీ";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Received Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "చెల్లింపు అందుకుంది";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Sent Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "చెల్లింపు పంపబడింది";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+"PAYMENTS_UNKNOWN_PAYMENT" = "చెల్లని చెల్లింపు";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "సమూహానికి జోడించండి";
@@ -3932,7 +3947,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "చెల్లని ఆహ్వానాలు";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "ఇతరులు ఆహ్వానించారు";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "మీరు ఆహ్వానించారు";
@@ -4274,13 +4289,13 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ వారి ప్రొఫైల్ పేరును %@ గా మార్చారు.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+"PROFILE_NAME_VIEW_TITLE" = "నీ పేరు";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "గురించి";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
-"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "పేరు";
 
 /* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "వినియోగదారుడు ";
@@ -4346,7 +4361,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "అసలు సందేశం కనుగొనబడలేదు";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "అటాచ్మెంట్";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "జోడింపు";
 
 /* Indicates this message is a quoted reply to an audio file. */
 "QUOTED_REPLY_TYPE_AUDIO" = "ఆడియో";
@@ -4781,13 +4796,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "లింకింగ్ కోడ్‌ను పొందడం సాధ్యం కాలేదు";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ఈ పరికరాన్ని వేరే ఖాతాకు లింక్ చేయడానికి, మీరు మొదట ఈ పరికరాన్ని రీసెట్ చేయాలి. మీరు ఖచ్చితంగా అన్ని చరిత్రలను (సందేశాలు, జోడింపులు, కాల్‌లు మొదలైనవి) తొలగించాలనుకుంటున్నారా? ఈ చర్య తిరిగి మార్చబడదు.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "ప్రతిదీ తొలగించండి";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "ఖాతా సరిపోలలేదు";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "ఈ పరికరంలో మీ ఫోన్‌తో లింక్ చేయడానికి Signal‌ను నవీకరించండి.";
@@ -4892,7 +4907,7 @@
 "SET_WALLPAPER_TITLE" = "వాల్‌పేపర్‌ను జత చేయండి";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "ఖాతా";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "నిరోధించు";
@@ -4940,10 +4955,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "పొరపాటు సంఘటన లేకరి";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "అందుబాటులో ఉంటే సిస్టమ్ సంప్రదింపు ఛాయాచిత్రాలను ప్రదర్శించండి";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "సిస్టమ్ సంప్రదింపు ఛాయాచిత్రాలను ఉపయోగించండి";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "థీమ్";
@@ -4979,7 +4994,7 @@
 "SETTINGS_CLEAR_HISTORY" = "మాటామంతీ చరిత్రను క్లియర్ చేయండి";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "రచనాస్వామ్యం Signal Messenger\nGPLv3  క్రింద అనుమతిపత్రము";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "డేటా వినియోగం";
@@ -4988,7 +5003,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "తక్కువ డేటాను ఉపయోగించండి";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "తక్కువ డేటాను ఉపయోగించడం సరికాని నెట్‌వర్క్‌లలో కాల్‌లను మెరుగుపరుస్తుంది.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "కాల్స్";
@@ -4997,7 +5012,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "వాయిస్ సందేశాలు, ఒకసారి-వీక్షణ మీడియా మరియు స్టిక్కర్లు (100kb లోపు) ఎల్లప్పుడూ ఆటో-డౌన్‌లోడ్ చేయబడతాయి.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "ఆటో-డౌన్‌లోడ్";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "స్వీయ-సమాచారాన్ని బదిలీచేయడం సెట్టింగ్‌లను రీసెట్ చేయండి";
@@ -5006,22 +5021,22 @@
 "SETTINGS_DATA_TITLE" = "డేటా వినియోగం";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "క్రొత్త మాటామంతిల కోసం అప్రమేయ టైమర్";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ఖాతాను తొలగించండి";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "బదిలీ చేయవద్దు";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "మీకు %@ బ్యాలెన్స్ ఉంది. మీ ఖాతాను తొలగించే ముందు మీరు మీ నిధులను మరొక వాలెట్ చిరునామాకు బదిలీ చేయకపోతే, మీరు దాన్ని ఎప్పటికీ కోల్పోతారు.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "చెల్లింపుల బ్యాలెన్స్ బదిలీ చేయాలా?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "బ్యాలెన్స్ బదిలీ ";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "సమాచార మొత్తని తొలగించండి";
@@ -5036,7 +5051,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "అదృశ్యమవుతున్న  సందేశాలు";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "మీరు ప్రారంభించిన అన్ని క్రొత్త మాటామంతిల కోసం అప్రమేయంగా అదృశ్యమయ్యే సందేశ టైమర్‌ను సెట్ చేయండి.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal కు దానం చేయండి";
@@ -5051,7 +5066,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "మీరు @signalapp ఉపయోగించి నన్ను చేరుకోవచ్చు. ఇప్పుడే పొందండి: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chat Color & Wallpaper";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "మాటామంతి కలర్ & వాల్‌పేపర్";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "సందేశ ధ్వని";
@@ -5090,211 +5105,211 @@
 "SETTINGS_MESSAGING" = "సందేశం";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+"SETTINGS_MESSAGING_FOOTER" = "సందేశాలు చదివి మరియు టైప్ చేస్తున్నప్పుడు, చూడండి మరియు భాగస్వామ్యం చేయండి. నిలిపివేయబడితే, మీరు ఇతరుల నుండి చదివిన రశీదులు లేదా టైపింగ్ సూచికలను చూడలేరు.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "అమరికలు";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "మ్యూట్ చేసిన మాటామంతిలను చేర్చండి";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "బ్యాడ్జ్ కౌంట్";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "మీ ఫోన్ లాక్ చేయబడినప్పుడు కాల్ మరియు సందేశ నోటిఫికేషన్‌లు కనిపిస్తాయి.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "ప్రకటనల ధ్వని";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "పరిచయం Signal లొ చేరారు";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "ఎప్పుడు తెలియజేయండి…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "ప్రకటనలు";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "సక్రియం చేయండి";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "MobileCoin పంపడానికి మరియు స్వీకరించడానికి మీరు Signal ఉపయోగించవచ్చు. అన్ని చెల్లింపులు MobileCoins మరియు MobileCoin Wallet కోసం ఉపయోగ నిబంధనలకు లోబడి ఉంటాయి. ఇది బీటా లక్షణం కాబట్టి మీరు కొన్ని సమస్యలను ఎదుర్కొంటారు మరియు మీరు కోల్పోయే చెల్లింపులు లేదా బ్యాలెన్స్‌లను తిరిగి పొందలేరు.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "సక్రియం చేయండి";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin నిబంధనలను చూడండి";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "నిధులను జోడించండి";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "నిధులను జోడించడానికి, మీ వాలెట్ చిరునామాకు MobileCoin పంపండి. MobileCoin కి మద్దతిచ్చే మార్పిడిలో మీ ఖాతా నుండి లావాదేవీని ప్రారంభించండి, ఆపై QR కోడ్‌ను స్కాన్ చేయండి లేదా మీ వాలెట్ చిరునామాను కాపీ చేయండి.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "వాలెట్ చిరునామా కాపీ చేయబడింది";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "అన్ని చెల్లింపులు";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%3$@ వద్ద %1$@ %2$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal లో చెల్లింపులు ఇకపై అందుబాటులో లేవు. మీరు ఇప్పటికీ నిధులను ఎక్స్ఛేంజికి బదిలీ చేయవచ్చు, కానీ మీరు ఇకపై చెల్లింపులను పంపలేరు మరియు స్వీకరించలేరు లేదా నిధులను జోడించలేరు.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "మీ బ్యాలెన్స్ అందుబాటులో లేనందున చెల్లింపులను నిష్క్రియం చేయలేము. మీ కనెక్షన్‌ను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "మీ బ్యాలెన్స్ అందుబాటులో లేనందున చెల్లింపు పూర్తి కాలేదు. మీ కనెక్షన్‌ను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal లో చెల్లింపులు ఇకపై అందుబాటులో లేవు. మీరు ఇప్పటికీ నిధులను ఎక్స్ఛేంజికి బదిలీ చేయవచ్చు, కానీ మీరు ఇకపై చెల్లింపులను పంపలేరు మరియు స్వీకరించలేరు లేదా నిధులను జోడించలేరు.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal లో చెల్లింపులు ఇకపై అందుబాటులో లేవు. మీరు ఇప్పటికీ నిధులను ఎక్స్ఛేంజికి బదిలీ చేయవచ్చు, కానీ మీరు ఇకపై చెల్లింపులను పంపలేరు మరియు స్వీకరించలేరు లేదా నిధులను జోడించలేరు.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "మార్పిడులు కేవలం అంచనాలు మరియు ఖచ్చితమైనవి కాకపోవచ్చు.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "All Currencies";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "అన్ని కరెన్సీలు";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "బదిలీ మిగిలిన బ్యాలెన్స్";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "నిష్క్రియం చేయండి";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "చెల్లింపులను నిష్క్రియం చేయండి";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "మీరు చెల్లింపులను నిష్క్రియం చేస్తే మీరు సిగ్నల్‌లో మొబైల్‌కాయిన్‌ను పంపలేరు లేదా స్వీకరించలేరు.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "చెల్లింపులను నిష్క్రియం చేయండి?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "చెల్లింపులను నిష్క్రియం చేయండి";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "చెల్లింపులను నిష్క్రియం చేయడానికి ముందు మీ నిధులను మరొక వాలెట్ చిరునామాకు బదిలీ చేయాలని సిఫార్సు చేయబడింది. మీరు ఇప్పుడు మీ నిధులను బదిలీ చేయకూడదని ఎంచుకుంటే, మీరు చెల్లింపులను తిరిగి సక్రియం చేస్తే అవి Signal తో అనుసంధానించబడిన మీ వాలెట్‌లో ఉంటాయి.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "మీరు చెల్లింపులను తిరిగి సక్రియం చేయడానికి ఎంచుకుంటే మీ బ్యాలెన్స్ Signal తో అనుసంధానించబడిన మీ వాలెట్‌లో ఉంటుంది.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "బదిలీ చేయకుండా నిష్క్రియం చేయండి?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "బదిలీ చేయకుండా నిష్క్రియం చేయండి";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "చెల్లింపులు క్రియారహితం కాలేదు";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "వివరాలు";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "చెల్లింపులను ప్రారంభించండి";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin కొత్త గోప్యతా దృష్టి డిజిటల్ కరెన్సీ.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin గురించి";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "మీ వాలెట్ చిరునామాకు MobileCoin పంపడం ద్వారా మీరు Signalలో ఉపయోగం కోసం నిధులను జోడించవచ్చు.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "నిధులను కలుపుతోంది";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "మీరు MobileCoinకు మద్దతిచ్చే మారకంలో ఎప్పుడైనా MobileCoinను క్యాష్ అవుట్ చేయవచ్చు. ఆ మారకంలో మీ ఖాతాకు బదిలీ చేయండి.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "క్యాష్ అవుట్";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "పిన్‌ను నవీకరించండి";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "అధిక బ్యాలెన్స్‌తో, మీ ఖాతాకు మరింత రక్షణను జోడించడానికి మీరు ఆల్ఫాన్యూమరిక్ పిన్‌కు నవీకరించాలనుకోవచ్చు.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "మీ పిన్‌ను నవీకరించండి";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "పదబంధాన్ని రికార్డు చేయండి ";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "మీ రికవరీ పదబంధం మీ చెల్లింపుల ఖాతాను పునరుద్ధరించడానికి మరొక మార్గాన్ని ఇస్తుంది.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "రికవరీ పదబంధాన్ని రికార్డ్ చేయండి";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "చెల్లని వాలెట్ చిరునామా";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "ఇటీవలి కార్యాచరణ ఇంకా లేదు.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "మీరు చెల్లింపులను ప్రారంభించాలనుకుంటున్నారా?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "చెల్లింపులు ప్రారంభించబడలేదు";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "చెల్లింపులు పంపడానికి తిరిగి నమోదు చేయండి.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "నమోదు కాలేదు";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Activate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "చెల్లింపులను సక్రియం చేయండి";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "చెల్లింపులు సక్రియం చేయబడ్డాయి.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "క్రొత్త గోప్యతా దృష్టి డిజిటల్ కరెన్సీ అయిన MobileCoin న్ పంపడానికి మరియు స్వీకరించడానికి Signal ఉపయోగించండి. ప్రారంభించడానికి సక్రియం చేయండి.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "చెల్లింపులను తిరిగి సక్రియం చేయండి";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "చెల్లింపులను పరిచయం చేస్తోంది (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "మీరు మీ Signal పిన్ను ధృవీకరిస్తే Signal ను మళ్లీ ఇన్‌స్టాల్ చేసినప్పుడు మీ బ్యాలెన్స్ స్వయంచాలకంగా పునరుద్ధరించబడుతుంది. రికవరీ పదబంధాన్ని ఉపయోగించి మీరు మీ సమతుల్యతను కూడా పునరుద్ధరించవచ్చు, ఇది మీకు ప్రత్యేకమైన 24-పదాల పదబంధం. దానిని వ్రాసి సురక్షితమైన స్థలంలో నిల్వ చేయండి.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "నిధులను జోడించండి";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "బ్లాక్ సంఖ్య";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "నెట్‌వర్క్ ఫీజు";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "అందుకున్న";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@ నుండి స్వీకరించబడింది";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "పంపినది";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ %2$@ న";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "మీరు";
@@ -5303,31 +5318,31 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "పంపిన";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@ కు పంపబడింది";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "స్థితి";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "చెల్లింపు మొత్తం మరియు లావాదేవీల సమయంతో సహా లావాదేవీ వివరాలు MobileCoin లెడ్జర్‌లో భాగం.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "లావాదేవీని పూర్తి చేయడానికి మీ వద్ద ఉన్న నాణేలను కలపలేనప్పుడు “కాయిన్ క్లీనప్ ఫీజు” వసూలు చేయబడుతుంది. చెల్లింపులు పంపడం కొనసాగించడానికి క్లీనప్ మిమ్మల్ని అనుమతిస్తుంది.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "ఈ చెల్లింపును పూర్తి చేయడానికి మీకు తగినంత MOB లేదు. మీ ప్రస్తుత బ్యాలెన్స్ %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "తగినంత బ్యాలెన్స్ లేదు";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%@ నుండి";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "%@ వరకు";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "చెల్లింపులు నిష్క్రియం చేయబడ్డాయి.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "అన్ని";
@@ -5339,175 +5354,175 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "పంపిన";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "ఇటీవలి చెల్లింపులు";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "మీరు మీ పిన్ను నిలిపివేయడానికి ముందు, మీరు మీ చెల్లింపుల ఖాతాను తిరిగి పొందగలరని నిర్ధారించుకోవడానికి మీ చెల్లింపుల రికవరీ పదబంధాన్ని రికార్డ్ చేయాలి.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "రికార్డ్ రికవరీ ఫ్రేజ్";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "రికార్డ్ చెల్లింపులు రికవరీ పదబంధం";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "మిగిలిన మొత్తం";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "తొలగించు";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "చెల్లింపుల ఖాతాను పునరుద్ధరించండి";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "మీరు మీ పదబంధాన్ని సరిగ్గా నమోదు చేశారని నిర్ధారించుకోండి.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "రికవరీ పదబంధాన్ని నిర్ధారించండి";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "చెల్లింపుల ఖాతా పునరుద్ధరించబడింది.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "మాన్యువల్‌గా నమోదు చేయండి";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Recovery Failed";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "రికవరీ విఫలమైంది";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "ఇది చెల్లుబాటు అయ్యే రికవరీ పదబంధం కాదు.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "చెల్లని పదబంధం";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "తాత్కాలికంగా భద్రపరుచు ప్రదేశమునుండి అతికించండి";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "రికవరీ పదబంధం";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "రికవరీ పదబంధాన్ని అతికించండి";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "మీ రికవరీ పదబంధం మీకు ప్రత్యేకమైన 12-పదాల పదబంధం. మీ చెల్లింపుల ఖాతాను పునరుద్ధరించడానికి దీన్ని ఉపయోగించండి.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "రికవరీ పదబంధాన్ని నమోదు చేయండి";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "రికవరీ పదబంధం";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "%@ వ పదాన్ని నమోదు చేయండి";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Invalid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "పునరుద్ధరణ పదబంధం చెల్లదు.";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Word is spelled incorrectly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "పదం తప్పుగా స్పెల్లింగ్ చేయబడింది.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "రికవరీ పదబంధాన్ని నమోదు చేయండి";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "బదిలీ గ్రహీత కోసం QR కోడ్‌ను స్కాన్ చేయండి.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "చెల్లని చిరునామా";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR కోడ్‌ను స్కాన్ చేయండి";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "చెల్లింపు పంపండి";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "గ్రహీతను ఎంచుకోండి";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "కరెన్సీ మార్పిడి";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "చెల్లింపులు";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "మీరు మీ Signal వాలెట్ చిరునామాకు బదిలీ చేయలేరు. మద్దతు ఉన్న మార్పిడి వద్ద మీ ఖాతా నుండి వాలెట్ చిరునామాను నమోదు చేయండి.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "ఎక్స్ఛేంజ్ అందించిన వాలెట్ చిరునామాకు బదిలీని పూర్తి చేయడం ద్వారా మీరు MobileCoin న్ను బదిలీ చేయవచ్చు. వాలెట్ చిరునామా అనేది QR కోడ్ క్రింద సాధారణంగా సంఖ్యలు మరియు అక్షరాల స్ట్రింగ్.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "మీరు బదిలీ చేయడానికి ప్రయత్నిస్తున్న వాలెట్ చిరునామాను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "తప్పు చిరునామా";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "వీరికి: వాలెట్ చిరునామాను స్కాన్ చేయండి లేదా నమోదు చేయండి";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "ఎక్స్ఛేంజ్కు బదిలీ చేయండి";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "ఎక్స్ఛేంజ్కు బదిలీ చేయండి";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Recovery phrase setup complete.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "రికవరీ పదబంధం సెటప్ పూర్తయింది.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "నిర్ధారించండి";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "మీ రికవరీ పదబంధం నుండి %1$@ మరియు %2$@ పదాలను నమోదు చేయండి.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "A word is incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "ఒక పదం తప్పు. మళ్ళీ ప్రయత్నించండి.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Both words are incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "రెండు పదాలు తప్పు. మళ్ళీ ప్రయత్నించండి.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Word %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "పదం %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "రికవరీ పదబంధాన్ని నిర్ధారించండి";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "రికవరీ ఫ్రేజ్ కాపీ చేయబడింది";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "తాత్కాలికంగా  భద్రపరుచు  ప్రదేశముకు నకలు చెయ్యి";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "మీరు మీ రికవరీ పదబంధాన్ని డిజిటల్‌గా నిల్వ చేయాలని ఎంచుకుంటే, మీరు విశ్వసించిన చోట సురక్షితంగా నిల్వ చేయబడిందని నిర్ధారించుకోండి.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "తాత్కాలికంగా  భద్రపరుచు  ప్రదేశముకు నకలు చెయ్యి?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "మళ్ళీ పదబంధం చూడండి";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "రికవరీ పదబంధాన్ని చూడండి";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "రికవరీ పదబంధం";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "కింది 24 పదాలను క్రమంలో రాయండి. మీ జాబితాను సురక్షితమైన స్థలంలో నిల్వ చేయండి.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "స్క్రీన్ షాట్ చేయవద్దు లేదా ఇమెయిల్ ద్వారా పంపవద్దు.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "రికవరీ పదబంధం";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "Payments (Beta)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "చెల్లింపులు (Beta)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Your Wallet Address";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "మీ వాలెట్ చిరునామా";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "ఫోన్ నంబర్ ద్వారా నన్ను కనుగొనండి";
@@ -5534,7 +5549,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "పిన్ రిమైండర్‌లు";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "పిన్‌లు Signal గుప్తీకరించిన సమాచారాన్ని నిల్వ చేస్తాయి కాబట్టి మీరు మాత్రమే దీన్ని యాక్సెస్ చేయవచ్చు. మీ పిన్ తిరిగి పొందలేము. మీరు Signal ‌ను మళ్లీ ఇన్‌స్టాల్ చేసినప్పుడు మీ ప్రొఫైల్, సెట్టింగ్‌లు మరియు పరిచయాలు పునరుద్ధరించబడతాయి.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "మీ పిన్ మార్చండి";
@@ -5546,7 +5561,7 @@
 "SETTINGS_PINS_TITLE" = "Signal పిన్";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "సెన్సార్‌షిప్ సర్క్వెన్షన్, రిలే కాల్స్ మరియు సీల్డ్ పంపినవారి సెట్టింగ్‌లు.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "ఆధునిక";
@@ -5588,10 +5603,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "స్క్రీన్ తాళం";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "అనువర్తన స్విచ్చర్‌లో స్క్రీన్‌ను దాచండి";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "iOS ఫోన్ అనువర్తనంలో \"రీసెంట్స్\" జాబితాలో కాల్‌లను చూపించు.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "శబ్దాలు ";
@@ -5600,22 +5615,22 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "కాలింగ్";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Signal ను అన్‌లాక్ చేయడానికి టచ్ ఐడి, ఫేస్ ఐడి లేదా మీ iOS పరికర పాస్‌కోడ్‌ను ఉపయోగించండి.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Signal ను అన్‌లాక్ చేయడానికి ఫేస్ ఐడిని ఉపయోగించండి.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal ను అన్‌లాక్ చేయడానికి మీ పరికర పాస్‌కోడ్‌ను ఉపయోగించండి.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Signal ను అన్‌లాక్ చేయడానికి టచ్ ఐడిని ఉపయోగించండి.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "అనువర్తన భద్రత";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "సూచనలలో మాటామంతిలను చూపించు";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "ఇతర అనువర్తనాల నుండి భాగస్వామ్యం చేసేటప్పుడు Signal మాటామంతీ‌లు సూచనలుగా ప్రదర్శించబడతాయి.";
@@ -5624,7 +5639,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "నమోదు లాక్";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal తో మీ ఫోన్ నంబర్‌ను మళ్లీ నమోదు చేయడానికి మీ Signal పిన్ అవసరం.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "టైపింగ్ సూచికలు";
@@ -5633,7 +5648,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "ముద్రవేసిన ప్రేషకుడు";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "స్టేటస్‌ చిహ్నాన్ని చూపించు";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ఎవరి నుండి అయినా అనుమతించు";
@@ -5675,7 +5690,7 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "సిద్ధంగా లేదు";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "అటాచ్మెంట్ పంపడం సాధ్యం కాలేదు";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "జోడింపు పంపడం సాధ్యం కాలేదు";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%1$@ లో %2$@ ని అప్‌లోడ్ చేస్తోంది…";
@@ -5714,31 +5729,31 @@
 "SMS_INVITE_BODY" = "Signal ను ఇన్‌స్టాల్ చేయడానికి నేను మిమ్మల్ని ఆహ్వానిస్తున్నాను! లింక్ ఇక్కడ ఉంది:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "శబ్దాలు & నోటిఫికేషన్‌లు";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ఏదీ కాదు";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "ధృవీకరణ పూర్తయింది.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "మీరు ధృవీకరణను దాటవేయాలని ఎంచుకుంటే, మీరు ఇతర వ్యక్తుల నుండి సందేశాలను కోల్పోవచ్చు మరియు మీ సందేశాలు పంపడంలో విఫలం కావచ్చు.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ధృవీకరించకుండా కొనసాగించాలా?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Signal పై స్పామ్‌ను నిరోధించడంలో సహాయపడటానికి, దయచేసి ధృవీకరణను పూర్తి చేయండి.\n\nధృవీకరించిన తర్వాత, మీరు సందేశాన్ని కొనసాగించవచ్చు. పాజ్ చేయబడిన ఏదైనా సందేశాలు స్వయంచాలకంగా పంపబడతాయి.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "సందేశాన్ని కొనసాగించడానికి ధృవీకరించండి";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ధృవీకరణను దాటవేయి";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "పూర్తి ధృవీకరణ";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "రాబోయే వారాల్లో ప్రస్తుత సమూహాలు స్వయంచాలకంగా ఈ లక్షణాలను పొందుతాయి.";
@@ -5807,7 +5822,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "మమ్మల్ని సంప్రదించండి";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "ఏమి జరుగుతుందో మాకు చెప్పండి";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "సమస్య గురించి మాకు చెప్పండి:";
@@ -5864,13 +5879,13 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "నిర్ధారించబడిన";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "మీరు వారికి సందేశం పంపినప్పుడు అదృశ్యమగు సందేశ సమయం %@ కు సెట్ చేయబడుతుంది.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "సాధారణంగా సమూహాలు లేవు. అభ్యర్థనలను జాగ్రత్తగా సమీక్షించండి.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "సాధారణంగా సమూహాలు లేవు. అభ్యర్థనలను జాగ్రత్తగా సమీక్షించండి.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ఈ సందేశం తొలగించబడింది.";
@@ -6032,7 +6047,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "మీ పరికరం ఈ లక్షణానికి మద్దతు ఇవ్వదు.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "%@ తో మీ భద్రతా సంఖ్య మార్చబడింది, అది వారు Signal ను తిరిగి ఇన్‌స్టాల్ చేయటం లేదా పరికరాన్నీ మార్చడం వల్ల జరిగి ఉండవచ్చు. క్రొత్త భద్రతా సంఖ్యను నిర్ధారించడానికి ధృవీకరించు నొక్కండి. ఇది ఐచ్ఛికం.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "నిర్ధారించబడిన";
@@ -6149,7 +6164,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "వాయిస్ సందేశం";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "రికార్డ్ చేయడానికి నొక్కి పట్టుకోండి.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop యొక్క పూర్తి స్థాపన ";
@@ -6176,10 +6191,10 @@
 "WALLPAPER_PREVIEW_TITLE" = "పూర్వప్రదర్శన";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Clear Chat Color";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "మాటామంతీ రంగు క్లియర్ చేయండి";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Clear chat color for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "ఈ మాటామంతీ కోసం మాటామంతీ రంగును క్లియర్ చేయాలా?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "వాల్‌పేపర్‌ను క్లియర్ చేయండి";
@@ -6197,40 +6212,40 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "అన్ని వాల్‌పేపర్‌లను రీసెట్ చేయడం సాధ్యం కాలేదు, దయచేసి తరువాత మళ్లీ ప్రయత్నించండి లేదా లోపం కొనసాగితే మద్దతును సంప్రదించండి.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Reset All Colors";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "అన్ని రంగులను రీసెట్ చేయండి";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "అన్ని వాల్‌పేపర్‌లను రీసెట్ చేయండి";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "మీరు అన్ని మాటామంతి రంగులను భర్తీ చేయాలనుకుంటున్నారా?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "మాటామంతి రంగులను రీసెట్ చేయండి";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "మాటామంతి రంగును రీసెట్ చేయండి";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "వాల్‌పేపర్‌ను రీసెట్ చేయండి";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "అప్రమేయ రంగులను రీసెట్ చేయండి";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "మాటామంతి రంగులను రీసెట్ చేయండి";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "అప్రమేయ వాల్‌పేపర్‌ను రీసెట్ చేయండి";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Reset Wallpapers";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "వాల్‌పేపర్‌లను రీసెట్ చేయండి";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Would you like to override all wallpapers?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "మీరు అన్ని వాల్‌పేపర్‌లను భర్తీ చేయాలనుకుంటున్నారా?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "వాల్‌పేపర్‌ను రీసెట్ చేయండి";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "మాటామంతీ రంగు ";

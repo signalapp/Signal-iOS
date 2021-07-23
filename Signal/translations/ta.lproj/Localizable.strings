@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "இப்போது இல்லை";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "பற்றி Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "புதிய பாதுகாப்பு எண்ணை ஒப்புக்கொள்";
@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "குழுவில் சேர்";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "கூட்டு “%1$@” முதல் “%2$@”?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "புதியனவற்றை சேர் உறுப்பினர்";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ அவர்கள் %@ குழுவில் சேர்க்கப்பட்டனர் ";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "கூட்டு ஒரு குழு";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "இந்த பயனருடன் உங்கள் சுயவிவரத்தைப் பகிர விரும்புகிறீர்களா?";
@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "சேமி";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "உங்களிடம் உள்ளது இல்லை குழுக்கள்இந்த நபருடன் பொதுவானது. தேவையற்ற செய்திகளைத் தவிர்ப்பதற்கு ஏற்றுக்கொள்வதற்கு முன் கோரிக்கைகளை கவனமாக மதிப்பாய்வு செய்யவும்.\n ";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "உங்களிடம் உள்ளது இல்லை இது பொதுவான உறுப்பினர்கள் குழு. தேவையற்ற செய்திகளைத் தவிர்ப்பதற்கு ஏற்றுக்கொள்வதற்கு முன் கோரிக்கைகளை கவனமாக மதிப்பாய்வு செய்யவும்.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "பற்றி செய்தி கோரிக்கைகள்";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "பதில்";
@@ -278,7 +278,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "நீங்கள் புகைப்படங்களை எடுத்தவுடன், உங்கள் சமீபத்தியவற்றை  இங்கு அனுப்ப முடியும்.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "கட்டணம்";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "இணைப்பு";
@@ -322,26 +322,35 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "சபாநாயகர்";
 
+/* Action text for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+
+/* Body for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+
+/* Title for avatar builder megaphone */
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "ஒரு வண்ணத்தைத் தேர்வுசெய்க";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "நிறம்";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "உரை";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "புகைப்பட கருவி";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
-
-/* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "புகைப்படம்";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "தேர்ந்தெடு ஒரு அவதாரம்";
+
+/* Text indicating the user can create a new avatar with text */
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "உரை";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "மீண்டும்";
@@ -434,7 +443,7 @@
 "BUTTON_DONE" = "முடிந்தது";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "நகல்";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "தொகு";
@@ -452,7 +461,7 @@
 "BUTTON_OKAY" = "சரி";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "முந்தையது";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "தேர்வு";
@@ -464,7 +473,7 @@
 "BUTTON_SHARE" = "பகிர்";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "தொடங்கு";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "சமர்ப்பி";
@@ -572,58 +581,58 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "நாட்டினை தேர்வுசெய்";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "இங்கே ஒரு முன்னோட்டம் அரட்டை நிறம்.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "இங்கே ஒரு முன்னோட்டம் அரட்டை நிறம்.";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "மற்றொரு குமிழி";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "நிறம் உங்களுக்கு மட்டுமே தெரியும்.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "நிறம் உங்களுக்கு மட்டுமே தெரியும்.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "நிறம் உங்களுக்கு மட்டுமே தெரியும்.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+"CHAT_COLOR_SETTINGS_AUTO" = "ஆட்டோ";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "This custom color is used in 1 chat. Do you want to delete it?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "இந்த தனிப்பயன் வண்ணம் 1 இல் பயன்படுத்தப்படுகிறது அரட்டை. அதை நீக்க விரும்புகிறீர்களா?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "This custom color is used in %@ chats. Do you want to delete it for all chats?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "இந்த தனிப்பயன் வண்ணம் பயன்படுத்தப்படுகிறது %@ அரட்டைகள். எல்லா அரட்டைகளுக்கும் இதை நீக்க விரும்புகிறீர்களா?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Delete Color";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "வண்ணத்தை நீக்கு";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "உரையாடல் நிறம்";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edit Color";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "தொகு நிறம்";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "இந்த வண்ணம் பயன்படுத்தப்படுகிறது %@ அரட்டைகள். எல்லா அரட்டைகளுக்கும் மாற்றங்களைச் சேமிக்க விரும்புகிறீர்களா?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "ஆட்டோ வண்ணத்துடன் பொருந்துகிறது பின்னணிப்படம்";
 
 /* Action text for char colors megaphone */
 "CHAT_COLORS_MEGAPHONE_ACTION" = "தோற்றம்";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "இப்பொழுது உன்னால் முடியும் மாற்றம் உங்கள் அரட்டைகளில் சாய்வு மற்றும் பலவற்றின் வண்ணங்கள்.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "தனிப்பயன் அரட்டை வண்ணங்கள்\n ";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "அரட்டை நிறம் & பின்னணிப்படம்";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "கிளிப்போர்டுடன் ஒப்பிடுக";
@@ -1099,6 +1108,9 @@
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "மேலும் வாசிக்க";
 
+/* Indicator that a value has been copied to the clipboard. */
+"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "உங்கள் அமர்வை மீட்டமைப்பது எதிர்கால செய்திகளை %@ from இலிருந்து பெற உங்களை அனுமதிக்கும், ஆனால் இது ஏற்கனவே சிதைந்த செய்திகளை மீட்டெடுக்காது.";
 
@@ -1112,19 +1124,19 @@
 "CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "சாய்வு";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "சாயல்";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "செறிவூட்டல்";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "திட";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "விருப்ப வண்ணம்";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
@@ -1376,7 +1388,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "இந்த உரையாடலில்  செய்திகள் %@ பிறகு மறைந்துவிடும்.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "விருப்ப நேரம்";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "days";
@@ -1693,6 +1705,9 @@
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "தோற்றம்";
 
+/* 'Get Started' button direction users to avatar builder */
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "நண்பர்களை அழை";
 
@@ -1916,10 +1931,10 @@
 "GROUP_DESCRIPTION_MORE" = "more";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "கூட்டு குழு விளக்கம்...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Group descriptions will be visible to members of this group and people who have been invited.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "குழு இந்த உறுப்பினர்களுக்கு விளக்கங்கள் தெரியும் குழு மற்றும் மக்கள் அழைக்கப்பட்டவர்கள்.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
@@ -2036,7 +2051,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "நீங்கள் மாற்றினீர்கள் குழு அமைப்புகள் க்கு அனுமதிஅனைத்து உறுப்பினர்கள்அனுப்பு செய்திகள்.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
@@ -2045,7 +2060,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "நீங்கள் மாற்றினீர்கள் குழு அமைப்புகள் மட்டும் அனுமதி நிர்வாகிகள் க்கு அனுப்பு செய்திகள்.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
@@ -2417,19 +2432,19 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ குழுவைப் புதுப்பித்தது.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "தி குழு விளக்கம் இருந்தது அகற்றப்பட்டது.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "நீங்கள் அகற்றிவிட்டீர்கள் குழு விளக்கம்.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "தி குழு விளக்கம் இருந்தது மாற்றப்பட்டது.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "You changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "நீங்கள் மாற்றினீர்கள் குழு விளக்கம்.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
@@ -2477,7 +2492,7 @@
 "GROUP_YOU_LEFT" = "நீங்கள் குழுவிலிருந்து வெளியேறிவிட்டீர்கள்.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "நிர்வாகிகள்";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
@@ -3110,7 +3125,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "பதிவேற்றுகிறது";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "பார்த்தவர்";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "பெறப்பட்டது";
@@ -3131,7 +3146,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "தடுமற்றும் அழி";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "ஸ்பேம் மற்றும் தடுப்பைப் புகாரளிக்கவும்";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "தடுக்கப்பட்டவர்களை அழைக்க முடியாது நீங்கள் அல்லது அனுப்பு நீங்கள் செய்திகள்.";
@@ -3185,7 +3200,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "கோரிக்கையை மதிப்பாய்வு செய்யவும்";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Reported as spam and blocked.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "என புகாரளிக்கப்பட்டது ஸ்பேம் மற்றும் தடுக்கப்பட்டது.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "ஒப்புக்கொள்";
@@ -3251,7 +3266,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "சிலருக்கு இது அனுப்பப்படுகிறது, விவரங்களுக்கு இங்கே தட்டவும்";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "அனுப்பு இடைநிறுத்தப்பட்டது";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Paused";
@@ -4274,7 +4289,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ அவர்கள் தங்கள் சுயவிவரப் பெயரை %@ என மாற்றினர் .";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+"PROFILE_NAME_VIEW_TITLE" = "உங்கள் பெயர்";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "பற்றி";
@@ -5036,7 +5051,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "காணாமல் போகும் செய்திகள்";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "அமை இயல்புநிலை மறைந்து வரும் செய்தி டைமர் நீங்கள் தொடங்கிய அனைத்து புதிய அரட்டைகளுக்கும்.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donate to Signal சிக்னலுக்கு நன்கொடை";
@@ -5051,7 +5066,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "@signalapp பயன்படுத்தி நீங்கள் என்னை அணுகலாம். இப்போது கிடைக்கும்: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chat Color & Wallpaper";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "அரட்டை நிறம் & வால்பேப்பர்";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "செய்தி ஒலி";
@@ -5720,13 +5735,13 @@
 "SOUNDS_NONE" = "யாரும்";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "சரிபார்ப்பு முழுமை.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "சரிபார்ப்பைத் தவிர்க்க நீங்கள் தேர்வுசெய்தால், நீங்கள் செய்திகளைத் தவறவிடலாம் மற்றவை மக்கள் உங்கள் செய்திகள் தோல்வியடையக்கூடும் அனுப்பு.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "சரிபார்க்காமல் தொடரவா?";
 
 /* Body for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
@@ -5867,7 +5882,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "இல்லை குழுக்கள்பொதுவாக. கோரிக்கைகளை கவனமாக மதிப்பாய்வு செய்யவும்.";
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
@@ -6203,10 +6218,10 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "அனைத்து பின்னணிப்படங்களையும் மீட்டமைக்கவும்";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "அனைத்தையும் மேலெழுத விரும்புகிறீர்களா? அரட்டை வண்ணங்கள்?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "மீட்டமை அரட்டை வண்ணங்கள்";
 
 /* Reset conversation chat color action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
@@ -6218,7 +6233,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "மீட்டமை அரட்டை வண்ணங்கள்";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";

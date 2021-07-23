@@ -18,6 +18,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     case sharingSuggestions
     case donateMegaphone
     case chatColors
+    case avatarBuilder
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -70,6 +71,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return RemoteConfig.donateMegaphone
         case .chatColors:
             return true
+        case .avatarBuilder:
+            return profileManager.localProfileAvatarData() == nil
         }
     }
 
@@ -131,6 +134,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return .low
         case .chatColors:
             return .low
+        case .avatarBuilder:
+            return .medium
         }
     }
 
