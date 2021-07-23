@@ -15,6 +15,7 @@ public class HVTableDataSource: NSObject {
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
+    @objc
     public var renderState: HVRenderState = .empty
 
     private let kArchivedConversationsReuseIdentifier = "kArchivedConversationsReuseIdentifier"
