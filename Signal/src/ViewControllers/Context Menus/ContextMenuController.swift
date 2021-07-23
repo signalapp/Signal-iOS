@@ -118,6 +118,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     let menuAccessory: ContextMenuActionsAccessory?
 
     var gestureRecognizer: UIGestureRecognizer?
+    var localPanGestureRecoginzer: UIPanGestureRecognizer?
 
     var accessoryViews: [ContextMenuTargetedPreviewAccessory] {
         var accessories = contextMenuPreview.accessoryViews
@@ -195,19 +196,31 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     }
 
     public func gestureDidEnd() {
+        guard localPanGestureRecoginzer == nil else {
+            return
+        }
+        
+        handleGestureEnd()
+    }
+    
+    private func handleGestureEnd() {
         if let locationInView = gestureRecognizer?.location(in: view) {
             for accessory in accessoryViews {
                 let locationInAccessory = view .convert(locationInView, to: accessory.accessoryView)
                 accessory.touchLocationInViewDidEnd(locationInView: locationInAccessory)
             }
         }
-
-        if let gestureRecognizer = self.gestureRecognizer {
-            view.removeGestureRecognizer(gestureRecognizer)
+        
+        if localPanGestureRecoginzer == nil {
+            if let gestureRecognizer = self.gestureRecognizer {
+                view.removeGestureRecognizer(gestureRecognizer)
+            }
+            
+            let newPanGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognized(sender:)))
+            view.addGestureRecognizer(newPanGesture)
+            gestureRecognizer = newPanGesture
+            localPanGestureRecoginzer = newPanGesture
         }
-        let newPanGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognized(sender:)))
-        view.addGestureRecognizer(newPanGesture)
-        gestureRecognizer = newPanGesture
     }
 
     // MARK: Emoji Sheet
@@ -253,7 +266,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         if sender.state == .began || sender.state == .changed {
             gestureDidChange()
         } else if sender.state == .ended {
-            gestureDidEnd()
+            handleGestureEnd()
         }
     }
 

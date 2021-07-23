@@ -187,7 +187,6 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
 
     public func initiatingGestureRecognizerDidEnd() {
         contextMenuController?.gestureDidEnd()
-
     }
 
     public override func initiatingGestureRecognizer() -> UIGestureRecognizer? {
