@@ -33,6 +33,7 @@ public enum AppNotificationCategory: CaseIterable {
     case missedCallWithActions
     case missedCallWithoutActions
     case missedCallFromNoLongerVerifiedIdentity
+    case internalError
 }
 
 public enum AppNotificationAction: String, CaseIterable {
@@ -44,6 +45,7 @@ public enum AppNotificationAction: String, CaseIterable {
     case showThread
     case reactWithThumbsUp
     case showCallLobby
+    case submitDebugLogs
 }
 
 public struct AppNotificationUserInfoKey {
@@ -83,6 +85,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.missedCall"
         case .missedCallFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
+        case .internalError:
+            return "Signal.AppNotificationCategory.internalError"
         }
     }
 
@@ -115,6 +119,8 @@ extension AppNotificationCategory {
             return []
         case .missedCallFromNoLongerVerifiedIdentity:
             return []
+        case .internalError:
+            return []
         }
     }
 }
@@ -138,6 +144,8 @@ extension AppNotificationAction {
             return "Signal.AppNotifications.Action.reactWithThumbsUp"
         case .showCallLobby:
             return "Signal.AppNotifications.Action.showCallLobby"
+        case .submitDebugLogs:
+            return "Signal.AppNotifications.Action.submitDebugLogs"
         }
     }
 }
@@ -586,6 +594,25 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
+    public func notifyInternalUsers(ofErrorMessage errorString: String) {
+        // Fail debug on all devices. External devices should still log the error string.
+        owsFailDebug("Fatal error occurred: \(errorString).")
+
+        // Only display a visible notification on internal builds
+        guard DebugFlags.internalErrorAlerts else { return }
+        DispatchQueue.main.async {
+            self.adaptee.notify(
+                category: .internalError,
+                title: "Internal Error: Please file a bug",
+                body:  errorString,
+                threadIdentifier: nil,
+                userInfo: [
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.submitDebugLogs.rawValue
+                ],
+                sound: self.requestGlobalSound())
+        }
+    }
+
     public func notifyForGroupCallSafetyNumberChange(inThread thread: TSThread) {
         let notificationTitle: String?
         switch previewType {
@@ -679,13 +706,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let notificationBody = errorMessage.previewText(transaction: transaction)
 
         transaction.addAsyncCompletionOnMain {
-            let sound = self.checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
             self.adaptee.notify(category: .threadlessErrorMessage,
                                 title: nil,
                                 body: notificationBody,
                                 threadIdentifier: nil,
                                 userInfo: [:],
-                                sound: sound)
+                                sound: self.requestGlobalSound())
         }
     }
 
@@ -719,6 +745,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         return OWSSounds.notificationSound(for: thread)
+    }
+
+    private func requestGlobalSound() -> OWSSound? {
+        checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
     }
 
     private func checkIfShouldPlaySound() -> Bool {

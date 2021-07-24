@@ -40,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyUserForThreadlessErrorMessage:(ThreadlessErrorMessage *)errorMessage
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)notifyInternalUsersOfErrorMessage:(NSString *)errorString;
+
 - (void)clearAllNotifications;
 
 - (void)cancelNotificationsForMessageId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(messageId:));

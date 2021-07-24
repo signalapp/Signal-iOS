@@ -68,6 +68,8 @@ public class NotificationActionHandler: NSObject {
             return try reactWithThumbsUp(userInfo: userInfo)
         case .showCallLobby:
             return try showCallLobby(userInfo: userInfo)
+        case .submitDebugLogs:
+            return submitDebugLogs()
         }
     }
 
@@ -209,6 +211,14 @@ public class NotificationActionHandler: NSObject {
                 // If currentCall is non-nil, we can't join a call anyway, fallback to showing the thread.
                 // Individual calls don't have a lobby, just show the thread.
                 return self.showThread(notificationMessage: notificationMessage)
+            }
+        }
+    }
+
+    private class func submitDebugLogs() -> Promise<Void> {
+        Promise { resolver in
+            Pastelog.submitLogs {
+                resolver.fulfill(())
             }
         }
     }
