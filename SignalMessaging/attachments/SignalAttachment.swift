@@ -788,11 +788,11 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            // When preparing an attachment, we always prepare it in high quality. The user can choose
-            // during sending whether they want the final send to be in standard or high quality. We
-            // will do the final convert and compress before uploading.
+            // When preparing an attachment, we always prepare it in the max quality for the current
+            // context. The user can choose during sending whether they want the final send to be in
+            // standard or high quality. We will do the final convert and compress before uploading.
 
-            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .high) {
+            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .max) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 do {
                     return try attachment.removingImageMetadata()
@@ -807,7 +807,7 @@ public class SignalAttachment: NSObject {
             return convertAndCompressImage(
                 dataSource: dataSource,
                 attachment: attachment,
-                imageQuality: .high
+                imageQuality: .max
             )
         }
     }
@@ -866,6 +866,7 @@ public class SignalAttachment: NSObject {
 
             let maxSize = imageUploadQuality.maxEdgeSize
             let pixelSize = dataSource.imageMetadata.pixelSize
+            var imageProperties = [CFString: Any]()
 
             let cgImage: CGImage
             if pixelSize.width > maxSize || pixelSize.height > maxSize {
@@ -877,6 +878,20 @@ public class SignalAttachment: NSObject {
             } else {
                 guard let imageSource = cgImageSource(for: dataSource) else {
                     return .error(error: .couldNotParseImage)
+                }
+
+                guard let originalImageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, [
+                    kCGImageSourceShouldCache: false
+                ] as CFDictionary) as? [CFString: Any] else {
+                    return .error(error: .couldNotParseImage)
+                }
+
+                // Preserve any orientation properties in the final output image.
+                if let tiffOrientation = originalImageProperties[kCGImagePropertyTIFFOrientation] {
+                    imageProperties[kCGImagePropertyTIFFOrientation] = tiffOrientation
+                }
+                if let iptcOrientation = originalImageProperties[kCGImagePropertyIPTCImageOrientation] {
+                    imageProperties[kCGImagePropertyIPTCImageOrientation] = iptcOrientation
                 }
 
                 guard let image = CGImageSourceCreateImageAtIndex(imageSource, 0, [
@@ -894,7 +909,6 @@ public class SignalAttachment: NSObject {
             let dataFileExtension: String
             let dataUTI: CFString
             let dataMIMEType: String
-            let imageProperties: CFDictionary?
 
             // We convert everything that's not sticker-like to jpg, because
             // often images with alpha channels don't actually have any
@@ -905,12 +919,11 @@ public class SignalAttachment: NSObject {
                 dataFileExtension = "png"
                 dataUTI = kUTTypePNG
                 dataMIMEType = OWSMimeTypeImagePng
-                imageProperties = nil
             } else {
                 dataFileExtension = "jpg"
                 dataUTI = kUTTypeJPEG
                 dataMIMEType = OWSMimeTypeImageJpeg
-                imageProperties = [kCGImageDestinationLossyCompressionQuality: compressionQuality(for: pixelSize)] as CFDictionary
+                imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize)
             }
 
             let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: dataFileExtension)
@@ -918,7 +931,7 @@ public class SignalAttachment: NSObject {
                 owsFailDebug("Failed to create CGImageDestination for attachment")
                 return .error(error: .couldNotConvertImage)
             }
-            CGImageDestinationAddImage(destination, cgImage, imageProperties)
+            CGImageDestinationAddImage(destination, cgImage, imageProperties as CFDictionary)
             guard CGImageDestinationFinalize(destination) else {
                 owsFailDebug("Failed to write downsampled attachment to disk")
                 return .error(error: .couldNotConvertImage)

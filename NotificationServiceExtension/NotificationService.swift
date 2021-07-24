@@ -35,16 +35,6 @@ class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var areVersionMigrationsComplete = false
 
-    // This string is not directly used by the app, but the key is supplied
-    // by the service in the push notification body. Sometimes, the NSE is
-    // unable to launch to process notifications (most often when the app
-    // is updating). In those circumstances, this copy will render to the
-    // user.
-    let pushFallbackText = NSLocalizedString(
-        "PUSH_FALLBACK_MESSAGE",
-        comment: "Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario."
-    )
-
     func completeSilenty() {
         let content = UNMutableNotificationContent()
         content.badge = NSNumber(value: databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) })

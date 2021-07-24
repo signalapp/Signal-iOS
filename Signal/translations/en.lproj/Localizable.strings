@@ -137,7 +137,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Answer";
 
 /* notification body */
-"APN_Message" = "New Message!";
+"APN_Message" = "You may have new messages";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
@@ -4338,9 +4338,6 @@
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profile";
-
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "You may have new messages";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Mark as Read";
