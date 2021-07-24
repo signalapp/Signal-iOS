@@ -40,6 +40,17 @@ public enum ImageQualityLevel: UInt {
         }
     }
 
+    public static var max: ImageQualityLevel {
+        if CurrentAppContext().isMainApp {
+            return .high
+        } else {
+            // Outside of the main app (like in the share extension)
+            // we have very tight memory restrictions, and cannot
+            // allow sending high quality media.
+            return .standard
+        }
+    }
+
     private static let keyValueStore = SDSKeyValueStore(collection: "ImageQualityLevel")
     private static let defaultQualityKey = "defaultQuality"
     public static func `default`(transaction: SDSAnyReadTransaction) -> ImageQualityLevel {
@@ -47,6 +58,11 @@ public enum ImageQualityLevel: UInt {
               let storedQuality = ImageQualityLevel(rawValue: rawStoredQuality) else {
             return .standard
         }
+
+        // If the max quality we allow is less than the stored preference,
+        // we have to restrict ourselves to the max allowed.
+        if rawStoredQuality > max.rawValue { return max }
+
         return storedQuality
     }
     public static func setDefault(_ level: ImageQualityLevel, transaction: SDSAnyWriteTransaction) {

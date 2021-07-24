@@ -788,11 +788,11 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
-            // When preparing an attachment, we always prepare it in high quality. The user can choose
-            // during sending whether they want the final send to be in standard or high quality. We
-            // will do the final convert and compress before uploading.
+            // When preparing an attachment, we always prepare it in the max quality for the current
+            // context. The user can choose during sending whether they want the final send to be in
+            // standard or high quality. We will do the final convert and compress before uploading.
 
-            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .high) {
+            if isValidOutputOriginalImage(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .max) {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 do {
                     return try attachment.removingImageMetadata()
@@ -807,7 +807,7 @@ public class SignalAttachment: NSObject {
             return convertAndCompressImage(
                 dataSource: dataSource,
                 attachment: attachment,
-                imageQuality: .high
+                imageQuality: .max
             )
         }
     }
