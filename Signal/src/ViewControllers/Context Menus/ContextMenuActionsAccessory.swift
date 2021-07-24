@@ -29,10 +29,14 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
         menuView.handleGestureEnded(locationInView: locationInView)
     }
 
+    func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction) {
+        delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self)
+        contextMenuAction.handler(contextMenuAction)
+    }
 }
 
 protocol ContextMenuActionsViewDelegate: AnyObject {
-
+    func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction)
 }
 
 public class ContextMenuActionsView: UIView {
@@ -72,7 +76,7 @@ public class ContextMenuActionsView: UIView {
         var maxWidth: CGFloat = 250
         let margin: CGFloat = 16
         let verticalPadding: CGFloat = 20
-        let iconSize: CGFloat = 18
+        let iconSize: CGFloat = 22
 
         public init(
             title: String,
@@ -263,11 +267,18 @@ public class ContextMenuActionsView: UIView {
     }
 
     func handleGestureEnded(locationInView: CGPoint) {
+        var index: Int = NSNotFound
         for actionRow in actionViews {
             actionRow.isHighlighted = false
+            if actionRow.frame.contains(locationInView) {
+                index = actionViews.firstIndex(of: actionRow) ?? NSNotFound
+            }
         }
 
-        // Fire action here
+        if index != NSNotFound {
+            let action = menu.children[index]
+            delegate?.contextMenuActionViewDidSelectAction(contextMenuAction: action)
+        }
     }
 
 }

@@ -9,6 +9,8 @@ public class MessageAction: NSObject {
     @objc
     let block: (_ sender: Any?) -> Void
     let accessibilityIdentifier: String
+    let contextMenuTitle: String
+    let contextMenuAttributes: ContextMenuAction.Attributes
 
     public enum MessageActionType {
         case reply
@@ -25,9 +27,13 @@ public class MessageAction: NSObject {
     public init(_ actionType: MessageActionType,
                 accessibilityLabel: String,
                 accessibilityIdentifier: String,
+                contextMenuTitle: String,
+                contextMenuAttributes: ContextMenuAction.Attributes,
                 block: @escaping (_ sender: Any?) -> Void) {
         self.actionType = actionType
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.contextMenuTitle = contextMenuTitle
+        self.contextMenuAttributes = contextMenuAttributes
         self.block = block
         super.init()
         self.accessibilityLabel = accessibilityLabel

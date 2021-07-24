@@ -19,7 +19,7 @@ struct MessageActionBuilder {
     static func reply(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.reply,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"), contextMenuTitle: NSLocalizedString("CONTEXT_MENU_REPLY", comment: "Context menu button title"), contextMenuAttributes: [],
                              block: { [weak delegate] (_) in
                                 delegate?.messageActionsReplyToItem(itemViewModel)
 
@@ -29,7 +29,7 @@ struct MessageActionBuilder {
     static func copyText(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.copy,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"), contextMenuTitle: NSLocalizedString("CONTEXT_MENU_COPY", comment: "Context menu button title"), contextMenuAttributes: [],
                              block: { (_) in
                                 itemViewModel.copyTextAction()
         })
@@ -38,7 +38,7 @@ struct MessageActionBuilder {
     static func showDetails(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.info,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"), contextMenuTitle: NSLocalizedString("CONTEXT_MENU_DETAILS", comment: "Context menu button title"), contextMenuAttributes: [],
                              block: { [weak delegate] (_) in
                                 delegate?.messageActionsShowDetailsForItem(itemViewModel)
         })
@@ -47,7 +47,7 @@ struct MessageActionBuilder {
     static func deleteMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.delete,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"), contextMenuTitle: NSLocalizedString("CONTEXT_MENU_DELETE_MESSAGE", comment: "Context menu button title"), contextMenuAttributes: [.destructive],
                              block: { [weak delegate] (_) in
                                 delegate?.messageActionsDeleteItem(itemViewModel)
         })
@@ -56,7 +56,7 @@ struct MessageActionBuilder {
     static func shareMedia(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.share,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SHARE_MEDIA", comment: "Action sheet button title"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "share_media"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "share_media"), contextMenuTitle: NSLocalizedString("CONTEXT_MENU_SHARE_MEDIA", comment: "Context menu button title"), contextMenuAttributes: [],
                              block: { sender in
                                 itemViewModel.shareMediaAction(sender: sender)
         })
@@ -65,7 +65,7 @@ struct MessageActionBuilder {
     static func forwardMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.forward,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_MESSAGE", comment: "Action sheet button title"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"), contextMenuTitle: NSLocalizedString("CONTEXT_MENU_FORWARD_MESSAGE", comment: "Context menu button title"), contextMenuAttributes: [],
                              block: { [weak delegate] (_) in
                                 delegate?.messageActionsForwardItem(itemViewModel)
         })
@@ -74,7 +74,7 @@ struct MessageActionBuilder {
     static func selectMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(.select,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SELECT_MESSAGE", comment: "Action sheet accessibility label"),
-                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "select_message"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "select_message"), contextMenuTitle: NSLocalizedString("CONTEXT_MENU_SELECT_MESSAGE", comment: "Context menu button title"), contextMenuAttributes: [],
                              block: { [weak delegate] (_) in
                                 delegate?.messageActionsStartedSelect(initialItem: itemViewModel)
         })

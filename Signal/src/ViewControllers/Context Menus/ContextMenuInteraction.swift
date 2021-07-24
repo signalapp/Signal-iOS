@@ -104,7 +104,9 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     public func menuAccessory(configuration: ContextMenuConfiguration) -> ContextMenuActionsAccessory {
         let menu = configuration.actionProvider?([]) ?? ContextMenu([])
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior)], alignmentOffset: CGPoint(x: 0, y: 12))
-        return ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
+        let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
+        accessory.delegate = self
+        return accessory
     }
 
     public func dismissMenu() {
@@ -197,6 +199,8 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         let menu = configuration.actionProvider?([]) ?? ContextMenu([])
         let isIncomingMessage = itemViewModel.interaction.interactionType() == .incomingMessage
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior), (isIncomingMessage ? .leading : .trailing, .interior)], alignmentOffset: CGPoint(x: 0, y: 12))
-        return ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
+        let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
+        accessory.delegate = self
+        return accessory
     }
 }

@@ -96,7 +96,7 @@ extension ConversationViewController {
             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_SELECTED_MESSAGES",
                                                   comment: "accessibility label"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action",
-                                                                    name: "delete_selected_messages"),
+                                                                    name: "delete_selected_messages"), contextMenuTitle: "Delete Selected", contextMenuAttributes: [],
             block: { [weak self] _ in self?.didTapDeleteSelectedItems() }
         )
 

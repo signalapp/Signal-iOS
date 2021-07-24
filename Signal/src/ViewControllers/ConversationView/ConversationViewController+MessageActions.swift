@@ -189,23 +189,33 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
 
         return ContextMenuConfiguration.init(identifier: UUID() as NSCopying, actionProvider: { _ in
-            let defaultState = ContextMenuAction.init(title: "Default", image: Theme.iconImage(.messageActionReply), attributes: [], handler: { _ in
-                Logger.debug("default state handler")
-            })
 
-            let disabled = ContextMenuAction.init(title: "Disabled", image: Theme.iconImage(.messageActionSave), attributes: [.disabled], handler: { _ in
-                Logger.debug("disabled state handler")
-            })
+            var contextMenuActions: [ContextMenuAction] = []
+            if let actions = self.collectionViewActiveContextMenuInteraction?.messageActions {
 
-            let highlighted = ContextMenuAction.init(title: "Default 2", image: Theme.iconImage(.messageActionForward), attributes: [], handler: { _ in
-                Logger.debug("default 2 state handler")
-            })
+                let actionOrder: [MessageAction.MessageActionType] = [.reply, .forward, .copy, .share, .select, .info, .delete]
 
-            let destructive = ContextMenuAction.init(title: "Destructive", image: Theme.iconImage(.messageActionDelete), attributes: [.destructive], handler: { _ in
-                Logger.debug("destructive state handler")
-            })
+                func messageActionWithType(_ actions: [MessageAction], type: MessageAction.MessageActionType) -> MessageAction? {
+                    for messageAction in actions {
+                        if messageAction.actionType == type {
+                            return messageAction
+                        }
+                    }
+                    return nil
+                }
 
-            return ContextMenu([defaultState, disabled, highlighted, destructive])
+                for type in actionOrder {
+                    if let messageAction = messageActionWithType(actions, type: type) {
+                        let contextMenuAction = ContextMenuAction.init(title: messageAction.contextMenuTitle, image: messageAction.image, attributes: messageAction.contextMenuAttributes, handler: { _ in
+                            messageAction.block(self)
+                        })
+
+                        contextMenuActions.append(contextMenuAction)
+                    }
+                }
+            }
+
+            return ContextMenu(contextMenuActions)
         })
     }
 
