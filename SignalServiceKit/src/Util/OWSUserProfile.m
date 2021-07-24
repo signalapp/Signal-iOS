@@ -641,7 +641,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                            }
                                        }
 
-                                       if (shouldReupload && self.tsAccountManager.isPrimaryDevice) {
+                                       if (shouldReupload && self.tsAccountManager.isPrimaryDevice
+                                           && CurrentAppContext().isMainApp) {
                                            // shouldReuploadProtectedProfileName has side effects,
                                            // so only invoke it if shouldReupload is true.
                                            if (OWSUserProfile.shouldReuploadProtectedProfileName) {
