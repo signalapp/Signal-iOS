@@ -4,6 +4,8 @@ import Sodium
 
 @objc(SNSnodeAPI)
 public final class SnodeAPI : NSObject {
+    private static let sodium = Sodium()
+    
     private static var hasLoadedSnodePool = false
     private static var loadedSwarms: Set<String> = []
     private static var getSnodePoolPromise: Promise<Set<Snode>>?
@@ -296,7 +298,6 @@ public final class SnodeAPI : NSObject {
     }
     
     public static func getSessionID(for onsName: String) -> Promise<String> {
-        let sodium = Sodium()
         let validationCount = 3
         let sessionIDByteCount = 33
         // The name must be lowercased
@@ -390,32 +391,46 @@ public final class SnodeAPI : NSObject {
     
     public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let (promise, seal) = RawResponsePromise.pending()
-        let storage = SNSnodeKitConfiguration.shared.storage
         Threading.workQueue.async {
-            storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
-            let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
-            let parameters = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
-            invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+            getMessagesInternal(from: snode, associatedWith: publicKey).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
     }
 
     public static func getMessages(for publicKey: String) -> Promise<Set<MessageListPromise>> {
         let (promise, seal) = Promise<Set<MessageListPromise>>.pending()
-        let storage = SNSnodeKitConfiguration.shared.storage
         Threading.workQueue.async {
             attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                 getTargetSnodes(for: publicKey).mapValues2 { targetSnode in
-                    storage.pruneLastMessageHashInfoIfExpired(for: targetSnode, associatedWith: publicKey)
-                    let lastHash = storage.getLastMessageHash(for: targetSnode, associatedWith: publicKey) ?? ""
-                    let parameters = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey, "lastHash" : lastHash ]
-                    return invoke(.getMessages, on: targetSnode, associatedWith: publicKey, parameters: parameters).map2 { rawResponse in
+                    return getMessagesInternal(from: targetSnode, associatedWith: publicKey).map2 { rawResponse in
                         parseRawMessagesResponse(rawResponse, from: targetSnode, associatedWith: publicKey)
                     }
                 }.map2 { Set($0) }
             }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
+    }
+    
+    private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
+        // Get last message hash
+        storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
+        let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
+        // Construct signature
+        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
+        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
+        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
+        // Make the request
+        let parameters: JSON = [
+            "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
+            "lastHash" : lastHash,
+            "timestamp" : timestamp,
+            "pubkey_ed25519" : ed25519PublicKey,
+            "signature" : signature.toBase64()!
+        ]
+        return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
     public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
@@ -439,7 +454,6 @@ public final class SnodeAPI : NSObject {
         let storage = SNSnodeKitConfiguration.shared.storage
         guard let userX25519PublicKey = storage.getUserPublicKey(),
             let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
-        let sodium = Sodium()
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
             getSwarm(for: userX25519PublicKey).then2 { swarm -> Promise<[String:Bool]> in
                 let snode = swarm.randomElement()!
@@ -532,6 +546,7 @@ public final class SnodeAPI : NSObject {
             newReceivedMessages.insert(hash)
             return !isDuplicate
         }
+        // Avoid the sync write transaction if possible
         if oldReceivedMessages != newReceivedMessages {
             SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                 SNSnodeKitConfiguration.shared.storage.setReceivedMessages(to: newReceivedMessages, for: publicKey, using: transaction)
