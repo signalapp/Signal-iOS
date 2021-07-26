@@ -323,13 +323,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Звучник";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Додајте слику";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Изаберите изглед и боју или прилагодите своје иницијале.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Додајте фотографију за профил";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Изаберите боју";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Прочитајте више";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Копирано у остави";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Ресетовање сесије омогућава примање будићих порука од %@, али не може повратити постојеће оштећене поруке.";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Изглед";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Додајте слику";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Позивница пријатељима";

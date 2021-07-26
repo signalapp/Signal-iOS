@@ -323,7 +323,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Luidspreker";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Profielfoto toevoegen";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "Maak jezelf herkenbaar door een profielfoto in te stellen of pas de kleur of tekst aan.";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Meer lezen";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Naar klembord gekopieerd";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Je sessie opnieuw opzetten zal het mogelijk maken toekomstige berichten van %@ te ontvangen, maar het zal reeds beschadigde berichten niet herstellen.";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Uiterlijk";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Profielfoto toevoegen";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Kennissen uitnodigen";

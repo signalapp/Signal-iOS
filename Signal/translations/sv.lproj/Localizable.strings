@@ -323,13 +323,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Högtalare";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Lägg till foto";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Välj ett utseende och en färg eller anpassa dina initialer.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Lägg till ett profilfoto";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Välj en färg";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Läs mer";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Kopierad till urklipp";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Att återställa din session låter dig ta emot nya meddelanden från %@, men kommer inte att återställa meddelanden som redan är korrupta.";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Utseende";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Lägg till foto";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Bjud in vänner";
@@ -2009,10 +2009,10 @@
 "GROUP_INVITE_LINK_RESET" = "Grupplänken återställdes.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Du återställer grupplänken.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Du har återställt grupplänken.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ återställ grupplänken.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ har återställt grupplänken.";
 
 /* Message indicating that the group invite link was set to not require approval. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Administratörsgodkännande inaktiverades för grupplänken.";
@@ -4856,7 +4856,7 @@
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Starta Signal på din gamla iPad för att överföra ditt konto";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "Den säkra anslutningen har återställts.";
+"SECURE_SESSION_RESET" = "Säker session har återställts.";
 
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "Se alla";

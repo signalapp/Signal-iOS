@@ -323,7 +323,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Динамик";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Добавить фото";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "Выберите вид и цвет или настройте свои инициалы.";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Читать далее";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Скопировано в буфер обмена";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Сброс вашей сессии позволит вам получать сообщения от %@ в дальнейшем, но не восстановит уже повреждённые сообщения.";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Внешний вид";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Добавить фото";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Пригласить друзей";

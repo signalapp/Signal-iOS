@@ -323,7 +323,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Μεγάφωνο";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Προσθήκη φωτογραφίας";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "Επέλεξε ένα στυλ και χρώμα, ή επεξεργάσου τα αρχικά σου.";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Διάβασε Περισσότερα";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Αντιγράφηκε στο πρόχειρο";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Η επαναφορά της συνεδρίας θα επιτρέψει τη λήψη μελλοντικών μηνυμάτων από τον/την %@, αλλά δεν θα ανακτήσει τα ήδη κατεστραμμένα μηνύματα.";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Εμφάνιση";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Προσθήκη φωτογραφίας";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Πρόσκληση φίλων";
@@ -3047,25 +3047,25 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Προώθηση μηνύματος";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Άνοιγμα πρόσκλησης σε ομάδα";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Άνοιγμα συνδέσμου";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Προβολή πακέτου αυτοκολλήτων";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Κλήση";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime φωνή";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime βίντεο";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Αποστολή μηνύματος κειμένου";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Απάντηση σε αυτό το μήνυμα";
@@ -3077,7 +3077,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Κοινοποίηση πολυμέσων";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Πρόσκληση σε ομάδα";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Πακέτο αυτοκολλήτων";

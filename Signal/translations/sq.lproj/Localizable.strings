@@ -323,7 +323,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altoparlant";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Shtoni Foto";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "Zgjidhni një pamje dhe ngjyrë, ose përshtatni inicialet tuaja.";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Lexoni Më Tepër";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "U kopjua në të Papastër";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Risistemimi i sesionit tuaj do t’ju bëjë të mundur të merrni mesazhe nga %@ në të ardhmen, por nuk do të rikthejë dot ndonjë nga mesazhet e dëmtuar.";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Dukje";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Shtoni Foto";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Ftoni shokë";

@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "आता नाही";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "About Signal";
+"ABOUT_SECTION_TITLE" = "Signal बद्दल";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "नवीन सुरक्षितता क्रमांक स्वीकार करा";
@@ -86,13 +86,13 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "गटात जोडा";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "\"%1$@\" ला \"%2$@\" मध्ये जोडायचे?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "नवीन सदस्य जोडा";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "आधीपासून सदस्य आहे";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ आधीपासून %@ चा सदस्य आहे";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ हा %@ मध्ये जोडला गेला होता";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "गटात जोडा";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "या वापरकर्त्यासोबत आपल्याला आपली प्रोफाईल सामायिक करायला आवडेल का?";
@@ -125,13 +125,13 @@
 "ALERT_SAVE" = "जतन करा";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "आपले या व्यक्तीसोबत कुठलेही गट समाईक नाहीत. नको असलेले संदेश टाळण्यासाठी विनंत्याचे काळजीपूर्वक पुनरावलोकन करा.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "आपले या गटामध्ये कुठलेही सदस्य समाईक नाहीत. नको असलेले संदेश टाळण्यासाठी विनंत्याचे काळजीपूर्वक पुनरावलोकन करा.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "संदेश विनंत्यांबद्दल";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "उत्तर";
@@ -323,34 +323,34 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "स्पीकर";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "फोटो जोडा";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "रूप आणि रंग निवडा किंवा आपली आद्याक्षरे सानुकूलित करा.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "प्रोफाईल फोटो जोडा";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "रंग बदला";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "रंग";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "मजकूर";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "कॅमेरा";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "फोटो";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "अवतार निवडा";
 
 /* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "मजकूर";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "मागे";
@@ -443,7 +443,7 @@
 "BUTTON_DONE" = "ठीक";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "डूप्लिकेट";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "संपादन";
@@ -461,7 +461,7 @@
 "BUTTON_OKAY" = "ठीक आहे";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Previous";
+"BUTTON_PREVIOUS" = "मागील";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "निवडा";
@@ -473,7 +473,7 @@
 "BUTTON_SHARE" = "सामायिक करा";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "चालू करा";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "प्रविष्ट करा";
@@ -581,58 +581,58 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "देश निवडा";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "चॅटच्या रंगाचे हे एक पुनरावलोकन आहे.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "चॅटच्या रंगाचे हे एक पुनरावलोकन आहे.";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "अजून एक बुडबुडा";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "रंग फक्त आपल्याला दृश्यमान आहे.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "रंग फक्त आपल्याला दृश्यमान आहे.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "रंग फक्त आपल्याला दृश्यमान आहे.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+"CHAT_COLOR_SETTINGS_AUTO" = "ऑटो";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "This custom color is used in 1 chat. Do you want to delete it?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "हा कस्टम रंग 1 चॅटमध्ये वापरला गेला आहे. आपण त्यास हटवू इच्छिता?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "This custom color is used in %@ chats. Do you want to delete it for all chats?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "हा कस्टम रंग %@ चॅटमध्ये वापरला गेला आहे. आपण त्यास सर्व चॅटसाठी हटवू इच्छिता?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Delete Color";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "रंग हटवा";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "चॅट रंग";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edit Color";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "रंग संपादित करा";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "हा कस्टम रंग %@ चॅटमध्ये वापरला गेला आहे. आपण त्यास सर्व चॅटसाठी बदल जतन करू इच्छिता?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "वॉलपेपरसोबत स्वयंचलितपणे रंग जुळवते";
 
 /* Action text for char colors megaphone */
 "CHAT_COLORS_MEGAPHONE_ACTION" = "स्वरूप";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "आता आपण ग्रेडिएंट आणि अधिकसह चॅटमधले रंग बदलू शकता.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "कस्टम चॅट रंग";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "चॅट रंग आणि वॉलपेपर";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "क्लिपबोर्ड सोबत तुलना करा";
@@ -659,7 +659,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "आपल्या संपर्कांमधील कोण Signal वापरकर्ते आहेत हे पहाण्यासाठी आपण iOS सेटिंग अॅप मध्ये संपर्क अॅक्सेस सक्षम करू शकता.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "आपले संदेश हटवून हे अॅप्लिकेशन रीसेट करेल. प्रक्रिया पूर्ण झाल्यावर अॅप बंद होईल.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "सर्व डेटा हटवायची आपणास खात्री आहे का?";
@@ -791,19 +791,19 @@
 "CONTACT_SUPPORT" = "समर्थन सोबत संपर्क साधा";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "मला एक नवीन वैशिष्ट्याची विनंती करायला आवडेल";
 
 /* A brief localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "वैशिष्ट्य विनंती";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "मला अॅपवर अभिप्राय द्यायचा आहे";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "अॅप अभिप्राय";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+"CONTACT_SUPPORT_FILTER_OTHER" = "काहीतरी वेगळे";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "इतर";
@@ -818,16 +818,16 @@
 "CONTACT_SUPPORT_FILTER_PROMPT" = "आम्ही कशी मदत करू शकतो?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "I have a question";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "मला एक प्रश्न पडला आहे";
 
 /* A brief localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Question";
+"CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "प्रश्न";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Something’s not working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "काहीतरी कार्य करत नाही";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "काहीतरी कार्य करत नाही";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "आपली समर्थन विनंती पूर्ण करण्यात Signal अक्षम होता.";
@@ -842,7 +842,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "डीबग लॉग प्रविष्ट करायचे?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Select Reason";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "कारण निवडा";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "डीबग लॉग सोबत प्रविष्ट करा";
@@ -866,7 +866,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "चॅट हटवायचे?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "या गटात फक्त प्रशासक संदेश पाठवू शकतात.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "%@ चॅटपेक्षा अधिक आपण निवडू शकत नाही.";
@@ -914,10 +914,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "अक्षम केले";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "गट नाव, फोटो, विवरण आणि हरवणारे संदेश टायमर जो संपादन करू शकतो त्याला निवडा.";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ऑडिओ";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "या वापरकर्त्याकडून आपल्याला यापुढे संदेश किंवा अद्यतने प्राप्त होणार नाहीत.";
@@ -935,7 +935,7 @@
 "CONVERSATION_SETTINGS_EDIT" = "संपादन";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "गट माहिती संपादित करा";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "फक्त प्रशासक";
@@ -983,19 +983,19 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "उल्लेख";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "message";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "संदेश";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "हे चॅट या वेळेसाठी म्यूट करा…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "नेहमी";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "mute";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "म्यूट करा";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hours";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 तास";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "म्यूट करा";
@@ -1019,28 +1019,28 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "नेहमी";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "नेहमी म्यूट केलेले";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "muted";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "म्यूट केलेले";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@पर्यंत";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ पर्यंत म्यूट केले";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ गट समाईक";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "नवीन संपर्क बनवा";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "कुठलेही गट समाईक नाहीत";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 गट समाईक";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "परवानग्या";
@@ -1058,16 +1058,16 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ ला गट प्रशासक म्हणून हटवायचे?";
 
 /* Button to search the chat */
-"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "search";
+"CONVERSATION_SETTINGS_SEARCH_BUTTON" = "शोधा";
 
 /* Label for button that sets 'send messages permission' for a group to 'all members'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "सर्व सदस्य";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "या गटात संदेश कोण पाठवू शकतो आणि कॉल कोण चालू करू शकतो ते निवडा.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "संदेश पाठवा";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "फक्त प्रशासक";
@@ -1082,10 +1082,10 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "अनम्यूट करा";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "व्हिडिओ";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "संपर्क तपशील";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "प्रोफाईल सामायिक करा";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "अधिक वाचा";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "क्लिपबोर्डवर कॉपी केले";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "आपले सत्र पुनःप्रस्थापित केल्याने भविष्यात %@ कडून संदेश प्राप्त करण्याची अनुमती मिळेल, पण कुठलेही आधीपासून दूषित संदेश पुनर्स्थापित करणार नाही.";
@@ -1124,22 +1124,22 @@
 "CURRENCY_PICKER_VIEW_TITLE" = "चलन सेट करा";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "ग्रेडिएंट";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "ह्यू";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "सॅच्यूरेशन";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "सॉलिड";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "कस्टम रंग";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "ग्रेडिएंटची दिशा बदलण्यासाठी ओढा";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ह्याला काही मिनिटे लागू शकतात.";
@@ -1151,22 +1151,22 @@
 "DATE_HOURS_AGO_FORMAT" = "%@ ता";
 
 /* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ hours ago";
+"DATE_HOURS_AGO_LONG_FORMAT" = "%@ तासांपूर्वी";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ मि";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ मिनिटांपूर्वी";
 
 /* The present; the current time. */
 "DATE_NOW" = "आता";
 
 /* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 hour ago";
+"DATE_ONE_HOUR_AGO_LONG" = "1 तासापूर्वी";
 
 /* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 minute ago";
+"DATE_ONE_MINUTE_AGO_LONG" = "1 मिनिटापूर्वी";
 
 /* The current day. */
 "DATE_TODAY" = "आज";
@@ -1220,7 +1220,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "खाते हटवा";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "हे आपले Signal खाते हटवेल आणि अॅपलिकेशन रीसेट करेल. ही प्रक्रिया पूर्ण झाल्यावर अॅप बंद होईल.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "आपले खाते हटवायची आपणास खात्री आहे का?";
@@ -1229,28 +1229,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "देश कोड";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "खाते हटविण्यात अयशस्वी. Wi-Fi किंवा मोबाईल डेटा चालू असल्याची खात्री करा, नंतर पुन्हा प्रयत्न करा.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "हे आपली खाते माहिती, प्रोफाईल आणि आपले सर्व संदेश हटवेल.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "खाते हटवत आहे...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "कुठलेही इंटरनेट कनेक्शन नाही. Wi-Fi किंवा मोबाईल डेटा चालू असल्याची खात्री करा, नंतर पुन्हा प्रयत्न करा.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "फोन नंबर";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "आपल्या Signal नंबरची पुष्टी करा";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "खाते हटवा";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "आपण प्रविष्ट केलेला फोन नंबर आपल्या खात्याशी जुळत नाही.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "चॅटमधले सर्व संदेश हटवायचे?";
@@ -1271,10 +1271,10 @@
 "DEREGISTRATION_WARNING" = "डिव्हाईस नोंदणीकृत नाही. आपला फोन नंबर एका वेगळ्या डिव्हाईस सोबत Signal वर नोंदणीकृत असू शकतो. पुन्हा-नोंदणी करण्यासाठी टॅप करा.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "%@ ला शेवटचा सक्रिय";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "%@ ला लिंक केले";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "डिव्हाईस यादी अद्यतनित करण्यात अयशस्वी.";
@@ -1388,34 +1388,34 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%@ नंतर या चॅटमधील संदेश हरवतील.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "कस्टम वेळ";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "दिवस";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "सक्षम केल्यानंतर, या चॅट मधील पाठविलेले आणि प्राप्त झालेले नवीन संदेश पाहिल्यानंतर हरवतील.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "सध्या %@ नंतर संदेश हरवतात. ";
 
 /* The unit for a number of hours */
-"DISAPPEARING_MESSAGES_HOURS" = "hours";
+"DISAPPEARING_MESSAGES_HOURS" = "तास";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "हरवणारे संदेश सेटिंग";
 
 /* The unit for a number of minutes */
-"DISAPPEARING_MESSAGES_MINUTES" = "minutes";
+"DISAPPEARING_MESSAGES_MINUTES" = "मिनिटे";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "सेकंद";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "सक्षम केल्यानंतर, या संभाषणातील आपल्याद्वारा  पाठवलेले आणि प्राप्त झालेले नवीन संदेश पाहिल्यानंतर हरवतील.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "आठवडे";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "रद्द करा";
@@ -1436,37 +1436,37 @@
 "DONATION_MEGAPHONE_TITLE" = "Signal ला देणगी द्या";
 
 /* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+"DONATION_VIEW_AMOUNT_LABEL" = "देणगी रक्कम";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "कस्टम रक्कम प्रविष्ट करा";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal ला देणगी";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "देणगी देण्याचे इतर मार्ग";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "देणगी देण्यासाठी मोठी रक्कम निवडा";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "देणगी देण्यासाठी छोटी रक्कम निवडा";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "देणगी देण्यासाठी एक रक्कम निवडा";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "आपल्या समर्थनासाठी धन्यवाद!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "Signal आपल्यासारख्या लोकांद्वारा समर्थित आहे.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "देणगी का द्यायची?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "आपण iOS सेटिंग अॅप मध्ये अॅक्सेस सक्षम करू शकता.";
@@ -1598,7 +1598,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "सर्व्हर त्रुटी. कृपया नंतर पुन्हा प्रयत्न करा";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "संदेश पाठवण्यापूर्वी सर्व्हरला वापरकर्ता सत्यापन आवश्यक आहे.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "एक अज्ञात त्रुटी आढळली.";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "स्वरूप";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "फोटो जोडा";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "मित्रांना आमंत्रित करा";
@@ -1784,10 +1784,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ ब्लॉक केलेले आहे";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "या गटातील फक्त प्रशासक कॉल चालू करू शकतात.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "गट कॉल चालू करू शकत नाही";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ ब्लॉक केलेले आहे";
@@ -1862,7 +1862,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ या कॉल मध्ये आहे";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ सादर करत आहे";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "पुनःकनेक्ट करत आहे…";
@@ -1871,7 +1871,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "कुणीतरी कॉलमध्ये सामील झाले आहे ज्यांचा सुरक्षितता नंबर बदलला आहे.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "स्क्रीन शेअर पहाण्यासाठी वर स्वाइप करा";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "कुणीतरी गट कॉल चालू केला";
@@ -1931,16 +1931,16 @@
 "GROUP_DESCRIPTION_MORE" = "आणखी";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "गट विवरण जोडा...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Group descriptions will be visible to members of this group and people who have been invited.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "गट विवरण या गटाच्या सदस्यांना आणि आमंत्रित केलेल्या लोकांना दृश्यमान असेल.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "गट विवरण";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "गट विवरण (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "एक अवैध आमंत्रण जोडले गेले होते.";
@@ -2048,22 +2048,22 @@
 "GROUP_INVITES_VIEW_TITLE" = "सदस्य आमंत्रणे";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "सर्व सदस्यांना संदेश पाठवण्याची अनुमती देण्यासाठी गट सेटिंग बदलल्या गेल्या.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "सर्व सदस्यांना संदेश पाठवण्याची अनुमती देण्यासाठी आपण गट सेटिंग बदलल्या.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "सर्व सदस्यांना संदेश पाठवण्याची अनुमती देण्यासाठी %@ ने गट सेटिंग बदलल्या.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "फक्त प्रशासकांना संदेश पाठवण्याची अनुमती देण्यासाठी गट सेटिंग बदलल्या गेल्या.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "फक्त प्रशासकांना संदेश पाठवण्याची अनुमती देण्यासाठी आपण गट सेटिंग बदलल्या.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "फक्त प्रशासकांना संदेश पाठवण्याची अनुमती देण्यासाठी %@ ने गट सेटिंग बदलल्या.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ही गट लिंक आता वैध नाही.";
@@ -2255,7 +2255,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "सदस्य";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ गट सदस्यांचे नाव समान आहेत.";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "पुनरावलोकन करण्यासाठी टॅप करा";
@@ -2267,16 +2267,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "सदस्यांचे पुनरावलोकन करा";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ गट सदस्यांचे नाव समान आहेत, खाली सदस्यांचे पुनरावलोकन करा किंवा काय करायचे ते निवडा.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ गट सदस्यांचे नाव समान आहेत, खाली सदस्यांचे पुनरावलोकन करा किंवा काय करायचे ते निवडा.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ गट सदस्यांचे नाव समान आहेत.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "गटाचे नाव (आवश्यक)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "गट नाव";
@@ -2432,22 +2432,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ने गट अद्यतनित केला";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "गट विवरण काढले गेले.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "आपण गट विवरण काढले.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ने गट विवरण काढले.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "गट विवरण बदलले गेले.";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "आपण गट विवरण बदलले आहे.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ने गट विवरण बदलले.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "गट नाव काढले गेले.";
@@ -2492,13 +2492,13 @@
 "GROUP_YOU_LEFT" = "आपण गट सोडला आहे.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "प्रशासक";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "फक्त %@ संदेश पाठवू शकतात";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "प्रशासकाला संदेश पाठवा";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "आपण जाण्यापूर्वी या गटासाठी नवीन प्रशासक निवडा.";
@@ -2822,7 +2822,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "स्टिकर";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "दोनदा टॅप करा आणि रेकॉर्ड करण्यासाठी धरून ठेवा. पाठवण्यासाठी सोडा किंवा रद्द करण्यासाठी डावीकडे स्लाइड करा. दोनदा टॅप करा आणि रेकॉर्ड करणे लॉक करण्यासाठी वर स्लाइड करा.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "व्हॉईस संदेश";
@@ -2924,7 +2924,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "आपल्याला लिंक करावयाचा डिव्हाईस वर प्रदर्शित केलेला QR कोड स्कॅन करा. ";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "नवीन डिव्हाइस लिंक करण्यासाठी QR कोड स्कॅन करा.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "नवीन डिव्हाईस जोडा";
@@ -2975,7 +2975,7 @@
 "LOGGING_SECTION" = "लॉगिंग";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "समस्या आणि क्रॅश सोडवण्यासाठी डीबग लॉग Signal ला मदत करू शकतात.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "संदेश";
@@ -3038,34 +3038,34 @@
 "MESSAGE_ACTION_DETAILS" = "अधिक माहिती";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "नवीन ईमेल संदेश";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ईमेल कॉन्फिगर केलेले नाही.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "हा संदेश फॉर्वर्ड करा";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "गट आमंत्रण उघडा";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "लिंक उघडा";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "स्टिकर पॅक पहा";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "कॉल करा";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime ऑडिओ";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime व्हिडिओ";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "मजकूर संदेश पाठवा";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ह्या संदेशाला प्रत्युत्तर द्या";
@@ -3077,7 +3077,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "मिडिया सामायिक करा";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "गट आमंत्रण";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "स्टिकर पॅक";
@@ -3089,7 +3089,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "नवीन संदेश";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "पाठवलेली वेळ कॉपी केली";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "यावरून पाठवले";
@@ -3107,13 +3107,13 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "अयशस्वी";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "पाठवण्याला विराम दिला";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "याने वाचले";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "यास पाठवत आहे";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "याला पाठवले";
@@ -3137,7 +3137,7 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "फाईलनाव";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
+"MESSAGE_METADATA_VIEW_TITLE" = "संदेश तपशील";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "अवरोधित करा";
@@ -3146,7 +3146,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "अवरोधित करा आणि हटवा";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "स्पॅम म्हणून रिपोर्ट करा आणि ब्लॉक करा";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "अवरोधित व्यक्ती आपल्याला कॉल करू किंवा संदेश पाठवू शकणार नाहीत.";
@@ -3269,7 +3269,7 @@
 "MESSAGE_STATUS_PENDING" = "विराम दिलेले पाठवा";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "विराम दिला";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "वाचले";
@@ -3344,7 +3344,7 @@
 "MUTED_BADGE" = "म्यूट केलेले";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "अलीकडे त्यांचे प्रोफाईल नाव %1$@ ते %2$@ वर बदलले.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "वगळा";
@@ -3533,10 +3533,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "आपल्या संदेशांना माणुसकीचा एक स्पर्श जोडा";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "आपण बराच काळ निष्क्रिय असल्यामुळे, Signal वापरण्यासाठी आपण पुन्हा नोंदणी करणे आवश्यक आहे.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+"ONBOARDING_DROPPED_YDB_TITLE" = "Signal साठी नोंदणी करा";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad नोंदवा";
@@ -3587,7 +3587,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE" = "आपला फोन नंबर प्रविष्ट करा";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Your Phone Number";
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "आपला फोन नंबर";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "अवैध फोन नंबर. कृपया नोंदणी करण्यासाठी कृपया एक वैध फोन नंबर प्रविष्ट करा.";
@@ -3674,58 +3674,58 @@
 "OUTGOING_CALL_FORMAT" = "आपण %@ ला कॉल केलेला";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "विनंतीला नकार द्या";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%2$@ वर %1$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "आपण नकार दिल्याचे %@ ला सूचित केले जाईल.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "या विनंतीला नकार द्यायचा?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "कॉइन सफाई फी";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "विनंती रद्द करू शकले नाही.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "विनंती रद्द करू शकले नाही.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "अयशस्वी";
 
 /* Status indicator for incoming payments which failed to verify. */
-"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "अवैध";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_FAILURE_INVALID" = "Invalid";
+"PAYMENTS_FAILURE_INVALID" = "अवैध";
 
 /* Status indicator for outgoing payments which failed. */
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "अयशस्वी";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "अपूरे फंड";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "प्रेषकाला पावती पाठवली जाऊ शकली नाही";
 
 /* Status indicator for outgoing payments which failed to verify. */
-"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "अवैध";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "टीप जोडा";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "उपलब्ध बॅलंस: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "पेमेंटची पुष्टी करा";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "पे करा";
@@ -3734,34 +3734,34 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "सेवेसोबत संपर्क साधू शकले नाही";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "हे पेमेंट पूर्ण करण्यासाठी आपल्याकडे पुरेसे MOB नाहीत.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "हे पेमेंट पूर्ण करण्यासाठी आपल्याकडे पुरेसे MOB नाहीत. आपला वर्तमान बॅलंस %@ आहे.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "अवैध व्यवहार";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "पेमेंट वापरण्यासाठी Signal अद्यतनित करा.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "पेमेंट आतापर्यंत सत्यापित नाही";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "पेमेंट पूर्ण करू शकले नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "नेटवर्क फी";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "अंदाजे %@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "अवैध रक्कम";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
@@ -3773,37 +3773,37 @@
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "पे करा";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "एकूण रक्कम";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "प्रक्रिया करत आहे";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "%@ ला";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "विनंती ";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1 नवीन पेमेंट सूचना";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ ने आपल्याला %2$@ पाठवले";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ नवीन पेमेंट सूचना";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "पेमेंट पूर्ण झाले";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "असत्यापित";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "सत्यापित";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "पेमेंट पूर्ण झाले";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "पाठवत आहे…";
@@ -3812,28 +3812,28 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "पाठविले";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "तयार करत आहे";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "असत्यापित";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "सत्यापित";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "अज्ञात अपयश";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "पूर्ण झाले";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "असत्यापित";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "सत्यापित";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "पूर्ण झाले";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "पाठवत आहे…";
@@ -3842,16 +3842,16 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "पाठविले";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "तयार करत आहे";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "असत्यापित";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "सत्यापित";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "अज्ञात अपयश";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
@@ -4907,7 +4907,7 @@
 "SET_WALLPAPER_TITLE" = "वॉलपेपर सेट करा";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "खाते";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "अवरोधित करा";
@@ -5066,7 +5066,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "आपण माझ्यापर्यंत @signalapp वापरून पोहोचू शकता. तो आता मिळवा: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chat Color & Wallpaper";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "चॅट रंग आणि वॉलपेपर";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "संदेश ध्वनी";
@@ -5126,7 +5126,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "तेव्हा सूचित करा…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "सूचना";
@@ -5147,7 +5147,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "फंड जोडण्यासाठी, MobileCoin आपल्या वॉलेट पत्त्यावर पाठवा. MobileCoin चे समर्थन करत असलेल्या ऐक्सचेंजवर आपल्या खात्यावरून व्यवहार चालू करा, नंतर QR कोड स्कॅन करा किंवा वॉलेट पत्ता कॉपी करा.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
@@ -5159,7 +5159,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal मध्ये पेमेंट यापुढे उपलब्ध नाही. तरीही आपण फंड एक्सचेंजवर स्थानांतरित करू शकता पण आपण यापुढे पेमेंट पाठवू किंवा प्राप्त करू शकत नाही किंवा फंड जोडू शकत नाही.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
@@ -5168,10 +5168,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal मध्ये पेमेंट यापुढे उपलब्ध नाही. तरीही आपण फंड एक्सचेंजवर स्थानांतरित करू शकता पण आपण यापुढे पेमेंट पाठवू किंवा प्राप्त करू शकत नाही किंवा फंड जोडू शकत नाही.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal मध्ये पेमेंट यापुढे उपलब्ध नाही. तरीही आपण फंड एक्सचेंजवर स्थानांतरित करू शकता पण आपण यापुढे पेमेंट पाठवू किंवा प्राप्त करू शकत नाही किंवा फंड जोडू शकत नाही.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "रूपांतरण हा एक अंदाज असतो आणि तो कदाचित अचूक नसू शकतो.";
@@ -5219,40 +5219,40 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin हे नवीन गोपनीयता केंद्रित डिजिटल चलन आहे.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin बद्दल";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "MobileCoin आपल्या वॉलेट पत्त्यावर पाठवण्यासाठी आपण Signal मध्ये वापरासाठी फंड जोडू शकता.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoin चे समर्थन करत असलेल्या ऐक्सचेंजवर आपण कधीही MobileCoin फंड काढू शकता. फक्त त्या ऐक्सचेंजवर आपल्या खात्यावर स्थानांतरण करा.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "फंड काढत आहे";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PIN अद्यतनित करा";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "उच्च बॅलंससह, आपल्या खात्याला अधिक संरक्षण जोडण्यासाठी आपल्याला अल्फान्यूमेरिक PIN अद्यतनित करावेसे वाटू शकते.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Update your PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "आपला PIN अद्यतनित करा";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "आपली रिकव्हरी फ्रेझ आपल्याला आपले पेमेंट खाते पुनर्स्थापित करायचा अजून एक मार्ग देते.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "रिकव्हरी फ्रेझ रेकॉर्ड करा";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
@@ -5297,7 +5297,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "नेटवर्क फी";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "प्राप्त झाले";
@@ -5324,13 +5324,13 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "स्थिती";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "व्यवहार तपशील ज्यात पेमेंट रक्कम आणि व्यवहाराची वेळ हे MobileCoin लेजरचा एक भाग आहेत.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "आपल्याकडील कॉइन व्यव्हार पूर्ण करण्यासाठी वापरले जाऊ शकत नसल्यास \"कॉइन सफाई फी\" चार्ज केली जाते. सफाई आपल्याला पेमेंट पाठवण्यासाठी अनुमती देते.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "हे पेमेंट पूर्ण करण्यासाठी आपल्याकडे पुरेसे MOB नाहीत. आपला वर्तमान बॅलंस %@ आहे.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
@@ -5339,7 +5339,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "%@ ला";
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "पेमेंट निष्क्रिय केले गेले.";
@@ -5381,7 +5381,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "पेमेंट खाते पुनर्स्थापित केले गेले.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
@@ -5450,7 +5450,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "ऐक्सचेंजने पुरवलेल्या वॉलेट पत्त्यावर स्थानांतरण पूर्ण करून आपण MobileCoin स्थानांतरित करू शकता. वॉलेट पत्ता हे अंक आणि अक्षरांची स्ट्रिंग आहे साधारणपणे QR कोडच्या खाली.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
@@ -5495,7 +5495,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "आपण जर आपला रिकव्हरी फ्रेझ डिटिटल स्वरूपात स्टोअर करण्याचे निवडत असल्यास, ते कुठेतरी सुरक्षितपणे स्टोअर केले असल्याची खात्री करा.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
@@ -5513,7 +5513,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "स्क्रीनशॉट घेऊ नका किंवा ईमेलद्वारा पाठवू नका.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
@@ -6218,7 +6218,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "सर्व वॉलपेपर रीसेट करा";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "सर्व चॅटचे रंग ओव्हरराइड करण्यास आपण इच्छुक आहात का?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
@@ -6242,7 +6242,7 @@
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Reset Wallpapers";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Would you like to override all wallpapers?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "सर्व वॉलपेपर ओव्हरराइड करण्यास आपण इच्छुक आहात का?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Reset Wallpaper";
