@@ -456,9 +456,6 @@ public enum OnionRequestAPI {
                 }
             } else if let message = json?["result"] as? String, message == "Loki Server error" {
                 // Do nothing
-            } else if case .server(let host, _, _, _, _) = destination, host == "116.203.70.33" && statusCode == 0 {
-                // FIXME: Temporary thing to kick out nodes that can't talk to the V2 OGS yet
-                handleUnspecificError()
             } else if statusCode == 0 { // Timeout
                 // Do nothing
             } else {

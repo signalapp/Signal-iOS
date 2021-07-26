@@ -1,0 +1,18 @@
+framework module SignalRingRTC {
+    umbrella header "SignalRingRTC.h"
+    
+    export *
+    module * { export * }
+
+    explicit module RingRTC {
+        header "ringrtc.h"
+        link "ringrtc"
+        export *
+    }
+    
+}
+
+module SignalRingRTC.Swift {
+    header "SignalRingRTC-Swift.h"
+    requires objc
+}

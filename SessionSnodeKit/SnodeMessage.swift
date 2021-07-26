@@ -8,8 +8,6 @@ public final class SnodeMessage : NSObject, NSCoding { // NSObject/NSCoding conf
     public let data: LosslessStringConvertible
     /// The time to live for the message in milliseconds.
     public let ttl: UInt64
-    /// When the proof of work was calculated.
-    ///
     /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
     public let timestamp: UInt64
 
