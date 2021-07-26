@@ -5,6 +5,7 @@
 import Foundation
 import SignalRingRTC
 import PromiseKit
+import SessionUtilitiesKit
 
 // All Observer methods will be invoked from the main thread.
 @objc(OWSCallServiceObserver)
@@ -45,12 +46,12 @@ public final class CallService: NSObject {
             // Prevent device from sleeping while we have an active call.
             if oldValue != newValue {
                 if let oldValue = oldValue {
-                    DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
+                    DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
                 }
 
                 if let newValue = newValue {
                     assert(calls.contains(newValue))
-                    DeviceSleepManager.shared.addBlock(blockObject: newValue)
+                    DeviceSleepManager.sharedInstance.addBlock(blockObject: newValue)
 
                     if newValue.isIndividualCall { individualCallService.startCallTimer() }
                 } else {

@@ -51,6 +51,7 @@ PODS:
   - SQLCipher/standard (4.4.0):
     - SQLCipher/common
   - SwiftProtobuf (1.5.0)
+  - WebRTC (63.11.20455)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -135,6 +136,7 @@ DEPENDENCIES:
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
   - Sodium (~> 0.8.0)
   - SwiftProtobuf (~> 1.5.0)
+  - WebRTC (~> 63.11)
   - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
@@ -154,6 +156,7 @@ SPEC REPOS:
     - Sodium
     - SQLCipher
     - SwiftProtobuf
+    - WebRTC
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -204,10 +207,11 @@ SPEC CHECKSUMS:
   Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
+  WebRTC: f2a6203584745fe53532633397557876b5d71640
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 50e6a35c838ba28d2ee02bc6018fdd297c04e55f
+PODFILE CHECKSUM: 70c56fb65241e2064eb7999b6647a36be5031fe3
 
 COCOAPODS: 1.10.1

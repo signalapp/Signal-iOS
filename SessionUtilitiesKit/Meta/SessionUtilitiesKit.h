@@ -18,6 +18,7 @@ FOUNDATION_EXPORT const unsigned char SessionUtilitiesKitVersionString[];
 #import <SessionUtilitiesKit/OWSMath.h>
 #import <SessionUtilitiesKit/TSRequest.h>
 #import <SessionUtilitiesKit/TSYapDatabaseObject.h>
+#import <SessionUtilitiesKit/UnfairLock.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>
 #import <SessionUtilitiesKit/UIView+OWS.h>
 

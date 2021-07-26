@@ -12,6 +12,7 @@ target 'Session' do
   pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'Sodium', '~> 0.8.0', :inhibit_warnings => true
+  pod 'WebRTC', '~> 63.11', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
   pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
   pod 'ZXingObjC', :inhibit_warnings => true

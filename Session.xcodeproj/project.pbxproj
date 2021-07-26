@@ -233,6 +233,10 @@
 		B882A79526AE878300B5AB69 /* IndividualCallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B882A77526AE878300B5AB69 /* IndividualCallService.swift */; };
 		B882A79626AE878300B5AB69 /* OutboundIndividualCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B882A77626AE878300B5AB69 /* OutboundIndividualCallInitiator.swift */; };
 		B882A79726AE878300B5AB69 /* IndividualCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = B882A77726AE878300B5AB69 /* IndividualCall.swift */; };
+		B882A79926AE897E00B5AB69 /* Atomics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B882A79826AE897E00B5AB69 /* Atomics.swift */; };
+		B882A79C26AE89F200B5AB69 /* UnfairLock.m in Sources */ = {isa = PBXBuildFile; fileRef = B882A79B26AE89F200B5AB69 /* UnfairLock.m */; };
+		B882A79D26AE8A1700B5AB69 /* UnfairLock.h in Headers */ = {isa = PBXBuildFile; fileRef = B882A79A26AE89E300B5AB69 /* UnfairLock.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B882A79F26AE8A2200B5AB69 /* UnfairLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B882A79E26AE8A2200B5AB69 /* UnfairLock.swift */; };
 		B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB07255A580700E217F9 /* OWSBackupFragment.m */; };
 		B8856CB1256F0F47001CE70E /* OWSBackupFragment.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAEA255A580500E217F9 /* OWSBackupFragment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F7255B6DBC007E1867 /* OWSAudioPlayer.m */; };
@@ -1252,6 +1256,10 @@
 		B882A77526AE878300B5AB69 /* IndividualCallService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallService.swift; sourceTree = "<group>"; };
 		B882A77626AE878300B5AB69 /* OutboundIndividualCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundIndividualCallInitiator.swift; sourceTree = "<group>"; };
 		B882A77726AE878300B5AB69 /* IndividualCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCall.swift; sourceTree = "<group>"; };
+		B882A79826AE897E00B5AB69 /* Atomics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomics.swift; sourceTree = "<group>"; };
+		B882A79A26AE89E300B5AB69 /* UnfairLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnfairLock.h; sourceTree = "<group>"; };
+		B882A79B26AE89F200B5AB69 /* UnfairLock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UnfairLock.m; sourceTree = "<group>"; };
+		B882A79E26AE8A2200B5AB69 /* UnfairLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnfairLock.swift; sourceTree = "<group>"; };
 		B8856D5F256F129B001CE70E /* OWSAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAlerts.swift; sourceTree = "<group>"; };
 		B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
 		B886B4A62398B23E00211ABE /* QRCodeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeVC.swift; sourceTree = "<group>"; };
@@ -2409,6 +2417,7 @@
 				C33FDB8A255A581200E217F9 /* AppContext.h */,
 				C33FDB85255A581100E217F9 /* AppContext.m */,
 				C3C2A5D12553860800C340D1 /* Array+Description.swift */,
+				B882A79826AE897E00B5AB69 /* Atomics.swift */,
 				C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */,
 				B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */,
 				B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */,
@@ -2433,6 +2442,9 @@
 				C33FDB14255A580800E217F9 /* OWSMath.h */,
 				C33FDB6B255A580F00E217F9 /* SNUserDefaults.swift */,
 				C33FDB3F255A580C00E217F9 /* String+SSK.swift */,
+				B882A79A26AE89E300B5AB69 /* UnfairLock.h */,
+				B882A79B26AE89F200B5AB69 /* UnfairLock.m */,
+				B882A79E26AE8A2200B5AB69 /* UnfairLock.swift */,
 				C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */,
 				C38EF237255B6D65007E1867 /* UIDevice+featureSupport.swift */,
 				C35D0DB425AE5F1200B6BF49 /* UIEdgeInsets.swift */,
@@ -3785,6 +3797,7 @@
 				C352A3772557864000338F3E /* NSTimer+Proxying.h in Headers */,
 				C32C5B51256DC219003C73A2 /* NSNotificationCenter+OWS.h in Headers */,
 				C3C2A67D255388CC00C340D1 /* SessionUtilitiesKit.h in Headers */,
+				B882A79D26AE8A1700B5AB69 /* UnfairLock.h in Headers */,
 				C32C6018256E07F9003C73A2 /* NSUserDefaults+OWS.h in Headers */,
 				B8856D8D256F1502001CE70E /* UIView+OWS.h in Headers */,
 			);
@@ -4361,6 +4374,7 @@
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/Sodium/Sodium.framework",
+				"${PODS_ROOT}/WebRTC/WebRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
@@ -4383,6 +4397,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sodium.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
@@ -4720,6 +4735,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B882A79926AE897E00B5AB69 /* Atomics.swift in Sources */,
 				C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */,
 				C32C5A47256DB8F0003C73A2 /* ECKeyPair+Hexadecimal.swift in Sources */,
 				C3D9E41525676C320040E4F3 /* Storage.swift in Sources */,
@@ -4737,6 +4753,7 @@
 				C32C5DD2256DD9E5003C73A2 /* LRUCache.swift in Sources */,
 				C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */,
 				C32C5FA1256DFED5003C73A2 /* NSArray+Functional.m in Sources */,
+				B882A79F26AE8A2200B5AB69 /* UnfairLock.swift in Sources */,
 				C3A7225E2558C38D0043A11F /* Promise+Retaining.swift in Sources */,
 				C3D9E4D12567777D0040E4F3 /* OWSMediaUtils.swift in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
@@ -4764,6 +4781,7 @@
 				C3D9E4F4256778AF0040E4F3 /* NSData+Image.m in Sources */,
 				C32C5E0C256DDAFA003C73A2 /* NSRegularExpression+SSK.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
+				B882A79C26AE89F200B5AB69 /* UnfairLock.m in Sources */,
 				B8856D23256F116B001CE70E /* Weak.swift in Sources */,
 				C32C5A48256DB8F0003C73A2 /* BuildConfiguration.swift in Sources */,
 				B87EF18126377A1D00124B3C /* Features.swift in Sources */,
