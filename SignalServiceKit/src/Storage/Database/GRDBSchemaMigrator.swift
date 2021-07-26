@@ -144,6 +144,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_populateGroupMember
         case dataMigration_cullInvalidIdentityKeySendingErrors
         case dataMigration_moveToThreadAssociatedData
+        case dataMigration_markAvatarBuilderMegaphoneCompleteIfNecessary
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1395,6 +1396,15 @@ public class GRDBSchemaMigrator: NSObject {
                 } catch {
                     owsFail("Error \(error)")
                 }
+            }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_markAvatarBuilderMegaphoneCompleteIfNecessary.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            if Self.profileManager.localProfileAvatarData() != nil {
+                ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .avatarBuilder, transaction: transaction)
             }
         }
     }
