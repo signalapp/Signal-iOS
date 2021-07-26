@@ -117,6 +117,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         // If we're still truncated, trim down the visible text until
         // we have space to fit the "more" link without truncation.
         // This should only take a few iterations.
+        var iterationCount = 0
         while visibleCharacterRangeUpperBound < textThatFits.utf16.count {
             let truncateToIndex = max(0, visibleCharacterRangeUpperBound)
             guard truncateToIndex > 0 else { break }
@@ -126,6 +127,12 @@ class GroupDescriptionPreviewView: ManualLayoutView {
             setTextThatFits(textThatFits)
             visibleCharacterRangeUpperBound
                 = textView.visibleTextRange.upperBound - Self.moreTextPlusPrefixLength
+
+            iterationCount += 1
+            if iterationCount >= 10 {
+                owsFailDebug("Failed to calculate visible range for description text. Bailing.")
+                break
+            }
         }
     }
 
