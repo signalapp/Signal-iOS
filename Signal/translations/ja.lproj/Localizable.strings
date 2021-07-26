@@ -323,7 +323,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "スピーカー";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "画像を追加";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "見た目や色を選んだり、イニシャルをカスタマイズできます。";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "さらに表示";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "クリップボードにコピーしました";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "セッションをリセットすると、それ以後の %@ からのメッセージは受信しますが、破損した過去のメッセージは回復しません。";
@@ -1415,7 +1415,7 @@
 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "有効にすると、あなたの新規チャットで新たに送受信されるメッセージは、閲覧後に消えます。";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "週間";
+"DISAPPEARING_MESSAGES_WEEKS" = "週";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "キャンセル";
@@ -1706,7 +1706,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "デザイン";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "画像を追加";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "友達を招待する";
@@ -5540,7 +5540,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "リマインダーを無効にする";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PINは忘れないようにするか、安全に保管してください。復元はできませんので。PINを忘れると、Signalに登録し直しても、データは失われる可能性があります。";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PINは復元できないため、記憶するか安全に保管してください。PINを忘れると、Signalアカウントの再登録時にデータが失われる可能性があります。";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Signal PINの確認";
