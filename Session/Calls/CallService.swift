@@ -325,7 +325,7 @@ public final class CallService: NSObject {
 
     @objc
     func configureBandwidthMode() {
-        guard AppReadiness.isAppReady else { return }
+        guard AppReadiness.isAppReady() else { return }
         guard let currentCall = currentCall else { return }
 
         let useLowBandwidth = Self.useLowBandwidthWithSneakyTransaction()
