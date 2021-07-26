@@ -45,6 +45,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)setIsOnlyNotifyMentions:(BOOL)isOnlyNotifyMentions withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

@@ -1001,13 +1001,11 @@ CGFloat kIconViewLength = 24;
     UISwitch *uiSwitch = (UISwitch *)sender;
     if (uiSwitch.isOn) {
         [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            ((TSGroupThread *)self.thread).isOnlyNotifyMentions = true;
-            [self.thread saveWithTransaction:transaction];
+            [(TSGroupThread *)self.thread setIsOnlyNotifyMentions:true withTransaction:transaction];
         }];
     } else {
         [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            ((TSGroupThread *)self.thread).isOnlyNotifyMentions = false;
-            [self.thread saveWithTransaction:transaction];
+            [(TSGroupThread *)self.thread setIsOnlyNotifyMentions:false withTransaction:transaction];
         }];
     }
 }

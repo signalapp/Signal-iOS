@@ -208,6 +208,17 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     }];
 }
 
+- (void)setIsOnlyNotifyMentions:(BOOL)isOnlyNotifyMentions withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    self.isOnlyNotifyMentions = isOnlyNotifyMentions;
+    
+    [self saveWithTransaction:transaction];
+    
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.groupThreadUpdated object:self.uniqueId];
+    }];
+}
+
 - (void)leaveGroupWithSneakyTransaction
 {
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
