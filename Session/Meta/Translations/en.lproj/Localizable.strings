@@ -136,6 +136,8 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+/* Table cell label in conversation settings which returns the user to the conversation with 'notification settings' activated */
+"CONVERSATION_SETTINGS_NOTIFICATION" = "Notify Mentions Only";
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
 /* Title for the 'crop/scale image' dialog. */

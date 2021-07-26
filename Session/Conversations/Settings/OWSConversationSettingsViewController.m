@@ -318,6 +318,55 @@ CGFloat kIconViewLength = 24;
         } actionBlock:^{
             [weakSelf inviteUsersToOpenGroup];
         }]];
+        
+        // Notification Settings
+        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+            UITableViewCell *cell = [OWSTableItem newCell];
+            OWSConversationSettingsViewController *strongSelf = weakSelf;
+            OWSCAssertDebug(strongSelf);
+            cell.preservesSuperviewLayoutMargins = YES;
+            cell.contentView.preservesSuperviewLayoutMargins = YES;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+            UIImageView *iconView = [strongSelf viewForIconWithName:@"NotifyMentions"];
+
+            UILabel *rowLabel = [UILabel new];
+            rowLabel.text = NSLocalizedString(
+                @"CONVERSATION_SETTINGS_NOTIFICATION", @"");
+            rowLabel.textColor = LKColors.text;
+            rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+
+            UISwitch *switchView = [UISwitch new];
+            switchView.on = ((TSGroupThread *)strongSelf.thread).isOnlyNotifyMentions;
+            [switchView addTarget:strongSelf action:@selector(notifyMentionsSwitchValueDidChange:)
+                forControlEvents:UIControlEventValueChanged];
+
+            UIStackView *topRow =
+                [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
+            topRow.spacing = strongSelf.iconSpacing;
+            topRow.alignment = UIStackViewAlignmentCenter;
+            [cell.contentView addSubview:topRow];
+            [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
+
+            UILabel *subtitleLabel = [UILabel new];
+            subtitleLabel.text = NSLocalizedString(@"When enabled, only messages mentioned you will be notified.", @"");
+            subtitleLabel.textColor = LKColors.text;
+            subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
+            subtitleLabel.numberOfLines = 0;
+            subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            [cell.contentView addSubview:subtitleLabel];
+            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:8];
+            [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
+            [subtitleLabel autoPinTrailingToSuperviewMargin];
+            [subtitleLabel autoPinBottomToSuperviewMargin];
+
+            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+
+            cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"notify_mentions_only");
+
+            return cell;
+         } customRowHeight:UITableViewAutomaticDimension actionBlock:nil]];
     }
 
     // Search
@@ -945,6 +994,22 @@ CGFloat kIconViewLength = 24;
 - (void)tappedConversationSearch
 {
     [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
+}
+
+- (void)notifyMentionsSwitchValueDidChange:(id)sender
+{
+    UISwitch *uiSwitch = (UISwitch *)sender;
+    if (uiSwitch.isOn) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            ((TSGroupThread *)self.thread).isOnlyNotifyMentions = true;
+            [self.thread saveWithTransaction:transaction];
+        }];
+    } else {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            ((TSGroupThread *)self.thread).isOnlyNotifyMentions = false;
+            [self.thread saveWithTransaction:transaction];
+        }];
+    }
 }
 
 - (void)hideEditNameUI
