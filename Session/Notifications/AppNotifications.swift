@@ -165,6 +165,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
         // for more details.
         let messageText = DisplayableText.filterNotificationText(rawMessageText)
+        
+        // Do not fire the notification wihtout mentioning current user,
+        // if current user sets isOnlyNotifyMentions on.
+        let isUserMentioned = MentionUtilities.isUserMentioned(in: messageText ?? "")
+        if let groupThread = thread as? TSGroupThread, groupThread.isOnlyNotifyMentions && !isUserMentioned {
+            return
+        }
 
         let context = Contact.context(for: thread)
         let senderName = Storage.shared.getContact(with: incomingMessage.authorId)?.displayName(for: context) ?? incomingMessage.authorId
