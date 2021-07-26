@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 import SignalRingRTC
 
 public enum CallState: String {

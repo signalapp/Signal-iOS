@@ -3,8 +3,6 @@
 //
 
 import Foundation
-import SignalServiceKit
-import SignalMessaging
 
 /**
  * Manage call related UI in a pre-CallKit world.

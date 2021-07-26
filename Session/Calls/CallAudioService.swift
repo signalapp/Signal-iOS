@@ -4,8 +4,6 @@
 
 import Foundation
 import AVFoundation
-import SignalServiceKit
-import SignalMessaging
 import AVKit
 import SignalRingRTC
 

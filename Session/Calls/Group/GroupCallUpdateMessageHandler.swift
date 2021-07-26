@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 import SignalRingRTC
 
 class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver, Dependencies {

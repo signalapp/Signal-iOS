@@ -3,8 +3,6 @@
 //
 
 import Foundation
-import SignalServiceKit
-import SignalMessaging
 
 /**
  * Creates an outbound call via WebRTC.

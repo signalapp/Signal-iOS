@@ -4,7 +4,6 @@
 
 import Foundation
 import AVFoundation
-import SignalServiceKit
 
 public struct AudioSource: Hashable {
 

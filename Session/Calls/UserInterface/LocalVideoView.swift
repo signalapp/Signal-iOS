@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import WebRTC
 
 class LocalVideoView: UIView {
     private let localVideoCapturePreview = RTCCameraPreviewView()
