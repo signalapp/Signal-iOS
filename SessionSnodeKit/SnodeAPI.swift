@@ -413,22 +413,22 @@ public final class SnodeAPI : NSObject {
     
     private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
-        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
+//        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
         // Get last message hash
         storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
         let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
         // Construct signature
-        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
-        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
-        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
-        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
+//        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
+//        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+//        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
+//        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
         // Make the request
         let parameters: JSON = [
             "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
             "lastHash" : lastHash,
-            "timestamp" : timestamp,
-            "pubkey_ed25519" : ed25519PublicKey,
-            "signature" : signature.toBase64()!
+//            "timestamp" : timestamp,
+//            "pubkey_ed25519" : ed25519PublicKey,
+//            "signature" : signature.toBase64()!
         ]
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
