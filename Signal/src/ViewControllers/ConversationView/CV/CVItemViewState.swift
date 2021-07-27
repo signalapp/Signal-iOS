@@ -600,7 +600,6 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             return
         }
 
-        // Sender Key TODO: How do these errors collapse?
         switch item.interactionType {
         case .error:
             guard let errorMessage = interaction as? TSErrorMessage,
