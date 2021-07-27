@@ -188,25 +188,17 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         _ interaction: ContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
 
-        return ContextMenuConfiguration.init(identifier: UUID() as NSCopying, actionProvider: { _ in
+        return ContextMenuConfiguration(identifier: UUID() as NSCopying, actionProvider: { _ in
 
             var contextMenuActions: [ContextMenuAction] = []
             if let actions = self.collectionViewActiveContextMenuInteraction?.messageActions {
 
                 let actionOrder: [MessageAction.MessageActionType] = [.reply, .forward, .copy, .share, .select, .info, .delete]
 
-                func messageActionWithType(_ actions: [MessageAction], type: MessageAction.MessageActionType) -> MessageAction? {
-                    for messageAction in actions {
-                        if messageAction.actionType == type {
-                            return messageAction
-                        }
-                    }
-                    return nil
-                }
-
                 for type in actionOrder {
-                    if let messageAction = messageActionWithType(actions, type: type) {
-                        let contextMenuAction = ContextMenuAction.init(title: messageAction.contextMenuTitle, image: messageAction.image, attributes: messageAction.contextMenuAttributes, handler: { _ in
+                    let actionWithType = actions.first { $0.actionType == type }
+                    if let messageAction = actionWithType {
+                        let contextMenuAction = ContextMenuAction(title: messageAction.contextMenuTitle, image: messageAction.image, attributes: messageAction.contextMenuAttributes, handler: { _ in
                             messageAction.block(self)
                         })
 
@@ -242,7 +234,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
         // Add reaction bar if necessary
         if thread.canSendReactionToThread && shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
-            let reactionBarAccessory = ContextMenuRectionBarAccessory.init(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
+            let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
             reactionBarAccessory.didSelectReactionHandler = {(message: TSMessage, reaction: String, isRemoving: Bool) in
                 self.databaseStorage.asyncWrite { transaction in
                     ReactionManager.localUserReactedWithDurableSend(to: message,

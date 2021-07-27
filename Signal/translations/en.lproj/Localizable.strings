@@ -3088,25 +3088,25 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
 
-/* Context menu Reply Button Title */
+/* Context menu Reply button title */
 "CONTEXT_MENU_REPLY" = "Reply";
 
-/* Context menu Reply Button Title */
+/* Context menu Copy button title */
 "CONTEXT_MENU_COPY" = "Copy";
 
-/* Context menu Info Button Title */
+/* Context menu Info button title */
 "CONTEXT_MENU_DETAILS" = "Info";
 
-/* Context menu Reply Button Title */
+/* Context menu Delete button title */
 "CONTEXT_MENU_DELETE_MESSAGE" = "Delete";
 
-/* Context menu Share Button Title */
+/* Context menu Share button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "Share";
 
-/* Context menu Forward Button Title */
+/* Context menu Forward button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Forward";
 
-/* Context menu Select Button Title */
+/* Context menu Select button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "Select";
 
 /* Title for message actions for a group invite link. */

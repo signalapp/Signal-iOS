@@ -268,11 +268,9 @@ public class ContextMenuActionsView: UIView {
 
     func handleGestureEnded(locationInView: CGPoint) {
         var index: Int = NSNotFound
-        for actionRow in actionViews {
+        for (rowIndex, actionRow) in actionViews.enumerated() {
             actionRow.isHighlighted = false
-            if actionRow.frame.contains(locationInView) {
-                index = actionViews.firstIndex(of: actionRow) ?? NSNotFound
-            }
+            index = rowIndex
         }
 
         if index != NSNotFound {
