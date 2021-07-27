@@ -233,7 +233,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                 @"ERROR_MESSAGE_SESSION_REFRESH", @"Text notifying the user that their secure session has been reset");
         case TSErrorMessageDecryptionFailure: {
             NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
-                @"Error message for a decryption failure. Embeds {{senders name}}.");
+                @"Error message for a decryption failure. Embeds {{sender short name}}.");
             NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender
                                                                         transaction:transaction];
             return [[NSString alloc] initWithFormat:formatString, senderName];

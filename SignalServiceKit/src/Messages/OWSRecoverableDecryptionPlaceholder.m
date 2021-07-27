@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *formatString = NSLocalizedString(
-        @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{senders name}}.");
+        @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{sender short name}}.");
     NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
     return [[NSString alloc] initWithFormat:formatString, senderName];
 }

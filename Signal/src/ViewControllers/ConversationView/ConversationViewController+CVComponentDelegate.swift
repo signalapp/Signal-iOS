@@ -707,9 +707,13 @@ extension ConversationViewController: CVComponentDelegate {
         showUnknownThreadWarningAlert()
     }
 
-    public func cvc_didTapDeliveryIssueWarning() {
+    public func cvc_didTapDeliveryIssueWarning(_ message: TSErrorMessage) {
         AssertIsOnMainThread()
+        guard let senderAddress = message.sender else {
+            owsFailDebug("Expected a sender address")
+            return
+        }
 
-        showDeliveryIssueWarningAlert()
+        showDeliveryIssueWarningAlert(from: senderAddress)
     }
 }
