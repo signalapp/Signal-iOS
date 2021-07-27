@@ -15,6 +15,15 @@ protocol ContextMenuViewDelegate: AnyObject {
 class ContextMenuHostView: UIView {
 
     weak var delegate: ContextMenuViewDelegate?
+    var previewViewAlignment: ContextMenuTargetedPreview.Alignment = .center
+
+    private var contentAreaInsets: UIEdgeInsets {
+        let constPadding: CGFloat = 22
+        return UIEdgeInsets(top: safeAreaInsets.top + constPadding,
+                     leading: safeAreaInsets.leading,
+                     bottom: safeAreaInsets.bottom + constPadding,
+                     trailing: safeAreaInsets.trailing)
+    }
 
     var blurView: UIView? {
         didSet {
@@ -58,55 +67,144 @@ class ContextMenuHostView: UIView {
         }
     }
 
+    lazy var previewSourceFrame: CGRect = delegate?.contextMenuViewPreviewSourceFrame(self) ?? CGRect.zero
+    private let minPreviewScaleFactor: CGFloat = 0.5
+
     override func layoutSubviews() {
         super.layoutSubviews()
         blurView?.frame = bounds
         if let previewView = self.previewView {
-            let previewFrame = delegate?.contextMenuViewPreviewSourceFrame(self) ?? CGRect.zero
-            previewView.frame = previewFrame
+            previewView.frame = targetPreviewFrame()
         }
 
         if let accessories = accessoryViews {
             for accessory in accessories {
-                layoutAccessoryView(accessory: accessory)
+                layoutAccessoryView(accessory)
             }
         }
     }
 
-    private func layoutAccessoryView(accessory: ContextMenuTargetedPreviewAccessory) {
-        guard let previewFrame = previewView?.frame else {
-            owsFailDebug("Cannot layout accessory views without a preview view")
-            return
+    private func targetPreviewFrame() -> CGRect {
+        var previewFrame = previewSourceFrame
+        let contentRect = bounds.inset(by: contentAreaInsets)
+
+        // Check for Y-offset shift first, aligning to bottom accessory
+        let minX: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).x }.min() ?? 0
+        let maxX: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).maxX }.max() ?? 0
+        var minY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).y }.min() ?? 0
+        var maxY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).maxY }.max() ?? 0
+
+        // Vertically shift if necessary
+        if maxY > contentRect.maxY {
+            let adjust = maxY - contentRect.maxY
+            previewFrame.y -= adjust
+            minY -= adjust
+            maxY -= adjust
         }
 
+        if minY < contentRect.minY {
+            let adjust = contentRect.minY - minY
+            previewFrame.y += adjust
+            minY += adjust
+            maxY += adjust
+        }
+
+        // Check if preview needs to be shrunk to to fit vertical accessories
+        let contentHeight = maxY - minY
+        var previewWidthAdjustment: CGFloat = 0
+        if contentHeight > contentRect.height {
+            let delta = contentHeight - contentRect.height
+            let targetHeight = previewFrame.height - delta
+            let scaleFactor = max((targetHeight / previewFrame.height), minPreviewScaleFactor)
+            if previewViewAlignment == .right {
+                let oldWidth = previewFrame.width
+                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+                previewFrame.origin.x += oldWidth - previewFrame.width
+                previewWidthAdjustment = oldWidth - previewFrame.width
+            } else {
+                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+            }
+        }
+
+        // Check if preview needs to be shrunk to fit horizontal accessories
+        let contentWidth = maxX - minX - previewWidthAdjustment
+        if contentWidth > contentRect.width {
+            let delta = contentWidth - contentRect.width
+            let targetWidth = previewFrame.width - delta
+            let scaleFactor = max((targetWidth / previewFrame.width), minPreviewScaleFactor)
+            if previewViewAlignment == .right {
+                let oldWidth = previewFrame.width
+                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+                previewFrame.origin.x += oldWidth - previewFrame.width
+            } else {
+                previewFrame.size = CGSizeScale(previewFrame.size, scaleFactor)
+            }
+        }
+
+        return previewFrame
+    }
+
+    private func accessoryFrame(_ accessory: ContextMenuTargetedPreviewAccessory, previewFrame: CGRect) -> CGRect {
         var accessoryFrame = CGRect.zero
         accessory.accessoryView.sizeToFit()
         accessoryFrame.size = accessory.accessoryView.frame.size
 
-        for (edgeAlignment, originAlignment) in accessory.accessoryAlignment.alignments {
+        let isLandscape = bounds.size.width > bounds.size.height
+        let defaultAlignments = accessory.accessoryAlignment.alignments
+        let alignments = isLandscape ? accessory.landscapeAccessoryAlignment?.alignments ?? defaultAlignments : defaultAlignments
+
+        for (edgeAlignment, originAlignment) in alignments {
             switch (edgeAlignment, originAlignment) {
             case (.top, .exterior):
                 accessoryFrame.y = previewFrame.y - accessoryFrame.height
             case (.top, .interior):
                 accessoryFrame.y = previewFrame.y
             case (.trailing, .exterior):
-                accessoryFrame.x = previewFrame.x + previewFrame.width
+                accessoryFrame.x = previewFrame.maxX
             case (.trailing, .interior):
-                accessoryFrame.x = previewFrame.x + previewFrame.width  - accessoryFrame.width
+                accessoryFrame.x = previewFrame.maxX - accessoryFrame.width
             case (.leading, .exterior):
                 accessoryFrame.x = previewFrame.x - accessoryFrame.width
             case (.leading, .interior):
                 accessoryFrame.x = previewFrame.x
             case (.bottom, .exterior):
-                accessoryFrame.y = previewFrame.y + previewFrame.height
+                accessoryFrame.y = previewFrame.maxY
             case (.bottom, .interior):
-                accessoryFrame.y = previewFrame.y + previewFrame.height - accessoryFrame.height
+                accessoryFrame.y = previewFrame.maxY - accessoryFrame.height
             }
         }
 
-        accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, accessory.accessoryAlignment.alignmentOffset)
+        let defaultOffset = accessory.accessoryAlignment.alignmentOffset
+        let offset = isLandscape ? accessory.landscapeAccessoryAlignment?.alignmentOffset ?? defaultOffset : defaultOffset
+        accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, offset)
 
-        accessory.accessoryView.frame = accessoryFrame
+        return accessoryFrame
+    }
+
+    private func adjustAccessoryFrameForContentRect(_ accessoryFrame: CGRect) -> CGRect {
+        var updatedFrame = accessoryFrame
+        // Adjust accessory horizontal/vertical overlap if needed
+        let contentRect = bounds.inset(by: contentAreaInsets)
+        if accessoryFrame.maxY > contentRect.maxY {
+            let adjust = accessoryFrame.maxY - contentRect.maxY
+            updatedFrame.y -= adjust
+        }
+
+        if accessoryFrame.maxX > contentRect.maxX {
+            let adjust = accessoryFrame.maxX - contentRect.maxX
+            updatedFrame.x -= adjust
+        }
+
+        return updatedFrame
+    }
+
+    private func layoutAccessoryView(_ accessory: ContextMenuTargetedPreviewAccessory) {
+        guard let previewFrame = previewView?.frame else {
+            owsFailDebug("Cannot layout accessory views without a preview view")
+            return
+        }
+
+        accessory.accessoryView.frame = adjustAccessoryFrameForContentRect(accessoryFrame(accessory, previewFrame: previewFrame))
     }
 }
 
@@ -119,6 +217,10 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
 
     var gestureRecognizer: UIGestureRecognizer?
     var localPanGestureRecoginzer: UIPanGestureRecognizer?
+
+    private var gestureExitedDeadZone: Bool = false
+    private let deadZoneRadius: CGFloat = 30
+    private var initialTouchLocation: CGPoint?
 
     var accessoryViews: [ContextMenuTargetedPreviewAccessory] {
         var accessories = contextMenuPreview.accessoryViews
@@ -159,6 +261,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         let contextMenuView = ContextMenuHostView(frame: CGRect.zero)
         contextMenuView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         contextMenuView.delegate = self
+        contextMenuView.previewViewAlignment = contextMenuPreview.alignment
         view = contextMenuView
 
         contextMenuView.blurView = blurView
@@ -187,6 +290,22 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     // MARK: Gesture Recognizer Support
     public func gestureDidChange() {
         if let locationInView = gestureRecognizer?.location(in: view) {
+
+            if !gestureExitedDeadZone {
+                guard let initialTouchLocation = self.initialTouchLocation else {
+                    self.initialTouchLocation = locationInView
+                    return
+                }
+
+                let distanceFromInitialLocation = abs(hypot(
+                    locationInView.x - initialTouchLocation.x,
+                    locationInView.y - initialTouchLocation.y
+                ))
+                gestureExitedDeadZone = distanceFromInitialLocation >= deadZoneRadius
+
+                if !gestureExitedDeadZone { return }
+            }
+
             for accessory in accessoryViews {
                 let locationInAccessory = view .convert(locationInView, to: accessory.accessoryView)
                 accessory.touchLocationInViewDidChange(locationInView: locationInAccessory)
@@ -199,23 +318,25 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         guard localPanGestureRecoginzer == nil else {
             return
         }
-        
+
         handleGestureEnd()
     }
-    
+
     private func handleGestureEnd() {
+        if !gestureExitedDeadZone { return }
+
         if let locationInView = gestureRecognizer?.location(in: view) {
             for accessory in accessoryViews {
                 let locationInAccessory = view .convert(locationInView, to: accessory.accessoryView)
                 accessory.touchLocationInViewDidEnd(locationInView: locationInAccessory)
             }
         }
-        
+
         if localPanGestureRecoginzer == nil {
             if let gestureRecognizer = self.gestureRecognizer {
                 view.removeGestureRecognizer(gestureRecognizer)
             }
-            
+
             let newPanGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognized(sender:)))
             view.addGestureRecognizer(newPanGesture)
             gestureRecognizer = newPanGesture

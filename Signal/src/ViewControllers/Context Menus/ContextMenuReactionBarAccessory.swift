@@ -11,10 +11,6 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
 
     private var reactionPicker: MessageReactionPicker
 
-    private var gestureExitedDeadZone: Bool = false
-    private let deadZoneRadius: CGFloat = 30
-    private var initialTouchLocation: CGPoint?
-
     public init(
         thread: TSThread,
         itemViewModel: CVItemViewModelImpl?
@@ -46,27 +42,10 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
     }
 
     override func touchLocationInViewDidChange(locationInView: CGPoint) {
-        if !gestureExitedDeadZone {
-            guard let initialTouchLocation = self.initialTouchLocation else {
-                self.initialTouchLocation = locationInView
-                return
-            }
-
-            let distanceFromInitialLocation = abs(hypot(
-                locationInView.x - initialTouchLocation.x,
-                locationInView.y - initialTouchLocation.y
-            ))
-            gestureExitedDeadZone = distanceFromInitialLocation >= deadZoneRadius
-
-            if !gestureExitedDeadZone { return }
-        }
-
         reactionPicker.updateFocusPosition(locationInView, animated: true)
     }
 
     override func touchLocationInViewDidEnd(locationInView: CGPoint) {
-        if !gestureExitedDeadZone { return }
-
         // Send focused emoji if needed
         if let focusedEmoji = reactionPicker.focusedEmoji {
             if focusedEmoji == MessageReactionPicker.anyEmojiName {

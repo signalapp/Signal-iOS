@@ -77,7 +77,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
         configuration = contextMenuConfiguration
 
-        let targetedPreview = delegate.contextMenuInteraction(self, previewForHighlightingMenuWithConfiguration: contextMenuConfiguration) ?? ContextMenuTargetedPreview(view: view, accessoryViews: nil)
+        let targetedPreview = delegate.contextMenuInteraction(self, previewForHighlightingMenuWithConfiguration: contextMenuConfiguration) ?? ContextMenuTargetedPreview(view: view, alignment: .center, accessoryViews: nil)
 
         for accessory in targetedPreview.accessoryViews {
             accessory.delegate = self
@@ -200,6 +200,7 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         let isIncomingMessage = itemViewModel.interaction.interactionType() == .incomingMessage
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior), (isIncomingMessage ? .leading : .trailing, .interior)], alignmentOffset: CGPoint(x: 0, y: 12))
         let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
+        accessory.landscapeAccessoryAlignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.top, .interior), (isIncomingMessage ? .trailing : .leading, .exterior)], alignmentOffset: CGPoint(x: isIncomingMessage ? 12 : -12, y: 0))
         accessory.delegate = self
         return accessory
     }

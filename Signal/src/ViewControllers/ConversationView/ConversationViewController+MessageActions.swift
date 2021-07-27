@@ -246,10 +246,18 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             accessories.append(reactionBarAccessory)
         }
 
+        var alignment: ContextMenuTargetedPreview.Alignment = .center
+        let interactionType = contextInteraction.itemViewModel.interaction.interactionType()
+        if interactionType == .incomingMessage {
+            alignment = .left
+        } else if interactionType == .outgoingMessage {
+            alignment = .right
+        }
+
         if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {
-            return ContextMenuTargetedPreview(view: contentView, accessoryViews: accessories)
+            return ContextMenuTargetedPreview(view: contentView, alignment: alignment, accessoryViews: accessories)
         } else {
-            return ContextMenuTargetedPreview(view: cell, accessoryViews: accessories)
+            return ContextMenuTargetedPreview(view: cell, alignment: alignment, accessoryViews: accessories)
 
         }
     }
