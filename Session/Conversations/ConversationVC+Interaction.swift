@@ -22,6 +22,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         // so the result may be inaccurate before all the cells are loaded. Use this
         // to scroll to the last row instead.
         let indexPath = IndexPath(row: viewItems.count - 1, section: 0)
+        unreadViewItems.removeAll()
         messagesTableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
 
