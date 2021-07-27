@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSInteraction.h>
+#import "TSInteraction.h"
 #import "TSInteraction_Subclass.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

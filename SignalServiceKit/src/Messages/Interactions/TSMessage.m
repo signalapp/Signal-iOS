@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSMessage.h>
+#import "TSMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/AppContext.h>
