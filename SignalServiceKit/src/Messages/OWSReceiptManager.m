@@ -246,7 +246,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             }
 
             if ([self areReadReceiptsEnabled]) {
-                OWSLogVerbose(@"Enqueuing read receipt for sender.");
+                OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
                 [self.outgoingReceiptManager enqueueViewedReceiptForAddress:message.authorAddress
                                                                   timestamp:message.timestamp
                                                                 transaction:transaction];
