@@ -35,10 +35,19 @@ class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var areVersionMigrationsComplete = false
 
-    func completeSilenty() {
+    func completeSilenty(timeHasExpired: Bool = false) {
+        guard let contentHandler = contentHandler else { return }
         let content = UNMutableNotificationContent()
-        content.badge = NSNumber(value: databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) })
-        contentHandler?(content)
+
+        // We cannot perform a database read when the NSE's time
+        // has expired, we must exit immediately.
+        if !timeHasExpired {
+            let badgeCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
+            content.badge = NSNumber(value: badgeCount)
+        }
+
+        contentHandler(content)
+        self.contentHandler = nil
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
@@ -74,7 +83,7 @@ class NotificationService: UNNotificationServiceExtension {
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
         // notification is to the user otherwise.
-        completeSilenty()
+        completeSilenty(timeHasExpired: true)
     }
 
     func fetchAndProcessMessages() {
