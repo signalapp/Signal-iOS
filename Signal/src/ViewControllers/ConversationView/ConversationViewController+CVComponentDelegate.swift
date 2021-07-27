@@ -706,4 +706,10 @@ extension ConversationViewController: CVComponentDelegate {
 
         showUnknownThreadWarningAlert()
     }
+
+    public func cvc_didTapDeliveryIssueWarning() {
+        AssertIsOnMainThread()
+
+        showDeliveryIssueWarningAlert()
+    }
 }

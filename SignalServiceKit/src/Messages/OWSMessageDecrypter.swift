@@ -337,7 +337,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             let localUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
                 address: sourceAddress,
                 transaction: transaction)
-            let supportsModernResend = remoteUserSupportsSenderKey && localUserSupportsSenderKey
+            let contentSupportsResend = envelopeContentSupportsResend(envelope: envelope, cipherType: cipherType, transaction: transaction)
+            let supportsModernResend = remoteUserSupportsSenderKey && localUserSupportsSenderKey && contentSupportsResend
 
             if supportsModernResend {
                 Logger.info("Performing modern resend of \(contentHint) content with timestamp \(envelope.timestamp)")
@@ -416,14 +417,41 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         return wrappedError
     }
 
+    func envelopeContentSupportsResend(
+        envelope: SSKProtoEnvelope,
+        cipherType: CiphertextMessage.MessageType,
+        transaction: SDSAnyWriteTransaction) -> Bool {
+
+        guard [.whisper, .senderKey, .preKey, .plaintext].contains(cipherType),
+              let contentData = envelope.content else {
+            return false
+        }
+
+        do {
+            _ = try DecryptionErrorMessage(
+                originalMessageBytes: contentData,
+                type: cipherType,
+                timestamp: envelope.timestamp,
+                originalSenderDeviceId: envelope.sourceDevice)
+            return true
+        } catch {
+            owsFailDebug("Could not build DecryptionError")
+            return false
+        }
+    }
+
     func sendResendRequest(envelope: SSKProtoEnvelope,
                            cipherType: CiphertextMessage.MessageType,
                            transaction: SDSAnyWriteTransaction) {
-        let resendRequest = OWSOutgoingResendRequest(
-            failedEnvelope: envelope,
-            cipherType: cipherType.rawValue,
-            transaction: transaction)
-        messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
+        let resendRequest = OWSOutgoingResendRequest(failedEnvelope: envelope,
+                                                     cipherType: cipherType.rawValue,
+                                                     transaction: transaction)
+
+        if let resendRequest = resendRequest {
+            messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
+        } else {
+            owsFailDebug("Failed to build resend message")
+        }
     }
 
     func resetSessionIfNecessary(envelope: SSKProtoEnvelope,

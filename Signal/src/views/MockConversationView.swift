@@ -412,4 +412,5 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_didTapUnknownThreadWarningGroup() {}
     func cvc_didTapUnknownThreadWarningContact() {}
+    func cvc_didTapDeliveryIssueWarning() {}
 }

@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/TSMessage.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/AppContext.h>
@@ -12,7 +13,6 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -688,16 +688,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (BOOL)hasPerConversationExpirationStarted
 {
     return _expireStartedAt > 0 && _expiresInSeconds > 0;
-}
-
-- (uint64_t)timestampForLegacySorting
-{
-    if ([self shouldUseReceiptDateForSorting] && self.receivedAtTimestamp > 0) {
-        return self.receivedAtTimestamp;
-    } else {
-        OWSAssertDebug(self.timestamp > 0);
-        return self.timestamp;
-    }
 }
 
 - (BOOL)shouldUseReceiptDateForSorting

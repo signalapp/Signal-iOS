@@ -529,6 +529,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             .verificationStateChangeMessage,
             .call,
             .errorMessage,
+            .recoverableDecryptionPlaceholder,
             .incomingMessage,
             .infoMessage,
             .invalidIdentityKeyErrorMessage,
@@ -1243,7 +1244,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
                     AND \(interactionColumn: .messageType) IN (\(infoMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
                 ) OR (
-                    \(interactionColumn: .recordType) = \(SDSRecordType.errorMessage.rawValue)
+                    \(interactionColumn: .recordType) IN \([SDSRecordType.errorMessage.rawValue, SDSRecordType.recoverableDecryptionPlaceholder.rawValue])
                     AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
                 ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
             )
@@ -1268,6 +1269,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             .verificationStateChangeMessage,
             .call,
             .errorMessage,
+            .recoverableDecryptionPlaceholder,
             .invalidIdentityKeyErrorMessage,
             .invalidIdentityKeyReceivingErrorMessage,
             .invalidIdentityKeySendingErrorMessage

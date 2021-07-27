@@ -50,10 +50,22 @@ extension TSInteraction {
 
         switch self {
         case let errorMessage as TSErrorMessage:
-            // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
-            // there was no meaningful interaction.
-            return errorMessage.errorType != .nonBlockingIdentityChange
-
+            switch errorMessage.errorType {
+            case .nonBlockingIdentityChange:
+                // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
+                // there was no meaningful interaction.
+                return true
+            case .decryptionFailure:
+                if let replaceableInteraction = errorMessage as? OWSRecoverableDecryptionPlaceholder {
+                    // Replaceable interactions may be temporarily hidden if we expect we'll be
+                    // able to recover
+                    return replaceableInteraction.isVisible
+                } else {
+                    return true
+                }
+            default:
+                return false
+            }
         case let infoMessage as TSInfoMessage:
             switch infoMessage.messageType {
             case .verificationStateChange,
@@ -73,7 +85,9 @@ extension TSInteraction {
         }
     }
 
-    private func replacePlaceholder(
+    /// Returns `true` if the receiver was inserted into the database by updating the placeholder
+    /// Returns `false` if the receiver needs to be inserted into the database.
+    private func updatePlaceholder(
         from sender: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> Bool {
@@ -97,20 +111,31 @@ extension TSInteraction {
         }
 
         Logger.info("Fetched placeholder with timestamp: \(timestamp) from sender: \(sender). Performing replacement...")
+        guard let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) else {
+            owsFailDebug("Unexpected interaction type")
+            return false
+        }
 
-        if let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) {
-            owsAssertDebug(placeholders.count == 1)
+        if placeholder.supportsReplacement {
             placeholder.replaceWithInteraction(self, writeTx: transaction)
             return true
         } else {
-            owsFailDebug("Unexpected interaction type")
+            // We've found the placeholder for the replacement message, but it is no longer eligible
+            // for replacement. We now want to preserve this placeholder as a permanent error message.
+            //
+            // In many places we assume interaction timestamps are unique for a thread. To workaround
+            // this expectation, we ever so slightly decrement the timestamp of the expired placeholder.
+            Logger.info("Placeholder not eligible for replacement. Updating timestamp")
+            placeholder.anyUpdate(transaction: transaction) { interaction in
+                (interaction as? OWSRecoverableDecryptionPlaceholder)?.decrementTimestamp()
+            }
             return false
         }
     }
 
     @objc
     public func insertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        if replacePlaceholder(from: sender, transaction: transaction) {
+        if updatePlaceholder(from: sender, transaction: transaction) {
             Logger.info("Successfully replaced placeholder with interaction: \(timestamp)")
         } else {
             anyInsert(transaction: transaction)

@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingResendRequest
 
-- (instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                            cipherType:(uint8_t)cipherType
-                           transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
+                                     cipherType:(uint8_t)cipherType
+                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(envelope.content);
     OWSAssertDebug(transaction);

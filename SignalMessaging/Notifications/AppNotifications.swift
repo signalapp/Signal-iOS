@@ -627,10 +627,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
              .decryptionFailure,
              .groupCreationFailed:
             return
-        @unknown default:
-            break
+        case .sessionRefresh:
+            notifyUser(for: errorMessage as TSMessage, thread: thread, wantsSound: true, transaction: transaction)
         }
-        notifyUser(for: errorMessage as TSMessage, thread: thread, wantsSound: true, transaction: transaction)
     }
 
     public func notifyUser(for previewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {

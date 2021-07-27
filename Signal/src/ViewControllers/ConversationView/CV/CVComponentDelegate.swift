@@ -159,6 +159,7 @@ public protocol CVComponentDelegate {
 
     func cvc_didTapUnknownThreadWarningGroup()
     func cvc_didTapUnknownThreadWarningContact()
+    func cvc_didTapDeliveryIssueWarning()
 }
 
 // MARK: -
@@ -196,6 +197,7 @@ struct CVMessageAction: Equatable {
         case cvc_didTapAddToContacts(contactShare: ContactShareViewModel)
         case cvc_didTapUnknownThreadWarningGroup
         case cvc_didTapUnknownThreadWarningContact
+        case cvc_didTapDeliveryIssueWarning
 
         func perform(delegate: CVComponentDelegate) {
             switch self {
@@ -243,6 +245,8 @@ struct CVMessageAction: Equatable {
                 delegate.cvc_didTapUnknownThreadWarningGroup()
             case .cvc_didTapUnknownThreadWarningContact:
                 delegate.cvc_didTapUnknownThreadWarningContact()
+            case .cvc_didTapDeliveryIssueWarning:
+                delegate.cvc_didTapDeliveryIssueWarning()
             }
         }
     }

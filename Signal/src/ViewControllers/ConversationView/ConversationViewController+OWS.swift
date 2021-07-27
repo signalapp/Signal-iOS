@@ -170,6 +170,10 @@ extension ConversationViewController {
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)
     }
+
+    public func showDeliveryIssueWarningAlert() {
+        // TODO
+    }
 }
 
 // MARK: - ForwardMessageDelegate

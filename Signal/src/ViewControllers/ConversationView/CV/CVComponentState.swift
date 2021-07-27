@@ -652,7 +652,6 @@ fileprivate extension CVComponentState.Builder {
                                                    avatar: avatar)
             return build()
         case .info, .error, .call:
-            // Sender Key TODO: Error interaction UI?
             let currentCallThreadId = viewStateSnapshot.currentCallThreadId
             self.systemMessage = CVComponentSystemMessage.buildComponentState(interaction: interaction,
                                                                               threadViewModel: threadViewModel,

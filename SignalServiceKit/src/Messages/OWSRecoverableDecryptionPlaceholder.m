@@ -3,6 +3,7 @@
 //
 
 #import "OWSRecoverableDecryptionPlaceholder.h"
+#import "TSInteraction_Subclass.h"
 #import "TSThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -57,10 +58,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
+- (void)decrementTimestamp
+{
+    self.timestamp = self.timestamp - 1;
+}
+
 - (BOOL)isVisible
 {
-    // Check if 60mins have elapsed
-    NSDate *expiration = [self.receivedAtDate dateByAddingTimeInterval:kHourInterval];
+    // If this interaction has ever been seen or the recovery period has elapsed, we should make
+    // this visible to the user.
+    NSTimeInterval expirationInterval = [RemoteConfig replaceableInteractionExpiration];
+    NSDate *expiration = [self.receivedAtDate dateByAddingTimeInterval:expirationInterval];
     return [expiration isBeforeNow] || self.wasRead;
 }
 
@@ -71,10 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    // Sender Key TODO: Update how this looks depending on visibility
     NSString *formatString = NSLocalizedString(
         @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{senders name}}.");
-
     NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
     return [[NSString alloc] initWithFormat:formatString, senderName];
 }

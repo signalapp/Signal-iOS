@@ -670,6 +670,8 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.safetyNumber16)
             case .sessionRefresh:
                 return Theme.iconImage(.refresh16)
+            case .decryptionFailure:
+                return Theme.iconImage(.error16)
             case .invalidKeyException,
                  .missingKeyId,
                  .noSession,
@@ -677,11 +679,7 @@ extension CVComponentSystemMessage {
                  .duplicateMessage,
                  .invalidVersion,
                  .unknownContactBlockOffer,
-                 .groupCreationFailed,
-                 .decryptionFailure:
-                return nil
-            @unknown default:
-                owsFailDebug("Unknown value.")
+                 .groupCreationFailed:
                 return nil
             }
         } else if let infoMessage = interaction as? TSInfoMessage {
@@ -724,9 +722,6 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.info16)
             case .profileUpdate:
                 return Theme.iconImage(.profile16)
-            @unknown default:
-                owsFailDebug("Unknown value.")
-                return nil
             }
         } else if let call = interaction as? TSCall {
 
@@ -951,8 +946,9 @@ extension CVComponentSystemMessage {
                           accessibilityIdentifier: "learn_more",
                           action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
         case .decryptionFailure:
-            // Sender Key TODO: Error interaction UI?
-            return nil
+            return Action(title: CommonStrings.learnMore,
+                          accessibilityIdentifier: "learn_more",
+                          action: .cvc_didTapDeliveryIssueWarning)
         case .duplicateMessage,
              .invalidVersion:
             return nil
@@ -963,9 +959,6 @@ extension CVComponentSystemMessage {
             return Action(title: CommonStrings.retryButton,
                           accessibilityIdentifier: "retry_send_group",
                           action: .cvc_didTapResendGroupUpdate(errorMessage: message))
-        @unknown default:
-            owsFailDebug("Unknown value.")
-            return nil
         }
     }
 
@@ -1102,9 +1095,6 @@ extension CVComponentSystemMessage {
                           accessibilityIdentifier: "update_contact",
                           action: .cvc_didTapUpdateSystemContact(address: profileChangeAddress,
                                                                  newNameComponents: profileChangeNewNameComponents))
-        @unknown default:
-            owsFailDebug("Unknown value.")
-            return nil
         }
     }
 

@@ -231,6 +231,11 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.forceSenderKey || isEnabled(.senderKey)
     }
 
+    @objc
+    public static var replaceableInteractionExpiration: TimeInterval {
+        interval(.replaceableInteractionExpiration, defaultInterval: kHourInterval)
+    }
+
     // MARK: -
 
     private static func interval(
@@ -447,6 +452,7 @@ private struct Flags {
         case donateMegaphoneSnoozeInterval
         case reactiveProfileKeyAttemptInterval
         case standardMediaQualityLevel
+        case replaceableInteractionExpiration
     }
 }
 

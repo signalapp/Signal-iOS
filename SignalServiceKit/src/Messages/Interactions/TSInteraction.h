@@ -90,7 +90,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 #pragma mark Utility Method
 
-- (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 
 // "Dynamic" interactions are not messages or static events (like

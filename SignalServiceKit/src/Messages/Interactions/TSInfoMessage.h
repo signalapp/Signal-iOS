@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSInfoMessage : TSMessage <OWSReadTracking>
 
-typedef NS_ENUM(NSInteger, TSInfoMessageType) {
+typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeSessionDidEnd,
     TSInfoMessageUserNotRegistered,
     // TSInfoMessageTypeUnsupportedMessage appears to be obsolete.
