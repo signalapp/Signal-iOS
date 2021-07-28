@@ -38,17 +38,14 @@ extension OWSMessageManager {
         withSenderKeyDistributionMessage skdmData: Data,
         transaction writeTx: SDSAnyWriteTransaction) {
 
-        guard envelope.sourceAddress?.isValid == true else {
+        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
             return owsFailDebug("Invalid source address")
         }
 
         do {
             let skdm = try SenderKeyDistributionMessage(bytes: skdmData.map { $0 })
-            guard let sourceAddress = envelope.sourceUuid else {
-                throw OWSAssertionError("SenderKeyDistributionMessages must be sent from senders with UUID")
-            }
             let sourceDeviceId = envelope.sourceDevice
-            let protocolAddress = try ProtocolAddress(name: sourceAddress, deviceId: sourceDeviceId)
+            let protocolAddress = try ProtocolAddress(from: sourceAddress, deviceId: sourceDeviceId)
             try processSenderKeyDistributionMessage(skdm, from: protocolAddress, store: senderKeyStore, context: writeTx)
         } catch {
             owsFailDebug("Failed to process incoming sender key \(error)")
@@ -61,8 +58,7 @@ extension OWSMessageManager {
         withDecryptionErrorMessage bytes: Data,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
-        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid,
-              let sourceUuid = envelope.sourceUuid else {
+        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
             return owsFailDebug("Invalid source address")
         }
         let sourceDeviceId = envelope.sourceDevice
@@ -73,7 +69,7 @@ extension OWSMessageManager {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }
-            let protocolAddress = try ProtocolAddress(name: sourceUuid, deviceId: sourceDeviceId)
+            let protocolAddress = try ProtocolAddress(from: sourceAddress, deviceId: sourceDeviceId)
 
             // If a ratchet key is included, this was a 1:1 session message
             // Archive the session if the current key matches.
