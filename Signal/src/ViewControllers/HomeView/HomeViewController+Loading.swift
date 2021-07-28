@@ -237,11 +237,6 @@ public class HVLoadCoordinator: NSObject {
 
     @objc
     public func ensureFirstLoad() {
-        loadIfNecessary(suppressAnimations: true, ensureFirstLoad: true)
-    }
-
-    public func loadIfNecessary(suppressAnimations: Bool = false,
-                                ensureFirstLoad: Bool = false) {
         AssertIsOnMainThread()
 
         guard let viewController = viewController else {
@@ -253,11 +248,43 @@ public class HVLoadCoordinator: NSObject {
         // app is foreground and active.  Therefore we need to make an
         // exception and update the view contents; otherwise, the home
         // view will briefly appear empty after launch.
-        let shouldPerformFirstLoad = (ensureFirstLoad &&
-                                        !viewController.hasEverAppeared &&
-                                        viewController.tableDataSource.renderState.visibleThreadCount == 0)
+        let shouldForceLoad = (!viewController.hasEverAppeared &&
+                                viewController.tableDataSource.renderState.visibleThreadCount == 0)
 
-        guard viewController.shouldBeUpdatingView || shouldPerformFirstLoad else {
+        loadIfNecessary(suppressAnimations: true, shouldForceLoad: shouldForceLoad)
+    }
+
+    @objc
+    public func applicationWillEnterForeground() {
+        AssertIsOnMainThread()
+
+        guard let viewController = viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+
+        if viewController.isViewVisible {
+            // When app returns from background, it should perform one load
+            // immediately (before entering the foreground) without animations.
+            // Otherwise, the user sees the changes that occurred in the
+            // background animate in.
+            loadIfNecessary(suppressAnimations: true, shouldForceLoad: true)
+        } else {
+            viewController.updateViewState()
+        }
+    }
+
+    public func loadIfNecessary(suppressAnimations: Bool = false,
+                                shouldForceLoad: Bool = false) {
+        AssertIsOnMainThread()
+
+        guard let viewController = viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+
+        let shouldLoad = viewController.shouldBeUpdatingView || shouldForceLoad
+        guard shouldLoad else {
             return
         }
 

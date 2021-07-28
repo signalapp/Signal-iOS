@@ -111,7 +111,7 @@ extension HomeViewController {
     private func applicationWillEnterForeground(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        updateViewState()
+        loadCoordinator.applicationWillEnterForeground()
     }
 
     @objc
