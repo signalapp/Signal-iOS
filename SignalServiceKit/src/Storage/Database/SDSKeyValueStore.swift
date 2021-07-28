@@ -511,7 +511,7 @@ public class SDSKeyValueStore: NSObject {
     // MARK: -
 
     @available(*, deprecated, message: "Did you mean removeValue(forKey:transaction:) or setCodable(optional:key:transaction)?")
-    public func setCodable<T: Encodable>(_ value: Optional<T>, key: String, transaction: SDSAnyWriteTransaction) throws {
+    public func setCodable<T: Encodable>(_ value: T?, key: String, transaction: SDSAnyWriteTransaction) throws {
         try setCodable(optional: value, key: key, transaction: transaction)
     }
 
