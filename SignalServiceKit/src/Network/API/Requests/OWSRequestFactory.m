@@ -502,7 +502,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"gv2"] = @(YES);
     capabilities[@"gv2-2"] = @(YES);
     capabilities[@"gv2-3"] = @(YES);
-    capabilities[@"announcementGroup"] = @(YES);
+
+    if (RemoteConfig.announcementOnlyGroupsCapability) {
+        capabilities[@"announcementGroup"] = @(YES);
+    }
 
     if (SSKFeatureFlags.groupsV2MigrationSetCapability
         && !SSKDebugFlags.groupsV2migrationsDisableMigrationCapability.value) {
