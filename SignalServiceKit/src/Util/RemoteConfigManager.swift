@@ -196,8 +196,13 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var announcementOnlyGroups: Bool {
-        DebugFlags.forceAnnouncementOnlyGroups || isEnabled(.announcementOnlyGroups)
+    public static var announcementOnlyGroupsCapability: Bool {
+        DebugFlags.forceAnnouncementOnlyGroupsCapability || isEnabled(.announcementOnlyGroupsCapability)
+    }
+
+    @objc
+    public static var announcementOnlyGroupsUI: Bool {
+        DebugFlags.forceAnnouncementOnlyGroupsUI || isEnabled(.announcementOnlyGroupsUI)
     }
 
     @objc
@@ -414,7 +419,8 @@ private struct Flags {
         case paymentsResetKillSwitch
         case giphySendAsMP4
         case viewedReceiptSending
-        case announcementOnlyGroups
+        case announcementOnlyGroupsCapability
+        case announcementOnlyGroupsUI
         case notificationServiceExtension
         case senderKey
     }
