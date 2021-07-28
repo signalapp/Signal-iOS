@@ -227,7 +227,11 @@ fileprivate extension SenderKeyStore {
     func setMetadata(_ metadata: KeyMetadata?, for distributionId: DistributionId, writeTx: SDSAnyWriteTransaction) {
         storageLock.assertOwner()
         do {
-            try keyMetadataStore.setCodable(metadata, key: distributionId.uuidString, transaction: writeTx)
+            if let metadata = metadata {
+                try keyMetadataStore.setCodable(metadata, key: distributionId.uuidString, transaction: writeTx)
+            } else {
+                keyMetadataStore.removeValue(forKey: distributionId.uuidString, transaction: writeTx)
+            }
             keyCache[distributionId] = metadata
         } catch {
             owsFailDebug("Failed to persist sender key: \(error)")
