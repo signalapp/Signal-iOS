@@ -15,11 +15,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkDeviceViewController () <OWSQRScannerDelegate>
+@interface OWSLinkDeviceViewController () <QRCodeScanDelegate>
 
 @property (nonatomic) UIView *qrScanningView;
 @property (nonatomic) UILabel *scanningInstructionsLabel;
-@property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
+@property (nonatomic) QRCodeScanViewController *qrCodeScanViewController;
 @property (nonatomic, readonly) OWSReceiptManager *receiptManager;
 
 @end
@@ -43,17 +43,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.scanningInstructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.scanningInstructionsLabel.textAlignment = NSTextAlignmentCenter;
 
-    self.qrScanningController = [OWSQRCodeScanningViewController new];
-    self.qrScanningController.scanDelegate = self;
-    [self.view addSubview:self.qrScanningController.view];
-    [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
-    [self.qrScanningController.view autoPinToSquareAspectRatio];
+    self.qrCodeScanViewController = [[QRCodeScanViewController alloc] initWithAppearance:QRCodeScanViewAppearanceNormal];
+    self.qrCodeScanViewController.delegate = self;
+    [self.view addSubview:self.qrCodeScanViewController.view];
+    [self.qrCodeScanViewController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.qrCodeScanViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.qrCodeScanViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.qrCodeScanViewController.view autoPinToSquareAspectRatio];
+    [self addChildViewController:self.qrCodeScanViewController];
 
     UIView *bottomView = [UIView new];
     [self.view addSubview:bottomView];
-    [bottomView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.qrScanningController.view];
+    [bottomView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.qrCodeScanViewController.view];
     [bottomView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [bottomView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     [bottomView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -91,10 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (!UIDevice.currentDevice.isIPad) {
         [UIDevice.currentDevice ows_setOrientation:UIDeviceOrientationPortrait];
     }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.qrScanningController startCapture];
-    });
 }
 
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
@@ -105,13 +102,29 @@ NS_ASSUME_NONNULL_BEGIN
     self.scanningInstructionsLabel.textColor = Theme.primaryTextColor;
 }
 
-#pragma mark - OWSQRScannerDelegate
+#pragma mark - QRCodeScanDelegate
 
-- (void)controller:(nullable OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
+- (void)qrCodeScanViewDismiss:(QRCodeScanViewController *)qrCodeScanViewController
 {
-    OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:string];
+    OWSAssertIsOnMainThread();
+    
+    [self popToLinkedDeviceList];
+}
+
+- (QRCodeScanOutcome)qrCodeScanViewScanned:(QRCodeScanViewController *)qrCodeScanViewController
+                   qrCodeData:(nullable NSData *)qrCodeData
+                 qrCodeString:(nullable NSString *)qrCodeString
+{
+    OWSAssertIsOnMainThread();
+    
+    if (qrCodeString == nil) {
+        // Only accept QR codes with a valid string payload.
+        return QRCodeScanOutcomeContinueScanning;
+    }
+
+    OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:qrCodeString];
     if (!parser.isValid) {
-        OWSLogError(@"Unable to parse provisioning params from QRCode: %@", string);
+        OWSLogError(@"Unable to parse provisioning params from QRCode: %@", qrCodeString);
 
         NSString *title = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_TITLE", @"report an invalid linking code");
         NSString *body = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_BODY", @"report an invalid linking code");
@@ -132,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
             initWithTitle:NSLocalizedString(@"LINK_DEVICE_RESTART", @"attempt another linking")
                     style:ActionSheetActionStyleDefault
                   handler:^(ActionSheetAction *action) {
-                      [self.qrScanningController startCapture];
+                    [self.qrCodeScanViewController tryToStartScanning];
                   }];
         [actionSheet addAction:proceedAction];
 
@@ -140,6 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self provisionWithConfirmationWithParser:parser];
     }
+    
+    return QRCodeScanOutcomeStopScanning;
 }
 
 - (void)provisionWithConfirmationWithParser:(OWSDeviceProvisioningURLParser *)parser
@@ -267,8 +282,10 @@ NS_ASSUME_NONNULL_BEGIN
                       actionWithTitle:CommonStrings.okayButton
                                 style:UIAlertActionStyleDefault
                               handler:^(UIAlertAction *action) {
-                                  [self controller:nil
-                                      didDetectQRCodeWithString:[alertController textFields].firstObject.text];
+        NSString *qrCodeString = [alertController textFields].firstObject.text;
+        [self qrCodeScanViewScanned:self.qrCodeScanViewController
+                         qrCodeData:nil
+                       qrCodeString:qrCodeString];
                               }]];
     [alertController addAction:[UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                         style:UIAlertActionStyleCancel
