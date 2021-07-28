@@ -27,7 +27,7 @@ public class EarlyMessageManager: NSObject {
 
     private enum EarlyReceipt: Codable {
         private enum CodingKeys: String, CodingKey {
-            case type, sender, timestamp
+            case type, sender, deviceId, timestamp
         }
         private enum EncodedType: String, Codable {
             case outgoingMessageRead
@@ -42,6 +42,7 @@ public class EarlyMessageManager: NSObject {
 
             let type = try container.decode(EncodedType.self, forKey: .type)
             let sender = try container.decodeIfPresent(SignalServiceAddress.self, forKey: .sender)
+            let rawDeviceId = try container.decodeIfPresent(UInt32.self, forKey: .deviceId)
             let timestamp = try container.decode(UInt64.self, forKey: .timestamp)
 
             switch type {
@@ -49,17 +50,35 @@ public class EarlyMessageManager: NSObject {
                 guard let sender = sender else {
                     throw OWSAssertionError("Missing sender")
                 }
-                self = .outgoingMessageRead(sender: sender, timestamp: timestamp)
+                let deviceId = rawDeviceId ?? {
+                    // TODO: Remove this shim before ship. Just use existing OWSAssertionError
+                    // DeviceId is only used to drop MSL entries, so a placeholder value of zero is fine.
+                    owsFailDebug("Invalid deviceId")
+                    return 0
+                }()
+                self = .outgoingMessageRead(sender: sender, deviceId: deviceId, timestamp: timestamp)
             case .outgoingMessageDelivered:
                 guard let sender = sender else {
                     throw OWSAssertionError("Missing sender")
                 }
-                self = .outgoingMessageDelivered(sender: sender, timestamp: timestamp)
+                let deviceId = rawDeviceId ?? {
+                    // TODO: Remove this shim before ship. Just use existing OWSAssertionError
+                    // DeviceId is only used to drop MSL entries, so a placeholder value of zero is fine.
+                    owsFailDebug("Invalid deviceId")
+                    return 0
+                }()
+                self = .outgoingMessageDelivered(sender: sender, deviceId: deviceId, timestamp: timestamp)
             case .outgoingMessageViewed:
                 guard let sender = sender else {
                     throw OWSAssertionError("Missing sender")
                 }
-                self = .outgoingMessageViewed(sender: sender, timestamp: timestamp)
+                let deviceId = rawDeviceId ?? {
+                    // TODO: Remove this shim before ship. Just use existing OWSAssertionError
+                    // DeviceId is only used to drop MSL entries, so a placeholder value of zero is fine.
+                    owsFailDebug("Invalid deviceId")
+                    return 0
+                }()
+                self = .outgoingMessageViewed(sender: sender, deviceId: deviceId, timestamp: timestamp)
             case .messageReadOnLinkedDevice:
                 self = .messageReadOnLinkedDevice(timestamp: timestamp)
             case .messageViewedOnLinkedDevice:
@@ -71,17 +90,20 @@ public class EarlyMessageManager: NSObject {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             switch self {
-            case .outgoingMessageRead(let sender, let timestamp):
+            case .outgoingMessageRead(let sender, let deviceId, let timestamp):
                 try container.encode(EncodedType.outgoingMessageRead, forKey: .type)
                 try container.encode(sender, forKey: .sender)
+                try container.encode(deviceId, forKey: .deviceId)
                 try container.encode(timestamp, forKey: .timestamp)
-            case .outgoingMessageDelivered(let sender, let timestamp):
+            case .outgoingMessageDelivered(let sender, let deviceId, let timestamp):
                 try container.encode(EncodedType.outgoingMessageDelivered, forKey: .type)
                 try container.encode(sender, forKey: .sender)
+                try container.encode(deviceId, forKey: .deviceId)
                 try container.encode(timestamp, forKey: .timestamp)
-            case .outgoingMessageViewed(let sender, let timestamp):
+            case .outgoingMessageViewed(let sender, let deviceId, let timestamp):
                 try container.encode(EncodedType.outgoingMessageViewed, forKey: .type)
                 try container.encode(sender, forKey: .sender)
+                try container.encode(deviceId, forKey: .deviceId)
                 try container.encode(timestamp, forKey: .timestamp)
             case .messageReadOnLinkedDevice(let timestamp):
                 try container.encode(EncodedType.messageReadOnLinkedDevice, forKey: .type)
@@ -92,19 +114,19 @@ public class EarlyMessageManager: NSObject {
             }
         }
 
-        case outgoingMessageRead(sender: SignalServiceAddress, timestamp: UInt64)
-        case outgoingMessageDelivered(sender: SignalServiceAddress, timestamp: UInt64)
-        case outgoingMessageViewed(sender: SignalServiceAddress, timestamp: UInt64)
+        case outgoingMessageRead(sender: SignalServiceAddress, deviceId: UInt32, timestamp: UInt64)
+        case outgoingMessageDelivered(sender: SignalServiceAddress, deviceId: UInt32, timestamp: UInt64)
+        case outgoingMessageViewed(sender: SignalServiceAddress, deviceId: UInt32, timestamp: UInt64)
         case messageReadOnLinkedDevice(timestamp: UInt64)
         case messageViewedOnLinkedDevice(timestamp: UInt64)
 
         var timestamp: UInt64 {
             switch self {
-            case .outgoingMessageRead(_, let timestamp):
+            case .outgoingMessageRead(_, _, let timestamp):
                 return timestamp
-            case .outgoingMessageDelivered(_, let timestamp):
+            case .outgoingMessageDelivered(_, _, let timestamp):
                 return timestamp
-            case .outgoingMessageViewed(_, let timestamp):
+            case .outgoingMessageViewed(_, _, let timestamp):
                 return timestamp
             case .messageReadOnLinkedDevice(let timestamp):
                 return timestamp
@@ -113,11 +135,11 @@ public class EarlyMessageManager: NSObject {
             }
         }
 
-        init(receiptType: SSKProtoReceiptMessageType, sender: SignalServiceAddress, timestamp: UInt64) {
+        init(receiptType: SSKProtoReceiptMessageType, senderAddress: SignalServiceAddress, senderDeviceId: UInt32, timestamp: UInt64) {
             switch receiptType {
-            case .delivery: self = .outgoingMessageDelivered(sender: sender, timestamp: timestamp)
-            case .read: self = .outgoingMessageRead(sender: sender, timestamp: timestamp)
-            case .viewed: self = .outgoingMessageViewed(sender: sender, timestamp: timestamp)
+            case .delivery: self = .outgoingMessageDelivered(sender: senderAddress, deviceId: senderDeviceId, timestamp: timestamp)
+            case .read: self = .outgoingMessageRead(sender: senderAddress, deviceId: senderDeviceId, timestamp: timestamp)
+            case .viewed: self = .outgoingMessageViewed(sender: senderAddress, deviceId: senderDeviceId, timestamp: timestamp)
             }
         }
     }
@@ -180,7 +202,8 @@ public class EarlyMessageManager: NSObject {
     @objc
     public func recordEarlyReceiptForOutgoingMessage(
         type: SSKProtoReceiptMessageType,
-        sender: SignalServiceAddress,
+        senderAddress: SignalServiceAddress,
+        senderDeviceId: UInt32,
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
@@ -194,7 +217,7 @@ public class EarlyMessageManager: NSObject {
         Logger.info("Recording early \(type) receipt for outgoing message \(identifier)")
 
         recordEarlyReceipt(
-            .init(receiptType: type, sender: sender, timestamp: timestamp),
+            .init(receiptType: type, senderAddress: senderAddress, senderDeviceId: senderDeviceId, timestamp: timestamp),
             identifier: identifier,
             transaction: transaction
         )
@@ -290,8 +313,8 @@ public class EarlyMessageManager: NSObject {
         // Apply any early receipts for this message
         for earlyReceipt in earlyReceipts ?? [] {
             switch earlyReceipt {
-            case .outgoingMessageRead(let sender, let timestamp):
-                Logger.info("Applying early read receipt from \(sender) for outgoing message \(identifier)")
+            case .outgoingMessageRead(let sender, let deviceId, let timestamp):
+                Logger.info("Applying early read receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
@@ -299,11 +322,12 @@ public class EarlyMessageManager: NSObject {
                 }
                 message.update(
                     withReadRecipient: sender,
+                    recipientDeviceId: deviceId,
                     readTimestamp: timestamp,
                     transaction: transaction
                 )
-            case .outgoingMessageViewed(let sender, let timestamp):
-                Logger.info("Applying early viewed receipt from \(sender) for outgoing message \(identifier)")
+            case .outgoingMessageViewed(let sender, let deviceId, let timestamp):
+                Logger.info("Applying early viewed receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
@@ -311,11 +335,12 @@ public class EarlyMessageManager: NSObject {
                 }
                 message.update(
                     withViewedRecipient: sender,
+                    recipientDeviceId: deviceId,
                     viewedTimestamp: timestamp,
                     transaction: transaction
                 )
-            case .outgoingMessageDelivered(let sender, let timestamp):
-                Logger.info("Applying early delivery receipt from \(sender) for outgoing message \(identifier)")
+            case .outgoingMessageDelivered(let sender, let deviceId, let timestamp):
+                Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
@@ -323,6 +348,7 @@ public class EarlyMessageManager: NSObject {
                 }
                 message.update(
                     withDeliveredRecipient: sender,
+                    recipientDeviceId: deviceId,
                     deliveryTimestamp: NSNumber(value: timestamp),
                     transaction: transaction
                 )

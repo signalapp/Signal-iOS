@@ -297,6 +297,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // messages repurpose the "timestamp" field to indicate when the
 // corresponding message was originally sent.
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
+                   recipientDeviceId:(uint32_t)deviceId
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
                          transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -315,10 +316,12 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // This method is used to record a successful "read" by one recipient.
 - (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress
+              recipientDeviceId:(uint32_t)deviceId
                   readTimestamp:(uint64_t)readTimestamp
                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithViewedRecipient:(SignalServiceAddress *)recipientAddress
+                recipientDeviceId:(uint32_t)deviceId
                   viewedTimestamp:(uint64_t)viewedTimestamp
                       transaction:(SDSAnyWriteTransaction *)transaction;
 

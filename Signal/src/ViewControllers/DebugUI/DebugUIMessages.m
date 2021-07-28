@@ -4282,8 +4282,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
-                [message updateWithDeliveredRecipient:address deliveryTimestamp:timestamp transaction:transaction];
+                [message updateWithDeliveredRecipient:address
+                                    recipientDeviceId:0
+                                    deliveryTimestamp:timestamp
+                                          transaction:transaction];
                 [message updateWithReadRecipient:address
+                               recipientDeviceId:0
                                    readTimestamp:timestamp.unsignedLongLongValue
                                      transaction:transaction];
             }
@@ -4581,6 +4585,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         if (address != nil) {
             OWSAssertDebug(address.isValid);
             [message updateWithDeliveredRecipient:address
+                                recipientDeviceId:0
                                 deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
                                       transaction:transaction];
         }
@@ -4590,6 +4595,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         if (address != nil) {
             OWSAssertDebug(address.isValid);
             [message updateWithReadRecipient:address
+                           recipientDeviceId:0
                                readTimestamp:[NSDate ows_millisecondTimeStamp]
                                  transaction:transaction];
         }

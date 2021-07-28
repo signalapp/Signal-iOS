@@ -732,13 +732,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 }
 
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
+                   recipientDeviceId:(uint32_t)deviceId
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
                          transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
-
-    // Sender Key TODO: Remove pending send
 
     // Ignore receipts for messages that have been deleted.
     // They are no longer relevant to this message.
@@ -750,6 +749,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     if (!deliveryTimestamp) {
         deliveryTimestamp = @([NSDate ows_millisecondTimeStamp]);
     }
+
+    [self clearMessageSendLogEntryForRecipient:recipientAddress
+                                      deviceId:deviceId
+                                   transaction:transaction];
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
@@ -770,6 +773,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 }
 
 - (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress
+              recipientDeviceId:(uint32_t)deviceId
                   readTimestamp:(uint64_t)readTimestamp
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -781,6 +785,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     if (self.wasRemotelyDeleted) {
         return;
     }
+
+    // This is only really necessary for delivery receipts, but while we're here with
+    // an open write transaction, might as well double check we've cleared it.
+    [self clearMessageSendLogEntryForRecipient:recipientAddress
+                                      deviceId:deviceId
+                                   transaction:transaction];
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
@@ -801,6 +811,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 }
 
 - (void)updateWithViewedRecipient:(SignalServiceAddress *)recipientAddress
+                recipientDeviceId:(uint32_t)deviceId
                   viewedTimestamp:(uint64_t)viewedTimestamp
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -812,6 +823,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     if (self.wasRemotelyDeleted) {
         return;
     }
+
+    // This is only really necessary for delivery receipts, but while we're here with
+    // an open write transaction, might as well double check we've cleared it.
+    [self clearMessageSendLogEntryForRecipient:recipientAddress
+                                      deviceId:deviceId
+                                   transaction:transaction];
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
@@ -965,6 +982,19 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                             block:^(TSOutgoingMessage *message) {
                                                 message.recipientAddressStates = [recipientAddressStates copy];
                                             }];
+}
+
+- (void)clearMessageSendLogEntryForRecipient:(SignalServiceAddress *)address
+                                    deviceId:(uint32_t)deviceId
+                                 transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.uuid);
+    NSDate *interactionTimestamp = [NSDate ows_dateWithMillisecondsSince1970:self.timestamp];
+
+    [MessageSendLog recordSuccessfulDeliveryWithTimestamp:interactionTimestamp
+                                            recipientUuid:address.uuid
+                                        recipientDeviceId:deviceId
+                                              transaction:transaction];
 }
 
 #ifdef TESTABLE_BUILD

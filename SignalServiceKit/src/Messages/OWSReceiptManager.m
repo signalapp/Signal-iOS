@@ -267,6 +267,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 #pragma mark - Read Receipts From Recipient
 
 - (NSArray<NSNumber *> *)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
+                                        recipientDeviceId:(uint32_t)deviceId
                                            sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
                                             readTimestamp:(uint64_t)readTimestamp
                                               transaction:(SDSAnyWriteTransaction *)transaction
@@ -304,7 +305,10 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             // TODO: We might also need to "mark as read by recipient" any older messages
             // from us in that thread.  Or maybe this state should hang on the thread?
             for (TSOutgoingMessage *message in messages) {
-                [message updateWithReadRecipient:address readTimestamp:readTimestamp transaction:transaction];
+                [message updateWithReadRecipient:address
+                               recipientDeviceId:deviceId
+                                   readTimestamp:readTimestamp
+                                     transaction:transaction];
             }
         } else {
             [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
@@ -315,6 +319,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 }
 
 - (NSArray<NSNumber *> *)processViewedReceiptsFromRecipient:(SignalServiceAddress *)address
+                                          recipientDeviceId:(uint32_t)deviceId
                                              sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
                                             viewedTimestamp:(uint64_t)viewedTimestamp
                                                 transaction:(SDSAnyWriteTransaction *)transaction
@@ -350,7 +355,10 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 
         if (messages.count > 0) {
             for (TSOutgoingMessage *message in messages) {
-                [message updateWithViewedRecipient:address viewedTimestamp:viewedTimestamp transaction:transaction];
+                [message updateWithViewedRecipient:address
+                                 recipientDeviceId:deviceId
+                                   viewedTimestamp:viewedTimestamp
+                                       transaction:transaction];
             }
         } else {
             [sentTimestampsMissingMessage addObject:@(sentTimestamp)];

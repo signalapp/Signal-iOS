@@ -173,12 +173,12 @@ public extension DebugUIScreenshots {
                 let timestampMessage2 = startingDateMS - (6 * kDayInMs + 3 * kMinuteInMs)
                 let message2 = self.buildOutgoingMessage(thread: thread, messageBody: "☺️",
                                                          timestamp: timestampMessage2, transaction: transaction)
-                message2.update(withReadRecipient: otherAddress, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
+                message2.update(withReadRecipient: otherAddress, recipientDeviceId: 0, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
                 let timestampMessage3 = startingDateMS - (6 * kDayInMs + 3 * kMinuteInMs)
                 let message3 = self.buildOutgoingMessage(thread: thread, messageBody: NSLocalizedString("SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO",
                                                                                                         comment: "This is a message."),
                                                          timestamp: timestampMessage3, transaction: transaction)
-                message3.update(withReadRecipient: otherAddress, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
+                message3.update(withReadRecipient: otherAddress, recipientDeviceId: 0, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
                 let timestampMessage4 = startingDateMS - (6 * kDayInMs + 3 * kMinuteInMs)
                 let message4 = self.buildOutgoingMessage(thread: thread,
                                                          messageBody: nil,
@@ -221,7 +221,7 @@ public extension DebugUIScreenshots {
                                                                                         comment: "This is a message after an image of mountains + a lake."),
                                                          timestamp: timestampMessage3,
                                                          transaction: transaction)
-                message3.update(withReadRecipient: otherAddress, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
+                message3.update(withReadRecipient: otherAddress, recipientDeviceId: 0, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
                 let timestampMessage4 = startingDateMS - (5 * kDayInMs + 12 * kHourInMs)
                 let message4 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress,
                                                          messageBody: NSLocalizedString("SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE",
@@ -237,7 +237,7 @@ public extension DebugUIScreenshots {
                 let timestampMessage1 = startingDateMS - (4 * kDayInMs)
                 let message1 = self.buildOutgoingMessage(thread: thread, messageBody: "🤣🤣🤣",
                                                          timestamp: timestampMessage1, transaction: transaction)
-                message1.update(withReadRecipient: otherAddress, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
+                message1.update(withReadRecipient: otherAddress, recipientDeviceId: 0, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
             }
 
              // 1:1 incoming sticker
@@ -322,7 +322,7 @@ public extension DebugUIScreenshots {
                                                          transaction: transaction)
                 // This marks the outgoing message as read
                 // as opposed to displaying one sent check mark
-                message1.update(withReadRecipient: otherAddress, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
+                message1.update(withReadRecipient: otherAddress, recipientDeviceId: 0, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
                 let timestampMessage2 = startingDateMS - (2 * kDayInMs + 4 * kHourInMs + 42 * kMinuteInMs)
                 let message2 = self.buildIncomingMessage(thread: thread,
                                                          authorAddress: otherAddress,
@@ -504,7 +504,7 @@ public extension DebugUIScreenshots {
                                                          timestamp: timestampMessage2, transaction: transaction)
                 // This marks the outgoing message as read
                 // as opposed to displaying one sent check mark
-                message1.update(withReadRecipient: otherAddress, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
+                message1.update(withReadRecipient: otherAddress, recipientDeviceId: 0, readTimestamp: Date.ows_millisecondTimestamp(), transaction: transaction)
                 let attachmentMessage2 = buildAttachment(bundleFilename: "test-jpg-3.JPG",
                                                          mimeType: OWSMimeTypeImageJpeg,
                                                          transaction: transaction)
@@ -1051,10 +1051,12 @@ public extension DebugUIScreenshots {
         message.update(withSentRecipient: otherAddress, wasSentByUD: false, transaction: transaction)
         // Mark as delivered by someone.
         message.update(withDeliveredRecipient: otherAddress,
+                       recipientDeviceId: 0,
                        deliveryTimestamp: nil,
                        transaction: transaction)
         // Mark as read by someone.
         message.update(withReadRecipient: otherAddress,
+                       recipientDeviceId: 0,
                        readTimestamp: Date.ows_millisecondTimestamp(),
                        transaction: transaction )
 
