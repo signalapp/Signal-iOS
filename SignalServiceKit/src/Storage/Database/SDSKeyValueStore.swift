@@ -510,7 +510,18 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: -
 
+    @available(*, deprecated, message: "Did you mean removeValue(forKey:transaction:) or setCodable(optional:key:transaction)?")
+    public func setCodable<T: Encodable>(_ value: Optional<T>, key: String, transaction: SDSAnyWriteTransaction) throws {
+        try setCodable(optional: value, key: key, transaction: transaction)
+    }
+
     public func setCodable<T: Encodable>(_ value: T, key: String, transaction: SDSAnyWriteTransaction) throws {
+        // The only difference between setCodable(optional:...) and setCodable(_...) is
+        // the non-optional variant has a deprecated overload to warn callers of the ambiguity.
+        try setCodable(optional: value, key: key, transaction: transaction)
+    }
+
+    public func setCodable<T: Encodable>(optional value: T, key: String, transaction: SDSAnyWriteTransaction) throws {
         do {
             let data = try JSONEncoder().encode(value)
             setData(data, key: key, transaction: transaction)
