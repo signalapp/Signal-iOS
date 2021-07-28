@@ -195,12 +195,12 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var announcementOnlyGroupsCapability: Bool {
-        DebugFlags.forceAnnouncementOnlyGroups || isEnabled(.announcementOnlyGroupsCapability)
+        DebugFlags.forceAnnouncementOnlyGroupsCapability || isEnabled(.announcementOnlyGroupsCapability)
     }
 
     @objc
     public static var announcementOnlyGroupsUI: Bool {
-        DebugFlags.forceAnnouncementOnlyGroups || isEnabled(.announcementOnlyGroupsUI)
+        DebugFlags.forceAnnouncementOnlyGroupsUI || isEnabled(.announcementOnlyGroupsUI)
     }
 
     @objc
