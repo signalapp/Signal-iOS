@@ -222,7 +222,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         // already enabled.  If not, only show that UI if all group
         // members support that capability and the remote config flag
         // is enabled.
-        let canShowAnnouncementOnly = (RemoteConfig.announcementOnlyGroups &&
+        let canShowAnnouncementOnly = (RemoteConfig.announcementOnlyGroupsUI &&
                                             announcementOnlyCapabilityState == .enabled)
         if canShowAnnouncementOnly || newIsAnnouncementsOnly {
             let isAnnouncementsOnly = self.newIsAnnouncementsOnly
