@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSQRCodeScanningViewController.h"
 #import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSLinkDeviceViewController : OWSViewController
 
 @property (nonatomic, weak) id<OWSLinkDeviceViewControllerDelegate> delegate;
+
+- (void)controller:(nullable OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string;
 
 - (void)provisionWithConfirmationWithParser:(OWSDeviceProvisioningURLParser *)parser;
 
