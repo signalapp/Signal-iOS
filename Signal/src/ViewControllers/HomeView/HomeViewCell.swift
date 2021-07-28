@@ -215,6 +215,7 @@ public class HomeViewCell: UITableViewCell {
 
         typingIndicatorView.configureForHomeView()
 
+        NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(otherUsersProfileDidChange(notification:)),
                                                name: .otherUsersProfileDidChange,
