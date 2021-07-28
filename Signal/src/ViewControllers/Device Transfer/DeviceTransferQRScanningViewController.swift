@@ -3,11 +3,13 @@
 //
 
 import Foundation
+import ZXingObjC
 import MultipeerConnectivity
 
 class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
-    private let qrCodeScanViewController = QRCodeScanViewController(appearance: .unadorned)
+    var capture: ZXCapture?
+    var isCapturing = false
 
     lazy var activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .white)
@@ -48,16 +50,9 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
     }()
     lazy var captureContainerView: UIView = {
         let view = UIView()
-
-        let qrView = qrCodeScanViewController.view!
-        view.addSubview(qrView)
-
         view.addSubview(maskingView)
         maskingView.autoPinHeightToSuperview()
         maskingView.autoHCenterInSuperview()
-
-        qrView.autoPinEdges(toEdgesOf: maskingView)
-
         return view
     }()
     lazy var maskingView: UIView = {
@@ -106,59 +101,56 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
         contentView.addArrangedSubview(bottomSpacer)
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
         topSpacer.autoSetDimension(.height, toSize: 25, relation: .greaterThanOrEqual)
-
-        qrCodeScanViewController.delegate = self
-        addChild(qrCodeScanViewController)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        guard !isCapturing else { return }
+
+        DispatchQueue.global().async {
+            if let capture = self.capture {
+                capture.start()
+            } else {
+                let capture = ZXCapture()
+                self.capture = capture
+                capture.camera = capture.back()
+                capture.focusMode = .continuousAutoFocus
+                capture.delegate = self
+            }
+
+            DispatchQueue.main.async {
+                guard let capture = self.capture else { return }
+                capture.layer.frame = self.maskingView.frame
+                self.captureContainerView.layer.addSublayer(capture.layer)
+                self.captureContainerView.bringSubviewToFront(self.maskingView)
+                capture.start()
+
+                self.isCapturing = true
+            }
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        capture?.stop()
+        isCapturing = false
     }
 }
 
-// MARK: -
+extension DeviceTransferQRScanningViewController: ZXCaptureDelegate {
+    func captureResult(_ capture: ZXCapture!, result: ZXResult!) {
+        guard isCapturing else { return }
 
-extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
-
-    func qrCodeScanViewDismiss(_ qrCodeScanViewController: QRCodeScanViewController) {
-        AssertIsOnMainThread()
-
-        navigationController?.popViewController(animated: true)
-    }
-
-    func qrCodeScanViewScanned(_ qrCodeScanViewController: QRCodeScanViewController,
-                               qrCodeData: Data?,
-                               qrCodeString: String?) -> QRCodeScanOutcome {
-        AssertIsOnMainThread()
-
-        guard let qrCodeString = qrCodeString else {
-            // TODO: The user has probably scanned the wrong QR code.
-            // We could show an error alert to help them resolve the issue.
-            // For now, ignore the QR code and continue scanning.
-            owsFailDebug("QR code does not have a valid string payload.")
-            return .continueScanning
-        }
-
-        guard let scannedURL = URL(string: qrCodeString) else {
-            // TODO: The user has probably scanned the wrong QR code.
-            // We could show an error alert to help them resolve the issue.
-            // For now, ignore the QR code and continue scanning.
-            owsFailDebug("QR code does not have a valid URL payload: \(qrCodeString).")
-            return .continueScanning
+        guard let result = result, let text = result.text, let scannedURL = URL(string: text) else {
+            return owsFailDebug("scan returned bad result")
         }
 
         // Ignore if a non-signal url was scanned
-        guard scannedURL.scheme == kURLSchemeSGNLKey else {
-            // TODO: The user has probably scanned the wrong QR code.
-            // We could show an error alert to help them resolve the issue.
-            // For now, ignore the QR code and continue scanning.
-            owsFailDebug("QR code does not have a transfer URL payload: \(qrCodeString).")
-            return .continueScanning
-        }
+        guard scannedURL.scheme == kURLSchemeSGNLKey else { return }
+
+        capture?.stop()
+        isCapturing = false
 
         showConnecting()
 
@@ -205,8 +197,6 @@ extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
                 )
             }
         }
-
-        return .stopScanning
     }
 
     func showConnecting() {
@@ -230,8 +220,6 @@ extension DeviceTransferQRScanningViewController: QRCodeScanDelegate {
         }
     }
 }
-
-// MARK: -
 
 extension DeviceTransferQRScanningViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}

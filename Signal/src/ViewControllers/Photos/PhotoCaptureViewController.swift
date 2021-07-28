@@ -34,9 +34,6 @@ extension PhotoCaptureError: LocalizedError {
     }
 }
 
-// MARK: -
-
-@objc
 class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
