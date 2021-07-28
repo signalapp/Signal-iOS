@@ -15,7 +15,8 @@ extension ConversationViewController {
             return
         }
         if FeatureFlags.contextMenus {
-            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions)
+            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewLongPressGestureRecognizer)
+            collectionViewActiveContextMenuInteraction = interaction
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
             let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
@@ -183,32 +184,34 @@ extension ConversationViewController {
 
 extension ConversationViewController: ContextMenuInteractionDelegate {
 
-    func contextMenuInteraction(
+    public func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
 
-        return ContextMenuConfiguration.init(identifier: UUID() as NSCopying, actionProvider: { _ in
-            let defaultState = ContextMenuAction.init(title: "Default", image: Theme.iconImage(.messageActionReply), attributes: [], handler: { _ in
-                Logger.debug("default state handler")
-            })
+        return ContextMenuConfiguration(identifier: UUID() as NSCopying, actionProvider: { _ in
 
-            let disabled = ContextMenuAction.init(title: "Disabled", image: Theme.iconImage(.messageActionSave), attributes: [.disabled], handler: { _ in
-                Logger.debug("disabled state handler")
-            })
+            var contextMenuActions: [ContextMenuAction] = []
+            if let actions = self.collectionViewActiveContextMenuInteraction?.messageActions {
 
-            let highlighted = ContextMenuAction.init(title: "Highlighted", image: Theme.iconImage(.messageActionDelete), attributes: [.highlighted], handler: { _ in
-                Logger.debug("highlighted state handler")
-            })
+                let actionOrder: [MessageAction.MessageActionType] = [.reply, .forward, .copy, .share, .select, .info, .delete]
 
-            let destructive = ContextMenuAction.init(title: "Destructive", image: Theme.iconImage(.messageActionDelete), attributes: [.destructive], handler: { _ in
-                Logger.debug("destructive state handler")
-            })
+                for type in actionOrder {
+                    let actionWithType = actions.first { $0.actionType == type }
+                    if let messageAction = actionWithType {
+                        let contextMenuAction = ContextMenuAction(title: messageAction.contextMenuTitle, image: messageAction.image, attributes: messageAction.contextMenuAttributes, handler: { _ in
+                            messageAction.block(self)
+                        })
 
-            return ContextMenu([defaultState, disabled, highlighted, destructive])
+                        contextMenuActions.append(contextMenuAction)
+                    }
+                }
+            }
+
+            return ContextMenu(contextMenuActions)
         })
     }
 
-    func contextMenuInteraction(
+    public func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
 
@@ -231,7 +234,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
         // Add reaction bar if necessary
         if thread.canSendReactionToThread && shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
-            let reactionBarAccessory = ContextMenuRectionBarAccessory.init(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
+            let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
             reactionBarAccessory.didSelectReactionHandler = {(message: TSMessage, reaction: String, isRemoving: Bool) in
                 self.databaseStorage.asyncWrite { transaction in
                     ReactionManager.localUserReactedWithDurableSend(to: message,
@@ -243,12 +246,24 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             accessories.append(reactionBarAccessory)
         }
 
+        var alignment: ContextMenuTargetedPreview.Alignment = .center
+        let interactionType = contextInteraction.itemViewModel.interaction.interactionType()
+        if interactionType == .incomingMessage {
+            alignment = .left
+        } else if interactionType == .outgoingMessage {
+            alignment = .right
+        }
+
         if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {
-            return ContextMenuTargetedPreview(view: contentView, accessoryViews: accessories)
+            return ContextMenuTargetedPreview(view: contentView, alignment: alignment, accessoryViews: accessories)
         } else {
-            return ContextMenuTargetedPreview(view: cell, accessoryViews: accessories)
+            return ContextMenuTargetedPreview(view: cell, alignment: alignment, accessoryViews: accessories)
 
         }
+    }
+
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {
+        collectionViewActiveContextMenuInteraction = nil
     }
 
 }

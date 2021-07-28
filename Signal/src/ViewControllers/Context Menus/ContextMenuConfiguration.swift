@@ -18,7 +18,6 @@ public class ContextMenuAction {
 
         public static let disabled = ContextMenuAction.Attributes(rawValue: 1 << 0)
         public static let destructive = ContextMenuAction.Attributes(rawValue: 1 << 1)
-        public static let highlighted = ContextMenuAction.Attributes(rawValue: 1 << 2)
     }
 
     public let title: String
@@ -84,6 +83,7 @@ public class ContextMenuTargetedPreviewAccessory {
 
     // Defines accessory layout relative to preview view
     var accessoryAlignment: AccessoryAlignment
+    var landscapeAccessoryAlignment: AccessoryAlignment?
 
     weak var delegate: ContextMenuTargetedPreviewAccessoryInteractionDelegate?
 
@@ -108,6 +108,17 @@ public class ContextMenuTargetedPreviewAccessory {
     ) {
         completion()
     }
+
+    /// Called when a current touch event changed location
+    /// - Parameter locationInView: location relative to accessoryView's coordinate space
+    func touchLocationInViewDidChange(locationInView: CGPoint) {
+
+    }
+    /// Called when a current touch event ended
+    /// - Parameter locationInView: location relative to accessoryView's coordinate space
+    func touchLocationInViewDidEnd(locationInView: CGPoint) {
+
+    }
 }
 
 // UITargetedPreview analog
@@ -115,8 +126,16 @@ public class ContextMenuTargetedPreviewAccessory {
 // View must be in a window when ContextMenuTargetedPreview is initialized
 public class ContextMenuTargetedPreview {
 
+    public enum Alignment {
+        case left
+        case center
+        case right
+
+    }
+
     public let view: UIView?
     public let snapshot: UIView?
+    public let alignment: Alignment
     public let accessoryViews: [ContextMenuTargetedPreviewAccessory]
 
     private var previewFrame: CGRect = CGRect.zero
@@ -125,9 +144,12 @@ public class ContextMenuTargetedPreview {
     /// View must be in a window
     /// - Parameters:
     ///   - view: View to render preview of
+    ///   - alignment: If preview needs to be scaled, this property defines the edge alignment
+    ///    in the source view to pin the preview to
     ///   - accessoryViews: accessory view
     public init (
         view: UIView,
+        alignment: Alignment,
         accessoryViews: [ContextMenuTargetedPreviewAccessory]?
     ) {
         AssertIsOnMainThread()
@@ -141,21 +163,7 @@ public class ContextMenuTargetedPreview {
             owsFailDebug("Unable to snapshot context menu preview view")
         }
 
-        self.accessoryViews = accessoryViews ?? []
-    }
-
-    /// Chat History View optimized initializer, takes a pre-snapshotted replicant view vs an original view
-    /// View does not need to be in a window
-    /// - Parameters:
-    ///   - snapshot: snapshot view
-    ///   - accessoryViews: accessory views
-    public init (
-        snapshot: UIView,
-        accessoryViews: [ContextMenuTargetedPreviewAccessory]?
-    ) {
-        AssertIsOnMainThread()
-        self.snapshot = snapshot
-        self.view = nil
+        self.alignment = alignment
         self.accessoryViews = accessoryViews ?? []
     }
 }

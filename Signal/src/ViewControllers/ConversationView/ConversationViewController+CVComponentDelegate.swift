@@ -84,6 +84,8 @@ extension ConversationViewController: CVComponentDelegate {
     public func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
+        collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidChange()
+
         guard let messageActionsViewController = messageActionsViewController else {
             return
         }
@@ -97,6 +99,8 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
+
+        collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidEnd()
 
         guard let messageActionsViewController = messageActionsViewController else {
             return
