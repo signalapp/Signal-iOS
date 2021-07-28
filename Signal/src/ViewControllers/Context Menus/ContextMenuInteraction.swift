@@ -109,13 +109,16 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         return accessory
     }
 
-    public func dismissMenu() {
+    public func dismissMenu(completion: @escaping() -> Void ) {
         if let configuarion = self.configuration {
             delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
         }
 
-        contextMenuController?.view.removeFromSuperview()
-        contextMenuController = nil
+        contextMenuController?.animateOut({
+            completion()
+            self.contextMenuController?.view.removeFromSuperview()
+            self.contextMenuController = nil
+        })
     }
 
     // MARK: Private
@@ -129,12 +132,16 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
 extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTargetedPreviewAccessoryInteractionDelegate {
 
-    func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory) {
-        dismissMenu()
+    func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory, completion: @escaping () -> Void) {
+        dismissMenu(completion: completion)
+    }
+
+    func contextMenuTargetedPreviewAccessoryPreviewAlignment(_ accessory: ContextMenuTargetedPreviewAccessory) -> ContextMenuTargetedPreview.Alignment {
+        return contextMenuController?.contextMenuPreview.alignment ?? .center
     }
 
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController) {
-        dismissMenu()
+        dismissMenu(completion: { })
     }
 
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(

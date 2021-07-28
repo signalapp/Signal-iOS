@@ -199,7 +199,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                     let actionWithType = actions.first { $0.actionType == type }
                     if let messageAction = actionWithType {
                         let contextMenuAction = ContextMenuAction(title: messageAction.contextMenuTitle, image: messageAction.image, attributes: messageAction.contextMenuAttributes, handler: { _ in
-                            messageAction.block(self)
+                            messageAction.block(nil)
                         })
 
                         contextMenuActions.append(contextMenuAction)

@@ -1658,6 +1658,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             avatarView.frame = componentView.avatarView.bounds
             let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.leading, .exterior), (.bottom, .interior)], alignmentOffset: CGPoint(x: -8, y: 0))
             let avatarViewAccessory = ContextMenuTargetedPreviewAccessory(accessoryView: avatarView, accessoryAlignment: alignment)
+            avatarViewAccessory.animateAccessoryPresentationAlongsidePreview = true
             return [avatarViewAccessory]
         } else {
             return nil
