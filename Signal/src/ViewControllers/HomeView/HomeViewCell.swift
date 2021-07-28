@@ -32,6 +32,12 @@ public class HomeViewCell: UITableViewCell {
     // The "Wrapper" shows either "snippet label" or "typing indicator".
     private let bottomRowWrapper = ManualLayoutView(name: "bottomRowWrapper")
 
+    public var isCellVisible = false {
+        didSet {
+            updateTypingIndicatorState()
+        }
+    }
+
     private var cvviews: [CVView] {
         [
             avatarView,
@@ -728,6 +734,8 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private func reset() {
+        isCellVisible = false
+
         for cvview in cvviews {
             cvview.reset()
         }
@@ -800,6 +808,8 @@ public class HomeViewCell: UITableViewCell {
 
     private func updateTypingIndicatorState() {
         AssertIsOnMainThread()
+
+        let shouldShowTypingIndicators = self.shouldShowTypingIndicators && self.isCellVisible
 
         // We use "override snippets" to show "message" search results.
         // We don't want to show typing indicators in that case.

@@ -13,6 +13,7 @@ extension HomeViewController {
             viewState.isViewVisible = newValue
 
             updateShouldBeUpdatingView()
+            updateCellVisibility()
         }
     }
 
@@ -52,6 +53,7 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         let isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive()
+
         self.shouldBeUpdatingView = self.isViewVisible && isAppForegroundAndActive
     }
 
