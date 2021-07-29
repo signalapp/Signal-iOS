@@ -208,9 +208,9 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     }];
 }
 
-- (void)setIsOnlyNotifyMentions:(BOOL)isOnlyNotifyMentions withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)setisOnlyNotifyingForMentions:(BOOL)isOnlyNotifyingForMentions withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    self.isOnlyNotifyMentions = isOnlyNotifyMentions;
+    self.isOnlyNotifyingForMentions = isOnlyNotifyingForMentions;
     
     [self saveWithTransaction:transaction];
     

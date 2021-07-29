@@ -230,7 +230,7 @@ final class ConversationCell : UITableViewCell {
         let result = NSMutableAttributedString()
         if threadViewModel.isMuted {
             result.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
-        } else if threadViewModel.isOnlyNotifyMentions {
+        } else if threadViewModel.isOnlyNotifyingForMentions {
             let imageAttachment = NSTextAttachment()
             imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: Colors.unimportant)
             imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)

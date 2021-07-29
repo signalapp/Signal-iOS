@@ -136,8 +136,6 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "until %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
-/* Table cell label in conversation settings which returns the user to the conversation with 'notification settings' activated */
-"CONVERSATION_SETTINGS_NOTIFICATION" = "Notify Mentions Only";
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Unmute";
 /* Title for the 'crop/scale image' dialog. */
@@ -548,3 +546,6 @@
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";
+"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
+"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
