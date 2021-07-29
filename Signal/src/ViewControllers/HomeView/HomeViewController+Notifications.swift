@@ -54,6 +54,10 @@ extension HomeViewController {
                                                selector: #selector(blockListDidChange),
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(uiContentSizeCategoryDidChange),
+                                               name: UIContentSizeCategory.didChangeNotification,
+                                               object: nil)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -163,6 +167,14 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         // This is wasteful but this event is very rare.
+        reloadTableDataAndResetCellContentCache()
+    }
+
+    @objc
+    private func uiContentSizeCategoryDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        // This is expensive but this event is very rare.
         reloadTableDataAndResetCellContentCache()
     }
 }

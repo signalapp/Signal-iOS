@@ -149,7 +149,14 @@ public class HomeViewCell: UITableViewCell {
         self.selectionStyle = .default
     }
 
-    func configure(_ configuration: Configuration) {
+    static func measureCellHeight(configuration: Configuration) -> CGFloat {
+        AssertIsOnMainThread()
+
+        let cellContentToken = Self.cellContentToken(forConfiguration: configuration)
+        return cellContentToken.measurements.outerHStackMeasurement.measuredSize.height
+    }
+
+    func configure(configuration: Configuration) {
         AssertIsOnMainThread()
 
         let cellContentToken = Self.cellContentToken(forConfiguration: configuration)
