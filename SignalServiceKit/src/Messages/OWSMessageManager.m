@@ -592,6 +592,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    TSIncomingMessage *_Nullable message = nil;
     if ((dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0) {
         [self handleEndSessionMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0) {
@@ -602,14 +603,14 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         // Do nothing, we handle profile keys on all incoming messages above.
     } else {
-        TSIncomingMessage *_Nullable message = [self handleReceivedEnvelope:envelope
-                                                            withDataMessage:dataMessage
-                                                                     thread:thread
-                                                              plaintextData:plaintextData
-                                                            wasReceivedByUD:wasReceivedByUD
-                                                    serverDeliveryTimestamp:serverDeliveryTimestamp
-                                               shouldDiscardVisibleMessages:shouldDiscardVisibleMessages
-                                                                transaction:transaction];
+        message = [self handleReceivedEnvelope:envelope
+                               withDataMessage:dataMessage
+                                        thread:thread
+                                 plaintextData:plaintextData
+                               wasReceivedByUD:wasReceivedByUD
+                       serverDeliveryTimestamp:serverDeliveryTimestamp
+                  shouldDiscardVisibleMessages:shouldDiscardVisibleMessages
+                                   transaction:transaction];
         if (message != nil) {
             OWSAssertDebug([TSMessage anyFetchWithUniqueId:message.uniqueId transaction:transaction] != nil);
 
@@ -619,7 +620,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Send delivery receipts for "valid data" messages received via UD.
     if (wasReceivedByUD) {
-        [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope transaction:transaction];
+        [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope
+                                                       messageUniqueId:message.uniqueId
+                                                           transaction:transaction];
     }
 }
 

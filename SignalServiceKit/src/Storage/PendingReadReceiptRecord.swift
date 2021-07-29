@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,12 +11,14 @@ public struct PendingReadReceiptRecord: Codable, FetchableRecord, PersistableRec
     public private(set) var id: Int64?
     public let threadId: Int64
     public let messageTimestamp: Int64
+    public let messageUniqueId: String?
     public let authorPhoneNumber: String?
     public let authorUuid: String?
 
-    public init(threadId: Int64, messageTimestamp: Int64, authorPhoneNumber: String?, authorUuid: String?) {
+    public init(threadId: Int64, messageTimestamp: Int64, messageUniqueId: String?, authorPhoneNumber: String?, authorUuid: String?) {
         self.threadId = threadId
         self.messageTimestamp = messageTimestamp
+        self.messageUniqueId = messageUniqueId
         self.authorPhoneNumber = authorPhoneNumber
         self.authorUuid = authorUuid
     }

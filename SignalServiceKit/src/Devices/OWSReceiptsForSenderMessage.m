@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSReceiptsForSenderMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSReceiptsForSenderMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -11,16 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSReceiptsForSenderMessage ()
 
+@property (nonatomic, readonly) NSSet<NSString *> *messageUniqueIds;
 @property (nonatomic, readonly) NSArray<NSNumber *> *messageTimestamps;
 @property (nonatomic, readonly) SSKProtoReceiptMessageType receiptType;
-
-// The uniqueIds for the timestamps included in the receipt message
-// Assembled when building the receipt proto. Not valid until then.
-//
-// We might want to consider initing the receipt message with the uniqueIds
-// as well as the timestamp. That'll require a migrating change to our receipt store
-// model. For now this should be fine.
-@property (nonatomic, strong, nullable) NSSet<NSString *> *messageUniqueIds;
 
 @end
 
@@ -29,31 +22,31 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSReceiptsForSenderMessage
 
 + (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(TSThread *)thread
-                                                          messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
+                                                                 receiptSet:(MessageReceiptSet *)receiptSet
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
-                                             messageTimestamps:messageTimestamps
+                                                    receiptSet:receiptSet
                                                    receiptType:SSKProtoReceiptMessageTypeDelivery];
 }
 
 + (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
-                                                      messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
+                                                             receiptSet:(MessageReceiptSet *)receiptSet
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
-                                             messageTimestamps:messageTimestamps
+                                                    receiptSet:receiptSet
                                                    receiptType:SSKProtoReceiptMessageTypeRead];
 }
 
 + (OWSReceiptsForSenderMessage *)viewedReceiptsForSenderMessageWithThread:(TSThread *)thread
-                                                        messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
+                                                               receiptSet:(MessageReceiptSet *)receiptSet
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
-                                             messageTimestamps:messageTimestamps
+                                                    receiptSet:receiptSet
                                                    receiptType:SSKProtoReceiptMessageTypeViewed];
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
-             messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
+                    receiptSet:(MessageReceiptSet *)receiptSet
                    receiptType:(SSKProtoReceiptMessageType)receiptType
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
@@ -62,7 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _messageTimestamps = [messageTimestamps copy];
+    _messageUniqueIds = [receiptSet.uniqueIds copy];
+    _messageTimestamps = [receiptSet.timestamps copy];
     _receiptType = receiptType;
 
     return self;
@@ -100,34 +94,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.recipientAddresses.count == 1);
     OWSAssertDebug(self.messageTimestamps.count > 0);
     NSError *_Nullable error = nil;
-    NSMutableSet<NSString *> *messageUniqueIds = [[NSMutableSet alloc] init];
 
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
     [builder setType:self.receiptType];
-
-    for (NSNumber *messageTimestamp in self.messageTimestamps) {
-        [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];
-
-        NSArray<TSInteraction *> *interactions = [InteractionFinder
-            interactionsWithTimestamp:messageTimestamp.unsignedLongLongValue
-                               filter:^BOOL(TSInteraction *interaction) {
-                                   if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                       TSIncomingMessage *message = (TSIncomingMessage *)interaction;
-                                       return
-                                           [message.authorAddress isEqualToAddress:self.recipientAddresses.firstObject];
-                                   } else {
-                                       return NO;
-                                   }
-                               }
-                          transaction:transaction
-                                error:&error];
-
-        OWSAssertDebug(interactions.count <= 1);
-        for (TSInteraction *interaction in interactions) {
-            [messageUniqueIds addObject:interaction.uniqueId];
-        }
-    }
-    self.messageUniqueIds = [messageUniqueIds copy];
 
     SSKProtoReceiptMessage *_Nullable receiptMessage = [builder buildAndReturnError:&error];
     if (error || !receiptMessage) {

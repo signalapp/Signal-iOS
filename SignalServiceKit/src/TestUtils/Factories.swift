@@ -248,13 +248,15 @@ public class OutgoingMessageFactory: NSObject, Factory {
     @objc
     public func buildDeliveryReceipt(transaction: SDSAnyWriteTransaction) -> OWSReceiptsForSenderMessage {
         let item = OWSReceiptsForSenderMessage.deliveryReceiptsForSenderMessage(with: threadCreator(transaction),
-                                                                                messageTimestamps: messageTimestampsBuilder())
+                                                                                receiptSet: receiptSetBuilder())
         return item
     }
 
     @objc
-    public var messageTimestampsBuilder: () -> [NSNumber] = {
-        return [1]
+    var receiptSetBuilder: () -> MessageReceiptSet = {
+        let set = MessageReceiptSet()
+        set.insert(timestamp: 1, messageUniqueId: "hello")
+        return set
     }
 }
 

@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSLinkedDeviceViewedReceipt : MTLModel
 
 @property (nonatomic, readonly) SignalServiceAddress *senderAddress;
+@property (nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
 @property (nonatomic, readonly) uint64_t viewedTimestamp;
 
@@ -20,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
-                   messageIdTimestamp:(uint64_t)messageIdtimestamp
+                      messageUniqueId:(nullable NSString *)messageUniqueId
+                   messageIdTimestamp:(uint64_t)messageIdTimestamp
                       viewedTimestamp:(uint64_t)viewedTimestamp NS_DESIGNATED_INITIALIZER;
 
 @end

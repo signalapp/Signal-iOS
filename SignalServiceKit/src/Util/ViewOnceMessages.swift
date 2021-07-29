@@ -133,13 +133,12 @@ public class ViewOnceMessages: NSObject {
             owsFailDebug("Missing thread.")
             return
         }
-        let messageIdTimestamp: UInt64 = message.timestamp
         let readTimestamp: UInt64 = nowMs()
 
         let syncMessage = OWSViewOnceMessageReadSyncMessage(thread: thread,
                                                             senderAddress: senderAddress,
-                                                                 messageIdTimestamp: messageIdTimestamp,
-                                                                 readTimestamp: readTimestamp)
+                                                            message: message,
+                                                            readTimestamp: readTimestamp)
         messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
 
         if let incomingMessage = message as? TSIncomingMessage {

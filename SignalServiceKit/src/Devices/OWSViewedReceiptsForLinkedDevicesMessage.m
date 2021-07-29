@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSViewedReceiptsForLinkedDevicesMessage.h"
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
-#import <SignalServiceKit/OWSViewedReceiptsForLinkedDevicesMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -55,10 +55,15 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-// Sender Key: TODO
 - (NSSet<NSString *> *)relatedUniqueIds
 {
-    return [super relatedUniqueIds];
+    NSMutableArray<NSString *> *messageUniqueIds = [[NSMutableArray alloc] init];
+    for (OWSLinkedDeviceViewedReceipt *viewReceipt in self.viewedReceipts) {
+        if (viewReceipt.messageUniqueId) {
+            [messageUniqueIds addObject:viewReceipt.messageUniqueId];
+        }
+    }
+    return [[super relatedUniqueIds] setByAddingObjectsFromArray:messageUniqueIds];
 }
 
 @end
@@ -73,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSLinkedDeviceViewedReceipt
 
 - (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
+                      messageUniqueId:(nullable NSString *)messageUniqueId
                    messageIdTimestamp:(uint64_t)messageIdTimestamp
                       viewedTimestamp:(uint64_t)viewedTimestamp
 {
@@ -85,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _senderPhoneNumber = address.phoneNumber;
     _senderUUID = address.uuidString;
+    _messageUniqueId = messageUniqueId;
     _messageIdTimestamp = messageIdTimestamp;
     _viewedTimestamp = viewedTimestamp;
 
