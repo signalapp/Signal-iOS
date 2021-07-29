@@ -214,10 +214,12 @@ NS_ASSUME_NONNULL_BEGIN
         // Mark outgoing message as "sent", "delivered" or "delivered and read" using production methods.
         [expiringSentOutgoingMessage updateWithSentRecipient:self.otherAddress wasSentByUD:NO transaction:transaction];
         [expiringDeliveredOutgoingMessage updateWithDeliveredRecipient:self.otherAddress
+                                                     recipientDeviceId:0
                                                      deliveryTimestamp:nil
                                                            transaction:transaction];
         uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
         [expiringDeliveredAndReadOutgoingMessage updateWithReadRecipient:self.otherAddress
+                                                       recipientDeviceId:0
                                                            readTimestamp:nowMs
                                                              transaction:transaction];
     }];

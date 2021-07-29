@@ -65,6 +65,10 @@ public class LaunchJobs: NSObject {
             // successfully downloaded before the app exited should be marked as failures.
             OWSFailedAttachmentDownloadsJob().runSync()
 
+            // Kick off a low priority trim of the MSL
+            // This will reschedule itself on a background queue ~24h or so
+            MessageSendLog.schedulePeriodicCleanup()
+
             DispatchQueue.main.async {
                 Logger.verbose("Completing.")
                 self.state = .complete

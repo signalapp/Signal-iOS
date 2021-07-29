@@ -1199,10 +1199,12 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 for (SignalServiceAddress *sendingAddress in message.sendingRecipientAddresses) {
                     [message updateWithReadRecipient:sendingAddress
+                                   recipientDeviceId:self.tsAccountManager.storedDeviceId
                                        readTimestamp:message.timestamp
                                          transaction:transaction];
                     if (message.isVoiceMessage || message.isViewOnceMessage) {
                         [message updateWithViewedRecipient:sendingAddress
+                                         recipientDeviceId:self.tsAccountManager.storedDeviceId
                                            viewedTimestamp:message.timestamp
                                                transaction:transaction];
                     }

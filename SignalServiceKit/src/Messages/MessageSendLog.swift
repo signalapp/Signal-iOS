@@ -170,6 +170,7 @@ public class MessageSendLog: NSObject {
         }
     }
 
+    @objc
     public static func recordSuccessfulDelivery(
         timestamp: Date,
         recipientUuid: UUID,
@@ -178,12 +179,14 @@ public class MessageSendLog: NSObject {
     ) {
         do {
             let payloadAlias = TableAlias()
-            try Recipient
+            let targets: [Recipient] = try Recipient
                 .joining(required: Recipient.payload.aliased(payloadAlias))
                 .filter(payloadAlias[Column("sentTimestamp")] == timestamp)
                 .filter(Column("recipientUuid") == recipientUuid)
                 .filter(Column("recipientDeviceId") == recipientDeviceId)
-                .deleteAll(writeTx.unwrapGrdbWrite.database)
+                .fetchAll(writeTx.unwrapGrdbWrite.database)
+            try targets.forEach { try $0.delete(writeTx.unwrapGrdbWrite.database) }
+
         } catch {
             owsFailDebug("Failed to record successful delivery \(error)")
         }
@@ -204,8 +207,35 @@ public class MessageSendLog: NSObject {
         }
     }
 
-    public static func cleanupStaleEntries(transaction writeTx: SDSAnyWriteTransaction) {
-        // TODO: Clear everything older than one day
+    public static func schedulePeriodicCleanup() {
+        guard CurrentAppContext().isMainApp, !CurrentAppContext().isRunningTests else { return }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            performPeriodicCleanup()
+        }
+    }
+
+    private static func performPeriodicCleanup() {
+        DispatchQueue.sharedBackground.async {
+            databaseStorage.write { writeTx in
+                forceCleanupStaleEntries(transaction: writeTx)
+            }
+        }
+
+        DispatchQueue.sharedBackground.asyncAfter(deadline: .now() + kDayInterval) {
+            performPeriodicCleanup()
+        }
+    }
+
+    private static func forceCleanupStaleEntries(transaction: SDSAnyWriteTransaction) {
+        do {
+            try Payload
+                .filter(Column("sentTimestamp") < payloadExpirationDate)
+                .deleteAll(transaction.unwrapGrdbWrite.database)
+            Logger.info("Trimmed stale entries of MSL")
+        } catch {
+            owsFailDebug("Failed to trim stale MSL entries: \(error)")
+        }
     }
 }
 

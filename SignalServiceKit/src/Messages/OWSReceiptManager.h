@@ -59,11 +59,13 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 /// Returns an array of timestamps that had missing messages
 - (NSArray<NSNumber *> *)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
+                                        recipientDeviceId:(uint32_t)deviceId
                                            sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
                                             readTimestamp:(uint64_t)readTimestamp
                                               transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (NSArray<NSNumber *> *)processViewedReceiptsFromRecipient:(SignalServiceAddress *)address
+                                          recipientDeviceId:(uint32_t)deviceId
                                              sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
                                             viewedTimestamp:(uint64_t)viewedTimestamp
                                                 transaction:(SDSAnyWriteTransaction *)transaction;

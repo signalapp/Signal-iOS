@@ -296,6 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Old-style delivery notices don't include a "delivery timestamp".
     // TODO: do we need to preserve early old-style delivery receipts?
     [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
+                             recipientDeviceId:envelope.sourceDevice
                                 sentTimestamps:@[
                                     @(envelope.timestamp),
                                 ]
@@ -308,6 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
 // messages repurpose the "timestamp" field to indicate when the
 // corresponding message was originally sent.
 - (NSArray<NSNumber *> *)processDeliveryReceiptsFromRecipient:(SignalServiceAddress *)address
+                                            recipientDeviceId:(uint32_t)deviceId
                                                sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
                                             deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
                                                   transaction:(SDSAnyWriteTransaction *)transaction
@@ -361,6 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             for (TSOutgoingMessage *outgoingMessage in messages) {
                 [outgoingMessage updateWithDeliveredRecipient:address
+                                            recipientDeviceId:deviceId
                                             deliveryTimestamp:deliveryTimestamp
                                                   transaction:transaction];
             }
@@ -883,6 +886,7 @@ NS_ASSUME_NONNULL_BEGIN
         case SSKProtoReceiptMessageTypeDelivery:
             OWSLogVerbose(@"Processing receipt message with delivery receipts.");
             earlyTimestamps = [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
+                                                       recipientDeviceId:envelope.sourceDevice
                                                           sentTimestamps:sentTimestamps
                                                        deliveryTimestamp:@(envelope.timestamp)
                                                              transaction:transaction];
@@ -890,6 +894,7 @@ NS_ASSUME_NONNULL_BEGIN
         case SSKProtoReceiptMessageTypeRead:
             OWSLogVerbose(@"Processing receipt message with read receipts.");
             earlyTimestamps = [OWSReceiptManager.shared processReadReceiptsFromRecipient:envelope.sourceAddress
+                                                                       recipientDeviceId:envelope.sourceDevice
                                                                           sentTimestamps:sentTimestamps
                                                                            readTimestamp:envelope.timestamp
                                                                              transaction:transaction];
@@ -897,6 +902,7 @@ NS_ASSUME_NONNULL_BEGIN
         case SSKProtoReceiptMessageTypeViewed:
             OWSLogVerbose(@"Processing receipt message with viewed receipts.");
             earlyTimestamps = [OWSReceiptManager.shared processViewedReceiptsFromRecipient:envelope.sourceAddress
+                                                                         recipientDeviceId:envelope.sourceDevice
                                                                             sentTimestamps:sentTimestamps
                                                                            viewedTimestamp:envelope.timestamp
                                                                                transaction:transaction];
@@ -909,7 +915,8 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
         UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
         [self.earlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptMessage.unwrappedType
-                                                                        sender:envelope.sourceAddress
+                                                                 senderAddress:envelope.sourceAddress
+                                                                senderDeviceId:envelope.sourceDevice
                                                                      timestamp:envelope.timestamp
                                                     associatedMessageTimestamp:earlyTimestamp
                                                                    transaction:transaction];
