@@ -55,7 +55,6 @@ extension OWSOutgoingReceiptManager {
         let hasStoredUuidSet: Bool
         let hasStoredPhoneNumberSet: Bool
 
-
         if let uuidString = address.uuidString, store.hasValue(forKey: uuidString, transaction: transaction) {
             if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: uuidString, transaction: transaction) {
                 builderSet.union(receiptSet)

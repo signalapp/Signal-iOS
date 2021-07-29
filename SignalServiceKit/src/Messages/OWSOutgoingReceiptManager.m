@@ -258,7 +258,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    MessageReceiptSet *persistedSet = [self fetchReceiptSetWithType:receiptType address:address transaction:transaction];
+    MessageReceiptSet *persistedSet = [self fetchReceiptSetWithType:receiptType
+                                                            address:address
+                                                        transaction:transaction];
     [persistedSet insertWithTimestamp:timestamp messageUniqueId:messageUniqueId];
     [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
     [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
