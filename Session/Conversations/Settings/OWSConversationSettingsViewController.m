@@ -546,7 +546,7 @@ CGFloat kIconViewLength = 24;
                 [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
                 UILabel *subtitleLabel = [UILabel new];
-                subtitleLabel.text = NSLocalizedString(@"When enabled, only messages mentioned you will be notified.", @"");
+                subtitleLabel.text = NSLocalizedString(@"vc_conversation_settings_notify_for_mentions_only_explanation", @"");
                 subtitleLabel.textColor = LKColors.text;
                 subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
                 subtitleLabel.numberOfLines = 0;
