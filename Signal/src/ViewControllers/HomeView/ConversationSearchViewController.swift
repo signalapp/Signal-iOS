@@ -20,7 +20,7 @@ public class ConversationSearchViewController: UITableViewController {
 
     private var viewHasAppeared = false
     private var lastReloadDate: Date?
-    private let cellMeasurementCache = LRUCache<String, HVCellMeasurement>(maxSize: 256)
+    private let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
 
     @objc
     public var searchText = "" {
@@ -102,7 +102,7 @@ public class ConversationSearchViewController: UITableViewController {
 
     private func reloadTableData() {
         self.lastReloadDate = Date()
-        self.cellMeasurementCache.clear()
+        self.cellContentCache.clear()
         self.tableView.reloadData()
     }
 
@@ -251,7 +251,7 @@ public class ConversationSearchViewController: UITableViewController {
             let avatarAsyncLoadInterval = kSecondInterval * 1
             return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
         }()
-        let cellMeasurementCache = self.cellMeasurementCache
+        let cellContentCache = self.cellContentCache
 
         switch searchSection {
         case .noResults:
@@ -284,7 +284,7 @@ public class ConversationSearchViewController: UITableViewController {
                 thread: searchResult.thread,
                 shouldLoadAvatarAsync: shouldLoadAvatarAsync,
                 isBlocked: isBlocked(thread: searchResult.thread),
-                cellMeasurementCache: cellMeasurementCache
+                cellContentCache: cellContentCache
             ))
             return cell
         case .groupThreads:
@@ -304,7 +304,7 @@ public class ConversationSearchViewController: UITableViewController {
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
                 overrideDate: nil,
-                cellMeasurementCache: cellMeasurementCache
+                cellContentCache: cellContentCache
             ))
             return cell
         case .contacts:
@@ -357,7 +357,7 @@ public class ConversationSearchViewController: UITableViewController {
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
                 overrideDate: overrideDate,
-                cellMeasurementCache: cellMeasurementCache
+                cellContentCache: cellContentCache
             ))
 
             return cell

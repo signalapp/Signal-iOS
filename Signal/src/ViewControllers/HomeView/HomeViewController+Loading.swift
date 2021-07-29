@@ -93,7 +93,7 @@ extension HomeViewController {
         case .renderStateForReset(renderState: let renderState):
             tableDataSource.renderState = renderState
             threadViewModelCache.clear()
-            cellMeasurementCache.clear()
+            cellContentCache.clear()
             reloadTableData()
         case .renderStateWithRowChanges(renderState: let renderState, let rowChanges):
             tableDataSource.renderState = renderState
@@ -122,13 +122,13 @@ extension HomeViewController {
 
         let tableView = self.tableView
         let threadViewModelCache = self.threadViewModelCache
-        let cellMeasurementCache = self.cellMeasurementCache
+        let cellContentCache = self.cellContentCache
         let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
         tableView.beginUpdates()
         for rowChange in rowChanges {
 
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
-            cellMeasurementCache.removeObject(forKey: rowChange.threadUniqueId)
+            cellContentCache.removeObject(forKey: rowChange.threadUniqueId)
 
             switch rowChange.type {
             case .delete(let oldIndexPath):

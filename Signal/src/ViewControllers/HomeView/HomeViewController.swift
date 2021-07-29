@@ -7,10 +7,10 @@ import Foundation
 @objc
 public extension HomeViewController {
 
-    func reloadTableDataAndResetCellMeasurementCache() {
+    func reloadTableDataAndResetCellContentCache() {
         AssertIsOnMainThread()
 
-        cellMeasurementCache.clear()
+        cellContentCache.clear()
         reloadTableData()
     }
 

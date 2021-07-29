@@ -64,7 +64,7 @@ extension HomeViewController {
     private func preferContactAvatarsPreferenceDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        reloadTableDataAndResetCellMeasurementCache()
+        reloadTableDataAndResetCellContentCache()
     }
 
     @objc
@@ -72,7 +72,7 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         // This is wasteful but this event is very rare.
-        reloadTableDataAndResetCellMeasurementCache()
+        reloadTableDataAndResetCellContentCache()
 
         if !firstConversationCueView.isHidden {
             updateFirstConversationLabel()
@@ -163,7 +163,7 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         // This is wasteful but this event is very rare.
-        reloadTableDataAndResetCellMeasurementCache()
+        reloadTableDataAndResetCellContentCache()
     }
 }
 
