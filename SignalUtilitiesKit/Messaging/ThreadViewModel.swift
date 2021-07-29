@@ -14,6 +14,7 @@ public class ThreadViewModel: NSObject {
     @objc public let contactSessionID: String?
     @objc public let name: String
     @objc public let isMuted: Bool
+    @objc public let isOnlyNotifyingForMentions: Bool
 
     var isContactThread: Bool {
         return !isGroupThread
@@ -38,6 +39,12 @@ public class ThreadViewModel: NSObject {
             self.contactSessionID = contactThread.contactSessionID()
         } else {
             self.contactSessionID = nil
+        }
+        
+        if let groupThread = thread as? TSGroupThread {
+            self.isOnlyNotifyingForMentions = groupThread.isOnlyNotifyingForMentions
+        } else {
+            self.isOnlyNotifyingForMentions = false
         }
 
         self.unreadCount = thread.unreadMessageCount(transaction: transaction)

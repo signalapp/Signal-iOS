@@ -86,22 +86,33 @@ final class ConversationTitleView : UIView {
     }
 
     private func getSubtitle() -> NSAttributedString? {
+        let result = NSMutableAttributedString()
         if thread.isMuted {
-            let result = NSMutableAttributedString()
             result.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.text ]))
             result.append(NSAttributedString(string: "Muted"))
             return result
         } else if let thread = self.thread as? TSGroupThread {
-            var userCount: UInt64?
-            switch thread.groupModel.groupType {
-            case .closedGroup: userCount = UInt64(thread.groupModel.groupMemberIds.count)
-            case .openGroup:
-                guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: self.thread.uniqueId!) else { return nil }
-                userCount = Storage.shared.getUserCount(forV2OpenGroupWithID: openGroupV2.id)
-            default: break
-            }
-            if let userCount = userCount {
-                return NSAttributedString(string: "\(userCount) members")
+            if thread.isOnlyNotifyingForMentions {
+                let imageAttachment = NSTextAttachment()
+                let color: UIColor = isDarkMode ? .white : .black
+                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: color)
+                imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)
+                let imageAsString = NSAttributedString(attachment: imageAttachment)
+                result.append(imageAsString)
+                result.append(NSAttributedString(string: "  " + NSLocalizedString("view_conversation_title_notify_for_mentions_only", comment: "")))
+                return result
+            } else {
+                var userCount: UInt64?
+                switch thread.groupModel.groupType {
+                case .closedGroup: userCount = UInt64(thread.groupModel.groupMemberIds.count)
+                case .openGroup:
+                    guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: self.thread.uniqueId!) else { return nil }
+                    userCount = Storage.shared.getUserCount(forV2OpenGroupWithID: openGroupV2.id)
+                default: break
+                }
+                if let userCount = userCount {
+                    return NSAttributedString(string: "\(userCount) members")
+                }
             }
         }
         return nil

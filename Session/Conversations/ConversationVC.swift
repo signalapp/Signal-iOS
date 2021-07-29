@@ -150,7 +150,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     /// The button will be invisible until the user has scrolled at least this amount from the bottom of the table view.
     static let scrollButtonNoVisibilityThreshold: CGFloat = 20
     /// Automatically scroll to the bottom of the conversation when sending a message if the scroll distance from the bottom is less than this number.
-    static let scrollToBottomMargin: CGFloat = 40
+    static let scrollToBottomMargin: CGFloat = 60
     
     // MARK: Lifecycle
     init(thread: TSThread, focusedMessageID: String? = nil) {
