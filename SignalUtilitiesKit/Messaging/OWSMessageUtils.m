@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
         YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
         NSArray<NSString *> *allGroups = [unreadMessages allGroups];
         for (NSString *groupID in allGroups) {
-            TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
+            TSGroupThread *thread = [TSGroupThread fetchObjectWithUniqueID:groupID transaction:transaction];
             if (thread.isMuted) continue;
             [unreadMessages enumerateKeysAndObjectsInGroup:groupID
                                                 usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
@@ -83,6 +83,10 @@ NS_ASSUME_NONNULL_BEGIN
                 id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
                 if (unread.read) {
                     NSLog(@"Found an already read message in the * unread * messages list.");
+                    return;
+                }
+                TSIncomingMessage * incomingMessage = (TSIncomingMessage *)object;
+                if (incomingMessage != nil && thread.isOnlyNotifyingForMentions && !incomingMessage.isUserMentioned) {
                     return;
                 }
                 count += 1;
