@@ -18,6 +18,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 @property (nonatomic, strong) TSGroupModel *groupModel;
 @property (nonatomic, readonly) BOOL isOpenGroup;
 @property (nonatomic, readonly) BOOL isClosedGroup;
+@property (nonatomic) BOOL isOnlyNotifyingForMentions;
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
@@ -44,6 +45,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)setisOnlyNotifyingForMentions:(BOOL)isOnlyNotifyingForMentions withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

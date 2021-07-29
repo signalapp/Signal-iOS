@@ -546,3 +546,6 @@
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";
+"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
+"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
