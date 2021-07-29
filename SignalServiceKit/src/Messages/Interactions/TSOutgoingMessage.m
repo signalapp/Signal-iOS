@@ -988,13 +988,15 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                     deviceId:(uint32_t)deviceId
                                  transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(address.uuid);
-    NSDate *interactionTimestamp = [NSDate ows_dateWithMillisecondsSince1970:self.timestamp];
+    // MSL entries will only exist for addresses with UUIDs
+    if (address.uuid) {
+        NSDate *interactionTimestamp = [NSDate ows_dateWithMillisecondsSince1970:self.timestamp];
 
-    [MessageSendLog recordSuccessfulDeliveryWithTimestamp:interactionTimestamp
-                                            recipientUuid:address.uuid
-                                        recipientDeviceId:deviceId
-                                              transaction:transaction];
+        [MessageSendLog recordSuccessfulDeliveryWithTimestamp:interactionTimestamp
+                                                recipientUuid:address.uuid
+                                            recipientDeviceId:deviceId
+                                                  transaction:transaction];
+    }
 }
 
 #ifdef TESTABLE_BUILD
