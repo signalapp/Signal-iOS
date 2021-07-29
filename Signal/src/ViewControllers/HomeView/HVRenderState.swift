@@ -15,6 +15,9 @@ public class HVRenderState: NSObject {
     var archiveCount: UInt { viewInfo.archiveCount }
     var inboxCount: UInt { viewInfo.inboxCount }
 
+    @objc
+    var visibleThreadCount: Int { pinnedThreads.count + unpinnedThreads.count }
+
     var hasArchivedThreadsRow: Bool { viewInfo.hasArchivedThreadsRow }
     var hasVisibleReminders: Bool { viewInfo.hasVisibleReminders }
 

@@ -15,6 +15,7 @@ public class HVTableDataSource: NSObject {
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
+    @objc
     public var renderState: HVRenderState = .empty
 
     private let kArchivedConversationsReuseIdentifier = "kArchivedConversationsReuseIdentifier"
@@ -101,7 +102,7 @@ extension HVTableDataSource: UITableViewDelegate {
         switch section {
         case .pinned, .unpinned:
             if !renderState.hasPinnedAndUnpinnedThreads {
-                return CGFloat.ulpOfOne
+                return CGFloat.epsilon
             }
 
             return UITableView.automaticDimension
@@ -109,7 +110,7 @@ extension HVTableDataSource: UITableViewDelegate {
             // Without returning a header with a non-zero height, Grouped
             // table view will use a default spacing between sections. We
             // do not want that spacing so we use the smallest possible height.
-            return CGFloat.ulpOfOne
+            return CGFloat.epsilon
         }
     }
 
@@ -119,7 +120,7 @@ extension HVTableDataSource: UITableViewDelegate {
         // Without returning a footer with a non-zero height, Grouped
         // table view will use a default spacing between sections. We
         // do not want that spacing so we use the smallest possible height.
-        return CGFloat.ulpOfOne
+        return CGFloat.epsilon
     }
 
     public func tableView(_ tableView: UITableView,
@@ -400,10 +401,6 @@ extension HVTableDataSource: UITableViewDataSource {
             }
         }()
         cell.accessibilityIdentifier = cellName
-
-        let archiveTitle = (viewState.homeViewMode == .inbox
-                                ? CommonStrings.archiveAction
-                                : CommonStrings.unarchiveAction)
 
         if isConversationActive(forThread: thread) {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)

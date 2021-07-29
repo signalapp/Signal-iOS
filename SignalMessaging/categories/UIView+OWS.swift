@@ -1187,6 +1187,15 @@ public extension CGFloat {
     var sqr: CGFloat {
         self * self
     }
+
+    // An epsilon is a small, non-zero value.
+    //
+    // This value is _NOT_ an appropriate tolerance for fuzzy comparison,
+    // e.g. fuzzyEquals().
+    static var epsilon: CGFloat {
+        // ulpOfOne is the difference between 1.0 and the next largest CGFloat value.
+        .ulpOfOne
+    }
 }
 
 // MARK: -
