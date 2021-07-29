@@ -3,7 +3,6 @@
 //
 
 #import "TSInteraction.h"
-#import "TSInteraction_Subclass.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSThread.h>

@@ -3,7 +3,6 @@
 //
 
 #import "OWSRecoverableDecryptionPlaceholder.h"
-#import "TSInteraction_Subclass.h"
 #import "TSThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -60,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)decrementTimestamp
 {
+    OWSAssert(self.timestamp > 1);
     self.timestamp = self.timestamp - 1;
 }
 
@@ -68,7 +68,9 @@ NS_ASSUME_NONNULL_BEGIN
     // If this interaction has ever been seen or the recovery period has elapsed, we should make
     // this visible to the user.
     NSTimeInterval expirationInterval = [RemoteConfig replaceableInteractionExpiration];
-    NSDate *expiration = [self.receivedAtDate dateByAddingTimeInterval:expirationInterval];
+    OWSAssertDebug(expirationInterval >= 0);
+
+    NSDate *expiration = [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
     return [expiration isBeforeNow] || self.wasRead;
 }
 
