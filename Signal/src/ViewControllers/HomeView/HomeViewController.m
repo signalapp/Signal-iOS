@@ -731,6 +731,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // for a single load.
     if (!self.hasEverAppeared) {
         [self.loadCoordinator ensureFirstLoad];
+    } else {
+        [self ensureCellAnimations];
     }
 
     NSIndexPath *_Nullable selectedIndexPath = self.tableView.indexPathForSelectedRow;

@@ -823,6 +823,12 @@ public class HomeViewCell: UITableViewCell {
             typingIndicatorView.stopAnimation()
         }
     }
+
+    public func ensureCellAnimations() {
+        AssertIsOnMainThread()
+
+        updateTypingIndicatorState()
+    }
 }
 
 // MARK: -

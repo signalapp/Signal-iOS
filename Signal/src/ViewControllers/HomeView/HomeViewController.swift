@@ -37,6 +37,17 @@ public extension HomeViewController {
         cell.isCellVisible = self.isViewVisible
     }
 
+    func ensureCellAnimations() {
+        AssertIsOnMainThread()
+
+        for cell in tableView.visibleCells {
+            guard let cell = cell as? HomeViewCell else {
+                continue
+            }
+            cell.ensureCellAnimations()
+        }
+    }
+
     // MARK: -
 
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
