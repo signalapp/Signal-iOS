@@ -393,21 +393,16 @@ extension HVTableDataSource: UITableViewDataSource {
         }
 
         let thread = threadViewModel.threadRecord
-
-        // We want initial loads and reloads to load avatars sync,
-        // but subsequent avatar loads (e.g. from scrolling) should
-        // be async.
-        //
-        // TODO: We should add an explicit "isReloadingAll" flag to HomeViewController.
-        let avatarAsyncLoadInterval: TimeInterval = kSecondInterval * 1
-        let lastReloadInterval: TimeInterval = abs(lastReloadDate?.timeIntervalSinceNow ?? 0)
-        let shouldLoadAvatarAsync = (viewState.hasEverAppeared
-                                        && (lastReloadDate == nil ||
-                                                lastReloadInterval > avatarAsyncLoadInterval))
+        let lastReloadDate: Date? = {
+            guard viewState.hasEverAppeared else {
+                return nil
+            }
+            return self.lastReloadDate
+        }()
         let isBlocked = blockingManager.isThreadBlocked(thread)
         let cellContentCache = viewController.cellContentCache
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
-                                                       shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                                                       lastReloadDate: lastReloadDate,
                                                        isBlocked: isBlocked,
                                                        cellContentCache: cellContentCache)
         cell.configure(configuration)

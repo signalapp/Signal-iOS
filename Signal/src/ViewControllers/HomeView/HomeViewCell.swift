@@ -62,7 +62,7 @@ public class HomeViewCell: UITableViewCell {
 
     struct Configuration {
         let thread: ThreadViewModel
-        let shouldLoadAvatarAsync: Bool
+        let lastReloadDate: Date?
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
@@ -76,13 +76,13 @@ public class HomeViewCell: UITableViewCell {
         }
 
         init(thread: ThreadViewModel,
-             shouldLoadAvatarAsync: Bool,
+             lastReloadDate: Date?,
              isBlocked: Bool,
              overrideSnippet: NSAttributedString? = nil,
              overrideDate: Date? = nil,
              cellContentCache: LRUCache<String, HVCellContentToken>) {
             self.thread = thread
-            self.shouldLoadAvatarAsync = shouldLoadAvatarAsync
+            self.lastReloadDate = lastReloadDate
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
@@ -205,15 +205,18 @@ public class HomeViewCell: UITableViewCell {
 
     private static func buildCellConfigs(configuration: Configuration) -> HVCellConfigs {
         let shouldShowMuteIndicator = Self.shouldShowMuteIndicator(configuration: configuration)
-        let messageStatusToken = Self.buildMessageStatusToken(thread: configuration.thread,
-                                                              shouldHideStatusIndicator: <#T##Bool#>)
+        let messageStatusToken = Self.buildMessageStatusToken(configuration: configuration)
+        let unreadIndicatorLabelConfig = Self.buildUnreadIndicatorLabelConfig(configuration: configuration)
 
         return HVCellConfigs(
             thread: configuration.thread.threadRecord,
+            lastReloadDate: configuration.lastReloadDate,
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
+            hasUnreadStyle: configuration.hasUnreadStyle,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
             messageStatusToken: messageStatusToken,
+            unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
 
             topRowStackConfig: Self.topRowStackConfig,
             bottomRowStackConfig: Self.bottomRowStackConfig,
@@ -279,11 +282,11 @@ public class HomeViewCell: UITableViewCell {
                                                                 vStackSize.asManualSubviewInfo
                                                              ])
 
-        return HVCellMeasurement(avatarStackMeasurement: avatarStackMeasurement,
-                                 topRowStackMeasurement: topRowStackMeasurement,
-                                 bottomRowStackMeasurement: bottomRowStackMeasurement,
-                                 vStackMeasurement: vStackMeasurement,
-                                 outerHStackMeasurement: outerHStackMeasurement)
+        return HVCellMeasurements(avatarStackMeasurement: avatarStackMeasurement,
+                                  topRowStackMeasurement: topRowStackMeasurement,
+                                  bottomRowStackMeasurement: bottomRowStackMeasurement,
+                                  vStackMeasurement: vStackMeasurement,
+                                  outerHStackMeasurement: outerHStackMeasurement)
     }
 
     private func configure(cellContentToken: HVCellContentToken) {
@@ -296,10 +299,6 @@ public class HomeViewCell: UITableViewCell {
 
         self.cellContentToken = cellContentToken
 
-        // TODO:
-        //        let thread = configuration.thread
-        let isBlocked = cellContentToken.isBlocked
-        let hasUnreadStyle = cellContentToken.hasUnreadStyle
         let shouldShowMuteIndicator = cellContentToken.shouldShowMuteIndicator
 
         let configs = cellContentToken.configs
@@ -324,7 +323,7 @@ public class HomeViewCell: UITableViewCell {
         // the worst-case snippet content.
         let snippetLineHeight = CGFloat(ceil(snippetLabelConfig.font.ows_semibold.lineHeight * 1.2))
 
-        avatarView.shouldLoadAsync = configuration.shouldLoadAvatarAsync
+        avatarView.shouldLoadAsync = cellContentToken.shouldLoadAvatarAsync
         avatarView.configureWithSneakyTransaction(thread: cellContentToken.thread)
 
         typingIndicatorView.configureForHomeView()
@@ -346,25 +345,9 @@ public class HomeViewCell: UITableViewCell {
         // Unread Indicator
 
         // If there are unread messages, show the "unread badge."
-        var shouldHideStatusIndicator = false
-        func applyUnreadIndicator() {
-            guard !hasOverrideSnippet else {
-                // If we're using the conversation list cell to render search results,
-                // don't show "unread badge" or "message status" indicator.
-                shouldHideStatusIndicator = true
-                return
-            }
-            guard hasUnreadStyle else {
-                return
-            }
-
-            let unreadCount = thread.unreadCount
+        if let unreadIndicatorLabelConfig = configs.unreadIndicatorLabelConfig {
             let unreadLabel = self.unreadLabel
-            unreadLabel.text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
-            unreadLabel.textColor = .ows_white
-            unreadLabel.lineBreakMode = .byTruncatingTail
-            unreadLabel.textAlignment = .center
-            unreadLabel.font = unreadFont
+            unreadIndicatorLabelConfig.applyForRendering(label: unreadLabel)
             unreadLabel.removeFromSuperview()
             let unreadLabelSize = unreadLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
 
@@ -397,7 +380,6 @@ public class HomeViewCell: UITableViewCell {
             // of the unread badge.
             unreadBadge.layer.zPosition = +1
         }
-        applyUnreadIndicator()
 
         // The top row contains:
         //
@@ -543,8 +525,12 @@ public class HomeViewCell: UITableViewCell {
 
     // MARK: - Message Status Indicator
 
-    private static func buildMessageStatusToken(thread: ThreadViewModel,
-                                                shouldHideStatusIndicator: Bool) -> HVMessageStatusToken? {
+    private static func buildMessageStatusToken(configuration: Configuration) -> HVMessageStatusToken? {
+
+        // If we're using the conversation list cell to render search results,
+        // don't show "unread badge" or "message status" indicator.
+        let shouldHideStatusIndicator = configuration.hasOverrideSnippet
+        let thread = configuration.thread
         guard !shouldHideStatusIndicator,
               let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage else {
             return nil
@@ -617,6 +603,29 @@ public class HomeViewCell: UITableViewCell {
         }
 
         return StatusIndicator(view: messageStatusIconView, size: token.image.size)
+    }
+
+    // MARK: - Unread Indicator
+
+    private static func buildUnreadIndicatorLabelConfig(configuration: Configuration) -> CVLabelConfig? {
+        guard !configuration.hasOverrideSnippet else {
+            // If we're using the conversation list cell to render search results,
+            // don't show "unread badge" or "message status" indicator.
+            return nil
+        }
+        guard configuration.hasUnreadStyle else {
+            return nil
+        }
+
+        let thread = configuration.thread
+        let unreadCount = thread.unreadCount
+        let text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
+        return CVLabelConfig(text: text,
+                             font: unreadFont,
+                             textColor: .ows_white,
+                             numberOfLines: 1,
+                             lineBreakMode: .byTruncatingTail,
+                             textAlignment: .center)
     }
 
     // MARK: - Label Configs
@@ -894,11 +903,13 @@ private struct HVMessageStatusToken {
 private struct HVCellConfigs {
     // State
     let thread: TSThread
+    let lastReloadDate: Date?
     let isBlocked: Bool
     let shouldShowMuteIndicator: Bool
     let hasUnreadStyle: Bool
     let hasOverrideSnippet: Bool
-    let messageStatusToken: HVMessageStatusToken
+    let messageStatusToken: HVMessageStatusToken?
+    let unreadIndicatorLabelConfig: CVLabelConfig?
 
     // Configs
     let topRowStackConfig: ManualStackView.Config
@@ -932,6 +943,17 @@ class HVCellContentToken {
     fileprivate var shouldShowMuteIndicator: Bool { configs.shouldShowMuteIndicator }
     fileprivate var hasUnreadStyle: Bool { configs.hasUnreadStyle }
     fileprivate var hasOverrideSnippet: Bool { configs.hasOverrideSnippet }
+
+    fileprivate var shouldLoadAvatarAsync: Bool {
+        guard let lastReloadDate = configs.lastReloadDate else {
+            return false
+        }
+        // We want initial loads and reloads to load avatars sync,
+        // but subsequent avatar loads (e.g. from scrolling) should
+        // be async.
+        let avatarAsyncLoadInterval = kSecondInterval * 1
+        return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
+    }
 
     fileprivate init(configs: HVCellConfigs,
                      measurements: HVCellMeasurements) {

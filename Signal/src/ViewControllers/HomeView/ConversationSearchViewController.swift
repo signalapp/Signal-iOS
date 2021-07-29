@@ -18,7 +18,7 @@ public class ConversationSearchViewController: UITableViewController {
     @objc
     public weak var delegate: ConversationSearchViewDelegate?
 
-    private var viewHasAppeared = false
+    private var hasEverAppeared = false
     private var lastReloadDate: Date?
     private let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
 
@@ -116,7 +116,7 @@ public class ConversationSearchViewController: UITableViewController {
 
         applyTheme()
         reloadTableData()
-        self.viewHasAppeared = true
+        self.hasEverAppeared = true
     }
 
     deinit {
@@ -238,18 +238,11 @@ public class ConversationSearchViewController: UITableViewController {
             return UITableViewCell()
         }
 
-        let shouldLoadAvatarAsync: Bool = {
-            guard self.viewHasAppeared else {
-                return false
+        let lastReloadDate: Date? = {
+            guard self.hasEverAppeared else {
+                return nil
             }
-            guard let lastReloadDate = self.lastReloadDate else {
-                return true
-            }
-            // We want initial loads and reloads to load avatars sync,
-            // but subsequent avatar loads (e.g. from scrolling) should
-            // be async.
-            let avatarAsyncLoadInterval = kSecondInterval * 1
-            return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
+            return self.lastReloadDate
         }()
         let cellContentCache = self.cellContentCache
 
@@ -282,7 +275,7 @@ public class ConversationSearchViewController: UITableViewController {
             }
             cell.configure(.init(
                 thread: searchResult.thread,
-                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 cellContentCache: cellContentCache
             ))
@@ -300,7 +293,7 @@ public class ConversationSearchViewController: UITableViewController {
 
             cell.configure(.init(
                 thread: searchResult.thread,
-                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
                 overrideDate: nil,
@@ -353,7 +346,7 @@ public class ConversationSearchViewController: UITableViewController {
 
             cell.configure(.init(
                 thread: searchResult.thread,
-                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
                 overrideDate: overrideDate,
