@@ -14,8 +14,6 @@ extension SignalApp {
         DispatchQueue.global(qos: .background).async {
             Wallpaper.warmCaches()
         }
-
-        MessageSendLog.schedulePeriodicCleanup()
     }
 
     @objc

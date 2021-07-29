@@ -208,6 +208,8 @@ public class MessageSendLog: NSObject {
     }
 
     public static func schedulePeriodicCleanup() {
+        guard CurrentAppContext().isMainApp, !CurrentAppContext().isRunningTests else { return }
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             performPeriodicCleanup()
         }
