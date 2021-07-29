@@ -252,47 +252,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (receiptType == OWSReceiptType_Viewed && !RemoteConfig.viewedReceiptSending) {
         return;
     }
-
-    SDSKeyValueStore *store = [self storeForReceiptType:receiptType];
-
     OWSAssertDebug(address.isValid);
     if (timestamp < 1) {
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
 
-    NSString *identifier = address.uuidString ?: address.phoneNumber;
-
-    NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
-    if (address.uuidString) {
-        oldUUIDTimestamps = [store getObjectForKey:address.uuidString transaction:transaction];
-    }
-
-    NSSet<NSNumber *> *_Nullable oldPhoneNumberTimestamps;
-    if (address.phoneNumber) {
-        oldPhoneNumberTimestamps = [store getObjectForKey:address.phoneNumber transaction:transaction];
-    }
-
-    NSSet<NSNumber *> *_Nullable oldTimestamps;
-
-    // Unexpectedly have entries both on phone number and UUID, defer to UUID
-    if (oldUUIDTimestamps && oldPhoneNumberTimestamps) {
-        oldTimestamps = [oldUUIDTimestamps setByAddingObjectsFromSet:oldPhoneNumberTimestamps];
-        [store removeValueForKey:address.phoneNumber transaction:transaction];
-
-        // If we have timestamps only under phone number, but know the UUID, migrate them lazily
-    } else if (oldPhoneNumberTimestamps && address.uuidString) {
-        oldTimestamps = oldPhoneNumberTimestamps;
-        [store removeValueForKey:address.phoneNumber transaction:transaction];
-    } else {
-        oldTimestamps = oldUUIDTimestamps ?: oldPhoneNumberTimestamps;
-    }
-
-    NSMutableSet<NSNumber *> *newTimestamps = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
-    [newTimestamps addObject:@(timestamp)];
-
-    [store setObject:newTimestamps key:identifier transaction:transaction];
-
+    MessageReceiptSet *persistedSet = [self fetchReceiptSetWithType:receiptType address:address transaction:transaction];
+    [persistedSet insertWithTimestamp:timestamp messageUniqueId:messageUniqueId];
+    [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
     [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
                                        block:^{
                                            [self process];

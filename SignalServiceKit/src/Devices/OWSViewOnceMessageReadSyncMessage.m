@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSViewOnceMessageReadSyncMessage ()
-@property (strong, nonatomic, readonly) NSString *messageUniqueId;
+@property (strong, nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values
 @end
 
 @implementation OWSViewOnceMessageReadSyncMessage
@@ -69,7 +69,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSSet<NSString *> *)relatedUniqueIds
 {
-    return [[super relatedUniqueIds] setByAddingObject:self.messageUniqueId];
+    if (self.messageUniqueId) {
+        return [[super relatedUniqueIds] setByAddingObject:self.messageUniqueId];
+    } else {
+        return [super relatedUniqueIds];
+    }
 }
 
 @end

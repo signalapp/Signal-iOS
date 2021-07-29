@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-class MessageReceiptSet: NSObject {
+class MessageReceiptSet: NSObject, Codable {
     @objc
     public private(set) var timestamps: Set<UInt64> = Set()
     @objc
@@ -52,26 +52,38 @@ extension OWSOutgoingReceiptManager {
         let store = store(for: type)
         let builderSet = MessageReceiptSet()
 
-        let existingUUIDStore = address.uuidString.flatMap { store.getObject(forKey: $0, transaction: transaction) }
-        if let numberSet = existingUUIDStore as? Set<UInt64> {
-            builderSet.union(numberSet)
-        } else if let receiptSet = existingUUIDStore as? MessageReceiptSet {
-            builderSet.union(receiptSet)
+        let hasStoredUuidSet: Bool
+        let hasStoredPhoneNumberSet: Bool
+
+
+        if let uuidString = address.uuidString, store.hasValue(forKey: uuidString, transaction: transaction) {
+            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: uuidString, transaction: transaction) {
+                builderSet.union(receiptSet)
+            } else if let numberSet = store.getObject(forKey: uuidString, transaction: transaction) as? Set<UInt64> {
+                builderSet.union(numberSet)
+            }
+            hasStoredUuidSet = true
+        } else {
+            hasStoredUuidSet = false
         }
 
-        let existingPhoneNumberStore = address.phoneNumber.flatMap { store.getObject(forKey: $0, transaction: transaction) }
-        if let numberSet = existingPhoneNumberStore as? Set<UInt64> {
-            builderSet.union(numberSet)
-        } else if let receiptSet = existingPhoneNumberStore as? MessageReceiptSet {
-            builderSet.union(receiptSet)
+        if let phoneNumber = address.phoneNumber, store.hasValue(forKey: phoneNumber, transaction: transaction) {
+            if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: phoneNumber, transaction: transaction) {
+                builderSet.union(receiptSet)
+            } else if let numberSet = store.getObject(forKey: phoneNumber, transaction: transaction) as? Set<UInt64> {
+                builderSet.union(numberSet)
+            }
+            hasStoredPhoneNumberSet = true
+        } else {
+            hasStoredPhoneNumberSet = false
         }
 
         // If we're in a write transaction and we have a phone number and uuid
-        // store that need to be merged, remove the phone number
+        // set that needed to be merged, remove the phone number set and store the merged set
         // If it's not a write transaction, we can leave it unmerged and do it later.
         if let writeTx = transaction as? SDSAnyWriteTransaction,
-           existingUUIDStore != nil,
-           existingPhoneNumberStore != nil,
+           hasStoredUuidSet,
+           hasStoredPhoneNumberSet,
            let phoneNumber = address.phoneNumber {
             store.removeValue(forKey: phoneNumber, transaction: writeTx)
             storeReceiptSet(builderSet, type: type, address: address, transaction: writeTx)
@@ -89,7 +101,11 @@ extension OWSOutgoingReceiptManager {
         }
 
         if set.timestamps.count > 0 {
-            store.setObject(set, key: identifier, transaction: transaction)
+            do {
+                try store.setCodable(set, key: identifier, transaction: transaction)
+            } catch {
+                owsFailDebug("\(error)")
+            }
         } else {
             store.removeValue(forKey: identifier, transaction: transaction)
         }

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSReceiptsForSenderMessage ()
 
-@property (nonatomic, readonly) NSSet<NSString *> *messageUniqueIds;
+@property (nonatomic, readonly, nullable) NSSet<NSString *> *messageUniqueIds;
 @property (nonatomic, readonly) NSArray<NSNumber *> *messageTimestamps;
 @property (nonatomic, readonly) SSKProtoReceiptMessageType receiptType;
 
@@ -97,6 +97,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
     [builder setType:self.receiptType];
+    for (NSNumber *messageTimestamp in self.messageTimestamps) {
+        [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];
+    }
 
     SSKProtoReceiptMessage *_Nullable receiptMessage = [builder buildAndReturnError:&error];
     if (error || !receiptMessage) {
@@ -121,7 +124,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSSet<NSString *> *)relatedUniqueIds
 {
-    return [[super relatedUniqueIds] setByAddingObjectsFromSet:self.messageUniqueIds];
+    if (self.messageUniqueIds) {
+        return [[super relatedUniqueIds] setByAddingObjectsFromSet:self.messageUniqueIds];
+    } else {
+        return [super relatedUniqueIds];
+    }
 }
 
 @end
