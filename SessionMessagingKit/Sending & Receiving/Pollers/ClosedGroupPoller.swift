@@ -7,8 +7,8 @@ public final class ClosedGroupPoller : NSObject {
     private var timers: [String:Timer] = [:]
 
     // MARK: Settings
-    private static let minPollInterval: Double = 4
-    private static let maxPollInterval: Double = 2 * 60
+    private static let minPollInterval: Double = 2
+    private static let maxPollInterval: Double = 30
 
     // MARK: Error
     private enum Error : LocalizedError {
