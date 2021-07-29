@@ -166,6 +166,8 @@
 		B82149B825D60393009C0F2A /* BlockedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82149B725D60393009C0F2A /* BlockedModal.swift */; };
 		B82149C125D605C6009C0F2A /* InfoBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82149C025D605C6009C0F2A /* InfoBanner.swift */; };
 		B8214A2B25D63EB9009C0F2A /* MessagesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8214A2A25D63EB9009C0F2A /* MessagesTableView.swift */; };
+		B822F9BD26B26CA2003B8CB8 /* TSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = B822F9BC26B26CA2003B8CB8 /* TSCall.m */; };
+		B822F9BE26B26CA8003B8CB8 /* TSCall.h in Headers */ = {isa = PBXBuildFile; fileRef = B822F9BB26B26C82003B8CB8 /* TSCall.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8269D2925C7A4B400488AB4 /* InputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D2825C7A4B400488AB4 /* InputView.swift */; };
 		B8269D3325C7A8C600488AB4 /* InputViewButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D3225C7A8C600488AB4 /* InputViewButton.swift */; };
 		B8269D3D25C7B34D00488AB4 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D3C25C7B34D00488AB4 /* InputTextView.swift */; };
@@ -1183,6 +1185,8 @@
 		B82149B725D60393009C0F2A /* BlockedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedModal.swift; sourceTree = "<group>"; };
 		B82149C025D605C6009C0F2A /* InfoBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoBanner.swift; sourceTree = "<group>"; };
 		B8214A2A25D63EB9009C0F2A /* MessagesTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesTableView.swift; sourceTree = "<group>"; };
+		B822F9BB26B26C82003B8CB8 /* TSCall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TSCall.h; sourceTree = "<group>"; };
+		B822F9BC26B26CA2003B8CB8 /* TSCall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TSCall.m; sourceTree = "<group>"; };
 		B8269D2825C7A4B400488AB4 /* InputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputView.swift; sourceTree = "<group>"; };
 		B8269D3225C7A8C600488AB4 /* InputViewButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewButton.swift; sourceTree = "<group>"; };
 		B8269D3C25C7B34D00488AB4 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
@@ -2670,6 +2674,8 @@
 		C32C5A99256DBDC1003C73A2 /* Signal */ = {
 			isa = PBXGroup;
 			children = (
+				B822F9BB26B26C82003B8CB8 /* TSCall.h */,
+				B822F9BC26B26CA2003B8CB8 /* TSCall.m */,
 				C33FDB9C255A581300E217F9 /* TSIncomingMessage.h */,
 				C33FDA97255A57FE00E217F9 /* TSIncomingMessage.m */,
 				C3B7845C25649DA600ADB2E7 /* TSIncomingMessage+Conversion.swift */,
@@ -3856,6 +3862,7 @@
 				C3A3A145256E1B49004D228D /* OWSMediaGalleryFinder.h in Headers */,
 				B8856E33256F18D5001CE70E /* OWSStorage+Subclass.h in Headers */,
 				C32C5C0A256DC9B4003C73A2 /* OWSIdentityManager.h in Headers */,
+				B822F9BE26B26CA8003B8CB8 /* TSCall.h in Headers */,
 				B8856E9D256F1C3D001CE70E /* OWSSounds.h in Headers */,
 				C32C5E64256DDFD6003C73A2 /* OWSStorage.h in Headers */,
 			);
@@ -4851,6 +4858,7 @@
 				B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */,
 				C32C5B3F256DC1DF003C73A2 /* TSQuotedMessage+Conversion.swift in Sources */,
 				B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */,
+				B822F9BD26B26CA2003B8CB8 /* TSCall.m in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
 				C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */,

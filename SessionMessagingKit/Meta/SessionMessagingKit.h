@@ -39,6 +39,7 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/TSAttachment.h>
 #import <SessionMessagingKit/TSAttachmentPointer.h>
 #import <SessionMessagingKit/TSAttachmentStream.h>
+#import <SessionMessagingKit/TSCall.h>
 #import <SessionMessagingKit/TSContactThread.h>
 #import <SessionMessagingKit/TSDatabaseSecondaryIndexes.h>
 #import <SessionMessagingKit/TSDatabaseView.h>
