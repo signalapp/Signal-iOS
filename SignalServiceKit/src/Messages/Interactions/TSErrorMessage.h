@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSErrorMessageBuilder;
 
-typedef NS_ENUM(int32_t, TSErrorMessageType) {
+typedef NS_CLOSED_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
     // DEPRECATED: We no longer create TSErrorMessageWrongTrustedIdentityKey, but
     // persisted legacy messages could exist indefinitly.

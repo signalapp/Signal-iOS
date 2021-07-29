@@ -90,7 +90,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 #pragma mark Utility Method
 
-- (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 
 // "Dynamic" interactions are not messages or static events (like
@@ -107,6 +106,19 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp NS_SWIFT_NAME(replaceReceivedAtTimestamp(_:));
 - (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(SDSAnyWriteTransaction *)transaction;
 #endif
+
+@end
+
+@interface TSInteraction (Subclass)
+
+// Timestamps are *almost* always immutable. The one exception is for placeholder interactions.
+// After a certain amount of time, a placeholder becomes ineligible for replacement. The would-be
+// replacement is just inserted natively.
+//
+// This breaks all sorts of assumptions we have of timestamps being unique. To workaround this,
+// we decrement the timestamp on a failed placeholder. This ensures that both the placeholder
+// error message and the would-be replacement can coexist.
+@property (nonatomic, assign) uint64_t timestamp;
 
 @end
 

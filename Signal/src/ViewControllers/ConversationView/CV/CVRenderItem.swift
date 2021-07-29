@@ -133,7 +133,6 @@ extension CVRenderItem: ConversationViewLayoutItem {
                 return ConversationStyle.defaultMessageSpacing
             }
         case .call, .info, .error:
-            // Sender Key TODO: Error interaction UI?
             if previousInteraction.interactionType() == interaction.interactionType() {
                 switch previousInteraction.interactionType() {
                 case .error:

@@ -1035,6 +1035,7 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapUnknownThreadWarningGroup() {}
     // TODO:
     func cvc_didTapUnknownThreadWarningContact() {}
+    func cvc_didTapDeliveryIssueWarning() {}
 }
 
 extension MessageDetailViewController: UINavigationControllerDelegate {

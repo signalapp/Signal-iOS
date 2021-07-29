@@ -10,9 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingResendRequest : TSOutgoingMessage
 
-- (instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                            cipherType:(uint8_t)cipherType
-                           transaction:(SDSAnyWriteTransaction *)transaction;
+- (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
+                                     cipherType:(uint8_t)cipherType
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
