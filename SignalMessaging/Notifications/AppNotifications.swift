@@ -604,7 +604,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             self.adaptee.notify(
                 category: .internalError,
                 title: "Internal Error: Please file a bug",
-                body:  errorString,
+                body: errorString,
                 threadIdentifier: nil,
                 userInfo: [
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.submitDebugLogs.rawValue
