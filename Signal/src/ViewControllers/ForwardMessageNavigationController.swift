@@ -24,7 +24,12 @@ class ForwardMessageNavigationController: OWSNavigationController {
     var approvalMessageBody: MessageBody?
     var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
-    var selectedConversations: [ConversationItem] = []
+    var mentionCandidates: [SignalServiceAddress] = []
+    var selectedConversations: [ConversationItem] = [] {
+        didSet {
+            updateMentionCandidates()
+        }
+    }
 
     private let itemViewModel: CVItemViewModelImpl
 
@@ -333,6 +338,27 @@ extension ForwardMessageNavigationController {
             return threads
         }
     }
+
+    private func updateMentionCandidates() {
+        AssertIsOnMainThread()
+
+        guard selectedConversations.count == 1,
+              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient else {
+            mentionCandidates = []
+            return
+        }
+
+        let groupThread = databaseStorage.read { readTx in
+            TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
+        }
+
+        owsAssertDebug(groupThread != nil)
+        if let groupThread = groupThread, Mention.threadAllowsMentionSend(groupThread) {
+            mentionCandidates = groupThread.recipientAddresses
+        } else {
+            mentionCandidates = []
+        }
+    }
 }
 
 // MARK: -
@@ -476,13 +502,7 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        guard selectedConversations.count == 1,
-              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient,
-              let groupThread = databaseStorage.read(block: { transaction in
-                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
-              }),
-              Mention.threadAllowsMentionSend(groupThread) else { return [] }
-        return groupThread.recipientAddresses
+        mentionCandidates
     }
 }
 

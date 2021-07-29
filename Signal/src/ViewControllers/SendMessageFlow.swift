@@ -149,7 +149,12 @@ class SendMessageFlow: NSObject {
 
     var unapprovedContent: SendMessageUnapprovedContent
 
-    var selectedConversations: [ConversationItem] = []
+    var mentionCandidates: [SignalServiceAddress] = []
+    var selectedConversations: [ConversationItem] = [] {
+        didSet {
+            updateMentionCandidates()
+        }
+    }
 
     public init(flowType: SendMessageFlowType,
                 unapprovedContent: SendMessageUnapprovedContent,
@@ -182,6 +187,27 @@ class SendMessageFlow: NSObject {
 
     fileprivate func fireCancelled() {
         delegate?.sendMessageFlowDidCancel()
+    }
+
+    private func updateMentionCandidates() {
+        AssertIsOnMainThread()
+
+        guard selectedConversations.count == 1,
+              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient else {
+            mentionCandidates = []
+            return
+        }
+
+        let groupThread = databaseStorage.read { readTx in
+            TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
+        }
+
+        owsAssertDebug(groupThread != nil)
+        if let groupThread = groupThread, Mention.threadAllowsMentionSend(groupThread) {
+            mentionCandidates = groupThread.recipientAddresses
+        } else {
+            mentionCandidates = []
+        }
     }
 }
 
@@ -582,13 +608,7 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        guard selectedConversations.count == 1,
-              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient,
-              let groupThread = databaseStorage.read(block: { transaction in
-                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
-              }),
-              Mention.threadAllowsMentionSend(groupThread) else { return [] }
-        return groupThread.recipientAddresses
+        mentionCandidates
     }
 }
 
