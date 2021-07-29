@@ -271,10 +271,11 @@ extension SpamChallengeResolver {
 
         do {
             try SDSDatabaseStorage.shared.write { writeTx in
-                try keyValueStore.setCodable(
-                    challenges,
-                    key: outstandingChallengesKey,
-                    transaction: writeTx)
+                if let challenges = challenges {
+                    try keyValueStore.setCodable(challenges, key: outstandingChallengesKey, transaction: writeTx)
+                } else {
+                    keyValueStore.removeValue(forKey: outstandingChallengesKey, transaction: writeTx)
+                }
             }
         } catch {
             owsFailDebug("Failed to save outstanding challenges")
