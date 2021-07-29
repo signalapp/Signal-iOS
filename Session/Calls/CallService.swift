@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import WebRTC
 import SignalRingRTC
 import PromiseKit
 import SessionUtilitiesKit
@@ -518,7 +519,7 @@ public final class CallService: NSObject {
     func prepareIncomingIndividualCall(
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
-        callType: SSKProtoCallMessageOfferType
+        callType: SNProtoCallMessageOfferType
     ) -> SignalCall {
         AssertIsOnMainThread()
 
@@ -532,7 +533,7 @@ public final class CallService: NSObject {
 
         let newCall = SignalCall.incomingIndividualCall(
             localId: UUID(),
-            remoteAddress: thread.contactAddress,
+            publicKey: thread.contactSessionID(),
             sentAtTimestamp: sentAtTimestamp,
             offerMediaType: offerMediaType
         )
@@ -662,7 +663,7 @@ extension CallService: CallObserver {
             Logger.warn("No peek info for call: \(call)")
             return
         }
-        updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
+        updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: NSDate.ows_millisecondTimeStamp())
     }
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {

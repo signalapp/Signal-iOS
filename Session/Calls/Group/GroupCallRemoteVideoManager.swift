@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import WebRTC
 import SignalRingRTC
 
 class GroupCallRemoteVideoManager: Dependencies {

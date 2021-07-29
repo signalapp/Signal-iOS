@@ -74,11 +74,8 @@ import WebRTC
         }
         call.individualCall.callRecord = callRecord
 
-        // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId()
-
         do {
-            try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId)
+            try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: 1)
         } catch {
             self.handleFailedCall(failedCall: call, error: error)
         }

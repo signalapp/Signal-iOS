@@ -20,12 +20,8 @@ import Foundation
      */
     @discardableResult
     @objc
-    public func initiateCall(address: SignalServiceAddress) -> Bool {
-        Logger.info("with address: \(address)")
-
-        guard address.isValid else { return false }
-
-        return initiateCall(address: address, isVideo: false)
+    public func initiateCall(publicKey: String) -> Bool {
+        return initiateCall(publicKey: publicKey, isVideo: false)
     }
 
     /**
@@ -33,14 +29,7 @@ import Foundation
      */
     @discardableResult
     @objc
-    public func initiateCall(address: SignalServiceAddress, isVideo: Bool) -> Bool {
-        guard tsAccountManager.isOnboarded() else {
-            Logger.warn("aborting due to user not being onboarded.")
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
-                                                                     comment: "alert body shown when trying to use features in the app before completing registration-related setup."))
-            return false
-        }
-
+    public func initiateCall(publicKey: String, isVideo: Bool) -> Bool {
         guard let callUIAdapter = Self.callService.individualCallService.callUIAdapter else {
             owsFailDebug("missing callUIAdapter")
             return false
@@ -50,18 +39,7 @@ import Foundation
             return false
         }
 
-        let showedAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
-            address: address,
-            confirmationText: CallStrings.confirmAndCallButtonTitle
-        ) { didConfirmIdentity in
-            guard didConfirmIdentity else { return }
-            _ = self.initiateCall(address: address, isVideo: isVideo)
-        }
-        guard !showedAlert else {
-            return false
-        }
-
-        frontmostViewController.ows_askForMicrophonePermissions { granted in
+        frontmostViewController.ows_ask(forMicrophonePermissions: { granted in
             guard granted == true else {
                 Logger.warn("aborting due to missing microphone permissions.")
                 frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
@@ -69,18 +47,18 @@ import Foundation
             }
 
             if isVideo {
-                frontmostViewController.ows_askForCameraPermissions { granted in
+                frontmostViewController.ows_ask(forCameraPermissions: { granted in
                     guard granted else {
                         Logger.warn("aborting due to missing camera permissions.")
                         return
                     }
 
-                    callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: true)
-                }
+                    callUIAdapter.startAndShowOutgoingCall(publicKey: publicKey, hasLocalVideo: true)
+                })
             } else {
-                callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
+                callUIAdapter.startAndShowOutgoingCall(publicKey: publicKey, hasLocalVideo: false)
             }
-        }
+        })
 
         return true
     }

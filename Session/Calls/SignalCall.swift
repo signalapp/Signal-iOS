@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import SignalCoreKit
 
 // All Observer methods will be invoked from the main thread.
 public protocol CallObserver: AnyObject {
@@ -165,7 +166,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             localId: localId,
             state: .dialing,
             publicKey: publicKey,
-            sentAtTimestamp: NSDate.ows_millisecondTimestamp(),
+            sentAtTimestamp: NSDate.ows_millisecondTimeStamp(),
             callAdapterType: .default
         )
         return SignalCall(individualCall: individualCall)
