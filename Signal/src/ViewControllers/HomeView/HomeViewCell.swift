@@ -90,21 +90,9 @@ public class HomeViewCell: UITableViewCell {
         }
     }
     private var cellContentToken: HVCellContentToken?
-    // TODO:
     private var thread: TSThread? {
         cellContentToken?.thread
     }
-
-    // TODO:
-    //    private var thread: ThreadViewModel? {
-    //        configuration?.thread
-    //    }
-    //    private var overrideSnippet: NSAttributedString? {
-    //        configuration?.overrideSnippet
-    //    }
-    //        private var hasOverrideSnippet: Bool {
-    //            overrideSnippet != nil
-    //        }
 
     // MARK: - View Constants
 
@@ -231,7 +219,6 @@ public class HomeViewCell: UITableViewCell {
 
     private static func buildMeasurements(configuration: Configuration,
                                           configs: HVCellConfigs) -> HVCellMeasurements {
-        let isBlocked = configuration.isBlocked
         let shouldShowMuteIndicator = configs.shouldShowMuteIndicator
 
         let topRowStackConfig = configs.topRowStackConfig
@@ -265,6 +252,24 @@ public class HomeViewCell: UITableViewCell {
                                                              subviewInfos: topRowStackSubviewInfos)
         let topRowStackSize = topRowStackMeasurement.measuredSize
 
+        // Reserve space for two lines of snippet text, taking into account
+        // the worst-case snippet content.
+        let snippetLineHeight = CGFloat(ceil(snippetLabelConfig.font.ows_semibold.lineHeight * 1.2))
+
+        // Use a fixed size for the snippet label and its wrapper.
+        let bottomRowWrapperSize = CGSize(width: 0, height: snippetLineHeight * 2)
+        var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
+            bottomRowWrapperSize.asManualSubviewInfo()
+        ]
+        if let messageStatusToken = configs.messageStatusToken {
+            let statusIndicatorSize = messageStatusToken.image.size
+            // The status indicator should vertically align with the
+            // first line of the snippet.
+            let locationOffset = CGPoint(x: 0,
+                                         y: snippetLineHeight * -0.5)
+            bottomRowStackSubviewInfos.append(statusIndicatorSize.asManualSubviewInfo(hasFixedSize: true,
+                                                                                      locationOffset: locationOffset))
+        }
         let bottomRowStackMeasurement = ManualStackView.measure(config: bottomRowStackConfig,
                                                                 subviewInfos: bottomRowStackSubviewInfos)
         let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
@@ -286,7 +291,8 @@ public class HomeViewCell: UITableViewCell {
                                   topRowStackMeasurement: topRowStackMeasurement,
                                   bottomRowStackMeasurement: bottomRowStackMeasurement,
                                   vStackMeasurement: vStackMeasurement,
-                                  outerHStackMeasurement: outerHStackMeasurement)
+                                  outerHStackMeasurement: outerHStackMeasurement,
+                                  snippetLineHeight: snippetLineHeight)
     }
 
     private func configure(cellContentToken: HVCellContentToken) {
@@ -317,11 +323,9 @@ public class HomeViewCell: UITableViewCell {
         let bottomRowStackMeasurement = measurements.bottomRowStackMeasurement
         let vStackMeasurement = measurements.vStackMeasurement
         let outerHStackMeasurement = measurements.outerHStackMeasurement
+        let snippetLineHeight = measurements.snippetLineHeight
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
-        // Reserve space for two lines of snippet text, taking into account
-        // the worst-case snippet content.
-        let snippetLineHeight = CGFloat(ceil(snippetLabelConfig.font.ows_semibold.lineHeight * 1.2))
 
         avatarView.shouldLoadAsync = cellContentToken.shouldLoadAvatarAsync
         avatarView.configureWithSneakyTransaction(thread: cellContentToken.thread)
@@ -439,21 +443,11 @@ public class HomeViewCell: UITableViewCell {
                                                     width: typingIndicatorSize.width,
                                                     height: typingIndicatorSize.height)
         }
-        // Use a fixed size for the snippet label and its wrapper.
-        let bottomRowWrapperSize = CGSize(width: 0, height: snippetLineHeight * 2)
 
         var bottomRowStackSubviews: [UIView] = [ bottomRowWrapper ]
-        var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
-            bottomRowWrapperSize.asManualSubviewInfo()
-        ]
-        if let statusIndicator = prepareStatusIndicatorView(token: cellContentToken.configs.messageStatusToken) {
-            bottomRowStackSubviews.append(statusIndicator.view)
-            // The status indicator should vertically align with the
-            // first line of the snippet.
-            let locationOffset = CGPoint(x: 0,
-                                         y: snippetLineHeight * -0.5)
-            bottomRowStackSubviewInfos.append(statusIndicator.size.asManualSubviewInfo(hasFixedSize: true,
-                                                                                       locationOffset: locationOffset))
+        if let messageStatusToken = cellContentToken.configs.messageStatusToken {
+            let statusIndicator = configureStatusIndicatorView(token: messageStatusToken)
+            bottomRowStackSubviews.append(statusIndicator)
         }
 
         updateTypingIndicatorState()
@@ -580,14 +574,7 @@ public class HomeViewCell: UITableViewCell {
                                     shouldAnimateStatusIcon: shouldAnimateStatusIcon)
     }
 
-    struct StatusIndicator {
-        let view: UIView
-        let size: CGSize
-    }
-    private func prepareStatusIndicatorView(token: HVMessageStatusToken?) -> StatusIndicator? {
-        guard let token = token else {
-            return nil
-        }
+    private func configureStatusIndicatorView(token: HVMessageStatusToken) -> UIView {
         messageStatusIconView.image = token.image.withRenderingMode(.alwaysTemplate)
         messageStatusIconView.tintColor = token.tintColor
 
@@ -602,7 +589,7 @@ public class HomeViewCell: UITableViewCell {
             messageStatusIconView.layer.removeAllAnimations()
         }
 
-        return StatusIndicator(view: messageStatusIconView, size: token.image.size)
+        return messageStatusIconView
     }
 
     // MARK: - Unread Indicator
@@ -930,6 +917,7 @@ private struct HVCellMeasurements {
     let bottomRowStackMeasurement: ManualStackView.Measurement
     let vStackMeasurement: ManualStackView.Measurement
     let outerHStackMeasurement: ManualStackView.Measurement
+    let snippetLineHeight: CGFloat
 }
 
 // MARK: -
