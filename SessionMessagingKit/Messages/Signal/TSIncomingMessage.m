@@ -13,6 +13,7 @@
 #import "TSGroupThread.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -119,6 +120,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     return self.isExpiringMessage;
+}
+
+- (BOOL)isUserMentioned
+{
+    NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
+    return (self.body != nil && [self.body containsString:[NSString stringWithFormat:@"@%@", userPublicKey]]) || (self.quotedMessage != nil && [self.quotedMessage.authorId isEqualToString:userPublicKey]);
 }
 
 #pragma mark - OWSReadTracking
