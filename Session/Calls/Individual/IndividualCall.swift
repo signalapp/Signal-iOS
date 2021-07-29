@@ -102,7 +102,7 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
     var wasRemovedFromSystem = false
 
     @objc
-    public let remoteAddress: SignalServiceAddress
+    public let publicKey: String
 
     public var isEnded: Bool {
         switch state {
@@ -179,12 +179,12 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, state: CallState, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
+    init(direction: CallDirection, localId: UUID, state: CallState, publicKey: String, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
         self.direction = direction
         self.localId = localId
         self.state = state
-        self.remoteAddress = remoteAddress
-        self.thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+        self.publicKey = publicKey
+        self.thread = TSContactThread.getOrCreateThread(contactSessionID: publicKey)
         self.sentAtTimestamp = sentAtTimestamp
         self.callAdapterType = callAdapterType
     }
@@ -206,7 +206,7 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
     }
 
     override public var description: String {
-        return "IndividualCall: {\(remoteAddress), localId: \(localId), signalingId: \(callId as Optional)))}"
+        return "IndividualCall: {\(publicKey), localId: \(localId), signalingId: \(callId as Optional)))}"
     }
 
     private func updateCallRecordType() {

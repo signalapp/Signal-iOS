@@ -500,6 +500,1054 @@ extension SNProtoContent.SNProtoContentBuilder {
 
 #endif
 
+// MARK: - SNProtoCallMessageOffer
+
+@objc public class SNProtoCallMessageOffer: NSObject {
+
+    // MARK: - SNProtoCallMessageOfferType
+
+    @objc public enum SNProtoCallMessageOfferType: Int32 {
+        case offerAudioCall = 0
+        case offerVideoCall = 1
+    }
+
+    private class func SNProtoCallMessageOfferTypeWrap(_ value: SessionProtos_CallMessage.Offer.TypeEnum) -> SNProtoCallMessageOfferType {
+        switch value {
+        case .offerAudioCall: return .offerAudioCall
+        case .offerVideoCall: return .offerVideoCall
+        }
+    }
+
+    private class func SNProtoCallMessageOfferTypeUnwrap(_ value: SNProtoCallMessageOfferType) -> SessionProtos_CallMessage.Offer.TypeEnum {
+        switch value {
+        case .offerAudioCall: return .offerAudioCall
+        case .offerVideoCall: return .offerVideoCall
+        }
+    }
+
+    // MARK: - SNProtoCallMessageOfferBuilder
+
+    @objc public class func builder(id: UInt64) -> SNProtoCallMessageOfferBuilder {
+        return SNProtoCallMessageOfferBuilder(id: id)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageOfferBuilder {
+        let builder = SNProtoCallMessageOfferBuilder(id: id)
+        if let _value = sdp {
+            builder.setSdp(_value)
+        }
+        if hasType {
+            builder.setType(type)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageOfferBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage.Offer()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
+        @objc public func setId(_ valueParam: UInt64) {
+            proto.id = valueParam
+        }
+
+        @objc public func setSdp(_ valueParam: String) {
+            proto.sdp = valueParam
+        }
+
+        @objc public func setType(_ valueParam: SNProtoCallMessageOfferType) {
+            proto.type = SNProtoCallMessageOfferTypeUnwrap(valueParam)
+        }
+
+        @objc public func setOpaque(_ valueParam: Data) {
+            proto.opaque = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoCallMessageOffer {
+            return try SNProtoCallMessageOffer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessageOffer.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage.Offer
+
+    @objc public let id: UInt64
+
+    @objc public var sdp: String? {
+        guard proto.hasSdp else {
+            return nil
+        }
+        return proto.sdp
+    }
+    @objc public var hasSdp: Bool {
+        return proto.hasSdp
+    }
+
+    @objc public var type: SNProtoCallMessageOfferType {
+        return SNProtoCallMessageOffer.SNProtoCallMessageOfferTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc public var opaque: Data? {
+        guard proto.hasOpaque else {
+            return nil
+        }
+        return proto.opaque
+    }
+    @objc public var hasOpaque: Bool {
+        return proto.hasOpaque
+    }
+
+    private init(proto: SessionProtos_CallMessage.Offer,
+                 id: UInt64) {
+        self.proto = proto
+        self.id = id
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessageOffer {
+        let proto = try SessionProtos_CallMessage.Offer(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage.Offer) throws -> SNProtoCallMessageOffer {
+        guard proto.hasID else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        // MARK: - Begin Validation Logic for SNProtoCallMessageOffer -
+
+        // MARK: - End Validation Logic for SNProtoCallMessageOffer -
+
+        let result = SNProtoCallMessageOffer(proto: proto,
+                                             id: id)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessageOffer {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessageOffer.SNProtoCallMessageOfferBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessageOffer? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoCallMessageAnswer
+
+@objc public class SNProtoCallMessageAnswer: NSObject {
+
+    // MARK: - SNProtoCallMessageAnswerBuilder
+
+    @objc public class func builder(id: UInt64) -> SNProtoCallMessageAnswerBuilder {
+        return SNProtoCallMessageAnswerBuilder(id: id)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageAnswerBuilder {
+        let builder = SNProtoCallMessageAnswerBuilder(id: id)
+        if let _value = sdp {
+            builder.setSdp(_value)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageAnswerBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage.Answer()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
+        @objc public func setId(_ valueParam: UInt64) {
+            proto.id = valueParam
+        }
+
+        @objc public func setSdp(_ valueParam: String) {
+            proto.sdp = valueParam
+        }
+
+        @objc public func setOpaque(_ valueParam: Data) {
+            proto.opaque = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoCallMessageAnswer {
+            return try SNProtoCallMessageAnswer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessageAnswer.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage.Answer
+
+    @objc public let id: UInt64
+
+    @objc public var sdp: String? {
+        guard proto.hasSdp else {
+            return nil
+        }
+        return proto.sdp
+    }
+    @objc public var hasSdp: Bool {
+        return proto.hasSdp
+    }
+
+    @objc public var opaque: Data? {
+        guard proto.hasOpaque else {
+            return nil
+        }
+        return proto.opaque
+    }
+    @objc public var hasOpaque: Bool {
+        return proto.hasOpaque
+    }
+
+    private init(proto: SessionProtos_CallMessage.Answer,
+                 id: UInt64) {
+        self.proto = proto
+        self.id = id
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessageAnswer {
+        let proto = try SessionProtos_CallMessage.Answer(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage.Answer) throws -> SNProtoCallMessageAnswer {
+        guard proto.hasID else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        // MARK: - Begin Validation Logic for SNProtoCallMessageAnswer -
+
+        // MARK: - End Validation Logic for SNProtoCallMessageAnswer -
+
+        let result = SNProtoCallMessageAnswer(proto: proto,
+                                              id: id)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessageAnswer {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessageAnswer.SNProtoCallMessageAnswerBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessageAnswer? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoCallMessageIceUpdate
+
+@objc public class SNProtoCallMessageIceUpdate: NSObject {
+
+    // MARK: - SNProtoCallMessageIceUpdateBuilder
+
+    @objc public class func builder(id: UInt64) -> SNProtoCallMessageIceUpdateBuilder {
+        return SNProtoCallMessageIceUpdateBuilder(id: id)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageIceUpdateBuilder {
+        let builder = SNProtoCallMessageIceUpdateBuilder(id: id)
+        if let _value = mid {
+            builder.setMid(_value)
+        }
+        if hasLine {
+            builder.setLine(line)
+        }
+        if let _value = sdp {
+            builder.setSdp(_value)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageIceUpdateBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage.IceUpdate()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
+        @objc public func setId(_ valueParam: UInt64) {
+            proto.id = valueParam
+        }
+
+        @objc public func setMid(_ valueParam: String) {
+            proto.mid = valueParam
+        }
+
+        @objc public func setLine(_ valueParam: UInt32) {
+            proto.line = valueParam
+        }
+
+        @objc public func setSdp(_ valueParam: String) {
+            proto.sdp = valueParam
+        }
+
+        @objc public func setOpaque(_ valueParam: Data) {
+            proto.opaque = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoCallMessageIceUpdate {
+            return try SNProtoCallMessageIceUpdate.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessageIceUpdate.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage.IceUpdate
+
+    @objc public let id: UInt64
+
+    @objc public var mid: String? {
+        guard proto.hasMid else {
+            return nil
+        }
+        return proto.mid
+    }
+    @objc public var hasMid: Bool {
+        return proto.hasMid
+    }
+
+    @objc public var line: UInt32 {
+        return proto.line
+    }
+    @objc public var hasLine: Bool {
+        return proto.hasLine
+    }
+
+    @objc public var sdp: String? {
+        guard proto.hasSdp else {
+            return nil
+        }
+        return proto.sdp
+    }
+    @objc public var hasSdp: Bool {
+        return proto.hasSdp
+    }
+
+    @objc public var opaque: Data? {
+        guard proto.hasOpaque else {
+            return nil
+        }
+        return proto.opaque
+    }
+    @objc public var hasOpaque: Bool {
+        return proto.hasOpaque
+    }
+
+    private init(proto: SessionProtos_CallMessage.IceUpdate,
+                 id: UInt64) {
+        self.proto = proto
+        self.id = id
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessageIceUpdate {
+        let proto = try SessionProtos_CallMessage.IceUpdate(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage.IceUpdate) throws -> SNProtoCallMessageIceUpdate {
+        guard proto.hasID else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        // MARK: - Begin Validation Logic for SNProtoCallMessageIceUpdate -
+
+        // MARK: - End Validation Logic for SNProtoCallMessageIceUpdate -
+
+        let result = SNProtoCallMessageIceUpdate(proto: proto,
+                                                 id: id)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessageIceUpdate {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessageIceUpdate.SNProtoCallMessageIceUpdateBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessageIceUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoCallMessageBusy
+
+@objc public class SNProtoCallMessageBusy: NSObject {
+
+    // MARK: - SNProtoCallMessageBusyBuilder
+
+    @objc public class func builder(id: UInt64) -> SNProtoCallMessageBusyBuilder {
+        return SNProtoCallMessageBusyBuilder(id: id)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageBusyBuilder {
+        let builder = SNProtoCallMessageBusyBuilder(id: id)
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageBusyBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage.Busy()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
+        @objc public func setId(_ valueParam: UInt64) {
+            proto.id = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoCallMessageBusy {
+            return try SNProtoCallMessageBusy.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessageBusy.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage.Busy
+
+    @objc public let id: UInt64
+
+    private init(proto: SessionProtos_CallMessage.Busy,
+                 id: UInt64) {
+        self.proto = proto
+        self.id = id
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessageBusy {
+        let proto = try SessionProtos_CallMessage.Busy(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage.Busy) throws -> SNProtoCallMessageBusy {
+        guard proto.hasID else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        // MARK: - Begin Validation Logic for SNProtoCallMessageBusy -
+
+        // MARK: - End Validation Logic for SNProtoCallMessageBusy -
+
+        let result = SNProtoCallMessageBusy(proto: proto,
+                                            id: id)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessageBusy {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessageBusy.SNProtoCallMessageBusyBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessageBusy? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoCallMessageHangup
+
+@objc public class SNProtoCallMessageHangup: NSObject {
+
+    // MARK: - SNProtoCallMessageHangupType
+
+    @objc public enum SNProtoCallMessageHangupType: Int32 {
+        case hangupNormal = 0
+        case hangupAccepted = 1
+        case hangupDeclined = 2
+        case hangupBusy = 3
+        case hangupNeedPermission = 4
+    }
+
+    private class func SNProtoCallMessageHangupTypeWrap(_ value: SessionProtos_CallMessage.Hangup.TypeEnum) -> SNProtoCallMessageHangupType {
+        switch value {
+        case .hangupNormal: return .hangupNormal
+        case .hangupAccepted: return .hangupAccepted
+        case .hangupDeclined: return .hangupDeclined
+        case .hangupBusy: return .hangupBusy
+        case .hangupNeedPermission: return .hangupNeedPermission
+        }
+    }
+
+    private class func SNProtoCallMessageHangupTypeUnwrap(_ value: SNProtoCallMessageHangupType) -> SessionProtos_CallMessage.Hangup.TypeEnum {
+        switch value {
+        case .hangupNormal: return .hangupNormal
+        case .hangupAccepted: return .hangupAccepted
+        case .hangupDeclined: return .hangupDeclined
+        case .hangupBusy: return .hangupBusy
+        case .hangupNeedPermission: return .hangupNeedPermission
+        }
+    }
+
+    // MARK: - SNProtoCallMessageHangupBuilder
+
+    @objc public class func builder(id: UInt64) -> SNProtoCallMessageHangupBuilder {
+        return SNProtoCallMessageHangupBuilder(id: id)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageHangupBuilder {
+        let builder = SNProtoCallMessageHangupBuilder(id: id)
+        if hasType {
+            builder.setType(type)
+        }
+        if hasDeviceID {
+            builder.setDeviceID(deviceID)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageHangupBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage.Hangup()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
+        @objc public func setId(_ valueParam: UInt64) {
+            proto.id = valueParam
+        }
+
+        @objc public func setType(_ valueParam: SNProtoCallMessageHangupType) {
+            proto.type = SNProtoCallMessageHangupTypeUnwrap(valueParam)
+        }
+
+        @objc public func setDeviceID(_ valueParam: UInt32) {
+            proto.deviceID = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoCallMessageHangup {
+            return try SNProtoCallMessageHangup.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessageHangup.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage.Hangup
+
+    @objc public let id: UInt64
+
+    @objc public var type: SNProtoCallMessageHangupType {
+        return SNProtoCallMessageHangup.SNProtoCallMessageHangupTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc public var deviceID: UInt32 {
+        return proto.deviceID
+    }
+    @objc public var hasDeviceID: Bool {
+        return proto.hasDeviceID
+    }
+
+    private init(proto: SessionProtos_CallMessage.Hangup,
+                 id: UInt64) {
+        self.proto = proto
+        self.id = id
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessageHangup {
+        let proto = try SessionProtos_CallMessage.Hangup(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage.Hangup) throws -> SNProtoCallMessageHangup {
+        guard proto.hasID else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        // MARK: - Begin Validation Logic for SNProtoCallMessageHangup -
+
+        // MARK: - End Validation Logic for SNProtoCallMessageHangup -
+
+        let result = SNProtoCallMessageHangup(proto: proto,
+                                              id: id)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessageHangup {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessageHangup.SNProtoCallMessageHangupBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessageHangup? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoCallMessageOpaque
+
+@objc public class SNProtoCallMessageOpaque: NSObject {
+
+    // MARK: - SNProtoCallMessageOpaqueBuilder
+
+    @objc public class func builder() -> SNProtoCallMessageOpaqueBuilder {
+        return SNProtoCallMessageOpaqueBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageOpaqueBuilder {
+        let builder = SNProtoCallMessageOpaqueBuilder()
+        if let _value = data {
+            builder.setData(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageOpaqueBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage.Opaque()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setData(_ valueParam: Data) {
+            proto.data = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoCallMessageOpaque {
+            return try SNProtoCallMessageOpaque.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessageOpaque.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage.Opaque
+
+    @objc public var data: Data? {
+        guard proto.hasData else {
+            return nil
+        }
+        return proto.data
+    }
+    @objc public var hasData: Bool {
+        return proto.hasData
+    }
+
+    private init(proto: SessionProtos_CallMessage.Opaque) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessageOpaque {
+        let proto = try SessionProtos_CallMessage.Opaque(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage.Opaque) throws -> SNProtoCallMessageOpaque {
+        // MARK: - Begin Validation Logic for SNProtoCallMessageOpaque -
+
+        // MARK: - End Validation Logic for SNProtoCallMessageOpaque -
+
+        let result = SNProtoCallMessageOpaque(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessageOpaque {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessageOpaque.SNProtoCallMessageOpaqueBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessageOpaque? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoCallMessage
+
+@objc public class SNProtoCallMessage: NSObject {
+
+    // MARK: - SNProtoCallMessageBuilder
+
+    @objc public class func builder() -> SNProtoCallMessageBuilder {
+        return SNProtoCallMessageBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageBuilder {
+        let builder = SNProtoCallMessageBuilder()
+        if let _value = offer {
+            builder.setOffer(_value)
+        }
+        if let _value = answer {
+            builder.setAnswer(_value)
+        }
+        builder.setIceUpdate(iceUpdate)
+        if let _value = legacyHangup {
+            builder.setLegacyHangup(_value)
+        }
+        if let _value = busy {
+            builder.setBusy(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
+        if let _value = hangup {
+            builder.setHangup(_value)
+        }
+        if hasSupportsMultiRing {
+            builder.setSupportsMultiRing(supportsMultiRing)
+        }
+        if hasDestinationDeviceID {
+            builder.setDestinationDeviceID(destinationDeviceID)
+        }
+        if let _value = opaque {
+            builder.setOpaque(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setOffer(_ valueParam: SNProtoCallMessageOffer) {
+            proto.offer = valueParam.proto
+        }
+
+        @objc public func setAnswer(_ valueParam: SNProtoCallMessageAnswer) {
+            proto.answer = valueParam.proto
+        }
+
+        @objc public func addIceUpdate(_ valueParam: SNProtoCallMessageIceUpdate) {
+            var items = proto.iceUpdate
+            items.append(valueParam.proto)
+            proto.iceUpdate = items
+        }
+
+        @objc public func setIceUpdate(_ wrappedItems: [SNProtoCallMessageIceUpdate]) {
+            proto.iceUpdate = wrappedItems.map { $0.proto }
+        }
+
+        @objc public func setLegacyHangup(_ valueParam: SNProtoCallMessageHangup) {
+            proto.legacyHangup = valueParam.proto
+        }
+
+        @objc public func setBusy(_ valueParam: SNProtoCallMessageBusy) {
+            proto.busy = valueParam.proto
+        }
+
+        @objc public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
+        @objc public func setHangup(_ valueParam: SNProtoCallMessageHangup) {
+            proto.hangup = valueParam.proto
+        }
+
+        @objc public func setSupportsMultiRing(_ valueParam: Bool) {
+            proto.supportsMultiRing = valueParam
+        }
+
+        @objc public func setDestinationDeviceID(_ valueParam: UInt32) {
+            proto.destinationDeviceID = valueParam
+        }
+
+        @objc public func setOpaque(_ valueParam: SNProtoCallMessageOpaque) {
+            proto.opaque = valueParam.proto
+        }
+
+        @objc public func build() throws -> SNProtoCallMessage {
+            return try SNProtoCallMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage
+
+    @objc public let offer: SNProtoCallMessageOffer?
+
+    @objc public let answer: SNProtoCallMessageAnswer?
+
+    @objc public let iceUpdate: [SNProtoCallMessageIceUpdate]
+
+    @objc public let legacyHangup: SNProtoCallMessageHangup?
+
+    @objc public let busy: SNProtoCallMessageBusy?
+
+    @objc public let hangup: SNProtoCallMessageHangup?
+
+    @objc public let opaque: SNProtoCallMessageOpaque?
+
+    @objc public var profileKey: Data? {
+        guard proto.hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    @objc public var hasProfileKey: Bool {
+        return proto.hasProfileKey
+    }
+
+    @objc public var supportsMultiRing: Bool {
+        return proto.supportsMultiRing
+    }
+    @objc public var hasSupportsMultiRing: Bool {
+        return proto.hasSupportsMultiRing
+    }
+
+    @objc public var destinationDeviceID: UInt32 {
+        return proto.destinationDeviceID
+    }
+    @objc public var hasDestinationDeviceID: Bool {
+        return proto.hasDestinationDeviceID
+    }
+
+    private init(proto: SessionProtos_CallMessage,
+                 offer: SNProtoCallMessageOffer?,
+                 answer: SNProtoCallMessageAnswer?,
+                 iceUpdate: [SNProtoCallMessageIceUpdate],
+                 legacyHangup: SNProtoCallMessageHangup?,
+                 busy: SNProtoCallMessageBusy?,
+                 hangup: SNProtoCallMessageHangup?,
+                 opaque: SNProtoCallMessageOpaque?) {
+        self.proto = proto
+        self.offer = offer
+        self.answer = answer
+        self.iceUpdate = iceUpdate
+        self.legacyHangup = legacyHangup
+        self.busy = busy
+        self.hangup = hangup
+        self.opaque = opaque
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessage {
+        let proto = try SessionProtos_CallMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage) throws -> SNProtoCallMessage {
+        var offer: SNProtoCallMessageOffer? = nil
+        if proto.hasOffer {
+            offer = try SNProtoCallMessageOffer.parseProto(proto.offer)
+        }
+
+        var answer: SNProtoCallMessageAnswer? = nil
+        if proto.hasAnswer {
+            answer = try SNProtoCallMessageAnswer.parseProto(proto.answer)
+        }
+
+        var iceUpdate: [SNProtoCallMessageIceUpdate] = []
+        iceUpdate = try proto.iceUpdate.map { try SNProtoCallMessageIceUpdate.parseProto($0) }
+
+        var legacyHangup: SNProtoCallMessageHangup? = nil
+        if proto.hasLegacyHangup {
+            legacyHangup = try SNProtoCallMessageHangup.parseProto(proto.legacyHangup)
+        }
+
+        var busy: SNProtoCallMessageBusy? = nil
+        if proto.hasBusy {
+            busy = try SNProtoCallMessageBusy.parseProto(proto.busy)
+        }
+
+        var hangup: SNProtoCallMessageHangup? = nil
+        if proto.hasHangup {
+            hangup = try SNProtoCallMessageHangup.parseProto(proto.hangup)
+        }
+
+        var opaque: SNProtoCallMessageOpaque? = nil
+        if proto.hasOpaque {
+            opaque = try SNProtoCallMessageOpaque.parseProto(proto.opaque)
+        }
+
+        // MARK: - Begin Validation Logic for SNProtoCallMessage -
+
+        // MARK: - End Validation Logic for SNProtoCallMessage -
+
+        let result = SNProtoCallMessage(proto: proto,
+                                        offer: offer,
+                                        answer: answer,
+                                        iceUpdate: iceUpdate,
+                                        legacyHangup: legacyHangup,
+                                        busy: busy,
+                                        hangup: hangup,
+                                        opaque: opaque)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessage.SNProtoCallMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SNProtoKeyPair
 
 @objc public class SNProtoKeyPair: NSObject {

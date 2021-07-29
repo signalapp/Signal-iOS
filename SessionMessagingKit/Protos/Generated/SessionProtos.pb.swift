@@ -257,6 +257,427 @@ struct SessionProtos_Content {
   fileprivate var _dataExtractionNotification: SessionProtos_DataExtractionNotification? = nil
 }
 
+struct SessionProtos_CallMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var offer: SessionProtos_CallMessage.Offer {
+    get {return _storage._offer ?? SessionProtos_CallMessage.Offer()}
+    set {_uniqueStorage()._offer = newValue}
+  }
+  /// Returns true if `offer` has been explicitly set.
+  var hasOffer: Bool {return _storage._offer != nil}
+  /// Clears the value of `offer`. Subsequent reads from it will return its default value.
+  mutating func clearOffer() {_uniqueStorage()._offer = nil}
+
+  var answer: SessionProtos_CallMessage.Answer {
+    get {return _storage._answer ?? SessionProtos_CallMessage.Answer()}
+    set {_uniqueStorage()._answer = newValue}
+  }
+  /// Returns true if `answer` has been explicitly set.
+  var hasAnswer: Bool {return _storage._answer != nil}
+  /// Clears the value of `answer`. Subsequent reads from it will return its default value.
+  mutating func clearAnswer() {_uniqueStorage()._answer = nil}
+
+  var iceUpdate: [SessionProtos_CallMessage.IceUpdate] {
+    get {return _storage._iceUpdate}
+    set {_uniqueStorage()._iceUpdate = newValue}
+  }
+
+  var legacyHangup: SessionProtos_CallMessage.Hangup {
+    get {return _storage._legacyHangup ?? SessionProtos_CallMessage.Hangup()}
+    set {_uniqueStorage()._legacyHangup = newValue}
+  }
+  /// Returns true if `legacyHangup` has been explicitly set.
+  var hasLegacyHangup: Bool {return _storage._legacyHangup != nil}
+  /// Clears the value of `legacyHangup`. Subsequent reads from it will return its default value.
+  mutating func clearLegacyHangup() {_uniqueStorage()._legacyHangup = nil}
+
+  var busy: SessionProtos_CallMessage.Busy {
+    get {return _storage._busy ?? SessionProtos_CallMessage.Busy()}
+    set {_uniqueStorage()._busy = newValue}
+  }
+  /// Returns true if `busy` has been explicitly set.
+  var hasBusy: Bool {return _storage._busy != nil}
+  /// Clears the value of `busy`. Subsequent reads from it will return its default value.
+  mutating func clearBusy() {_uniqueStorage()._busy = nil}
+
+  /// Signal-iOS sends profile key with call messages
+  /// for earlier discovery.
+  var profileKey: Data {
+    get {return _storage._profileKey ?? Data()}
+    set {_uniqueStorage()._profileKey = newValue}
+  }
+  /// Returns true if `profileKey` has been explicitly set.
+  var hasProfileKey: Bool {return _storage._profileKey != nil}
+  /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
+  mutating func clearProfileKey() {_uniqueStorage()._profileKey = nil}
+
+  var hangup: SessionProtos_CallMessage.Hangup {
+    get {return _storage._hangup ?? SessionProtos_CallMessage.Hangup()}
+    set {_uniqueStorage()._hangup = newValue}
+  }
+  /// Returns true if `hangup` has been explicitly set.
+  var hasHangup: Bool {return _storage._hangup != nil}
+  /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
+  mutating func clearHangup() {_uniqueStorage()._hangup = nil}
+
+  var supportsMultiRing: Bool {
+    get {return _storage._supportsMultiRing ?? false}
+    set {_uniqueStorage()._supportsMultiRing = newValue}
+  }
+  /// Returns true if `supportsMultiRing` has been explicitly set.
+  var hasSupportsMultiRing: Bool {return _storage._supportsMultiRing != nil}
+  /// Clears the value of `supportsMultiRing`. Subsequent reads from it will return its default value.
+  mutating func clearSupportsMultiRing() {_uniqueStorage()._supportsMultiRing = nil}
+
+  var destinationDeviceID: UInt32 {
+    get {return _storage._destinationDeviceID ?? 0}
+    set {_uniqueStorage()._destinationDeviceID = newValue}
+  }
+  /// Returns true if `destinationDeviceID` has been explicitly set.
+  var hasDestinationDeviceID: Bool {return _storage._destinationDeviceID != nil}
+  /// Clears the value of `destinationDeviceID`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationDeviceID() {_uniqueStorage()._destinationDeviceID = nil}
+
+  var opaque: SessionProtos_CallMessage.Opaque {
+    get {return _storage._opaque ?? SessionProtos_CallMessage.Opaque()}
+    set {_uniqueStorage()._opaque = newValue}
+  }
+  /// Returns true if `opaque` has been explicitly set.
+  var hasOpaque: Bool {return _storage._opaque != nil}
+  /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
+  mutating func clearOpaque() {_uniqueStorage()._opaque = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  struct Offer {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var id: UInt64 {
+      get {return _id ?? 0}
+      set {_id = newValue}
+    }
+    /// Returns true if `id` has been explicitly set.
+    var hasID: Bool {return self._id != nil}
+    /// Clears the value of `id`. Subsequent reads from it will return its default value.
+    mutating func clearID() {self._id = nil}
+
+    /// Legacy/deprecated; replaced by 'opaque'
+    var sdp: String {
+      get {return _sdp ?? String()}
+      set {_sdp = newValue}
+    }
+    /// Returns true if `sdp` has been explicitly set.
+    var hasSdp: Bool {return self._sdp != nil}
+    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
+    mutating func clearSdp() {self._sdp = nil}
+
+    var type: SessionProtos_CallMessage.Offer.TypeEnum {
+      get {return _type ?? .offerAudioCall}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var opaque: Data {
+      get {return _opaque ?? Data()}
+      set {_opaque = newValue}
+    }
+    /// Returns true if `opaque` has been explicitly set.
+    var hasOpaque: Bool {return self._opaque != nil}
+    /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
+    mutating func clearOpaque() {self._opaque = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case offerAudioCall // = 0
+
+      /// next index 3, skip 2 – it was the unused "NEED_PERMISSION" type
+      case offerVideoCall // = 1
+
+      init() {
+        self = .offerAudioCall
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .offerAudioCall
+        case 1: self = .offerVideoCall
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .offerAudioCall: return 0
+        case .offerVideoCall: return 1
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _sdp: String? = nil
+    fileprivate var _type: SessionProtos_CallMessage.Offer.TypeEnum? = nil
+    fileprivate var _opaque: Data? = nil
+  }
+
+  struct Answer {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var id: UInt64 {
+      get {return _id ?? 0}
+      set {_id = newValue}
+    }
+    /// Returns true if `id` has been explicitly set.
+    var hasID: Bool {return self._id != nil}
+    /// Clears the value of `id`. Subsequent reads from it will return its default value.
+    mutating func clearID() {self._id = nil}
+
+    /// Legacy/deprecated; replaced by 'opaque'
+    var sdp: String {
+      get {return _sdp ?? String()}
+      set {_sdp = newValue}
+    }
+    /// Returns true if `sdp` has been explicitly set.
+    var hasSdp: Bool {return self._sdp != nil}
+    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
+    mutating func clearSdp() {self._sdp = nil}
+
+    var opaque: Data {
+      get {return _opaque ?? Data()}
+      set {_opaque = newValue}
+    }
+    /// Returns true if `opaque` has been explicitly set.
+    var hasOpaque: Bool {return self._opaque != nil}
+    /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
+    mutating func clearOpaque() {self._opaque = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _sdp: String? = nil
+    fileprivate var _opaque: Data? = nil
+  }
+
+  struct IceUpdate {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var id: UInt64 {
+      get {return _id ?? 0}
+      set {_id = newValue}
+    }
+    /// Returns true if `id` has been explicitly set.
+    var hasID: Bool {return self._id != nil}
+    /// Clears the value of `id`. Subsequent reads from it will return its default value.
+    mutating func clearID() {self._id = nil}
+
+    /// Legacy/deprecated; remove when old clients are gone.
+    var mid: String {
+      get {return _mid ?? String()}
+      set {_mid = newValue}
+    }
+    /// Returns true if `mid` has been explicitly set.
+    var hasMid: Bool {return self._mid != nil}
+    /// Clears the value of `mid`. Subsequent reads from it will return its default value.
+    mutating func clearMid() {self._mid = nil}
+
+    /// Legacy/deprecated; remove when old clients are gone.
+    var line: UInt32 {
+      get {return _line ?? 0}
+      set {_line = newValue}
+    }
+    /// Returns true if `line` has been explicitly set.
+    var hasLine: Bool {return self._line != nil}
+    /// Clears the value of `line`. Subsequent reads from it will return its default value.
+    mutating func clearLine() {self._line = nil}
+
+    /// Legacy/deprecated; replaced by 'opaque'
+    var sdp: String {
+      get {return _sdp ?? String()}
+      set {_sdp = newValue}
+    }
+    /// Returns true if `sdp` has been explicitly set.
+    var hasSdp: Bool {return self._sdp != nil}
+    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
+    mutating func clearSdp() {self._sdp = nil}
+
+    var opaque: Data {
+      get {return _opaque ?? Data()}
+      set {_opaque = newValue}
+    }
+    /// Returns true if `opaque` has been explicitly set.
+    var hasOpaque: Bool {return self._opaque != nil}
+    /// Clears the value of `opaque`. Subsequent reads from it will return its default value.
+    mutating func clearOpaque() {self._opaque = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _mid: String? = nil
+    fileprivate var _line: UInt32? = nil
+    fileprivate var _sdp: String? = nil
+    fileprivate var _opaque: Data? = nil
+  }
+
+  struct Busy {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var id: UInt64 {
+      get {return _id ?? 0}
+      set {_id = newValue}
+    }
+    /// Returns true if `id` has been explicitly set.
+    var hasID: Bool {return self._id != nil}
+    /// Clears the value of `id`. Subsequent reads from it will return its default value.
+    mutating func clearID() {self._id = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _id: UInt64? = nil
+  }
+
+  struct Hangup {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var id: UInt64 {
+      get {return _id ?? 0}
+      set {_id = newValue}
+    }
+    /// Returns true if `id` has been explicitly set.
+    var hasID: Bool {return self._id != nil}
+    /// Clears the value of `id`. Subsequent reads from it will return its default value.
+    mutating func clearID() {self._id = nil}
+
+    var type: SessionProtos_CallMessage.Hangup.TypeEnum {
+      get {return _type ?? .hangupNormal}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var deviceID: UInt32 {
+      get {return _deviceID ?? 0}
+      set {_deviceID = newValue}
+    }
+    /// Returns true if `deviceID` has been explicitly set.
+    var hasDeviceID: Bool {return self._deviceID != nil}
+    /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
+    mutating func clearDeviceID() {self._deviceID = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case hangupNormal // = 0
+      case hangupAccepted // = 1
+      case hangupDeclined // = 2
+      case hangupBusy // = 3
+      case hangupNeedPermission // = 4
+
+      init() {
+        self = .hangupNormal
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .hangupNormal
+        case 1: self = .hangupAccepted
+        case 2: self = .hangupDeclined
+        case 3: self = .hangupBusy
+        case 4: self = .hangupNeedPermission
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .hangupNormal: return 0
+        case .hangupAccepted: return 1
+        case .hangupDeclined: return 2
+        case .hangupBusy: return 3
+        case .hangupNeedPermission: return 4
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _type: SessionProtos_CallMessage.Hangup.TypeEnum? = nil
+    fileprivate var _deviceID: UInt32? = nil
+  }
+
+  struct Opaque {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var data: Data {
+      get {return _data ?? Data()}
+      set {_data = newValue}
+    }
+    /// Returns true if `data` has been explicitly set.
+    var hasData: Bool {return self._data != nil}
+    /// Clears the value of `data`. Subsequent reads from it will return its default value.
+    mutating func clearData() {self._data = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _data: Data? = nil
+  }
+
+  init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+#if swift(>=4.2)
+
+extension SessionProtos_CallMessage.Offer.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SessionProtos_CallMessage.Hangup.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 struct SessionProtos_KeyPair {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1564,6 +1985,417 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if lhs._typingMessage != rhs._typingMessage {return false}
     if lhs._configurationMessage != rhs._configurationMessage {return false}
     if lhs._dataExtractionNotification != rhs._dataExtractionNotification {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".CallMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "offer"),
+    2: .same(proto: "answer"),
+    3: .same(proto: "iceUpdate"),
+    4: .same(proto: "legacyHangup"),
+    5: .same(proto: "busy"),
+    6: .same(proto: "profileKey"),
+    7: .same(proto: "hangup"),
+    8: .same(proto: "supportsMultiRing"),
+    9: .same(proto: "destinationDeviceId"),
+    10: .same(proto: "opaque"),
+  ]
+
+  fileprivate class _StorageClass {
+    var _offer: SessionProtos_CallMessage.Offer? = nil
+    var _answer: SessionProtos_CallMessage.Answer? = nil
+    var _iceUpdate: [SessionProtos_CallMessage.IceUpdate] = []
+    var _legacyHangup: SessionProtos_CallMessage.Hangup? = nil
+    var _busy: SessionProtos_CallMessage.Busy? = nil
+    var _profileKey: Data? = nil
+    var _hangup: SessionProtos_CallMessage.Hangup? = nil
+    var _supportsMultiRing: Bool? = nil
+    var _destinationDeviceID: UInt32? = nil
+    var _opaque: SessionProtos_CallMessage.Opaque? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _offer = source._offer
+      _answer = source._answer
+      _iceUpdate = source._iceUpdate
+      _legacyHangup = source._legacyHangup
+      _busy = source._busy
+      _profileKey = source._profileKey
+      _hangup = source._hangup
+      _supportsMultiRing = source._supportsMultiRing
+      _destinationDeviceID = source._destinationDeviceID
+      _opaque = source._opaque
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._offer) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._answer) }()
+        case 3: try { try decoder.decodeRepeatedMessageField(value: &_storage._iceUpdate) }()
+        case 4: try { try decoder.decodeSingularMessageField(value: &_storage._legacyHangup) }()
+        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._busy) }()
+        case 6: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
+        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._hangup) }()
+        case 8: try { try decoder.decodeSingularBoolField(value: &_storage._supportsMultiRing) }()
+        case 9: try { try decoder.decodeSingularUInt32Field(value: &_storage._destinationDeviceID) }()
+        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._opaque) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._offer {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      }
+      if let v = _storage._answer {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      }
+      if !_storage._iceUpdate.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._iceUpdate, fieldNumber: 3)
+      }
+      if let v = _storage._legacyHangup {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      }
+      if let v = _storage._busy {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      }
+      if let v = _storage._profileKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
+      }
+      if let v = _storage._hangup {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      }
+      if let v = _storage._supportsMultiRing {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
+      }
+      if let v = _storage._destinationDeviceID {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+      }
+      if let v = _storage._opaque {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_CallMessage, rhs: SessionProtos_CallMessage) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._offer != rhs_storage._offer {return false}
+        if _storage._answer != rhs_storage._answer {return false}
+        if _storage._iceUpdate != rhs_storage._iceUpdate {return false}
+        if _storage._legacyHangup != rhs_storage._legacyHangup {return false}
+        if _storage._busy != rhs_storage._busy {return false}
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._hangup != rhs_storage._hangup {return false}
+        if _storage._supportsMultiRing != rhs_storage._supportsMultiRing {return false}
+        if _storage._destinationDeviceID != rhs_storage._destinationDeviceID {return false}
+        if _storage._opaque != rhs_storage._opaque {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Offer"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+    2: .same(proto: "sdp"),
+    3: .same(proto: "type"),
+    4: .same(proto: "opaque"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._sdp) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._opaque) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._id {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    if let v = self._sdp {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
+    }
+    if let v = self._opaque {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_CallMessage.Offer, rhs: SessionProtos_CallMessage.Offer) -> Bool {
+    if lhs._id != rhs._id {return false}
+    if lhs._sdp != rhs._sdp {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs._opaque != rhs._opaque {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "OFFER_AUDIO_CALL"),
+    1: .same(proto: "OFFER_VIDEO_CALL"),
+  ]
+}
+
+extension SessionProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Answer"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+    2: .same(proto: "sdp"),
+    3: .same(proto: "opaque"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._sdp) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._opaque) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._id {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    if let v = self._sdp {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._opaque {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_CallMessage.Answer, rhs: SessionProtos_CallMessage.Answer) -> Bool {
+    if lhs._id != rhs._id {return false}
+    if lhs._sdp != rhs._sdp {return false}
+    if lhs._opaque != rhs._opaque {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".IceUpdate"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+    2: .same(proto: "mid"),
+    3: .same(proto: "line"),
+    4: .same(proto: "sdp"),
+    5: .same(proto: "opaque"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._mid) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._line) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._sdp) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._opaque) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._id {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    if let v = self._mid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._line {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }
+    if let v = self._sdp {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    }
+    if let v = self._opaque {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_CallMessage.IceUpdate, rhs: SessionProtos_CallMessage.IceUpdate) -> Bool {
+    if lhs._id != rhs._id {return false}
+    if lhs._mid != rhs._mid {return false}
+    if lhs._line != rhs._line {return false}
+    if lhs._sdp != rhs._sdp {return false}
+    if lhs._opaque != rhs._opaque {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Busy"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._id {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_CallMessage.Busy, rhs: SessionProtos_CallMessage.Busy) -> Bool {
+    if lhs._id != rhs._id {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Hangup"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "id"),
+    2: .same(proto: "type"),
+    3: .same(proto: "deviceId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._deviceID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._id {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
+    }
+    if let v = self._deviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_CallMessage.Hangup, rhs: SessionProtos_CallMessage.Hangup) -> Bool {
+    if lhs._id != rhs._id {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs._deviceID != rhs._deviceID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SessionProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "HANGUP_NORMAL"),
+    1: .same(proto: "HANGUP_ACCEPTED"),
+    2: .same(proto: "HANGUP_DECLINED"),
+    3: .same(proto: "HANGUP_BUSY"),
+    4: .same(proto: "HANGUP_NEED_PERMISSION"),
+  ]
+}
+
+extension SessionProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SessionProtos_CallMessage.protoMessageName + ".Opaque"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "data"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._data) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._data {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_CallMessage.Opaque, rhs: SessionProtos_CallMessage.Opaque) -> Bool {
+    if lhs._data != rhs._data {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -159,13 +159,13 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
-    public class func outgoingIndividualCall(localId: UUID, remoteAddress: SignalServiceAddress) -> SignalCall {
+    public class func outgoingIndividualCall(localId: UUID, publicKey: String) -> SignalCall {
         let individualCall = IndividualCall(
             direction: .outgoing,
             localId: localId,
             state: .dialing,
-            remoteAddress: remoteAddress,
-            sentAtTimestamp: Date.ows_millisecondTimestamp(),
+            publicKey: publicKey,
+            sentAtTimestamp: NSDate.ows_millisecondTimestamp(),
             callAdapterType: .default
         )
         return SignalCall(individualCall: individualCall)

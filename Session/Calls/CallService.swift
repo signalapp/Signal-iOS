@@ -503,11 +503,11 @@ public final class CallService: NSObject {
         if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
     }
 
-    func buildOutgoingIndividualCallIfPossible(address: SignalServiceAddress, hasVideo: Bool) -> SignalCall? {
+    func buildOutgoingIndividualCallIfPossible(publicKey: String, hasVideo: Bool) -> SignalCall? {
         AssertIsOnMainThread()
         guard !hasCallInProgress else { return nil }
 
-        let call = SignalCall.outgoingIndividualCall(localId: UUID(), remoteAddress: address)
+        let call = SignalCall.outgoingIndividualCall(localId: UUID(), publicKey: publicKey)
         call.individualCall.offerMediaType = hasVideo ? .video : .audio
 
         addCall(call)

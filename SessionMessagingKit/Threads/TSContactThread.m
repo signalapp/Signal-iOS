@@ -36,9 +36,14 @@ NSString *const TSContactThreadPrefix = @"c";
 + (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID
 {
     __block TSContactThread *thread;
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithContactSessionID:contactSessionID transaction:transaction];
+    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        thread = [self getThreadWithContactSessionID:contactSessionID transaction:transaction];
     }];
+    if (thread == nil) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            thread = [self getOrCreateThreadWithContactSessionID:contactSessionID transaction:transaction];
+        }];
+    }
 
     return thread;
 }

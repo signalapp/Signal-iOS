@@ -42,6 +42,83 @@ message Content {
   optional DataExtractionNotification dataExtractionNotification = 8;
 }
 
+message CallMessage {
+
+  message Offer {
+
+    enum Type {
+      OFFER_AUDIO_CALL = 0;
+      OFFER_VIDEO_CALL = 1;
+      // next index 3, skip 2 – it was the unused "NEED_PERMISSION" type
+    }
+
+    // @required
+    optional uint64 id     = 1;
+    // Legacy/deprecated; replaced by 'opaque'
+    optional string sdp    = 2;
+    optional Type   type   = 3;
+    optional bytes  opaque = 4;
+  }
+
+  message Answer {
+    // @required
+    optional uint64 id     = 1;
+    // Legacy/deprecated; replaced by 'opaque'
+    optional string sdp    = 2;
+    optional bytes  opaque = 3;
+  }
+
+  message IceUpdate {
+    // @required
+    optional uint64 id     = 1;
+    // Legacy/deprecated; remove when old clients are gone.
+    optional string mid    = 2;
+    // Legacy/deprecated; remove when old clients are gone.
+    optional uint32 line   = 3;
+    // Legacy/deprecated; replaced by 'opaque'
+    optional string sdp    = 4;
+    optional bytes  opaque = 5;
+  }
+
+  message Busy {
+    // @required
+    optional uint64 id = 1;
+  }
+
+  message Hangup {
+  
+    enum Type {
+      HANGUP_NORMAL          = 0;
+      HANGUP_ACCEPTED        = 1;
+      HANGUP_DECLINED        = 2;
+      HANGUP_BUSY            = 3;
+      HANGUP_NEED_PERMISSION = 4;
+    }
+
+    // @required
+    optional uint64 id       = 1;
+    optional Type   type     = 2;
+    optional uint32 deviceId = 3;
+  }
+
+  message Opaque {
+    optional bytes data = 1;
+  }
+
+  optional Offer     offer               = 1;
+  optional Answer    answer              = 2;
+  repeated IceUpdate iceUpdate           = 3;
+  optional Hangup    legacyHangup        = 4;
+  optional Busy      busy                = 5;
+  // Signal-iOS sends profile key with call messages
+  // for earlier discovery.
+  optional bytes     profileKey          = 6;
+  optional Hangup    hangup              = 7;
+  optional bool      supportsMultiRing   = 8;
+  optional uint32    destinationDeviceId = 9;
+  optional Opaque    opaque              = 10;
+}
+
 message KeyPair {
   // @required
   required bytes publicKey  = 1;
