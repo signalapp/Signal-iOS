@@ -58,6 +58,8 @@ public class HomeViewCell: UITableViewCell {
         ]
     }
 
+    // MARK: - Configuration
+
     struct Configuration {
         let thread: ThreadViewModel
         let shouldLoadAvatarAsync: Bool
@@ -88,6 +90,7 @@ public class HomeViewCell: UITableViewCell {
         }
     }
     private var cellContentToken: HVCellContentToken?
+    // TODO:
     private var thread: TSThread? {
         cellContentToken?.thread
     }
@@ -103,7 +106,7 @@ public class HomeViewCell: UITableViewCell {
     //            overrideSnippet != nil
     //        }
 
-    // MARK: -
+    // MARK: - View Constants
 
     private static var unreadFont: UIFont {
         UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold
@@ -201,11 +204,16 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private static func buildCellConfigs(configuration: Configuration) -> HVCellConfigs {
-        HVCellConfigs(
+        let shouldShowMuteIndicator = Self.shouldShowMuteIndicator(configuration: configuration)
+        let messageStatusToken = Self.buildMessageStatusToken(thread: configuration.thread,
+                                                              shouldHideStatusIndicator: <#T##Bool#>)
+
+        return HVCellConfigs(
             thread: configuration.thread.threadRecord,
             isBlocked: configuration.isBlocked,
-            shouldShowMuteIndicator: shouldShowMuteIndicator(configuration: configuration),
+            shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
+            messageStatusToken: messageStatusToken,
 
             topRowStackConfig: Self.topRowStackConfig,
             bottomRowStackConfig: Self.bottomRowStackConfig,
@@ -245,6 +253,7 @@ public class HomeViewCell: UITableViewCell {
         topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
                                                                          verticalFlowBehavior: .fixed))
 
+        let avatarSize: CGSize = .square(CGFloat(HomeViewCell.avatarSize))
         let avatarStackMeasurement = ManualStackView.measure(config: avatarStackConfig,
                                                              subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ])
         let avatarStackSize = avatarStackMeasurement.measuredSize
@@ -291,6 +300,7 @@ public class HomeViewCell: UITableViewCell {
         //        let thread = configuration.thread
         let isBlocked = cellContentToken.isBlocked
         let hasUnreadStyle = cellContentToken.hasUnreadStyle
+        let shouldShowMuteIndicator = cellContentToken.shouldShowMuteIndicator
 
         let configs = cellContentToken.configs
         let topRowStackConfig = configs.topRowStackConfig
@@ -409,7 +419,7 @@ public class HomeViewCell: UITableViewCell {
         nameLabelConfig.applyForRendering(label: nameLabel)
         topRowStackSubviews.append(nameLabel)
 
-        if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
+        if shouldShowMuteIndicator {
             muteIconView.setTemplateImageName("bell-disabled-outline-24",
                                               tintColor: Theme.primaryTextColor)
             muteIconView.tintColor = Self.snippetColor
@@ -454,8 +464,7 @@ public class HomeViewCell: UITableViewCell {
         var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
             bottomRowWrapperSize.asManualSubviewInfo()
         ]
-        if let statusIndicator = prepareStatusIndicatorView(thread: thread,
-                                                            shouldHideStatusIndicator: shouldHideStatusIndicator) {
+        if let statusIndicator = prepareStatusIndicatorView(token: cellContentToken.configs.messageStatusToken) {
             bottomRowStackSubviews.append(statusIndicator.view)
             // The status indicator should vertically align with the
             // first line of the snippet.
@@ -491,6 +500,8 @@ public class HomeViewCell: UITableViewCell {
                               measurement: outerHStackMeasurement,
                               subviews: outerHStackSubviews)
     }
+
+    // MARK: - Stack Configs
 
     private static var topRowStackConfig: ManualStackView.Config {
         ManualStackView.Config(axis: .horizontal,
@@ -530,12 +541,10 @@ public class HomeViewCell: UITableViewCell {
                                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12))
     }
 
-    struct StatusIndicator {
-        let view: UIView
-        let size: CGSize
-    }
-    private static func prepareStatusIndicatorView(thread: ThreadViewModel,
-                                                   shouldHideStatusIndicator: Bool) -> StatusIndicator? {
+    // MARK: - Message Status Indicator
+
+    private static func buildMessageStatusToken(thread: ThreadViewModel,
+                                                shouldHideStatusIndicator: Bool) -> HVMessageStatusToken? {
         guard !shouldHideStatusIndicator,
               let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage else {
             return nil
@@ -580,10 +589,23 @@ public class HomeViewCell: UITableViewCell {
         guard let image = statusIndicatorImage else {
             return nil
         }
-        messageStatusIconView.image = image.withRenderingMode(.alwaysTemplate)
-        messageStatusIconView.tintColor = messageStatusViewTintColor
+        return HVMessageStatusToken(image: image.withRenderingMode(.alwaysTemplate),
+                                    tintColor: messageStatusViewTintColor,
+                                    shouldAnimateStatusIcon: shouldAnimateStatusIcon)
+    }
 
-        if shouldAnimateStatusIcon {
+    struct StatusIndicator {
+        let view: UIView
+        let size: CGSize
+    }
+    private func prepareStatusIndicatorView(token: HVMessageStatusToken?) -> StatusIndicator? {
+        guard let token = token else {
+            return nil
+        }
+        messageStatusIconView.image = token.image.withRenderingMode(.alwaysTemplate)
+        messageStatusIconView.tintColor = token.tintColor
+
+        if token.shouldAnimateStatusIcon {
             let animation = CABasicAnimation(keyPath: "transform.rotation.z")
             animation.toValue = NSNumber(value: Double.pi * 2)
             animation.duration = kSecondInterval * 1
@@ -594,8 +616,10 @@ public class HomeViewCell: UITableViewCell {
             messageStatusIconView.layer.removeAllAnimations()
         }
 
-        return StatusIndicator(view: messageStatusIconView, size: image.size)
+        return StatusIndicator(view: messageStatusIconView, size: token.image.size)
     }
+
+    // MARK: - Label Configs
 
     private static func attributedSnippet(configuration: Configuration) -> NSAttributedString {
         let thread = configuration.thread
@@ -859,6 +883,14 @@ public class HomeViewCell: UITableViewCell {
 
 // MARK: -
 
+private struct HVMessageStatusToken {
+    let image: UIImage
+    let tintColor: UIColor
+    let shouldAnimateStatusIcon: Bool
+}
+
+// MARK: -
+
 private struct HVCellConfigs {
     // State
     let thread: TSThread
@@ -866,6 +898,7 @@ private struct HVCellConfigs {
     let shouldShowMuteIndicator: Bool
     let hasUnreadStyle: Bool
     let hasOverrideSnippet: Bool
+    let messageStatusToken: HVMessageStatusToken
 
     // Configs
     let topRowStackConfig: ManualStackView.Config
@@ -897,6 +930,7 @@ class HVCellContentToken {
     fileprivate var thread: TSThread { configs.thread }
     fileprivate var isBlocked: Bool { configs.isBlocked }
     fileprivate var shouldShowMuteIndicator: Bool { configs.shouldShowMuteIndicator }
+    fileprivate var hasUnreadStyle: Bool { configs.hasUnreadStyle }
     fileprivate var hasOverrideSnippet: Bool { configs.hasOverrideSnippet }
 
     fileprivate init(configs: HVCellConfigs,
