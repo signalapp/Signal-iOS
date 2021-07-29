@@ -171,8 +171,30 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    public func showDeliveryIssueWarningAlert() {
-        // TODO
+    public func showDeliveryIssueWarningAlert(from senderAddress: SignalServiceAddress) {
+        let senderName = databaseStorage.read { transaction in
+            Self.contactsManager.displayName(for: senderAddress, transaction: transaction)
+        }
+        let alertTitle = NSLocalizedString("ALERT_DELIVERY_ISSUE_TITLE", comment: "Title for delivery issue sheet")
+        let alertMessageFormat = NSLocalizedString("ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message. Embeds {{ sender name }}.")
+        let alertMessage = String(format: alertMessageFormat, senderName)
+
+        let headerImageView = UIImageView(image: .init(named: "delivery-issue"))
+        headerImageView.autoSetDimension(.height, toSize: 110)
+        headerImageView.autoSetDimension(.width, toSize: 200)
+
+        let headerView = UIView()
+        headerView.addSubview(headerImageView)
+        headerImageView.autoPinEdge(toSuperviewEdge: .top, withInset: 22)
+        headerImageView.autoPinEdge(toSuperviewEdge: .bottom)
+        headerImageView.autoHCenterInSuperview()
+
+        let actionSheet = ActionSheetController(
+            title: alertTitle,
+            message: alertMessage)
+        actionSheet.customHeader = headerView
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        presentActionSheet(actionSheet)
     }
 }
 

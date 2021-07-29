@@ -948,7 +948,7 @@ extension CVComponentSystemMessage {
         case .decryptionFailure:
             return Action(title: CommonStrings.learnMore,
                           accessibilityIdentifier: "learn_more",
-                          action: .cvc_didTapDeliveryIssueWarning)
+                          action: .cvc_didTapDeliveryIssueWarning(errorMessage: message))
         case .duplicateMessage,
              .invalidVersion:
             return nil
