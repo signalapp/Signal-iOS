@@ -61,7 +61,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,
                             group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
                             senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
-                            if let messageBody = tsIncomingMessage.previewText(with: transaction).filterForDisplay, !messageBody.contains("@\(userPublicKey)") && group.isOnlyNotifyMentions {
+                            if let messageBody = tsIncomingMessage.previewText(with: transaction).filterForDisplay, !messageBody.contains("@\(userPublicKey)") && group.isOnlyNotifyingForMentions {
                                 // Ignore PNs if the group is set to only notify mentions
                                 return self.completeSilenty()
                             }
