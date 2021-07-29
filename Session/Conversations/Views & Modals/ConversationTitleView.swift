@@ -92,13 +92,14 @@ final class ConversationTitleView : UIView {
             result.append(NSAttributedString(string: "Muted"))
             return result
         } else if let thread = self.thread as? TSGroupThread {
-            if thread.isOnlyNotifyMentions {
+            if thread.isOnlyNotifyingForMentions {
                 let imageAttachment = NSTextAttachment()
-                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: Colors.text)
+                let color: UIColor = isDarkMode ? .white : .black
+                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: color)
                 imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)
-                let imageString = NSAttributedString(attachment: imageAttachment)
-                result.append(imageString)
-                result.append(NSAttributedString(string: "  Only Notify Mentions"))
+                let imageAsString = NSAttributedString(attachment: imageAttachment)
+                result.append(imageAsString)
+                result.append(NSAttributedString(string: "  " + NSLocalizedString("view_conversation_title_notify_for_mentions_only", comment: "")))
                 return result
             } else {
                 var userCount: UInt64?

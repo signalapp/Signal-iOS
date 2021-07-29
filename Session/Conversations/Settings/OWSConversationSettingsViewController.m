@@ -318,55 +318,6 @@ CGFloat kIconViewLength = 24;
         } actionBlock:^{
             [weakSelf inviteUsersToOpenGroup];
         }]];
-        
-        // Notification Settings
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [OWSTableItem newCell];
-            OWSConversationSettingsViewController *strongSelf = weakSelf;
-            OWSCAssertDebug(strongSelf);
-            cell.preservesSuperviewLayoutMargins = YES;
-            cell.contentView.preservesSuperviewLayoutMargins = YES;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-            UIImageView *iconView = [strongSelf viewForIconWithName:@"NotifyMentions"];
-
-            UILabel *rowLabel = [UILabel new];
-            rowLabel.text = NSLocalizedString(
-                @"CONVERSATION_SETTINGS_NOTIFICATION", @"");
-            rowLabel.textColor = LKColors.text;
-            rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
-            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-
-            UISwitch *switchView = [UISwitch new];
-            switchView.on = ((TSGroupThread *)strongSelf.thread).isOnlyNotifyMentions;
-            [switchView addTarget:strongSelf action:@selector(notifyMentionsSwitchValueDidChange:)
-                forControlEvents:UIControlEventValueChanged];
-
-            UIStackView *topRow =
-                [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
-            topRow.spacing = strongSelf.iconSpacing;
-            topRow.alignment = UIStackViewAlignmentCenter;
-            [cell.contentView addSubview:topRow];
-            [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
-
-            UILabel *subtitleLabel = [UILabel new];
-            subtitleLabel.text = NSLocalizedString(@"When enabled, only messages mentioned you will be notified.", @"");
-            subtitleLabel.textColor = LKColors.text;
-            subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
-            subtitleLabel.numberOfLines = 0;
-            subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-            [cell.contentView addSubview:subtitleLabel];
-            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:8];
-            [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
-            [subtitleLabel autoPinTrailingToSuperviewMargin];
-            [subtitleLabel autoPinBottomToSuperviewMargin];
-
-            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
-
-            cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"notify_mentions_only");
-
-            return cell;
-         } customRowHeight:UITableViewAutomaticDimension actionBlock:nil]];
     }
 
     // Search
@@ -563,6 +514,56 @@ CGFloat kIconViewLength = 24;
             vc.thread = weakSelf.thread;
             [weakSelf.navigationController pushViewController:vc animated:YES];
         }]];
+        
+        if (self.isOpenGroup) {
+            // Notification Settings
+            [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
+                UITableViewCell *cell = [OWSTableItem newCell];
+                OWSConversationSettingsViewController *strongSelf = weakSelf;
+                OWSCAssertDebug(strongSelf);
+                cell.preservesSuperviewLayoutMargins = YES;
+                cell.contentView.preservesSuperviewLayoutMargins = YES;
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                UIImageView *iconView = [strongSelf viewForIconWithName:@"NotifyMentions"];
+
+                UILabel *rowLabel = [UILabel new];
+                rowLabel.text = NSLocalizedString(@"vc_conversation_settings_notify_for_mentions_only_title", @"");
+                rowLabel.textColor = LKColors.text;
+                rowLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
+                rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+
+                UISwitch *switchView = [UISwitch new];
+                switchView.on = ((TSGroupThread *)strongSelf.thread).isOnlyNotifyingForMentions;
+                [switchView addTarget:strongSelf action:@selector(notifyForMentionsOnlySwitchValueDidChange:)
+                    forControlEvents:UIControlEventValueChanged];
+
+                UIStackView *topRow =
+                    [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
+                topRow.spacing = strongSelf.iconSpacing;
+                topRow.alignment = UIStackViewAlignmentCenter;
+                [cell.contentView addSubview:topRow];
+                [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
+
+                UILabel *subtitleLabel = [UILabel new];
+                subtitleLabel.text = NSLocalizedString(@"When enabled, only messages mentioned you will be notified.", @"");
+                subtitleLabel.textColor = LKColors.text;
+                subtitleLabel.font = [UIFont systemFontOfSize:LKValues.smallFontSize];
+                subtitleLabel.numberOfLines = 0;
+                subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+                [cell.contentView addSubview:subtitleLabel];
+                [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:8];
+                [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
+                [subtitleLabel autoPinTrailingToSuperviewMargin];
+                [subtitleLabel autoPinBottomToSuperviewMargin];
+
+                cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+
+                cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSConversationSettingsViewController, @"notify_for_mentions_only");
+
+                return cell;
+             } customRowHeight:UITableViewAutomaticDimension actionBlock:nil]];
+        }
         
         // Mute thread
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -996,18 +997,13 @@ CGFloat kIconViewLength = 24;
     [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
 }
 
-- (void)notifyMentionsSwitchValueDidChange:(id)sender
+- (void)notifyForMentionsOnlySwitchValueDidChange:(id)sender
 {
     UISwitch *uiSwitch = (UISwitch *)sender;
-    if (uiSwitch.isOn) {
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [(TSGroupThread *)self.thread setIsOnlyNotifyMentions:true withTransaction:transaction];
-        }];
-    } else {
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [(TSGroupThread *)self.thread setIsOnlyNotifyMentions:false withTransaction:transaction];
-        }];
-    }
+    BOOL isEnabled = uiSwitch.isOn;
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [(TSGroupThread *)self.thread setisOnlyNotifyingForMentions:isEnabled withTransaction:transaction];
+    }];
 }
 
 - (void)hideEditNameUI
