@@ -8,11 +8,19 @@ protocol ContextMenuControllerDelegate: AnyObject {
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController)
 }
 
-protocol ContextMenuViewDelegate: AnyObject {
+private protocol ContextMenuViewDelegate: AnyObject {
     func contextMenuViewPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect
+    func contextMenuViewAnimationState(_ contextMenuView: ContextMenuHostView) -> ContextMenuAnimationState
+    func contextMenuViewPreviewFrameForAccessoryLayout(_ contextMenuView: ContextMenuHostView) -> CGRect
 }
 
-class ContextMenuHostView: UIView {
+private enum ContextMenuAnimationState {
+    case none
+    case animateIn
+    case animateOut
+}
+
+private class ContextMenuHostView: UIView {
 
     weak var delegate: ContextMenuViewDelegate?
     var previewViewAlignment: ContextMenuTargetedPreview.Alignment = .center
@@ -73,8 +81,14 @@ class ContextMenuHostView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         blurView?.frame = bounds
+
+        let animationState = delegate?.contextMenuViewAnimationState(self) ?? .none
+
         if let previewView = self.previewView {
-            previewView.frame = targetPreviewFrame()
+            // Let the controller manage the preview's frame if animating
+            if animationState != .animateOut {
+                previewView.frame = targetPreviewFrame()
+            }
         }
 
         if let accessories = accessoryViews {
@@ -199,8 +213,10 @@ class ContextMenuHostView: UIView {
     }
 
     private func layoutAccessoryView(_ accessory: ContextMenuTargetedPreviewAccessory) {
-        guard let previewFrame = previewView?.frame else {
-            owsFailDebug("Cannot layout accessory views without a preview view")
+        let previewFrame = delegate?.contextMenuViewPreviewFrameForAccessoryLayout(self) ?? CGRect.zero
+
+        let animationState = delegate?.contextMenuViewAnimationState(self) ?? .none
+        guard !(accessory.animateAccessoryPresentationAlongsidePreview && animationState == .animateOut) else {
             return
         }
 
@@ -215,12 +231,30 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     let contextMenuConfiguration: ContextMenuConfiguration
     let menuAccessory: ContextMenuActionsAccessory?
 
+    var previewView: UIView? {
+        if let hostView = view as? ContextMenuHostView {
+            return hostView.previewView
+        }
+
+        return nil
+    }
+
     var gestureRecognizer: UIGestureRecognizer?
     var localPanGestureRecoginzer: UIPanGestureRecognizer?
 
     private var gestureExitedDeadZone: Bool = false
     private let deadZoneRadius: CGFloat = 30
     private var initialTouchLocation: CGPoint?
+
+    private var animationState: ContextMenuAnimationState = .none
+    private var animateOutPreviewFrame = CGRect.zero
+    private let animationDuration = 0.4
+
+    private var previewShadowVisible = false {
+        didSet {
+            self.previewView?.layer.shadowOpacity = previewShadowVisible ? 0.3 : 0
+        }
+    }
 
     var accessoryViews: [ContextMenuTargetedPreviewAccessory] {
         var accessories = contextMenuPreview.accessoryViews
@@ -231,8 +265,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     }
 
     lazy var blurView: UIVisualEffectView = {
-        let effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
-        return UIVisualEffectView(effect: effect)
+        return UIVisualEffectView(effect: nil)
     }()
 
     private var emojiPickerSheet: EmojiPickerSheet?
@@ -268,6 +301,11 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         contextMenuView.previewView = contextMenuPreview.snapshot
         contextMenuView.accessoryViews = accessoryViews
 
+        self.previewView?.isHidden = true
+        self.previewView?.layer.shadowRadius = 12
+        self.previewView?.layer.shadowOffset = CGSize(width: 0, height: 4)
+        self.previewView?.layer.shadowColor = UIColor.ows_black.cgColor
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
         view.addGestureRecognizer(tapGesture)
     }
@@ -280,12 +318,118 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        guard let previewView = previewView else {
+            owsFailDebug("Cannot animate without preview view!")
+            return
+        }
+
+        animationState = .animateIn
+
+        UIView.animate(withDuration: animationDuration / 2.0) {
+            self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
+            self.previewShadowVisible = true
+        }
+
+        previewView.isHidden = false
+        let finalFrame = previewView.frame
+        let initialFrame = previewSourceFrame()
+        let shiftPreview = finalFrame != initialFrame
+        if shiftPreview {
+            previewView.frame = initialFrame
+
+            let yDelta = finalFrame.y - initialFrame.y
+            for accessory in accessoryViews {
+                if accessory.animateAccessoryPresentationAlongsidePreview {
+                    accessory.accessoryView.frame.y -= yDelta
+                }
+            }
+
+            UIView.animate(
+                withDuration: animationDuration,
+                delay: 0,
+                usingSpringWithDamping: 0.8,
+                initialSpringVelocity: 1,
+                options: [.curveEaseInOut, .beginFromCurrentState],
+                animations: {
+                    for accessory in self.accessoryViews {
+                        if accessory.animateAccessoryPresentationAlongsidePreview {
+                            accessory.accessoryView.frame.y += yDelta
+                        }
+                    }
+                    self.previewView?.frame = finalFrame
+                }) { _ in
+                    self.animationState = .none
+            }
+        }
+
+        // Animate in accessories
         for accessory in accessoryViews {
-            accessory.animateIn(duration: 0.2) { }
+            accessory.animateIn(duration: animationDuration, previewWillShift: shiftPreview) { }
         }
     }
 
     // MARK: Public
+
+    public func animateOut(_ completion: @escaping () -> Void) {
+
+        guard let previewView = previewView else {
+            owsFailDebug("Cannot animate without preview view!")
+            completion()
+            return
+        }
+
+        let dispatchGroup = DispatchGroup()
+        animationState = .animateOut
+        dispatchGroup.enter()
+        UIView.animate(withDuration: animationDuration / 2.0) {
+            self.blurView.effect = nil
+            self.previewShadowVisible = false
+        } completion: { _ in
+            dispatchGroup.leave()
+        }
+
+        let finalFrame = previewSourceFrame()
+        let initialFrame = previewView.frame
+        animateOutPreviewFrame = initialFrame
+        let shiftPreview = finalFrame != initialFrame
+        if shiftPreview {
+
+            let yDelta = finalFrame.y - initialFrame.y
+
+            dispatchGroup.enter()
+            UIView.animate(
+                withDuration: animationDuration,
+                delay: 0,
+                usingSpringWithDamping: 0.8,
+                initialSpringVelocity: 1,
+                options: [.curveEaseInOut, .beginFromCurrentState],
+                animations: {
+                    for accessory in self.accessoryViews {
+                        if accessory.animateAccessoryPresentationAlongsidePreview {
+                            accessory.accessoryView.frame.y += yDelta
+                        }
+                    }
+                    self.previewView?.frame = finalFrame
+                },
+                completion: { _ in
+                    dispatchGroup.leave()
+                }
+            )
+        }
+
+        // Animate in accessories
+        for accessory in accessoryViews {
+            dispatchGroup.enter()
+            accessory.animateOut(duration: animationDuration, previewWillShift: shiftPreview) {
+                dispatchGroup.leave()
+            }
+        }
+
+        dispatchGroup.notify(queue: .main) {
+            self.animationState = .none
+            completion()
+        }
+    }
 
     // MARK: Gesture Recognizer Support
     public func gestureDidChange() {
@@ -367,15 +511,31 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
 
     // MARK: ContextMenuViewDelegate
 
-    func contextMenuViewPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect {
+    fileprivate func contextMenuViewPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect {
+        return previewSourceFrame()
+    }
+
+    fileprivate func contextMenuViewAnimationState(_ contextMenuView: ContextMenuHostView) -> ContextMenuAnimationState {
+        return animationState
+    }
+
+    fileprivate func contextMenuViewPreviewFrameForAccessoryLayout(_ contextMenuView: ContextMenuHostView) -> CGRect {
+        if animationState == .animateOut {
+            return animateOutPreviewFrame
+        }
+
+        return previewView?.frame ?? CGRect.zero
+    }
+
+    // MARK: Private
+
+    private func previewSourceFrame() -> CGRect {
         guard let sourceView = contextMenuPreview.view else {
             owsFailDebug("Expected source view")
             return CGRect.zero
         }
         return view.convert(sourceView.frame, from: sourceView)
     }
-
-    // MARK: Private
 
     @objc
     private func tapGestureRecognized(sender: UIGestureRecognizer) {

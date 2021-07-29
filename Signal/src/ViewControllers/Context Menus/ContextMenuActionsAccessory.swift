@@ -10,6 +10,11 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
 
     private let menuView: ContextMenuActionsView
 
+    private let minimumScale: CGFloat = 0.2
+    private let minimumOpacity: CGFloat = 0.2
+    private let springDamping: CGFloat = 0.8
+    private let springInitialVelocity: CGFloat = 1
+
     public init(
         menu: ContextMenu,
         accessoryAlignment: AccessoryAlignment
@@ -19,19 +24,104 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
         menuView = ContextMenuActionsView(menu: menu)
         super.init(accessoryView: menuView, accessoryAlignment: accessoryAlignment)
         menuView.delegate = self
+        animateAccessoryPresentationAlongsidePreview = true
     }
 
-    override func touchLocationInViewDidChange(locationInView: CGPoint) {
+    override func animateIn(
+        duration: TimeInterval,
+        previewWillShift: Bool,
+        completion: @escaping () -> Void
+    ) {
+
+        setMenuLayerAnchorPoint()
+
+        menuView.transform = CGAffineTransform.scale(minimumScale)
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            usingSpringWithDamping: springDamping,
+            initialSpringVelocity: springInitialVelocity,
+            options: [.curveEaseInOut, .beginFromCurrentState],
+            animations: {
+                self.menuView.transform = CGAffineTransform.identity
+            },
+            completion: nil
+        )
+
+        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
+        opacityAnimation.fromValue = minimumOpacity
+        opacityAnimation.toValue = 1
+        opacityAnimation.duration = duration
+        opacityAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        menuView.layer.add(opacityAnimation, forKey: "insertOpacity")
+    }
+
+    override func animateOut(
+        duration: TimeInterval,
+        previewWillShift: Bool,
+        completion: @escaping () -> Void
+    ) {
+
+        setMenuLayerAnchorPoint()
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            usingSpringWithDamping: springDamping,
+            initialSpringVelocity: springInitialVelocity,
+            options: [.curveEaseInOut, .beginFromCurrentState],
+            animations: {
+                self.menuView.transform = CGAffineTransform.scale(self.minimumScale)
+            },
+            completion: { _ in
+                completion()
+            }
+        )
+
+        let opacityAnimation = CABasicAnimation(keyPath: "opacity")
+        opacityAnimation.fromValue = 1
+        opacityAnimation.toValue = 0
+        opacityAnimation.duration = duration - 0.1
+        opacityAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        opacityAnimation.isRemovedOnCompletion = false
+        opacityAnimation.fillMode = .forwards
+        menuView.layer.add(opacityAnimation, forKey: "removeOpacity")
+    }
+
+    private func setMenuLayerAnchorPoint() {
+        let alignment = delegate?.contextMenuTargetedPreviewAccessoryPreviewAlignment(self)
+        let xAnchor: CGFloat
+        switch alignment {
+        case .center:
+            xAnchor = 0.5
+        case .left:
+            xAnchor = 0
+        case .right:
+            xAnchor = 1
+        case .none:
+            xAnchor = 0
+        }
+
+        let frame = menuView.frame
+        menuView.layer.anchorPoint = CGPoint(x: xAnchor, y: 0)
+        menuView.frame = frame
+    }
+
+    override func touchLocationInViewDidChange(
+        locationInView: CGPoint
+    ) {
         menuView.handleGestureChanged(locationInView: locationInView)
     }
 
-    override func touchLocationInViewDidEnd(locationInView: CGPoint) {
+    override func touchLocationInViewDidEnd(
+        locationInView: CGPoint
+    ) {
         menuView.handleGestureEnded(locationInView: locationInView)
     }
 
     func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction) {
-        delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self)
-        contextMenuAction.handler(contextMenuAction)
+        delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self, completion: {
+            contextMenuAction.handler(contextMenuAction)
+        })
     }
 }
 

@@ -52,7 +52,8 @@ public class ContextMenu {
 }
 
 protocol ContextMenuTargetedPreviewAccessoryInteractionDelegate: AnyObject {
-    func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory)
+    func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory, completion: @escaping () -> Void)
+    func contextMenuTargetedPreviewAccessoryPreviewAlignment(_ accessory: ContextMenuTargetedPreviewAccessory) -> ContextMenuTargetedPreview.Alignment
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(_ accessory: ContextMenuTargetedPreviewAccessory, completion: @escaping (String) -> Void)
 }
 
@@ -85,6 +86,8 @@ public class ContextMenuTargetedPreviewAccessory {
     var accessoryAlignment: AccessoryAlignment
     var landscapeAccessoryAlignment: AccessoryAlignment?
 
+    var animateAccessoryPresentationAlongsidePreview: Bool = false
+
     weak var delegate: ContextMenuTargetedPreviewAccessoryInteractionDelegate?
 
     init(
@@ -97,6 +100,7 @@ public class ContextMenuTargetedPreviewAccessory {
 
     func animateIn(
         duration: TimeInterval,
+        previewWillShift: Bool,
         completion: @escaping () -> Void
     ) {
         completion()
@@ -104,6 +108,7 @@ public class ContextMenuTargetedPreviewAccessory {
 
     func animateOut(
         duration: TimeInterval,
+        previewWillShift: Bool,
         completion: @escaping () -> Void
     ) {
         completion()
@@ -130,7 +135,6 @@ public class ContextMenuTargetedPreview {
         case left
         case center
         case right
-
     }
 
     public let view: UIView?

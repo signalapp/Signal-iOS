@@ -24,18 +24,31 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.top, .exterior), (isIncomingMessage ? .leading : .trailing, .interior)], alignmentOffset: CGPoint(x: alignmnetOffset, y: -12))
         super.init(accessoryView: reactionPicker, accessoryAlignment: alignment)
         reactionPicker.delegate = self
+        reactionPicker.isHidden = true
     }
 
     override func animateIn(
         duration: TimeInterval,
+        previewWillShift: Bool,
         completion: @escaping () -> Void
     ) {
-        reactionPicker.playPresentationAnimation(duration: duration)
-        completion()
+        let animateIn = {
+            self.reactionPicker.isHidden = false
+            self.reactionPicker.playPresentationAnimation(duration: 0.2)
+            completion()
+
+        }
+        if previewWillShift {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { animateIn() }
+        } else {
+            animateIn()
+        }
+
     }
 
     override func animateOut(
         duration: TimeInterval,
+        previewWillShift: Bool,
         completion: @escaping () -> Void
     ) {
         reactionPicker.playDismissalAnimation(duration: duration, completion: completion)
@@ -69,7 +82,7 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
 
         reactionPicker.playDismissalAnimation(duration: 0.2) {
             self.didSelectReactionHandler?(message, reaction, isRemoving)
-            self.delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self)
+            self.delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self, completion: { })
 
         }
     }
@@ -85,7 +98,7 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
         self.delegate?.contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(self) { emojiString in
             let isRemoving = emojiString == self.itemViewModel?.reactionState?.localUserEmoji
             self.didSelectReactionHandler?(message, emojiString, isRemoving)
-            self.delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self)
+            self.delegate?.contextMenuTargetedPreviewAccessoryRequestsDismissal(self, completion: { })
         }
     }
 }
