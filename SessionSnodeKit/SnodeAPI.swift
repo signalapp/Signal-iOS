@@ -413,6 +413,11 @@ public final class SnodeAPI : NSObject {
     
     private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
+        
+        // NOTE: All authentication logic is currently commented out, the reason being that we can't currently support
+        // it yet for closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our
+        // closed groups.
+        
 //        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
         // Get last message hash
         storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
