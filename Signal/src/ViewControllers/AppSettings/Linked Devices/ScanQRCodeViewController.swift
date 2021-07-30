@@ -86,6 +86,8 @@ class QRCodeScanViewController: OWSViewController {
 
     private var scanner: QRCodeScanner?
 
+    private let canDeliverResultsFlag = AtomicBool(false)
+
     @objc
     public required init(appearance: Appearance) {
         self.appearance = appearance
@@ -199,6 +201,9 @@ class QRCodeScanViewController: OWSViewController {
             return
         }
 
+        let couldEnable = canDeliverResultsFlag.tryToSetFlag()
+        owsAssertDebug(couldEnable)
+
         view.removeAllSubviews()
 
         let scanner = QRCodeScanner(sampleBufferDelegate: self)
@@ -279,6 +284,11 @@ class QRCodeScanViewController: OWSViewController {
     }()
 
     private func processClassification(_ request: VNRequest) {
+        guard !canDeliverResultsFlag.get() else {
+            // Already complete.
+            return
+        }
+
         func filterBarcodes() -> [VNBarcodeObservation] {
             guard let results = request.results else {
                 return []
@@ -348,10 +358,15 @@ class QRCodeScanViewController: OWSViewController {
             }
 
             let outcome = delegate.qrCodeScanViewScanned(self,
-                                                          qrCodeData: qrCode.qrCodeData,
-                                                          qrCodeString: qrCode.qrCodeString)
+                                                         qrCodeData: qrCode.qrCodeData,
+                                                         qrCodeString: qrCode.qrCodeString)
             switch outcome {
             case .stopScanning:
+                guard self.canDeliverResultsFlag.tryToSetFlag() else {
+                    // Already complete.
+                    return
+                }
+
                 self.stopScanning()
 
                 // Vibrate
@@ -766,8 +781,8 @@ private class QRCodeScanner {
         }
         // Failover to a front-facing camera.
         let frontSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
-                                                           mediaType: .video,
-                                                           position: .front)
+                                                            mediaType: .video,
+                                                            position: .front)
         if let device = selectDevice(session: frontSession) {
             return device
         }
