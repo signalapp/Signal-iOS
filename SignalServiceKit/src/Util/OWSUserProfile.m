@@ -868,9 +868,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         return nil;
     }
 
-    return [[NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents:self.nameComponents
-                                                                               style:0
-                                                                             options:0] filterStringForDisplay];
+    return [[self.sharedFormat formatNameComponents:self.nameComponents] filterStringForDisplay];
 }
 
 #pragma mark - Profile Avatars Directory

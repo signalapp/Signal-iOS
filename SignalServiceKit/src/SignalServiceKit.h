@@ -26,7 +26,6 @@
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSFormat.h>
 #import <SignalServiceKit/OWSGroupCallMessage.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>

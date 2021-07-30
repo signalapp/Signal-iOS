@@ -435,9 +435,8 @@ public class AvatarBuilder: NSObject {
             return nil
         }
 
-        guard let abbreviation = PersonNameComponentsFormatter.localizedString(from: personNameComponents,
-                                                                               style: .abbreviated,
-                                                                               options: []).strippedOrNil else {
+        guard let abbreviation = sharedFormat.formatNameComponents(personNameComponents,
+                                                                   style: .abbreviated).strippedOrNil else {
             Logger.warn("Could not abbreviate name.")
             return nil
         }

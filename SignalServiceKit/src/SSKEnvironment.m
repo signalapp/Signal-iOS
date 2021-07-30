@@ -55,6 +55,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
 @property (nonatomic) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
+@property (nonatomic) OWSFormat *sharedFormatRef;
 
 @end
 
@@ -114,6 +115,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
+                           sharedFormat:(OWSFormat *)sharedFormat
 {
     self = [super init];
     if (!self) {
@@ -169,6 +171,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _paymentsCurrenciesRef = paymentsCurrencies;
     _spamChallengeResolverRef = spamResolver;
     _senderKeyStoreRef = senderKeyStore;
+    _sharedFormatRef = sharedFormat;
 
     return self;
 }

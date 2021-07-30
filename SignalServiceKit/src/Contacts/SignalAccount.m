@@ -221,9 +221,7 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
     if (components.nickname.length > 0 && self.shouldUseNicknames) {
         result = components.nickname;
     } else if (components.givenName.length > 0 || components.familyName.length > 0) {
-        result = [NSPersonNameComponentsFormatter localizedStringFromPersonNameComponents: components
-                                                                                    style: NSPersonNameComponentsFormatterStyleDefault
-                                                                                  options: 0];
+        return [[self.sharedFormat formatNameComponents:components] filterStringForDisplay];
     } else {
         // The components might have a nickname but !shouldUseNicknames.
         OWSLogWarn(@"Invalid name components.");

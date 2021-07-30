@@ -1073,9 +1073,7 @@ extension CVComponentSystemMessage {
             }
             let systemContactName = Self.contactsManagerImpl.nameFromSystemContacts(for: profileChangeAddress,
                                                                                     transaction: transaction)
-            let newProfileName = PersonNameComponentsFormatter.localizedString(from: profileChangeNewNameComponents,
-                                                                               style: .`default`,
-                                                                               options: [])
+            let newProfileName = sharedFormat.formatNameComponents(profileChangeNewNameComponents)
             let currentProfileName = Self.profileManager.fullName(for: profileChangeAddress,
                                                                   transaction: transaction)
 

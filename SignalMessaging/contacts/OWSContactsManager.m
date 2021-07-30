@@ -4,7 +4,6 @@
 
 #import "OWSContactsManager.h"
 #import "Environment.h"
-#import "OWSFormat.h"
 #import "OWSProfileManager.h"
 #import "ViewControllerUtils.h"
 #import <Contacts/Contacts.h>
@@ -864,14 +863,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return [self displayNameForAddress:address transaction:transaction];
     }
 
-    static NSPersonNameComponentsFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSPersonNameComponentsFormatter new];
-        formatter.style = NSPersonNameComponentsFormatterStyleShort;
-    });
-
-    return [formatter stringFromPersonNameComponents:nameComponents];
+    return [self.sharedFormat formatNameComponentsShort:nameComponents];
 }
 
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address

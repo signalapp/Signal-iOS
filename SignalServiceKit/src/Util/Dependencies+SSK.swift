@@ -465,6 +465,14 @@ public extension NSObject {
     static var senderKeyStore: SenderKeyStore {
         SSKEnvironment.shared.senderKeyStoreRef
     }
+
+    var sharedFormat: OWSFormat {
+        SSKEnvironment.shared.sharedFormatRef
+    }
+
+    static var sharedFormat: OWSFormat {
+        SSKEnvironment.shared.sharedFormatRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -921,6 +929,14 @@ public extension Dependencies {
 
     static var senderKeyStore: SenderKeyStore {
         SSKEnvironment.shared.senderKeyStoreRef
+    }
+
+    var sharedFormat: OWSFormat {
+        SSKEnvironment.shared.sharedFormatRef
+    }
+
+    static var sharedFormat: OWSFormat {
+        SSKEnvironment.shared.sharedFormatRef
     }
 }
 

@@ -6,6 +6,46 @@ import Foundation
 
 @objc
 public class OWSFormat: NSObject {
+
+    // We evacuate this cache in the background in case the
+    // user changes a system setting that would affect
+    // formatting behavior.
+    private let shortNameComponentsCache = LRUCache<String, String>(maxSize: 256,
+                                                                    nseMaxSize: 0,
+                                                                    shouldEvacuateInBackground: true)
+
+    @objc
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+    }
+
+    @objc
+    public func formatNameComponents(_ nameComponents: PersonNameComponents) -> String {
+        formatNameComponents(nameComponents, style: .default)
+    }
+
+    @objc
+    public func formatNameComponentsShort(_ nameComponents: PersonNameComponents) -> String {
+        formatNameComponents(nameComponents, style: .short)
+    }
+
+    @objc
+    public func formatNameComponents(_ nameComponents: PersonNameComponents,
+                                     style: PersonNameComponentsFormatter.Style) -> String {
+        let cacheKey = String(describing: nameComponents) + "." + String(describing: style)
+        if let value = shortNameComponentsCache.get(key: cacheKey) {
+            Logger.verbose("---- cache hit: \(cacheKey) -> \(value)")
+            return value
+        }
+        let value = PersonNameComponentsFormatter.localizedString(from: nameComponents,
+                                                                  style: style,
+                                                                  options: [])
+        shortNameComponentsCache.set(key: cacheKey, value: value)
+        Logger.verbose("---- cache miss: \(cacheKey) -> \(value)")
+        return value
+    }
 }
 
 // MARK: -
