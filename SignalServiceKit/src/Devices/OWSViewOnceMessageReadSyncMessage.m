@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSViewOnceMessageReadSyncMessage ()
-@property (strong, nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values
+@property (nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values
 @end
 
 @implementation OWSViewOnceMessageReadSyncMessage

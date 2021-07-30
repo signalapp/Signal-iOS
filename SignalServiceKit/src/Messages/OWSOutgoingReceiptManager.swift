@@ -31,8 +31,8 @@ class MessageReceiptSet: NSObject, Codable {
         uniqueIds.subtract(other.uniqueIds)
     }
 
-    fileprivate func union(_ otherSet: Set<UInt64>) {
-        timestamps.formUnion(otherSet)
+    fileprivate func union(timestampSet: Set<UInt64>) {
+        timestamps.formUnion(timestampSet)
     }
 }
 
@@ -41,7 +41,7 @@ extension OWSOutgoingReceiptManager {
     func fetchAllReceiptSets(type: OWSReceiptType, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress: MessageReceiptSet] {
         let allAddresses = store(for: type)
             .allKeys(transaction: transaction)
-            .map { SignalServiceAddress(identifier: $0) }
+            .compactMap { SignalServiceAddress(identifier: $0) }
 
         let tuples = allAddresses.map { ($0, fetchReceiptSet(type: type, address: $0, transaction: transaction)) }
         return Dictionary(uniqueKeysWithValues: tuples)
@@ -59,7 +59,7 @@ extension OWSOutgoingReceiptManager {
             if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: uuidString, transaction: transaction) {
                 builderSet.union(receiptSet)
             } else if let numberSet = store.getObject(forKey: uuidString, transaction: transaction) as? Set<UInt64> {
-                builderSet.union(numberSet)
+                builderSet.union(timestampSet: numberSet)
             }
             hasStoredUuidSet = true
         } else {
@@ -70,7 +70,7 @@ extension OWSOutgoingReceiptManager {
             if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: phoneNumber, transaction: transaction) {
                 builderSet.union(receiptSet)
             } else if let numberSet = store.getObject(forKey: phoneNumber, transaction: transaction) as? Set<UInt64> {
-                builderSet.union(numberSet)
+                builderSet.union(timestampSet: numberSet)
             }
             hasStoredPhoneNumberSet = true
         } else {
@@ -112,11 +112,13 @@ extension OWSOutgoingReceiptManager {
 }
 
 fileprivate extension SignalServiceAddress {
-    convenience init(identifier: String) {
+    convenience init?(identifier: String) {
         if let uuid = UUID(uuidString: identifier) {
             self.init(uuid: uuid)
-        } else {
+        } else if (identifier as NSString).isValidE164() {
             self.init(phoneNumber: identifier)
+        } else {
+            return nil
         }
     }
 }
