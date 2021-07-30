@@ -27,14 +27,14 @@ public extension HomeViewController {
             guard let cell = cell as? HomeViewCell else {
                 continue
             }
-            updateCellVisibility(cell: cell)
+            updateCellVisibility(cell: cell, isCellVisible: true)
         }
     }
 
-    func updateCellVisibility(cell: HomeViewCell) {
+    func updateCellVisibility(cell: HomeViewCell, isCellVisible: Bool) {
         AssertIsOnMainThread()
 
-        cell.isCellVisible = self.isViewVisible
+        cell.isCellVisible = self.isViewVisible && isCellVisible
     }
 
     func ensureCellAnimations() {

@@ -292,7 +292,7 @@ extension HVTableDataSource: UITableViewDelegate {
         guard let cell = cell as? HomeViewCell else {
             return
         }
-        viewController?.updateCellVisibility(cell: cell)
+        viewController?.updateCellVisibility(cell: cell, isCellVisible: true)
     }
 
     public func tableView(_ tableView: UITableView,
@@ -303,7 +303,7 @@ extension HVTableDataSource: UITableViewDelegate {
         guard let cell = cell as? HomeViewCell else {
             return
         }
-        viewController?.updateCellVisibility(cell: cell)
+        viewController?.updateCellVisibility(cell: cell, isCellVisible: false)
     }
 }
 
