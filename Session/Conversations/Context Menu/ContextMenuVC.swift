@@ -75,7 +75,19 @@ final class ContextMenuVC : UIViewController {
         } else {
             timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
         }
-        self.updateMenu()
+        let menuHeight = self.updateMenu()
+        let spacing = Values.smallSpacing
+        let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
+        if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {
+            menuView.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
+        } else {
+            menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
+        }
+        switch viewItem.interaction.interactionType() {
+        case .outgoingMessage: menuView.pin(.right, to: .right, of: snapshot)
+        case .incomingMessage: menuView.pin(.left, to: .left, of: snapshot)
+        default: break // Should never occur
+        }
         // Tap gesture
         let mainTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         view.addGestureRecognizer(mainTapGestureRecognizer)
@@ -95,7 +107,7 @@ final class ContextMenuVC : UIViewController {
         menuView.layer.shadowPath = UIBezierPath(roundedRect: menuView.bounds, cornerRadius: ContextMenuVC.menuCornerRadius).cgPath
     }
     
-    func updateMenu(forDelete: Bool = false) {
+    func updateMenu(forDelete: Bool = false) -> CGFloat {
         // Menu
         menuView.subviews.forEach({ $0.removeFromSuperview() })
         let menuBackgroundView = UIView()
@@ -111,19 +123,7 @@ final class ContextMenuVC : UIViewController {
         menuView.addSubview(menuStackView)
         menuStackView.pin(to: menuView)
         view.addSubview(menuView)
-        let menuHeight = CGFloat(actionViews.count) * ContextMenuVC.actionViewHeight
-        let spacing = Values.smallSpacing
-        let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
-        if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {
-            menuView.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
-        } else {
-            menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
-        }
-        switch viewItem.interaction.interactionType() {
-        case .outgoingMessage: menuView.pin(.right, to: .right, of: snapshot)
-        case .incomingMessage: menuView.pin(.left, to: .left, of: snapshot)
-        default: break // Should never occur
-        }
+        return CGFloat(actionViews.count) * ContextMenuVC.actionViewHeight
     }
 
     // MARK: Interaction
