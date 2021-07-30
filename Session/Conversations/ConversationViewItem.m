@@ -979,7 +979,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteRemotelyAction
 {
-    // TODO: closefd group and one-on-one chat
+    // TODO: closed group and one-on-one chat
     
     if (self.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
@@ -988,25 +988,31 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         OWSInteractionType interationType = self.interaction.interactionType;
         if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
         
-        // Make sure it's an open group message
-        TSMessage *message = (TSMessage *)self.interaction;
-        if (!message.isOpenGroupMessage) return;
-
-        // Get the open group
-        SNOpenGroupV2 *openGroupV2 = [LKStorage.shared getV2OpenGroupForThreadID:groupThread.uniqueId];
-        if (openGroupV2 == nil) return;
-
-        // If it's an incoming message the user must have moderator status
-        if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-            NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
-            if (![SNOpenGroupAPIV2 isUserModerator:userPublicKey forRoom:openGroupV2.room onServer:openGroupV2.server]) { return; }
+        if (groupThread.isClosedGroup) {
+            
         }
         
-        // Delete the message
-        [[SNOpenGroupAPIV2 deleteMessageWithServerID:message.openGroupServerMessageID fromRoom:openGroupV2.room onServer:openGroupV2.server].catch(^(NSError *error) {
-            // Roll back
-            [self.interaction save];
-        }) retainUntilComplete];
+        if (groupThread.isOpenGroup) {
+            // Make sure it's an open group message
+            TSMessage *message = (TSMessage *)self.interaction;
+            if (!message.isOpenGroupMessage) return;
+
+            // Get the open group
+            SNOpenGroupV2 *openGroupV2 = [LKStorage.shared getV2OpenGroupForThreadID:groupThread.uniqueId];
+            if (openGroupV2 == nil) return;
+
+            // If it's an incoming message the user must have moderator status
+            if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+                NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
+                if (![SNOpenGroupAPIV2 isUserModerator:userPublicKey forRoom:openGroupV2.room onServer:openGroupV2.server]) { return; }
+            }
+            
+            // Delete the message
+            [[SNOpenGroupAPIV2 deleteMessageWithServerID:message.openGroupServerMessageID fromRoom:openGroupV2.room onServer:openGroupV2.server].catch(^(NSError *error) {
+                // Roll back
+                [self.interaction save];
+            }) retainUntilComplete];
+        }
     }
 }
 
