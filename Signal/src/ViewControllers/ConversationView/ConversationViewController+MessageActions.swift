@@ -15,12 +15,12 @@ extension ConversationViewController {
             return
         }
         if FeatureFlags.contextMenus {
-            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewLongPressGestureRecognizer)
+            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewContextMenuGestureRecognizer)
             collectionViewActiveContextMenuInteraction = interaction
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
             let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
-            interaction.presentMenu(locationInView: screenPoint)
+            interaction.initiateContextMenuGesture(locationInView: screenPoint)
         } else {
             let messageActionsViewController = MessageActionsViewController(itemViewModel: itemViewModel,
                                                                             focusedView: cell,
@@ -263,6 +263,10 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
     }
 
     public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {
+        if let contextInteraction = interaction as? ChatHistoryContextMenuInteraction, let cell = contextInteraction.view as? CVCell, let componentView = cell.componentView {
+            componentView.contextMenuSourceAnimationComplete?()
+        }
+
         collectionViewActiveContextMenuInteraction = nil
     }
 

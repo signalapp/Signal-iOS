@@ -22,11 +22,31 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
     weak var delegate: ContextMenuInteractionDelegate?
     fileprivate var contextMenuController: ContextMenuController?
-    var configuration: ContextMenuConfiguration?
+
+    private let sourceViewBounceDuration = 0.3
+    fileprivate var gestureEligibleForMenuPresentation: Bool {
+        didSet {
+            if !gestureEligibleForMenuPresentation {
+                // Animate back out
+                UIView.animate(
+                    withDuration: sourceViewBounceDuration,
+                    delay: 0,
+                    options: [.curveEaseInOut, .beginFromCurrentState],
+                    animations: {
+                        self.targetedPreview?.view?.transform = CGAffineTransform.identity
+                    },
+                    completion: nil
+                )
+            }
+        }
+    }
+    fileprivate var locationInView = CGPoint.zero
+    fileprivate var configuration: ContextMenuConfiguration?
+    fileprivate var targetedPreview: ContextMenuTargetedPreview?
 
     private var longPressGestureRecognizer: UIGestureRecognizer = {
         let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressRecognized(sender:)))
-        recognizer.minimumPressDuration = 0.3
+        recognizer.minimumPressDuration = 0.1
         return recognizer
     }()
 
@@ -50,10 +70,13 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         delegate: ContextMenuInteractionDelegate
     ) {
         self.delegate = delegate
+        gestureEligibleForMenuPresentation = false
         super.init()
     }
 
-    public func presentMenu(locationInView: CGPoint) {
+    public func initiateContextMenuGesture(locationInView: CGPoint) {
+        self.locationInView = locationInView
+        gestureEligibleForMenuPresentation = true
 
         guard let delegate = self.delegate else {
             owsFailDebug("Missing ContextMenuInteractionDelegate")
@@ -62,11 +85,6 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
         guard let view = self.view else {
             owsFailDebug("Missing view")
-            return
-        }
-
-        guard let window = view.window else {
-            owsFailDebug("View must be in a window!")
             return
         }
 
@@ -83,7 +101,50 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
             accessory.delegate = self
         }
 
-        presentMenu(window: window, contextMenuConfiguration: contextMenuConfiguration, targetedPreview: targetedPreview)
+        self.targetedPreview = targetedPreview
+
+        UIView.animate(
+            withDuration: sourceViewBounceDuration,
+            delay: 0,
+            options: [.curveEaseInOut, .beginFromCurrentState],
+            animations: {
+                targetedPreview.view?.transform = CGAffineTransform.scale(0.95)
+            },
+            completion: { finished in
+                let shouldPresent = finished && self.gestureEligibleForMenuPresentation
+
+                if shouldPresent {
+                    self.presentMenu(locationInView: self.locationInView)
+                    // Animate back out
+                    self.gestureEligibleForMenuPresentation = false
+                }
+            }
+        )
+
+    }
+
+    public func presentMenu(locationInView: CGPoint) {
+        guard let view = self.view else {
+            owsFailDebug("Missing view")
+            return
+        }
+
+        guard let window = view.window else {
+            owsFailDebug("View must be in a window!")
+            return
+        }
+
+        guard let configuration = self.configuration else {
+            owsFailDebug("Missing context menu configuration")
+            return
+        }
+
+        guard let targetedPreview = self.targetedPreview else {
+            owsFailDebug("Missing targeted preview")
+            return
+        }
+
+        presentMenu(window: window, contextMenuConfiguration: configuration, targetedPreview: targetedPreview)
     }
 
     public func presentMenu(window: UIWindow, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) {
@@ -126,6 +187,14 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     @objc
     private func longPressRecognized(sender: UIGestureRecognizer) {
         let locationInView = sender.location(in: self.view)
+        switch sender.state {
+        case .began:
+            initiateContextMenuGesture(locationInView: locationInView)
+        case .ended, .cancelled:
+            gestureEligibleForMenuPresentation = false
+        default:
+            break
+        }
         presentMenu(locationInView: locationInView)
     }
 }
@@ -195,6 +264,14 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     }
 
     public func initiatingGestureRecognizerDidEnd() {
+        gestureEligibleForMenuPresentation = false
+
+        if contextMenuController == nil {
+            if let configuarion = self.configuration {
+                delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
+            }
+        }
+
         contextMenuController?.gestureDidEnd()
     }
 

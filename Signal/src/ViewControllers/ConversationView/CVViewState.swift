@@ -122,6 +122,7 @@ public class CVViewState: NSObject {
 
     public let collectionViewTapGestureRecognizer = UITapGestureRecognizer()
     public let collectionViewLongPressGestureRecognizer = UILongPressGestureRecognizer()
+    public let collectionViewContextMenuGestureRecognizer = UILongPressGestureRecognizer()
     public let collectionViewPanGestureRecognizer = UIPanGestureRecognizer()
     public var collectionViewActiveContextMenuInteraction: ChatHistoryContextMenuInteraction?
     public var longPressHandler: CVLongPressHandler?
@@ -285,6 +286,9 @@ public extension ConversationViewController {
     }
     var collectionViewLongPressGestureRecognizer: UILongPressGestureRecognizer {
         viewState.collectionViewLongPressGestureRecognizer
+    }
+    var collectionViewContextMenuGestureRecognizer: UILongPressGestureRecognizer {
+        viewState.collectionViewContextMenuGestureRecognizer
     }
     var collectionViewPanGestureRecognizer: UIPanGestureRecognizer {
         viewState.collectionViewPanGestureRecognizer

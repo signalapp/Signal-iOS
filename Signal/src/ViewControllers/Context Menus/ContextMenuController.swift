@@ -249,6 +249,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     private var animationState: ContextMenuAnimationState = .none
     private var animateOutPreviewFrame = CGRect.zero
     private let animationDuration = 0.4
+    private let springDamping: CGFloat = 0.8
+    private let springInitialVelocity: CGFloat = 1.0
 
     private var previewShadowVisible = false {
         didSet {
@@ -330,10 +332,14 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
             self.previewShadowVisible = true
         }
 
-        previewView.isHidden = false
         let finalFrame = previewView.frame
         let initialFrame = previewSourceFrame()
         let shiftPreview = finalFrame != initialFrame
+
+        // Match initial transform
+        previewView.transform = CGAffineTransform.scale(0.95)
+        previewView.isHidden = false
+
         if shiftPreview {
             previewView.frame = initialFrame
 
@@ -347,8 +353,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
             UIView.animate(
                 withDuration: animationDuration,
                 delay: 0,
-                usingSpringWithDamping: 0.8,
-                initialSpringVelocity: 1,
+                usingSpringWithDamping: springDamping,
+                initialSpringVelocity: springInitialVelocity,
                 options: [.curveEaseInOut, .beginFromCurrentState],
                 animations: {
                     for accessory in self.accessoryViews {
@@ -357,9 +363,21 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
                         }
                     }
                     self.previewView?.frame = finalFrame
+                    self.previewView?.transform = CGAffineTransform.identity
                 }) { _ in
                     self.animationState = .none
             }
+        } else {
+            // Re-scale to match original size, on the original scaling curve
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                options: [.curveEaseInOut, .beginFromCurrentState],
+                animations: {
+                    self.previewView?.transform = CGAffineTransform.identity
+                },
+                completion: nil
+            )
         }
 
         // Animate in accessories
@@ -400,8 +418,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
             UIView.animate(
                 withDuration: animationDuration,
                 delay: 0,
-                usingSpringWithDamping: 0.8,
-                initialSpringVelocity: 1,
+                usingSpringWithDamping: springDamping,
+                initialSpringVelocity: springInitialVelocity,
                 options: [.curveEaseInOut, .beginFromCurrentState],
                 animations: {
                     for accessory in self.accessoryViews {

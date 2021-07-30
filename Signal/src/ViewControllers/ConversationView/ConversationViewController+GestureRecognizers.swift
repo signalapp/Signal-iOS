@@ -14,6 +14,13 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         collectionViewLongPressGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewLongPressGestureRecognizer)
 
+        if FeatureFlags.contextMenus {
+            collectionViewContextMenuGestureRecognizer.addTarget(self, action: #selector(handleLongPressGesture))
+            collectionViewContextMenuGestureRecognizer.minimumPressDuration = 0.1
+            collectionViewContextMenuGestureRecognizer.delegate = self
+            collectionView.addGestureRecognizer(collectionViewContextMenuGestureRecognizer)
+        }
+
         collectionViewPanGestureRecognizer.addTarget(self, action: #selector(handlePanGesture))
         collectionViewPanGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewPanGestureRecognizer)
@@ -61,6 +68,13 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         } else {
             return true
         }
+    }
+
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Support standard long press recognizing for body text cases, and context menu long press recognizing for everything else 
+        let currentIsLongPress = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer)
+        let otherIsLongPress = (otherGestureRecognizer == collectionViewLongPressGestureRecognizer || otherGestureRecognizer == collectionViewContextMenuGestureRecognizer)
+        return currentIsLongPress && otherIsLongPress
     }
 
     // MARK: -
@@ -142,7 +156,11 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
                                                                componentDelegate: componentDelegate) else {
             return nil
         }
-        longPressHandler.startGesture(cell: cell)
+        if sender == collectionViewContextMenuGestureRecognizer {
+            longPressHandler.startContextMenuGesture(cell: cell)
+        } else {
+            longPressHandler.startGesture(cell: cell)
+        }
         return longPressHandler
     }
 
@@ -238,7 +256,7 @@ public struct CVLongPressHandler {
         self.itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
     }
 
-    func startGesture(cell: CVCell) {
+    func startContextMenuGesture(cell: CVCell) {
         guard let delegate = self.delegate else {
             owsFailDebug("Missing delegate.")
             return
@@ -266,9 +284,56 @@ public struct CVLongPressHandler {
                                            shouldAllowReply: shouldAllowReply)
         case .systemMessage:
             delegate.cvc_didLongPressSystemMessage(cell, itemViewModel: itemViewModel)
-        case .bodyText(let item):
-            delegate.cvc_didLongPressBodyTextItem(.init(item: item))
+        case .bodyText( _ ):
+            break
         }
+    }
+
+    func startGesture(cell: CVCell) {
+        guard let delegate = self.delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
+
+        let useContextMenu = FeatureFlags.contextMenus
+        let shouldAllowReply = delegate.cvc_shouldAllowReplyForItem(itemViewModel)
+
+        if !useContextMenu {
+            switch gestureLocation {
+            case .`default`:
+
+                // TODO: Rename from "Text view item" to "default"?
+                delegate.cvc_didLongPressTextViewItem(cell,
+                                                      itemViewModel: itemViewModel,
+                                                      shouldAllowReply: shouldAllowReply)
+            case .media:
+                delegate.cvc_didLongPressMediaViewItem(cell,
+                                                       itemViewModel: itemViewModel,
+                                                       shouldAllowReply: shouldAllowReply)
+            case .sticker:
+                delegate.cvc_didLongPressSticker(cell,
+                                                 itemViewModel: itemViewModel,
+                                                 shouldAllowReply: shouldAllowReply)
+            case .quotedReply:
+                delegate.cvc_didLongPressQuote(cell,
+                                               itemViewModel: itemViewModel,
+                                               shouldAllowReply: shouldAllowReply)
+            case .systemMessage:
+                delegate.cvc_didLongPressSystemMessage(cell, itemViewModel: itemViewModel)
+            case .bodyText(let item):
+                // TODO EB This one handles URLs, and data detectors
+                delegate.cvc_didLongPressBodyTextItem(.init(item: item))
+            }
+        } else {
+            switch gestureLocation {
+            case .bodyText(let item):
+                delegate.cvc_didLongPressBodyTextItem(.init(item: item))
+            default:
+                // Case will be handled by context menu gesture recognizer
+                break
+            }
+        }
+
     }
 
     func handleLongPress(_ sender: UILongPressGestureRecognizer) {
