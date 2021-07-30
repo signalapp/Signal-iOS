@@ -1212,6 +1212,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             .unknownProtocolVersion
         ]
 
+        let errorMessageInteractions: [SDSRecordType] = [
+            .errorMessage,
+            .recoverableDecryptionPlaceholder
+        ]
         let errorMessageTypes: [TSErrorMessageType] = [
             .noSession,
             .wrongTrustedIdentityKey,
@@ -1244,7 +1248,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
                     AND \(interactionColumn: .messageType) IN (\(infoMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
                 ) OR (
-                    \(interactionColumn: .recordType) IN \([SDSRecordType.errorMessage.rawValue, SDSRecordType.recoverableDecryptionPlaceholder.rawValue])
+                    \(interactionColumn: .recordType) IN (\(errorMessageInteractions.map { "\($0.rawValue)" }.joined(separator: ",")))
                     AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
                 ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
             )
