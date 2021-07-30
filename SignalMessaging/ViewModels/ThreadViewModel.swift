@@ -47,8 +47,7 @@ public class ThreadViewModel: NSObject {
     @objc
     public let lastMessageForInbox: TSInteraction?
 
-    // This property is only set if forHomeView is true.
-    @objc
+    // This property is only populated if forHomeView is true.
     public let homeViewInfo: HomeViewInfo?
 
     @objc
@@ -84,6 +83,7 @@ public class ThreadViewModel: NSObject {
         if forHomeView {
             homeViewInfo = HomeViewInfo(thread: thread,
                                                         lastMessageForInbox: lastMessageForInbox,
+                                                        hasPendingMessageRequest: hasPendingMessageRequest,
                                                         transaction: transaction)
         } else {
             homeViewInfo = nil
@@ -104,62 +104,104 @@ public class ThreadViewModel: NSObject {
 
 // MARK: -
 
-@objc
-public class HomeViewInfo: NSObject {
+public class HomeViewInfo: Dependencies {
 
-    @objc
-    public let draftText: String?
-    @objc
-    public let hasVoiceMemoDraft: Bool
-    @objc
-    public let lastMessageText: String
-    @objc
     public let lastMessageDate: Date?
-    @objc
-    public let lastMessageSenderName: String?
-    @objc
-    public let addedToGroupByName: String?
+    public let isBlocked: Bool
+    public let snippet: HVSnippet
 
     @objc
     public init(thread: TSThread,
                 lastMessageForInbox: TSInteraction?,
+                hasPendingMessageRequest: Bool,
                 transaction: SDSAnyReadTransaction) {
 
-        if let previewable = lastMessageForInbox as? OWSPreviewText {
-            self.lastMessageText = previewable.previewText(transaction: transaction).filterStringForDisplay()
-        } else {
-            self.lastMessageText = ""
-        }
+        self.isBlocked = Self.blockingManager.isThreadBlocked(thread)
 
         self.lastMessageDate = lastMessageForInbox?.receivedAtDate()
 
-        if let draftMessageBody = thread.currentDraft(shouldFetchLatest: false, transaction: transaction) {
-            self.draftText = draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
-        } else {
-            self.draftText = nil
-        }
+        self.snippet = Self.buildHVSnippet(thread: thread,
+                                           isBlocked: isBlocked,
+                                           hasPendingMessageRequest: hasPendingMessageRequest,
+                                           lastMessageForInbox: lastMessageForInbox,
+                                           transaction: transaction)
+    }
 
-        self.hasVoiceMemoDraft = VoiceMessageModel.hasDraft(for: thread, transaction: transaction)
+    private static func buildHVSnippet(thread: TSThread,
+                                       isBlocked: Bool,
+                                       hasPendingMessageRequest: Bool,
+                                       lastMessageForInbox: TSInteraction?,
+                                       transaction: SDSAnyReadTransaction) -> HVSnippet {
 
-        if let groupThread = thread as? TSGroupThread, let addedByAddress = groupThread.groupModel.addedByAddress {
-            self.addedToGroupByName = Self.contactsManager.shortDisplayName(for: addedByAddress, transaction: transaction)
-        } else {
-            self.addedToGroupByName = nil
+        func loadDraftText() -> String? {
+            guard let draftMessageBody = thread.currentDraft(shouldFetchLatest: false,
+                                                             transaction: transaction) else {
+                return nil
+            }
+            return draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
         }
-        var lastMessageSenderName: String?
-        if !lastMessageText.isEmpty,
-           let groupThread = thread as? TSGroupThread {
+        func hasVoiceMemoDraft() -> Bool {
+            VoiceMessageModel.hasDraft(for: thread, transaction: transaction)
+        }
+        func loadLastMessageText() -> String? {
+            guard let previewable = lastMessageForInbox as? OWSPreviewText else {
+                return nil
+            }
+            return previewable.previewText(transaction: transaction).filterStringForDisplay()
+        }
+        func loadLastMessageSenderName() -> String? {
+            guard let groupThread = thread as? TSGroupThread else {
+                return nil
+            }
             if let incomingMessage = lastMessageForInbox as? TSIncomingMessage {
-                lastMessageSenderName = Self.contactsManagerImpl.shortestDisplayName(
+                return Self.contactsManagerImpl.shortestDisplayName(
                     forGroupMember: incomingMessage.authorAddress,
                     inGroup: groupThread.groupModel,
                     transaction: transaction
                 )
             } else if lastMessageForInbox is TSOutgoingMessage {
-                lastMessageSenderName = NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                                          comment: "Label indicating the local user.")
+                return NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
+                                         comment: "Label indicating the local user.")
+            } else {
+                return nil
             }
         }
-        self.lastMessageSenderName = lastMessageSenderName
+        func loadAddedToGroupByName() -> String? {
+            guard let groupThread = thread as? TSGroupThread,
+                  let addedByAddress = groupThread.groupModel.addedByAddress else {
+                return nil
+            }
+            return Self.contactsManager.shortDisplayName(for: addedByAddress, transaction: transaction)
+        }
+
+        if isBlocked {
+            return .blocked
+        } else if hasPendingMessageRequest {
+            return .pendingMessageRequest(addedToGroupByName: loadAddedToGroupByName())
+        } else if let draftText = loadDraftText()?.nilIfEmpty {
+            return .draft(draftText: draftText)
+        } else if hasVoiceMemoDraft() {
+            return .voiceMemoDraft
+        } else if let lastMessageText = loadLastMessageText()?.nilIfEmpty {
+            if let senderName = loadLastMessageSenderName()?.nilIfEmpty {
+                return .groupSnippet(lastMessageText: lastMessageText, senderName: senderName)
+            } else {
+                return .contactSnippet(lastMessageText: lastMessageText)
+            }
+        } else {
+            return .none
+        }
     }
+}
+
+// MARK: -
+
+public enum HVSnippet {
+    case blocked
+    case pendingMessageRequest(addedToGroupByName: String?)
+    case draft(draftText: String)
+    case voiceMemoDraft
+    case contactSnippet(lastMessageText: String)
+    case groupSnippet(lastMessageText: String, senderName: String)
+    case none
 }

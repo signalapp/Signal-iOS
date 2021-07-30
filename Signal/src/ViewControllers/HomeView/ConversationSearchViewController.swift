@@ -532,7 +532,9 @@ public class ConversationSearchViewController: UITableViewController {
     // MARK: -
 
     private func isBlocked(thread: ThreadViewModel) -> Bool {
-        blockingManager.isThreadBlocked(thread.threadRecord)
+        owsAssertDebug(thread.homeViewInfo != nil)
+
+        return thread.homeViewInfo?.isBlocked == true
     }
 }
 
