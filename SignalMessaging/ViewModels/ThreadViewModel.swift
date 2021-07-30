@@ -82,9 +82,9 @@ public class ThreadViewModel: NSObject {
 
         if forHomeView {
             homeViewInfo = HomeViewInfo(thread: thread,
-                                                        lastMessageForInbox: lastMessageForInbox,
-                                                        hasPendingMessageRequest: hasPendingMessageRequest,
-                                                        transaction: transaction)
+                                        lastMessageForInbox: lastMessageForInbox,
+                                        hasPendingMessageRequest: hasPendingMessageRequest,
+                                        transaction: transaction)
         } else {
             homeViewInfo = nil
         }

@@ -49,13 +49,16 @@ public class HomeViewCell: UITableViewCell {
             unreadLabel,
 
             avatarStack,
-            topRowStack,
-            bottomRowStack,
             bottomRowWrapper
         ]
     }
 
-    private var isReusing = false
+    private struct ReuseToken {
+        let hasMuteIndicator: Bool
+        let hasMessageStatusToken: Bool
+    }
+
+    private var reuseToken: ReuseToken?
 
     // MARK: - Configuration
 
@@ -462,19 +465,41 @@ public class HomeViewCell: UITableViewCell {
         let vStackSubviews = [ topRowStack, bottomRowStack ]
         let outerHStackSubviews = [ avatarStack, vStack ]
 
+        let newReuseToken = ReuseToken(hasMuteIndicator: shouldShowMuteIndicator,
+                                       hasMessageStatusToken: cellContentToken.configs.messageStatusToken != nil)
+
         avatarStack.configure(config: avatarStackConfig,
                               measurement: avatarStackMeasurement,
                               subviews: avatarStackSubviews)
 
-        topRowStack.configure(config: topRowStackConfig,
-                              measurement: topRowStackMeasurement,
-                              subviews: topRowStackSubviews)
+        // topRowStack can only be configured for reuse if
+        // its subview list hasn't changed.
+        if let oldReuseToken = self.reuseToken,
+           oldReuseToken.hasMuteIndicator == newReuseToken.hasMuteIndicator {
+            topRowStack.configureForReuse(config: topRowStackConfig,
+                                          measurement: topRowStackMeasurement)
+        } else {
+            topRowStack.reset()
+            topRowStack.configure(config: topRowStackConfig,
+                                  measurement: topRowStackMeasurement,
+                                  subviews: topRowStackSubviews)
+        }
 
-        bottomRowStack.configure(config: bottomRowStackConfig,
-                                 measurement: bottomRowStackMeasurement,
-                                 subviews: bottomRowStackSubviews)
+        // bottomRowStack can only be configured for reuse if
+        // its subview list hasn't changed.
+        if let oldReuseToken = self.reuseToken,
+           oldReuseToken.hasMessageStatusToken == newReuseToken.hasMessageStatusToken {
+            bottomRowStack.configureForReuse(config: bottomRowStackConfig,
+                                             measurement: bottomRowStackMeasurement)
+        } else {
+            bottomRowStack.reset()
+            bottomRowStack.configure(config: bottomRowStackConfig,
+                                     measurement: bottomRowStackMeasurement,
+                                     subviews: bottomRowStackSubviews)
+        }
 
-        if isReusing {
+        // vStack and outerHStack can always be configured for reuse.
+        if self.reuseToken != nil {
             vStack.configureForReuse(config: vStackConfig,
                                      measurement: vStackMeasurement)
 
@@ -490,7 +515,7 @@ public class HomeViewCell: UITableViewCell {
                                   subviews: outerHStackSubviews)
         }
 
-        isReusing = true
+        self.reuseToken = newReuseToken
     }
 
     // MARK: - Stack Configs
@@ -640,7 +665,7 @@ public class HomeViewCell: UITableViewCell {
         switch snippet {
         case .blocked:
             return NSAttributedString(string: NSLocalizedString("HOME_VIEW_BLOCKED_CONVERSATION",
-                                                     comment: "Table cell subtitle label for a conversation the user has blocked."),
+                                                                comment: "Table cell subtitle label for a conversation the user has blocked."),
                                       attributes: [
                                         .font: snippetFont,
                                         .foregroundColor: snippetColor
