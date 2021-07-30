@@ -14,6 +14,7 @@ extension MessageReceiver {
         case let message as DataExtractionNotification: handleDataExtractionNotification(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
+        case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
@@ -216,6 +217,19 @@ extension MessageReceiver {
         }
     }
     
+    
+    
+    // MARK: - Unsend Requests
+    
+    public static func handleUnsendRequest(_ message: UnsendRequest, using transaction: Any) {
+        guard message.sender == message.author else { return }
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        if let author = message.author, let timestamp = message.timestamp,
+           let messageToDelete = userPublicKey == message.sender ? TSOutgoingMessage.find(withTimestamp: timestamp) : TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction) {
+            messageToDelete.remove(with: transaction)
+        }
+    }
     
     
     // MARK: - Visible Messages
