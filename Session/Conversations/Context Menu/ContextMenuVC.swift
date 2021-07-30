@@ -108,7 +108,7 @@ final class ContextMenuVC : UIViewController {
     }
     
     func updateMenu(forDelete: Bool = false) -> CGFloat {
-        // Menu
+        // Menu: return the menuHeight
         menuView.subviews.forEach({ $0.removeFromSuperview() })
         let menuBackgroundView = UIView()
         menuBackgroundView.backgroundColor = Colors.receivedMessageBackground

@@ -546,15 +546,29 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
-        self.contextMenuVC?.updateMenu(forDelete: true)
+        let _ = self.contextMenuVC?.updateMenu(forDelete: true)
     }
     
     func deleteLocally(_ viewItem: ConversationViewItem) {
-        // TODO: delete locally
+        viewItem.deleteLocallyAction()
     }
     
     func deleteForEveryone(_ viewItem: ConversationViewItem) {
-        // TODO: delete for everyone
+        viewItem.deleteLocallyAction()
+        viewItem.deleteRemotelyAction()
+        let unsendRequest = UnsendRequest()
+        switch viewItem.interaction.interactionType() {
+        case .incomingMessage:
+            if let incomingMessage = viewItem.interaction as? TSIncomingMessage {
+                unsendRequest.author = incomingMessage.authorId
+            }
+        case .outgoingMessage: unsendRequest.author = getUserHexEncodedPublicKey()
+        default: return // Should never occur
+        }
+        unsendRequest.timestamp = viewItem.interaction.timestamp
+        SNMessagingKitConfiguration.shared.storage.write { transaction in
+            MessageSender.send(unsendRequest, in: self.thread, using: transaction as! YapDatabaseReadWriteTransaction)
+        }
     }
     
     func save(_ viewItem: ConversationViewItem) {

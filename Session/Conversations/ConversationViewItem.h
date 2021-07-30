@@ -132,7 +132,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)copyTextAction;
 - (void)shareMediaAction;
 - (void)saveMediaAction;
-- (void)deleteAction;
+- (void)deleteLocallyAction;
+- (void)deleteRemotelyAction;
 
 - (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;

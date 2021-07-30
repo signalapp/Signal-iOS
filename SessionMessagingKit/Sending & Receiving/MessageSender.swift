@@ -212,7 +212,7 @@ public final class MessageSender : NSObject {
                     isSuccess = true
                     storage.write(with: { transaction in
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
-                        var shouldNotify = (message is VisibleMessage && !isSyncMessage)
+                        var shouldNotify = ((message is VisibleMessage || message is UnsendRequest) && !isSyncMessage)
                         /*
                         if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
                             shouldNotify = true
