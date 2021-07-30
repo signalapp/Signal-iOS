@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 
+@property (nonatomic, readonly) BOOL isUserMentioned;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body

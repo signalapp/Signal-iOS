@@ -168,8 +168,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         // Don't fire the notification if the current user isn't mentioned
         // and isOnlyNotifyingForMentions is on.
-        let isUserMentioned = MentionUtilities.isUserMentioned(in: messageText ?? "")
-        if let groupThread = thread as? TSGroupThread, groupThread.isOnlyNotifyingForMentions && !isUserMentioned {
+        if let groupThread = thread as? TSGroupThread, groupThread.isOnlyNotifyingForMentions && !incomingMessage.isUserMentioned {
             return
         }
 
