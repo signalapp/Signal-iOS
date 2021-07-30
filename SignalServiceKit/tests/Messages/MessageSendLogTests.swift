@@ -108,7 +108,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                             timestamp: Date(millisecondsSince1970: newMessage.timestamp),
                             transaction: writeTx))
 
-            // Expect some results when re-fetching the payload for the first device
+            // Expect some results when re-fetching the payload for the second device
             XCTAssertNotNil(MessageSendLog.fetchPayload(
                                 address: recipientAddress,
                                 deviceId: 1,
