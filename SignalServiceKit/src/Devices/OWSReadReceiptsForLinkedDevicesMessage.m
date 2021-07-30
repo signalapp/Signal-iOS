@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
-#import <SignalServiceKit/OWSReadReceiptsForLinkedDevicesMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -54,10 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-// Sender Key: TODO
 - (NSSet<NSString *> *)relatedUniqueIds
 {
-    return [super relatedUniqueIds];
+    NSMutableArray<NSString *> *messageUniqueIds = [[NSMutableArray alloc] init];
+    for (OWSLinkedDeviceReadReceipt *readReceipt in self.readReceipts) {
+        if (readReceipt.messageUniqueId) {
+            [messageUniqueIds addObject:readReceipt.messageUniqueId];
+        }
+    }
+    return [[super relatedUniqueIds] setByAddingObjectsFromArray:messageUniqueIds];
 }
 
 

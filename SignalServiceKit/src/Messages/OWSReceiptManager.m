@@ -205,6 +205,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");
                 [self.outgoingReceiptManager enqueueReadReceiptForAddress:message.authorAddress
                                                                 timestamp:message.timestamp
+                                                          messageUniqueId:message.uniqueId
                                                               transaction:transaction];
             }
             break;
@@ -249,6 +250,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");
                 [self.outgoingReceiptManager enqueueViewedReceiptForAddress:message.authorAddress
                                                                   timestamp:message.timestamp
+                                                            messageUniqueId:message.uniqueId
                                                                 transaction:transaction];
             }
             break;

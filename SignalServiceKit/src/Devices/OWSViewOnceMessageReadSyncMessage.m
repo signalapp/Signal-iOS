@@ -7,14 +7,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSViewOnceMessageReadSyncMessage ()
+@property (nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values
+@end
+
 @implementation OWSViewOnceMessageReadSyncMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
                  senderAddress:(SignalServiceAddress *)senderAddress
-            messageIdTimestamp:(uint64_t)messageIdTimestamp
+                       message:(TSMessage *)message
                  readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssertDebug(senderAddress.isValid && messageIdTimestamp > 0);
+    OWSAssertDebug(senderAddress.isValid && message.timestamp > 0);
 
     self = [super initWithThread:thread];
     if (!self) {
@@ -22,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _senderAddress = senderAddress;
-    _messageIdTimestamp = messageIdTimestamp;
+    _messageUniqueId = message.uniqueId;
+    _messageIdTimestamp = message.timestamp;
     _readTimestamp = readTimestamp;
 
     return self;
@@ -62,10 +67,13 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-// Sender Key: TODO
 - (NSSet<NSString *> *)relatedUniqueIds
 {
-    return [super relatedUniqueIds];
+    if (self.messageUniqueId) {
+        return [[super relatedUniqueIds] setByAddingObject:self.messageUniqueId];
+    } else {
+        return [super relatedUniqueIds];
+    }
 }
 
 @end

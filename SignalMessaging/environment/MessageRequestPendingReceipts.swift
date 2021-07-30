@@ -159,6 +159,7 @@ public class MessageRequestPendingReceipts: NSObject, PendingReceiptRecorder {
             }
             outgoingReceiptManager.enqueueReadReceipt(for: address,
                                                       timestamp: UInt64(receipt.messageTimestamp),
+                                                      messageUniqueId: receipt.messageUniqueId,
                                                       transaction: transaction.asAnyWrite)
         }
         try finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction)
@@ -172,6 +173,7 @@ public class MessageRequestPendingReceipts: NSObject, PendingReceiptRecorder {
             }
             outgoingReceiptManager.enqueueViewedReceipt(for: address,
                                                         timestamp: UInt64(receipt.messageTimestamp),
+                                                        messageUniqueId: receipt.messageUniqueId,
                                                         transaction: transaction.asAnyWrite)
         }
         try finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction)
@@ -188,6 +190,7 @@ public class PendingReceiptFinder {
 
         let record = PendingReadReceiptRecord(threadId: threadId,
                                               messageTimestamp: Int64(message.timestamp),
+                                              messageUniqueId: message.uniqueId,
                                               authorPhoneNumber: message.authorPhoneNumber,
                                               authorUuid: message.authorUUID)
 
@@ -202,6 +205,7 @@ public class PendingReceiptFinder {
 
         let record = PendingViewedReceiptRecord(threadId: threadId,
                                                 messageTimestamp: Int64(message.timestamp),
+                                                messageUniqueId: message.uniqueId,
                                                 authorPhoneNumber: message.authorPhoneNumber,
                                                 authorUuid: message.authorUUID)
 

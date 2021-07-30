@@ -199,7 +199,7 @@ public class MessageSendLog: NSObject {
     ) {
         Logger.info("Deleting all MSL payload entries related to \(interaction.uniqueId)")
         do {
-            try Recipient
+            try Message
                 .filter(Column("uniqueId") == interaction.uniqueId)
                 .deleteAll(writeTx.unwrapGrdbWrite.database)
         } catch {

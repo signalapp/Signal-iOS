@@ -6,15 +6,31 @@ import Foundation
 
 struct ReceiptForLinkedDevice: Codable {
     let senderAddress: SignalServiceAddress
+    let messageUniqueId: String?            // Only nil when decoding old values
     let messageIdTimestamp: UInt64
     let timestamp: UInt64
 
+    init(senderAddress: SignalServiceAddress, messageUniqueId: String, messageIdTimestamp: UInt64, timestamp: UInt64) {
+        self.senderAddress = senderAddress
+        self.messageUniqueId = messageUniqueId
+        self.messageIdTimestamp = messageIdTimestamp
+        self.timestamp = timestamp
+    }
+
     var asLinkedDeviceReadReceipt: OWSLinkedDeviceReadReceipt {
-        return OWSLinkedDeviceReadReceipt(senderAddress: senderAddress, messageIdTimestamp: messageIdTimestamp, readTimestamp: timestamp)
+        return OWSLinkedDeviceReadReceipt(
+            senderAddress: senderAddress,
+            messageUniqueId: messageUniqueId,
+            messageIdTimestamp: messageIdTimestamp,
+            readTimestamp: timestamp)
     }
 
     var asLinkedDeviceViewedReceipt: OWSLinkedDeviceViewedReceipt {
-        return OWSLinkedDeviceViewedReceipt(senderAddress: senderAddress, messageIdTimestamp: messageIdTimestamp, viewedTimestamp: timestamp)
+        return OWSLinkedDeviceViewedReceipt(
+            senderAddress: senderAddress,
+            messageUniqueId: messageUniqueId,
+            messageIdTimestamp: messageIdTimestamp,
+            viewedTimestamp: timestamp)
     }
 }
 
@@ -111,6 +127,7 @@ public extension OWSReceiptManager {
         let receiptsForMessage = messages.map {
             OWSLinkedDeviceReadReceipt(
                 senderAddress: localAddress,
+                messageUniqueId: $0.uniqueId,
                 messageIdTimestamp: $0.timestamp,
                 readTimestamp: readTimestamp
             )
@@ -128,6 +145,7 @@ public extension OWSReceiptManager {
 
         let newReadReceipt = ReceiptForLinkedDevice(
             senderAddress: messageAuthorAddress,
+            messageUniqueId: message.uniqueId,
             messageIdTimestamp: message.timestamp,
             timestamp: Date.ows_millisecondTimestamp()
         )
@@ -156,6 +174,7 @@ public extension OWSReceiptManager {
 
         let newViewedReceipt = ReceiptForLinkedDevice(
             senderAddress: messageAuthorAddress,
+            messageUniqueId: message.uniqueId,
             messageIdTimestamp: message.timestamp,
             timestamp: Date.ows_millisecondTimestamp()
         )
