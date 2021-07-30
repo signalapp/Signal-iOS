@@ -86,7 +86,7 @@ class QRCodeScanViewController: OWSViewController {
 
     private var scanner: QRCodeScanner?
 
-    private let isCompleteFlag = AtomicBool(false)
+    private let canDeliverResultsFlag = AtomicBool(false)
 
     @objc
     public required init(appearance: Appearance) {
@@ -201,6 +201,9 @@ class QRCodeScanViewController: OWSViewController {
             return
         }
 
+        let couldEnable = canDeliverResultsFlag.tryToSetFlag()
+        owsAssertDebug(couldEnable)
+
         view.removeAllSubviews()
 
         let scanner = QRCodeScanner(sampleBufferDelegate: self)
@@ -281,7 +284,7 @@ class QRCodeScanViewController: OWSViewController {
     }()
 
     private func processClassification(_ request: VNRequest) {
-        guard !isCompleteFlag.get() else {
+        guard !canDeliverResultsFlag.get() else {
             // Already complete.
             return
         }
@@ -359,7 +362,7 @@ class QRCodeScanViewController: OWSViewController {
                                                          qrCodeString: qrCode.qrCodeString)
             switch outcome {
             case .stopScanning:
-                guard self.isCompleteFlag.tryToSetFlag() else {
+                guard self.canDeliverResultsFlag.tryToSetFlag() else {
                     // Already complete.
                     return
                 }
