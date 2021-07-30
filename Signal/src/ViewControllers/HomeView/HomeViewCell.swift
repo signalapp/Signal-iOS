@@ -45,7 +45,6 @@ public class HomeViewCell: UITableViewCell {
             snippetLabel,
             dateTimeLabel,
             messageStatusIconView,
-            typingIndicatorView,
             muteIconView,
             unreadLabel,
 
@@ -808,7 +807,7 @@ public class HomeViewCell: UITableViewCell {
         cellContentToken = nil
         avatarView.image = nil
         avatarView.reset()
-        typingIndicatorView.reset()
+        typingIndicatorView.resetForReuse()
 
         NotificationCenter.default.removeObserver(self)
     }
