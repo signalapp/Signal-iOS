@@ -61,6 +61,10 @@ public class UserNotificationConfig {
             // Currently, .showCallLobby is only used as a default action.
             owsFailDebug("Show call lobby not supported as a UNNotificationAction")
             return nil
+        case .submitDebugLogs:
+            // Currently, .submitDebugLogs is only used as a default action.
+            owsFailDebug("Show submit debug logs not supported as a UNNotificationAction")
+            return nil
         }
     }
 
@@ -268,41 +272,40 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
         AssertIsOnMainThread()
-        guard CurrentAppContext().isMainAppAndActive else {
-            return true
-        }
-
         switch category {
-        case .incomingMessageWithActions_CanReply,
-             .incomingMessageWithActions_CannotReply,
-             .incomingMessageWithoutActions,
-             .incomingReactionWithActions_CanReply,
-             .incomingReactionWithActions_CannotReply,
-             .infoOrErrorMessage:
-            // If the app is in the foreground, show these notifications
-            // unless the corresponding conversation is already open.
-            break
         case .incomingMessageFromNoLongerVerifiedIdentity,
              .threadlessErrorMessage,
              .incomingCall,
              .missedCallWithActions,
              .missedCallWithoutActions,
              .missedCallFromNoLongerVerifiedIdentity:
-            // Always show these notifications whenever the app is in the foreground.
+            // Always show these notifications
             return true
-        }
+        case .internalError:
+            // Only show internal errors on internal builds
+            return DebugFlags.internalErrorAlerts
+        case .incomingMessageWithActions_CanReply,
+             .incomingMessageWithActions_CannotReply,
+             .incomingMessageWithoutActions,
+             .incomingReactionWithActions_CanReply,
+             .incomingReactionWithActions_CannotReply,
+             .infoOrErrorMessage:
+            // Only show these notification if:
+            // - The app is not foreground
+            // - The app is foreground, but the corresponding conversation is not open
+            guard CurrentAppContext().isMainAppAndActive else { return true }
+            guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
+                owsFailDebug("threadId was unexpectedly nil")
+                return true
+            }
 
-        guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return true
-        }
+            guard let conversationSplitVC = CurrentAppContext().frontmostViewController() as? ConversationSplit else {
+                return true
+            }
 
-        guard let conversationSplitVC = CurrentAppContext().frontmostViewController() as? ConversationSplit else {
-            return true
+            // Show notifications for any *other* thread than the currently selected thread
+            return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
         }
-
-        // Show notifications for any *other* thread than the currently selected thread
-        return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
     }
 
     func getNotificationRequests() -> Guarantee<[UNNotificationRequest]> {

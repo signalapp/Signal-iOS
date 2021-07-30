@@ -406,6 +406,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             self.notificationsManager?.notifyUser(for: errorMessage,
                                                  thread: contactThread,
                                                  transaction: transaction)
+
+            self.notificationsManager?.notifyInternalUsers(
+                ofErrorMessage: "Failed decryption of envelope: \(envelope.timestamp)")
         }
 
         return wrappedError

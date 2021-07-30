@@ -236,6 +236,9 @@ public class DebugFlags: BaseFlags {
     public static let keepWebSocketOpenInBackground = false
 
     @objc
+    public static let internalErrorAlerts = build.includes(.qa)
+
+    @objc
     public static let audibleErrorLogging = build.includes(.qa)
 
     @objc
