@@ -343,7 +343,12 @@ public class ConversationAvatarView: AvatarImageView {
         }
     }
 
-    private static let serialQueue = DispatchQueue(label: "org.signal.ConversationAvatarView")
+    // Load avatars in _reverse_ order in which they are enqueued.
+    // Avatars are enqueued as the user navigates (and not cancelled),
+    // so the most recently enqueued avatars are most likely to be
+    // visible. To put it another way, we don't cancel loads so
+    // the oldest loads are most likely to be unnecessary.
+    private static let serialQueue = ReverseDispatchQueue(label: "org.signal.ConversationAvatarView")
 
     public func updateImageAsync() {
         AssertIsOnMainThread()
