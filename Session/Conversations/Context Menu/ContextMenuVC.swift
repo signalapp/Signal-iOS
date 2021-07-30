@@ -75,14 +75,37 @@ final class ContextMenuVC : UIViewController {
         } else {
             timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
         }
+        self.updateMenu()
+        // Tap gesture
+        let mainTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        view.addGestureRecognizer(mainTapGestureRecognizer)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        UIView.animate(withDuration: 0.25) {
+            self.blurView.effect = UIBlurEffect(style: .regular)
+            self.menuView.alpha = 1
+        }
+    }
+
+    // MARK: Updating
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        menuView.layer.shadowPath = UIBezierPath(roundedRect: menuView.bounds, cornerRadius: ContextMenuVC.menuCornerRadius).cgPath
+    }
+    
+    func updateMenu(forDelete: Bool = false) {
         // Menu
+        menuView.subviews.forEach({ $0.removeFromSuperview() })
         let menuBackgroundView = UIView()
         menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
         menuBackgroundView.layer.cornerRadius = ContextMenuVC.menuCornerRadius
         menuBackgroundView.layer.masksToBounds = true
         menuView.addSubview(menuBackgroundView)
         menuBackgroundView.pin(to: menuView)
-        let actionViews = ContextMenuVC.actions(for: viewItem, delegate: delegate).map { ActionView(for: $0, dismiss: snDismiss) }
+        let actions = forDelete ? ContextMenuVC.deleteActions(for: viewItem, delegate: delegate) : ContextMenuVC.actions(for: viewItem, delegate: delegate)
+        let actionViews = actions.map { ActionView(for: $0, dismiss: snDismiss) }
         let menuStackView = UIStackView(arrangedSubviews: actionViews)
         menuStackView.axis = .vertical
         menuView.addSubview(menuStackView)
@@ -101,23 +124,6 @@ final class ContextMenuVC : UIViewController {
         case .incomingMessage: menuView.pin(.left, to: .left, of: snapshot)
         default: break // Should never occur
         }
-        // Tap gesture
-        let mainTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        view.addGestureRecognizer(mainTapGestureRecognizer)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        UIView.animate(withDuration: 0.25) {
-            self.blurView.effect = UIBlurEffect(style: .regular)
-            self.menuView.alpha = 1
-        }
-    }
-
-    // MARK: Updating
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        menuView.layer.shadowPath = UIBezierPath(roundedRect: menuView.bounds, cornerRadius: ContextMenuVC.menuCornerRadius).cgPath
     }
 
     // MARK: Interaction

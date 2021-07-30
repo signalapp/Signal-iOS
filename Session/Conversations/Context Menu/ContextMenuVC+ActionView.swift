@@ -26,20 +26,25 @@ extension ContextMenuVC {
         }
 
         private func setUpViewHierarchy() {
+            var subviews: [UIView] = []
             // Icon
-            let iconSize = ActionView.iconSize
-            let iconImageView = UIImageView(image: action.icon.resizedImage(to: CGSize(width: iconSize, height: iconSize))!.withTint(Colors.text))
-            let iconImageViewSize = ActionView.iconImageViewSize
-            iconImageView.set(.width, to: iconImageViewSize)
-            iconImageView.set(.height, to: iconImageViewSize)
-            iconImageView.contentMode = .center
+            if let icon = action.icon {
+                let iconSize = ActionView.iconSize
+                let iconImageView = UIImageView(image: icon.resizedImage(to: CGSize(width: iconSize, height: iconSize))!.withTint(Colors.text))
+                let iconImageViewSize = ActionView.iconImageViewSize
+                iconImageView.set(.width, to: iconImageViewSize)
+                iconImageView.set(.height, to: iconImageViewSize)
+                iconImageView.contentMode = .center
+                subviews.append(iconImageView)
+            }
             // Title
             let titleLabel = UILabel()
             titleLabel.text = action.title
             titleLabel.textColor = Colors.text
             titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+            subviews.append(titleLabel)
             // Stack view
-            let stackView = UIStackView(arrangedSubviews: [ iconImageView, titleLabel ])
+            let stackView = UIStackView(arrangedSubviews: subviews)
             stackView.axis = .horizontal
             stackView.spacing = Values.smallSpacing
             stackView.alignment = .center
@@ -56,6 +61,7 @@ extension ContextMenuVC {
         // MARK: Interaction
         @objc private func handleTap() {
             action.work()
+            guard action.tag != "delete" else { return }
             dismiss()
         }
     }

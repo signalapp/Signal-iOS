@@ -2,44 +2,71 @@
 extension ContextMenuVC {
 
     struct Action {
-        let icon: UIImage
+        let icon: UIImage?
         let title: String
+        let tag: String
         let work: () -> Void
 
         static func reply(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Reply"
-            return Action(icon: UIImage(named: "ic_reply")!, title: title) { delegate?.reply(viewItem) }
+            let tag = "reply"
+            return Action(icon: UIImage(named: "ic_reply")!, title: title, tag: tag) { delegate?.reply(viewItem) }
         }
 
         static func copy(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Copy"
-            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copy(viewItem) }
+            let tag = "copy"
+            return Action(icon: UIImage(named: "ic_copy")!, title: title, tag: tag) { delegate?.copy(viewItem) }
         }
 
         static func copySessionID(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Copy Session ID"
-            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copySessionID(viewItem) }
+            let tag = "copySessionID"
+            return Action(icon: UIImage(named: "ic_copy")!, title: title, tag: tag) { delegate?.copySessionID(viewItem) }
         }
 
         static func delete(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Delete"
-            return Action(icon: UIImage(named: "ic_trash")!, title: title) { delegate?.delete(viewItem) }
+            let tag = "delete"
+            return Action(icon: UIImage(named: "ic_trash")!, title: title, tag: tag) { delegate?.delete(viewItem) }
+        }
+        
+        static func deleteLocally(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
+            let title = "Delete for me"
+            let tag = "deleteforme"
+            return Action(icon: nil, title: title, tag: tag) { delegate?.deleteLocally(viewItem) }
+        }
+        
+        static func deleteForEveryone(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
+            let tag = "deleteforeveryone"
+            var title = "Delete for everyone"
+            if !viewItem.isGroupThread {
+                title = "Delete for me and \(viewItem.interaction.thread.name())"
+            }
+            return Action(icon: nil, title: title, tag: tag) { delegate?.deleteForEveryone(viewItem) }
         }
 
         static func save(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Save"
-            return Action(icon: UIImage(named: "ic_download")!, title: title) { delegate?.save(viewItem) }
+            let tag = "save"
+            return Action(icon: UIImage(named: "ic_download")!, title: title, tag: tag) { delegate?.save(viewItem) }
         }
 
         static func ban(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Ban User"
-            return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.ban(viewItem) }
+            let tag = "banUser"
+            return Action(icon: UIImage(named: "ic_block")!, title: title, tag: tag) { delegate?.ban(viewItem) }
         }
         
         static func banAndDeleteAllMessages(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
             let title = "Ban and Delete All"
-            return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.banAndDeleteAllMessages(viewItem) }
+            let tag = "banAndDeleteAll"
+            return Action(icon: UIImage(named: "ic_block")!, title: title, tag: tag) { delegate?.banAndDeleteAllMessages(viewItem) }
         }
+    }
+    
+    static func deleteActions(for viewItem: ConversationViewItem, delegate: ContextMenuActionDelegate?) -> [Action] {
+        return [Action.deleteForEveryone(viewItem, delegate), Action.deleteLocally(viewItem, delegate)]
     }
 
     static func actions(for viewItem: ConversationViewItem, delegate: ContextMenuActionDelegate?) -> [Action] {
@@ -88,6 +115,8 @@ protocol ContextMenuActionDelegate : class {
     func copy(_ viewItem: ConversationViewItem)
     func copySessionID(_ viewItem: ConversationViewItem)
     func delete(_ viewItem: ConversationViewItem)
+    func deleteLocally(_ viewItem: ConversationViewItem)
+    func deleteForEveryone(_ viewItem: ConversationViewItem)
     func save(_ viewItem: ConversationViewItem)
     func ban(_ viewItem: ConversationViewItem)
     func banAndDeleteAllMessages(_ viewItem: ConversationViewItem)

@@ -546,7 +546,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
-        viewItem.deleteAction()
+        self.contextMenuVC?.updateMenu(forDelete: true)
+    }
+    
+    func deleteLocally(_ viewItem: ConversationViewItem) {
+        // TODO: delete locally
+    }
+    
+    func deleteForEveryone(_ viewItem: ConversationViewItem) {
+        // TODO: delete for everyone
     }
     
     func save(_ viewItem: ConversationViewItem) {
