@@ -149,12 +149,11 @@ public class SenderKeyStore: NSObject {
 
     public func skdmBytesForGroupThread(_ groupThread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> Data? {
         do {
-            guard let localAddress = tsAccountManager.localAddress else {
+            guard let localAddress = ProtocolAddress.localAddress, localAddress.uuid != nil else {
                 throw OWSAssertionError("No local address")
             }
-            let protocolAddress = try ProtocolAddress(from: localAddress, deviceId: tsAccountManager.storedDeviceId())
             let distributionId = distributionIdForSendingToThread(groupThread, writeTx: writeTx)
-            let skdm = try SenderKeyDistributionMessage(from: protocolAddress,
+            let skdm = try SenderKeyDistributionMessage(from: localAddress,
                                                         distributionId: distributionId,
                                                         store: self,
                                                         context: writeTx)
@@ -174,14 +173,14 @@ extension SenderKeyStore: SignalClient.SenderKeyStore {
         record: SenderKeyRecord,
         context: StoreContext
     ) throws {
-        storageLock.withLock {
+        try storageLock.withLock {
             let writeTx = context.asTransaction
 
             var updatedValue: KeyMetadata
             if let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) {
                 updatedValue = existingMetadata
             } else {
-                updatedValue = KeyMetadata(record: record, sender: sender, distributionId: distributionId)
+                updatedValue = try KeyMetadata(record: record, sender: sender, distributionId: distributionId)
             }
             updatedValue.record = record
             setMetadata(updatedValue, for: distributionId, writeTx: writeTx)
@@ -287,10 +286,14 @@ private struct KeyMetadata: Codable {
     var deliveredDevices: [UUID: Set<UInt32>]
     var isForEncrypting: Bool
 
-    init(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: SenderKeyStore.DistributionId) {
+    init(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: SenderKeyStore.DistributionId) throws {
+        guard let uuid = sender.uuid else {
+            throw OWSAssertionError("Invalid sender. Must have UUID")
+        }
+
         self.recordData = record.serialize()
         self.distributionId = distributionId
-        self.ownerUuid = sender.uuid
+        self.ownerUuid = uuid
         self.ownerDeviceId = sender.deviceId
 
         self.isForEncrypting = sender.isCurrentDevice
@@ -315,16 +318,38 @@ fileprivate extension TSGroupThread {
     var threadUniqueId: ThreadUniqueId { uniqueId }
 }
 
-fileprivate extension ProtocolAddress {
-    convenience init(from recipientAddress: SignalServiceAddress, deviceId: UInt32) throws {
-        try self.init(name: recipientAddress.uuidString ?? recipientAddress.phoneNumber!, deviceId: deviceId)
+extension ProtocolAddress {
+
+    // TODO: Replace implementation for Swift 5.5 with throwable computed properties
+    //    static var localAddress: ProtocolAddress {
+    //        get throws {
+    //            ...
+    //            guard let address = address else { throw OWSAssertionError("No recipient address") }
+    //            return try ProtocolAddress(from: address, deviceId: deviceId)
+    @available(swift, obsoleted: 5.5, message: "Please swap out commented implementation in SenderKeyStore.swift")
+    static var localAddress: ProtocolAddress? {
+        get {
+            let tsAccountManager = SSKEnvironment.shared.tsAccountManager
+            let address = tsAccountManager.localAddress
+            let deviceId = SSKEnvironment.shared.tsAccountManager.storedDeviceId()
+            return try? address.map { try ProtocolAddress(from: $0, deviceId: deviceId) }
+        }
     }
 
-    var uuid: UUID {
-        UUID(uuidString: name) ?? {
-            owsFailDebug("Bad uuid string")
-            return UUID()
-        }()
+    convenience init(from recipientAddress: SignalServiceAddress, deviceId: UInt32) throws {
+        if let uuid = recipientAddress.uuid {
+            try self.init(uuid: uuid, deviceId: deviceId)
+        } else {
+            try self.init(name: recipientAddress.phoneNumber!, deviceId: deviceId)
+        }
+    }
+
+    convenience init(uuid: UUID, deviceId: UInt32) throws {
+        try self.init(name: uuid.uuidString, deviceId: deviceId)
+    }
+
+    var uuid: UUID? {
+        UUID(uuidString: name)
     }
 
     var isCurrentDevice: Bool {
