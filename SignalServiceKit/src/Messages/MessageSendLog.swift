@@ -174,7 +174,7 @@ public class MessageSendLog: NSObject {
     public static func recordSuccessfulDelivery(
         timestamp: Date,
         recipientUuid: UUID,
-        recipientDeviceId: Int,
+        recipientDeviceId: Int64,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         do {
@@ -237,6 +237,12 @@ public class MessageSendLog: NSObject {
             owsFailDebug("Failed to trim stale MSL entries: \(error)")
         }
     }
+
+    #if TESTABLE_BUILD
+    static func test_forceCleanupStaleEntries(transaction: SDSAnyWriteTransaction) {
+        forceCleanupStaleEntries(transaction: transaction)
+    }
+    #endif
 }
 
 extension SealedSenderContentHint: Codable {}
