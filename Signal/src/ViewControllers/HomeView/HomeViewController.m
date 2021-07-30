@@ -729,7 +729,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // view will briefly appear empty after launch. But to avoid
     // hurting first launch perf, we only want to make an exception
     // for a single load.
-    [self.loadCoordinator ensureFirstLoad];
+    if (!self.hasEverAppeared) {
+        [self.loadCoordinator ensureFirstLoad];
+    } else {
+        [self ensureCellAnimations];
+    }
 
     NSIndexPath *_Nullable selectedIndexPath = self.tableView.indexPathForSelectedRow;
     if (selectedIndexPath != nil) {

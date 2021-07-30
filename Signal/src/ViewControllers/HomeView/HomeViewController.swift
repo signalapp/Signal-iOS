@@ -20,6 +20,36 @@ public extension HomeViewController {
         tableView.reloadData()
     }
 
+    func updateCellVisibility() {
+        AssertIsOnMainThread()
+
+        for cell in tableView.visibleCells {
+            guard let cell = cell as? HomeViewCell else {
+                continue
+            }
+            updateCellVisibility(cell: cell, isCellVisible: true)
+        }
+    }
+
+    func updateCellVisibility(cell: HomeViewCell, isCellVisible: Bool) {
+        AssertIsOnMainThread()
+
+        cell.isCellVisible = self.isViewVisible && isCellVisible
+    }
+
+    func ensureCellAnimations() {
+        AssertIsOnMainThread()
+
+        for cell in tableView.visibleCells {
+            guard let cell = cell as? HomeViewCell else {
+                continue
+            }
+            cell.ensureCellAnimations()
+        }
+    }
+
+    // MARK: -
+
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
                                              paymentModel: TSPaymentModel,
                                              transaction: SDSAnyReadTransaction) {

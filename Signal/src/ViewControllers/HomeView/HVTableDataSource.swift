@@ -283,6 +283,28 @@ extension HVTableDataSource: UITableViewDelegate {
             viewController?.commitPreviewController(vc)
         }
     }
+
+    public func tableView(_ tableView: UITableView,
+                          willDisplay cell: UITableViewCell,
+                          forRowAt indexPath: IndexPath) {
+        AssertIsOnMainThread()
+
+        guard let cell = cell as? HomeViewCell else {
+            return
+        }
+        viewController?.updateCellVisibility(cell: cell, isCellVisible: true)
+    }
+
+    public func tableView(_ tableView: UITableView,
+                          didEndDisplaying cell: UITableViewCell,
+                          forRowAt indexPath: IndexPath) {
+        AssertIsOnMainThread()
+
+        guard let cell = cell as? HomeViewCell else {
+            return
+        }
+        viewController?.updateCellVisibility(cell: cell, isCellVisible: false)
+    }
 }
 
 // MARK: -
