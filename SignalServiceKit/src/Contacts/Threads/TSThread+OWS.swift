@@ -172,3 +172,34 @@ public extension TSThread {
         lastVisibleInteractionStore.setData(data, key: thread.uniqueId, transaction: transaction)
     }
 }
+
+// MARK: - Drafts
+
+extension TSThread {
+
+    @objc
+    public func currentDraft(transaction: SDSAnyReadTransaction) -> MessageBody? {
+        currentDraft(shouldFetchLatest: true, transaction: transaction)
+    }
+
+    @objc
+    public func currentDraft(shouldFetchLatest: Bool,
+                             transaction: SDSAnyReadTransaction) -> MessageBody? {
+        if shouldFetchLatest {
+            guard let thread = TSThread.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                return nil
+            }
+            return Self.draft(forThread: thread)
+        } else {
+            return Self.draft(forThread: self)
+        }
+    }
+
+    private static func draft(forThread thread: TSThread) -> MessageBody? {
+        guard let messageDraft = thread.messageDraft else {
+            return nil
+        }
+        let ranges: MessageBodyRanges = thread.messageDraftBodyRanges ?? .empty
+        return MessageBody(text: messageDraft, ranges: ranges)
+    }
+}

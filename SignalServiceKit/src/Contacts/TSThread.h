@@ -138,17 +138,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
     (SDSAnyReadTransaction *)transaction;
 - (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-#pragma mark Drafts
-
-/**
- *  Returns the last known draft for that thread. Always returns a string. Empty string if nil.
- *
- *  @param transaction Database transaction.
- *
- *  @return Last known draft for that thread.
- */
-- (nullable MessageBody *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction;
-
 /**
  *  Sets the draft of a thread. Typically called when leaving a conversation view.
  *

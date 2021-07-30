@@ -133,7 +133,7 @@ public class HomeViewInfo: NSObject {
 
         self.lastMessageDate = lastMessageForInbox?.receivedAtDate()
 
-        if let draftMessageBody = thread.currentDraft(with: transaction) {
+        if let draftMessageBody = thread.currentDraft(shouldFetchLatest: false, transaction: transaction) {
             self.draftText = draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
         } else {
             self.draftText = nil

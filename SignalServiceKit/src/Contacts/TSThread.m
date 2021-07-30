@@ -572,19 +572,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-#pragma mark - Drafts
-
-- (nullable MessageBody *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSThread *_Nullable thread = [TSThread anyFetchWithUniqueId:self.uniqueId transaction:transaction];
-    if (thread.messageDraft != nil) {
-        return [[MessageBody alloc] initWithText:thread.messageDraft
-                                          ranges:thread.messageDraftBodyRanges ?: MessageBodyRanges.empty];
-    } else {
-        return nil;
-    }
-}
-
 - (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction

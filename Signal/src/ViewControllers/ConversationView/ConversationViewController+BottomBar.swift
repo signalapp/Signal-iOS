@@ -167,7 +167,7 @@ public extension ConversationViewController {
             voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {
             Self.databaseStorage.read { transaction in
-                messageDraft = self.thread.currentDraft(with: transaction)
+                messageDraft = self.thread.currentDraft(transaction: transaction)
                 if VoiceMessageModel.hasDraft(for: self.thread, transaction: transaction) {
                     voiceMemoDraft = VoiceMessageModel(thread: self.thread)
                 }
@@ -190,7 +190,7 @@ public extension ConversationViewController {
         AssertIsOnMainThread()
 
         guard let messageDraft = (Self.databaseStorage.read { transaction in
-            self.thread.currentDraft(with: transaction)
+            self.thread.currentDraft(transaction: transaction)
         }) else {
             return
         }
