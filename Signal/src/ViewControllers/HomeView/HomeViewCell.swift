@@ -48,14 +48,14 @@ public class HomeViewCell: UITableViewCell {
             muteIconView,
             unreadLabel,
 
-            outerHStack,
             avatarStack,
-            vStack,
             topRowStack,
             bottomRowStack,
             bottomRowWrapper
         ]
     }
+
+    private var isReusing = false
 
     // MARK: - Configuration
 
@@ -474,13 +474,23 @@ public class HomeViewCell: UITableViewCell {
                                  measurement: bottomRowStackMeasurement,
                                  subviews: bottomRowStackSubviews)
 
-        vStack.configure(config: vStackConfig,
-                         measurement: vStackMeasurement,
-                         subviews: vStackSubviews)
+        if isReusing {
+            vStack.configureForReuse(config: vStackConfig,
+                                     measurement: vStackMeasurement)
 
-        outerHStack.configure(config: outerHStackConfig,
-                              measurement: outerHStackMeasurement,
-                              subviews: outerHStackSubviews)
+            outerHStack.configureForReuse(config: outerHStackConfig,
+                                          measurement: outerHStackMeasurement)
+        } else {
+            vStack.configure(config: vStackConfig,
+                             measurement: vStackMeasurement,
+                             subviews: vStackSubviews)
+
+            outerHStack.configure(config: outerHStackConfig,
+                                  measurement: outerHStackMeasurement,
+                                  subviews: outerHStackSubviews)
+        }
+
+        isReusing = true
     }
 
     // MARK: - Stack Configs
@@ -803,6 +813,8 @@ public class HomeViewCell: UITableViewCell {
         for cvview in cvviews {
             cvview.reset()
         }
+
+        // Some ManualStackViews are _NOT_ reset to facilitate reuse.
 
         cellContentToken = nil
         avatarView.image = nil
