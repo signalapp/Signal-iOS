@@ -196,6 +196,39 @@ extension SessionProtos_TypingMessage.Action: CaseIterable {
 
 #endif  // swift(>=4.2)
 
+struct SessionProtos_UnsendRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// @required
+  var timestamp: UInt64 {
+    get {return _timestamp ?? 0}
+    set {_timestamp = newValue}
+  }
+  /// Returns true if `timestamp` has been explicitly set.
+  var hasTimestamp: Bool {return self._timestamp != nil}
+  /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+  mutating func clearTimestamp() {self._timestamp = nil}
+
+  /// @required
+  var author: String {
+    get {return _author ?? String()}
+    set {_author = newValue}
+  }
+  /// Returns true if `author` has been explicitly set.
+  var hasAuthor: Bool {return self._author != nil}
+  /// Clears the value of `author`. Subsequent reads from it will return its default value.
+  mutating func clearAuthor() {self._author = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _timestamp: UInt64? = nil
+  fileprivate var _author: String? = nil
+}
+
 struct SessionProtos_Content {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -246,6 +279,15 @@ struct SessionProtos_Content {
   /// Clears the value of `dataExtractionNotification`. Subsequent reads from it will return its default value.
   mutating func clearDataExtractionNotification() {self._dataExtractionNotification = nil}
 
+  var unsendRequest: SessionProtos_UnsendRequest {
+    get {return _unsendRequest ?? SessionProtos_UnsendRequest()}
+    set {_unsendRequest = newValue}
+  }
+  /// Returns true if `unsendRequest` has been explicitly set.
+  var hasUnsendRequest: Bool {return self._unsendRequest != nil}
+  /// Clears the value of `unsendRequest`. Subsequent reads from it will return its default value.
+  mutating func clearUnsendRequest() {self._unsendRequest = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -255,6 +297,7 @@ struct SessionProtos_Content {
   fileprivate var _typingMessage: SessionProtos_TypingMessage? = nil
   fileprivate var _configurationMessage: SessionProtos_ConfigurationMessage? = nil
   fileprivate var _dataExtractionNotification: SessionProtos_DataExtractionNotification? = nil
+  fileprivate var _unsendRequest: SessionProtos_UnsendRequest? = nil
 }
 
 struct SessionProtos_KeyPair {
@@ -1504,6 +1547,50 @@ extension SessionProtos_TypingMessage.Action: SwiftProtobuf._ProtoNameProviding 
   ]
 }
 
+extension SessionProtos_UnsendRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".UnsendRequest"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "timestamp"),
+    2: .same(proto: "author"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._timestamp == nil {return false}
+    if self._author == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._author) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._timestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    if let v = self._author {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_UnsendRequest, rhs: SessionProtos_UnsendRequest) -> Bool {
+    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._author != rhs._author {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Content"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -1512,6 +1599,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     6: .same(proto: "typingMessage"),
     7: .same(proto: "configurationMessage"),
     8: .same(proto: "dataExtractionNotification"),
+    9: .same(proto: "unsendRequest"),
   ]
 
   public var isInitialized: Bool {
@@ -1520,6 +1608,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if let v = self._typingMessage, !v.isInitialized {return false}
     if let v = self._configurationMessage, !v.isInitialized {return false}
     if let v = self._dataExtractionNotification, !v.isInitialized {return false}
+    if let v = self._unsendRequest, !v.isInitialized {return false}
     return true
   }
 
@@ -1534,6 +1623,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       case 6: try { try decoder.decodeSingularMessageField(value: &self._typingMessage) }()
       case 7: try { try decoder.decodeSingularMessageField(value: &self._configurationMessage) }()
       case 8: try { try decoder.decodeSingularMessageField(value: &self._dataExtractionNotification) }()
+      case 9: try { try decoder.decodeSingularMessageField(value: &self._unsendRequest) }()
       default: break
       }
     }
@@ -1555,6 +1645,9 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if let v = self._dataExtractionNotification {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
     }
+    if let v = self._unsendRequest {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1564,6 +1657,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     if lhs._typingMessage != rhs._typingMessage {return false}
     if lhs._configurationMessage != rhs._configurationMessage {return false}
     if lhs._dataExtractionNotification != rhs._dataExtractionNotification {return false}
+    if lhs._unsendRequest != rhs._unsendRequest {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
