@@ -10,7 +10,7 @@ public class OWSFormat: NSObject {
     // We evacuate this cache in the background in case the
     // user changes a system setting that would affect
     // formatting behavior.
-    private let shortNameComponentsCache = LRUCache<String, String>(maxSize: 256,
+    private let shortNameComponentsCache = LRUCache<String, String>(maxSize: 512,
                                                                     nseMaxSize: 0,
                                                                     shouldEvacuateInBackground: true)
 
@@ -36,14 +36,12 @@ public class OWSFormat: NSObject {
                                      style: PersonNameComponentsFormatter.Style) -> String {
         let cacheKey = String(describing: nameComponents) + "." + String(describing: style)
         if let value = shortNameComponentsCache.get(key: cacheKey) {
-            Logger.verbose("---- cache hit: \(cacheKey) -> \(value)")
             return value
         }
         let value = PersonNameComponentsFormatter.localizedString(from: nameComponents,
                                                                   style: style,
                                                                   options: [])
         shortNameComponentsCache.set(key: cacheKey, value: value)
-        Logger.verbose("---- cache miss: \(cacheKey) -> \(value)")
         return value
     }
 }
