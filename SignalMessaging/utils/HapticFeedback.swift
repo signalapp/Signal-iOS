@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -49,6 +49,19 @@ public class ImpactHapticFeedback: NSObject {
             let generator = UIImpactFeedbackGenerator(style: style)
             generator.prepare()
             generator.impactOccurred()
+        }
+    }
+
+    @objc
+    public class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle, intensity: CGFloat) {
+        DispatchQueue.main.async {
+            let generator = UIImpactFeedbackGenerator(style: style)
+            generator.prepare()
+            if #available(iOS 13, *) {
+                generator.impactOccurred(intensity: intensity)
+            } else {
+                generator.impactOccurred()
+            }
         }
     }
 }

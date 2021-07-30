@@ -68,8 +68,6 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
         UIView.animate(
             withDuration: duration,
             delay: 0,
-            usingSpringWithDamping: springDamping,
-            initialSpringVelocity: springInitialVelocity,
             options: [.curveEaseInOut, .beginFromCurrentState],
             animations: {
                 self.menuView.transform = CGAffineTransform.scale(self.minimumScale)
@@ -338,13 +336,8 @@ public class ContextMenuActionsView: UIView {
     func handleGestureChanged(locationInView: CGPoint) {
         // Add impact effect here
         var highlightStateChanged = false
-        var rowWasPreviouslyHighlighted = false
         for actionRow in actionViews {
             let wasHighlighted = actionRow.isHighlighted
-            if !rowWasPreviouslyHighlighted {
-                rowWasPreviouslyHighlighted = wasHighlighted
-            }
-
             let shouldHighlight = actionRow.frame.contains(locationInView) && !actionRow.attributes.contains(.disabled)
             actionRow.isHighlighted = shouldHighlight
 
@@ -353,7 +346,7 @@ public class ContextMenuActionsView: UIView {
             }
         }
 
-        if highlightStateChanged && rowWasPreviouslyHighlighted {
+        if highlightStateChanged {
             ImpactHapticFeedback.impactOccured(style: .light)
         }
     }

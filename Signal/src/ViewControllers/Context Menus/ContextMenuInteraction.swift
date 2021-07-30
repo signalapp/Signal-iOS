@@ -23,7 +23,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     weak var delegate: ContextMenuInteractionDelegate?
     fileprivate var contextMenuController: ContextMenuController?
 
-    private let sourceViewBounceDuration = 0.3
+    private let sourceViewBounceDuration = 0.2
     fileprivate var gestureEligibleForMenuPresentation: Bool {
         didSet {
             if !gestureEligibleForMenuPresentation {
@@ -152,7 +152,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, initiatingGestureRecognizer: initiatingGestureRecognizer(), menuAccessory: menuAccessory)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
-        ImpactHapticFeedback.impactOccured(style: .medium)
+        ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
 
         window.addSubview(contextMenuController.view)
         contextMenuController.view.frame = window.bounds
