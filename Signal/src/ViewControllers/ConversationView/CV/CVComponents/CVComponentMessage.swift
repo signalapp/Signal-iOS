@@ -1484,8 +1484,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         public func contextMenuContentView() -> UIView? {
-            chatColorView.animationsEnabled = true
-            return chatColorView
+            // Use contentStack for non-colored balloons
+            if chatColorView.superview == nil {
+                return contentStack
+            } else {
+                chatColorView.animationsEnabled = true
+                return chatColorView
+            }
+
         }
 
         public func contextMenuSourceAnimationComplete() {

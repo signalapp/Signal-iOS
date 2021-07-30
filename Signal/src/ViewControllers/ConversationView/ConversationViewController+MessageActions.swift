@@ -262,6 +262,10 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         }
     }
 
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {
+        dismissKeyBoard()
+    }
+
     public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {
         if let contextInteraction = interaction as? ChatHistoryContextMenuInteraction, let cell = contextInteraction.view as? CVCell, let componentView = cell.componentView {
             componentView.contextMenuSourceAnimationComplete?()
