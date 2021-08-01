@@ -153,7 +153,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        super.viewWillDisappear(animated)
         isVisible = false
         VolumeButtons.shared?.removeObserver(photoCapture)
     }
