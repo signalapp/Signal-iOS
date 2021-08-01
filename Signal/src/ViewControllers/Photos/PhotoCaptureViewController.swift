@@ -142,6 +142,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         UIViewController.attemptRotationToDeviceOrientation()
         photoCapture.updateVideoPreviewConnection(toOrientation: previewOrientation)
         updateIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
+        resumePhotoCapture()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -156,6 +157,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         super.viewWillDisappear(animated)
         isVisible = false
         VolumeButtons.shared?.removeObserver(photoCapture)
+        pausePhotoCapture()
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -533,6 +535,28 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }.catch { [weak self] error in
             guard let self = self else { return }
             self.showFailureUI(error: error)
+        }
+    }
+
+    private func pausePhotoCapture() {
+        guard photoCapture.session.isRunning else { return }
+        firstly {
+            photoCapture.stopCapture()
+        }.done { [weak self] in
+            self?.hasCaptureStarted = false
+        }.catch { [weak self] error in
+            self?.showFailureUI(error: error)
+        }
+    }
+
+    private func resumePhotoCapture() {
+        guard !photoCapture.session.isRunning else { return }
+        firstly {
+            photoCapture.resumeCapture()
+        }.done { [weak self] in
+            self?.hasCaptureStarted = true
+        }.catch { [weak self] error in
+            self?.showFailureUI(error: error)
         }
     }
 
