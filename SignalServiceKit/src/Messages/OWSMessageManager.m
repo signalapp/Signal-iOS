@@ -2002,17 +2002,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSArray<TSAttachmentPointer *> *attachmentPointers =
-        [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:message];
-
-    NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
-    for (TSAttachmentPointer *pointer in attachmentPointers) {
-        [pointer anyInsertWithTransaction:transaction];
-        [attachmentIds addObject:pointer.uniqueId];
-    }
-    message.attachmentIds = [attachmentIds copy];
-
-    if (!message.hasRenderableContent) {
+    // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
+    // But since the message is partially built and doesn't have the attachments yet, we check
+    // for attachments explicitly.
+    if (!message.hasRenderableContent && dataMessage.attachments.count == 0) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);
         if (SSKDebugFlags.internalLogging) {
             OWSLogInfo(@"Ignoring empty message(envelope): %@", envelope.debugDescription);
@@ -2024,6 +2017,22 @@ NS_ASSUME_NONNULL_BEGIN
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
+
+    NSArray<TSAttachmentPointer *> *attachmentPointers = [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments
+                                                                                              albumMessage:message];
+
+    NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
+    for (TSAttachmentPointer *pointer in attachmentPointers) {
+        [pointer anyInsertWithTransaction:transaction];
+        [attachmentIds addObject:pointer.uniqueId];
+    }
+    if (message.attachmentIds.count != attachmentIds.count) {
+        [message anyUpdateIncomingMessageWithTransaction:transaction block:^(TSIncomingMessage *message) {
+            message.attachmentIds = [attachmentIds copy];
+        }];
+    }
+    OWSAssertDebug(message.hasRenderableContent);
+
     [self.earlyMessageManager applyPendingMessagesFor:message transaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.

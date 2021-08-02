@@ -125,16 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                changeActionsProtoData:nil
                                                                  additionalRecipients:nil] build];
 
-    NSArray<TSAttachmentPointer *> *attachmentPointers =
-        [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
-                                             albumMessage:outgoingMessage];
-    NSMutableArray<NSString *> *attachmentIds = [outgoingMessage.attachmentIds mutableCopy];
-    for (TSAttachmentPointer *pointer in attachmentPointers) {
-        [pointer anyInsertWithTransaction:transaction];
-        [attachmentIds addObject:pointer.uniqueId];
-    }
-    outgoingMessage.attachmentIds = [attachmentIds copy];
-
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (localAddress == nil) {
         OWSFailDebug(@"Missing localAddress.");
@@ -151,12 +141,16 @@ NS_ASSUME_NONNULL_BEGIN
     if (transcript.isExpirationTimerUpdate) {
         // early return to avoid saving an empty incoming message.
         OWSAssertDebug(transcript.body.length == 0);
-        OWSAssertDebug(outgoingMessage.attachmentIds.count == 0);
+        OWSAssertDebug(transcript.attachmentPointerProtos == 0);
         
         return;
     }
 
-    if (!outgoingMessage.hasRenderableContent && !outgoingMessage.isViewOnceMessage) {
+    // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
+    // But since outgoingMessage is partially built and doesn't have the attachments yet, we check
+    // for attachments explicitly.
+    BOOL outgoingMessageHasContent = (outgoingMessage.hasRenderableContent || transcript.attachmentPointerProtos);
+    if (!outgoingMessageHasContent && !outgoingMessage.isViewOnceMessage) {
         if (transcript.thread.isGroupV2Thread) {
             // This is probably a v2 group update.
             OWSLogWarn(@"Ignoring message transcript for empty v2 group message.");
@@ -166,7 +160,24 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Check for any placeholders inserted because of a previously undecryptable message
+    // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [outgoingMessage insertOrReplacePlaceholderFrom:localAddress transaction:transaction];
+
+    NSArray<TSAttachmentPointer *> *attachmentPointers = [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
+                                                                                              albumMessage:outgoingMessage];
+    NSMutableArray<NSString *> *attachmentIds = [outgoingMessage.attachmentIds mutableCopy];
+    for (TSAttachmentPointer *pointer in attachmentPointers) {
+        [pointer anyInsertWithTransaction:transaction];
+        [attachmentIds addObject:pointer.uniqueId];
+    }
+    if (outgoingMessage.attachmentIds.count != attachmentIds.count) {
+        [outgoingMessage anyUpdateOutgoingMessageWithTransaction:transaction block:^(TSOutgoingMessage *message) {
+            message.attachmentIds = [attachmentIds copy];
+        }];
+    }
+    OWSAssertDebug(outgoingMessage.hasRenderableContent);
+
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:transcript.udRecipientAddresses
                                                        nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
                                                                   isSentUpdate:NO
