@@ -551,11 +551,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func deleteLocally(_ viewItem: ConversationViewItem) {
         viewItem.deleteLocallyAction()
-    }
-    
-    func deleteForEveryone(_ viewItem: ConversationViewItem) {
-        viewItem.deleteLocallyAction()
-        viewItem.deleteRemotelyAction()
         let unsendRequest = UnsendRequest()
         switch viewItem.interaction.interactionType() {
         case .incomingMessage:
@@ -569,6 +564,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         SNMessagingKitConfiguration.shared.storage.write { transaction in
             MessageSender.send(unsendRequest, in: self.thread, using: transaction as! YapDatabaseReadWriteTransaction)
         }
+    }
+    
+    func deleteForEveryone(_ viewItem: ConversationViewItem) {
+        viewItem.deleteRemotelyAction()
+        deleteLocally(viewItem)
     }
     
     func save(_ viewItem: ConversationViewItem) {
