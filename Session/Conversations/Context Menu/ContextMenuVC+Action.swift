@@ -67,8 +67,13 @@ extension ContextMenuVC {
     
     static func deleteActions(for viewItem: ConversationViewItem, delegate: ContextMenuActionDelegate?) -> [Action] {
         switch viewItem.interaction.interactionType() {
-        case .outgoingMessage: return [Action.deleteForEveryone(viewItem, delegate), Action.deleteLocally(viewItem, delegate)]
-        case .incomingMessage: return [Action.deleteLocally(viewItem, delegate)]
+        case .outgoingMessage:
+            if let message = viewItem.interaction as? TSMessage, let _ = message.serverHash {
+                return [Action.deleteForEveryone(viewItem, delegate), Action.deleteLocally(viewItem, delegate)]
+            }
+            return [Action.deleteLocally(viewItem, delegate)]
+        case .incomingMessage:
+            return [Action.deleteLocally(viewItem, delegate)]
         default: return [] // Should never occur
         }
         
