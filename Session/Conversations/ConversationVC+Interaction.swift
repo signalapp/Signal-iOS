@@ -549,8 +549,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let _ = self.contextMenuVC?.updateMenu(forDelete: true)
     }
     
-    func deleteLocally(_ viewItem: ConversationViewItem) {
-        viewItem.deleteLocallyAction()
+    private func buildUsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
         let unsendRequest = UnsendRequest()
         switch viewItem.interaction.interactionType() {
         case .incomingMessage:
@@ -558,17 +557,29 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 unsendRequest.author = incomingMessage.authorId
             }
         case .outgoingMessage: unsendRequest.author = getUserHexEncodedPublicKey()
-        default: return // Should never occur
+        default: return nil// Should never occur
         }
         unsendRequest.timestamp = viewItem.interaction.timestamp
-        SNMessagingKitConfiguration.shared.storage.write { transaction in
-            MessageSender.send(unsendRequest, in: self.thread, using: transaction as! YapDatabaseReadWriteTransaction)
+        return unsendRequest
+    }
+    
+    func deleteLocally(_ viewItem: ConversationViewItem) {
+        viewItem.deleteLocallyAction()
+        if let unsendRequest = buildUsendRequest(viewItem) {
+            SNMessagingKitConfiguration.shared.storage.write { transaction in
+                MessageSender.send(unsendRequest, to: .contact(publicKey: getUserHexEncodedPublicKey()), using: transaction).retainUntilComplete()
+            }
         }
     }
     
     func deleteForEveryone(_ viewItem: ConversationViewItem) {
+        viewItem.deleteLocallyAction()
         viewItem.deleteRemotelyAction()
-        deleteLocally(viewItem)
+        if let unsendRequest = buildUsendRequest(viewItem) {
+            SNMessagingKitConfiguration.shared.storage.write { transaction in
+                MessageSender.send(unsendRequest, in: self.thread, using: transaction as! YapDatabaseReadWriteTransaction)
+            }
+        }
     }
     
     func save(_ viewItem: ConversationViewItem) {
