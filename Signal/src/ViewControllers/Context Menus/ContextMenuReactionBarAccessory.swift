@@ -39,7 +39,7 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
 
         }
         if previewWillShift {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { animateIn() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { animateIn() }
         } else {
             animateIn()
         }

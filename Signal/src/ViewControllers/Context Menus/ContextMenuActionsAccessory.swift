@@ -22,6 +22,7 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
         self.menu = menu
 
         menuView = ContextMenuActionsView(menu: menu)
+        menuView.isHidden = true
         super.init(accessoryView: menuView, accessoryAlignment: accessoryAlignment)
         menuView.delegate = self
         animateAccessoryPresentationAlongsidePreview = true
@@ -36,6 +37,7 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
         setMenuLayerAnchorPoint()
 
         menuView.transform = CGAffineTransform.scale(minimumScale)
+        menuView.isHidden = false
         UIView.animate(
             withDuration: duration,
             delay: 0,

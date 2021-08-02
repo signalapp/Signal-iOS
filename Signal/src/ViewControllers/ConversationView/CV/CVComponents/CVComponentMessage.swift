@@ -1484,7 +1484,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         public func contextMenuContentView() -> UIView? {
+            chatColorView.animationsEnabled = true
             return chatColorView
+        }
+
+        public func contextMenuSourceAnimationComplete() {
+            chatColorView.animationsEnabled = false
         }
 
         fileprivate func removeSwipeActionAnimations() {

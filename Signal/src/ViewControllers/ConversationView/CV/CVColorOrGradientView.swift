@@ -38,6 +38,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     private let maskLayer = CAShapeLayer()
 
     public var ensureSubviewsFillBounds = false
+    public var animationsEnabled = false
 
     public init() {
         super.init(name: "CVColorOrGradientView")
@@ -287,8 +288,13 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
     // MARK: - CALayerDelegate
 
     public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
-        // Disable all implicit CALayer animations.
-        NSNull()
+        // Disable all implicit CALayer animations if needed
+        if animationsEnabled {
+            return super.action(for: layer, forKey: event)
+        } else {
+            return NSNull()
+        }
+
     }
 }
 

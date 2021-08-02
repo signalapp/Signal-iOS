@@ -291,7 +291,10 @@ public protocol CVComponentView {
 
     func reset()
 
+    // Allows component opportunity to configure and return a subview for context menu previews
     @objc optional func contextMenuContentView() -> UIView?
+    // Called when bounce in animation for context menu completes
+    @objc optional func contextMenuSourceAnimationComplete()
 }
 
 // MARK: -
