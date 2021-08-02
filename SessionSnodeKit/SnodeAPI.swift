@@ -454,6 +454,8 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
+//    public static func deleteMessage() -> Promise
+    
     /// Clears all the user's data from their swarm. Returns a dictionary of snode public key to deletion confirmation.
     public static func clearAllData() -> Promise<[String:Bool]> {
         let storage = SNSnodeKitConfiguration.shared.storage

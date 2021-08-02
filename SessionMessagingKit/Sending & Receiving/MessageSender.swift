@@ -208,10 +208,13 @@ public final class MessageSender : NSObject {
             let promiseCount = promises.count
             var errorCount = 0
             promises.forEach {
-                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse in
                     guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                     isSuccess = true
                     storage.write(with: { transaction in
+                        let json = rawResponse as? JSON
+                        let hash = json?["hash"] as? String
+                        message.serverHash = hash
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
                         var shouldNotify = ((message is VisibleMessage || message is UnsendRequest) && !isSyncMessage)
                         /*
@@ -329,6 +332,7 @@ public final class MessageSender : NSObject {
         Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         // Get the visible message if possible
         if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
+            tsMessage.serverHash = message.serverHash
             // Track the open group server message ID
             tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
             tsMessage.save(with: transaction)
