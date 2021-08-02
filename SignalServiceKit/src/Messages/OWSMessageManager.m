@@ -2018,8 +2018,8 @@ NS_ASSUME_NONNULL_BEGIN
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
 
-    NSArray<TSAttachmentPointer *> *attachmentPointers = [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments
-                                                                                              albumMessage:message];
+    NSArray<TSAttachmentPointer *> *attachmentPointers =
+        [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:message];
 
     NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
@@ -2027,9 +2027,10 @@ NS_ASSUME_NONNULL_BEGIN
         [attachmentIds addObject:pointer.uniqueId];
     }
     if (message.attachmentIds.count != attachmentIds.count) {
-        [message anyUpdateIncomingMessageWithTransaction:transaction block:^(TSIncomingMessage *message) {
-            message.attachmentIds = [attachmentIds copy];
-        }];
+        [message anyUpdateIncomingMessageWithTransaction:transaction
+                                                   block:^(TSIncomingMessage *message) {
+                                                       message.attachmentIds = [attachmentIds copy];
+                                                   }];
     }
     OWSAssertDebug(message.hasRenderableContent);
 

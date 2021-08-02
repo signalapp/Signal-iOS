@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
         // early return to avoid saving an empty incoming message.
         OWSAssertDebug(transcript.body.length == 0);
         OWSAssertDebug(transcript.attachmentPointerProtos == 0);
-        
+
         return;
     }
 
@@ -164,17 +164,19 @@ NS_ASSUME_NONNULL_BEGIN
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [outgoingMessage insertOrReplacePlaceholderFrom:localAddress transaction:transaction];
 
-    NSArray<TSAttachmentPointer *> *attachmentPointers = [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
-                                                                                              albumMessage:outgoingMessage];
+    NSArray<TSAttachmentPointer *> *attachmentPointers =
+        [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
+                                             albumMessage:outgoingMessage];
     NSMutableArray<NSString *> *attachmentIds = [outgoingMessage.attachmentIds mutableCopy];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
         [pointer anyInsertWithTransaction:transaction];
         [attachmentIds addObject:pointer.uniqueId];
     }
     if (outgoingMessage.attachmentIds.count != attachmentIds.count) {
-        [outgoingMessage anyUpdateOutgoingMessageWithTransaction:transaction block:^(TSOutgoingMessage *message) {
-            message.attachmentIds = [attachmentIds copy];
-        }];
+        [outgoingMessage anyUpdateOutgoingMessageWithTransaction:transaction
+                                                           block:^(TSOutgoingMessage *message) {
+                                                               message.attachmentIds = [attachmentIds copy];
+                                                           }];
     }
     OWSAssertDebug(outgoingMessage.hasRenderableContent);
 
