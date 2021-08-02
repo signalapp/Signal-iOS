@@ -269,7 +269,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     
     @objc
     public func cancelNotification(_ identifier: String) {
-        self.adaptee.cancelNotification(identifier: identifier)
+        DispatchQueue.main.async {
+            self.adaptee.cancelNotification(identifier: identifier)
+        }
     }
 
     @objc
