@@ -57,7 +57,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         //   it, for example when they leave a censored region.
         let censorshipCircumventionSection = OWSTableSection()
 
-        let isAnySocketOpen = TSSocketManager.shared.socketState() == .open
+        let isAnySocketOpen = socketManager.isAnySocketOpen
         if OWSSignalService.shared().hasCensoredPhoneNumber {
             if OWSSignalService.shared().isCensorshipCircumventionManuallyDisabled {
                 censorshipCircumventionSection.footerTitle = NSLocalizedString(
@@ -112,7 +112,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 } else if OWSSignalService.shared().hasCensoredPhoneNumber,
                           OWSSignalService.shared().isCensorshipCircumventionManuallyDisabled {
                     return true
-                } else if TSSocketManager.shared.socketState() == .open {
+                } else if Self.socketManager.isAnySocketOpen {
                     return false
                 } else {
                     return Self.reachabilityManager.isReachable

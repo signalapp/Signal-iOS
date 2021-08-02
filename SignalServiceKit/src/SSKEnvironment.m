@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
@@ -19,14 +19,14 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<ContactsManagerProtocol> contactsManagerRef;
 @property (nonatomic) MessageSender *messageSenderRef;
 @property (nonatomic) id<ProfileManagerProtocol> profileManagerRef;
-@property (nonatomic) TSNetworkManager *networkManagerRef;
+@property (nonatomic) NetworkManager *networkManagerRef;
 @property (nonatomic) OWSMessageManager *messageManagerRef;
 @property (nonatomic) BlockingManager *blockingManagerRef;
 @property (nonatomic) OWSIdentityManager *identityManagerRef;
 @property (nonatomic) id<OWSUDManager> udManagerRef;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypterRef;
 @property (nonatomic) GroupsV2MessageProcessor *groupsV2MessageProcessorRef;
-@property (nonatomic) TSSocketManager *socketManagerRef;
+@property (nonatomic) SocketManager *socketManagerRef;
 @property (nonatomic) TSAccountManager *tsAccountManagerRef;
 @property (nonatomic) OWS2FAManager *ows2FAManagerRef;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJobRef;
@@ -71,7 +71,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                  pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
-                         networkManager:(TSNetworkManager *)networkManager
+                         networkManager:(NetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(BlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
@@ -82,7 +82,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
-                          socketManager:(TSSocketManager *)socketManager
+                          socketManager:(SocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob

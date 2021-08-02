@@ -5,7 +5,6 @@
 #import "Theme.h"
 #import "UIUtil.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

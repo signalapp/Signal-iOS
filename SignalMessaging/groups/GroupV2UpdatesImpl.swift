@@ -318,48 +318,43 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 self.resolver.fulfill(groupThread)
             }.catch(on: .global()) { (error) in
 
-                let nsError: NSError = error as NSError
-                if case GroupsV2Error.unauthorized = error {
-                    if self.shouldIgnoreAuthFailures {
-                        Logger.warn("Group refresh failed: \(error)")
-                        nsError.isRetryable = false
-                    } else {
-                        owsFailDebug("Group refresh failed: \(error)")
-                        nsError.isRetryable = true
-                    }
-                } else if case GroupsV2Error.localUserNotInGroup = error {
-                    Logger.warn("Local user not in group: \(error)")
-                    nsError.isRetryable = false
-                } else if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Group refresh failed: \(error)")
-                    nsError.isRetryable = true
-                } else if case GroupsV2Error.timeout = error {
-                    Logger.warn("Group refresh timed out: \(error)")
-                    nsError.isRetryable = true
-                } else if case GroupsV2Error.missingGroupChangeProtos = error {
-                    Logger.warn("Group state missing change protos: \(error)")
-                    nsError.isRetryable = false
+                var error = error
+                if self.shouldRetryAuthFailures,
+                   case GroupsV2Error.unauthorizedUnretryable = error {
+                    error = GroupsV2Error.unauthorizedRetryable
+                   }
+
+                if IsNetworkConnectivityFailure(error) {
+                    Logger.warn("Group update failed: \(error)")
                 } else {
-                    owsFailDebug("Group refresh failed: \(error)")
-                    nsError.isRetryable = true
+                    switch error {
+                    case GroupsV2Error.unauthorizedUnretryable,
+                         GroupsV2Error.unauthorizedRetryable,
+                         GroupsV2Error.localUserNotInGroup,
+                         GroupsV2Error.timeout,
+                         GroupsV2Error.missingGroupChangeProtos:
+                    Logger.warn("Group update failed: \(error)")
+                    default:
+                        owsFailDebug("Group update failed: \(error)")
+                    }
                 }
 
-                self.reportError(nsError)
+                self.reportError(error)
             }
         }
 
-        private var shouldIgnoreAuthFailures: Bool {
+        private var shouldRetryAuthFailures: Bool {
             return self.databaseStorage.read { transaction in
                 guard let groupThread = TSGroupThread.fetch(groupId: self.groupId, transaction: transaction) else {
                     // The thread may have been deleted while the refresh was in flight.
                     Logger.warn("Missing group thread.")
-                    return true
+                    return false
                 }
                 let isLocalUserInGroup = groupThread.isLocalUserFullOrInvitedMember
                 // Auth errors are expected if we've left the group,
                 // but we should still try to refresh so we can learn
                 // if we've been re-added.
-                return !isLocalUserInGroup
+                return isLocalUserInGroup
             }
         }
 
@@ -413,7 +408,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     case GroupsV2Error.groupNotInDatabase:
                         // Unknown groups are handled by snapshot.
                         return true
-                    case GroupsV2Error.unauthorized,
+                    case GroupsV2Error.unauthorizedUnretryable,
+                         GroupsV2Error.unauthorizedRetryable,
                          GroupsV2Error.localUserNotInGroup:
                         // We can recover from some auth edge cases
                         // using a snapshot.
@@ -1019,6 +1015,69 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
 
             return result.groupThread
+        }
+    }
+}
+
+// MARK: -
+
+extension GroupsV2Error: IsRetryableProvider {
+    public var isRetryableProvider: Bool {
+        if IsNetworkConnectivityFailure(self) {
+            return true
+        }
+
+        switch self {
+        case .redundantChange:
+            return true
+        case .unauthorizedRetryable:
+            return true
+        case .unauthorizedUnretryable:
+            return false
+        case .shouldRetry:
+            return true
+        case .shouldDiscard:
+            return false
+        case .groupNotInDatabase:
+            return true
+        case .timeout:
+            return true
+        case .localUserNotInGroup:
+            return false
+        case .conflictingChange:
+            return true
+        case .lastAdminCantLeaveGroup:
+            return false
+        case .tooManyMembers:
+            return false
+        case .gv2NotEnabled:
+            return false
+        case .localUserIsAlreadyRequestingMember:
+            return false
+        case .localUserIsNotARequestingMember:
+            return false
+        case .requestingMemberCantLoadGroupState:
+            return false
+        case .cantApplyChangesToPlaceholder:
+            return false
+        case .expiredGroupInviteLink:
+            return false
+        case .groupDoesNotExistOnService:
+            return false
+        case .groupNeedsToBeMigrated:
+            return false
+        case .groupCannotBeMigrated:
+            return false
+        case .groupDowngradeNotAllowed:
+            return false
+        case .missingGroupChangeProtos:
+            return false
+        case .unexpectedRevision:
+            return true
+        case .groupBlocked:
+            return false
+        case .newMemberMissingAnnouncementOnlyCapability:
+            return true
         }
     }
 }

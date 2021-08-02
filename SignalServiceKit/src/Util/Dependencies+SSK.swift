@@ -118,11 +118,11 @@ public extension NSObject {
         SSKEnvironment.shared.messagePipelineSupervisorRef
     }
 
-    final var networkManager: TSNetworkManager {
+    final var networkManager: NetworkManager {
         SSKEnvironment.shared.networkManagerRef
     }
 
-    static var networkManager: TSNetworkManager {
+    static var networkManager: NetworkManager {
         SSKEnvironment.shared.networkManagerRef
     }
 
@@ -168,11 +168,11 @@ public extension NSObject {
         SSKEnvironment.shared.reachabilityManagerRef
     }
 
-    final var socketManager: TSSocketManager {
+    final var socketManager: SocketManager {
         SSKEnvironment.shared.socketManagerRef
     }
 
-    static var socketManager: TSSocketManager {
+    static var socketManager: SocketManager {
         SSKEnvironment.shared.socketManagerRef
     }
 
@@ -575,11 +575,11 @@ public extension Dependencies {
         SSKEnvironment.shared.messagePipelineSupervisorRef
     }
 
-    var networkManager: TSNetworkManager {
+    var networkManager: NetworkManager {
         SSKEnvironment.shared.networkManagerRef
     }
 
-    static var networkManager: TSNetworkManager {
+    static var networkManager: NetworkManager {
         SSKEnvironment.shared.networkManagerRef
     }
 
@@ -625,11 +625,11 @@ public extension Dependencies {
         SSKEnvironment.shared.reachabilityManagerRef
     }
 
-    var socketManager: TSSocketManager {
+    var socketManager: SocketManager {
         SSKEnvironment.shared.socketManagerRef
     }
 
-    static var socketManager: TSSocketManager {
+    static var socketManager: SocketManager {
         SSKEnvironment.shared.socketManagerRef
     }
 
@@ -1107,8 +1107,8 @@ public extension MessageProcessor {
 // MARK: -
 
 @objc
-public extension TSSocketManager {
-    static var shared: TSSocketManager {
+public extension SocketManager {
+    static var shared: SocketManager {
         SSKEnvironment.shared.socketManagerRef
     }
 }
@@ -1116,8 +1116,8 @@ public extension TSSocketManager {
 // MARK: -
 
 @objc
-public extension TSNetworkManager {
-    static var shared: TSNetworkManager {
+public extension NetworkManager {
+    static var shared: NetworkManager {
         SSKEnvironment.shared.networkManagerRef
     }
 }

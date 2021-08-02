@@ -64,7 +64,7 @@ fileprivate extension Stripe {
             for amount: NSDecimalNumber,
             in currencyCode: Currency.Code
         ) -> Promise<(PaymentIntent)> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<TSNetworkManager.Response> in
+            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
                 guard !isAmountTooSmall(amount, in: currencyCode) else {
                     throw OWSAssertionError("Amount too small")
                 }
@@ -86,8 +86,11 @@ fileprivate extension Stripe {
                 )
 
                 return networkManager.makePromise(request: request)
-            }.map(on: .sharedUserInitiated) {  _, responseObject in
-                guard let parser = ParamParser(responseObject: responseObject) else {
+            }.map(on: .sharedUserInitiated) {  response in
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing or invalid JSON")
+                }
+                guard let parser = ParamParser(responseObject: json) else {
                     throw OWSAssertionError("Failed to decode JSON response")
                 }
                 return PaymentIntent(

@@ -15,13 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id<ContactsManagerProtocol> contactsManagerRef;
 @property (nonatomic) MessageSender *messageSenderRef;
 @property (nonatomic) id<ProfileManagerProtocol> profileManagerRef;
-@property (nonatomic) TSNetworkManager *networkManagerRef;
+@property (nonatomic) NetworkManager *networkManagerRef;
 @property (nonatomic) OWSMessageManager *messageManagerRef;
 @property (nonatomic) BlockingManager *blockingManagerRef;
 @property (nonatomic) OWSIdentityManager *identityManagerRef;
 @property (nonatomic) id<OWSUDManager> udManagerRef;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypterRef;
-@property (nonatomic) TSSocketManager *socketManagerRef;
+@property (nonatomic) SocketManager *socketManagerRef;
 @property (nonatomic) TSAccountManager *tsAccountManagerRef;
 @property (nonatomic) OWS2FAManager *ows2FAManagerRef;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJobRef;

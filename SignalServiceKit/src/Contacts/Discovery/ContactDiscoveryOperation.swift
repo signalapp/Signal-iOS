@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -107,6 +107,20 @@ public class ContactDiscoveryError: NSError {
     }
 
     public override var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
+        get {
+            NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
+        }
+        set {
+            notImplemented()
+        }
+    }
+}
+
+// MARK: - ContactDiscoveryError
+
+extension ContactDiscoveryError: IsRetryableProvider {
+    @objc
+    public var isRetryableProvider: Bool {
+        retrySuggested
     }
 }

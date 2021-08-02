@@ -84,7 +84,7 @@ public class AccountManager: NSObject {
             switch error {
             case PushRegistrationError.pushNotSupported(description: let description):
                 Logger.warn("Push not supported: \(description)")
-            case is NetworkManagerError:
+            case is OWSHTTPError:
                 // not deployed to production yet.
                 if error.httpStatusCode == 404 {
                     Logger.warn("404 while requesting preauthChallenge: \(error)")
@@ -344,7 +344,7 @@ public class AccountManager: NSObject {
                                                                        pin: pin,
                                                                        checkForAvailableTransfer: checkForAvailableTransfer)
 
-            tsAccountManager.verifyAccount(with: request,
+            tsAccountManager.verifyAccount(request: request,
                                            success: resolver.fulfill,
                                            failure: resolver.reject)
         }.map(on: .global()) { responseObject throws -> RegistrationResponse in
@@ -441,24 +441,16 @@ public class AccountManager: NSObject {
     // MARK: Turn Server
 
     func getTurnServerInfo() -> Promise<TurnServerInfo> {
-        return Promise { resolver in
-            self.networkManager.makeRequest(OWSRequestFactory.turnServerInfoRequest(),
-                                            success: { (_: URLSessionDataTask, responseObject: Any?) in
-                                                guard responseObject != nil else {
-                                                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-                                                }
-
-                                                if let responseDictionary = responseObject as? [String: AnyObject] {
-                                                    if let turnServerInfo = TurnServerInfo(attributes: responseDictionary) {
-                                                        return resolver.fulfill(turnServerInfo)
-                                                    }
-                                                    Logger.error("unexpected server response:\(responseDictionary)")
-                                                }
-                                                return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-            },
-                                            failure: { (_: URLSessionDataTask, error: Error) in
-                                                    return resolver.reject(error)
-            })
+        let request = OWSRequestFactory.turnServerInfoRequest()
+        return firstly {
+            Self.networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson,
+                  let responseDictionary = json as? [String: AnyObject],
+                  let turnServerInfo = TurnServerInfo(attributes: responseDictionary) else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+            return turnServerInfo
         }
     }
 

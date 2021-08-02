@@ -198,6 +198,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let forceEnableGiphyMP4 = build.includes(.beta)
 
+    @objc
+    public static let deprecateREST = build.includes(.dev)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -358,7 +361,7 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let isMessageProcessingVerbose = false
 
-    // Currently this flag is only honored by TSNetworkManager,
+    // Currently this flag is only honored by NetworkManager,
     // but we could eventually honor in other places as well:
     //
     // * The socket manager.

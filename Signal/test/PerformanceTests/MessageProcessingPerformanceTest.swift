@@ -125,7 +125,8 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         messageProcessor.processEncryptedEnvelopes(
             envelopeJobs: envelopeJobs,
-            serverDeliveryTimestamp: 0
+            serverDeliveryTimestamp: 0,
+            envelopeSource: .tests
         )
 
         waitForExpectations(timeout: 15.0) { _ in

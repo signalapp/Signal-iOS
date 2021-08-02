@@ -13,7 +13,6 @@
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIFont+OWS.h>
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>

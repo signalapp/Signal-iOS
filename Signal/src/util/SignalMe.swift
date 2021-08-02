@@ -42,7 +42,7 @@ class SignalMe: NSObject {
 
                 modal.dismiss {
                     guard let recipient = recipient else {
-                        return OWSActionSheets.showErrorAlert(message: OWSErrorMakeNoSuchSignalRecipientError().localizedDescription)
+                        return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().localizedDescription)
                     }
 
                     block(recipient.address)

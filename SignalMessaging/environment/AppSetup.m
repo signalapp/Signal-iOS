@@ -18,7 +18,6 @@
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -59,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSPreferences *preferences = [OWSPreferences new];
 
-        TSNetworkManager *networkManager = [[TSNetworkManager alloc] initDefault];
+        NetworkManager *networkManager = [NetworkManager new];
         OWSContactsManager *contactsManager = [OWSContactsManager new];
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         MessageSender *messageSender = [MessageSender new];
@@ -76,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSUDManager> udManager = [OWSUDManagerImpl new];
         OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
         GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
-        TSSocketManager *socketManager = [[TSSocketManager alloc] init];
+        SocketManager *socketManager = [[SocketManager alloc] init];
         TSAccountManager *tsAccountManager = [TSAccountManager new];
         OWS2FAManager *ows2FAManager = [OWS2FAManager new];
         OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];

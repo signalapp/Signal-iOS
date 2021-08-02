@@ -920,7 +920,7 @@ extension CallService: CallManagerDelegate {
         }.catch { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to send opaque message \(error)")
-            } else if error.isUntrustedIdentityError {
+            } else if error is UntrustedIdentityError {
                 relevantCalls.forEach { $0.publishSendFailureUntrustedParticipantIdentity() }
             } else {
                 Logger.error("Failed to send opaque message \(error)")
@@ -1175,12 +1175,5 @@ extension CallService: CallManagerDelegate {
             onAddRemoteVideoTrack: call,
             track: track
         )
-    }
-}
-
-private extension Error {
-    var isUntrustedIdentityError: Bool {
-        let nsError = self as NSError
-        return nsError.domain == OWSSignalServiceKitErrorDomain && nsError.code == OWSErrorCode.untrustedIdentity.rawValue
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -28,18 +28,11 @@ class OWSOperationTest: SSKBaseTestSwift {
     }
 
     func test_castSwiftErrorToNSErrorThenSet() {
-        enum FooError: Error {
-            case foo
-        }
-
         let expectedError = expectation(description: "didReportError")
         let operation = TestOperation(expectation: expectedError)
 
-        let error = FooError.foo
-        let nsError = error as NSError
-        nsError.isRetryable = true
-
-        operation.reportError(nsError)
+        let error = OWSRetryableError()
+        operation.reportError(error)
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
@@ -48,17 +41,16 @@ class OWSOperationTest: SSKBaseTestSwift {
         let expectedError = expectation(description: "didReportError")
         let operation = TestOperation(expectation: expectedError)
 
-        let nsError = NSError(domain: "Foo", code: 3, userInfo: nil)
-        nsError.isRetryable = true
+        let error = OWSRetryableError()
+        operation.reportError(error)
 
-        operation.reportError(nsError)
         waitForExpectations(timeout: 0.1, handler: nil)
     }
 
     func test_operationError() {
-        enum BarError: OperationError {
+        enum BarError: Error, IsRetryableProvider {
             case bar
-            var isRetryable: Bool {
+            var isRetryableProvider: Bool {
                 return true
             }
         }

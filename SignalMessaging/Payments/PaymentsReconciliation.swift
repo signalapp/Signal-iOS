@@ -46,7 +46,7 @@ public class PaymentsReconciliation: Dependencies {
                 self.reportSuccess()
             }.catch(on: .global()) { error in
                 owsFailDebugUnlessMCNetworkFailure(error)
-                let error = error.asUnretryableError
+                let error = SSKUnretryableError.paymentsReconciliationFailure
                 self.reportError(error)
             }
         }

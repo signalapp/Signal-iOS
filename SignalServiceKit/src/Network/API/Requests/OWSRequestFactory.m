@@ -668,7 +668,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
     //
-    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
+    // NOTE: NetworkManager now separately disables default cookie handling for all requests.
     [request setHTTPShouldHandleCookies:NO];
     // Set the cookie header.
     OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
@@ -707,7 +707,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
     //
-    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
+    // NOTE: NetworkManager now separately disables default cookie handling for all requests.
     [request setHTTPShouldHandleCookies:NO];
     // Set the cookie header.
     OWSAssertDebug(request.allHTTPHeaderFields.count == 0);

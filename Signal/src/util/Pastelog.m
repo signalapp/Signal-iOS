@@ -19,6 +19,8 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <sys/sysctl.h>
 
+// TODO: Eliminate AFNetworking.
+
 NS_ASSUME_NONNULL_BEGIN
 
 NSErrorDomain PastelogErrorDomain = @"PastelogErrorDomain";

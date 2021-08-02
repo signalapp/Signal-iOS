@@ -3,11 +3,7 @@
 //
 
 import XCTest
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
-
-import XCTest
+import PromiseKit
 @testable import SignalServiceKit
 import GRDB
 
@@ -15,7 +11,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
     // MARK: -
 
-    let stubbableNetworkManager = StubbableNetworkManager(default: ())
+    let stubbableNetworkManager = StubbableNetworkManager()
 
     var dbObserverBlock: (() -> Void)?
     private var dbObserver: BlockObserver?
@@ -206,22 +202,39 @@ private class BlockObserver: DatabaseChangeDelegate {
     }
 }
 
-class StubbableNetworkManager: TSNetworkManager {
-    var block: (TSRequest, TSNetworkManagerSuccess, TSNetworkManagerFailure) -> Void = { request, success, _ in
-        let fakeTask = URLSessionDataTask()
+class StubbableNetworkManager: NetworkManager {
+    typealias NetworkManagerSuccess = (HTTPResponse) -> Void
+    typealias NetworkManagerFailure = (Error) -> Void
+
+    var block: (TSRequest, NetworkManagerSuccess, NetworkManagerFailure) -> Void = { request, success, _ in
         Logger.info("faking success for request: \(request)")
-        success(fakeTask, nil)
+        let response = OWSHTTPResponseImpl(requestUrl: request.url!,
+                                            status: 200,
+                                            headers: OWSHttpHeaders(),
+                                            bodyData: nil,
+                                            message: nil)
+        success(response)
     }
 
-    override func makeRequest(_ request: TSRequest, completionQueue: DispatchQueue, success: @escaping TSNetworkManagerSuccess, failure: @escaping TSNetworkManagerFailure) {
+    public override func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
+        Logger.info("Ignoring request: \(request)")
 
         // This latency is optimistic because I didn't want to slow
         // the tests down too much. But I did want to introduce some
         // non-trivial latency to make any interactions with the various
         // async's a little more realistic.
         let fakeNetworkLatency = DispatchTimeInterval.milliseconds(25)
-        completionQueue.asyncAfter(deadline: .now() + fakeNetworkLatency) {
-            self.block(request, success, failure)
+        let block = self.block
+        let (promise, resolver) = Promise<HTTPResponse>.pending()
+        DispatchQueue.global().asyncAfter(deadline: .now() + fakeNetworkLatency) {
+            let success = { response in
+                resolver.fulfill(response)
+            }
+            let failure = { error in
+                resolver.reject(error)
+            }
+            block(request, success, failure)
         }
+        return promise
     }
 }

@@ -44,12 +44,14 @@ static NSString *const kOWSRetryAfterHeaderKey = @"Retry-After";
 
 @implementation NSHTTPURLResponse (HTTPHeaders)
 
+// TODO: Remove?
 - (nullable NSDate *)retryAfterDate
 {
     NSString *retryAfterString = [[self allHeaderFields] valueForKey:kOWSRetryAfterHeaderKey];
     return [[self class] parseRetryAfterHeaderValue:retryAfterString];
 }
 
+// TODO: Remove?
 + (nullable NSDate *)parseRetryAfterHeaderValue:(nullable NSString *)rawValue
 {
     NSCharacterSet *whitespace = [NSCharacterSet whitespaceAndNewlineCharacterSet];

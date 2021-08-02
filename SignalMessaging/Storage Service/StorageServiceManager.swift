@@ -747,7 +747,7 @@ class StorageServiceOperation: OWSOperation {
             manifest = try buildManifestRecord(manifestVersion: state.manifestVersion,
                                                identifiers: state.allIdentifiers)
         } catch {
-            return reportError(OWSAssertionError("failed to build proto with error: \(error)").asUnretryableError)
+            return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
         Logger.info("Backing up pending changes with manifest version: \(state.manifestVersion). \(updatedItems.count) new items. \(deletedIdentifiers.count) deleted items. Total keys: \(state.allIdentifiers.count)")
@@ -933,7 +933,7 @@ class StorageServiceOperation: OWSOperation {
             manifest = try buildManifestRecord(manifestVersion: state.manifestVersion,
                                                identifiers: identifiers)
         } catch {
-            return reportError(OWSAssertionError("failed to build proto with error: \(error)").asUnretryableError)
+            return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
 
         Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")

@@ -1630,9 +1630,6 @@
 /* Error indicating that a socket request timed out. */
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
 
-/* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
-
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
 
@@ -1704,6 +1701,12 @@
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+
+/* A default error description. */
+"ERRORS_DEFAULT_ERROR_DESCRIPTION" = "Error";
+
+/* A default error recovery suggestion. */
+"ERRORS_DEFAULT_ERROR_RECOVERY_DESCRIPTION" = "Please try again.";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";

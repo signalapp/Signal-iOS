@@ -218,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // The service implementation of the socket connection caches the linked device state,
                 // so all sync message sends will fail on the socket until it is cycled.
-                [TSSocketManager.shared cycleSocket];
+                [SocketManager.shared cycleSocket];
 
                 // Fetch the local profile to determine if all
                 // linked devices support UD.

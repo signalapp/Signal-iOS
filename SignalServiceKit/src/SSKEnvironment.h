@@ -18,6 +18,7 @@ extern NSNotificationName const WarmCachesNotification;
 @class MessageSender;
 @class MessageSenderJobQueue;
 @class ModelReadCaches;
+@class NetworkManager;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
 @class OWSDisappearingMessagesJob;
@@ -35,12 +36,11 @@ extern NSNotificationName const WarmCachesNotification;
 @class SSKSignedPreKeyStore;
 @class SenderKeyStore;
 @class SignalServiceAddressCache;
+@class SocketManager;
 @class SpamChallengeResolver;
 @class StickerManager;
 @class StorageCoordinator;
 @class TSAccountManager;
-@class TSNetworkManager;
-@class TSSocketManager;
 
 @protocol ContactsManagerProtocol;
 @protocol NotificationsProtocol;
@@ -70,7 +70,7 @@ extern NSNotificationName const WarmCachesNotification;
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                  pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
-                         networkManager:(TSNetworkManager *)networkManager
+                         networkManager:(NetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(BlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
@@ -81,7 +81,7 @@ extern NSNotificationName const WarmCachesNotification;
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
-                          socketManager:(TSSocketManager *)socketManager
+                          socketManager:(SocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
@@ -131,7 +131,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueueRef;
 @property (nonatomic, readonly) id<PendingReceiptRecorder> pendingReceiptRecorderRef;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManagerRef;
-@property (nonatomic, readonly) TSNetworkManager *networkManagerRef;
+@property (nonatomic, readonly) NetworkManager *networkManagerRef;
 @property (nonatomic, readonly) OWSMessageManager *messageManagerRef;
 @property (nonatomic, readonly) BlockingManager *blockingManagerRef;
 @property (nonatomic, readonly) OWSIdentityManager *identityManagerRef;
@@ -142,7 +142,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) id<OWSUDManager> udManagerRef;
 @property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypterRef;
 @property (nonatomic, readonly) GroupsV2MessageProcessor *groupsV2MessageProcessorRef;
-@property (nonatomic, readonly) TSSocketManager *socketManagerRef;
+@property (nonatomic, readonly) SocketManager *socketManagerRef;
 @property (nonatomic, readonly) TSAccountManager *tsAccountManagerRef;
 @property (nonatomic, readonly) OWS2FAManager *ows2FAManagerRef;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJobRef;

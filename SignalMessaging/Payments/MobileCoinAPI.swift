@@ -103,11 +103,14 @@ public class MobileCoinAPI: Dependencies {
         guard !CurrentAppContext().isNSE else {
             return Promise(error: OWSAssertionError("Payments disabled in NSE."))
         }
-        return firstly(on: .global()) { () -> Promise<TSNetworkManager.Response> in
+        return firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
             return Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> OWSAuthorization in
-            try Self.parseAuthorizationResponse(responseObject: responseObject)
+        }.map(on: .global()) { response -> OWSAuthorization in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+            return try Self.parseAuthorizationResponse(responseObject: json)
         }.map(on: .global()) { (signalAuthorization: OWSAuthorization) -> MobileCoinAPI in
             let localAccount = try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
             let client = try localAccount.buildClient(signalAuthorization: signalAuthorization)

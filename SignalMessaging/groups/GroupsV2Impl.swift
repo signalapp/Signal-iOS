@@ -1257,8 +1257,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                              toRedemptionDays: todayPlus7)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) -> AuthCredentialMap in
-            let temporalCredentials = try self.parseCredentialResponse(responseObject: responseObject)
+        }.map(on: .global()) { response -> AuthCredentialMap in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+            let temporalCredentials = try self.parseCredentialResponse(responseObject: json)
             let localZKGUuid = try localUuid.asZKGUuid()
             let serverPublicParams = try GroupsV2Protos.serverPublicParams()
             let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)

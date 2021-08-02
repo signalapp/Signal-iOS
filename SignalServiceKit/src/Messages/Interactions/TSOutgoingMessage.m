@@ -3,7 +3,6 @@
 //
 
 #import "TSOutgoingMessage.h"
-#import "NSError+OWSOperation.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -737,8 +736,8 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   return;
                                               }
 
-                                              if ([error
-                                                      ows_isSSKErrorWithCode:OWSErrorCodeServerRejectedSuspectedSpam]) {
+                                              if ([SpamChallengeRequiredError isSpamChallengeRequiredError:error] ||
+                                                  [SpamChallengeResolvedError isSpamChallengeResolvedError:error]) {
                                                   recipientState.state = OWSOutgoingMessageRecipientStatePending;
                                               } else {
                                                   recipientState.state = OWSOutgoingMessageRecipientStateFailed;

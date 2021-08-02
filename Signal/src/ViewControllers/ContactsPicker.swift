@@ -191,8 +191,8 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                         contacts.append(contact)
                     }
                     self.sections = collatedContacts(contacts)
-                } catch let error as NSError {
-                    Logger.error("Failed to fetch contacts with error:\(error)")
+                } catch {
+                    Logger.error("Failed to fetch contacts with error: \(error)")
                 }
         @unknown default:
             errorHandler(OWSAssertionError("Unexpected enum value"))
@@ -341,7 +341,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 predicate = CNContact.predicateForContacts(matchingName: searchText)
                 let filteredContacts = try contactStore.unifiedContacts(matching: predicate, keysToFetch: allowedContactKeys)
                     filteredSections = collatedContacts(filteredContacts)
-            } catch let error as NSError {
+            } catch {
                 Logger.error("updating search results failed with error: \(error)")
             }
         }

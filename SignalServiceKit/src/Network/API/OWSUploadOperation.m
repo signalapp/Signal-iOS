@@ -2,21 +2,19 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSError+OWSOperation.h"
-#import "NSNotificationCenter+OWS.h"
+#import <SignalServiceKit/OWSUploadOperation.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSUpload.h>
-#import <SignalServiceKit/OWSUploadOperation.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -73,7 +71,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
     return self;
 }
 
-- (TSNetworkManager *)networkManager
+- (NetworkManager *)networkManager
 {
     return SSKEnvironment.shared.networkManager;
 }
@@ -93,9 +91,8 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
 
     if (!attachmentStream) {
         OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
-        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         // Not finding local attachment is a terminal failure.
-        error.isRetryable = NO;
+        NSError *error = [OWSUnretryableError asNSError];
         [self reportError:error];
         return;
     }
@@ -148,14 +145,13 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
 
             if (HTTPStatusCodeForError(error).intValue == 413) {
                 OWSFailDebug(@"Request entity too large: %@.", @(attachmentStream.byteCount));
-                error.isRetryable = NO;
-            } else if (error.code == kCFURLErrorSecureConnectionFailed) {
-                error.isRetryable = NO;
+                [self reportError:[OWSUnretryableMessageSenderError asNSError]];
+            } else if (IsNetworkConnectivityFailure(error)) {
+                [self reportError:error];
             } else {
-                error.isRetryable = YES;
+                OWSFailDebug(@"Unexpected error: %@", error);
+                [self reportError:error];
             }
-
-            [self reportError:error];
         });
 }
 

@@ -507,6 +507,7 @@ public enum EnvelopeSource: UInt, CustomStringConvertible {
     // We re-decrypt incoming messages after accepting a safety number change.
     case identityChangeError
     case debugUI
+    case tests
 
     // MARK: - CustomStringConvertible
 
@@ -524,6 +525,8 @@ public enum EnvelopeSource: UInt, CustomStringConvertible {
             return "identityChangeError"
         case .debugUI:
             return "debugUI"
+        case .tests:
+            return "tests"
         }
     }
 }

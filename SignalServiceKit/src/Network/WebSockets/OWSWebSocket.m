@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSNotificationCenter+OWS.h"
+#import <SignalServiceKit/OWSWebSocket.h>
 #import "NSTimer+OWS.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/Threading.h>
@@ -10,11 +10,9 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/NotificationsProtocol.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSDevicesService.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/OWSWebSocket.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -52,109 +50,6 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
     }
 }
 
-@interface TSSocketMessage : NSObject
-
-@property (nonatomic, readonly) UInt64 requestId;
-@property (nonatomic, nullable) TSSocketMessageSuccess success;
-@property (nonatomic, nullable) TSSocketMessageFailure failure;
-@property (nonatomic) BOOL hasCompleted;
-@property (nonatomic, readonly) OWSBackgroundTask *backgroundTask;
-
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-@end
-
-#pragma mark -
-
-@implementation TSSocketMessage
-
-- (instancetype)initWithRequestId:(UInt64)requestId
-                          success:(TSSocketMessageSuccess)success
-                          failure:(TSSocketMessageFailure)failure
-{
-    if (self = [super init]) {
-        OWSAssertDebug(success);
-        OWSAssertDebug(failure);
-
-        _requestId = requestId;
-        _success = success;
-        _failure = failure;
-        _backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-    }
-
-    return self;
-}
-
-- (void)didSucceedWithResponseObject:(id _Nullable)responseObject
-{
-    @synchronized(self) {
-        if (self.hasCompleted) {
-            return;
-        }
-        self.hasCompleted = YES;
-    }
-
-    OWSAssertDebug(self.success);
-    OWSAssertDebug(self.failure);
-
-    TSSocketMessageSuccess success = self.success;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        success(responseObject);
-    });
-
-    self.success = nil;
-    self.failure = nil;
-}
-
-- (void)timeoutIfNecessary
-{
-    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
-        NSLocalizedString(
-            @"ERROR_DESCRIPTION_REQUEST_TIMED_OUT", @"Error indicating that a socket request timed out."));
-
-    [self didFailWithStatusCode:0 responseData:nil error:error];
-}
-
-- (void)didFailBeforeSending
-{
-    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
-        NSLocalizedString(@"ERROR_DESCRIPTION_REQUEST_FAILED", @"Error indicating that a socket request failed."));
-
-    [self didFailWithStatusCode:0 responseData:nil error:error];
-}
-
-- (void)didFailWithStatusCode:(NSInteger)statusCode responseData:(nullable NSData *)responseData error:(NSError *)error
-{
-    OWSAssertDebug(error);
-
-    @synchronized(self) {
-        if (self.hasCompleted) {
-            return;
-        }
-        self.hasCompleted = YES;
-    }
-
-    if (statusCode != 404) {
-        OWSLogError(@"didFailWithStatusCode: %zd, %@", statusCode, error);
-    } else {
-        OWSLogVerbose(@"didFailWithStatusCode: %zd, %@", statusCode, error);
-    }
-
-    OWSAssertDebug(self.success);
-    OWSAssertDebug(self.failure);
-
-    TSSocketMessageFailure failure = self.failure;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        failure(statusCode, responseData, error);
-    });
-
-    self.success = nil;
-    self.failure = nil;
-}
-
-@end
-
 #pragma mark -
 
 NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
@@ -168,6 +63,8 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 }
 
 // OWSWebSocket's properties should only be accessed from the main thread.
+//
+// TODO: Port to Swift.
 @interface OWSWebSocket () <SSKWebSocketDelegate>
 
 @property (nonatomic) OWSWebSocketType webSocketType;
@@ -222,7 +119,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 @property (nonatomic) BOOL hasObservedNotifications;
 
 // This property should only be accessed while synchronized on the socket manager.
-@property (nonatomic, readonly) NSMutableDictionary<NSNumber *, TSSocketMessage *> *socketMessageMap;
+@property (nonatomic, readonly) NSMutableDictionary<NSNumber *, SocketMessageInfo *> *messageInfoMap;
 
 @property (atomic) BOOL canMakeRequests;
 
@@ -246,7 +143,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
     _state = OWSWebSocketStateClosed;
     _hasEmptiedInitialQueue = NO;
     _willEmptyInitialQueue = NO;
-    _socketMessageMap = [NSMutableDictionary new];
+    _messageInfoMap = [NSMutableDictionary new];
 
     return self;
 }
@@ -285,7 +182,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceListUpdateModifiedDeviceList:)
-                                                 name:NSNotificationNameDeviceListUpdateModifiedDeviceList
+                                                 name:OWSDevicesService.deviceListUpdateModifiedDeviceList
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(environmentDidChange:)
@@ -484,7 +381,9 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 
 #pragma mark - Message Sending
 
-- (void)makeRequest:(TSRequest *)request success:(TSSocketMessageSuccess)success failure:(TSSocketMessageFailure)failure
+- (void)makeRequestInternal:(TSRequest *)request
+                    success:(TSSocketMessageSuccess)success
+                    failure:(TSSocketMessageFailure)failure
 {
     OWSAssertDebug(request);
     OWSAssertDebug(request.HTTPMethod.length > 0);
@@ -498,12 +397,13 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
         [self requestSocketAliveForAtLeastSeconds:keepAlive];
     });
 
-    TSSocketMessage *socketMessage = [[TSSocketMessage alloc] initWithRequestId:[Cryptography randomUInt64]
+    SocketMessageInfo *messageInfo = [[SocketMessageInfo alloc] initWithRequest:request
+                                                                     requestUrl:request.URL
                                                                         success:success
                                                                         failure:failure];
 
     @synchronized(self) {
-        self.socketMessageMap[@(socketMessage.requestId)] = socketMessage;
+        self.messageInfoMap[@(messageInfo.requestId)] = messageInfo;
     }
 
     NSURL *requestUrl = request.URL;
@@ -516,7 +416,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
             [NSJSONSerialization dataWithJSONObject:request.parameters options:(NSJSONWritingOptions)0 error:&error];
         if (!jsonData || error) {
             OWSFailDebug(@"could not serialize request JSON: %@", error);
-            [socketMessage didFailBeforeSending];
+            [messageInfo didFailInvalidRequest];
             return;
         }
     }
@@ -527,7 +427,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
     WebSocketProtoWebSocketRequestMessageBuilder *requestBuilder =
         [WebSocketProtoWebSocketRequestMessage builderWithVerb:request.HTTPMethod
                                                           path:requestPath
-                                                     requestID:socketMessage.requestId];
+                                                     requestID:messageInfo.requestId];
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
@@ -559,32 +459,30 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {
         OWSFailDebug(@"could not serialize proto: %@.", error);
-        [socketMessage didFailBeforeSending];
+        [messageInfo didFailInvalidRequest];
         return;
     }
 
     if (!self.canMakeRequests) {
         OWSLogError(@"makeRequest[%@]: socket not open.", NSStringForOWSWebSocketType(self.webSocketType));
-        [socketMessage didFailBeforeSending];
+        [messageInfo didFailDueToNetwork];
         return;
     }
 
     [self.websocket writeData:messageData];
     OWSLogInfo(@"making request[%@]: %llu, %@: %@, jsonData.length: %zd, socketType: %@",
         NSStringForOWSWebSocketType(self.webSocketType),
-        socketMessage.requestId,
+        messageInfo.requestId,
         request.HTTPMethod,
         requestPath,
         jsonData.length,
         NSStringFromOWSWebSocketType(self.webSocketType));
 
     const int64_t kSocketTimeoutSeconds = 10;
-    __weak TSSocketMessage *weakSocketMessage = socketMessage;
+    __weak SocketMessageInfo *weakMessageInfo = messageInfo;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSocketTimeoutSeconds * NSEC_PER_SEC),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        ^{
-            [weakSocketMessage timeoutIfNecessary];
-        });
+        ^{ [weakMessageInfo timeoutIfNecessary]; });
 }
 
 - (void)processWebSocketResponseMessage:(WebSocketProtoWebSocketResponseMessage *)message
@@ -627,36 +525,28 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
         [AppExpiry.shared setHasAppExpiredAtCurrentVersion];
     }
 
-    BOOL hasValidResponse = YES;
-    id responseObject = responseData;
-    if (responseData) {
-        NSError *error;
-        id _Nullable responseJson =
-            [NSJSONSerialization JSONObjectWithData:responseData options:(NSJSONReadingOptions)0 error:&error];
-        if (!responseJson || error) {
-            OWSFailDebug(@"could not parse WebSocket response JSON: %@.", error);
-            hasValidResponse = NO;
-        } else {
-            responseObject = responseJson;
-        }
-    }
+    OWSHttpHeaders *headers = [OWSWebSocket parseServiceHeaders:message.headers];
 
-    TSSocketMessage *_Nullable socketMessage;
+    SocketMessageInfo *_Nullable messageInfo;
     @synchronized(self) {
-        socketMessage = self.socketMessageMap[@(requestId)];
-        [self.socketMessageMap removeObjectForKey:@(requestId)];
+        messageInfo = self.messageInfoMap[@(requestId)];
+        [self.messageInfoMap removeObjectForKey:@(requestId)];
     }
 
-    if (!socketMessage) {
+    if (!messageInfo) {
         OWSLogError(@"Received response to unknown request: %@.", NSStringForOWSWebSocketType(self.webSocketType));
     } else {
         BOOL hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299;
-        BOOL didSucceed = hasSuccessStatus && hasValidResponse;
+        BOOL didSucceed = hasSuccessStatus;
         if (didSucceed) {
             [self.tsAccountManager setIsDeregistered:NO];
 
-            [socketMessage didSucceedWithResponseObject:responseObject];
+            [messageInfo didSucceedWithStatus:responseStatus
+                                      headers:headers
+                                     bodyData:responseData
+                                      message:responseMessage];
         } else {
+            // TODO: We should never get 403 from the UD socket. Assert.
             if (responseStatus == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.
@@ -667,10 +557,10 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
                 }
             }
 
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
-                NSLocalizedString(
-                    @"ERROR_DESCRIPTION_RESPONSE_FAILED", @"Error indicating that a socket response failed."));
-            [socketMessage didFailWithStatusCode:(NSInteger)responseStatus responseData:responseData error:error];
+            [messageInfo didFailWithResponseStatus:responseStatus
+                                   responseHeaders:headers
+                                     responseError:nil
+                                      responseData:responseData];
         }
     }
 }
@@ -684,18 +574,18 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 
 - (void)failAllPendingSocketMessages
 {
-    NSArray<TSSocketMessage *> *socketMessages;
+    NSArray<SocketMessageInfo *> *messageInfos;
     @synchronized(self) {
-        socketMessages = self.socketMessageMap.allValues;
-        [self.socketMessageMap removeAllObjects];
+        messageInfos = self.messageInfoMap.allValues;
+        [self.messageInfoMap removeAllObjects];
     }
 
-    OWSLogInfo(@"failAllPendingSocketMessages[%@]: %zd.",
+    OWSLogInfo(@"failAllPendingSocketMessages[%@]: %lu.",
         NSStringForOWSWebSocketType(self.webSocketType),
-        socketMessages.count);
+        (unsigned long)messageInfos.count);
 
-    for (TSSocketMessage *socketMessage in socketMessages) {
-        [socketMessage didFailBeforeSending];
+    for (SocketMessageInfo *messageInfo in messageInfos) {
+        [messageInfo didFailDueToNetwork];
     }
 }
 

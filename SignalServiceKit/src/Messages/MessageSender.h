@@ -9,11 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class BlockingManager;
+@class NetworkManager;
 @class OWSMessageSend;
 @class OutgoingMessagePreparer;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
-@class TSNetworkManager;
 @class TSOutgoingMessage;
 @class TSThread;
 

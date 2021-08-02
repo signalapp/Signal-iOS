@@ -3,10 +3,9 @@
 //
 
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
-#import <SignalServiceKit/OWSDeviceProvisioningCodeService.h>
-#import <SignalServiceKit/OWSDeviceProvisioningService.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSProvisioningMessage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

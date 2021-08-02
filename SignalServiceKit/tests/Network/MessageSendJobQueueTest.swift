@@ -131,8 +131,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertEqual(0, jobRecord.failureCount)
 
         // simulate permanent failure
-        let error = NSError(domain: "foo", code: 0, userInfo: nil)
-        error.isRetryable = true
+        let error = OWSRetryableError()
         fakeMessageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
             jobQueue.isSetup.set(false)
@@ -206,8 +205,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertEqual(0, jobRecord.failureCount)
 
         // simulate permanent failure
-        let error = NSError(domain: "foo", code: 0, userInfo: nil)
-        error.isRetryable = false
+        let error = OWSUnretryableError()
         fakeMessageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
             jobQueue.isSetup.set(false)

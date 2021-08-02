@@ -40,7 +40,7 @@ public struct ContactDiscoveryService: Dependencies {
                                          host: String,
                                          censorshipCircumventionPrefix: String) -> Promise<IntersectionResponse> {
 
-        firstly(on: .sharedUtility) { () -> Promise<TSNetworkManager.Response> in
+        firstly(on: .sharedUtility) { () -> Promise<HTTPResponse> in
             self.networkManager.makePromise(request: self.buildIntersectionRequest(
                 query: query,
                 cookies: cookies,
@@ -51,8 +51,11 @@ public struct ContactDiscoveryService: Dependencies {
                 censorshipCircumventionPrefix: censorshipCircumventionPrefix)
             )
 
-        }.map(on: .sharedUtility) { (_: URLSessionDataTask, responseObject: Any?) throws -> IntersectionResponse in
-            guard let params = ParamParser(responseObject: responseObject) else {
+        }.map(on: .sharedUtility) { (response: HTTPResponse) throws -> IntersectionResponse in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Invalid JSON")
+            }
+            guard let params = ParamParser(responseObject: json) else {
                 throw ContactDiscoveryError.assertionError(description: "missing response dict")
             }
             return IntersectionResponse(
@@ -98,7 +101,7 @@ public struct ContactDiscoveryService: Dependencies {
         // Don't bother with the default cookie store;
         // these cookies are ephemeral.
         //
-        // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
+        // NOTE: NetworkManager now separately disables default cookie handling for all requests.
         request.httpShouldHandleCookies = false
 
         // Set the cookie header.

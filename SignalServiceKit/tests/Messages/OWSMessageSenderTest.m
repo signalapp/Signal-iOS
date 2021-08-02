@@ -5,16 +5,15 @@
 #import "SSKBaseTestObjC.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFakeNetworkManager.h>
 #import <SignalServiceKit/OWSUploadOperation.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSRequest.h>
 
@@ -82,9 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldSucceed) {
         successHandler();
     } else {
-        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        [error setIsRetryable:NO];
-
+        NSError *error = [OWSUnretryableError new];
         failureHandler(error);
     }
 }
@@ -229,12 +226,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFakeContactsManager *contactsManager = [OWSFakeContactsManager new];
 
     // Successful Sending
-    TSNetworkManager *successfulNetworkManager = [[MessageSenderFakeNetworkManager alloc] initWithSuccess:YES];
+    NetworkManager *successfulNetworkManager = [[MessageSenderFakeNetworkManager alloc] initWithSuccess:YES];
     self.successfulMessageSender = [[MessageSender alloc] initWithNetworkManager:successfulNetworkManager
                                                                  contactsManager:contactsManager];
 
     // Unsuccessful Sending
-    TSNetworkManager *unsuccessfulNetworkManager = [[MessageSenderFakeNetworkManager alloc] initWithSuccess:NO];
+    NetworkManager *unsuccessfulNetworkManager = [[MessageSenderFakeNetworkManager alloc] initWithSuccess:NO];
     self.unsuccessfulMessageSender = [[MessageSender alloc] initWithNetworkManager:unsuccessfulNetworkManager
                                                                    contactsManager:contactsManager];
 }

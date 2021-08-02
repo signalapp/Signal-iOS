@@ -38,7 +38,6 @@
 #import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
-#import <SignalServiceKit/TSSocketManager.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
 
@@ -1117,7 +1116,7 @@ void uncaughtExceptionHandler(NSException *exception)
             // We don't currently have a convenient API to know when message fetching is *done* when
             // working with the websocket.
             //
-            // We *could* substantially rewrite the TSSocketManager to take advantage of the `empty` message
+            // We *could* substantially rewrite the SocketManager to take advantage of the `empty` message
             // But once our REST endpoint is fixed to properly de-enqueue fallback notifications, we can easily
             // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

@@ -120,11 +120,11 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
 }
 
 public extension TSOutgoingMessage {
-    @objc func failedRecipientAddresses(errorCode: OWSErrorCode) -> [SignalServiceAddress] {
+    @objc func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
         guard let states = recipientAddressStates else { return [] }
 
         return states.filter { _, state in
-            return state.state == .failed && state.errorCode?.intValue == errorCode.rawValue
+            return state.state == .failed && state.errorCode?.intValue == errorCode
         }.map { $0.key }
     }
 
@@ -140,7 +140,7 @@ public extension TSOutgoingMessage {
         guard let states = recipientAddressStates else { return true }
         return states
             .compactMap { $0.value.errorCode?.intValue }
-            .allSatisfy { $0 != OWSErrorCode.senderKeyUnavailable.rawValue }
+            .allSatisfy { $0 != SenderKeyUnavailableError.errorCode }
     }
 }
 

@@ -212,9 +212,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     Logger.info("Successfully sent null message after session reset " +
                                     "for undecryptable message from \(senderId)")
                 }.catch(on: .global()) { error in
-                    let nsError = error as NSError
-                    if nsError.domain == OWSSignalServiceKitErrorDomain &&
-                        nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
+                    if error is UntrustedIdentityError {
                         Logger.info("Failed to send null message after session reset for " +
                                         "for undecryptable message from \(senderId) (\(error))")
                     } else {
@@ -262,9 +260,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 ).done(on: .global()) {
                     Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")
                 }.catch(on: .global()) { error in
-                    let nsError = error as NSError
-                    if nsError.domain == OWSSignalServiceKitErrorDomain &&
-                        nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
+                    if error is UntrustedIdentityError {
                         Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
                     } else {
                         owsFailDebug("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")

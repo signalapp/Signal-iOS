@@ -639,11 +639,10 @@ public class OnboardingController: NSObject {
                 self.onboardingDidRequireCaptcha(viewController: fromViewController)
 
             default:
-                let nsError = error as NSError
-                owsFailDebug("unexpected error: \(nsError)")
+                owsFailDebug("unexpected error: \(error)")
                 completion?(false, error)
-                OWSActionSheets.showActionSheet(title: nsError.localizedDescription,
-                                                message: nsError.localizedRecoverySuggestion)
+                OWSActionSheets.showActionSheet(title: error.localizedDescription,
+                                                message: (error as NSError).localizedRecoverySuggestion)
             }
         }
     }
@@ -848,7 +847,8 @@ public class OnboardingController: NSObject {
         }
     }
 
-    private func verificationFailed(fromViewController: UIViewController, error: NSError,
+    private func verificationFailed(fromViewController: UIViewController,
+                                    error: NSError,
                                     completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 

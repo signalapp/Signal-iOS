@@ -52,12 +52,6 @@ public enum HTTPMethod {
 
 // MARK: -
 
-public enum OWSHTTPError: Error {
-    case requestError(statusCode: Int, httpUrlResponse: HTTPURLResponse, responseData: Data?)
-}
-
-// MARK: -
-
 public struct OWSHTTPResponse {
     public let task: URLSessionTask
     public let httpUrlResponse: HTTPURLResponse
@@ -260,14 +254,16 @@ public class OWSURLSession: NSObject {
 
     private struct RequestConfig {
         let task: URLSessionTask
+        let requestUrl: URL
         let require2xxOr3xx: Bool
         let failOnError: Bool
         let shouldHandleRemoteDeprecation: Bool
     }
 
-    private func requestConfig(forTask task: URLSessionTask) -> RequestConfig {
+    private func requestConfig(forTask task: URLSessionTask, requestUrl: URL) -> RequestConfig {
         // Snapshot session state at time request is made.
         RequestConfig(task: task,
+                      requestUrl: requestUrl,
                       require2xxOr3xx: require2xxOr3xx,
                       failOnError: failOnError,
                       shouldHandleRemoteDeprecation: shouldHandleRemoteDeprecation)
@@ -310,7 +306,7 @@ public class OWSURLSession: NSObject {
                     Logger.warn("Request failed: \(error)")
                 } else {
                     #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: task)
+                    HTTPUtils.logCurl(for: task)
 
                     if let responseData = responseData,
                        let httpUrlResponse = task.response as? HTTPURLResponse,
@@ -338,17 +334,28 @@ public class OWSURLSession: NSObject {
                 let statusCode = httpUrlResponse.statusCode
                 guard statusCode >= 200, statusCode < 400 else {
                     #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: task)
+                    HTTPUtils.logCurl(for: task)
                     Logger.verbose("Status code: \(statusCode)")
                     #endif
 
-                    throw OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse, responseData: responseData)
+                    let requestUrl = requestConfig.requestUrl
+                    if statusCode > 0 {
+                        owsAssert(statusCode <= UInt32.max)
+                        let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
+                        throw OWSHTTPError.forServiceResponse(requestUrl: requestUrl,
+                                                              responseStatus: UInt32(statusCode),
+                                                              responseHeaders: responseHeaders,
+                                                              responseError: nil,
+                                                              responseData: responseData)
+                    } else {
+                        throw OWSHTTPError.networkFailure(requestUrl: requestUrl)
+                    }
                 }
             }
 
             #if TESTABLE_BUILD
             if DebugFlags.logCurlOnSuccess {
-                TSNetworkManager.logCurl(for: task)
+                HTTPUtils.logCurl(for: task)
             }
             #endif
 
@@ -395,7 +402,9 @@ public class OWSURLSession: NSObject {
 
     @objc
     public static var signalIosUserAgent: String {
-        "Signal-iOS/\(AppVersion.shared().currentAppVersionLong) iOS/\(UIDevice.current.systemVersion)"
+        let result = "Signal-iOS/\(AppVersion.shared().currentAppVersionLong) iOS/\(UIDevice.current.systemVersion)"
+        Logger.verbose("---- userAgent: \(result)")
+        return result
     }
 
     private func buildUrl(_ urlString: String) -> URL? {
@@ -768,7 +777,10 @@ public extension OWSURLSession {
             self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = request.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -810,7 +822,10 @@ public extension OWSURLSession {
             self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = request.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -862,7 +877,10 @@ public extension OWSURLSession {
             self.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = request.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -916,7 +934,10 @@ public extension OWSURLSession {
         var requestConfig: RequestConfig?
         let task = taskBlock()
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = task.originalRequest?.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, URL)> in
@@ -932,6 +953,9 @@ public extension OWSURLSession {
 
 // MARK: - HTTP Headers
 
+// This class can be used to build "outgoing" headers for requests
+// or to parse "incoming" headers for responses.
+//
 // HTTP headers are case-insensitive.
 // This class handles conflict resolution.
 @objc
@@ -944,6 +968,18 @@ public class OWSHttpHeaders: NSObject {
 
     @objc
     public init(httpHeaders: [String: String]?) {}
+
+    @objc
+    public init(response: HTTPURLResponse) {
+        for (key, value) in response.allHeaderFields {
+           guard let key = key as? String,
+                 let value = value as? String else {
+            owsFailDebug("Invalid response header, key: \(key), value: \(value).")
+            continue
+           }
+            headers[key] = value
+        }
+    }
 
     @objc
     public func hasValueForHeader(_ header: String) -> Bool {

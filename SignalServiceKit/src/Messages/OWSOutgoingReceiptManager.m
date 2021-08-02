@@ -197,8 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
                     .catchInBackground(^(NSError *error) {
                         OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
 
-                        if (error.domain == OWSSignalServiceKitErrorDomain
-                            && error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                        if ([MessageSenderNoSuchSignalRecipientError isNoSuchSignalRecipientError:error]) {
                             [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
                         }
                     });

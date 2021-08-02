@@ -35,14 +35,14 @@ extension MessageSender {
         }
     }
 
-    private enum SenderKeyError: OperationError {
+    private enum SenderKeyError: Error, IsRetryableProvider {
         case invalidAuthHeader
         case invalidRecipient
         case deviceUpdate
         case staleDevices
         case recipientSKDMFailed(Error)
 
-        var isRetryable: Bool { true }
+        var isRetryableProvider: Bool { true }
 
         var isRetryableWithSenderKey: Bool {
             switch self {
@@ -54,16 +54,10 @@ extension MessageSender {
         }
 
         var asSSKError: NSError {
-            let code: OWSErrorCode
-            if isRetryableWithSenderKey {
-                code = .senderKeyEphemeralFailure
-            } else {
-                code = .senderKeyUnavailable
-            }
-            let error = (OWSErrorWithCodeDescription(code, localizedDescription) as NSError)
-            error.isRetryable = isRetryable
-            error.isFatal = false
-            return error
+            let error: Error = (isRetryableWithSenderKey
+                                    ? SenderKeyEphemeralError(customLocalizedDescription: localizedDescription)
+                                    : SenderKeyUnavailableError(customLocalizedDescription: localizedDescription))
+            return error as NSError
         }
     }
 
@@ -184,9 +178,7 @@ extension MessageSender {
                     sendResult.unregisteredAddresses.forEach { address in
                         self.markAddressAsUnregistered(address, message: message, thread: thread, transaction: writeTx)
 
-                        let error = OWSErrorMakeNoSuchSignalRecipientError() as NSError
-                        error.isRetryable = false
-                        error.shouldBeIgnoredForGroups = true
+                        let error = MessageSenderNoSuchSignalRecipientError()
                         wrappedSendErrorBlock(address, error)
                     }
 
@@ -443,10 +435,9 @@ extension MessageSender {
 
             if IsNetworkConnectivityFailure(error) {
                 return try retryIfPossible()
-            } else if case let OWSHTTPError.requestError(
-                        statusCode: statusCode,
-                        httpUrlResponse: response,
-                        responseData: responseData) = error {
+            } else if let httpError = error as? OWSHTTPError {
+                let statusCode = HTTPStatusCodeForError(httpError)
+                let responseData = HTTPResponseDataForError(httpError)
                 switch statusCode {
                 case 401:
                     owsFailDebug("Invalid composite authorization header for sender key send request. Falling back to fanout")
@@ -485,7 +476,7 @@ extension MessageSender {
                     }
                     throw SenderKeyError.staleDevices
                 case 428:
-                    guard let body = responseData, let expiry = response.retryAfterDate() else {
+                    guard let body = responseData, let expiry = HTTPRetryAfterDateForError(error) else {
                         throw OWSAssertionError("Invalid spam response body")
                     }
                     return Promise { resolver in
@@ -493,10 +484,7 @@ extension MessageSender {
                             if didSucceed {
                                 resolver.fulfill(())
                             } else {
-                                let errorDescription = NSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM", comment: "Description for errors returned from the server due to suspected spam.")
-                                let error = OWSErrorWithCodeDescription(.serverRejectedSuspectedSpam, errorDescription) as NSError
-                                error.isRetryable = false
-                                error.isFatal = false
+                                let error = SpamChallengeRequiredError()
                                 resolver.reject(error)
                             }
                         }

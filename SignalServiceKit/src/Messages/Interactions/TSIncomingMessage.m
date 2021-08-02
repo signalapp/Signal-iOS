@@ -3,7 +3,6 @@
 //
 
 #import "TSIncomingMessage.h"
-#import "NSNotificationCenter+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>

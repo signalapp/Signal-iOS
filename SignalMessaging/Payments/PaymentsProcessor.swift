@@ -423,7 +423,7 @@ private class PaymentProcessingOperation: OWSOperation {
         }.catch { error in
             // processStep() should never fail.
             owsFailDebug("Unexpected error: \(error)")
-            self.reportError(error.asUnretryableError)
+            self.reportError(SSKUnretryableError.paymentsProcessingFailure)
         }
     }
 

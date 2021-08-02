@@ -183,11 +183,14 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
             return
         }
 
-        firstly(on: .global()) { () -> Promise<TSNetworkManager.Response> in
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.currencyConversionRequest()
             return Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { (_: URLSessionDataTask, responseObject: Any?) in
-            guard let parser = ParamParser(responseObject: responseObject) else {
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+            guard let parser = ParamParser(responseObject: json) else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             let timestamp: UInt64 = try parser.required(key: "timestamp")

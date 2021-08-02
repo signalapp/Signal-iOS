@@ -2,16 +2,13 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSError+OWSOperation.h"
+#import <SignalServiceKit/OWSOperation.h>
 #import "NSTimer+OWS.h"
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-NSErrorUserInfoKey const OWSOperationIsRetryableKey = @"OWSOperationIsRetryableKey";
 
 NSString *const OWSOperationKeyIsExecuting = @"isExecuting";
 NSString *const OWSOperationKeyIsFinished = @"isFinished";
@@ -179,7 +176,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 {
     OWSLogDebug(@"reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
         error,
-        error.isFatal,
+        error.isFatalError,
         error.isRetryable,
         (unsigned long)self.remainingRetries);
 
@@ -187,7 +184,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     [self didReportError:error];
 
-    if (error.isFatal) {
+    if (error.isFatalError) {
         [self failOperationWithError:error];
         return;
     }

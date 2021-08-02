@@ -3,7 +3,6 @@
 //
 
 #import "TSAccountManager.h"
-#import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+OWS_HTTP.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
 #import <PromiseKit/AnyPromise.h>
@@ -11,20 +10,17 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/RemoteAttestation.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
-#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
-NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSNotificationName const NSNotificationNameRegistrationStateDidChange = @"NSNotificationNameRegistrationStateDidChange";
 NSString *const TSRemoteAttestationAuthErrorKey = @"TSRemoteAttestationAuth";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
@@ -615,153 +611,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }];
 }
 
-#pragma mark - Network Requests
-
-- (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
-                                        voipToken:(nullable NSString *)voipToken
-                                          success:(void (^)(void))successHandler
-                                          failure:(void (^)(NSError *))failureHandler
-{
-    [self registerForPushNotificationsWithPushToken:pushToken
-                                          voipToken:voipToken
-                                            success:successHandler
-                                            failure:failureHandler
-                                   remainingRetries:3];
-}
-
-- (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
-                                        voipToken:(nullable NSString *)voipToken
-                                          success:(void (^)(void))successHandler
-                                          failure:(void (^)(NSError *))failureHandler
-                                 remainingRetries:(int)remainingRetries
-{
-    TSRequest *request =
-        [OWSRequestFactory registerForPushRequestWithPushIdentifier:pushToken voipIdentifier:voipToken];
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            successHandler();
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (remainingRetries > 0) {
-                [self registerForPushNotificationsWithPushToken:pushToken
-                                                      voipToken:voipToken
-                                                        success:successHandler
-                                                        failure:failureHandler
-                                               remainingRetries:remainingRetries - 1];
-            } else {
-                if (!IsNetworkConnectivityFailure(error)) {
-                    OWSProdError([OWSAnalyticsEvents accountsErrorRegisterPushTokensFailed]);
-                }
-                failureHandler(error);
-            }
-        }];
-}
-
-- (void)verifyAccountWithRequest:(TSRequest *)request
-                         success:(void (^)(_Nullable id responseObject))successBlock
-                         failure:(void (^)(NSError *error))failureBlock
-{
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            long statuscode = response.statusCode;
-
-            switch (statuscode) {
-                case 200:
-                case 204: {
-                    OWSLogInfo(@"Verification code accepted.");
-                    successBlock(responseObject);
-                    break;
-                }
-                default: {
-                    OWSLogError(@"Unexpected status while verifying code: %ld", statuscode);
-                    NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                    failureBlock(error);
-                    break;
-                }
-            }
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (IsNetworkConnectivityFailure(error)) {
-                OWSLogWarn(@"network error: %@", error.debugDescription);
-            } else {
-                OWSLogError(@"non-network error: %@", error.debugDescription);
-            }
-            OWSAssertDebug([error.domain isEqualToString:TSNetworkManagerErrorDomain]);
-
-            switch (error.code) {
-                case 403: {
-                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeUserError,
-                        NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
-                            "Error message indicating that registration failed due to a missing or incorrect "
-                            "verification code."));
-                    failureBlock(userError);
-                    break;
-                }
-                case 409: {
-                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationTransferAvailable,
-                        @"There was an account previously registered with this number that is available for transfer.");
-                    failureBlock(userError);
-                    break;
-                }
-                case 413: {
-                    // In the case of the "rate limiting" error, we want to show the
-                    // "recovery suggestion", not the error's "description."
-                    NSError *userError
-                        = OWSErrorWithCodeDescription(OWSErrorCodeUserError, error.localizedRecoverySuggestion);
-                    failureBlock(userError);
-                    break;
-                }
-                case 423: {
-                    NSString *localizedMessage = NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
-                        "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.");
-                    OWSLogError(@"2FA PIN required: %ld", (long)error.code);
-
-                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN, localizedMessage);
-
-                    NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-                    if (responseData == nil) {
-                        OWSFailDebug(@"Response data is unexpectedly nil");
-                        return failureBlock(OWSErrorMakeUnableToProcessServerResponseError());
-                    }
-
-                    NSError *error;
-                    NSDictionary<NSString *, id> *_Nullable responseDict =
-                        [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
-                    if (![responseDict isKindOfClass:[NSDictionary class]] || error != nil) {
-                        OWSFailDebug(@"Failed to parse 2fa required json");
-                        return failureBlock(OWSErrorMakeUnableToProcessServerResponseError());
-                    }
-
-                    // Check if we received KBS credentials, if so pass them on.
-                    // This should only ever be returned if the user was using registration lock v2
-                    NSDictionary *_Nullable backupCredentials = responseDict[@"backupCredentials"];
-                    if ([backupCredentials isKindOfClass:[NSDictionary class]]) {
-                        RemoteAttestationAuth *_Nullable auth = [RemoteAttestation parseAuthParams:backupCredentials];
-                        if (!auth) {
-                            OWSFailDebug(@"remote attestation auth could not be parsed: %@", responseDict);
-                            return failureBlock(OWSErrorMakeUnableToProcessServerResponseError());
-                        }
-
-                        userError = OWSErrorWithUserInfo(OWSErrorCodeRegistrationMissing2FAPIN,
-                                                         @{
-                                                           NSLocalizedDescriptionKey: localizedMessage,
-                                                           TSRemoteAttestationAuthErrorKey: auth
-                                                         });
-                    }
-
-                    failureBlock(userError);
-                    break;
-                }
-                default: {
-                    OWSLogError(@"verifying code failed with unknown error: %@", error);
-                    failureBlock(error);
-                    break;
-                }
-            }
-        }];
-}
-
 #pragma mark Server keying material
 
 // NOTE: We no longer set this for new accounts.
@@ -809,31 +658,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
         [self loadAccountStateWithTransaction:transaction];
     }
-}
-
-+ (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock
-{
-    TSRequest *request = [OWSRequestFactory unregisterAccountRequest];
-    [[TSNetworkManager shared] makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            OWSLogInfo(@"Successfully unregistered");
-            success();
-
-            // This is called from `[AppSettingsViewController proceedToUnregistration]` whose
-            // success handler calls `[Environment resetAppData]`.
-            // This method, after calling that success handler, fires
-            // `RegistrationStateDidChangeNotification` which is only safe to fire after
-            // the data store is reset.
-
-            [self.shared postRegistrationStateDidChangeNotification];
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNetworkConnectivityFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents accountsErrorUnregisterAccountRequestFailed]);
-            }
-            OWSLogError(@"Failed to unregister with error: %@", error);
-            failureBlock(error);
-        }];
 }
 
 #pragma mark - De-Registration
@@ -1039,15 +863,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     OWSAssertIsOnMainThread();
 
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self updateAccountAttributesIfNecessary]; });
-}
-
-#pragma mark - Notifications
-
-- (void)postRegistrationStateDidChangeNotification
-{
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameRegistrationStateDidChange
-                                                             object:nil
-                                                           userInfo:nil];
 }
 
 #pragma mark - DatabaseChangeDelegate

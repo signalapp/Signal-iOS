@@ -50,10 +50,6 @@ typedef NS_ERROR_ENUM(RemoteAttestationErrorDomain, RemoteAttestationError){
 
 + (nullable RemoteAttestationAuth *)parseAuthParams:(id)response;
 
-+ (void)getRemoteAttestationAuthForService:(RemoteAttestationService)service
-                                   success:(void (^)(RemoteAttestationAuth *))successHandler
-                                   failure:(void (^)(NSError *error))failureHandler;
-
 + (BOOL)verifyServerQuote:(RemoteAttestationQuote *)quote
                      keys:(RemoteAttestationKeys *)keys
                 mrenclave:(NSString *)mrenclave;

@@ -10,6 +10,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels;
 extern const NSString *kNSNotificationKey_UserProfileWriter;
 
 @class MessageSender;
+@class NetworkManager;
 @class OWSAES256Key;
 @class OWSUserProfile;
 @class SDSAnyReadTransaction;
@@ -17,7 +18,6 @@ extern const NSString *kNSNotificationKey_UserProfileWriter;
 @class SDSDatabaseStorage;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
-@class TSNetworkManager;
 @class TSThread;
 
 typedef void (^ProfileManagerFailureBlock)(NSError *error);

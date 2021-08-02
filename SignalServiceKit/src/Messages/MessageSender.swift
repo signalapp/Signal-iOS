@@ -8,65 +8,7 @@ import SignalMetadataKit
 import SignalClient
 
 @objc
-public enum MessageSenderError: Int, Error {
-    case prekeyRateLimit
-    case untrustedIdentity
-    case missingDevice
-    case blockedContactRecipient
-    case threadMissing
-    case spamChallengeRequired
-    case spamChallengeResolved
-}
-
-// MARK: -
-
-@objc
 public extension MessageSender {
-
-    class func isPrekeyRateLimitError(_ error: Error) -> Bool {
-        switch error {
-        case MessageSenderError.prekeyRateLimit:
-            return true
-        default:
-            return false
-        }
-    }
-
-    class func isUntrustedIdentityError(_ error: Error?) -> Bool {
-        switch error {
-        case MessageSenderError.untrustedIdentity?:
-            return true
-        default:
-            return false
-        }
-    }
-
-    class func isMissingDeviceError(_ error: Error) -> Bool {
-        switch error {
-        case MessageSenderError.missingDevice:
-            return true
-        default:
-            return false
-        }
-    }
-
-    class func isSpamChallengeRequiredError(_ error: Error) -> Bool {
-        switch error {
-        case MessageSenderError.spamChallengeRequired:
-            return true
-        default:
-            return false
-        }
-    }
-
-    class func isSpamChallengeResolvedError(_ error: Error) -> Bool {
-        switch error {
-        case MessageSenderError.spamChallengeResolved:
-            return true
-        default:
-            return false
-        }
-    }
 
     class func ensureSessionsforMessageSendsObjc(_ messageSends: [OWSMessageSend],
                                                  ignoreErrors: Bool) -> AnyPromise {
@@ -250,7 +192,7 @@ public extension MessageSender {
                 // We don't want to make prekey requests if we can anticipate that
                 // we're going to get an untrusted identity error.
                 Logger.info("Skipping prekey request due to untrusted identity.")
-                return failure(MessageSenderError.untrustedIdentity)
+                return failure(UntrustedIdentityError(address: recipientAddress))
             }
         }
 
@@ -275,7 +217,7 @@ public extension MessageSender {
         firstly(on: .global()) { () -> Promise<RequestMakerResult> in
             return requestMaker.makeRequest()
         }.done(on: .global()) { (result: RequestMakerResult) in
-            guard let responseObject = result.responseObject as? [AnyHashable: Any] else {
+            guard let responseObject = result.responseJson as? [String: Any] else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
             }
             let bundle = SignalServiceKit.PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
@@ -289,13 +231,8 @@ public extension MessageSender {
                     return failure(MessageSenderError.prekeyRateLimit)
                 } else if httpStatusCode == 428 {
                     // SPAM TODO: Only retry messages with -hasRenderableContent
-                    var unpackedError = error
-                    if case NetworkManagerError.taskError(_, let underlyingError) = unpackedError {
-                        unpackedError = underlyingError
-                    }
-                    let userInfo = (unpackedError as NSError).userInfo
-                    let responseData = userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data
-                    let expiry = unpackedError.httpRetryAfterDate
+                    let responseData = HTTPResponseDataForError(error)
+                    let expiry = HTTPRetryAfterDateForError(error)
 
                     if let body = responseData, let expiry = expiry {
                         // The resolver has 10s to asynchronously resolve a challenge
@@ -306,14 +243,14 @@ public extension MessageSender {
                             retryAfter: expiry
                         ) { didResolve in
                             if didResolve {
-                                failure(MessageSenderError.spamChallengeResolved)
+                                failure(SpamChallengeResolvedError())
                             } else {
-                                failure(MessageSenderError.spamChallengeRequired)
+                                failure(SpamChallengeRequiredError())
                             }
                         }
                     } else {
                         owsFailDebug("No response body for spam challenge")
-                        return failure(MessageSenderError.spamChallengeRequired)
+                        return failure(SpamChallengeRequiredError())
                     }
                 }
             } else {
@@ -372,7 +309,7 @@ public extension MessageSender {
                                             recipientAddress: recipientAddress,
                                             preKeyBundle: preKeyBundle,
                                             transaction: transaction)
-            throw MessageSenderError.untrustedIdentity
+            throw UntrustedIdentityError(address: recipientAddress)
         }
         if !sessionStore.containsActiveSession(forAccountId: accountId,
                                                deviceId: deviceId.int32Value,
@@ -611,14 +548,14 @@ extension MessageSender {
 
         firstly(on: .global()) { () -> MessageSendInfo in
             guard let localAddress = tsAccountManager.localAddress else {
-                throw OWSAssertionError("Missing localAddress.").asUnretryableError
+                throw OWSAssertionError("Missing localAddress.")
             }
             let possibleThread = Self.databaseStorage.read { transaction in
                 TSThread.anyFetch(uniqueId: message.uniqueThreadId, transaction: transaction)
             }
             guard let thread = possibleThread else {
                 Logger.warn("Skipping send due to missing thread.")
-                throw MessageSenderError.threadMissing.asUnretryableError
+                throw MessageSenderError.threadMissing
             }
 
             if message.isSyncMessage {
@@ -667,11 +604,11 @@ extension MessageSender {
 
     private static func unsentRecipients(of message: TSOutgoingMessage, thread: TSThread) throws -> [SignalServiceAddress] {
         guard let localAddress = tsAccountManager.localAddress else {
-            throw OWSAssertionError("Missing localAddress.").asUnretryableError
+            throw OWSAssertionError("Missing localAddress.")
         }
         guard !message.isSyncMessage else {
             // Sync messages should not reach this code path.
-            throw OWSAssertionError("Unexpected sync message.").asUnretryableError
+            throw OWSAssertionError("Unexpected sync message.")
         }
 
         if let groupThread = thread as? TSGroupThread {
@@ -725,11 +662,12 @@ extension MessageSender {
             // you block them.
             guard !self.blockingManager.isAddressBlocked(contactAddress) else {
                 Logger.info("Skipping 1:1 send to blocked contact: \(contactAddress).")
-                throw MessageSenderError.blockedContactRecipient.asUnretryableError
+                throw MessageSenderError.blockedContactRecipient
             }
             return [contactAddress]
         } else {
-            throw OWSAssertionError("Invalid thread.").asUnretryableError
+            owsFailDebug("Invalid thread.")
+            throw SSKUnretryableError.invalidThread
         }
     }
 
@@ -771,15 +709,6 @@ extension MessageSender {
             var validRecipients = Set(addresses).subtracting(invalidRecipients)
             validRecipients.formUnion(signalRecipients.compactMap { $0.address })
             return Array(validRecipients)
-
-        }.recover(on: .sharedUtility) { error -> Promise<[SignalServiceAddress]> in
-            let nsError = error as NSError
-            if let cdsError = nsError as? ContactDiscoveryError {
-                nsError.isRetryable = cdsError.retrySuggested
-            } else {
-                nsError.isRetryable = true
-            }
-            throw nsError
         }
     }
 }
@@ -865,26 +794,14 @@ public extension MessageSender {
                                        wasSentByUD: result.wasSentByUD,
                                        wasSentByWebsocket: result.wasSentByWebsocket)
         }.catch(on: Self.completionQueue) { (error: Error) in
-            var unpackedError = error
-            if case NetworkManagerError.taskError(_, let underlyingError) = unpackedError {
-                unpackedError = underlyingError
-            }
-            let nsError = unpackedError as NSError
+            let statusCode: Int = HTTPStatusCodeForError(error)?.intValue ?? 0
+            let responseData: Data? = HTTPResponseDataForError(error)
 
-            var statusCode: Int = 0
-            var responseData: Data?
             if case RequestMakerUDAuthError.udAuthFailure = error {
                 // Try again.
                 Logger.info("UD request auth failed; failing over to non-UD request.")
-                nsError.isRetryable = true
-            } else if nsError.domain == TSNetworkManagerErrorDomain {
-                statusCode = nsError.code
-
-                if let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
-                    responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data
-                } else {
-                    owsFailDebug("Missing underlying error: \(error)")
-                }
+            } else if error is OWSHTTPError {
+                // Do nothing.
             } else {
                 owsFailDebug("Unexpected error: \(error)")
             }
@@ -892,7 +809,7 @@ public extension MessageSender {
             self.messageSendDidFail(messageSend,
                                     deviceMessages: deviceMessages,
                                     statusCode: statusCode,
-                                    responseError: nsError,
+                                    responseError: error,
                                     responseData: responseData)
         }
     }
@@ -1000,11 +917,7 @@ public extension MessageSender {
         switch statusCode {
         case 401:
             Logger.warn("Unable to send due to invalid credentials. Did the user's client get de-authed by registering elsewhere?")
-            let error = OWSErrorWithCodeDescription(OWSErrorCode.signalServiceFailure,
-                                                    NSLocalizedString("ERROR_DESCRIPTION_SENDING_UNAUTHORIZED",
-                                                                      comment: "Error message when attempting to send message")) as NSError
-            // No need to retry if we've been de-authed.
-            error.isRetryable = false
+            let error = MessageSendUnauthorizedError()
             messageSend.failure(error)
             return
         case 404:
@@ -1015,9 +928,9 @@ public extension MessageSender {
             Logger.warn("Mismatched devices for recipient: \(address) (\(deviceMessages.count))")
 
             guard let response = MessageSendFailureResponse.parse(responseData) else {
-                let nsError = OWSAssertionError("Couldn't parse JSON response.") as NSError
-                nsError.isRetryable = true
-                messageSend.failure(nsError)
+                owsFailDebug("Couldn't parse JSON response.")
+                let error = OWSRetryableMessageSenderError()
+                messageSend.failure(error)
                 return
             }
 
@@ -1035,9 +948,9 @@ public extension MessageSender {
             Logger.warn("Stale devices for recipient: \(address)")
 
             guard let response = MessageSendFailureResponse.parse(responseData) else {
-                let nsError = OWSAssertionError("Couldn't parse JSON response.") as NSError
-                nsError.isRetryable = true
-                messageSend.failure(nsError)
+                owsFailDebug("Couldn't parse JSON response.")
+                let error = OWSRetryableMessageSenderError()
+                messageSend.failure(error)
                 return
             }
 
@@ -1053,18 +966,16 @@ public extension MessageSender {
             // SPAM TODO: Only retry messages with -hasRenderableContent
             Logger.warn("Server requested user complete spam challenge.")
 
-            let errorDescription = NSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM", comment: "Description for errors returned from the server due to suspected spam.")
-            let error = OWSErrorWithCodeDescription(.serverRejectedSuspectedSpam, errorDescription) as NSError
-            error.isRetryable = false
-            error.isFatal = false
+            let error = SpamChallengeRequiredError()
 
-            if let data = responseData, let expiry = responseError.httpRetryAfterDate {
+            if let data = responseData,
+               let retryAfterDate = responseError.httpRetryAfterDate {
                 // The resolver has 10s to asynchronously resolve a challenge
                 // If it resolves, great! We'll let MessageSender auto-retry
                 // Otherwise, it'll be marked as "pending"
                 spamChallengeResolver.handleServerChallengeBody(
                     data,
-                    retryAfter: expiry
+                    retryAfter: retryAfterDate
                 ) { didResolve in
                     if didResolve {
                         retrySend()
@@ -1097,13 +1008,7 @@ public extension MessageSender {
             }
         }
 
-        let error = OWSErrorMakeNoSuchSignalRecipientError() as NSError
-        // No need to retry if the recipient is not registered.
-        error.isRetryable = false
-        // If one member of a group deletes their account,
-        // the group should ignore errors when trying to send
-        // messages to this ex-member.
-        error.shouldBeIgnoredForGroups = true
+        let error = MessageSenderNoSuchSignalRecipientError()
         messageSend.failure(error)
     }
 

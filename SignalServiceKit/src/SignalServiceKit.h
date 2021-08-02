@@ -7,6 +7,7 @@
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/ExperienceUpgrade.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/IncomingGroupsV2MessageJob.h>
 #import <SignalServiceKit/InstalledSticker.h>
 #import <SignalServiceKit/KnownStickerPack.h>
@@ -51,9 +52,11 @@
 #import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/OWSWebSocket.h>
 #import <SignalServiceKit/OutgoingPaymentSyncMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PreKeyBundle+jsonDict.h>
+#import <SignalServiceKit/RESTNetworkManager.h>
 #import <SignalServiceKit/RemoteAttestation.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SSKJobRecord.h>
@@ -78,12 +81,10 @@
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
 #import <SignalServiceKit/TSMention.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSPaymentModel.h>
 #import <SignalServiceKit/TSPaymentModels.h>
 #import <SignalServiceKit/TSPaymentRequestModel.h>
-#import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>

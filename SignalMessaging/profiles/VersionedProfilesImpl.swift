@@ -55,7 +55,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
             let profileKey: OWSAES256Key = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
             return (localUuid, profileKey)
-        }.then(on: DispatchQueue.global()) { (localUuid: UUID, profileKey: OWSAES256Key) -> Promise<TSNetworkManager.Response> in
+        }.then(on: DispatchQueue.global()) { (localUuid: UUID, profileKey: OWSAES256Key) -> Promise<HTTPResponse> in
             let localProfileKey = try self.parseProfileKey(profileKey: profileKey)
             let zkgUuid = try localUuid.asZKGUuid()
             let commitment = try localProfileKey.getCommitment(uuid: zkgUuid)
@@ -145,14 +145,17 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                                        version: profileKeyVersionString,
                                                                        commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
-        }.then(on: DispatchQueue.global()) { (_: URLSessionDataTask, responseObject: Any?) -> Promise<VersionedProfileUpdate> in
+        }.then(on: DispatchQueue.global()) { response -> Promise<VersionedProfileUpdate> in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
             if let profileAvatarData = profileAvatarData {
                 let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
                 guard let encryptedProfileAvatarData = OWSUserProfile.encrypt(profileData: profileAvatarData,
                                                                               profileKey: profileKey) else {
                     throw OWSAssertionError("Could not encrypt profile avatar.")
                 }
-                return self.parseFormAndUpload(formResponseObject: responseObject,
+                return self.parseFormAndUpload(formResponseObject: json,
                                                profileAvatarData: encryptedProfileAvatarData)
             }
             return Promise.value(VersionedProfileUpdate())

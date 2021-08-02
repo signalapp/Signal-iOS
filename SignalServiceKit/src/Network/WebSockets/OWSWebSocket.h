@@ -21,12 +21,17 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSWebSocketState) {
     OWSWebSocketStateOpen,
 };
 
-typedef void (^TSSocketMessageSuccess)(id _Nullable responseObject);
-// statusCode is zero by default, if request never made or failed.
-typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable responseData, NSError *error);
-
+@class OWSHTTPErrorWrapper;
+@class OWSHTTPResponseImpl;
 @class TSRequest;
 
+@protocol HTTPResponse;
+@protocol HTTPFailure;
+
+typedef void (^TSSocketMessageSuccess)(id<HTTPResponse> response);
+typedef void (^TSSocketMessageFailure)(OWSHTTPErrorWrapper *failure);
+
+// TODO: Port to Swift.
 @interface OWSWebSocket : NSObject
 
 @property (nonatomic, readonly) OWSWebSocketState state;
@@ -53,9 +58,9 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable r
 
 @property (atomic, readonly) BOOL canMakeRequests;
 
-- (void)makeRequest:(TSRequest *)request
-            success:(TSSocketMessageSuccess)success
-            failure:(TSSocketMessageFailure)failure;
+- (void)makeRequestInternal:(TSRequest *)request
+                    success:(TSSocketMessageSuccess)success
+                    failure:(TSSocketMessageFailure)failure;
 
 @end
 

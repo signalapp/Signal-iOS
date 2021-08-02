@@ -120,7 +120,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
             guard plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
                   length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
-                throw OWSAssertionError("Data is too large: \(length).").asUnretryableError
+                throw OWSAssertionError("Data is too large: \(length).")
             }
 
             return (temporaryFile, length)
@@ -148,25 +148,21 @@ public class OWSAttachmentUploadV2: NSObject {
     // Performs a request, trying to use the websocket
     // and failing over to REST.
     private func performRequest(skipWebsocket: Bool = false,
-                                requestBlock: @escaping () -> TSRequest) -> Promise<Any?> {
-        return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
+                                requestBlock: @escaping () -> TSRequest) -> Promise<HTTPResponse> {
+        return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let formRequest = requestBlock()
             let shouldUseWebsocket = (OWSUpload.socketManager.canMakeRequests(webSocketType: .default) &&
                                         !skipWebsocket)
             if shouldUseWebsocket {
-                return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
+                return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
                     OWSUpload.socketManager.makeRequestPromise(request: formRequest,
                                                                webSocketType: .default)
-                }.recover(on: Self.serialQueue) { (_) -> Promise<Any?> in
+                }.recover(on: Self.serialQueue) { (_) -> Promise<HTTPResponse> in
                     // Failover to REST request.
                     self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
                 }
             } else {
-                return firstly(on: Self.serialQueue) {
-                    return OWSUpload.networkManager.makePromise(request: formRequest)
-                }.map(on: Self.serialQueue) { (_: URLSessionDataTask, responseObject: Any?) -> Any? in
-                    return responseObject
-                }
+                return OWSUpload.networkManager.makePromise(request: formRequest)
             }
         }
     }
@@ -695,7 +691,7 @@ public extension OWSUpload {
             }, failure: { (task, error) in
                 if let task = task {
                     #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: task)
+                    HTTPUtils.logCurl(for: task)
                     #endif
                 } else {
                     owsFailDebug("Missing task.")

@@ -2,14 +2,13 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/MockSSKEnvironment.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSFakeCallMessageHandler.h>
 #import <SignalServiceKit/OWSFakeMessageSender.h>
-#import <SignalServiceKit/OWSFakeNetworkManager.h>
 #import <SignalServiceKit/OWSFakeProfileManager.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
@@ -21,7 +20,6 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
-    TSNetworkManager *networkManager = [[OWSFakeNetworkManager alloc] init];
+    NetworkManager *networkManager = [OWSFakeNetworkManager new];
     MessageSender *messageSender = [OWSFakeMessageSender new];
     MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
 
@@ -62,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
     GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
-    TSSocketManager *socketManager = [[TSSocketManager alloc] init];
+    SocketManager *socketManager = [[SocketManager alloc] init];
     TSAccountManager *tsAccountManager = [TSAccountManager new];
     OWS2FAManager *ows2FAManager = [OWS2FAManager new];
     OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];

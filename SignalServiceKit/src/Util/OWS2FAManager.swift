@@ -62,7 +62,7 @@ extension OWS2FAManager {
                 throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
             }
             return token
-        }.then { token -> Promise<TSNetworkManager.Response> in
+        }.then { token -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.enableRegistrationLockV2Request(withToken: token)
             return self.networkManager.makePromise(request: request)
         }.done { _ in
@@ -100,7 +100,7 @@ extension OWS2FAManager {
     }
 
     public func disableRegistrationLockV2() -> Promise<Void> {
-        return firstly { () -> Promise<TSNetworkManager.Response> in
+        return firstly { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.disableRegistrationLockV2Request()
             return self.networkManager.makePromise(request: request)
         }.done { _ in
@@ -144,6 +144,43 @@ extension OWS2FAManager {
             return requestEnable2FA(withPin: pinCode, mode: .V2)
         }.then {
             return self.enableRegistrationLockV2()
+        }
+    }
+
+    @objc
+    public func enable2FAV1(pin: String,
+                            success: (() -> Void)?,
+                            failure: ((Error) -> Void)?) {
+        // Convert the pin to arabic numerals, we never want to
+        // operate with pins in other numbering systems.
+        let request = OWSRequestFactory.enable2FARequest(withPin: pin.ensureArabicNumerals)
+        firstly {
+            Self.networkManager.makePromise(request: request)
+        }.done(on: .main) { _ in
+            Self.databaseStorage.write { transaction in
+                self.markEnabled(pin: pin, transaction: transaction)
+            }
+            success?()
+        }.catch(on: .main) { error in
+            owsFailDebugUnlessNetworkFailure(error)
+            failure?(error)
+        }
+    }
+
+    @objc
+    public func disable2FAV1(success: OWS2FASuccess?,
+                             failure: OWS2FAFailure?) {
+        let request = OWSRequestFactory.disable2FARequest()
+        firstly {
+            Self.networkManager.makePromise(request: request)
+        }.done(on: .main) { _ in
+            Self.databaseStorage.write { transaction in
+                self.markDisabled(transaction: transaction)
+            }
+            success?()
+        }.catch(on: .main) { error in
+            owsFailDebugUnlessNetworkFailure(error)
+            failure?(error)
         }
     }
 }

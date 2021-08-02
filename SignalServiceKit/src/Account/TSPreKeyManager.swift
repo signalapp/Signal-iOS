@@ -17,7 +17,7 @@ public class MessageProcessingOperation: OWSOperation {
             self.reportSuccess()
         }.catch { error in
             owsFailDebug("Error: \(error)")
-            self.reportError(error.asUnretryableError)
+            self.reportError(SSKUnretryableError.messageProcessingFailed)
         }
     }
 }

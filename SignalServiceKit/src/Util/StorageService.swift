@@ -33,7 +33,7 @@ public protocol StorageServiceManagerProtocol {
 // MARK: -
 
 public struct StorageService: Dependencies {
-    public enum StorageError: OperationError {
+    public enum StorageError: Error, IsRetryableProvider {
         case assertion
         case retryableAssertion
         case manifestDecryptionFailed(version: UInt64)
@@ -43,7 +43,7 @@ public struct StorageService: Dependencies {
 
         // MARK: 
 
-        public var isRetryable: Bool {
+        public var isRetryableProvider: Bool {
             switch self {
             case .assertion:
                 return false
@@ -62,7 +62,7 @@ public struct StorageService: Dependencies {
         }
 
         public var errorUserInfo: [String: Any] {
-            var userInfo: [String: Any] = [OWSOperationIsRetryableKey: self.isRetryable]
+            var userInfo: [String: Any] = [:]
             if case .networkError(_, let underlyingError) = self {
                 userInfo[NSUnderlyingErrorKey] = underlyingError
             }

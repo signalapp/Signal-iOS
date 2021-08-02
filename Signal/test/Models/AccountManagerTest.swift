@@ -12,9 +12,9 @@ struct FailedToGetRPRegistrationTokenError: Error { }
 
 enum PushNotificationRequestResult: String {
     case FailTSOnly = "FailTSOnly",
-    FailRPOnly = "FailRPOnly",
-    FailBoth = "FailBoth",
-    Succeed = "Succeed"
+         FailRPOnly = "FailRPOnly",
+         FailBoth = "FailBoth",
+         Succeed = "Succeed"
 }
 
 class FailingTSAccountManager: TSAccountManager {
@@ -26,11 +26,16 @@ class FailingTSAccountManager: TSAccountManager {
         self.phoneNumberAwaitingVerification = "+13235555555"
     }
 
-    override func verifyAccount(with request: TSRequest, success successBlock: @escaping (Any?) -> Void, failure failureBlock: @escaping (Error) -> Void) {
+    override func verifyAccount(request: TSRequest,
+                                success successBlock: @escaping (Any?) -> Void,
+                                failure failureBlock: @escaping (Error) -> Void) {
         failureBlock(VerificationFailedError())
     }
 
-    override func registerForPushNotifications(pushToken: String, voipToken: String?, success successHandler: @escaping () -> Void, failure failureHandler: @escaping (Error) -> Void) {
+    override func registerForPushNotifications(pushToken: String,
+                                               voipToken: String?,
+                                               success successHandler: @escaping () -> Void,
+                                               failure failureHandler: @escaping (Error) -> Void) {
         if pushToken == PushNotificationRequestResult.FailTSOnly.rawValue || pushToken == PushNotificationRequestResult.FailBoth.rawValue {
             failureHandler(OWSErrorMakeUnableToProcessServerResponseError())
         } else {
@@ -40,10 +45,11 @@ class FailingTSAccountManager: TSAccountManager {
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
-    override func verifyAccount(with request: TSRequest, success successBlock: @escaping (Any?) -> Void, failure failureBlock: @escaping (Error) -> Void) {
+    override func verifyAccount(request: TSRequest,
+                                success successBlock: @escaping (Any?) -> Void,
+                                failure failureBlock: @escaping (Error) -> Void) {
         successBlock(["uuid": UUID().uuidString])
     }
-
 }
 
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {

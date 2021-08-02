@@ -116,5 +116,5 @@ class CaptchaChallenge: SpamChallenge {
 
     // MARK: - Dependencies
 
-    var networkManager: TSNetworkManager { SSKEnvironment.shared.networkManager }
+    var networkManager: NetworkManager { SSKEnvironment.shared.networkManager }
 }

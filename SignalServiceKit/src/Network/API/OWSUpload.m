@@ -2,21 +2,20 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/OWSUpload.h>
 #import <AFNetworking/AFURLRequestSerialization.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSNetworkManager.h>
-#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -142,71 +141,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
     AppendMultipartFormPath(formData, @"x-amz-date", self.date);
     AppendMultipartFormPath(formData, @"policy", self.policy);
     AppendMultipartFormPath(formData, @"x-amz-signature", self.signature);
-}
-
-@end
-
-#pragma mark -
-
-@interface OWSAvatarUploadV2 ()
-
-@property (nonatomic, nullable) NSData *avatarData;
-
-@end
-
-#pragma mark -
-
-@implementation OWSAvatarUploadV2
-
-#pragma mark - Avatars
-
-// If avatarData is nil, we are clearing the avatar.
-- (AnyPromise *)uploadAvatarToService:(nullable NSData *)avatarData
-{
-    OWSAssertDebug(avatarData == nil || avatarData.length > 0);
-    self.avatarData = avatarData;
-
-    __weak OWSAvatarUploadV2 *weakSelf = self;
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        dispatch_async(OWSUpload.serialQueue, ^{
-            TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
-            [self.networkManager makeRequest:formRequest
-                success:^(NSURLSessionDataTask *task, id _Nullable formResponseObject) {
-                    OWSAvatarUploadV2 *_Nullable strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
-                    }
-
-                    if (avatarData == nil) {
-                        OWSLogDebug(@"successfully cleared avatar");
-                        return resolve(@(1));
-                    }
-
-                    [strongSelf parseFormAndUpload:formResponseObject]
-                        .thenInBackground(^{ return resolve(@(1)); })
-                        .catchInBackground(^(NSError *error) { resolve(error); });
-                }
-                failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    OWSLogError(@"Failed to get profile avatar upload form: %@", error);
-                    resolve(error);
-                }];
-        });
-    }];
-    return promise;
-}
-
-- (AnyPromise *)parseFormAndUpload:(nullable id)formResponseObject
-{
-    OWSUploadFormV2 *_Nullable form = [OWSUploadFormV2 parseDictionary:formResponseObject];
-    if (!form) {
-        return [AnyPromise
-            promiseWithValue:OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Invalid upload form.")];
-    }
-
-    self.urlPath = form.key;
-
-    NSString *uploadUrlPath = @"";
-    return [OWSUpload uploadV2WithData:self.avatarData uploadForm:form uploadUrlPath:uploadUrlPath progressBlock:nil];
 }
 
 @end

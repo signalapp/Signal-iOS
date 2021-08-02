@@ -69,9 +69,13 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         let request = OWSRequestFactory.availablePreKeysCountRequest()
         return firstly {
             networkManager.makePromise(request: request)
-        }.map { _, responseObject in
+        }.map(on: .global()) { response in
             Logger.debug("got response")
-            guard let params = ParamParser(responseObject: responseObject) else {
+            guard let json = response.responseBodyJson else {
+                owsFailDebug("Missing or invalid JSON.")
+                throw self.unexpectedServerResponseError()
+            }
+            guard let params = ParamParser(responseObject: json) else {
                 throw self.unexpectedServerResponseError()
             }
 
@@ -99,8 +103,11 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         let request = OWSRequestFactory.udSenderCertificateRequest(uuidOnly: uuidOnly)
         return firstly {
             self.networkManager.makePromise(request: request)
-        }.map { _, responseObject in
-            guard let parser = ParamParser(responseObject: responseObject) else {
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSUDError.invalidData(description: "Missing or invalid JSON")
+            }
+            guard let parser = ParamParser(responseObject: json) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate response")
             }
 
@@ -120,8 +127,14 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     public func getAccountUuid() -> Promise<UUID> {
         let request = OWSRequestFactory.accountWhoAmIRequest()
 
-        return networkManager.makePromise(request: request).map { _, responseObject in
-            guard let parser = ParamParser(responseObject: responseObject) else {
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                owsFailDebug("Missing or invalid JSON.")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+            guard let parser = ParamParser(responseObject: json) else {
                 throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
@@ -137,8 +150,14 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     public func requestStorageAuth() -> Promise<(username: String, password: String)> {
         let request = OWSRequestFactory.storageAuthRequest()
-        return networkManager.makePromise(request: request).map { _, responseObject in
-            guard let parser = ParamParser(responseObject: responseObject) else {
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                owsFailDebug("Missing or invalid JSON.")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+            guard let parser = ParamParser(responseObject: json) else {
                 throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
@@ -161,8 +180,12 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { _, responseObject in
-            guard let parser = ParamParser(responseObject: responseObject) else {
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                owsFailDebug("Missing or invalid JSON.")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+            guard let parser = ParamParser(responseObject: json) else {
                 throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
@@ -186,9 +209,14 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     public func getRemoteConfig() -> Promise<[String: RemoteConfigItem]> {
         let request = OWSRequestFactory.getRemoteConfigRequest()
 
-        return networkManager.makePromise(request: request).map { _, responseObject in
-
-            guard let parser = ParamParser(responseObject: responseObject) else {
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                owsFailDebug("Missing or invalid JSON.")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+            guard let parser = ParamParser(responseObject: json) else {
                 throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
