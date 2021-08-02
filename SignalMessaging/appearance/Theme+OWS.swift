@@ -65,6 +65,9 @@ public enum ThemeIcon: UInt {
     case messageActionSave
     case messageActionSelect
 
+    case contextMenuSelect
+    case contextMenuInfo
+
     case compose24
     case composeNewGroup
     case composeFindByPhoneNumber
@@ -280,7 +283,10 @@ public extension Theme {
             return "save-24"
         case .messageActionSelect:
             return "select-24"
-
+        case .contextMenuSelect:
+            return "check-circle-outline-24"
+        case .contextMenuInfo:
+            return "info-outline-24"
         case .compose24:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .composeNewGroup:

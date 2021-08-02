@@ -128,18 +128,24 @@ class MessageReactionPicker: UIStackView {
     }
 
     func playDismissalAnimation(duration: TimeInterval, completion: @escaping () -> Void) {
-        UIView.animate(withDuration: duration) { self.backgroundView?.alpha = 0 }
+        if !FeatureFlags.contextMenus {
+            UIView.animate(withDuration: duration) { self.backgroundView?.alpha = 0 }
 
-        var delay: TimeInterval = 0
-        for view in arrangedSubviews.reversed() {
-            UIView.animate(withDuration: duration, delay: delay, options: .curveEaseOut, animations: {
-                view.alpha = 0
-                view.transform = CGAffineTransform(translationX: 0, y: 24)
-            }, completion: { _ in
-                guard view == self.arrangedSubviews.first else { return }
+            var delay: TimeInterval = 0
+            for view in arrangedSubviews.reversed() {
+                UIView.animate(withDuration: duration, delay: delay, options: .curveEaseOut, animations: {
+                    view.alpha = 0
+                    view.transform = CGAffineTransform(translationX: 0, y: 24)
+                }, completion: { _ in
+                    guard view == self.arrangedSubviews.first else { return }
+                    completion()
+                })
+                delay += 0.01
+            }
+        } else {
+            UIView.animate(withDuration: duration) { self.alpha = 0 } completion: { _ in
                 completion()
-            })
-            delay += 0.01
+            }
         }
     }
 

@@ -46,7 +46,11 @@ public class MessageAction: NSObject {
         case .copy:
             return Theme.iconImage(.messageActionCopy)
         case .info:
-            return Theme.iconImage(.info)
+            if FeatureFlags.contextMenus {
+                return Theme.iconImage(.contextMenuInfo)
+            } else {
+                return Theme.iconImage(.info)
+            }
         case .delete:
             return Theme.iconImage(.messageActionDelete)
         case .share:
@@ -54,7 +58,11 @@ public class MessageAction: NSObject {
         case .forward:
             return Theme.iconImage(.messageActionForward)
         case .select:
-            return Theme.iconImage(.messageActionSelect)
+            if FeatureFlags.contextMenus {
+                return Theme.iconImage(.contextMenuSelect)
+            } else {
+                return Theme.iconImage(.messageActionSelect)
+            }
         }
     }
 }

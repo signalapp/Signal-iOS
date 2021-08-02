@@ -188,6 +188,10 @@ private class ContextMenuHostView: UIView {
             }
         }
 
+        if previewViewAlignment == .center {
+            accessoryFrame.x = previewFrame.midX - (accessoryFrame.width / 2)
+        }
+
         let defaultOffset = accessory.accessoryAlignment.alignmentOffset
         let offset = isLandscape ? accessory.landscapeAccessoryAlignment?.alignmentOffset ?? defaultOffset : defaultOffset
         accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, offset)
@@ -552,7 +556,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
             owsFailDebug("Expected source view")
             return CGRect.zero
         }
-        return view.convert(sourceView.frame, from: sourceView)
+        return view.convert(sourceView.frame, from: sourceView.superview)
     }
 
     @objc

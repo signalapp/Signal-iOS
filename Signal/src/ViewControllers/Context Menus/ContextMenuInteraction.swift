@@ -13,6 +13,8 @@ public protocol ContextMenuInteractionDelegate: AnyObject {
         _ interaction: ContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview?
     func contextMenuInteraction(_ interaction: ContextMenuInteraction,
+                                willDisplayMenuForConfiguration: ContextMenuConfiguration)
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction,
                                 willEndForConfiguration: ContextMenuConfiguration)
 
 }
@@ -23,7 +25,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     weak var delegate: ContextMenuInteractionDelegate?
     fileprivate var contextMenuController: ContextMenuController?
 
-    private let sourceViewBounceDuration = 0.3
+    private let sourceViewBounceDuration = 0.2
     fileprivate var gestureEligibleForMenuPresentation: Bool {
         didSet {
             if !gestureEligibleForMenuPresentation {
@@ -148,11 +150,13 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     }
 
     public func presentMenu(window: UIWindow, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) {
+        delegate?.contextMenuInteraction(self, willDisplayMenuForConfiguration: contextMenuConfiguration)
+        ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
+
         let menuAccessory = menuAccessory(configuration: contextMenuConfiguration)
         let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, initiatingGestureRecognizer: initiatingGestureRecognizer(), menuAccessory: menuAccessory)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
-        ImpactHapticFeedback.impactOccured(style: .medium)
 
         window.addSubview(contextMenuController.view)
         contextMenuController.view.frame = window.bounds
