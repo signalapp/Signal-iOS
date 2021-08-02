@@ -488,7 +488,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func updateUnreadCountView() {
-        let visibleViewItems = (messagesTableView.indexPathsForVisibleRows ?? []).map { viewItems[$0.row] }
+        let visibleViewItems = (messagesTableView.indexPathsForVisibleRows ?? []).map { viewItems[ifValid: $0.row] }
         for visibleItem in visibleViewItems {
             guard let index = unreadViewItems.firstIndex(where: { $0 === visibleItem }) else { continue }
             unreadViewItems.remove(at: index)
