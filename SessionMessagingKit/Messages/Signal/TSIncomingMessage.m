@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
                   wasReceivedByUD:(BOOL)wasReceivedByUD
           openGroupInvitationName:(nullable NSString *)openGroupInvitationName
            openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                       serverHash:(nullable NSString *)serverHash
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -66,7 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
                              quotedMessage:quotedMessage
                                linkPreview:linkPreview
                    openGroupInvitationName:openGroupInvitationName
-                    openGroupInvitationURL:openGroupInvitationURL];
+                    openGroupInvitationURL:openGroupInvitationURL
+                                serverHash:serverHash];
 
     if (!self) {
         return self;

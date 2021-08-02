@@ -94,7 +94,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                          openGroupInvitationName:(nullable NSString *)openGroupInvitationName
-                          openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL NS_DESIGNATED_INITIALIZER;
+                          openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                                      serverHash:(nullable NSString *)serverHash NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

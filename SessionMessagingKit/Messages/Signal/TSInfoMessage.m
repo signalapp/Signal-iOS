@@ -57,7 +57,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                              quotedMessage:nil
                                linkPreview:nil
                    openGroupInvitationName:nil
-                    openGroupInvitationURL:nil];
+                    openGroupInvitationURL:nil
+                                serverHash:nil];
 
     if (!self) {
         return self;

@@ -64,7 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
                   serverTimestamp:(nullable NSNumber *)serverTimestamp
                   wasReceivedByUD:(BOOL)wasReceivedByUD
           openGroupInvitationName:(nullable NSString *)openGroupInvitationName
-           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL NS_DESIGNATED_INITIALIZER;
+           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                       serverHash:(nullable NSString*)serverHash NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

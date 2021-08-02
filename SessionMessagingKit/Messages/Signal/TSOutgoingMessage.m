@@ -154,7 +154,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                          quotedMessage:quotedMessage
                                                            linkPreview:linkPreview
                                                openGroupInvitationName:nil
-                                                openGroupInvitationURL:nil];
+                                                openGroupInvitationURL:nil
+                                                            serverHash:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -173,7 +174,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                          quotedMessage:nil
                                                            linkPreview:nil
                                                openGroupInvitationName:nil
-                                                openGroupInvitationURL:nil];
+                                                openGroupInvitationURL:nil
+                                                            serverHash:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -188,6 +190,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                          openGroupInvitationName:(nullable NSString *)openGroupInvitationName
                           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                                      serverHash:(nullable NSString *)serverHash
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -198,7 +201,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              quotedMessage:quotedMessage
                                linkPreview:linkPreview
                    openGroupInvitationName:openGroupInvitationName
-                    openGroupInvitationURL:openGroupInvitationURL];
+                    openGroupInvitationURL:openGroupInvitationURL
+                                serverHash:serverHash];
     if (!self) {
         return self;
     }

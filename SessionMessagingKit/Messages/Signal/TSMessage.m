@@ -65,6 +65,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                  openGroupInvitationName:(nullable NSString *)openGroupInvitationName
                   openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                              serverHash:(nullable NSString *)serverHash
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -84,7 +85,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     _openGroupServerMessageID = 0;
     _openGroupInvitationName = openGroupInvitationName;
     _openGroupInvitationURL = openGroupInvitationURL;
-    _serverHash = nil;
+    _serverHash = serverHash;
 
     return self;
 }
