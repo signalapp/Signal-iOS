@@ -5,6 +5,8 @@ public final class UnsendRequest: ControlMessage {
     public var timestamp: UInt64?
     public var author: String?
     
+    public override var isSelfSendValid: Bool { true }
+    
     // MARK: Validation
     public override var isValid: Bool {
         guard super.isValid else { return false }

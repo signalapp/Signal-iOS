@@ -134,8 +134,9 @@ public final class MessageSender : NSObject {
         // • a configuration message
         // • a sync message
         // • a closed group control message of type `new`
+        // • an unsend request
         let isNewClosedGroupControlMessage = given(message as? ClosedGroupControlMessage) { if case .new = $0.kind { return true } else { return false } } ?? false
-        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage || isNewClosedGroupControlMessage else {
+        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage || isNewClosedGroupControlMessage || message is UnsendRequest else {
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
