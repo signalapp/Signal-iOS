@@ -980,6 +980,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (void)deleteRemotelyAction
 {
     // TODO: closed group and one-on-one chat
+    TSMessage *message = (TSMessage *)self.interaction;
     
     if (self.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
@@ -988,13 +989,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         OWSInteractionType interationType = self.interaction.interactionType;
         if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
         
-        if (groupThread.isClosedGroup) {
-            
-        }
-        
         if (groupThread.isOpenGroup) {
             // Make sure it's an open group message
-            TSMessage *message = (TSMessage *)self.interaction;
             if (!message.isOpenGroupMessage) return;
 
             // Get the open group
@@ -1012,8 +1008,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 // Roll back
                 [self.interaction save];
             }) retainUntilComplete];
+        } else {
+            NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:groupThread.groupModel.groupId];
+            [SNSnodeAPI deleteMessageForPublickKey:groupPublicKey serverHash:message.serverHash];
         }
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)self.interaction.thread;
+        [SNSnodeAPI deleteMessageForPublickKey:contactThread.contactSessionID serverHash:message.serverHash];
     }
+    
 }
 
 - (BOOL)hasBodyTextActionContent
