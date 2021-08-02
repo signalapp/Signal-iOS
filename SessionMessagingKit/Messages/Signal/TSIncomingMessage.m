@@ -77,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     _read = NO;
     _serverTimestamp = serverTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
+    _notificationIdentifier = nil;
 
     return self;
 }
@@ -126,6 +127,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     return (self.body != nil && [self.body containsString:[NSString stringWithFormat:@"@%@", userPublicKey]]) || (self.quotedMessage != nil && [self.quotedMessage.authorId isEqualToString:userPublicKey]);
+}
+
+- (void)setNotificationIdentifier:(NSString * _Nullable)notificationIdentifier transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction
+{
+    _notificationIdentifier = notificationIdentifier;
+    [self saveWithTransaction:transaction];
 }
 
 #pragma mark - OWSReadTracking

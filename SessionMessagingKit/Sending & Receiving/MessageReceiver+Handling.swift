@@ -227,6 +227,9 @@ extension MessageReceiver {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         if let author = message.author, let timestamp = message.timestamp,
            let messageToDelete = userPublicKey == message.sender ? TSOutgoingMessage.find(withTimestamp: timestamp) : TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction) {
+            if let incomingMessage = messageToDelete as? TSIncomingMessage, let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
+                SSKEnvironment.shared.notificationsManager!.cancelNotification(notificationIdentifier)
+            }
             messageToDelete.remove(with: transaction)
         }
     }

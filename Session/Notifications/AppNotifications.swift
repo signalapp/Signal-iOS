@@ -95,6 +95,7 @@ protocol NotificationPresenterAdaptee: class {
     func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?)
 
     func cancelNotifications(threadId: String)
+    func cancelNotification(identifier: String)
     func clearAllNotifications()
 }
 
@@ -219,6 +220,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]
+        
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let identifier: String = UUID().uuidString
+        incomingMessage.setNotificationIdentifier(identifier, transaction: transaction)
 
         DispatchQueue.main.async {
             notificationBody = MentionUtilities.highlightMentions(in: notificationBody!, threadID: thread.uniqueId!)
@@ -227,7 +232,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 title: notificationTitle,
                                 body: notificationBody ?? "",
                                 userInfo: userInfo,
-                                sound: sound)
+                                sound: sound,
+                                replacingIdentifier: identifier)
         }
     }
 
@@ -259,6 +265,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 userInfo: userInfo,
                                 sound: sound)
         }
+    }
+    
+    @objc
+    public func cancelNotification(_ identifier: String) {
+        self.adaptee.cancelNotification(identifier: identifier)
     }
 
     @objc

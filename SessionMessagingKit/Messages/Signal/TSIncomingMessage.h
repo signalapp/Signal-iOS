@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isUserMentioned;
 
+@property (nonatomic, readonly, nullable) NSString *notificationIdentifier;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body
@@ -87,6 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
 // convenience method for expiring a message which was just read
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)setNotificationIdentifier:(NSString * _Nullable)notificationIdentifier
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 
