@@ -547,7 +547,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSLogInfo(@"");
 
     // Dismiss any message actions if they're presented
-    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsWithAnimated:YES];
+    if (SSKFeatureFlags.contextMenus) {
+        [self.conversationSplitViewController.selectedConversationViewController
+            dismissMessageContextMenuWithAnimated:YES];
+    } else {
+        [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsWithAnimated:YES];
+    }
 
     ComposeViewController *viewController = [ComposeViewController new];
 
@@ -572,7 +577,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSLogInfo(@"");
 
     // Dismiss any message actions if they're presented
-    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsWithAnimated:YES];
+    if (SSKFeatureFlags.contextMenus) {
+        [self.conversationSplitViewController.selectedConversationViewController
+            dismissMessageContextMenuWithAnimated:YES];
+    } else {
+        [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsWithAnimated:YES];
+    }
 
     UIViewController *newGroupViewController = [NewGroupMembersViewController new];
 
@@ -667,7 +677,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)showCameraView
 {
     // Dismiss any message actions if they're presented
-    [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsWithAnimated:YES];
+    if (SSKFeatureFlags.contextMenus) {
+        [self.conversationSplitViewController.selectedConversationViewController
+            dismissMessageContextMenuWithAnimated:YES];
+    } else {
+        [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsWithAnimated:YES];
+    }
 
     [self ows_askForCameraPermissions:^(BOOL cameraGranted) {
         if (!cameraGranted) {

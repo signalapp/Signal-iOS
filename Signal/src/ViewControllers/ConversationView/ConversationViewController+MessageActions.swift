@@ -100,6 +100,13 @@ extension ConversationViewController {
     }
 
     @objc
+    public func dismissMessageContextMenu(animated: Bool) {
+        if let collectionViewActiveContextMenuInteraction = self.collectionViewActiveContextMenuInteraction {
+            collectionViewActiveContextMenuInteraction.dismissMenu(animated: animated, completion: { })
+        }
+    }
+
+    @objc
     public func dismissMessageActions(animated: Bool) {
         dismissMessageActions(animated: animated, completion: nil)
     }
@@ -133,11 +140,27 @@ extension ConversationViewController {
         }
     }
 
+    func dismissMessageContextMenuIfNecessary() {
+        if shouldDismissMessageContextMenu {
+            dismissMessageContextMenu(animated: true)
+        }
+    }
+
     var shouldDismissMessageActions: Bool {
         guard let messageActionsViewController = messageActionsViewController else {
             return false
         }
         let messageActionInteractionId = messageActionsViewController.focusedInteraction.uniqueId
+        // Check whether there is still a view item for this interaction.
+        return self.indexPath(forInteractionUniqueId: messageActionInteractionId) == nil
+    }
+
+    var shouldDismissMessageContextMenu: Bool {
+        guard let collectionViewActiveContextMenuInteraction = self.collectionViewActiveContextMenuInteraction else {
+            return false
+        }
+
+        let messageActionInteractionId = collectionViewActiveContextMenuInteraction.itemViewModel.interaction.uniqueId
         // Check whether there is still a view item for this interaction.
         return self.indexPath(forInteractionUniqueId: messageActionInteractionId) == nil
     }

@@ -110,7 +110,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
             delay: 0,
             options: [.curveEaseInOut, .beginFromCurrentState],
             animations: {
-                targetedPreview.view?.transform = CGAffineTransform.scale(0.95)
+                targetedPreview.view?.transform = .scale(0.95)
             },
             completion: { finished in
                 let shouldPresent = finished && self.gestureEligibleForMenuPresentation
@@ -174,16 +174,23 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         return accessory
     }
 
-    public func dismissMenu(completion: @escaping() -> Void ) {
+    public func dismissMenu(animated: Bool, completion: @escaping() -> Void ) {
         if let configuarion = self.configuration {
             delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
         }
 
-        contextMenuController?.animateOut({
+        if animated {
+            contextMenuController?.animateOut({
+                completion()
+                self.contextMenuController?.view.removeFromSuperview()
+                self.contextMenuController = nil
+            })
+        } else {
+            targetedPreview?.view?.isHidden = false
             completion()
             self.contextMenuController?.view.removeFromSuperview()
             self.contextMenuController = nil
-        })
+        }
     }
 
     // MARK: Private
@@ -206,7 +213,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTargetedPreviewAccessoryInteractionDelegate {
 
     func contextMenuTargetedPreviewAccessoryRequestsDismissal(_ accessory: ContextMenuTargetedPreviewAccessory, completion: @escaping () -> Void) {
-        dismissMenu(completion: completion)
+        dismissMenu(animated: true, completion: completion)
     }
 
     func contextMenuTargetedPreviewAccessoryPreviewAlignment(_ accessory: ContextMenuTargetedPreviewAccessory) -> ContextMenuTargetedPreview.Alignment {
@@ -214,7 +221,7 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
     }
 
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController) {
-        dismissMenu(completion: { })
+        dismissMenu(animated: true, completion: { })
     }
 
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
@@ -270,10 +277,8 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     public func initiatingGestureRecognizerDidEnd() {
         gestureEligibleForMenuPresentation = false
 
-        if contextMenuController == nil {
-            if let configuarion = self.configuration {
-                delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
-            }
+        if contextMenuController == nil, let configuarion = self.configuration {
+            delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
         }
 
         contextMenuController?.gestureDidEnd()
@@ -286,9 +291,11 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     public override func menuAccessory(configuration: ContextMenuConfiguration) -> ContextMenuActionsAccessory {
         let menu = configuration.actionProvider?([]) ?? ContextMenu([])
         let isIncomingMessage = itemViewModel.interaction.interactionType() == .incomingMessage
+        let isMessageType = itemViewModel.interaction.interactionType() == .outgoingMessage || isIncomingMessage
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior), (isIncomingMessage ? .leading : .trailing, .interior)], alignmentOffset: CGPoint(x: 0, y: 12))
         let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
-        accessory.landscapeAccessoryAlignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.top, .interior), (isIncomingMessage ? .trailing : .leading, .exterior)], alignmentOffset: CGPoint(x: isIncomingMessage ? 12 : -12, y: 0))
+        let landscapeAlignmentOffset = isMessageType ? CGPoint(x: isIncomingMessage ? 12 : -12, y: 0) : alignment.alignmentOffset
+        accessory.landscapeAccessoryAlignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [isMessageType ? (.top, .interior) : (.bottom, .exterior), (isIncomingMessage ? .trailing : .leading, .exterior)], alignmentOffset: landscapeAlignmentOffset)
         accessory.delegate = self
         return accessory
     }

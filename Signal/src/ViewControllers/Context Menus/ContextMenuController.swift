@@ -27,10 +27,11 @@ private class ContextMenuHostView: UIView {
 
     private var contentAreaInsets: UIEdgeInsets {
         let constPadding: CGFloat = 22
+        let minHorizPadding: CGFloat = 16
         return UIEdgeInsets(top: safeAreaInsets.top + constPadding,
-                     leading: safeAreaInsets.leading,
+                     leading: max(safeAreaInsets.leading, minHorizPadding),
                      bottom: safeAreaInsets.bottom + constPadding,
-                     trailing: safeAreaInsets.trailing)
+                     trailing: max(safeAreaInsets.trailing, minHorizPadding))
     }
 
     var blurView: UIView? {
@@ -107,6 +108,8 @@ private class ContextMenuHostView: UIView {
         let maxX: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).maxX }.max() ?? 0
         var minY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).y }.min() ?? 0
         var maxY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).maxY }.max() ?? 0
+        minY = min(minY, previewFrame.minY)
+        maxY = max(maxY, previewFrame.maxY)
 
         // Vertically shift if necessary
         if maxY > contentRect.maxY {
@@ -163,7 +166,7 @@ private class ContextMenuHostView: UIView {
         accessory.accessoryView.sizeToFit()
         accessoryFrame.size = accessory.accessoryView.frame.size
 
-        let isLandscape = bounds.size.width > bounds.size.height
+        let isLandscape = UIDevice.current.isIPad ? false : bounds.size.width > bounds.size.height
         let defaultAlignments = accessory.accessoryAlignment.alignments
         let alignments = isLandscape ? accessory.landscapeAccessoryAlignment?.alignments ?? defaultAlignments : defaultAlignments
 
@@ -332,7 +335,12 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         animationState = .animateIn
 
         UIView.animate(withDuration: animationDuration / 2.0) {
-            self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
+            if !UIDevice.current.isIPad {
+                self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
+                self.blurView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
+            } else {
+                self.blurView.backgroundColor = UIColor.ows_blackAlpha40
+            }
             self.previewShadowVisible = true
         }
 
@@ -343,6 +351,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         // Match initial transform
         previewView.transform = CGAffineTransform.scale(0.95)
         previewView.isHidden = false
+        contextMenuPreview.view?.isHidden = true
 
         if shiftPreview {
             previewView.frame = initialFrame
@@ -405,6 +414,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         dispatchGroup.enter()
         UIView.animate(withDuration: animationDuration / 2.0) {
             self.blurView.effect = nil
+            self.blurView.backgroundColor = nil
             self.previewShadowVisible = false
         } completion: { _ in
             dispatchGroup.leave()
@@ -448,6 +458,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         }
 
         dispatchGroup.notify(queue: .main) {
+            self.contextMenuPreview.view?.isHidden = false
             self.animationState = .none
             completion()
         }
