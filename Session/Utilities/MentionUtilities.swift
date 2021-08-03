@@ -44,9 +44,4 @@ public final class MentionUtilities : NSObject {
         }
         return result
     }
-    
-    public static func isUserMentioned(in string: String) -> Bool {
-        let userPublicKey = getUserHexEncodedPublicKey()
-        return string.contains("@\(userPublicKey)")
-    }
 }
