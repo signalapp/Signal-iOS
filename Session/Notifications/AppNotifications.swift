@@ -221,9 +221,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: threadId
         ]
         
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let identifier: String = UUID().uuidString
-        incomingMessage.setNotificationIdentifier(identifier, transaction: transaction)
+        let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString
 
         DispatchQueue.main.async {
             notificationBody = MentionUtilities.highlightMentions(in: notificationBody!, threadID: thread.uniqueId!)
