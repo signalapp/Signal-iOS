@@ -14,6 +14,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     override public func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         self.notificationContent = request.content.mutableCopy() as? UNMutableNotificationContent
+        let userPublicKey = SNGeneralUtilities.getUserPublicKey()
 
         // Abort if the main app is running
         var isMainAppAndActive = false
@@ -36,6 +37,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 do {
                     let (message, proto) = try MessageReceiver.parse(envelopeAsData, openGroupMessageServerID: nil, using: transaction)
                     let senderPublicKey = message.sender!
+                    if (senderPublicKey == userPublicKey) {
+                        // Ignore PNs for messages sent by the current user
+                        return self.completeSilenty()
+                    }
                     var senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
                     let snippet: String
                     var userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
@@ -47,6 +52,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         }
                         let thread = tsIncomingMessage.thread(with: transaction)
                         if thread.isMuted {
+                            // Ignore PNs if the thread is muted
                             return self.completeSilenty()
                         }
                         let threadID = thread.uniqueId!
@@ -56,6 +62,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,
                             group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
                             senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
+                            if group.isOnlyNotifyingForMentions && !tsIncomingMessage.isUserMentioned {
+                                // Ignore PNs if the group is set to only notify for mentions
+                                return self.completeSilenty()
+                            }
                         }
                     case let closedGroupControlMessage as ClosedGroupControlMessage:
                         // TODO: We could consider actually handling the update here. Not sure if there's enough time though, seeing as though
@@ -192,7 +202,7 @@ private extension String {
     func replacingMentions(for threadID: String, using transaction: YapDatabaseReadWriteTransaction) -> String {
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
         var result = self
-        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
+        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]{66}", options: [])
         let knownPublicKeys = MentionsManager.userPublicKeyCache[threadID] ?? []
         var mentions: [(range: NSRange, publicKey: String)] = []
         var m0 = regex.firstMatch(in: result, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: result.utf16.count))
