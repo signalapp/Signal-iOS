@@ -689,7 +689,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             return cancelVoiceMessageRecording()
         }
         // Limit voice messages to a minute
-        audioTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false, block: { [weak self] _ in
+        audioTimer = Timer.scheduledTimer(withTimeInterval: 180, repeats: false, block: { [weak self] _ in
             self?.snInputView.hideVoiceMessageUI()
             self?.endVoiceMessageRecording()
         })

@@ -55,6 +55,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return messagesTableView.contentSize.height - tableViewUnobscuredHeight
     }
     
+    var isCloseToBottom: Bool {
+        let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
+        return margin <= ConversationVC.scrollToBottomMargin
+    }
+    
     lazy var mnemonic: String = {
         let identityManager = OWSIdentityManager.shared()
         let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
@@ -150,7 +155,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     /// The button will be invisible until the user has scrolled at least this amount from the bottom of the table view.
     static let scrollButtonNoVisibilityThreshold: CGFloat = 20
     /// Automatically scroll to the bottom of the conversation when sending a message if the scroll distance from the bottom is less than this number.
-    static let scrollToBottomMargin: CGFloat = 40
+    static let scrollToBottomMargin: CGFloat = 60
     
     // MARK: Lifecycle
     init(thread: TSThread, focusedMessageID: String? = nil) {
@@ -314,6 +319,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             baselineKeyboardHeight = newHeight
             self.messagesTableView.keyboardHeight = newHeight
         }
+        let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
+        // HACK: If the keyboard is coming up and we're very close to the bottom, scroll to the
+        // bottom. This "fixes" an issue where the conversation would randomly scroll up sometimes
+        // when bringing up the keyboard.
+        if newHeight > 200 && margin <= 2 {
+            scrollToBottom(isAnimated: false)
+        }
         scrollButtonConstraint?.constant = -(newHeight + 16)
         let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
         self.messagesTableView.contentOffset.y = newContentOffsetY
@@ -353,13 +365,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                     if update.viewItem?.interaction is TSOutgoingMessage {
                         shouldScrollToBottom = true
                     } else {
-                        let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
-                        shouldScrollToBottom = margin <= ConversationVC.scrollToBottomMargin
+                        shouldScrollToBottom = self.isCloseToBottom
                     }
                 case .update:
                     self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
-                    let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
-                    shouldScrollToBottom = margin <= ConversationVC.scrollToBottomMargin
+                    shouldScrollToBottom = self.isCloseToBottom
                 default: preconditionFailure()
                 }
             }

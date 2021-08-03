@@ -288,7 +288,11 @@ extension MessageReceiver {
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
-        SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
+        DispatchQueue.main.async {
+            Storage.read { transaction in
+                SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
+            }
+        }
         return tsMessageID
     }
     
