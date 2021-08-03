@@ -368,7 +368,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                         shouldScrollToBottom = self.isCloseToBottom
                     }
                 case .update:
-                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
+                    // FIXME: This is called many times when a message is inserted, leading to bad performance
+                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                     shouldScrollToBottom = self.isCloseToBottom
                 default: preconditionFailure()
                 }
