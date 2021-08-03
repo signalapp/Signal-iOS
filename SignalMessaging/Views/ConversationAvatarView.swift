@@ -184,6 +184,19 @@ public class ConversationAvatarView: AvatarImageView {
                   transaction: transaction)
     }
 
+    public func reconfigure(diameterPoints: UInt? = nil, localUserDisplayMode: LocalUserDisplayMode? = nil, transaction: SDSAnyReadTransaction) {
+        guard let content = content else {
+            return owsFailDebug("Tried to configure before initially configured.")
+        }
+
+        configure(
+            content: content,
+            diameterPoints: diameterPoints ?? self.diameterPoints,
+            localUserDisplayMode: localUserDisplayMode ?? self.localUserDisplayMode,
+            transaction: transaction
+        )
+    }
+
     // MARK: - Notifications
 
     private func ensureObservers() {
