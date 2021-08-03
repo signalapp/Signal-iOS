@@ -77,6 +77,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(localAddress(with:));
 
+- (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction;
+
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
  *

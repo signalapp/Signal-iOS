@@ -30,6 +30,7 @@ NSString *const TSRemoteAttestationAuthErrorKey = @"TSRemoteAttestationAuth";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
+NSString *const TSAccountManager_RegistrationDateKey = @"TSAccountManager_RegistrationDateKey";
 NSString *const TSAccountManager_RegisteredUUIDKey = @"TSStorageRegisteredUUIDKey";
 NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
 NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
@@ -93,6 +94,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 @property (nonatomic, readonly, nullable) NSString *serverSignalingKey;
 @property (nonatomic, readonly, nullable) NSString *serverAuthToken;
 
+@property (nonatomic, readonly, nullable) NSDate *registrationDate;
+
 @property (nonatomic, readonly, nullable) NSString *deviceName;
 @property (nonatomic, readonly) UInt32 deviceId;
 
@@ -113,6 +116,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 
     _localNumber = [keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
+    _registrationDate = [keyValueStore getDate:TSAccountManager_RegistrationDateKey transaction:transaction];
+
     NSString *_Nullable uuidString = [keyValueStore getString:TSAccountManager_RegisteredUUIDKey
                                                   transaction:transaction];
     _localUuid = (uuidString != nil ? [[NSUUID alloc] initWithUUIDString:uuidString] : nil);
@@ -503,6 +508,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 {
     @synchronized (self) {
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
+        [self.keyValueStore setDate:[NSDate new] key:TSAccountManager_RegistrationDateKey transaction:transaction];
 
         if (localUuid == nil) {
             OWSFail(@"Missing localUuid.");
@@ -523,6 +529,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         self.phoneNumberAwaitingVerification = nil;
         self.uuidAwaitingVerification = nil;
     }
+}
+
+- (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self getOrLoadAccountStateWithTransaction:transaction].registrationDate;
 }
 
 - (uint32_t)getOrGenerateRegistrationId
