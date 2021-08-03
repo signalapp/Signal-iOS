@@ -201,7 +201,7 @@ private extension String {
     func replacingMentions(for threadID: String, using transaction: YapDatabaseReadWriteTransaction) -> String {
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
         var result = self
-        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
+        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]{66}", options: [])
         let knownPublicKeys = MentionsManager.userPublicKeyCache[threadID] ?? []
         var mentions: [(range: NSRange, publicKey: String)] = []
         var m0 = regex.firstMatch(in: result, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: result.utf16.count))

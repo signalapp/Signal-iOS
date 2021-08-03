@@ -14,7 +14,7 @@ public final class MentionUtilities : NSObject {
             MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
         }
         var string = string
-        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
+        let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]{66}", options: [])
         let knownPublicKeys = MentionsManager.userPublicKeyCache[threadID] ?? [] // Should always be populated at this point
         var mentions: [(range: NSRange, publicKey: String)] = []
         var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.utf16.count))
