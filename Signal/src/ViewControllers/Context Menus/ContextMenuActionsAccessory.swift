@@ -148,6 +148,9 @@ public class ContextMenuActionsView: UIView {
                             let view = UIView(frame: bounds)
                             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                             view.backgroundColor = Theme.cellSelectedColor
+                            if Theme.isDarkThemeEnabled {
+                                vibrancyView.backgroundColor = UIColor.ows_whiteAlpha20
+                            }
                             view.alpha = 0.3
                             vibrancyView.contentView.addSubview(view)
                             highlightedView = vibrancyView
@@ -194,6 +197,10 @@ public class ContextMenuActionsView: UIView {
             iconView.tintColor = titleLabel.textColor
 
             seperatorView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
+            if Theme.isDarkThemeEnabled {
+                seperatorView.backgroundColor = UIColor.ows_whiteAlpha20
+            }
+
             let seperator = UIView(frame: seperatorView.bounds)
             seperator.backgroundColor = Theme.cellSeparatorColor
             seperator.autoresizingMask = [.flexibleWidth, .flexibleHeight]

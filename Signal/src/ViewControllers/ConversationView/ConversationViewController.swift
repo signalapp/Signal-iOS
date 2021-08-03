@@ -377,7 +377,12 @@ public class ConversationViewController: OWSViewController {
 
         self.isViewCompletelyAppeared = false
 
-        dismissMessageActions(animated: false)
+        if FeatureFlags.contextMenus {
+            dismissMessageContextMenu(animated: false)
+        } else {
+            dismissMessageActions(animated: false)
+        }
+
         self.dismissReactionsDetailSheet(animated: false)
         self.saveLastVisibleSortIdAndOnScreenPercentage()
     }
@@ -482,7 +487,11 @@ public class ConversationViewController: OWSViewController {
 
         // Re-styling the message actions is tricky,
         // since this happens rarely just dismiss
-        dismissMessageActions(animated: false)
+        if FeatureFlags.contextMenus {
+            dismissMessageContextMenu(animated: false)
+        } else {
+            dismissMessageActions(animated: false)
+        }
         dismissReactionsDetailSheet(animated: false)
     }
 
@@ -528,7 +537,12 @@ public class ConversationViewController: OWSViewController {
 
         super.viewWillTransition(to: size, with: coordinator)
 
-        dismissMessageActions(animated: false)
+        if FeatureFlags.contextMenus {
+            dismissMessageContextMenu(animated: false)
+        } else {
+            dismissMessageActions(animated: false)
+        }
+
         dismissReactionsDetailSheet(animated: false)
 
         guard hasAppearedAndHasAppliedFirstLoad else {

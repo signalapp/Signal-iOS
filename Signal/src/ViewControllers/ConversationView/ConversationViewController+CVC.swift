@@ -150,7 +150,11 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
 
         // If the message has been deleted / disappeared, we need to dismiss
-        dismissMessageActionsIfNecessary()
+        if FeatureFlags.contextMenus {
+            dismissMessageContextMenuIfNecessary()
+        } else {
+            dismissMessageActionsIfNecessary()
+        }
 
         showMessageRequestDialogIfRequiredAsync()
 
