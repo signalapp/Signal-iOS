@@ -1002,7 +1002,7 @@ CGFloat kIconViewLength = 24;
     UISwitch *uiSwitch = (UISwitch *)sender;
     BOOL isEnabled = uiSwitch.isOn;
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [(TSGroupThread *)self.thread setisOnlyNotifyingForMentions:isEnabled withTransaction:transaction];
+        [(TSGroupThread *)self.thread setIsOnlyNotifyingForMentions:isEnabled withTransaction:transaction];
     }];
 }
 

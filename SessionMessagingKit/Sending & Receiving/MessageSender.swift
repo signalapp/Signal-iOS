@@ -340,6 +340,7 @@ public final class MessageSender : NSObject {
             recipients.forEach { recipient in
                 tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
             }
+            MessageInvalidator.invalidate(tsMessage, with: transaction)
             // Start the disappearing messages timer if needed
             OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }
