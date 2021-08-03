@@ -454,52 +454,54 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    @objc(deleteMessageForPublickKey:serverHash:)
-    public static func objc_deleteMessage(publicKey: String, serverHash: String) -> AnyPromise {
-        AnyPromise.from(deleteMessage(publicKey: publicKey, serverHash: serverHash))
+    @objc(deleteMessageForPublickKey:serverHashes:)
+    public static func objc_deleteMessage(publicKey: String, serverHashes: [String]) -> AnyPromise {
+        AnyPromise.from(deleteMessage(publicKey: publicKey, serverHashes: serverHashes))
     }
     
-    public static func deleteMessage(publicKey: String, serverHash: String) -> Promise<RawResponsePromise> {
+    public static func deleteMessage(publicKey: String, serverHashes: [String]) -> Promise<[String:Bool]> {
         let storage = SNSnodeKitConfiguration.shared.storage
         guard let userX25519PublicKey = storage.getUserPublicKey(),
             let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
         let publicKey = Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey
-        let (promise, seal) = Promise<RawResponsePromise>.pending()
-        Threading.workQueue.async {
-            getTargetSnodes(for: publicKey).map2 { targetSnodes in
-                let snode = targetSnodes.first!
-                let verificationData = (Snode.Method.deleteMessage.rawValue + serverHash).data(using: String.Encoding.utf8)!
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+            getSwarm(for: publicKey).then2 { swarm -> Promise<[String:Bool]> in
+                let snode = swarm.randomElement()!
+                let verificationData = (Snode.Method.deleteMessage.rawValue + serverHashes.joined(separator: "")).data(using: String.Encoding.utf8)!
                 guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else { throw Error.signingFailed }
                 let parameters: JSON = [
                     "pubkey" : userX25519PublicKey,
                     "pubkey_ed25519" : userED25519KeyPair.publicKey.toHexString(),
-                    "messages": [serverHash],
+                    "messages": serverHashes,
                     "signature": signature.toBase64()!
                 ]
                 return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
-                    invoke(.deleteMessage, on: snode, associatedWith: publicKey, parameters: parameters).map2{ rawResponse -> RawResponse in
-                        guard let json = rawResponse as? JSON else { throw HTTP.Error.invalidJSON }
-                        var result = false
-                        let isFailed = json["failed"] as? Bool ?? false
-                        if !isFailed {
-                            guard let hashes = json["deleted"] as? [String], let signature = json["signature"] as? String else { throw HTTP.Error.invalidJSON }
-                            // The signature format is ( PUBKEY_HEX || RMSG[0] || ... || RMSG[N] || DMSG[0] || ... || DMSG[M] )
-                            let verificationData = (publicKey + serverHash + hashes.joined(separator: "")).data(using: String.Encoding.utf8)!
-                            let isValid = sodium.sign.verify(message: Bytes(verificationData), publicKey: Bytes(Data(hex: snode.publicKeySet.ed25519Key)), signature: Bytes(Data(base64Encoded: signature)!))
-                            result = isValid
-                        } else {
-                            if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
-                                SNLog("Couldn't delete message with hash: \(serverHash) due to error: \(reason) (\(statusCode)).")
+                    invoke(.deleteMessage, on: snode, associatedWith: publicKey, parameters: parameters).map2{ rawResponse -> [String:Bool] in
+                        guard let json = rawResponse as? JSON, let swarm = json["swarm"] as? JSON else { throw HTTP.Error.invalidJSON }
+                        var result: [String:Bool] = [:]
+                        for (snodePublicKey, rawJSON) in swarm {
+                            guard let json = rawJSON as? JSON else { throw HTTP.Error.invalidJSON }
+                            let isFailed = json["failed"] as? Bool ?? false
+                            if !isFailed {
+                                guard let hashes = json["deleted"] as? [String], let signature = json["signature"] as? String else { throw HTTP.Error.invalidJSON }
+                                // The signature format is ( PUBKEY_HEX || RMSG[0] || ... || RMSG[N] || DMSG[0] || ... || DMSG[M] )
+                                let verificationData = (userX25519PublicKey + serverHashes.joined(separator: "") + hashes.joined(separator: "")).data(using: String.Encoding.utf8)!
+                                let isValid = sodium.sign.verify(message: Bytes(verificationData), publicKey: Bytes(Data(hex: snodePublicKey)), signature: Bytes(Data(base64Encoded: signature)!))
+                                result[snodePublicKey] = isValid
                             } else {
-                                SNLog("Couldn't delete message with hash: \(serverHash).")
+                                if let reason = json["reason"] as? String, let statusCode = json["code"] as? String {
+                                    SNLog("Couldn't delete data from: \(snodePublicKey) due to error: \(reason) (\(statusCode)).")
+                                } else {
+                                    SNLog("Couldn't delete data from: \(snodePublicKey).")
+                                }
+                                result[snodePublicKey] = false
                             }
                         }
                         return result
                     }
                 }
-            }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+            }
         }
-        return promise
     }
     
     /// Clears all the user's data from their swarm. Returns a dictionary of snode public key to deletion confirmation.

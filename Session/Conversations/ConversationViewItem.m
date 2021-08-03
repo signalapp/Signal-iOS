@@ -1010,11 +1010,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             }) retainUntilComplete];
         } else {
             NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:groupThread.groupModel.groupId];
-            [SNSnodeAPI deleteMessageForPublickKey:groupPublicKey serverHash:message.serverHash];
+            [[SNSnodeAPI deleteMessageForPublickKey:groupPublicKey serverHashes:@[message.serverHash]].catch(^(NSError *error) {
+                // Roll back
+                [self.interaction save];
+            }) retainUntilComplete];
         }
     } else {
         TSContactThread *contactThread = (TSContactThread *)self.interaction.thread;
-        [SNSnodeAPI deleteMessageForPublickKey:contactThread.contactSessionID serverHash:message.serverHash];
+        [[SNSnodeAPI deleteMessageForPublickKey:contactThread.contactSessionID serverHashes:@[message.serverHash]].catch(^(NSError *error) {
+            // Roll back
+            [self.interaction save];
+        }) retainUntilComplete];
     }
     
 }
