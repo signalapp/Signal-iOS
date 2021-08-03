@@ -515,7 +515,7 @@ CGFloat kIconViewLength = 24;
             [weakSelf.navigationController pushViewController:vc animated:YES];
         }]];
         
-        if (self.isOpenGroup) {
+        if (self.isGroupThread) {
             // Notification Settings
             [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [OWSTableItem newCell];
