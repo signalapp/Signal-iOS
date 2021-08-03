@@ -69,7 +69,7 @@ public final class ProfilePictureView : UIView {
                 publicKey = ""
                 useFallbackPicture = true
             } else { // A closed group
-                var users = MentionsManager.userPublicKeyCache[thread.uniqueId!] ?? []
+                var users = Set(thread.groupModel.groupMemberIds)
                 users.remove(getUserHexEncodedPublicKey())
                 var randomUsers = users.sorted() // Sort to provide a level of stability
                 if users.count == 1 {
