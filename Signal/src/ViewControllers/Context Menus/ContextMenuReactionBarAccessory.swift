@@ -58,7 +58,7 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
         reactionPicker.updateFocusPosition(locationInView, animated: true)
     }
 
-    override func touchLocationInViewDidEnd(locationInView: CGPoint) {
+    override func touchLocationInViewDidEnd(locationInView: CGPoint) -> Bool {
         // Send focused emoji if needed
         if let focusedEmoji = reactionPicker.focusedEmoji {
             if focusedEmoji == MessageReactionPicker.anyEmojiName {
@@ -67,7 +67,10 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
                 let isRemoving = focusedEmoji == self.itemViewModel?.reactionState?.localUserEmoji
                 didSelectReaction(reaction: focusedEmoji, isRemoving: isRemoving )
             }
+            return true
         }
+
+        return false
     }
 
     // MARK: MessageReactionPickerDelegate

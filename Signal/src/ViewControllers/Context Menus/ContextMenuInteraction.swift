@@ -244,6 +244,9 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     public let thread: TSThread
     public let messageActions: [MessageAction]
     public let chatHistoryLongPressGesture: UIGestureRecognizer?
+    public var contextMenuVisible: Bool {
+        return contextMenuController != nil
+    }
 
     /// Default initializer
     /// - Parameters:

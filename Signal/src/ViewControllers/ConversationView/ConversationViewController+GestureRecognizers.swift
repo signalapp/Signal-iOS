@@ -72,9 +72,9 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         // Support standard long press recognizing for body text cases, and context menu long press recognizing for everything else 
-        let currentIsLongPress = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer)
-        let otherIsLongPress = (otherGestureRecognizer == collectionViewLongPressGestureRecognizer || otherGestureRecognizer == collectionViewContextMenuGestureRecognizer)
-        return currentIsLongPress && otherIsLongPress
+        let currentIsLongPressOrTap = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer || gestureRecognizer == collectionViewTapGestureRecognizer)
+        let otherIsLongPressOrTap = (otherGestureRecognizer == collectionViewLongPressGestureRecognizer || otherGestureRecognizer == collectionViewContextMenuGestureRecognizer || otherGestureRecognizer == collectionViewTapGestureRecognizer)
+        return currentIsLongPressOrTap && otherIsLongPressOrTap
     }
 
     // MARK: -
@@ -114,6 +114,11 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         guard let cell = findCell(forGesture: sender) else {
             return
         }
+
+        if let interaction = collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
+            return
+        }
+
         let wasHandled = cell.handleTap(sender: sender, componentDelegate: componentDelegate)
         if !wasHandled {
             dismissKeyBoard()
