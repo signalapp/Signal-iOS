@@ -347,7 +347,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             return messagesTableView.reloadData()
         }
         var shouldScrollToBottom = false
-        let shouldAnimate = conversationUpdate.shouldAnimateUpdates
         let batchUpdates: () -> Void = {
             for update in conversationUpdate.updateItems! {
                 switch update.updateItemType {
@@ -362,47 +361,20 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                         shouldScrollToBottom = self.isCloseToBottom
                     }
                 case .update:
-                    shouldScrollToBottom = self.isCloseToBottom // Check this * before * reloading the row
                     print("[Test] UPDATE")
-                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
+                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
                 default: preconditionFailure()
                 }
             }
         }
-        let batchUpdatesCompletion: (Bool) -> Void = { isFinished in
+        messagesTableView.performBatchUpdates(batchUpdates) { _ in
             if shouldScrollToBottom {
                 self.scrollToBottom(isAnimated: true)
-            } else {
-                // This is a workaround for an issue where after an attachment is sent without the keyboard showing before,
-                // once the keyboard shows, the table view's content offset can be wrong and the last message won't completely show.
-                // This is caused by the main run loop calling some table view update method that sets the content offset back to
-                // the previous value when the keyboard is shown.
-                self.messagesTableView.reloadData()
             }
             self.markAllAsRead()
         }
-        if shouldAnimate {
-            messagesTableView.performBatchUpdates(batchUpdates, completion: batchUpdatesCompletion)
-        } else {
-            // HACK: We use `UIView.animateWithDuration:0` rather than `UIView.performWithAnimation` to work around a
-            // UIKit Crash like:
-            //
-            //     *** Assertion failure in -[ConversationViewLayout prepareForCollectionViewUpdates:],
-            //     /BuildRoot/Library/Caches/com.apple.xbs/Sources/UIKit_Sim/UIKit-3600.7.47/UICollectionViewLayout.m:760
-            //     *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'While
-            //     preparing update a visible view at <NSIndexPath: 0xc000000011c00016> {length = 2, path = 0 - 142}
-            //     wasn't found in the current data model and was not in an update animation. This is an internal
-            //     error.'
-            //
-            // I'm unclear if this is a bug in UIKit, or if we're doing something crazy in
-            // ConversationViewLayout#prepareLayout. To reproduce, rapidily insert and delete items into the
-            // conversation.
-            UIView.animate(withDuration: 0) {
-                self.messagesTableView.performBatchUpdates(batchUpdates, completion: batchUpdatesCompletion)
-                if shouldScrollToBottom {
-                    self.scrollToBottom(isAnimated: false)
-                }
-            }
+        if shouldScrollToBottom {
+            self.scrollToBottom(isAnimated: false)
         }
     }
     
