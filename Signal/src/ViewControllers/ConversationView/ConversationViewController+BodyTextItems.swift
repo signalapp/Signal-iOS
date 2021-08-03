@@ -322,6 +322,8 @@ extension ConversationViewController {
             cvc_didTapStickerPack(stickerPackInfo)
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
             cvc_didTapGroupInviteLink(url: dataItem.url)
+        } else if SignalMe.isPossibleUrl(dataItem.url) {
+            cvc_didTapSignalMeLink(url: dataItem.url)
         } else if isMailtoUrl(dataItem.url) {
             didTapEmail(dataItem: dataItem)
         } else {

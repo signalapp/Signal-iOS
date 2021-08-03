@@ -437,7 +437,9 @@ void uncaughtExceptionHandler(NSException *exception)
         return NO;
     }
 
-    if ([StickerPackInfo isStickerPackShareUrl:url]) {
+    if ([SignalMe isPossibleUrl:url]) {
+        return [self tryToShowSignalMeChatForUrl:url];
+    } else if ([StickerPackInfo isStickerPackShareUrl:url]) {
         StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
         if (stickerPackInfo == nil) {
             OWSFailDebug(@"Could not parse sticker pack share URL: %@", url);
@@ -517,6 +519,29 @@ void uncaughtExceptionHandler(NSException *exception)
                                    completion:^{ [packView presentFrom:rootViewController animated:NO]; }];
         } else {
             [packView presentFrom:rootViewController animated:NO];
+        }
+    });
+    return YES;
+}
+
+- (BOOL)tryToShowSignalMeChatForUrl:(NSURL *)url
+{
+    OWSAssertDebug(!self.didAppLaunchFail);
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+        if (!self.tsAccountManager.isRegistered) {
+            OWSFailDebug(@"Ignoring signal me URL; not registered.");
+            return;
+        }
+
+        UIViewController *rootViewController = self.window.rootViewController;
+        if (rootViewController.presentedViewController) {
+            [rootViewController dismissViewControllerAnimated:NO
+                                                   completion:^{
+                                                       [SignalMe openChatWithUrl:url
+                                                              fromViewController:rootViewController];
+                                                   }];
+        } else {
+            [SignalMe openChatWithUrl:url fromViewController:rootViewController];
         }
     });
     return YES;

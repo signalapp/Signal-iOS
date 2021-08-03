@@ -8,6 +8,7 @@
 	<array>
 		<string>applinks:signal.art</string>
 		<string>applinks:signal.group</string>
+		<string>applinks:signal.me</string>
 	</array>
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>

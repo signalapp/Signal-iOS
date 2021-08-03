@@ -279,6 +279,8 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
+        if SignalMe.isPossibleUrl(url) { return cvc_didTapSignalMeLink(url: url) }
+
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 
@@ -319,6 +321,10 @@ extension ConversationViewController: CVComponentDelegate {
         owsAssertDebug(GroupManager.isPossibleGroupInviteLink(url))
 
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
+    }
+
+    public func cvc_didTapSignalMeLink(url: URL) {
+        SignalMe.openChat(url: url, fromViewController: self)
     }
 
     public func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {
