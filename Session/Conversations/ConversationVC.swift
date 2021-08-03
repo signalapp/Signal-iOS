@@ -320,12 +320,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             self.messagesTableView.keyboardHeight = newHeight
         }
         let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
-        // HACK: If the keyboard is coming up and we're very close to the bottom, scroll to the
-        // bottom. This "fixes" an issue where the conversation would randomly scroll up sometimes
-        // when bringing up the keyboard.
-        if newHeight > 200 && margin <= 2 {
-            scrollToBottom(isAnimated: false)
-        }
         scrollButtonConstraint?.constant = -(newHeight + 16)
         let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
         self.messagesTableView.contentOffset.y = newContentOffsetY
