@@ -861,17 +861,6 @@ CGFloat kIconViewLength = 24;
             [self.thread updateWithMutedUntilDate:nil transaction:transaction];
         }];
     }
-    if (self.isClosedGroup) {
-        NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)self.thread).groupModel.groupId];
-        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
-        if (uiSwitch.isOn) {
-            [[LKPushNotificationAPI performOperation:ClosedGroupOperationUnsubscribe
-                forClosedGroupWithPublicKey:groupPublicKey userPublicKey:userPublicKey] retainUntilComplete];
-        } else {
-            [[LKPushNotificationAPI performOperation:ClosedGroupOperationSubscribe
-                forClosedGroupWithPublicKey:groupPublicKey userPublicKey:userPublicKey] retainUntilComplete];
-        }
-    }
 }
 
 - (void)blockConversationSwitchDidChange:(id)sender
