@@ -25,7 +25,7 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("skipping notification for: \(errorMessage.description)")
     }
 
-    public func notifyInternalUsers(ofErrorMessage errorString: String) {
+    public func notifyTestPopulation(ofErrorMessage errorString: String) {
         owsFailDebug("Internal error message: \(errorString)")
         Logger.warn("Skipping internal error notification: \(errorString)")
     }

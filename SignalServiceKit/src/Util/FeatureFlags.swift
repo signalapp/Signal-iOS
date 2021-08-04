@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-enum FeatureBuild: Int {
+public enum FeatureBuild: Int {
     case dev
     case internalPreview
     case qa
@@ -18,9 +18,20 @@ extension FeatureBuild {
     func includes(_ level: FeatureBuild) -> Bool {
         return self.rawValue <= level.rawValue
     }
+
+    public var buildName: String {
+        switch self {
+        case .dev: return "Signal Debug"
+        case .internalPreview: return "Signal Internal Preview"
+        case .qa: return "Signal Internal"
+        case .openPreview: return "Signal Preview"
+        case .beta: return "Signal Beta"
+        case .production: return "Signal"
+        }
+    }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+public let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
 // MARK: -
 
@@ -239,7 +250,7 @@ public class DebugFlags: BaseFlags {
     public static let keepWebSocketOpenInBackground = false
 
     @objc
-    public static let internalErrorAlerts = build.includes(.qa)
+    public static let testPopulationErrorAlerts = build.includes(.beta)
 
     @objc
     public static let audibleErrorLogging = build.includes(.qa)

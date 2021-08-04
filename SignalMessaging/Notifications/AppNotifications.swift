@@ -594,17 +594,21 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyInternalUsers(ofErrorMessage errorString: String) {
+    public func notifyTestPopulation(ofErrorMessage errorString: String) {
         // Fail debug on all devices. External devices should still log the error string.
         owsFailDebug("Fatal error occurred: \(errorString).")
+        guard DebugFlags.testPopulationErrorAlerts else { return }
 
-        // Only display a visible notification on internal builds
-        guard DebugFlags.internalErrorAlerts else { return }
+        let titleFormat = NSLocalizedString("ERROR_NOTIFICATION_TITLE_FORMAT", comment: "Format string for an error alert notification title. Embeds {{ build name }}")
+        let messageFormat = NSLocalizedString("ERROR_NOTIFICATION_MESSAGE_FORMAT", comment: "Format string for an error alert notification message. Embes {{ error string }}")
+        let title = String(format: titleFormat, build.buildName)
+        let message = String(format: messageFormat, errorString)
+
         DispatchQueue.main.async {
             self.adaptee.notify(
                 category: .internalError,
-                title: "Internal Error: Please file a bug",
-                body: errorString,
+                title: title,
+                body: message,
                 threadIdentifier: nil,
                 userInfo: [
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.submitDebugLogs.rawValue
