@@ -979,6 +979,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteRemotelyAction
 {
+    // TODO: closed group and one-on-one chat
     TSMessage *message = (TSMessage *)self.interaction;
     
     if (self.isGroupThread) {
@@ -1009,22 +1010,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             }) retainUntilComplete];
         } else {
             NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:groupThread.groupModel.groupId];
-            NSArray *serverHashes = @[message.serverHash];
-            if ([message isKindOfClass:[TSOutgoingMessage class]] && ((TSOutgoingMessage *)message).syncMessageServerHash != nil) {
-                serverHashes = @[message.serverHash, ((TSOutgoingMessage *)message).syncMessageServerHash];
-            }
-            [[SNSnodeAPI deleteMessageForPublickKey:groupPublicKey serverHashes:serverHashes].catch(^(NSError *error) {
+            [[SNSnodeAPI deleteMessageForPublickKey:groupPublicKey serverHashes:@[message.serverHash]].catch(^(NSError *error) {
                 // Roll back
                 [self.interaction save];
             }) retainUntilComplete];
         }
     } else {
         TSContactThread *contactThread = (TSContactThread *)self.interaction.thread;
-        NSArray *serverHashes = @[message.serverHash];
-        if ([message isKindOfClass:[TSOutgoingMessage class]] && ((TSOutgoingMessage *)message).syncMessageServerHash != nil) {
-            serverHashes = @[message.serverHash, ((TSOutgoingMessage *)message).syncMessageServerHash];
-        }
-        [[SNSnodeAPI deleteMessageForPublickKey:contactThread.contactSessionID serverHashes:serverHashes].catch(^(NSError *error) {
+        [[SNSnodeAPI deleteMessageForPublickKey:contactThread.contactSessionID serverHashes:@[message.serverHash]].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];

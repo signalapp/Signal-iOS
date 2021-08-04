@@ -332,8 +332,7 @@ public final class MessageSender : NSObject {
         Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         // Get the visible message if possible
         if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
-            if (!isSyncMessage) { tsMessage.serverHash = message.serverHash }
-            else { tsMessage.syncMessageServerHash = message.serverHash }
+            tsMessage.serverHash = message.serverHash
             // Track the open group server message ID
             tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
             tsMessage.save(with: transaction)
