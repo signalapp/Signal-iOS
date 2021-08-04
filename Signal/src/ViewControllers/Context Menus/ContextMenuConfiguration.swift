@@ -121,8 +121,9 @@ public class ContextMenuTargetedPreviewAccessory {
     }
     /// Called when a current touch event ended
     /// - Parameter locationInView: location relative to accessoryView's coordinate space
-    func touchLocationInViewDidEnd(locationInView: CGPoint) {
-
+    /// - Returns: true if accessory handled the touch ending, false if the touch is not relevant to this view
+    func touchLocationInViewDidEnd(locationInView: CGPoint) -> Bool {
+        return false
     }
 }
 

@@ -114,8 +114,8 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
 
     override func touchLocationInViewDidEnd(
         locationInView: CGPoint
-    ) {
-        menuView.handleGestureEnded(locationInView: locationInView)
+    ) -> Bool {
+        return menuView.handleGestureEnded(locationInView: locationInView)
     }
 
     func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction) {
@@ -129,7 +129,7 @@ protocol ContextMenuActionsViewDelegate: AnyObject {
     func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction)
 }
 
-public class ContextMenuActionsView: UIView {
+public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
     private class ContextMenuActionRow: UIView {
         let attributes: ContextMenuAction.Attributes
@@ -179,7 +179,7 @@ public class ContextMenuActionsView: UIView {
         ) {
             titleLabel = UILabel(frame: CGRect.zero)
             titleLabel.text = title
-            titleLabel.font = UIFont.ows_dynamicTypeTitle3
+            titleLabel.font = .ows_dynamicTypeBodyClamped
 
             self.attributes = attributes
             hostEffect = hostBlurEffect
@@ -260,9 +260,20 @@ public class ContextMenuActionsView: UIView {
     public let menu: ContextMenu
 
     private let actionViews: [ContextMenuActionRow]
+    private let scrollView: UIScrollView
     private let backdropView: UIVisualEffectView
 
     private var tapGestureRecognizer: UILongPressGestureRecognizer?
+
+    public var isScrolling: Bool {
+        didSet {
+            if isScrolling && oldValue != isScrolling {
+                for actionRow in actionViews {
+                    actionRow.isHighlighted = false
+                }
+            }
+        }
+    }
 
     let cornerRadius: CGFloat = 12
 
@@ -271,6 +282,7 @@ public class ContextMenuActionsView: UIView {
     ) {
         self.menu = menu
 
+        scrollView = UIScrollView(frame: CGRect.zero)
         let effect = UIBlurEffect(style: UIBlurEffect.Style.prominent)
         backdropView = UIVisualEffectView(effect: effect)
 
@@ -279,11 +291,14 @@ public class ContextMenuActionsView: UIView {
             let actionView = ContextMenuActionRow(title: action.title, icon: action.image, attributes: action.attributes, hostBlurEffect: effect)
             actionViews.append(actionView)
         }
+
         self.actionViews = actionViews
+        isScrolling = false
 
         super.init(frame: CGRect.zero)
 
         let tapGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
+        tapGestureRecognizer.delegate = self
         tapGestureRecognizer.minimumPressDuration = 0
         addGestureRecognizer(tapGestureRecognizer)
         self.tapGestureRecognizer = tapGestureRecognizer
@@ -291,10 +306,13 @@ public class ContextMenuActionsView: UIView {
         layer.cornerRadius = cornerRadius
         layer.masksToBounds = true
         addSubview(backdropView)
+        backdropView.contentView.addSubview(scrollView)
 
         for actionView in actionViews {
-            backdropView.contentView.addSubview(actionView)
+            scrollView.addSubview(actionView)
         }
+
+        scrollView.delegate = self
 
         actionViews.last?.seperatorView.isHidden = true
     }
@@ -309,12 +327,17 @@ public class ContextMenuActionsView: UIView {
         super.layoutSubviews()
 
         backdropView.frame = bounds
+        scrollView.frame = bounds
         var yOffset: CGFloat = 0
         let actionViewSize = actionViewSizeThatFits(bounds.size)
+        var maxY: CGFloat = 0
         for actionView in actionViews {
             actionView.frame = CGRect(x: 0, y: yOffset, width: actionViewSize.width, height: actionViewSize.height)
             yOffset += actionViewSize.height
+            maxY = max(maxY, actionView.frame.maxY)
         }
+
+        scrollView.contentSize = CGSize(width: bounds.width, height: maxY)
     }
 
     public override func sizeThatFits(
@@ -334,13 +357,17 @@ public class ContextMenuActionsView: UIView {
     @objc
     func tapGestureRecognized(sender: UIGestureRecognizer) {
         if sender.state == .began || sender.state == .changed {
-            handleGestureChanged(locationInView: sender.location(in: self))
+            handleGestureChanged(locationInView: sender.location(in: scrollView))
         } else if sender.state == .ended {
-            handleGestureEnded(locationInView: sender.location(in: self))
+            handleGestureEnded(locationInView: sender.location(in: scrollView))
         }
     }
 
     func handleGestureChanged(locationInView: CGPoint) {
+        guard !isScrolling else {
+            return
+        }
+
         // Add impact effect here
         var highlightStateChanged = false
         for actionRow in actionViews {
@@ -358,7 +385,11 @@ public class ContextMenuActionsView: UIView {
         }
     }
 
-    func handleGestureEnded(locationInView: CGPoint) {
+    func handleGestureEnded(locationInView: CGPoint) -> Bool {
+        guard !isScrolling else {
+            return false
+        }
+
         var index: Int = NSNotFound
         for (rowIndex, actionRow) in actionViews.enumerated() {
             if actionRow.isHighlighted && index == NSNotFound {
@@ -370,7 +401,31 @@ public class ContextMenuActionsView: UIView {
         if index != NSNotFound {
             let action = menu.children[index]
             delegate?.contextMenuActionViewDidSelectAction(contextMenuAction: action)
+            return true
         }
+
+        return false
+    }
+
+    // MARK: UIGestureRecognizerDelegate
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+
+    // MARK: UIScrollViewDelegate
+
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        isScrolling = true
+    }
+
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            isScrolling = false
+        }
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isScrolling = false
     }
 
 }

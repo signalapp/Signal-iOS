@@ -568,6 +568,10 @@ public class CVLoadCoordinator: NSObject {
 
             guard viewState.selectionAnimationState != .animating  else { return false }
 
+            if let interaction = viewState.collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
+                return false
+            }
+
             let result = !delegate.isLayoutApplyingUpdate && !delegate.areCellsAnimating
             return result
         }

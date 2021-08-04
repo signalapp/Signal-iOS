@@ -93,10 +93,35 @@ private class ContextMenuHostView: UIView {
         }
 
         if let accessories = accessoryViews {
+            var accessoryFrames: [CGRect] = []
             for accessory in accessories {
                 layoutAccessoryView(accessory)
+
+                var frame = accessory.accessoryView.frame
+
+                // Check for accessory view intersects
+                for accessoryFrame in accessoryFrames {
+                    if accessoryFrame != frame && frame.intersects(accessoryFrame) {
+                        // We have an intersect! Only handling vertical intersects for now
+                        if frame.y < accessoryFrame.maxY {
+                            frame.y += accessoryFrame.maxY - frame.y + 12
+                        }
+
+                        // Shrink accessory view if needed
+                        let contentBounds = bounds.inset(by: contentAreaInsets)
+                        if frame.maxY > contentBounds.maxY {
+                            frame.size.height -= frame.maxY - contentBounds.maxY
+                        }
+
+                        accessory.accessoryView.frame = frame
+                        break
+                    }
+                }
+
+                accessoryFrames.append(frame)
             }
         }
+
     }
 
     private func targetPreviewFrame() -> CGRect {
@@ -250,7 +275,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     var localPanGestureRecoginzer: UIPanGestureRecognizer?
 
     private var gestureExitedDeadZone: Bool = false
-    private let deadZoneRadius: CGFloat = 30
+    private let deadZoneRadius: CGFloat = 40
     private var initialTouchLocation: CGPoint?
 
     private var animationState: ContextMenuAnimationState = .none
@@ -500,15 +525,6 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     }
 
     private func handleGestureEnd() {
-        if !gestureExitedDeadZone { return }
-
-        if let locationInView = gestureRecognizer?.location(in: view) {
-            for accessory in accessoryViews {
-                let locationInAccessory = view .convert(locationInView, to: accessory.accessoryView)
-                accessory.touchLocationInViewDidEnd(locationInView: locationInAccessory)
-            }
-        }
-
         if localPanGestureRecoginzer == nil {
             if let gestureRecognizer = self.gestureRecognizer {
                 view.removeGestureRecognizer(gestureRecognizer)
@@ -518,6 +534,24 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
             view.addGestureRecognizer(newPanGesture)
             gestureRecognizer = newPanGesture
             localPanGestureRecoginzer = newPanGesture
+        }
+
+        if !gestureExitedDeadZone { return }
+
+        var accessoryHandledTouch = false
+        if let locationInView = gestureRecognizer?.location(in: view) {
+            for accessory in accessoryViews {
+                let locationInAccessory = view .convert(locationInView, to: accessory.accessoryView)
+                let handled = accessory.touchLocationInViewDidEnd(locationInView: locationInAccessory)
+                if !accessoryHandledTouch {
+                    accessoryHandledTouch = handled
+                }
+            }
+        }
+
+        if !accessoryHandledTouch {
+            delegate?.contextMenuControllerRequestsDismissal(self)
+            return
         }
     }
 
