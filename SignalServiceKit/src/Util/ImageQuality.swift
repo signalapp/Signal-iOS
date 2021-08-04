@@ -47,7 +47,7 @@ public enum ImageQualityLevel: UInt {
             // Outside of the main app (like in the share extension)
             // we have very tight memory restrictions, and cannot
             // allow sending high quality media.
-            return .standard
+            return .one
         }
     }
 
