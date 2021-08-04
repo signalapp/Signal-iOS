@@ -91,7 +91,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [super themeDidChange];
 
-    [self reloadTableDataAndResetCellMeasurementCache];
+    [self reloadTableDataAndResetCellContentCache];
 }
 
 - (void)applyTheme
@@ -135,14 +135,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // transition. We reload in the right places accordingly.
 
     if (UIDevice.currentDevice.isIPad) {
-        [self reloadTableDataAndResetCellMeasurementCache];
+        [self reloadTableDataAndResetCellContentCache];
     }
 
     [coordinator
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             [self applyTheme];
             if (!UIDevice.currentDevice.isIPad) {
-                [self reloadTableDataAndResetCellMeasurementCache];
+                [self reloadTableDataAndResetCellContentCache];
             }
 
             // The Get Started banner will occupy most of the screen in landscape

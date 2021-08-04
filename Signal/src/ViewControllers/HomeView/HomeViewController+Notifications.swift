@@ -54,6 +54,10 @@ extension HomeViewController {
                                                selector: #selector(blockListDidChange),
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(uiContentSizeCategoryDidChange),
+                                               name: UIContentSizeCategory.didChangeNotification,
+                                               object: nil)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -64,7 +68,7 @@ extension HomeViewController {
     private func preferContactAvatarsPreferenceDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        reloadTableDataAndResetCellMeasurementCache()
+        reloadTableDataAndResetCellContentCache()
     }
 
     @objc
@@ -72,7 +76,7 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         // This is wasteful but this event is very rare.
-        reloadTableDataAndResetCellMeasurementCache()
+        reloadTableDataAndResetCellContentCache()
 
         if !firstConversationCueView.isHidden {
             updateFirstConversationLabel()
@@ -163,7 +167,15 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         // This is wasteful but this event is very rare.
-        reloadTableDataAndResetCellMeasurementCache()
+        reloadTableDataAndResetCellContentCache()
+    }
+
+    @objc
+    private func uiContentSizeCategoryDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        // This is expensive but this event is very rare.
+        reloadTableDataAndResetCellContentCache()
     }
 }
 

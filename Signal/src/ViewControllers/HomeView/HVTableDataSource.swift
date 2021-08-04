@@ -341,6 +341,23 @@ extension HVTableDataSource: UITableViewDataSource {
         }
     }
 
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        AssertIsOnMainThread()
+                guard let section = HomeViewSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section).")
+            return UITableView.automaticDimension
+        }
+
+        switch section {
+        case .reminders:
+            return UITableView.automaticDimension
+        case .pinned, .unpinned:
+            return measureConversationCell(tableView: tableView, indexPath: indexPath)
+        case .archiveButton:
+            return UITableView.automaticDimension
+        }
+    }
+
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
@@ -376,6 +393,16 @@ extension HVTableDataSource: UITableViewDataSource {
         return cell
     }
 
+    private func measureConversationCell(tableView: UITableView, indexPath: IndexPath) -> CGFloat {
+        AssertIsOnMainThread()
+
+        guard let configuration = cellConfiguration(forIndexPath: indexPath) else {
+            owsFailDebug("Missing configuration.")
+            return UITableView.automaticDimension
+        }
+        return HomeViewCell.measureCellHeight(configuration: configuration)
+    }
+
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
@@ -383,35 +410,14 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
-            owsFailDebug("Missing threadViewModel.")
-            return UITableViewCell()
-        }
-        guard let viewController = self.viewController else {
-            owsFailDebug("Missing viewController.")
+        guard let configuration = cellConfiguration(forIndexPath: indexPath) else {
+            owsFailDebug("Missing configuration.")
             return UITableViewCell()
         }
 
-        let thread = threadViewModel.threadRecord
+        cell.configure(configuration: configuration)
 
-        // We want initial loads and reloads to load avatars sync,
-        // but subsequent avatar loads (e.g. from scrolling) should
-        // be async.
-        //
-        // TODO: We should add an explicit "isReloadingAll" flag to HomeViewController.
-        let avatarAsyncLoadInterval: TimeInterval = kSecondInterval * 1
-        let lastReloadInterval: TimeInterval = abs(lastReloadDate?.timeIntervalSinceNow ?? 0)
-        let shouldLoadAvatarAsync = (viewState.hasEverAppeared
-                                        && (lastReloadDate == nil ||
-                                                lastReloadInterval > avatarAsyncLoadInterval))
-        let isBlocked = blockingManager.isThreadBlocked(thread)
-        let cellMeasurementCache = viewController.cellMeasurementCache
-        let configuration = HomeViewCell.Configuration(thread: threadViewModel,
-                                                       shouldLoadAvatarAsync: shouldLoadAvatarAsync,
-                                                       isBlocked: isBlocked,
-                                                       cellMeasurementCache: cellMeasurementCache)
-        cell.configure(configuration)
-
+        let thread = configuration.thread.threadRecord
         let cellName: String = {
             if let groupThread = thread as? TSGroupThread {
                 return "cell-group-\(groupThread.groupModel.groupName ?? "unknown")"
@@ -431,6 +437,34 @@ extension HVTableDataSource: UITableViewDataSource {
         }
 
         return cell
+    }
+
+    private func cellConfiguration(forIndexPath indexPath: IndexPath) -> HomeViewCell.Configuration? {
+        AssertIsOnMainThread()
+
+        guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
+            owsFailDebug("Missing threadViewModel.")
+            return nil
+        }
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return nil
+        }
+
+        let thread = threadViewModel.threadRecord
+        let lastReloadDate: Date? = {
+            guard viewState.hasEverAppeared else {
+                return nil
+            }
+            return self.lastReloadDate
+        }()
+        let isBlocked = blockingManager.isThreadBlocked(thread)
+        let cellContentCache = viewController.cellContentCache
+        let configuration = HomeViewCell.Configuration(thread: threadViewModel,
+                                                       lastReloadDate: lastReloadDate,
+                                                       isBlocked: isBlocked,
+                                                       cellContentCache: cellContentCache)
+        return configuration
     }
 
     private func isConversationActive(forThread thread: TSThread) -> Bool {

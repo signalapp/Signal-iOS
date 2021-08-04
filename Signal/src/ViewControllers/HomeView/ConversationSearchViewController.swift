@@ -18,9 +18,9 @@ public class ConversationSearchViewController: UITableViewController {
     @objc
     public weak var delegate: ConversationSearchViewDelegate?
 
-    private var viewHasAppeared = false
+    private var hasEverAppeared = false
     private var lastReloadDate: Date?
-    private let cellMeasurementCache = LRUCache<String, HVCellMeasurement>(maxSize: 256)
+    private let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
 
     @objc
     public var searchText = "" {
@@ -102,7 +102,7 @@ public class ConversationSearchViewController: UITableViewController {
 
     private func reloadTableData() {
         self.lastReloadDate = Date()
-        self.cellMeasurementCache.clear()
+        self.cellContentCache.clear()
         self.tableView.reloadData()
     }
 
@@ -116,7 +116,7 @@ public class ConversationSearchViewController: UITableViewController {
 
         applyTheme()
         reloadTableData()
-        self.viewHasAppeared = true
+        self.hasEverAppeared = true
     }
 
     deinit {
@@ -232,26 +232,31 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
+    public override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        AssertIsOnMainThread()
+
+        guard let searchSection = SearchSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section).")
+            return UITableView.automaticDimension
+        }
+
+        switch searchSection {
+        case .noResults, .contacts:
+            return UITableView.automaticDimension
+        case .contactThreads, .groupThreads, .messages:
+            guard let configuration = self.cellConfiguration(searchSection: searchSection, row: indexPath.row) else {
+                owsFailDebug("Missing configuration.")
+                return UITableView.automaticDimension
+            }
+            return HomeViewCell.measureCellHeight(configuration: configuration)
+        }
+    }
+
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             return UITableViewCell()
         }
-
-        let shouldLoadAvatarAsync: Bool = {
-            guard self.viewHasAppeared else {
-                return false
-            }
-            guard let lastReloadDate = self.lastReloadDate else {
-                return true
-            }
-            // We want initial loads and reloads to load avatars sync,
-            // but subsequent avatar loads (e.g. from scrolling) should
-            // be async.
-            let avatarAsyncLoadInterval = kSecondInterval * 1
-            return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
-        }()
-        let cellMeasurementCache = self.cellMeasurementCache
 
         switch searchSection {
         case .noResults:
@@ -270,43 +275,6 @@ public class ConversationSearchViewController: UITableViewController {
             let searchText = self.searchResultSet.searchText
             cell.configure(searchText: searchText)
             return cell
-        case .contactThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
-                owsFailDebug("cell was unexpectedly nil")
-                return UITableViewCell()
-            }
-
-            guard let searchResult = self.searchResultSet.contactThreads[safe: indexPath.row] else {
-                owsFailDebug("searchResult was unexpectedly nil")
-                return UITableViewCell()
-            }
-            cell.configure(.init(
-                thread: searchResult.thread,
-                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
-                isBlocked: isBlocked(thread: searchResult.thread),
-                cellMeasurementCache: cellMeasurementCache
-            ))
-            return cell
-        case .groupThreads:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
-                owsFailDebug("cell was unexpectedly nil")
-                return UITableViewCell()
-            }
-
-            guard let searchResult = self.searchResultSet.groupThreads[safe: indexPath.row] else {
-                owsFailDebug("searchResult was unexpectedly nil")
-                return UITableViewCell()
-            }
-
-            cell.configure(.init(
-                thread: searchResult.thread,
-                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
-                isBlocked: isBlocked(thread: searchResult.thread),
-                overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
-                overrideDate: nil,
-                cellMeasurementCache: cellMeasurementCache
-            ))
-            return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
@@ -320,17 +288,67 @@ public class ConversationSearchViewController: UITableViewController {
             cell.configureWithSneakyTransaction(address: searchResult.signalAccount.recipientAddress,
                                                 localUserDisplayMode: .noteToSelf)
             return cell
-        case .messages:
+        case .contactThreads, .groupThreads, .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
-
-            guard let searchResult = self.searchResultSet.messages[safe: indexPath.row] else {
-                owsFailDebug("searchResult was unexpectedly nil")
+            guard let configuration = self.cellConfiguration(searchSection: searchSection, row: indexPath.row) else {
+                owsFailDebug("Missing configuration.")
                 return UITableViewCell()
             }
+            cell.configure(configuration: configuration)
+            return cell
+        }
+    }
 
+    private func cellConfiguration(searchSection: SearchSection, row: Int) -> HomeViewCell.Configuration? {
+        AssertIsOnMainThread()
+
+        let lastReloadDate: Date? = {
+            guard self.hasEverAppeared else {
+                return nil
+            }
+            return self.lastReloadDate
+        }()
+        let cellContentCache = self.cellContentCache
+
+        switch searchSection {
+        case .noResults:
+            owsFailDebug("Invalid section.")
+            return nil
+        case .contactThreads:
+            guard let searchResult = self.searchResultSet.contactThreads[safe: row] else {
+                owsFailDebug("searchResult was unexpectedly nil")
+                return nil
+            }
+            return HomeViewCell.Configuration(
+                thread: searchResult.thread,
+                lastReloadDate: lastReloadDate,
+                isBlocked: isBlocked(thread: searchResult.thread),
+                cellContentCache: cellContentCache
+            )
+        case .groupThreads:
+            guard let searchResult = self.searchResultSet.groupThreads[safe: row] else {
+                owsFailDebug("searchResult was unexpectedly nil")
+                return nil
+            }
+            return HomeViewCell.Configuration(
+                thread: searchResult.thread,
+                lastReloadDate: lastReloadDate,
+                isBlocked: isBlocked(thread: searchResult.thread),
+                overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
+                overrideDate: nil,
+                cellContentCache: cellContentCache
+            )
+        case .contacts:
+            owsFailDebug("Invalid section.")
+            return nil
+        case .messages:
+            guard let searchResult = self.searchResultSet.messages[safe: row] else {
+                owsFailDebug("searchResult was unexpectedly nil")
+                return nil
+            }
             var overrideSnippet = NSAttributedString()
             var overrideDate: Date?
             if searchResult.messageId != nil {
@@ -350,17 +368,14 @@ public class ConversationSearchViewController: UITableViewController {
                     owsFailDebug("message search result is missing message snippet")
                 }
             }
-
-            cell.configure(.init(
+            return HomeViewCell.Configuration(
                 thread: searchResult.thread,
-                shouldLoadAvatarAsync: shouldLoadAvatarAsync,
+                lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
                 overrideDate: overrideDate,
-                cellMeasurementCache: cellMeasurementCache
-            ))
-
-            return cell
+                cellContentCache: cellContentCache
+            )
         }
     }
 

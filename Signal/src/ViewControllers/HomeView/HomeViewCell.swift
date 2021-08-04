@@ -58,69 +58,72 @@ public class HomeViewCell: UITableViewCell {
         ]
     }
 
-    public struct Configuration {
+    // MARK: - Configuration
+
+    struct Configuration {
         let thread: ThreadViewModel
-        let shouldLoadAvatarAsync: Bool
+        let lastReloadDate: Date?
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
-        let cellMeasurementCache: LRUCache<String, HVCellMeasurement>
+        let cellContentCache: LRUCache<String, HVCellContentToken>
 
-        public init(thread: ThreadViewModel,
-                    shouldLoadAvatarAsync: Bool,
-                    isBlocked: Bool,
-                    overrideSnippet: NSAttributedString? = nil,
-                    overrideDate: Date? = nil,
-                    cellMeasurementCache: LRUCache<String, HVCellMeasurement>) {
+        fileprivate var hasOverrideSnippet: Bool {
+            overrideSnippet != nil
+        }
+        fileprivate var hasUnreadStyle: Bool {
+            thread.hasUnreadMessages && overrideSnippet == nil
+        }
+
+        init(thread: ThreadViewModel,
+             lastReloadDate: Date?,
+             isBlocked: Bool,
+             overrideSnippet: NSAttributedString? = nil,
+             overrideDate: Date? = nil,
+             cellContentCache: LRUCache<String, HVCellContentToken>) {
             self.thread = thread
-            self.shouldLoadAvatarAsync = shouldLoadAvatarAsync
+            self.lastReloadDate = lastReloadDate
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
-            self.cellMeasurementCache = cellMeasurementCache
+            self.cellContentCache = cellContentCache
         }
     }
-    private var configuration: Configuration?
-
-    private var thread: ThreadViewModel? {
-        configuration?.thread
-    }
-    private var overrideSnippet: NSAttributedString? {
-        configuration?.overrideSnippet
-    }
-    private var hasOverrideSnippet: Bool {
-        overrideSnippet != nil
+    private var cellContentToken: HVCellContentToken?
+    private var thread: TSThread? {
+        cellContentToken?.thread
     }
 
-    // MARK: -
+    // MARK: - View Constants
 
-    private var unreadFont: UIFont {
+    private static var unreadFont: UIFont {
         UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold
     }
 
-    private var dateTimeFont: UIFont {
+    private static var dateTimeFont: UIFont {
         .ows_dynamicTypeCaption1Clamped
     }
 
-    private var snippetFont: UIFont {
+    private static var snippetFont: UIFont {
         .ows_dynamicTypeSubheadlineClamped
     }
 
-    private var nameFont: UIFont {
+    private static var nameFont: UIFont {
         UIFont.ows_dynamicTypeBodyClamped.ows_semibold
     }
 
     // Used for profile names.
-    private var nameSecondaryFont: UIFont {
+    private static var nameSecondaryFont: UIFont {
         UIFont.ows_dynamicTypeBodyClamped.ows_italic
     }
 
-    private var snippetColor: UIColor {
+    private static var snippetColor: UIColor {
         Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45
     }
 
     // This value is now larger than AvatarBuilder.standardAvatarSizePoints.
     private static let avatarSize: UInt = 56
+    private static let muteIconSize: CGFloat = 16
 
     // MARK: -
 
@@ -146,62 +149,85 @@ public class HomeViewCell: UITableViewCell {
         self.selectionStyle = .default
     }
 
-    public func configure(_ configuration: Configuration) {
+    static func measureCellHeight(configuration: Configuration) -> CGFloat {
         AssertIsOnMainThread()
 
-        // If we have an existing HVCellMeasurement, use it.
+        let cellContentToken = Self.cellContentToken(forConfiguration: configuration)
+        return cellContentToken.measurements.outerHStackMeasurement.measuredSize.height
+    }
+
+    func configure(configuration: Configuration) {
+        AssertIsOnMainThread()
+
+        let cellContentToken = Self.cellContentToken(forConfiguration: configuration)
+        configure(cellContentToken: cellContentToken)
+    }
+
+    // Perf matters in home view.  Configuring home view cells is
+    // probably the biggest perf bottleneck.  In conversation view,
+    // we address this by doing cell measurement/arrangement off
+    // the main thread.  That's viable in conversation view because
+    // there's a "load window" so there's an upper bound on how
+    // many cells need to be prepared.
+    //
+    // Home view has no load window.  Therefore, home view defers
+    // the expensive work of a) building ThreadViewModel
+    // b) measurement/arrangement of cells.  threadViewModelCache
+    // caches a).  cellContentCache caches b).
+    //
+    // When configuring a hohome view cell, we reuse any existing
+    // cell measurement in cellContentCache.  If none exists,
+    // we build one and store it in cellContentCache for next
+    // time.
+    private static func cellContentToken(forConfiguration configuration: Configuration) -> HVCellContentToken {
+        let cellContentCache = configuration.cellContentCache
+
+        // If we have an existing HVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
         let cacheKey = configuration.thread.threadRecord.uniqueId
-        let cellMeasurementCache = configuration.cellMeasurementCache
-        let existingCellMeasurement: HVCellMeasurement? = cellMeasurementCache.get(key: cacheKey)
-        let cellMeasurement = configure(configuration: configuration,
-                                        existingCellMeasurement: existingCellMeasurement)
-        cellMeasurementCache.set(key: cacheKey, value: cellMeasurement)
-    }
-
-    fileprivate struct Configs {
-        let topRowStackConfig: ManualStackView.Config
-        let bottomRowStackConfig: ManualStackView.Config
-        let vStackConfig: ManualStackView.Config
-        let outerHStackConfig: ManualStackView.Config
-        let avatarStackConfig: ManualStackView.Config
-        let snippetLabelConfig: CVLabelConfig
-        let nameLabelConfig: CVLabelConfig
-        let dateTimeLabelConfig: CVLabelConfig
-    }
-
-    private func configure(configuration: Configuration,
-                           existingCellMeasurement: HVCellMeasurement?) -> HVCellMeasurement {
-        AssertIsOnMainThread()
-
-        OWSTableItem.configureCell(self)
-
-        self.preservesSuperviewLayoutMargins = false
-        self.contentView.preservesSuperviewLayoutMargins = false
-
-        self.configuration = configuration
-
-        let thread = configuration.thread
-        let isBlocked = configuration.isBlocked
-
-        let configs: Configs
-        if let existingCellMeasurement = existingCellMeasurement {
-            configs = existingCellMeasurement.configs
-        } else {
-            configs = Configs(
-                topRowStackConfig: self.topRowStackConfig,
-                bottomRowStackConfig: self.bottomRowStackConfig,
-                vStackConfig: self.vStackConfig,
-                outerHStackConfig: self.outerHStackConfig,
-                avatarStackConfig: ManualStackView.Config(axis: .horizontal,
-                                                          alignment: .center,
-                                                          spacing: 0,
-                                                          layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12)),
-                snippetLabelConfig: self.snippetLabelConfig(configuration: configuration),
-                nameLabelConfig: self.nameLabelConfig(configuration: configuration),
-                dateTimeLabelConfig: self.dateTimeLabelConfig(configuration: configuration)
-            )
+        if let cellContentToken = cellContentCache.get(key: cacheKey) {
+            return cellContentToken
         }
+
+        let configs = buildCellConfigs(configuration: configuration)
+        let measurements = buildMeasurements(configuration: configuration,
+                                             configs: configs)
+        let cellContentToken = HVCellContentToken(configs: configs,
+                                                  measurements: measurements)
+        cellContentCache.set(key: cacheKey, value: cellContentToken)
+        return cellContentToken
+    }
+
+    private static func buildCellConfigs(configuration: Configuration) -> HVCellConfigs {
+        let shouldShowMuteIndicator = Self.shouldShowMuteIndicator(configuration: configuration)
+        let messageStatusToken = Self.buildMessageStatusToken(configuration: configuration)
+        let unreadIndicatorLabelConfig = Self.buildUnreadIndicatorLabelConfig(configuration: configuration)
+
+        return HVCellConfigs(
+            thread: configuration.thread.threadRecord,
+            lastReloadDate: configuration.lastReloadDate,
+            isBlocked: configuration.isBlocked,
+            shouldShowMuteIndicator: shouldShowMuteIndicator,
+            hasUnreadStyle: configuration.hasUnreadStyle,
+            hasOverrideSnippet: configuration.hasOverrideSnippet,
+            messageStatusToken: messageStatusToken,
+            unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
+
+            topRowStackConfig: Self.topRowStackConfig,
+            bottomRowStackConfig: Self.bottomRowStackConfig,
+            vStackConfig: Self.vStackConfig,
+            outerHStackConfig: Self.outerHStackConfig,
+            avatarStackConfig: Self.avatarStackConfig,
+            snippetLabelConfig: Self.snippetLabelConfig(configuration: configuration),
+            nameLabelConfig: Self.nameLabelConfig(configuration: configuration),
+            dateTimeLabelConfig: Self.dateTimeLabelConfig(configuration: configuration)
+        )
+    }
+
+    private static func buildMeasurements(configuration: Configuration,
+                                          configs: HVCellConfigs) -> HVCellMeasurements {
+        let shouldShowMuteIndicator = configs.shouldShowMuteIndicator
+
         let topRowStackConfig = configs.topRowStackConfig
         let bottomRowStackConfig = configs.bottomRowStackConfig
         let vStackConfig = configs.vStackConfig
@@ -211,13 +237,105 @@ public class HomeViewCell: UITableViewCell {
         let nameLabelConfig = configs.nameLabelConfig
         let dateTimeLabelConfig = configs.dateTimeLabelConfig
 
-        snippetLabelConfig.applyForRendering(label: snippetLabel)
+        var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
+        let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
+                                                maxWidth: .greatestFiniteMagnitude)
+        topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
+                                                                         verticalFlowBehavior: .fixed))
+        if shouldShowMuteIndicator {
+            topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
+        }
+        let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
+                                                maxWidth: CGFloat.greatestFiniteMagnitude)
+        topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
+                                                                         verticalFlowBehavior: .fixed))
+
+        let avatarSize: CGSize = .square(CGFloat(HomeViewCell.avatarSize))
+        let avatarStackMeasurement = ManualStackView.measure(config: avatarStackConfig,
+                                                             subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ])
+        let avatarStackSize = avatarStackMeasurement.measuredSize
+
+        let topRowStackMeasurement = ManualStackView.measure(config: topRowStackConfig,
+                                                             subviewInfos: topRowStackSubviewInfos)
+        let topRowStackSize = topRowStackMeasurement.measuredSize
+
         // Reserve space for two lines of snippet text, taking into account
         // the worst-case snippet content.
-        let snippetLineHeight = CGFloat(ceil(snippetFont.ows_semibold.lineHeight * 1.2))
+        let snippetLineHeight = CGFloat(ceil(snippetLabelConfig.font.ows_semibold.lineHeight * 1.2))
 
-        avatarView.shouldLoadAsync = configuration.shouldLoadAvatarAsync
-        avatarView.configureWithSneakyTransaction(thread: thread.threadRecord)
+        // Use a fixed size for the snippet label and its wrapper.
+        let bottomRowWrapperSize = CGSize(width: 0, height: snippetLineHeight * 2)
+        var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
+            bottomRowWrapperSize.asManualSubviewInfo()
+        ]
+        if let messageStatusToken = configs.messageStatusToken {
+            let statusIndicatorSize = messageStatusToken.image.size
+            // The status indicator should vertically align with the
+            // first line of the snippet.
+            let locationOffset = CGPoint(x: 0,
+                                         y: snippetLineHeight * -0.5)
+            bottomRowStackSubviewInfos.append(statusIndicatorSize.asManualSubviewInfo(hasFixedSize: true,
+                                                                                      locationOffset: locationOffset))
+        }
+        let bottomRowStackMeasurement = ManualStackView.measure(config: bottomRowStackConfig,
+                                                                subviewInfos: bottomRowStackSubviewInfos)
+        let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
+
+        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
+                                                        subviewInfos: [
+                                                            topRowStackSize.asManualSubviewInfo,
+                                                            bottomRowStackSize.asManualSubviewInfo
+                                                        ])
+        let vStackSize = vStackMeasurement.measuredSize
+
+        let outerHStackMeasurement = ManualStackView.measure(config: outerHStackConfig,
+                                                             subviewInfos: [
+                                                                avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
+                                                                vStackSize.asManualSubviewInfo
+                                                             ])
+
+        return HVCellMeasurements(avatarStackMeasurement: avatarStackMeasurement,
+                                  topRowStackMeasurement: topRowStackMeasurement,
+                                  bottomRowStackMeasurement: bottomRowStackMeasurement,
+                                  vStackMeasurement: vStackMeasurement,
+                                  outerHStackMeasurement: outerHStackMeasurement,
+                                  snippetLineHeight: snippetLineHeight)
+    }
+
+    private func configure(cellContentToken: HVCellContentToken) {
+        AssertIsOnMainThread()
+
+        OWSTableItem.configureCell(self)
+
+        self.preservesSuperviewLayoutMargins = false
+        self.contentView.preservesSuperviewLayoutMargins = false
+
+        self.cellContentToken = cellContentToken
+
+        let shouldShowMuteIndicator = cellContentToken.shouldShowMuteIndicator
+
+        let configs = cellContentToken.configs
+        let topRowStackConfig = configs.topRowStackConfig
+        let bottomRowStackConfig = configs.bottomRowStackConfig
+        let vStackConfig = configs.vStackConfig
+        let outerHStackConfig = configs.outerHStackConfig
+        let avatarStackConfig = configs.avatarStackConfig
+        let snippetLabelConfig = configs.snippetLabelConfig
+        let nameLabelConfig = configs.nameLabelConfig
+        let dateTimeLabelConfig = configs.dateTimeLabelConfig
+
+        let measurements = cellContentToken.measurements
+        let avatarStackMeasurement = measurements.avatarStackMeasurement
+        let topRowStackMeasurement = measurements.topRowStackMeasurement
+        let bottomRowStackMeasurement = measurements.bottomRowStackMeasurement
+        let vStackMeasurement = measurements.vStackMeasurement
+        let outerHStackMeasurement = measurements.outerHStackMeasurement
+        let snippetLineHeight = measurements.snippetLineHeight
+
+        snippetLabelConfig.applyForRendering(label: snippetLabel)
+
+        avatarView.shouldLoadAsync = cellContentToken.shouldLoadAvatarAsync
+        avatarView.configureWithSneakyTransaction(thread: cellContentToken.thread)
 
         typingIndicatorView.configureForHomeView()
 
@@ -238,25 +356,9 @@ public class HomeViewCell: UITableViewCell {
         // Unread Indicator
 
         // If there are unread messages, show the "unread badge."
-        var shouldHideStatusIndicator = false
-        func applyUnreadIndicator() {
-            guard !hasOverrideSnippet else {
-                // If we're using the conversation list cell to render search results,
-                // don't show "unread badge" or "message status" indicator.
-                shouldHideStatusIndicator = true
-                return
-            }
-            guard hasUnreadStyle else {
-                return
-            }
-
-            let unreadCount = thread.unreadCount
+        if let unreadIndicatorLabelConfig = configs.unreadIndicatorLabelConfig {
             let unreadLabel = self.unreadLabel
-            unreadLabel.text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
-            unreadLabel.textColor = .ows_white
-            unreadLabel.lineBreakMode = .byTruncatingTail
-            unreadLabel.textAlignment = .center
-            unreadLabel.font = unreadFont
+            unreadIndicatorLabelConfig.applyForRendering(label: unreadLabel)
             unreadLabel.removeFromSuperview()
             let unreadLabelSize = unreadLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
 
@@ -289,7 +391,6 @@ public class HomeViewCell: UITableViewCell {
             // of the unread badge.
             unreadBadge.layer.zPosition = +1
         }
-        applyUnreadIndicator()
 
         // The top row contains:
         //
@@ -311,11 +412,10 @@ public class HomeViewCell: UITableViewCell {
         nameLabelConfig.applyForRendering(label: nameLabel)
         topRowStackSubviews.append(nameLabel)
 
-        let muteIconSize: CGFloat = 16
-        if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
+        if shouldShowMuteIndicator {
             muteIconView.setTemplateImageName("bell-disabled-outline-24",
                                               tintColor: Theme.primaryTextColor)
-            muteIconView.tintColor = snippetColor
+            muteIconView.tintColor = Self.snippetColor
             topRowStackSubviews.append(muteIconView)
         }
 
@@ -350,22 +450,11 @@ public class HomeViewCell: UITableViewCell {
                                                     width: typingIndicatorSize.width,
                                                     height: typingIndicatorSize.height)
         }
-        // Use a fixed size for the snippet label and its wrapper.
-        let bottomRowWrapperSize = CGSize(width: 0, height: snippetLineHeight * 2)
 
         var bottomRowStackSubviews: [UIView] = [ bottomRowWrapper ]
-        var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
-            bottomRowWrapperSize.asManualSubviewInfo()
-        ]
-        if let statusIndicator = prepareStatusIndicatorView(thread: thread,
-                                                            shouldHideStatusIndicator: shouldHideStatusIndicator) {
-            bottomRowStackSubviews.append(statusIndicator.view)
-            // The status indicator should vertically align with the
-            // first line of the snippet.
-            let locationOffset = CGPoint(x: 0,
-                                         y: snippetLineHeight * -0.5)
-            bottomRowStackSubviewInfos.append(statusIndicator.size.asManualSubviewInfo(hasFixedSize: true,
-                                                                                       locationOffset: locationOffset))
+        if let messageStatusToken = cellContentToken.configs.messageStatusToken {
+            let statusIndicator = configureStatusIndicatorView(token: messageStatusToken)
+            bottomRowStackSubviews.append(statusIndicator)
         }
 
         updateTypingIndicatorState()
@@ -374,117 +463,44 @@ public class HomeViewCell: UITableViewCell {
         let vStackSubviews = [ topRowStack, bottomRowStack ]
         let outerHStackSubviews = [ avatarStack, vStack ]
 
-        // Perf matters in home view.  Configuring home view cells is
-        // probably the biggest perf bottleneck.  In conversation view,
-        // we address this by doing cell measurement/arrangement off
-        // the main thread.  That's viable in conversation view because
-        // there's a "load window" so there's an upper bound on how
-        // many cells need to be prepared.
-        //
-        // Home view has no load window.  Therefore, home view defers
-        // the expensive work of a) building ThreadViewModel
-        // b) measurement/arrangement of cells.  threadViewModelCache
-        // caches a).  cellMeasurementCache caches b).
-        //
-        // When configuring a hohome view cell, we reuse any existing
-        // cell measurement in cellMeasurementCache.  If none exists,
-        // we build one and store it in cellMeasurementCache for next
-        // time.
-        //
-        // This requires an unusual arrangement of the code in this
-        // configuration method for home view cells, where we defer
-        // all measurement logic here (below) so that we can skip it
-        // if it's not necessary.
-        if let existingCellMeasurement = existingCellMeasurement {
-            avatarStack.configure(config: avatarStackConfig,
-                                  measurement: existingCellMeasurement.avatarStackMeasurement,
-                                  subviews: avatarStackSubviews)
+        avatarStack.configure(config: avatarStackConfig,
+                              measurement: avatarStackMeasurement,
+                              subviews: avatarStackSubviews)
 
-            topRowStack.configure(config: topRowStackConfig,
-                                  measurement: existingCellMeasurement.topRowStackMeasurement,
-                                  subviews: topRowStackSubviews)
+        topRowStack.configure(config: topRowStackConfig,
+                              measurement: topRowStackMeasurement,
+                              subviews: topRowStackSubviews)
 
-            bottomRowStack.configure(config: bottomRowStackConfig,
-                                     measurement: existingCellMeasurement.bottomRowStackMeasurement,
-                                     subviews: bottomRowStackSubviews)
+        bottomRowStack.configure(config: bottomRowStackConfig,
+                                 measurement: bottomRowStackMeasurement,
+                                 subviews: bottomRowStackSubviews)
 
-            vStack.configure(config: vStackConfig,
-                             measurement: existingCellMeasurement.vStackMeasurement,
-                             subviews: vStackSubviews)
+        vStack.configure(config: vStackConfig,
+                         measurement: vStackMeasurement,
+                         subviews: vStackSubviews)
 
-            outerHStack.configure(config: outerHStackConfig,
-                                  measurement: existingCellMeasurement.outerHStackMeasurement,
-                                  subviews: outerHStackSubviews)
-
-            return existingCellMeasurement
-        } else {
-            var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
-            let nameLabelSize = CVText.measureLabel(config: nameLabelConfig,
-                                                    maxWidth: .greatestFiniteMagnitude)
-            topRowStackSubviewInfos.append(nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress,
-                                                                             verticalFlowBehavior: .fixed))
-            if shouldShowMuteIndicator(forThread: thread, isBlocked: isBlocked) {
-                topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
-            }
-            let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig,
-                                                    maxWidth: CGFloat.greatestFiniteMagnitude)
-            topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
-                                                                             verticalFlowBehavior: .fixed))
-
-            let avatarStackMeasurement = avatarStack.configure(config: avatarStackConfig,
-                                                               subviews: avatarStackSubviews,
-                                                               subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ])
-            let avatarStackSize = avatarStackMeasurement.measuredSize
-
-            let topRowStackMeasurement = topRowStack.configure(config: topRowStackConfig,
-                                                               subviews: topRowStackSubviews,
-                                                               subviewInfos: topRowStackSubviewInfos)
-            let topRowStackSize = topRowStackMeasurement.measuredSize
-
-            let bottomRowStackMeasurement = bottomRowStack.configure(config: bottomRowStackConfig,
-                                                                     subviews: bottomRowStackSubviews,
-                                                                     subviewInfos: bottomRowStackSubviewInfos)
-            let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
-
-            let vStackMeasurement = vStack.configure(config: vStackConfig,
-                                                     subviews: vStackSubviews,
-                                                     subviewInfos: [
-                                                        topRowStackSize.asManualSubviewInfo,
-                                                        bottomRowStackSize.asManualSubviewInfo
-                                                     ])
-            let vStackSize = vStackMeasurement.measuredSize
-
-            let outerHStackMeasurement = outerHStack.configure(config: outerHStackConfig,
-                                                               subviews: [ avatarStack, vStack ],
-                                                               subviewInfos: [
-                                                                avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
-                                                                vStackSize.asManualSubviewInfo
-                                                               ])
-
-            return HVCellMeasurement(avatarStackMeasurement: avatarStackMeasurement,
-                                     topRowStackMeasurement: topRowStackMeasurement,
-                                     bottomRowStackMeasurement: bottomRowStackMeasurement,
-                                     vStackMeasurement: vStackMeasurement,
-                                     outerHStackMeasurement: outerHStackMeasurement,
-                                     configs: configs)
-        }
+        outerHStack.configure(config: outerHStackConfig,
+                              measurement: outerHStackMeasurement,
+                              subviews: outerHStackSubviews)
     }
 
-    private var topRowStackConfig: ManualStackView.Config {
+    // MARK: - Stack Configs
+
+    private static var topRowStackConfig: ManualStackView.Config {
         ManualStackView.Config(axis: .horizontal,
                                alignment: .center,
                                spacing: 6,
                                layoutMargins: .zero)
     }
 
-    private var bottomRowStackConfig: ManualStackView.Config {
+    private static var bottomRowStackConfig: ManualStackView.Config {
         ManualStackView.Config(axis: .horizontal,
                                alignment: .center,
                                spacing: 6,
                                layoutMargins: .zero)
     }
 
-    private var vStackConfig: ManualStackView.Config {
+    private static var vStackConfig: ManualStackView.Config {
         ManualStackView.Config(axis: .vertical,
                                alignment: .fill,
                                spacing: 1,
@@ -494,19 +510,28 @@ public class HomeViewCell: UITableViewCell {
                                                            trailing: 0))
     }
 
-    private var outerHStackConfig: ManualStackView.Config {
+    private static var outerHStackConfig: ManualStackView.Config {
         ManualStackView.Config(axis: .horizontal,
                                alignment: .center,
                                spacing: 12,
                                layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 0))
     }
 
-    struct StatusIndicator {
-        let view: UIView
-        let size: CGSize
+    private static var avatarStackConfig: ManualStackView.Config {
+        ManualStackView.Config(axis: .horizontal,
+                               alignment: .center,
+                               spacing: 0,
+                               layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12))
     }
-    private func prepareStatusIndicatorView(thread: ThreadViewModel,
-                                            shouldHideStatusIndicator: Bool) -> StatusIndicator? {
+
+    // MARK: - Message Status Indicator
+
+    private static func buildMessageStatusToken(configuration: Configuration) -> HVMessageStatusToken? {
+
+        // If we're using the conversation list cell to render search results,
+        // don't show "unread badge" or "message status" indicator.
+        let shouldHideStatusIndicator = configuration.hasOverrideSnippet
+        let thread = configuration.thread
         guard !shouldHideStatusIndicator,
               let outgoingMessage = thread.lastMessageForInbox as? TSOutgoingMessage else {
             return nil
@@ -551,10 +576,16 @@ public class HomeViewCell: UITableViewCell {
         guard let image = statusIndicatorImage else {
             return nil
         }
-        messageStatusIconView.image = image.withRenderingMode(.alwaysTemplate)
-        messageStatusIconView.tintColor = messageStatusViewTintColor
+        return HVMessageStatusToken(image: image.withRenderingMode(.alwaysTemplate),
+                                    tintColor: messageStatusViewTintColor,
+                                    shouldAnimateStatusIcon: shouldAnimateStatusIcon)
+    }
 
-        if shouldAnimateStatusIcon {
+    private func configureStatusIndicatorView(token: HVMessageStatusToken) -> UIView {
+        messageStatusIconView.image = token.image.withRenderingMode(.alwaysTemplate)
+        messageStatusIconView.tintColor = token.tintColor
+
+        if token.shouldAnimateStatusIcon {
             let animation = CABasicAnimation(keyPath: "transform.rotation.z")
             animation.toValue = NSNumber(value: Double.pi * 2)
             animation.duration = kSecondInterval * 1
@@ -565,18 +596,38 @@ public class HomeViewCell: UITableViewCell {
             messageStatusIconView.layer.removeAllAnimations()
         }
 
-        return StatusIndicator(view: messageStatusIconView, size: image.size)
+        return messageStatusIconView
     }
 
-    private var hasUnreadStyle: Bool {
-        guard let thread = thread else {
-            return false
+    // MARK: - Unread Indicator
+
+    private static func buildUnreadIndicatorLabelConfig(configuration: Configuration) -> CVLabelConfig? {
+        guard !configuration.hasOverrideSnippet else {
+            // If we're using the conversation list cell to render search results,
+            // don't show "unread badge" or "message status" indicator.
+            return nil
         }
-        return thread.hasUnreadMessages && overrideSnippet == nil
+        guard configuration.hasUnreadStyle else {
+            return nil
+        }
+
+        let thread = configuration.thread
+        let unreadCount = thread.unreadCount
+        let text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
+        return CVLabelConfig(text: text,
+                             font: unreadFont,
+                             textColor: .ows_white,
+                             numberOfLines: 1,
+                             lineBreakMode: .byTruncatingTail,
+                             textAlignment: .center)
     }
 
-    private func attributedSnippet(forThread thread: ThreadViewModel,
-                                   isBlocked: Bool) -> NSAttributedString {
+    // MARK: - Label Configs
+
+    private static func attributedSnippet(configuration: Configuration) -> NSAttributedString {
+        let thread = configuration.thread
+        let isBlocked = configuration.isBlocked
+        let hasUnreadStyle = configuration.hasUnreadStyle
 
         let snippetText = NSMutableAttributedString()
         if isBlocked {
@@ -678,17 +729,17 @@ public class HomeViewCell: UITableViewCell {
         return snippetText
     }
 
-    private func shouldShowMuteIndicator(forThread thread: ThreadViewModel, isBlocked: Bool) -> Bool {
-        !hasOverrideSnippet && !isBlocked && !thread.hasPendingMessageRequest && thread.isMuted
+    private static func shouldShowMuteIndicator(configuration: Configuration) -> Bool {
+        !configuration.hasOverrideSnippet && !configuration.isBlocked && !configuration.thread.hasPendingMessageRequest && configuration.thread.isMuted
     }
 
-    private func dateTimeLabelConfig(configuration: Configuration) -> CVLabelConfig {
+    private static func dateTimeLabelConfig(configuration: Configuration) -> CVLabelConfig {
         let thread = configuration.thread
         var text: String = ""
         if let labelDate = configuration.overrideDate ?? thread.homeViewInfo?.lastMessageDate {
             text = DateUtil.formatDateShort(labelDate)
         }
-        if hasUnreadStyle {
+        if configuration.hasUnreadStyle {
             return CVLabelConfig(text: text,
                                  font: dateTimeFont.ows_semibold,
                                  textColor: Theme.primaryTextColor,
@@ -701,7 +752,7 @@ public class HomeViewCell: UITableViewCell {
         }
     }
 
-    private func nameLabelConfig(configuration: Configuration) -> CVLabelConfig {
+    private static func nameLabelConfig(configuration: Configuration) -> CVLabelConfig {
         let thread = configuration.thread
         let text: String = {
             if thread.threadRecord is TSContactThread {
@@ -724,6 +775,20 @@ public class HomeViewCell: UITableViewCell {
                              lineBreakMode: .byTruncatingTail)
     }
 
+    private static func snippetLabelConfig(configuration: Configuration) -> CVLabelConfig {
+        let attributedText: NSAttributedString = {
+            if let overrideSnippet = configuration.overrideSnippet {
+                return overrideSnippet
+            }
+            return self.attributedSnippet(configuration: configuration)
+        }()
+        return CVLabelConfig(attributedText: attributedText,
+                             font: snippetFont,
+                             textColor: snippetColor,
+                             numberOfLines: 2,
+                             lineBreakMode: .byTruncatingTail)
+    }
+
     // MARK: - Reuse
 
     @objc
@@ -740,7 +805,7 @@ public class HomeViewCell: UITableViewCell {
             cvview.reset()
         }
 
-        configuration = nil
+        cellContentToken = nil
         avatarView.image = nil
         avatarView.reset()
         typingIndicatorView.reset()
@@ -756,15 +821,15 @@ public class HomeViewCell: UITableViewCell {
 
         guard let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
               address.isValid,
-              let contactThread = thread?.threadRecord as? TSContactThread,
+              let contactThread = thread as? TSContactThread,
               contactThread.contactAddress == address else {
             return
         }
-        guard let configuration = configuration else {
+        guard let cellContentToken = self.cellContentToken else {
             return
         }
         reset()
-        configure(configuration)
+        configure(cellContentToken: cellContentToken)
     }
 
     @objc
@@ -773,7 +838,7 @@ public class HomeViewCell: UITableViewCell {
 
         guard let thread = self.thread,
               let notificationThreadId = notification.object as? String,
-              thread.threadRecord.uniqueId == notificationThreadId else {
+              thread.uniqueId == notificationThreadId else {
             return
         }
 
@@ -783,27 +848,15 @@ public class HomeViewCell: UITableViewCell {
     // MARK: - Typing Indicators
 
     private var shouldShowTypingIndicators: Bool {
-        if !hasOverrideSnippet,
-           let thread = self.thread,
-           nil != typingIndicatorsImpl.typingAddress(forThread: thread.threadRecord) {
+        guard let cellContentToken = self.cellContentToken else {
+            return false
+        }
+        let thread = cellContentToken.thread
+        if !cellContentToken.hasOverrideSnippet,
+           nil != typingIndicatorsImpl.typingAddress(forThread: thread) {
             return true
         }
         return false
-    }
-
-    private func snippetLabelConfig(configuration: Configuration) -> CVLabelConfig {
-        let attributedText: NSAttributedString = {
-            if let overrideSnippet = self.overrideSnippet {
-                return overrideSnippet
-            }
-            return self.attributedSnippet(forThread: configuration.thread,
-                                          isBlocked: configuration.isBlocked)
-        }()
-        return CVLabelConfig(attributedText: attributedText,
-                             font: snippetFont,
-                             textColor: snippetColor,
-                             numberOfLines: 2,
-                             lineBreakMode: .byTruncatingTail)
     }
 
     private func updateTypingIndicatorState() {
@@ -833,13 +886,75 @@ public class HomeViewCell: UITableViewCell {
 
 // MARK: -
 
-public struct HVCellMeasurement {
+private struct HVMessageStatusToken {
+    let image: UIImage
+    let tintColor: UIColor
+    let shouldAnimateStatusIcon: Bool
+}
+
+// MARK: -
+
+private struct HVCellConfigs {
+    // State
+    let thread: TSThread
+    let lastReloadDate: Date?
+    let isBlocked: Bool
+    let shouldShowMuteIndicator: Bool
+    let hasUnreadStyle: Bool
+    let hasOverrideSnippet: Bool
+    let messageStatusToken: HVMessageStatusToken?
+    let unreadIndicatorLabelConfig: CVLabelConfig?
+
+    // Configs
+    let topRowStackConfig: ManualStackView.Config
+    let bottomRowStackConfig: ManualStackView.Config
+    let vStackConfig: ManualStackView.Config
+    let outerHStackConfig: ManualStackView.Config
+    let avatarStackConfig: ManualStackView.Config
+    let snippetLabelConfig: CVLabelConfig
+    let nameLabelConfig: CVLabelConfig
+    let dateTimeLabelConfig: CVLabelConfig
+}
+
+// MARK: -
+
+private struct HVCellMeasurements {
     let avatarStackMeasurement: ManualStackView.Measurement
     let topRowStackMeasurement: ManualStackView.Measurement
     let bottomRowStackMeasurement: ManualStackView.Measurement
     let vStackMeasurement: ManualStackView.Measurement
     let outerHStackMeasurement: ManualStackView.Measurement
-    fileprivate let configs: HomeViewCell.Configs
+    let snippetLineHeight: CGFloat
+}
+
+// MARK: -
+
+class HVCellContentToken {
+    fileprivate let configs: HVCellConfigs
+    fileprivate let measurements: HVCellMeasurements
+
+    fileprivate var thread: TSThread { configs.thread }
+    fileprivate var isBlocked: Bool { configs.isBlocked }
+    fileprivate var shouldShowMuteIndicator: Bool { configs.shouldShowMuteIndicator }
+    fileprivate var hasUnreadStyle: Bool { configs.hasUnreadStyle }
+    fileprivate var hasOverrideSnippet: Bool { configs.hasOverrideSnippet }
+
+    fileprivate var shouldLoadAvatarAsync: Bool {
+        guard let lastReloadDate = configs.lastReloadDate else {
+            return false
+        }
+        // We want initial loads and reloads to load avatars sync,
+        // but subsequent avatar loads (e.g. from scrolling) should
+        // be async.
+        let avatarAsyncLoadInterval = kSecondInterval * 1
+        return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
+    }
+
+    fileprivate init(configs: HVCellConfigs,
+                     measurements: HVCellMeasurements) {
+        self.configs = configs
+        self.measurements = measurements
+    }
 }
 
 // MARK: -

@@ -9,7 +9,7 @@ public class HVViewState: NSObject {
 
     public let tableDataSource = HVTableDataSource()
     public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
-    public let cellMeasurementCache = LRUCache<String, HVCellMeasurement>(maxSize: 256)
+    let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
 
     public let loadCoordinator = HVLoadCoordinator()
 
@@ -56,7 +56,7 @@ public extension HomeViewController {
     var threadViewModelCache: LRUCache<String, ThreadViewModel> { viewState.threadViewModelCache }
 
     @nonobjc
-    var cellMeasurementCache: LRUCache<String, HVCellMeasurement> { viewState.cellMeasurementCache }
+    internal var cellContentCache: LRUCache<String, HVCellContentToken> { viewState.cellContentCache }
 
     var loadCoordinator: HVLoadCoordinator { viewState.loadCoordinator }
 
