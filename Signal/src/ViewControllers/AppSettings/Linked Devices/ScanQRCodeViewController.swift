@@ -284,7 +284,7 @@ class QRCodeScanViewController: OWSViewController {
     }()
 
     private func processClassification(_ request: VNRequest) {
-        guard !canDeliverResultsFlag.get() else {
+        guard canDeliverResultsFlag.get() else {
             // Already complete.
             return
         }
@@ -362,7 +362,7 @@ class QRCodeScanViewController: OWSViewController {
                                                          qrCodeString: qrCode.qrCodeString)
             switch outcome {
             case .stopScanning:
-                guard self.canDeliverResultsFlag.tryToSetFlag() else {
+                guard self.canDeliverResultsFlag.tryToClearFlag() else {
                     // Already complete.
                     return
                 }
