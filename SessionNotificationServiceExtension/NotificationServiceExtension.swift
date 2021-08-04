@@ -67,6 +67,11 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                                 return self.completeSilenty()
                             }
                         }
+                        // Store the notification identifier for unsend request to cancel this notification
+                        tsIncomingMessage.setNotificationIdentifier(request.identifier, transaction: transaction)
+                    case let unsendRequest as UnsendRequest:
+                        MessageReceiver.handleUnsendRequest(unsendRequest, using: transaction)
+                        return self.completeSilenty()
                     case let closedGroupControlMessage as ClosedGroupControlMessage:
                         // TODO: We could consider actually handling the update here. Not sure if there's enough time though, seeing as though
                         // in some cases we need to send messages (e.g. our sender key) to a number of other users.
