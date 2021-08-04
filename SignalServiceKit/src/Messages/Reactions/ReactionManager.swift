@@ -133,7 +133,16 @@ public class ReactionManager: NSObject {
         timestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
-        guard reaction.emoji.isSingleEmoji else {
+        guard let emoji = reaction.emoji.strippedOrNil else {
+            owsFailDebug("Received invalid emoji")
+            return .invalidReaction
+        }
+        if DebugFlags.internalLogging {
+            let base64 = emoji.data(using: .utf8)?.base64EncodedString() ?? "?"
+            Logger.info("Processing reaction: \(emoji), \(base64)")
+            Logger.flush()
+        }
+        guard emoji.isSingleEmoji else {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
         }
@@ -166,7 +175,7 @@ public class ReactionManager: NSObject {
         } else {
             let reaction = message.recordReaction(
                 for: reactor,
-                emoji: reaction.emoji,
+                emoji: emoji,
                 sentAtTimestamp: timestamp,
                 receivedAtTimestamp: NSDate.ows_millisecondTimeStamp(),
                 transaction: transaction

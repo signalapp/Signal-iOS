@@ -551,15 +551,15 @@ public extension String {
     }
 
     var isSingleEmoji: Bool {
-        return glyphCount == 1 && containsEmoji
+        glyphCount == 1 && containsEmoji
     }
 
     var containsEmoji: Bool {
-        return unicodeScalars.contains { $0.isEmoji }
+        unicodeScalars.contains { $0.isEmoji }
     }
 
     var containsOnlyEmoji: Bool {
-        return !isEmpty
+        !isEmpty
             && !unicodeScalars.contains(where: {
                 !$0.isEmoji
                     && !$0.isZeroWidthJoiner
