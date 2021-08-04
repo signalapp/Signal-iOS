@@ -362,7 +362,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                     }
                 case .update:
                     print("[Test] UPDATE")
-                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
+                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                 default: preconditionFailure()
                 }
             }
