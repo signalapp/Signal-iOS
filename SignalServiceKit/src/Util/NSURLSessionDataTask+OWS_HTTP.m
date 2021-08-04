@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSURLSessionDataTask+OWS_HTTP.h"
@@ -30,7 +30,7 @@ static NSString *const kOWSRetryAfterHeaderKey = @"Retry-After";
     if (self.httpResponse) {
         return self.httpResponse.statusCode;
     } else {
-        OWSLogInfo(@"Retrieving status code from incomplete task.");
+        OWSLogVerbose(@"Retrieving status code from incomplete task.");
         return 0;
     }
 }

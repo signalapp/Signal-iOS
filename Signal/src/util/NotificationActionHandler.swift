@@ -47,6 +47,10 @@ public class NotificationActionHandler: NSObject {
             }
         }
 
+        if DebugFlags.internalLogging {
+            Logger.info("Performing action: \(action)")
+        }
+
         switch action {
         case .answerCall:
             return try answerCall(userInfo: userInfo)
