@@ -332,6 +332,9 @@ public final class MessageSender : NSObject {
         Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         // Get the visible message if possible
         if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
+            // When the sync message is successfully sent, the hash value of this TSOutgoingMessage
+            // will be replaced by the hash value of the sync message. Since the hash value of the
+            // real message has no use when we delete a message. It is OK to let it be.
             tsMessage.serverHash = message.serverHash
             // Track the open group server message ID
             tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
