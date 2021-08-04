@@ -390,7 +390,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let fileSize = attachment.dataLength
         label.text = String(format: NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                                                      comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
-                            OWSFormat.formatFileSize(UInt(fileSize)))
+                            OWSFormat.formatFileSize(fileSize))
 
         label.textColor = controlTintColor
         label.font = labelFont()

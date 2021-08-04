@@ -44,8 +44,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         var nameComponents = PersonNameComponents()
         nameComponents.givenName = givenName
         nameComponents.familyName = familyName
-        let formatter = PersonNameComponentsFormatter()
-        return formatter.string(from: nameComponents)
+        return OWSFormat.formatNameComponents(nameComponents)
     }
 
     func updateTableContents() {

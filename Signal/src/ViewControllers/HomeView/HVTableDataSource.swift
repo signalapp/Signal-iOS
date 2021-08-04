@@ -451,14 +451,14 @@ extension HVTableDataSource: UITableViewDataSource {
             return nil
         }
 
-        let thread = threadViewModel.threadRecord
         let lastReloadDate: Date? = {
             guard viewState.hasEverAppeared else {
                 return nil
             }
             return self.lastReloadDate
         }()
-        let isBlocked = blockingManager.isThreadBlocked(thread)
+        owsAssertDebug(threadViewModel.homeViewInfo != nil)
+        let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
         let cellContentCache = viewController.cellContentCache
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,

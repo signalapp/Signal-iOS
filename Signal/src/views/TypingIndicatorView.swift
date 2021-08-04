@@ -17,6 +17,8 @@ class TypingIndicatorView: ManualStackView {
     private let dot2 = DotView(dotType: .dotType2)
     private let dot3 = DotView(dotType: .dotType3)
 
+    private var cachedMeasurement: ManualStackView.Measurement?
+
     @objc
     public init() {
         super.init(name: "TypingIndicatorView")
@@ -48,10 +50,16 @@ class TypingIndicatorView: ManualStackView {
 
     @objc
     func configureForHomeView() {
-        let measurement = Self.measurement()
-        self.configure(config: Self.stackConfig,
-                       measurement: measurement,
-                       subviews: [ dot1, dot2, dot3 ])
+        if let measurement = self.cachedMeasurement {
+            self.configureForReuse(config: Self.stackConfig,
+                                   measurement: measurement)
+        } else {
+            let measurement = Self.measurement()
+            self.cachedMeasurement = measurement
+            self.configure(config: Self.stackConfig,
+                           measurement: measurement,
+                           subviews: [ dot1, dot2, dot3 ])
+        }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -99,6 +107,14 @@ class TypingIndicatorView: ManualStackView {
     override func reset() {
         super.reset()
 
+        self.cachedMeasurement = nil
+
+        stopAnimation()
+
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func resetForReuse() {
         stopAnimation()
 
         NotificationCenter.default.removeObserver(self)

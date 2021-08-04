@@ -45,18 +45,20 @@ public class HomeViewCell: UITableViewCell {
             snippetLabel,
             dateTimeLabel,
             messageStatusIconView,
-            typingIndicatorView,
             muteIconView,
             unreadLabel,
 
-            outerHStack,
             avatarStack,
-            vStack,
-            topRowStack,
-            bottomRowStack,
             bottomRowWrapper
         ]
     }
+
+    private struct ReuseToken {
+        let hasMuteIndicator: Bool
+        let hasMessageStatusToken: Bool
+    }
+
+    private var reuseToken: ReuseToken?
 
     // MARK: - Configuration
 
@@ -463,25 +465,57 @@ public class HomeViewCell: UITableViewCell {
         let vStackSubviews = [ topRowStack, bottomRowStack ]
         let outerHStackSubviews = [ avatarStack, vStack ]
 
+        let newReuseToken = ReuseToken(hasMuteIndicator: shouldShowMuteIndicator,
+                                       hasMessageStatusToken: cellContentToken.configs.messageStatusToken != nil)
+
         avatarStack.configure(config: avatarStackConfig,
                               measurement: avatarStackMeasurement,
                               subviews: avatarStackSubviews)
 
-        topRowStack.configure(config: topRowStackConfig,
-                              measurement: topRowStackMeasurement,
-                              subviews: topRowStackSubviews)
+        // topRowStack can only be configured for reuse if
+        // its subview list hasn't changed.
+        if let oldReuseToken = self.reuseToken,
+           oldReuseToken.hasMuteIndicator == newReuseToken.hasMuteIndicator {
+            topRowStack.configureForReuse(config: topRowStackConfig,
+                                          measurement: topRowStackMeasurement)
+        } else {
+            topRowStack.reset()
+            topRowStack.configure(config: topRowStackConfig,
+                                  measurement: topRowStackMeasurement,
+                                  subviews: topRowStackSubviews)
+        }
 
-        bottomRowStack.configure(config: bottomRowStackConfig,
-                                 measurement: bottomRowStackMeasurement,
-                                 subviews: bottomRowStackSubviews)
+        // bottomRowStack can only be configured for reuse if
+        // its subview list hasn't changed.
+        if let oldReuseToken = self.reuseToken,
+           oldReuseToken.hasMessageStatusToken == newReuseToken.hasMessageStatusToken {
+            bottomRowStack.configureForReuse(config: bottomRowStackConfig,
+                                             measurement: bottomRowStackMeasurement)
+        } else {
+            bottomRowStack.reset()
+            bottomRowStack.configure(config: bottomRowStackConfig,
+                                     measurement: bottomRowStackMeasurement,
+                                     subviews: bottomRowStackSubviews)
+        }
 
-        vStack.configure(config: vStackConfig,
-                         measurement: vStackMeasurement,
-                         subviews: vStackSubviews)
+        // vStack and outerHStack can always be configured for reuse.
+        if self.reuseToken != nil {
+            vStack.configureForReuse(config: vStackConfig,
+                                     measurement: vStackMeasurement)
 
-        outerHStack.configure(config: outerHStackConfig,
-                              measurement: outerHStackMeasurement,
-                              subviews: outerHStackSubviews)
+            outerHStack.configureForReuse(config: outerHStackConfig,
+                                          measurement: outerHStackMeasurement)
+        } else {
+            vStack.configure(config: vStackConfig,
+                             measurement: vStackMeasurement,
+                             subviews: vStackSubviews)
+
+            outerHStack.configure(config: outerHStackConfig,
+                                  measurement: outerHStackMeasurement,
+                                  subviews: outerHStackSubviews)
+        }
+
+        self.reuseToken = newReuseToken
     }
 
     // MARK: - Stack Configs
@@ -625,108 +659,111 @@ public class HomeViewCell: UITableViewCell {
     // MARK: - Label Configs
 
     private static func attributedSnippet(configuration: Configuration) -> NSAttributedString {
-        let thread = configuration.thread
-        let isBlocked = configuration.isBlocked
-        let hasUnreadStyle = configuration.hasUnreadStyle
+        owsAssertDebug(configuration.thread.homeViewInfo != nil)
+        let snippet: HVSnippet = configuration.thread.homeViewInfo?.snippet ?? .none
 
-        let snippetText = NSMutableAttributedString()
-        if isBlocked {
-            // If thread is blocked, don't show a snippet or mute status.
-            snippetText.append(NSLocalizedString("HOME_VIEW_BLOCKED_CONVERSATION",
-                                                 comment: "Table cell subtitle label for a conversation the user has blocked."),
+        switch snippet {
+        case .blocked:
+            return NSAttributedString(string: NSLocalizedString("HOME_VIEW_BLOCKED_CONVERSATION",
+                                                                comment: "Table cell subtitle label for a conversation the user has blocked."),
+                                      attributes: [
+                                        .font: snippetFont,
+                                        .foregroundColor: snippetColor
+                                      ])
+        case .pendingMessageRequest(let addedToGroupByName):
+            // If you haven't accepted the message request for this thread, don't show the latest message
+
+            // For group threads, show who we think added you (if we know)
+            if let addedToGroupByName = addedToGroupByName {
+                let addedToGroupFormat = NSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
+                                                           comment: "Table cell subtitle label for a group the user has been added to. {Embeds inviter name}")
+                return NSAttributedString(string: String(format: addedToGroupFormat, addedToGroupByName),
+                                          attributes: [
+                                            .font: snippetFont,
+                                            .foregroundColor: snippetColor
+                                          ])
+            } else {
+                // Otherwise just show a generic "message request" message
+                let text = NSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
+                                             comment: "Table cell subtitle label for a conversation the user has not accepted.")
+                return NSAttributedString(string: text,
+                                          attributes: [
+                                            .font: snippetFont,
+                                            .foregroundColor: snippetColor
+                                          ])
+            }
+        case .draft(let draftText):
+            let snippetText = NSMutableAttributedString()
+            snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
+                                                 comment: "A prefix indicating that a message preview is a draft"),
+                               attributes: [
+                                .font: snippetFont.ows_italic,
+                                .foregroundColor: snippetColor
+                               ])
+            snippetText.append(draftText,
                                attributes: [
                                 .font: snippetFont,
                                 .foregroundColor: snippetColor
                                ])
-        } else if thread.hasPendingMessageRequest {
-            // If you haven't accepted the message request for this thread, don't show the latest message
-
-            // For group threads, show who we think added you (if we know)
-            if let addedToGroupByName = thread.homeViewInfo?.addedToGroupByName {
-                let addedToGroupFormat = NSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
-                                                           comment: "Table cell subtitle label for a group the user has been added to. {Embeds inviter name}")
-                snippetText.append(String(format: addedToGroupFormat, addedToGroupByName),
-                                   attributes: [
-                                    .font: snippetFont,
-                                    .foregroundColor: snippetColor
-                                   ])
-
-                // Otherwise just show a generic "message request" message
-            } else {
-                snippetText.append(NSLocalizedString("HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
-                                                     comment: "Table cell subtitle label for a conversation the user has not accepted."),
-                                   attributes: [
-                                    .font: snippetFont,
-                                    .foregroundColor: snippetColor
-                                   ])
-            }
-        } else {
-            if let draftText = thread.homeViewInfo?.draftText?.nilIfEmpty,
-               !hasUnreadStyle {
-                snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
-                                                     comment: "A prefix indicating that a message preview is a draft"),
-                                   attributes: [
-                                    .font: snippetFont.ows_italic,
-                                    .foregroundColor: snippetColor
-                                   ])
-                snippetText.append(draftText,
-                                   attributes: [
-                                    .font: snippetFont,
-                                    .foregroundColor: snippetColor
-                                   ])
-            } else if thread.homeViewInfo?.hasVoiceMemoDraft == true,
-                      !hasUnreadStyle {
-                snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
-                                                     comment: "A prefix indicating that a message preview is a draft"),
-                                   attributes: [
-                                    .font: snippetFont.ows_italic,
-                                    .foregroundColor: snippetColor
-                                   ])
-                snippetText.append("🎤",
-                                   attributes: [
-                                    .font: snippetFont,
-                                    .foregroundColor: snippetColor
-                                   ])
-                snippetText.append(" ",
-                                   attributes: [
-                                    .font: snippetFont,
-                                    .foregroundColor: snippetColor
-                                   ])
-                snippetText.append(NSLocalizedString("ATTACHMENT_TYPE_VOICE_MESSAGE",
-                                                     comment: "Short text label for a voice message attachment, used for thread preview and on the lock screen"),
-                                   attributes: [
-                                    .font: snippetFont,
-                                    .foregroundColor: snippetColor
-                                   ])
-            } else {
-                if let lastMessageText = thread.homeViewInfo?.lastMessageText.filterStringForDisplay().nilIfEmpty {
-                    if let senderName = thread.homeViewInfo?.lastMessageSenderName {
-                        snippetText.append(senderName,
-                                           attributes: [
-                                            .font: snippetFont.ows_medium,
-                                            .foregroundColor: snippetColor
-                                           ])
-                        snippetText.append(":",
-                                           attributes: [
-                                            .font: snippetFont.ows_medium,
-                                            .foregroundColor: snippetColor
-                                           ])
-                        snippetText.append(" ",
-                                           attributes: [
-                                            .font: snippetFont
-                                           ])
-                    }
-
-                    snippetText.append(lastMessageText,
-                                       attributes: [
+            return snippetText
+        case .voiceMemoDraft:
+            let snippetText = NSMutableAttributedString()
+            snippetText.append(NSLocalizedString("HOME_VIEW_DRAFT_PREFIX",
+                                                 comment: "A prefix indicating that a message preview is a draft"),
+                               attributes: [
+                                .font: snippetFont.ows_italic,
+                                .foregroundColor: snippetColor
+                               ])
+            snippetText.append("🎤",
+                               attributes: [
+                                .font: snippetFont,
+                                .foregroundColor: snippetColor
+                               ])
+            snippetText.append(" ",
+                               attributes: [
+                                .font: snippetFont,
+                                .foregroundColor: snippetColor
+                               ])
+            snippetText.append(NSLocalizedString("ATTACHMENT_TYPE_VOICE_MESSAGE",
+                                                 comment: "Short text label for a voice message attachment, used for thread preview and on the lock screen"),
+                               attributes: [
+                                .font: snippetFont,
+                                .foregroundColor: snippetColor
+                               ])
+            return snippetText
+        case .contactSnippet(let lastMessageText):
+            return NSAttributedString(string: lastMessageText,
+                                      attributes: [
                                         .font: snippetFont,
                                         .foregroundColor: snippetColor
-                                       ])
-                }
-            }
+                                      ])
+        case .groupSnippet(let lastMessageText, let senderName):
+            let snippetText = NSMutableAttributedString()
+            snippetText.append(senderName,
+                               attributes: [
+                                .font: snippetFont.ows_medium,
+                                .foregroundColor: snippetColor
+                               ])
+            snippetText.append(":",
+                               attributes: [
+                                .font: snippetFont.ows_medium,
+                                .foregroundColor: snippetColor
+                               ])
+            snippetText.append(" ",
+                               attributes: [
+                                .font: snippetFont
+                               ])
+            snippetText.append(lastMessageText,
+                               attributes: [
+                                .font: snippetFont,
+                                .foregroundColor: snippetColor
+                               ])
+            return snippetText
+        case .none:
+            // TODO: Is this expected?
+            owsFailDebug("No snippet.")
+            return NSAttributedString(string: "")
         }
-
-        return snippetText
     }
 
     private static func shouldShowMuteIndicator(configuration: Configuration) -> Bool {
@@ -805,10 +842,12 @@ public class HomeViewCell: UITableViewCell {
             cvview.reset()
         }
 
+        // Some ManualStackViews are _NOT_ reset to facilitate reuse.
+
         cellContentToken = nil
         avatarView.image = nil
         avatarView.reset()
-        typingIndicatorView.reset()
+        typingIndicatorView.resetForReuse()
 
         NotificationCenter.default.removeObserver(self)
     }
