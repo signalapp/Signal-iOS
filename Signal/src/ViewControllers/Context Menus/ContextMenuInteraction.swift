@@ -48,7 +48,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
     private var longPressGestureRecognizer: UIGestureRecognizer = {
         let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressRecognized(sender:)))
-        recognizer.minimumPressDuration = 0.1
+        recognizer.minimumPressDuration = 0.2
         return recognizer
     }()
 
@@ -278,6 +278,10 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     }
 
     public func initiatingGestureRecognizerDidEnd() {
+        cancelPresentationGesture()
+    }
+
+    public func cancelPresentationGesture() {
         gestureEligibleForMenuPresentation = false
 
         if contextMenuController == nil, let configuarion = self.configuration {

@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)collectionViewWillChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize;
 - (void)collectionViewDidChangeSizeFrom:(CGSize)oldSize to:(CGSize)newSize;
 - (void)collectionViewWillAnimate;
+- (BOOL)collectionViewShouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer;
 
 @end
 

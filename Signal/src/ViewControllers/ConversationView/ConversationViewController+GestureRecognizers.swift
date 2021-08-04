@@ -16,7 +16,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 
         if FeatureFlags.contextMenus {
             collectionViewContextMenuGestureRecognizer.addTarget(self, action: #selector(handleLongPressGesture))
-            collectionViewContextMenuGestureRecognizer.minimumPressDuration = 0.1
+            collectionViewContextMenuGestureRecognizer.minimumPressDuration = 0.2
             collectionViewContextMenuGestureRecognizer.delegate = self
             collectionView.addGestureRecognizer(collectionViewContextMenuGestureRecognizer)
         }
@@ -71,7 +71,13 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
     }
 
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        // Support standard long press recognizing for body text cases, and context menu long press recognizing for everything else 
+
+        // Allow the context menu gesture recognizer to recognize simultaneously with scroll
+        if gestureRecognizer == collectionViewContextMenuGestureRecognizer && otherGestureRecognizer == collectionView.panGestureRecognizer {
+            return true
+        }
+
+        // Support standard long press recognizing for body text cases, and context menu long press recognizing for everything else
         let currentIsLongPressOrTap = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer || gestureRecognizer == collectionViewTapGestureRecognizer)
         let otherIsLongPressOrTap = (otherGestureRecognizer == collectionViewLongPressGestureRecognizer || otherGestureRecognizer == collectionViewContextMenuGestureRecognizer || otherGestureRecognizer == collectionViewTapGestureRecognizer)
         return currentIsLongPressOrTap && otherIsLongPressOrTap
