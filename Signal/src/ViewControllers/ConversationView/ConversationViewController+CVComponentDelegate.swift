@@ -720,6 +720,22 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        showDeliveryIssueWarningAlert(from: senderAddress)
+        // If the error message was added to a group thread, we must know that the failed decryption was
+        // associated with the current thread. Why?
+        //
+        // - If we fail to decrypt a message, the sender may have tagged the envelope with a groupId. That
+        // groupId is used to look up the source thread and insert this error message.
+        // - If there is no groupId on the envelope, we don't know anything about which thread the original
+        // message belongs to, so we fall back to inserting this message in the author's 1:1 thread.
+        // - There's no other information that would allow us to determine the originating thread other
+        // that this groupId field.
+        // - Therefore, if this error message was added to a group thread, we know we must have the right thread
+        // thread. If it's not in a group thread, we can't infer anything about the thread of the original message.
+        //
+        // Maybe one day the envelope will be annotated with additional information to always allow us to tie
+        // the failed decryption to the originating thread. But until then, this heuristic will always be correct.
+        // There's no reason to add an additional bit to the interactions db to track whether or not we know
+        // the originating thread.
+        showDeliveryIssueWarningAlert(from: senderAddress, isKnownThread: thread.isGroupThread)
     }
 }

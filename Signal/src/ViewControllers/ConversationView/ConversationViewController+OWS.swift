@@ -171,12 +171,18 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    public func showDeliveryIssueWarningAlert(from senderAddress: SignalServiceAddress) {
+    public func showDeliveryIssueWarningAlert(from senderAddress: SignalServiceAddress, isKnownThread: Bool) {
         let senderName = databaseStorage.read { transaction in
             Self.contactsManager.displayName(for: senderAddress, transaction: transaction)
         }
         let alertTitle = NSLocalizedString("ALERT_DELIVERY_ISSUE_TITLE", comment: "Title for delivery issue sheet")
-        let alertMessageFormat = NSLocalizedString("ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message. Embeds {{ sender name }}.")
+        let alertMessageFormat: String
+        if isKnownThread {
+            alertMessageFormat = NSLocalizedString("ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message. Embeds {{ sender name }}.")
+        } else {
+            alertMessageFormat = NSLocalizedString("ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT", comment: "Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}.")
+        }
+
         let alertMessage = String(format: alertMessageFormat, senderName)
 
         let headerImageView = UIImageView(image: .init(named: "delivery-issue"))
@@ -194,6 +200,15 @@ extension ConversationViewController {
             message: alertMessage)
         actionSheet.customHeader = headerView
         actionSheet.addAction(OWSActionSheets.okayAction)
+        actionSheet.addAction(
+            ActionSheetAction(
+                title: CommonStrings.learnMore,
+                accessibilityIdentifier: "learn_more",
+                style: .default
+            ) { _ in
+                UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/4404859745690")!)
+            }
+        )
         presentActionSheet(actionSheet)
     }
 }
