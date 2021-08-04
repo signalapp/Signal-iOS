@@ -24,6 +24,12 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
         AssertIsOnMainThread()
 
+        if let registrationDate = tsAccountManager.registrationDate(with: transaction.asAnyRead) {
+            guard Date().timeIntervalSince(registrationDate) >= delayAfterRegistration else {
+                return false
+            }
+        }
+
         switch self {
         case .introducingPins:
             // The PIN setup flow requires an internet connection and you to not already have a PIN
@@ -98,6 +104,25 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return false
         default:
             return true
+        }
+    }
+
+    // This much time must have passed since the user registered
+    // before the megaphone is ever presented.
+    var delayAfterRegistration: TimeInterval {
+        switch self {
+        case .contactPermissionReminder,
+             .notificationPermissionReminder:
+            return kDayInterval
+        case .introducingPins:
+            // Create a PIN after KBS network failure
+            return 2 * kHourInterval
+        case .pinReminder:
+            return 8 * kHourInterval
+        case .donateMegaphone:
+            return 5 * kDayInterval
+        default:
+            return 0
         }
     }
 

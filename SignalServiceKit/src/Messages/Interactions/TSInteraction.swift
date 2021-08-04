@@ -54,7 +54,7 @@ extension TSInteraction {
             case .nonBlockingIdentityChange:
                 // Otherwise all group threads with the recipient will percolate to the top of the inbox, even though
                 // there was no meaningful interaction.
-                return true
+                return false
             case .decryptionFailure:
                 if let replaceableInteraction = errorMessage as? OWSRecoverableDecryptionPlaceholder {
                     // Replaceable interactions may be temporarily hidden if we expect we'll be
@@ -64,7 +64,7 @@ extension TSInteraction {
                     return true
                 }
             default:
-                return false
+                return true
             }
         case let infoMessage as TSInfoMessage:
             switch infoMessage.messageType {

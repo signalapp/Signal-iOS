@@ -59,13 +59,15 @@ public class ConversationHeaderView: UIStackView {
     private let titleLabel: UILabel
     private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
-    private let avatarView = ConversationAvatarView(diameterPoints: 36,
-                                                    localUserDisplayMode: .noteToSelf)
+    private lazy var avatarView = ConversationAvatarView(
+        diameterPoints: avatarDiameterPoints,
+        localUserDisplayMode: .noteToSelf
+    )
+    private var avatarDiameterPoints: UInt {
+        traitCollection.verticalSizeClass == .compact ? 24 : 36
+    }
 
     public required init() {
-        // remove default border on avatarView
-        avatarView.layer.borderWidth = 0
-
         titleLabel = UILabel()
         titleLabel.textColor = Theme.navbarTitleColor
         titleLabel.lineBreakMode = .byTruncatingTail
@@ -140,6 +142,16 @@ public class ConversationHeaderView: UIStackView {
     public func updateAvatar() {
         databaseStorage.read { transaction in
             self.avatarView.updateImage(transaction: transaction)
+        }
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        databaseStorage.read { transaction in
+            avatarView.reconfigure(
+                diameterPoints: avatarDiameterPoints,
+                transaction: transaction
+            )
         }
     }
 
