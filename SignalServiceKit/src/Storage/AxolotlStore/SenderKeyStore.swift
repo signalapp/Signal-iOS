@@ -32,46 +32,25 @@ public class SenderKeyStore: NSObject {
         addresses: [SignalServiceAddress],
         writeTx: SDSAnyWriteTransaction
     ) throws -> [SignalServiceAddress] {
-
-        let allRecipients = addresses.compactMap {
-            SignalRecipient.get(address: $0, mustHaveDevices: false, transaction: writeTx)
-        }
-        guard allRecipients.count == addresses.count,
-              allRecipients.allSatisfy({ $0.address.uuid != nil }) else {
-            owsFailDebug("All sender key recipients must have UUID")
-            return []
-        }
-
-        let allDevicesMap: [SignalServiceAddress: Set<UInt32>] = try allRecipients
-            .reduce(into: [:]) { (builder, recipient) in
-                if let deviceArray = recipient.devices.array as? [NSNumber] {
-                    builder[recipient.address] = Set(deviceArray.map { $0.uint32Value })
-                } else {
-                    throw OWSAssertionError("Invalid device array")
-                }
-            }
-
-        return storageLock.withLock {
+        var addressesNeedingSenderKey = Set(addresses)
+        try storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
-            guard let deliveredDevices = getKeyMetadata(for: distributionId, readTx: writeTx)?.deliveredDevices else {
-                return Array(allDevicesMap.keys)
+            guard let keyMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
+                // No cached metadata. All recipients will need an SKDM
+                return
             }
 
-            return Array(allDevicesMap.filter { (address: SignalServiceAddress, currentDeviceSet: Set<UInt32>) in
-                guard let uuid = address.uuid else {
-                    owsFailDebug("Invalid address.")
-                    return false
+            // For each candidate SKDM recipient that we have stored in our key metadata, we want to check that no new
+            // devices have been added. If there aren't any new devices, we can remove that recipient from the set of
+            // addresses that we will send an SKDM too
+            for existingRecipient in keyMetadata.keyRecipients.values {
+                let currentRecipientState = try KeyRecipient.currentState(for: existingRecipient.ownerAddress, transaction: writeTx)
+                if existingRecipient.containsEveryDevice(from: currentRecipientState) {
+                    addressesNeedingSenderKey.remove(existingRecipient.ownerAddress)
                 }
-
-                // We should send a sender key distribution message to the candidate address if its
-                // current device set contains devices that we haven't already delivered a sender key to
-                if let alreadyDeliveredDevices = deliveredDevices[uuid] {
-                    return currentDeviceSet.subtracting(alreadyDeliveredDevices).isEmpty == false
-                } else {
-                    return true
-                }
-            }.keys)
+            }
         }
+        return Array(addressesNeedingSenderKey)
     }
 
     /// Records that the current sender key for the `thread` has been delivered to `participant`
@@ -79,22 +58,13 @@ public class SenderKeyStore: NSObject {
         for thread: TSGroupThread,
         to address: SignalServiceAddress,
         writeTx: SDSAnyWriteTransaction) throws {
-        guard let uuid = address.uuid else { throw OWSAssertionError("Invalid address") }
-        guard let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: writeTx) else {
-            throw OWSAssertionError("Missing recipient")
-        }
-        guard let currentDeviceSet = (recipient.devices.array as? [NSNumber])?.map({ $0.uint32Value }) else {
-            throw OWSAssertionError("Invalid device set")
-        }
-
-        storageLock.withLock {
+        try storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
             guard let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
-                owsFailDebug("Failed to look up metadata")
-                return
+                throw OWSAssertionError("Failed to look up key metadata")
             }
             var updatedMetadata = existingMetadata
-            updatedMetadata.deliveredDevices[uuid, default: Set()].formUnion(currentDeviceSet)
+            updatedMetadata.keyRecipients[address] = try KeyRecipient.currentState(for: address, transaction: writeTx)
             setMetadata(updatedMetadata, for: distributionId, writeTx: writeTx)
         }
     }
@@ -104,8 +74,6 @@ public class SenderKeyStore: NSObject {
         for thread: TSGroupThread,
         address: SignalServiceAddress,
         writeTx: SDSAnyWriteTransaction) {
-
-        guard let uuid = address.uuid else { return }
         storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
             guard let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
@@ -113,7 +81,7 @@ public class SenderKeyStore: NSObject {
                 return
             }
             var updatedMetadata = existingMetadata
-            updatedMetadata.deliveredDevices[uuid] = Set()
+            updatedMetadata.keyRecipients[address] = nil
             setMetadata(updatedMetadata, for: distributionId, writeTx: writeTx)
         }
     }
@@ -165,8 +133,9 @@ public class SenderKeyStore: NSObject {
     }
 }
 
-extension SenderKeyStore: SignalClient.SenderKeyStore {
+// MARK: - <SignalClient.SenderKeyStore>
 
+extension SenderKeyStore: SignalClient.SenderKeyStore {
     public func storeSenderKey(
         from sender: ProtocolAddress,
         distributionId: UUID,
@@ -256,8 +225,76 @@ fileprivate extension SenderKeyStore {
 }
 
 // MARK: - Model
+// MARK: KeyRecipient
 
-private struct KeyMetadata: Codable {
+/// Stores information about a recipient of a sender key
+/// Helpful for diffing across deviceId and registrationId changes.
+/// If a new device shows up, we need to make sure that we send a copy of our sender key to the address
+private struct KeyRecipient: Codable, Dependencies {
+
+    struct Device: Codable, Hashable {
+        let deviceId: UInt32
+        let registrationId: UInt32?
+
+        init(deviceId: UInt32, registrationId: UInt32?) {
+            self.deviceId = deviceId
+            self.registrationId = registrationId
+        }
+
+        static func ==(lhs: Device, rhs: Device) -> Bool {
+            // We can only be sure that a device hasn't changed if the registrationIds are the same
+            // If either registrationId is nil, that means the Device was constructed before we had a session
+            // established for the device.
+            //
+            // If we end up trying to send a SenderKey message to a device without a session, this ensures that
+            // this ensures that we will always send an SKDM to that device. A session will be created in order to
+            // send the SKDM, so by the time we're ready to mark success we should have something to store.
+            guard lhs.registrationId != nil, rhs.registrationId != nil else { return false }
+            return lhs.registrationId == rhs.registrationId && lhs.deviceId == rhs.deviceId
+        }
+    }
+
+    let ownerAddress: SignalServiceAddress
+    let devices: Set<Device>
+    private init(ownerAddress: SignalServiceAddress, devices: Set<Device>) {
+        self.ownerAddress = ownerAddress
+        self.devices = devices
+    }
+
+    /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
+    static func currentState(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) throws -> KeyRecipient {
+        guard let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: transaction),
+              let deviceIds = recipient.devices.array as? [NSNumber] else {
+            throw OWSAssertionError("Invalid device array")
+        }
+
+        let protocolAddresses = try deviceIds.map { try ProtocolAddress(from: address, deviceId: $0.uint32Value) }
+        let devices: [Device] = try protocolAddresses.map {
+            // We have to fetch the registrationId since deviceIds can be reused.
+            // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
+            // deviceIds that will need an SKDM
+            let registrationId = try Self.sessionStore.loadSession(for: $0, context: transaction)?.remoteRegistrationId()
+            return Device(deviceId: $0.deviceId, registrationId: registrationId)
+        }
+        return KeyRecipient(ownerAddress: address, devices: Set(devices))
+    }
+
+    /// Returns `true` as long as the argument does not contain any devices that are unknown to the receiver
+    func containsEveryDevice(from other: KeyRecipient) -> Bool {
+        guard ownerAddress == other.ownerAddress else {
+            owsFailDebug("Address mismatch")
+            return false
+        }
+
+        let newDevices = other.devices.subtracting(self.devices)
+        return newDevices.isEmpty
+    }
+}
+
+// MARK: KeyMetadata
+
+/// Stores information about a sender key, it's owner, it's distributionId, and all recipients who have been sent the sender key
+private struct KeyMetadata {
     let distributionId: SenderKeyStore.DistributionId
     let ownerUuid: UUID
     let ownerDeviceId: UInt32
@@ -283,7 +320,7 @@ private struct KeyMetadata: Codable {
     }
 
     let creationDate: Date
-    var deliveredDevices: [UUID: Set<UInt32>]
+    var keyRecipients: [SignalServiceAddress: KeyRecipient]
     var isForEncrypting: Bool
 
     init(record: SenderKeyRecord, sender: ProtocolAddress, distributionId: SenderKeyStore.DistributionId) throws {
@@ -298,7 +335,7 @@ private struct KeyMetadata: Codable {
 
         self.isForEncrypting = sender.isCurrentDevice
         self.creationDate = Date()
-        self.deliveredDevices = [:]
+        self.keyRecipients = [:]
     }
 
     var isValid: Bool {
@@ -308,6 +345,35 @@ private struct KeyMetadata: Codable {
         // If we're using it for encryption, it must be less than a month old
         let expirationDate = creationDate.addingTimeInterval(kMonthInterval)
         return (expirationDate.isAfterNow && isForEncrypting)
+    }
+}
+
+extension KeyMetadata: Codable {
+    enum CodingKeys: String, CodingKey {
+        case distributionId
+        case ownerUuid
+        case ownerDeviceId
+        case recordData
+
+        case creationDate
+        case keyRecipients
+        case isForEncrypting
+    }
+
+    init(from decoder: Decoder) throws {
+        let container   = try decoder.container(keyedBy: CodingKeys.self)
+
+        distributionId  = try container.decode(SenderKeyStore.DistributionId.self, forKey: .distributionId)
+        ownerUuid       = try container.decode(UUID.self, forKey: .ownerUuid)
+        ownerDeviceId   = try container.decode(UInt32.self, forKey: .ownerDeviceId)
+        recordData      = try container.decode([UInt8].self, forKey: .recordData)
+        creationDate    = try container.decode(Date.self, forKey: .creationDate)
+        isForEncrypting = try container.decode(Bool.self, forKey: .isForEncrypting)
+
+        // KeyRecipients is a V2 key replacing a different type that stored the same info, so it may not exist.
+        // A migration is overkill since these keys will expire after a month anyway. Resetting our keyRecipients
+        // to an empty dict will just mean we resend an SKDM before it's necessary
+        keyRecipients = try container.decodeIfPresent([SignalServiceAddress: KeyRecipient].self, forKey: .keyRecipients) ?? [:]
     }
 }
 
