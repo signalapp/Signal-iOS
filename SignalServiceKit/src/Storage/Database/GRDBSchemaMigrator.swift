@@ -107,6 +107,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createThreadAssociatedData
         case addServerGuidToInteractions
         case addMessageSendLog
+        case updatePendingReadReceipts
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1246,6 +1247,19 @@ public class GRDBSchemaMigrator: NSObject {
                     on: "MessageSendLog_Message",
                     columns: ["uniqueId"]
                 )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.updatePendingReadReceipts.rawValue) { db in
+            do {
+                try db.alter(table: "pending_read_receipts") { (table: TableAlteration) -> Void in
+                    table.add(column: "messageUniqueId", .text)
+                }
+                try db.alter(table: "pending_viewed_receipts") { (table: TableAlteration) -> Void in
+                    table.add(column: "messageUniqueId", .text)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }
