@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // Since we need to persist *both* the error and the replacement message, we adjust the placeholder's timestamp
 // slightly to resolve the timestamp collision.
-- (void)decrementTimestamp;
+- (void)adjustTimestamp:(uint64_t)timestamp;
 
 // --- CODE GENERATION MARKER
 
