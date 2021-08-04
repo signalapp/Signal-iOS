@@ -112,6 +112,12 @@
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Primljeno na znanje";
 
+/* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+
+/* Title for delivery issue sheet */
+"ALERT_DELIVERY_ISSUE_TITLE" = "Problem s isporukom";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Odbaci";
 
@@ -137,7 +143,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Odgovori";
 
 /* notification body */
-"APN_Message" = "Nova poruka!";
+"APN_Message" = "Možda imate novih poruka";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
@@ -213,6 +219,15 @@
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Pohranjeno";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Sporiji, veći protok";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Brži, manji protok";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
@@ -1609,6 +1624,9 @@
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
 
+/* Error message for a decryption failure. Embeds {{sender short name}}. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
 
@@ -1784,7 +1802,7 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Samo administratori ove grupe mogu započeti poziv.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
@@ -2048,19 +2066,19 @@
 "GROUP_INVITES_VIEW_TITLE" = "Member Invites";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Grupne su postavke promijenjene i svi članovi mogu slati poruke.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Izmijenili ste grupne postavke i dopustili svim članovima da šalju poruke.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Grupne su postavke promijenjene i samo administratori mogu slati poruke.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Izmijenili ste grupne postavke i dopustili samo administratorima da šalju poruke.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
@@ -2492,7 +2510,7 @@
 "GROUP_YOU_LEFT" = "Napustili ste grupu.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "administratori";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
@@ -3075,6 +3093,27 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+
+/* Context menu Reply button title */
+"CONTEXT_MENU_REPLY" = "Odgovori";
+
+/* Context menu Copy button title */
+"CONTEXT_MENU_COPY" = "Kopiraj";
+
+/* Context menu Info button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu Delete button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Izbriši";
+
+/* Context menu Share button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Dijeli";
+
+/* Context menu Forward button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Proslijedi";
+
+/* Context menu Select button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Select";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
@@ -4327,9 +4366,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "Možda imate novih poruka";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Označi kao pročitano";
 
@@ -4891,6 +4927,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Želite li poslati pozivnicu na Signal sljedećem broju:";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "Visoki";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "Standardni";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
 
@@ -5016,6 +5058,15 @@
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Data Usage";
@@ -5628,6 +5679,12 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "App Security";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";

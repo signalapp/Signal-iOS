@@ -112,6 +112,12 @@
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "ਸਮਝ ਗਏ";
 
+/* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+
+/* Title for delivery issue sheet */
+"ALERT_DELIVERY_ISSUE_TITLE" = "ਡਿਲਿਵਰੀ ਮਸਲਾ";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "ਰੱਦ ਕਰੋ";
 
@@ -125,19 +131,19 @@
 "ALERT_SAVE" = "ਰੱਖੋ ";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "You have no groups in common with this person. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "ਇਸ ਵਿਅਕਤੀ ਨਾਲ ਤੁਹਾਡੇ ਕੋਈ ਸਾਂਝੇ ਗਰੁੱਪ ਨਹੀਂ ਹਨ। ਅਣਚਾਹੇ ਸੁਨੇਹਿਆਂ ਤੋਂ ਬਚਣ ਲਈ ਬੇਨਤੀਆਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਾਵਧਾਨੀ ਨਾਲ ਇਹਨਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "ਤੁਹਾਡਾ ਇਸ ਗਰੁੱਪ ਨਾਲ ਕੋਈ ਸਾਂਝਾ ਮੈਂਬਰ ਨਹੀਂ ਹੈ। ਅਣਚਾਹੇ ਸੁਨੇਹਿਆਂ ਤੋਂ ਬਚਣ ਲਈ ਬੇਨਤੀਆਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਧਿਆਨ ਨਾਲ ਸਮੀਖਿਆ ਕਰੋ।";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "ਸੁਨੇਹਾ ਬੇਨਤੀਆਂ ਬਾਰੇ";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "ਜਵਾਬ";
 
 /* notification body */
-"APN_Message" = "ਨਵਾਂ ਸੁਨੇਹਾ!";
+"APN_Message" = "ਤੁਹਾਡੇ ਕੋਲ ਨਵੇਂ ਸੁਨੇਹੇ ਹੋ ਸਕਦੇ ਹਨ";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ਲਾਂਚ ਨਹੀਂ ਹੋ ਸਕਦਾ. ਕਿਰਪਾ ਕਰਕੇ ਡੀਬੱਗ ਲੌਗ ਨੂੰ support@signal.org ਤੇ ਭੇਜੋ ਤਾਂ ਜੋ ਅਸੀਂ ਇਸ ਮੁੱਦੇ ਦਾ ਹੱਲ ਕਰ ਸਕੀਏ.";
@@ -213,6 +219,15 @@
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "ਸੰਭਾਲਿਆ";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "ਹੌਲੀ, ਵੱਧ ਡੇਟਾ";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "ਵੱਧ ਤੇਜ਼, ਘੱਟ ਡੇਟਾ";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "ਮੀਡੀਆ ਕੁਆਲਿਟੀ";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ ਨੂੰ ਸੁਨੇਹਾ ਦਿਓ";
@@ -323,34 +338,34 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ਸਪੀਕਰ";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "ਫ਼ੋਟੋ ਜੋੜੋ";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "ਕੋਈ ਦਿੱਖ ਅਤੇ ਰੰਗ ਚੁਣੋ ਜਾਂ ਆਪਣੇ ਛੋਟੇ ਦਸਤਖਤਾਂ ਨੂੰ ਪਸੰਦ ਅਨੁਸਾਰ ਬਣਾਓ";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "ਪ੍ਰੋਫ਼ਾਈਲ ਫ਼ੋਟੋ ਜੋੜੋ";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "ਰੰਗ ਚੁਣੋ";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "ਰੰਗ";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "ਟੈਕਸਟ";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "ਕੈਮਰਾ ";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "ਫੋਟੋ";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "ਅਵਤਾਰ ਚੁਣੋ";
 
 /* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "ਟੈਕਸਟ";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "ਵਾਪਸ";
@@ -428,7 +443,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ਪਾਬੰਦੀ ਹੋਏ ਸੰਪਰਕ ਤੁਹਾਨੂੰ ਕਾਲ ਨਹੀਂ ਕਰ ਜਾਂ ਸੁਨੇਹੇ ਨਹੀਂ ਭੇਜ ਸਕਣਗੇ।";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "ਨਵਾਂ: ਚਿਹਰੇ ਧੁੰਦਲੇ ਕਰੋ ਜਾਂ ਕਿਤੇ ਵੀ ਧੁੰਦਲਾ ਕਰਨ ਲਈ ਖਿੱਚੋ";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "ਜੋੜੋ";
@@ -545,7 +560,7 @@
 "CALL_VIEW_MUTE_LABEL" = "ਚੁੱਪ";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ ਨੂੰ ਤੁਹਾਡੇ ਤੋਂ ਬੇਨਤੀ ਵਾਲਾ ਸੁਨੇਹਾ ਮਿਲੇਗਾ। ਜਦੋਂ ਤੁਹਾਡਾ ਬੇਨਤੀ ਵਾਲਾ ਸੁਨੇਹਾ ਮਨਜ਼ੂਰ ਕਰ ਲਿਆ ਜਾਵੇਗਾ ਤਾਂ ਤੁਸੀਂ ਕਾਲ ਕਰ ਸਕਦੇ ਹੋ।";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "ਕੈਮਰਾ ਦੀ ਦਿਸ਼ਾ ਬਦਲੋ";
@@ -581,31 +596,31 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "ਦੇਸ਼ ਚੁਣੋ";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "ਇਹ ਹੈ ਚੈਟ ਦੇ ਰੰਗ ਦੀ ਝਲਕ।";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "ਇਹ ਹੈ ਚੈਟ ਦੇ ਰੰਗ ਦੀ ਝਲਕ।";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "ਹੋਰ ਬੱਬਲ";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "ਇਹ ਰੰਗ ਸਿਰਫ਼ ਤੁਹਾਨੂੰ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ।";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "ਇਹ ਰੰਗ ਸਿਰਫ਼ ਤੁਹਾਨੂੰ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ।";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "ਇਹ ਰੰਗ ਸਿਰਫ਼ ਤੁਹਾਨੂੰ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ।";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "ਆਟੋ";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "This custom color is used in 1 chat. Do you want to delete it?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "ਇਸ ਕਸਟਮ ਰੰਗ ਦੀ ਵਰਤੋਂ 1 ਚੈਟ ਵਿੱਚ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸ ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "This custom color is used in %@ chats. Do you want to delete it for all chats?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "%@ ਚੈਟਾਂ ਵਿੱਚ ਇਸ ਕਸਟਮ ਰੰਗ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਸਾਰੀਆਂ ਚੈਟਾਂ ਲਈ ਇਸ ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "ਰੰਗ ਨੂੰ ਹਟਾਓ";
@@ -617,19 +632,19 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "ਰੰਗ ਨੂੰ ਸੋਧੋ";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "%@ ਚੈਟਾਂ ਵਿੱਚ ਇਸਰੰਗ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਕੀ ਤੁਸੀਂ ਸਾਰੀਆਂ ਚੈਟਾਂ ਲਈ ਇਸ ਨੂੰ ਸੇਵ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "ਵਾਲਪੇਪਰ ਨਾਲ ਰੰਗ ਖੁੱਦ ਮਿਲਾਉਂਦਾ ਹੈ";
 
 /* Action text for char colors megaphone */
 "CHAT_COLORS_MEGAPHONE_ACTION" = "ਦਿੱਖ";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "ਹੁਣ ਤੁਸੀਂ ਗ੍ਰੈਡਿਐਂਟਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨਾਲ ਆਪਣੀ ਚੈਟ ਵਿੱਚ ਰੰਗ ਬਦਲ ਸਕਦੇ ਹੋ।";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "ਚੈਟ ਦੇ ਰੰਗਾਂ ਨੂੰ ਕਸਟਮ ਕਰੋ";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "ਚੈਟ ਰੰਗ ਤੇ ਵਾਲਪੇਪਰ";
@@ -638,7 +653,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "ਕਲਿਪਬੋਰਡ ਨਾਲ ਤੁਲਨਾ ਕਰੋ";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a chat with.";
+"COMPOSE_BUTTON_HINT" = "ਚੈਟ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕਿਸੇ Signal ਦੇ ਵਰਤੋਂਕਾਰ ਨੂੰ ਚੁਣੋ ਜਾਂ ਉਸ ਨੂੰ ਖੋਜੋ।";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "ਲਿਖੋ";
@@ -659,7 +674,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "ਤੁਹਾਡੇ ਕਿਹੜੇ ਸੰਪਰਕ Signal ਦੇ ਉਪਭੋਗਤਾ ਹਨ, ਇਹ ਦੇਖਣ ਲਈ ਤੁਸੀਂ iOS ਸੈਟਿੰਗ ਐਪ ਵਿੱਚ ਸੰਪਰਕਾਂ ਤਾਈਂ ਪਹੁੰਚ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "ਇਸ ਨਾਲ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਮਿਟਕੇ ਐਪਲੀਕੇਸ਼ਨ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ। ਇਹ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਤੋਂ ਬਾਅਦ ਐਪ ਬੰਦ ਹੋ ਜਾਵੇਗੀ।";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "ਕੀ ਤੁਸੀਂ ਵਾਕਈ ਸਾਰਾ ਡੇਟਾ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?";
@@ -740,7 +755,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "ਸੰਸਥਾ";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "ਆਪਣੀਆਂ ਚੈਟਾਂ ਵਿੱਚ ਸੰਪਰਕਾਂ ਦੇ ਨਾਂ ਅਤੇ ਫੋਟੋਆਂ ਨੂੰ ਵੇਖਣਾ।";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "ਹੇਠਾਂ “Settings ਉੱਤੇ ਜਾਓ” ਨੂੰ ਛੂਹੋ";
@@ -791,13 +806,13 @@
 "CONTACT_SUPPORT" = "ਸੰਪਰਕ ਸਹਾਇਤਾ";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "ਮੈਂ ਇੱਕ ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਬੇਨਤੀ ਕਰਨਾ ਚਾਹਾਂਗਾ";
 
 /* A brief localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "خصوصیت دی درخواست";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "ਮੇਰੇ ਕੋਲ ਇਸ ਐਪ ਲਈ ਫੀਡਬੈਕ ਹੈ";
 
 /* A brief localized representation of the 'feedback' support filter. */
 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "ਐਪ ਲਈ ਫੀਡਬੈਕ";
@@ -827,7 +842,7 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "ਕੁਝ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Something Not Working";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "ਕੁਝ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal ਤੁਹਾਡੀ ਸਹਾਇਤਾ ਬੇਨਤੀ ਪੂਰੀ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਰਹੀ.";
@@ -866,10 +881,10 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ਚੈਟ ਹਟਾਉਣੀ ਹੈ?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "ਸਿਰਫ ਐਡਮਿਨ ਹੀ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸੁਨੇਹੇ ਭੇਜ ਸਕਦੇ ਹਨ।";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "ਤੁਸੀਂ %@ ਤੋਂ ਵੱਧ ਵਾਰਤਾਲਾਪਾਂ ਨੂੰ ਨਹੀਂ ਚੁਣ ਸਕਦੇ ਹੋ।";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "ਗਰੁੱਪ";
@@ -914,7 +929,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "ਅਸਮਰੱਥ ਕੀਤਾ";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ਇਸਦੀ ਚੋਣ ਕਰੋ ਗਰੁੱਪ ਦੇ ਨਾਂ, ਫ਼ੋਟੋ, ਵੇਰਵੇ ਅਤੇ ਅਲੋਪ ਹੋਣ ਵਾਲੇ ਸੁਨੇਹਿਆਂ ਦੇ ਟਾਈਮਰ ਵਿੱਚ ਕੌਣ ਸੋਧ ਕਰ ਸਕਦਾ ਹੈ।";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ਆਡੀਓ";
@@ -956,7 +971,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "ਐਡਮਿਨ ਬਣਾਓ";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ ਇਸ ਗਰੁੱਪ ਅਤੇ ਇਸਦੇ ਮੈਂਬਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਣਗੇ।";
 
 /* Label for 'member invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "ਸੱਦੇ ";
@@ -977,7 +992,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "ਜੇ ਚੁੱਪ ਹੈ ਤਾਂ ਸੂਚਿਤ ਨਾ ਕਰੋ";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Receive notifications when you’re mentioned in muted chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "ਜਦੋਂ ਮਿਊਟ ਕੀਤੀਆਂ ਚੈਟਾਂ ਵਿੱਚ ਤੁਹਾਡਾ ਜ਼ਿਕਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਤਾਂ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰਨੀਆਂ ਹਨ? ";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ਜ਼ਿਕਰ";
@@ -1031,16 +1046,16 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ ਤੱਕ ਮੌਨ ਹੈ";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ ਗਰੁੱਪ ਸਾਂਝੇ";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "ਨਵਾਂ ਸੰਪਰਕ ਬਣਾਓ";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "ਕੋਈ ਗਰੁੱਪ ਸਾਂਝੇ ਨਹੀਂ";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
+"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 ਗਰੁੱਪ ਸਾਂਝਾ";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "ਇਜਾਜ਼ਤਾਂ";
@@ -1064,10 +1079,10 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "ਸਾਰੇ ਮੈਂਬਰ";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "ਚੁਣੋ ਕਿ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸੁਨੇਹੇ ਕੌਣ ਭੇਜ ਸਕਦਾ ਹੈ ਅਤੇ ਕਾਲਾਂ ਸ਼ੁਰੂ ਕਰ ਸਕਦਾ ਹੈ।";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "ਸੁਨੇਹੇ ਭੇਜੋ";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "ਸਿਰਫ ਐਡਮਿਨ";
@@ -1109,7 +1124,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "ਹੋਰ ਪੜ੍ਹੋ";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "ਕਲਿਪਬੋਰਡ ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "ਤੁਹਾਡੇ ਸੈਸ਼ਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ ਤੁਸੀਂ %@ ਕੋਲੋਂ ਭਵਿੱਖ ਦੇ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਕਰ ਪਾਓਗੇ, ਪਰ ਇਸ ਨਾਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਕਰਪਟ ਹੋ ਚੁੱਕੇ ਸੁਨੇਹੇ ਬਹਾਲ ਨਹੀਂ ਹੋਣਗੇ.";
@@ -1139,7 +1154,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "ਪਸੰਦੀਦਾ ਰੰਗ";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "ਗਰੇਡੀਐਂਟ ਦੀ ਦਿਸ਼ਾ ਬਦਲਣ ਲਈ ਡ੍ਰੈਗ ਕਰੋ";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ.";
@@ -1238,7 +1253,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "ਖਾਤਾ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ....";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਵਾਈ-ਫਾਈ ਜਾਂ ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ ਹੈ ਅਤੇ ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ਫੋਨ ਨੰਬਰ";
@@ -1355,7 +1370,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "ਇਸ QR ਕੋਡ ਨੂੰ ਦੂਜੇ ਡਿਵਾਈਸ ਦੇ ਫ੍ਰੇਮ ਵਿੱਚ ਟਿਕਾਓ.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ਆਪਣੀ ਪੁਰਾਣੀ ਡਿਵਾਈਸ ਤੇ ਪ੍ਰੋਂਪਟ ਨਹੀਂ ਦਿਖ ਰਹੇ?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "ਦੂਜੇ ਡਿਵਾਈਸ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...";
@@ -1385,7 +1400,7 @@
 "DISAPPEARING_MESSAGES" = "ਗਾਇਬ ਹੋ ਜਾਣ ਵਾਲੇ ਸੁਨੇਹੇ";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ਇਸ ਚੈਟ ਵਿਚਲੇ ਸੁਨੇਹੇ %@ ਤੋਂ ਬਾਅਦ ਗਾਇਬ ਹੋ ਜਾਣਗੇ।";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "ਪਸੰਦੀਦਾ ਸਮਾਂ";
@@ -1394,7 +1409,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "ਦਿਨ";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "ਸਮਰੱਥ ਕੀਤੇ ਹੋਣ 'ਤੇ, ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਭੇਜੇ ਅਤੇ ਪ੍ਰਾਪਤ ਕੀਤੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਦੇਖ ਲਏ ਜਾਣ ਤੋਂ ਬਾਅਦ ਇਹ ਅਲੋਪ ਹੋ ਜਾਣਗੇ।";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "ਇਸ ਸਮੇਂ, ਸੁਨੇਹੇ %@ ਤੋਂ ਬਾਅਦ ਗਾਇਬ ਹੁੰਦੇ ਹਨ";
@@ -1412,7 +1427,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "ਸਕਿੰਟ";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "ਜਦੋਂ ਚਾਲੂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਤੁਹਾਡੇ ਦੁਆਰਾ ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ ਨਵੀਂ ਗੱਲਬਾਤ ਵਿੱਚ ਭੇਜੇ ਅਤੇ ਪ੍ਰਾਪਤ ਕੀਤੇ ਗਏ ਨਵੇਂ ਸੁਨੇਹੇ ਵੇਖੇ ਜਾਣ ਤੋਂ ਬਾਅਦ ਲੁਕ ਜਾਣਗੇ।";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "ਹਫ਼ਟੇ";
@@ -1463,7 +1478,7 @@
 "DONATION_VIEW_TITLE" = "Signal ਨੂੰ ਤੁਹਾਡੇ ਵਰਗੇ ਲੋਕਾਂ ਦਾ ਆਸਰਾ ਹੈ।";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Signal ਦੀ ਟੀਮ ਓਪਨ ਸੋਰਸ ਪਰਦੇਦਾਰੀ ਤਕਨੀਕ ਵਿਕਸਤ ਕਰਨ ਦੇ ਮਿਸ਼ਨ ਲਈ ਵਚਨਬੱਧ ਹੈ ਜੋ ਆਜ਼ਾਦ ਖੁਲਾਸੇ ਦੀ ਰੱਖਿਆ ਕਰਦੀ ਹੈ ਅਤੇ ਸੁਰੱਖਿਅਤ ਵਿਸ਼ਵਵਿਆਪੀ ਸੰਚਾਰ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਂਦੀ ਹੈ। ਤੁਹਾਡਾ ਯੋਗਦਾਨ ਇਸ ਮਿਸ਼ਨ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ। ਕੋਈ ਇਸ਼ਤਿਹਾਰ ਨਹੀਂ। ਕੋਈ ਟਰੈਕਰ ਨਹੀਂ। ਕੋਈ ਮਜ਼ਾਕ ਨਹੀਂ।\n\nਤੁਹਾਡਾ ਦਾਨ ਦੁਨੀਆ ਭਰ ਦੇ ਲੱਖਾਂ ਲੋਕਾਂ ਦੁਆਰਾ ਪ੍ਰਾਈਵੇਟ ਅਤੇ ਤਤਕਾਲ ਸੰਚਾਰ ਲਈ ਵਰਤੇ ਜਾਂਦੇ ਐਪ ਦੇ ਵਿਕਾਸ ਕਰਨ ਲਈ, ਸਰਵਰਾਂ ਅਤੇ ਬੈਂਡਵਿਡਥ ਲਈ ਅਦਾਇਗੀ ਕਰਨ ਵਿੱਚ ਸਹਾਇਤਾ ਕਰਦਾ ਹੈ।";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "ਦਾਨ ਕਿਉਂ ਦੇਈਏ?";
@@ -1481,10 +1496,10 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ਵਰਤੋਂਕਾਰ ਵਲੋਂ Signal ਅੱਪਗਰੇਡ ਕੀਤੇ ਜਾਣ ਤੱਕ ਇਸ ਵਰਤੋਂਕਾਰ ਨੂੰ ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ।";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "ਗਰੁੱਪ ਦੀ %@ ਮੈਂਬਰਾਂ ਦੀ ਵੱਧ-ਤੋਂ ਵੱਧ ਸੀਮਾ ਪੂਰੀ ਹੋ ਗਈ।";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "ਨਾ-ਮੰਨਣਯੋਗ ਫੋਟੋ।";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "ਅਪਡੇਟ ਕਰੋ";
@@ -1499,13 +1514,13 @@
 "EDIT_ITEM_COPY_ACTION" = "ਕਾਪੀ ਕਰੋ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "ਹੈਲੋ,\n\nਕੁਝ ਚਿਰ ਤੋਂ ਮੈਂ ਆਪਣੇ iPhone ਵਿੱਚ ਚੈਟਾਂ ਨੂੰ ਗੁਪਤ ਰੱਖਣ ਲਈ Signal ਦੀ ਵਰਤੋਂ ਕਰ ਰਿਹਾ/ਰਹੀ ਹਾਂ। ਮੈਂ ਚਾਹਾਂਗਾ/ਗੀ ਕਿ ਤੁਸੀਂ ਵੀ ਇਸ ਨੂੰ ਇੰਸਟਾਲ ਕਰੋ, ਤਾਂ ਜੋ ਆਪਾਂ ਨੂੰ ਵਿਸ਼ਵਾਸ ਹੋ ਸਕੇ ਕਿ ਸਿਰਫ ਤੁਸੀਂ ਅਤੇ ਮੈਂ ਹੀ ਆਪਣੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਪੜ੍ਹ ਰਹੇ ਹਾਂ ਜਾਂ ਫਿਰ ਆਪਣੀਆਂ ਕਾਲਾਂ ਨੂੰ ਸੁਣ ਰਹੇ ਹਾਂ। \n\nSignal iPhones ਅਤੇ Android ਲਈ ਉਪਲਬਧ ਹੈ। ਇਸ ਨੂੰ ਇੱਥੋਂ ਪਾਓ: %@\n\nSignal ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਸਨੇਹਿਆਂ ਵਾਲੀ ਐਪ ਵਾਂਗ ਹੀ ਕੰਮ ਕਰਦੀ ਹੈ। ਅਸੀਂ ਤਸਵੀਰਾਂ ਅਤੇ ਵੀਡੀਓ ਭੇਜ ਸਕਦੇ ਹਾਂ, ਕਾਲਾਂ ਕਰ ਸਕਦੇ ਹਾਂ, ਅਤੇ ਗਰੁੱਪ ਚੈਟ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹਾਂ। ਸਭ ਤੋਂ ਵਧੀਆ ਗੱਲ ਹੈ ਕਿ, ਕੋਈ ਵੀ ਹੋਰ ਵਿਅਕਤੀ ਇਹਨਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਚੀਜ ਨੂੰ ਦੇਖ ਨਹੀਂ ਸਕੇਗਾ, ਇੱਥੋਂ ਤੱਕ ਕਿ Signal ਨੂੰ ਬਣਾਉਣ ਵਾਲੇ ਲੋਕ ਵੀ ਨਹੀਂ!\n\nਤੁਸੀਂ ਓਪਨ ਵਿਸਪਰ ਸਿਸਟਮਾਂ, Signal ਨੂੰ ਬਣਾਉਣ ਵਾਲੇ ਲੋਕਾਂ ਦੇ ਬਾਰੇ ਇੱਥੇ ਜਾ ਕੇ ਵਧੇਰੇ ਪੜ੍ਹ ਸਕਦੇ ਹੋ: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "ਆਓ Signal ਨੂੰ ਅਪਣਾਈਏ";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "ਤੁਹਾਡੀ ਡਿਵਾਈਸ ਈਮੇਲ ਭੇਜਣ ਲਈ ਕੰਨਫਿਗਰ ਨਹੀਂ ਹੈ। ਸਹਾਇਤਾ ਦੀ ਬੇਨਤੀ ਭੇਜਣ ਲਈ, ਆਪਣੀ ਡਿਵਾਈਸ ਤੇ ਈਮੇਲ ਸੈਟ ਅਪ ਕਰੋ ਜਾਂ ਈਮੇਲ ਕਰੋ support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "ਈਮੇਲ ਮੌਜੂਦ ਨਹੀਂ ਹੈ";
@@ -1562,10 +1577,10 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "ਸੁਨੇਹਾ ਭੇਜਣਾ ਅਸਫਲ ਰਿਹਾ ਹੈ।";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "ਈਮੇਲ ਐਪ ਖੋਲ੍ਹਣ ਵਿੱਚ ਅਸਫਲ";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "ਮਦਦ ਦੀ ਬੇਨਤੀ ਤਿਆਰ ਨਹੀਂ ਹੋ ਸਕੀ";
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "ਲੌਗ ਅੱਪਲੋਡ ਕਰਨ ਲਈ ਅਸਫ਼ਲ ਹੈ।";
@@ -1598,7 +1613,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "ਸਰਵਰ ਤਰੁਟੀ. ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "ਸੁਨੇਹਾ ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਸਰਵਰ ਨੂੰ ਵਰਤੋਂਕਾਰ ਤਸਦੀਕ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "ਇੱਕ ਅਣਪਛਾਤੀ ਤਰੁਟੀ ਹੋਈ.";
@@ -1608,6 +1623,9 @@
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "ਅਟੈਚਮੈਂਟ ਨੂੰ ਡਾਉਨਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ.";
+
+/* Error message for a decryption failure. Embeds {{sender short name}}. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ਡੁਪਲੀਕੇਟ ਸੁਨੇਹਾ ਮਿਲਿਆ ਹੈ।";
@@ -1655,7 +1673,7 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "ਨਾ-ਰਜਿਸਟਰ ਹੋਇਆ ਵਰਤੋਂਕਾਰ: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "ਤੁਹਾਡੇ Signal ਦਾ ਸੰਸਕਰਣ ਅੱਜ ਖਤਮ ਹੋ ਗਿਆ ਹੈ। ਸਭ ਤੋਂ ਹਾਲੀਆ ਸੰਸਕਰਣ ਵਿੱਚ ਅਪਡੇਟ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "ਤੁਹਾਡੇ Signal ਦਾ ਸੰਸਕਰਣ %d ਦਿਨਾਂ ਵਿੱਚ ਖਤਮ ਹੋ ਜਾਵੇਗਾ. ਸਭ ਤੋਂ ਹਾਲੀਆ ਸੰਸਕਰਣ ਵਿੱਚ ਅਪਡੇਟ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ.";
@@ -1688,7 +1706,7 @@
 "FORWARD_MESSAGE" = "ਸੁਨੇਹਾ ਅੱਗੇ ਭੇਜੋ";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
+"GALLERY_TILES_EMPTY_GALLERY" = "ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਵਾਰਤਾਲਾਪ ਵਿੱਚ ਕੋਈ ਵੀ ਮੀਡੀਆ ਨਹੀਂ ਹੈ।";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "ਹੋਰ ਵੀ ਨਵਾਂ ਮੀਡੀਆ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...";
@@ -1706,7 +1724,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "ਦਿਖਾਵਟ";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "ਫ਼ੋਟੋ ਜੋੜੋ";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "ਦੋਸਤਾਂ ਨੂੰ ਸੱਦਾ ਦਿਓ";
@@ -1775,19 +1793,19 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "ਗਰੁੱਪ ਦੀ ਮੈਂਬਰਸ਼ਿਪ “%@“ ਵੱਲੋਂ ਬਦਲੀ ਜਾ ਸਕਦੀ ਹੈ.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
+"GROUP_ADMIN_ONLY_WARNING" = "ਸਿਰਫ ਐਡਮਿਨ ਹੀ ਇਸ ਵਿਕਲਪ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹਨ।";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "ਤੁਸੀਂ ਉਹਨਾਂ ਦੀ ਆਡੀਓ ਜਾਂ ਵੀਡੀਓ ਨਹੀਂ ਲਵੋਗੇ ਅਤੇ ਉਹ ਤੁਹਾਡੀਆਂ।";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "ਸਿਰਫ਼ ਗਰੁੱਪ ਦੇ ਐਡਮਿਨ ਹੀ ਕਾਲ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹਨ।";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "ਗਰੁੱਪ ਕਾਲ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ";
@@ -1802,10 +1820,10 @@
 "GROUP_CALL_ERROR_DETAILS" = "ਹੋਰ ਜਾਣਕਾਰੀ";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "The maximum number of %ld participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "ਇਸ ਕਾਲ ਲਈ %ld ਭਾਗੀਦਾਰਾਂ ਤੱਕ ਦੀ ਵੱਧ ਤੋਂ ਵੱਧ ਗਿਣਤੀ ਪਹੁੰਚ ਗਈ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਅਜ਼ਮਾਓ।";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "ਇਸ ਕਾਲ ਲਈ ਭਾਗੀਦਾਰਾਂ ਦੀ ਵੱਧ ਤੋਂ ਵੱਧ ਗਿਣਤੀ ਪਹੁੰਚ ਗਈ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਅਜ਼ਮਾਓ।";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "ਕਾਲ ਭਰੀ ਹੋਈ ਹੈ";
@@ -1820,13 +1838,13 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "ਇਸ ਕਾਲ ਵਿੱਚ %ld ਲੋਕ ਹਨ";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, and %3$@ others are in this call";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, ਅਤੇ %3$@​ ਹੋਰ ਇਸ ਕਾਲ ਵਿੱਚ ਹਨ";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Can't receive audio & video from %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ ਤੋਂ ਆਡੀਓ ਤੇ ਵੀਡੀਓ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋ ਸਕਦੀ";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "This may be because they have not verified your safety number change, there's a problem with their device, or they have blocked you.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "ਅਜਿਹਾ ਸ਼ਾਇਦ ਇਸ ਲਈ ਹੋ ਸਕਦਾ ਹੈ ਕਿਉਂਕਿ ਉਹਨਾਂ ਨੇ ਤੁਹਾਡੇ ਸੁਰੱਖਿਆ ਨੰਬਰ ਵਿੱਚ ਤਬਦੀਲੀ ਨੂੰ ਪ੍ਰਮਾਣਿਤ ਨਹੀਂ ਕੀਤਾ ਹੈ, ਉਹਨਾਂ ਦੀ ਡਿਵਾਈਸ ਵਿੱਚ ਕੋਈ ਸਮੱਸਿਆ ਹੋ ਸਕਦੀ ਹੈ, ਜਾਂ ਉਹਨਾਂ ਨੇ ਤੁਹਾਡੇ ’ਤੇ ਪਾਬੰਦੀ ਲਗਾ ਦਿੱਤੀ ਹੈ।";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@ ਤੋਂ ਆਡੀਓ ਤੇ ਵੀਡੀਓ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋ ਸਕਦੀ ਹੈ";
@@ -1931,10 +1949,10 @@
 "GROUP_DESCRIPTION_MORE" = "ਹੋਰ";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "ਗਰੁੱਪ ਬਿਓਰਾ ਜੋੜੋ...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Group descriptions will be visible to members of this group and people who have been invited.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ਗਰੁੱਪ ਵੇਰਵੇ ਇਸ ਗਰੁੱਪ ਦੇ ਮੈਂਬਰਾਂ ਅਤੇ ਉਹਨਾਂ ਲੋਕਾਂ ਲਈ ਦਿੱਸਣਯੋਗ ਹੋਣਗੇ ਜਿਹਨਾਂ ਨੂੰ ਸੱਦਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "ਗਰੁੱਪ ਦੀ ਜਾਣਕਾਰੀ";
@@ -1943,94 +1961,94 @@
 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "ਗਰੁੱਪ ਦੀ ਜਾਣਕਾਰੀ (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "ਇੱਕ ਮੰਨਣਯੋਗ ਸੱਦਾ ਜੋੜਿਆ ਗਿਆ ਸੀ।";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "You added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "ਤੁਸੀਂ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦਾ ਜੋੜਿਆ।";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "You added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "ਤੁਸੀਂ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਜੋੜੇ।";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ ਨੇ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦਾ ਜੋੜਿਆ।";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ ਨੇ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਜੋੜੇ।";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਜੋੜੇ ਗਏ ਸਨ।";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "ਇੱਕ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦਾ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਸੀ।";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "ਤੁਸੀਂ ਇੱਕ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "ਤੁਸੀਂ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ ਨੇ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ ਨੇ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦਿਆਂ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਰੱਦ ਕਰ ਦਿੱਤੇ ਗਏ ਸਨ।";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+"GROUP_INVITE_LINK_DISABLED" = "ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਸੀ।";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "You turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ।";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "ਐਡਮਿਨ ਮਨਜ਼ੂਰੀ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਹੈ।";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "ਤੁਸੀਂ ਐਡਮਿਨ ਮਨਜ਼ੂਰੀ ਨੂੰ ਯੋਗ ਬਣਾ ਕੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਚਾਲੂ ਕੀਤਾ।";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਐਡਮਿਨ ਮਨਜ਼ੂਰੀ ਨੂੰ ਯੋਗ ਬਣਾ ਕੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਚਾਲੂ ਕੀਤਾ।";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "ਐਡਮਿਨ ਮਨਜ਼ੂਰੀ ਨੂੰ ਬੰਦ ਕਰਕੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਸੀ।";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "You turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "ਤੁਸੀਂ ਐਡਮਿਨ ਮਨਜ਼ੂਰੀ ਨੂੰ ਅਯੋਗ ਬਣਾ ਕੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਚਾਲੂ ਕੀਤਾ।";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਐਡਮਿਨ ਮਨਜ਼ੂਰੀ ਨੂੰ ਬੰਦ ਕਰ ਕੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਚਾਲੂ ਕੀਤਾ।";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = " The group link was reset.";
+"GROUP_INVITE_LINK_RESET" = "ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਸੀ।";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "You reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਦੇ ਲਿੰਕ ਨੂੰ ਰੀਸੈੱਟ ਕੀਤਾ।";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ reset the group link.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਰੀਸੈੱਟ ਕੀਤਾ।";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "ਗੁਰੱਪ ਲਿੰਕ ਲਈ ਪ੍ਰਬੰਧਕ ਪ੍ਰਵਾਨਗੀ ਬੰਦ ਕੀਤੀ ਗਈ ਸੀ।";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਮਨਜ਼ੂਰੀ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ਨੇ ਗਰੁੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਮਨਜ਼ੂਰੀ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "ਗੁਰੱਪ ਲਿੰਕ ਲਈ ਪ੍ਰਬੰਧਕ ਪ੍ਰਵਾਨਗੀ ਚਾਲੂ ਕੀਤੀ ਗਈ ਸੀ।";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "You turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਮਨਜ਼ੂਰੀ ਨੂੰ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ਨੇ ਗਰੁੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਮਨਜ਼ੂਰੀ ਨੂੰ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਆਪਣੇ-ਆਪ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਉਹਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਸੱਦਾ ਦਿੱਤਾ ਗਿਆ ਹੈ, ਅਤੇ ਜਿੰਨਾਂ ਚਿਰ ਉਹ ਸਵੀਕਾਰ ਨਹੀਂ ਕਰ ਲੈਂਦੇ, ਉਹ ਗਰੁੱਪ ਦੇ ਕੋਈ ਸੁਨੇਹੇ ਨਹੀਂ ਦੇਖ ਪਾਉਣਗੇ.";
@@ -2048,28 +2066,28 @@
 "GROUP_INVITES_VIEW_TITLE" = "ਮੈਂਬਰ ਸੱਦੇ";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਸੀ ਤਾਂ ਜੋ ਸਾਰੇ ਮੈਂਬਰ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਤਾਂ ਜੋ ਸਾਰੇ ਮੈਂਬਰ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਤਾਂ ਜੋ ਸਾਰੇ ਮੈਂਬਰ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਸੀ ਤਾਂ ਜੋ ਸਿਰਫ਼ ਐਡਮਿਨ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਤਾਂ ਜੋ ਸਿਰਫ਼ ਐਡਮਿਨ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਤਾਂ ਜੋ ਸਿਰਫ਼ ਐਡਮਿਨ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "This group link is no longer valid.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ਇਹ ਸਮੂਹ ਲਿੰਕ ਹੁਣ ਸਰਗਰਮ ਨਹੀਂ ਹੈ।";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "ਗਰੁੱਪ";
@@ -2081,7 +2099,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "ਕੀ ਤੁਸੀਂ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣਾ ਅਤੇ ਇਸਦੇ ਮੈਂਬਰਾਂ ਨਾਲ ਆਪਣਾ ਨਾਮ ਅਤੇ ਤਸਵੀਰ ਸਾਂਝੀ ਕਰਨੀ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "ਕਿਰਪਾ ਦੇਖੋ ਕਿ ਤੁਸੀਂ ਆਨਲਾਈਨ ਹੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ.";
@@ -2090,37 +2108,37 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ|";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "ਇਹ ਇੱਕ ਵੈਧ ਗਰੁੱਪ ਲਿੰਕ ਨਹੀਂ ਹੈ। ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਪੂਰਾ ਲਿੰਕ ਬਰਕਰਾਰ ਅਤੇ ਸਹੀ ਹੈ।";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "ਅਵੈਧ ਲਿੰਕ";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਇਸ ਡਿਵਾਈਸ ’ਤੇ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ ਸ਼ਾਮਲ ਹੋਣ ਵਾਲੇ ਨਵੇਂ ਮੈਂਬਰਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਲਈ ਕਿਸੇ ਐਡਮਿਨ ਦੀ ਲੋੜ ਹੈ।";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "ਨਵੇਂ ਮੈਂਬਰਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦਿਓ";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "ਲਿੰਕ ਸਮਰੱਥ ਅਤੇ ਸਾਂਝਾ ਕਰੋ";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Share this link with friends to let them quickly join this group.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "ਦੋਸਤਾਂ ਨਾਲ ਇਹ ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ ਤਾਂ ਜੋ ਉਹ ਜਲਦੀ ਨਾਲ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਸਕਣ।";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "ਦੋਸਤਾਂ ਨੂੰ ਸੱਦਾ ਦਿਓ";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invite friends to your group via the group link";
+"GROUP_LINK_PROMOTION_UPDATE" = "ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ ਦੋਸਤਾਂ ਨੂੰ ਆਪਣੇ ਗਰੁੱਪ ਲਈ ਸੱਦਾ ਦਿਓ";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "People who scan this code will be able to join your group. Admins will still need to approve new members if you have that setting turned on.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ਜੋ ਲੋਕ ਇਸ ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਦੇ ਹਨ ਉਹ ਤੁਹਾਡੇ ਸਮੂਹ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਸਕਣਗੇ। ਐਡਮਿਨਜ਼ ਨੂੰ ਅਜੇ ਵੀ ਨਵੇਂ ਮੈਂਬਰਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਦੀ ਜ਼ਰੂਰਤ ਹੋਵੇਗੀ ਜੇ ਤੁਹਾਡੀ ਉਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ।";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "ਕੋਡ ਸਾਂਝਾ ਕਰੋ";
@@ -2138,13 +2156,13 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "ਗਰੁੱਪ ਲਿੰਕ";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Require an admin to approve new members joining via the group link.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ ਸ਼ਾਮਲ ਹੋਣ ਵਾਲੇ ਨਵੇਂ ਮੈਂਬਰਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਲਈ ਕਿਸੇ ਐਡਮਿਨ ਦੀ ਲੋੜ ਹੈ।";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Reset Link";
+"GROUP_LINK_VIEW_RESET_LINK" = "ਲਿੰਕ ਰੀਸੈੱਟ ਕਰੋ";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Are you sure you want to reset the group link? People will no longer be able to join the group using the current link.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "ਕੀ ਤੁਸੀਂ ਯਕੀਨਨ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਲੋਕ ਹੁਣ ਮੌਜੂਦਾ ਲਿੰਕ ਦੀ ਵਰਤੋਂ ਨਾਲ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਣਗੇੇ। ";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "ਸਾਂਝਾ ਕਰੋ";
@@ -2159,7 +2177,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal ਰਾਹੀਂ ਸਾਂਝਾ ਕਰੋ";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "ਇਸ ਲਿੰਕ ਵਾਲਾ ਕੋਈ ਵੀ ਬੰਦਾ ਇਸ ਗਰੁੱਪ ਦਾ ਨਾਮ ਅਤੇ ਮੈਂਬਰਾਂ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ ਅਤੇ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਕਰ ਸਕਦਾ ਹੈ। ਇਸਨੂੰ ਉਨ੍ਹਾਂ ਲੋਕਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਵਿਸ਼ਵਾਸ ਕਰਦੇ ਹੋ।";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "ਗਰੁੱਪ ਲਿੰਕ";
@@ -2201,7 +2219,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "ਤੁਸੀਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਏ।";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "You joined the group via the group link.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "ਤੁਸੀਂ ਗਰੁੱਪ ਦੇ ਲਿੰਕ ਰਾਹੀਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਏ।";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਤੁਹਾਨੂੰ ਕੱਢਿਆ।";
@@ -2210,16 +2228,16 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "ਤੁਹਾਨੂੰ ਗਰੁੱਪ ਵਿੱਚੋਂ ਕੱਢਿਆ ਗਿਆ ਸੀ।";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ approved your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਤੁਹਾਡੀ ਬੇਨਤੀ ਮਨਜ਼ੂਰ ਕੀਤੀ।";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "You canceled your request to join the group.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਆਪਣੀ ਬੇਨਤੀ ਰੱਦ ਕੀਤੀ।";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Your request to join the group was denied.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਤੁਹਾਡੀ ਬੇਨਤੀ ਤੋਂ ਨਾਂਹ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ।";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "You sent a request to join the group.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "ਤੁਸੀਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਬੇਨਤੀ ਭੇਜੀ।";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "ਤੁਹਾਨੂੰ ਐਡਮਿਨ ਅਧਿਕਾਰਾਂ ਨੂੰ ਵਾਂਝਾ ਕੀਤਾ ਗਿਆ ਸੀ।";
@@ -2228,7 +2246,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਤੁਹਾਡੇ ਐਡਮਿਨ ਅਧਿਕਾਰਾਂ ਨੂੰ ਮਨਸੂਖ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "ਇੱਕ ਮੈਂਬਰ ਨੇ ਤੁਹਾਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ।";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "ਐਡਮਿਨ";
@@ -2249,13 +2267,13 @@
 "GROUP_MEMBER_LOCAL_USER" = "ਤੁਸੀਂ";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "You can add or invite friends after creating this group.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "ਤੁਸੀਂ ਇਸ ਗਰੁੱਪ ਨੂੰ ਬਣਾਉਣ ਤੋਂ ਬਾਅਦ ਦੋਸਤਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਸੱਦਾ ਦੇ ਸਕਦੇ ਹੋ।";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "ਮੈਂਬਰ";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ ਗਰੁੱਪ ਮੈਂਬਰਾਂ ਦਾ ਸਮਾਨ ਨਾਮ ਹੈ।";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "ਸਮੀਖਿਆ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ";
@@ -2267,16 +2285,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "ਮੈਂਬਰ ਦੀ ਪੜਤਾਲ";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ ਗਰੁੱਪ ਮੈਂਬਰਾਂ ਦੇ ਨਾਂ ਇੱਕੋ ਜਿਹੇ ਹਨ। ਹੇਠਲੇ ਮੈਂਬਰਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ ਜਾਂ ਕਾਰਵਾਈ ਦੀ ਚੋਣ ਕਰੋ।";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ ਗਰੁੱਪ ਮੈਂਬਰਾਂ ਦੇ ਨਾਂ ਇੱਕੋ ਜਿਹੇ ਹਨ, ਹੇਠਲੇ ਮੈਂਬਰਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ ਅਤੇ ਕਾਰਵਾਈ ਦੀ ਚੋਣ ਕਰੋ।";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "ਗਰੁੱਪ ਦੇ %@ ਮੈਂਬਰਾਂ ਦਾ ਸਮਾਨ ਨਾਮ ਹੈ।";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "ਗਰੁੱਪ ਦਾ ਨਾਂ (ਲਾਜ਼ਮੀ)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "ਗਰੁੱਪ ਦਾ ਨਾਂ";
@@ -2336,7 +2354,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "1 ਵਿਅਕਤੀ ਨੂੰ ਗਰੁੱਪ ਲਈ ਸੱਦਾ ਭੇਜਿਆ।";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸੱਦਾ ਦਿੱਤਾ ਗਿਆ।";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "ਤੁਸੀਂ %@ ਨੂੰ ਗਰੁੱਪ ਲਈ ਸੱਦਾ ਭੇਜਿਆ।";
@@ -2354,7 +2372,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਇਆ/ਹੋਈ।";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ joined the group via the group link.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਏ।";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਨੂੰ ਛੱਡਿਆ।";
@@ -2366,25 +2384,25 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ਨੇ %2$@ ਨੂੰ ਕੱਢਿਆ।";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "You approved a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "ਤੁਸੀਂ %@ ਤੋਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਨੂੰ ਮਨਜ਼ੂਰ ਕੀਤਾ।";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ approved a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ ਨੇ %1$@ ਤੋਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਨੂੰ ਮਨਜ਼ੂਰ ਕੀਤਾ।";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਆਪਣੀ ਬੇਨਤੀ ਰੱਦ ਕੀਤੀ।";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "ਤੁਸੀਂ %@ ਤੋਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਨੂੰ ਨਾਮਨਜ਼ੂਰ ਕੀਤਾ।";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ ਨੇ %1$@ ਤੋਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਨੂੰ ਨਾਮਨਜ਼ੂਰ ਕੀਤਾ।";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = " %@ ਤੋਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਮਨਜ਼ੂਰ ਕਰ ਲਈ ਗਈ ਹੈ।";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਕੀਤੀ।";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ ਦੇ ਐਡਮਿਨ ਦੇ ਅਧਿਕਰਾਂ ਰੱਦ ਹੋ ਗਏ.";
@@ -2417,7 +2435,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਫ਼ੋਟੋ ਹਟਾਈ।";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "ਗਰੁੱਪ ਫੋਟੋ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ।";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "ਤੁਸੀਂ ਫ਼ੋਟੋ ਅੱਪਡੇਟ ਕੀਤੀ।";
@@ -2432,22 +2450,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਹੈ।";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "ਗਰੁੱਪ ਦੇ ਵੇਰਵੇ ਨੂੰ ਹਟਾਇਆ ਗਿਆ ਸੀ।";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਦੇ ਵੇਰਵੇ ਨੂੰ ਹਟਾਇਆ।";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਦੇ ਵੇਰਵੇ ਨੂੰ ਹਟਾਇਆ।";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "ਗਰੁੱਪ ਦੇ ਵੇਰਵੇ ਨੂੰ ਬਦਲਿਆ ਗਿਆ ਸੀ।";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਬਦਲਿਆ ਹੈ।";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਦੇ ਵੇਰਵੇ ਨੂੰ ਬਦਲਿਆ।";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "ਗਰੁੱਪ ਦਾ ਨਾਂ ਹਟਾਇਆ।";
@@ -2468,37 +2486,37 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "ਗਰੁੱਪ ਦਾ ਨਾਂ ਹੁਣ “%@” ਹੈ।";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਇੱਕ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ ਗਿਆ ਸੀ।";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "A member couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "ਮੈਂਬਰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਅਤੇ ਗਰੁੱਪ ਵਿੱਚੋਂ ਕੱਢ ਦਿੱਤਾ ਗਿਆ ਹੈ।";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "ਤੁਹਾਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਅਤੇ ਗਰੁੱਪ ਵਿੱਚੋਂ ਕੱਢ ਦਿੱਤਾ ਗਿਆ ਹੈ।";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ ਮੈਂਬਰਾਂ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਅਤੇ ਗਰੁੱਪ ਵਿੱਚੋਂ ਕੱਢ ਦਿੱਤਾ ਗਿਆ ਹੈ।";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "ਮੈਂਬਰ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਅਤੇ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਸੱਦਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।";
 
 /* Message indicating that the local user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
+"GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "ਤੁਹਾਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਅਤੇ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਸੱਦਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been invited to join.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ ਮੈਂਬਰਾਂ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਅਤੇ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਸੱਦਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "ਤੁਸੀਂ ਗਰੁੱਪ ਨੂੰ ਛੱਡਿਆ।";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "ਐਡਮਿਨਜ਼";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "ਸਿਰਫ %@ ਸੁਨੇਹੇ ਭੇਜ ਸਕਦਾ ਹੈ";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "ਐਡਮਿਨ ਨੂੰ ਸੁਨੇਹਾ ਭੇਜੋ";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "ਗਰੁੱਪ ਨੂੰ ਛੱਡਣ ਤੋਂ ਪਹਿਲਾਂ ਇਸ ਗਰੁੱਪ ਲਈ ਕੋਈ ਨਵਾਂ ਐਡਮਿਨ ਚੁਣੋ.";
@@ -2522,97 +2540,97 @@
 "GROUPS_INVITE_FRIENDS_BUTTON" = "ਦੋਸਤਾਂ ਨੂੰ ਸੱਦਾ ਦਿਓ";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Legacy Groups are groups that are not compatible with New Group features like admins and more descriptive group updates.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "ਲੀਗੇਸੀ ਗਰੁੱਪ ਉਹ ਗਰੁੱਪ ਹਨ ਜੋ ਨਵੀਆਂ ਗਰੁੱਪ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਜਿਵੇਂ ਕਿ ਐਡਮਿਨ ਅਤੇ ਵਧੇਰੇ ਵਰਣਨਯੋਗ ਗਰੁੱਪ ਅਪਡੇਟਾਂ ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹਨ।";
 
 /* Title for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "ਪੁਰਾਣੇ ਗਰੁੱਪ ਕੀ ਹਨ?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "ਲੀਗੇਸੀ ਗਰੁੱਪਾਂ ਨੂੰ ਅਜੇ ਨਵੇਂ ਗਰੁੱਪਾਂ ਵਿੱਚ ਅਪਗ੍ਰੇਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ, ਪਰ ਤੁਸੀਂ ਸਮਾਨ ਮੈਂਬਰਾਂ ਦੇ ਨਾਲ ਇੱਕ ਨਵਾਂ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ ਜੇ ਉਹ Signal ਦੇ ਨਵੀਨਤਮ ਸੰਸਕਰਣ 'ਤੇ ਹਨ।\n\nSignal ਭਵਿੱਖ ਵਿੱਚ ਲੀਗੇਸੀ ਸਮੂਹਾਂ ਨੂੰ ਅਪਗ੍ਰੇਡ ਕਰਨ ਦਾ ਇੱਕ ਤਰੀਕਾ ਪੇਸ਼ ਕਰੇਗਾ।";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "ਕੀ ਮੈਂ ਪੁਰਾਣਾ ਗਰੁੱਪ ਅੱਪਡੇਟ ਕਰ ਸਕਦਾ/ਸਕਦੀ ਹਾਂ?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "To create a New Group, all members should update to the latest version of Signal.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "ਇੱਕ ਨਵਾਂ ਗਰੁੱਪ ਬਣਾਉਣ ਲਈ, ਸਾਰੇ ਮੈਂਬਰਾਂ ਨੂੰ Signal ਦੇ ਨਵੀਨਤਮ ਸੰਸਕਰਣ 'ਤੇ ਅਪਡੇਟ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ।";
 
 /* Title for the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "ਪੁਰਾਣੇ ਬੇਨਾਮ ਨਵੇਂ ਗਰੁੱਪ";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Upgrade this group to activate new features like @mentions and admins. Members who have not shared their name or photo in this group will be invited to join. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@mentions ਅਤੇ ਐਡਮਿਨਜ਼ ਵਰਗੀਆਂ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਸਰਗਰਮ ਕਰਨ ਲਈ ਇਸ ਗਰੁੱਪ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ। ਜਿਹਨਾਂ ਮੈਂਬਰਾਂ ਨੇ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਆਪਣਾ ਨਾਂ ਜਾਂ ਫ਼ੋਟੋ ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਹੈ, ਉਹਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਸੱਦਾ ਭੇਜਿਆ ਜਾਵੇਗਾ।%@।";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Can’t Upgrade to New Group";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "ਨਵੇਂ ਗਰੁੱਪ ਲਈ ਅੱਪਗ੍ਰੇਡ ਨਹੀਂ ਹੋ ਸਕਦਾ";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "This group can’t be upgraded to a New Group because it has too many members. The maximum group size that can be upgraded is %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "ਇਸ ਲੀਗੇਸੀ ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਅੱਪਗ੍ਰੇਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਇਸ ਵਿੱਚ ਬਹੁਤ ਸਾਰੇ ਮੈਂਬਰ ਹਨ। ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਲਈ ਗਰੁੱਪ ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਆਕਾਰ %@ ਹੈ। ";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "ਜਦੋਂ ਗਰੁੱਪ ਦੇ ਸਾਰੇ ਮੌਜੂਦਾ ਮੈਂਬਰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੇ ਸਮਰੱਥ Signal ਦੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹਨ, ਤਾਂ ਇਸ ਗਰੁੱਪ ਨੂੰ ਅਪਗ੍ਰੇਡ ਕੀਤਾ ਜਾਵੇਗਾ।";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "ਸੁਨੇਹਿਆਂ ਦੇ ਸਾਰੇ ਪਿਛੋਕੜ ਅਤੇ ਮੀਡੀਆ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਰੱਖ ਲਿਆ ਜਾਵੇਗਾ।";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "ਇੱਸ ਗਰੁੱਪ ਨੂੰ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ 1 ਮੈਂਬਰ Signal ਦੇ ਕਿਸੇ ਪੁਰਾਣੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹਨ। ਉਹਨਾਂ ਦੁਆਰਾ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਲੈਣ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨਾਲ ਨਵਾਂ ਸਟਾਈਲ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ, ਜਾਂ ਗਰੁੱਪ ਬਣਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "ਇੱਸ ਗਰੁੱਪ ਨੂੰ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ %@ ਮੈਂਬਰ Signal ਦੇ ਕਿਸੇ ਪੁਰਾਣੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹਨ। ਉਹਨਾਂ ਦੁਆਰਾ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਲੈਣ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨਾਲ ਨਵਾਂ ਸਟਾਈਲ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ, ਜਾਂ ਗਰੁੱਪ ਬਣਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "ਇੱਸ ਗਰੁੱਪ ਨੂੰ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ 1 ਮੈਂਬਰ Signal ਦੇ ਕਿਸੇ ਪੁਰਾਣੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹਨ। ਉਹਨਾਂ ਦੁਆਰਾ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਲੈਣ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨਾਲ ਨਵਾਂ ਸਟਾਈਲ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ, ਜਾਂ ਗਰੁੱਪ ਬਣਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।%@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "ਇੱਸ ਗਰੁੱਪ ਨੂੰ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ %1$@ ਮੈਂਬਰ Signal ਦੇ ਕਿਸੇ ਪੁਰਾਣੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹਨ। ਉਹਨਾਂ ਦੁਆਰਾ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਲੈਣ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨਾਲ ਨਵਾਂ ਸਟਾਈਲ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ, ਜਾਂ ਗਰੁੱਪ ਬਣਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।%2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "ਇੱਕ ਲੀਗੇਸੀ ਗਰੁੱਪ ਬਣਾਇਆ ਜਾਵੇਗਾ ਕਿਉਂਕਿ 1 ਮੈਂਬਰ Signal ਦੇ ਪੁਰਾਣੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਰਿਹਾ ਹੈ। ਤੁਸੀਂ Signal ਨੂੰ ਅਪਡੇਟ ਕਰਨ ਤੋਂ ਬਾਅਦ ਉਨ੍ਹਾਂ ਨਾਲ ਨਵਾਂ ਸਟਾਈਲ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ, ਜਾਂ ਗਰੁੱਪ ਬਣਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "ਇੱਕ ਲੀਗੇਸੀ ਗਰੁੱਪ ਬਣਾਇਆ ਜਾਵੇਗਾ ਕਿਉਂਕਿ %@ ਮੈਂਬਰ Signal ਦੇ ਕਿਸੇ ਪੁਰਾਣੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹਨ। ਉਹਨਾਂ ਦੁਆਰਾ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਲੈਣ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨਾਲ ਨਵਾਂ ਸਟਾਈਲ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ, ਜਾਂ ਗਰੁੱਪ ਬਣਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 ਮੈਂਬਰ ਨਵੇਂ ਗਰੁੱਪ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੇ, ਇਸ ਲਈ ਇਹ ਇੱਕ ਲੀਗੇਸੀ ਗਰੁੱਪ ਹੋਵੇਗਾ। %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ ਮੈਂਬਰ ਨਵੇਂ ਗਰੁੱਪ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੇ, ਇਸ ਲਈ ਇਹ ਇੱਕ ਲੀਗੇਸੀ ਗਰੁੱਪ ਹੋਵੇਗਾ। %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "ਇਹ ਇੱਕ ਲੀਗੇਸੀ ਗਰੁੱਪ ਹੈ। ਗਰੁੱਪ ਪ੍ਰਬੰਧਕਾਂ ਵਰਗੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਸਿਰਫ ਨਵੇਂ ਗਰੁੱਪਾਂ ਲਈ ਉਪਲਬਧ ਹਨ।%@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "ਇਹ ਲੀਗੇਸੀ ਅਜੇ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਅਪਗ੍ਰੇਡ ਹੋਣ ਲਈ ਤਿਆਰ ਨਹੀਂ ਹੈ।%@";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "This Legacy Group can’t be upgraded to a New Group because it is too large. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "ਇਸ ਲੈਗਸੀ ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਅੱਪਗ੍ਰੇਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਇਹ ਬਹੁਤ ਵੱਡਾ ਹੈ। %@";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "This is a Legacy Group. To access new features like @mentions and admins, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "ਇਹ ਇੱਕ ਲੈਗਸੀ ਗਰੁੱਪ ਹੈ। @mentions ਅਤੇ ਐਡਮਿਨਜ਼ ਵਰਗੀਆਂ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਵੇਖਣ ਲਈ, %@।";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 member couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 ਮੈਂਬਰ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਦੁਬਾਰਾ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੀ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਹੁਣੇ ਸ਼ਾਮਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ members couldn’t be re-added to the New Group. Do you want to add them now?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ ਮੈਂਬਰਾਂ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਦੁਬਾਰਾ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੀ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਹੁਣੇ ਸ਼ਾਮਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "ਪੁਰਾਣਾ ਗਰੁੱਪ";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "You will need to accept an invite to join this group again, and will not receive group messages until you accept.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "ਤੁਹਾਨੂੰ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਦੁਬਾਰਾ ਸ਼ਾਮਲ ਹੋਣ ਦੇ ਸੱਦੇ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨਾ ਪਵੇਗਾ, ਅਤੇ ਜਦੋਂ ਤਕ ਤੁਸੀਂ ਸਵੀਕਾਰ ਨਹੀਂ ਕਰਦੇ ਉਦੋਂ ਤੱਕ ਗਰੁੱਪ ਦੇ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੇ।";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ਗਰੁੱਪ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਜਿਵੇਂ ਕਿ @mentions ਅਤੇ ਐਡਮਿਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ, ਇਸ ਗਰੁੱਪ ਨੂੰ ਅਪਗ੍ਰੇਡ ਕਰੋ।";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "ਨਵੇਂ ਸਮੂਹ ਕੀ ਹਨ?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "ਸੁਨੇਹਿਆਂ ਦੇ ਸਾਰੇ ਪਿਛੋਕੜ ਅਤੇ ਮੀਡੀਆ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਰੱਖ ਲਿਆ ਗਿਆ ਹੈ।";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "ਨਵੇਂ ਸਮੂਹਾਂ ਵਿੱਚ @mentions ਅਤੇ ਸਮੂਹ ਪਰਸ਼ਾਸ਼ਕ ਵਰਗੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਹਨ, ਅਤੇ ਭਵਿੱਖ ਵਿੱਚ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਸਮਰਥਨ ਕਰਨਗੀਆਂ।";
@@ -2633,52 +2651,52 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "ਮੈਂਬਰ ਜੋੜੋ";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "This member couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "ਇਸ ਮੈਂਬਰ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰਨ 'ਤੇ ਆਪਣੇ-ਆਪ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "ਇਹਨਾਂ ਮੈਂਬਰਾਂ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰਨ 'ਤੇ ਆਪਣੇ-ਆਪ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "ਸੁਨੇਹਿਆਂ ਦੇ ਸਾਰੇ ਪਿਛੋਕੜ ਅਤੇ ਮੀਡੀਆ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਰੱਖ ਲਿਆ ਗਿਆ ਹੈ।";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "ਇਸ ਮੈਂਬਰ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ ਅਤੇ ਜਦੋਂ ਤੱਕ ਉਹ ਅਪਗ੍ਰੇਡ ਨਹੀਂ ਕਰਦੇ, ਉਦੋਂ ਤੱਕ ਦੁਬਾਰਾ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਣਗੇ: ";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "ਇਹਨਾਂ ਮੈਂਬਰਾਂ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ ਅਤੇ ਜਦੋਂ ਤੱਕ ਉਹ ਅਪਗ੍ਰੇਡ ਨਹੀਂ ਕਰਦੇ, ਉਦੋਂ ਤੱਕ ਦੁਬਾਰਾ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਣਗੇ: ";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "ਇਸ ਮੈਂਬਰ ਨੂੰ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਦੁਬਾਰਾ ਸ਼ਾਮਲ ਹੋਣ ਦੇ ਸੱਦੇ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨਾ ਪਵੇਗਾ, ਅਤੇ ਜਦੋਂ ਤਕ ਉਹ ਸਵੀਕਾਰ ਨਹੀਂ ਕਰਦਾ ਉਦੋਂ ਤੱਕ ਗਰੁੱਪ ਦੇ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੇ।";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "ਇਹਨਾਂ ਮੈਂਬਰਾਂ ਨੂੰ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਦੁਬਾਰਾ ਸ਼ਾਮਲ ਹੋਣ ਦੇ ਸੱਦੇ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨਾ ਪਵੇਗਾ, ਅਤੇ ਜਦੋਂ ਤਕ ਉਹ ਸਵੀਕਾਰ ਨਹੀਂ ਕਰਦੇ ਉਦੋਂ ਤੱਕ ਗਰੁੱਪ ਦੇ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੇ।";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "ਇਹ ਮੈਂਬਰ ਨਵੇਂ ਗਰੁੱਪਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੇ ਯੋਗ ਨਹੀਂ ਹੈ, ਅਤੇ ਇਸ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "These members are not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "ਇਹ ਮੈਂਬਰ ਨਵੇਂ ਗਰੁੱਪਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੇ ਯੋਗ ਨਹੀਂ ਹਨ, ਅਤੇ ਇਹਨਾਂ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "ਨਵੇਂ ਗਰੁੱਪ ਲਈ ਅੱਪਗਰੇਡ ਕਰੋ";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Upgrade this Group";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਅਪਗ੍ਰੇਡ ਕਰੋ";
 
 /* Message for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "This group couldn’t be upgraded to a New Group right now.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਇੱਕ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਅੱਪਗ੍ਰੇਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "This group couldn’t be upgraded to a New Group because you’re not connected to the Internet. Try again later.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਅੱਪਗ੍ਰੇਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਤੁਸੀਂ ਇੰਟਰਨੈਟ ਨਾਲ ਜੁੜੇ ਨਹੀਂ ਹੋ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਅਜ਼ਮਾਓ।";
 
 /* Title for error alert indicating the group update failed. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Couldn’t Complete Upgrade";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "ਅੱਪਗ੍ਰੇਡ ਪੂਰਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Upgraded to New Group.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "ਨਵੇਂ ਗਰੁੱਪ ਲਈ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "upgrade this group";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "ਗਰੁੱਪ ਛੱਡਣ ਤੋਂ ਪਹਿਲਾਂ ਇਸ ਗਰੁੱਪ ਲਈ ਕੋਈ ਨਵਾਂ ਐਡਮਿਨ ਚੁਣੋ।";
@@ -2690,13 +2708,13 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "ਨਵਾਂ ਐਡਮਿਨ ਚੁਣੋ";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal ਗਰੁੱਪ %@ ਜਾਂ ਇਸਤੋਂ ਘੱਟ ਮੈਂਬਰਾਂ ਨਾਲ ਬਿਹਤਰੀਨ ਕਾਰਗੁਜ਼ਾਰੀ ਕਰਦੇ ਹਨ। ਹੋਰ ਮੈਂਬਰ ਸ਼ਾਮਲ ਕਰਨ ਨਾਲ ਸੁਨੇਹੇ ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਦੇਰੀ ਹੋਵੇਗੀ।";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Recommended member limit reached";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "ਸਿਫਾਰਸ਼ ਕੀਤੀ ਮੈਂਬਰ ਸੀਮਾ ਪੂਰੀ ਹੋਈ";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "ਫਿਰ ਵੀ ਮੈਂਬਰ ਜੋੜਣਾ ਹੈ?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "ਬੇਨਤੀ ਵੇਖੋ";
@@ -2765,10 +2783,10 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "ਫ਼ੋਟੋ ਬਦਲੋ";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਪੂਰੀ ਪਹੁੰਚ ਦਿਓ ਜਾਂ ਬਦਲੋ ਕਿ Signal ਕਿਹੜੀਆਂ ਫੋਟੋਆਂ ਵੇਖ  ਸਕਦਾ ਹੈ।";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "ਤੁਹਾਡੀਆਂ ਫੋਟੋਆਂ ਨਹੀਂ ਦਿੱਖ ਰਹੀਆਂ?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "ਅਟੈਚਮੈਂਟ ਨੂੰ ਚੁਣਨਾ ਅਸਫਲ ਰਿਹਾ.";
@@ -2804,16 +2822,16 @@
 "IN_CALL_TERMINATED" = "ਕਾਲ ਸਮਾਪਤ ਹੋਈ।";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "ਇਹ ਚੈਟ ਆਰਕਾਈਵ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ ਅਤੇ ਇਨਬਾਕਸ ਵਿੱਚ ਕੋਈ ਨਵੇਂ ਸੁਨੇਹੇ ਆਉਣ 'ਤੇ ਹੀ ਦਿਖਣਗੀਆਂ।";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "ਹਾਲੇ ਕੋਈ ਚੈਟ ਨਹੀਂ ਹੈ।\nਦੋਸਤ ਨੂੰ ਸੁਨੇਹਾ ਕਰਕੇ ਸ਼ੁਰੂਆਤ ਕਰੋ।";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ ਨੇ ਤੁਹਾਨੂੰ ਕਾਲ ਕੀਤੀ";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "ਤੁਸੀਂ ਆਪਣੇ ਫੋਨ ਜਾਂ iPad ਤੋਂ ਸਿੰਕ੍ਰੋਨਾਈਜ਼ ਕੀਤੇ ਸੁਨੇਹੇ ਭੇਜ ਜਾਂ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।  ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਦੇ ਲਈ, ਵਾਰਤਾਲਾਪ ਦਾ ਇਤਿਹਾਸ ਨਵੇਂ ਲਿੰਕ ਕੀਤੇ ਹੋਏ ਡਿਵਾਈਸਾਂ 'ਤੇ ਟ੍ਰਾਂਸਫਰ ਨਹੀਂ ਹੋਇਆ।";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal 'ਤੇ ਹੈ!";
@@ -2822,7 +2840,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ਸਟਿੱਕਰ";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ ਅਤੇ ਹੋਲਡ ਕਰੋ। ਭੇਜਣ ਲਈ ਜਾਰੀ ਕਰੋ ਜਾਂ ਰੱਦ ਕਰਨ ਲਈ ਖੱਬੇ ਪਾਸੇ ਸਲਾਈਡ ਕਰੋ। ਡਬਲ ਟੈਪ ਕਰੋ ਅਤੇ ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਲਾਕ ਕਰਨ ਲਈ ਉੱਪਰ ਵੱਲ ਸਲਾਈਡ ਕਰੋ।";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "ਆਵਾਜ਼ ਦਾ ਸੁਨੇਹਾ";
@@ -2891,7 +2909,7 @@
 "KEY_COMMAND_STICKERS" = "ਸਟਿੱਕਰ ਦਿਖਾਓ";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "ਚੈਟ ਅਨਆਰਕਾਈਵ ਕਰੋ";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "ਵਧੇਰੇ ਜਾਣੋ";
@@ -2912,7 +2930,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "ਡਿਵਾਈਸ ਨੂੰ ਲਿੰਕ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "ਇਹ ਡਿਵਾਈਸ ਤੁਹਾਡੇ ਗਰੁੱਪਾਂ ਅਤੇ ਸੰਪਰਕਾਂ ਨੂੰ ਦੇਖ ਪਾਏਗਾ, ਤੁਹਾਡੀਆਂ ਵਾਰਤਾਲਾਪਾਂ ਤਾਈਂ ਪਹੁੰਚ ਕਰ ਪਾਏਗਾ, ਅਤੇ ਤੁਹਾਡੇ ਨਾਮ 'ਤੇ ਸੁਨੇਹੇ ਭੇਜ ਪਾਏਗਾ।";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "ਇਸ ਡਿਵਾਈਸ ਨੂੰ ਲਿੰਕ ਕਰਨਾ ਹੈ?";
@@ -2924,7 +2942,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "ਜਿਸ ਡਿਵਾਈਸ ਨੂੰ ਤੁਸੀਂ ਲਿੰਕ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਉਸ 'ਤੇ ਪ੍ਰਦਰਸ਼ਿਤ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "ਨਵਾਂ ਡਿਵਾਈਸ ਲਿੰਕ ਕਰਨ ਲਈ QR ਕੋਡ ਸਕੈਨ ਕਰੋ";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ਨਵਾਂ ਡਿਵਾਈਸ ਲਿੰਕ ਕਰੋ";
@@ -2939,13 +2957,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "ਡਿਵਾਈਸ ਨੂੰ ਲਿੰਕ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "ਲਿੰਕ ਝਲਕ ਹੁਣ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਤਿਆਰ ਕੀਤੇ ਜਾਣਗੇ।";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "ਅਸਮਰੱਥ ਕਰੋ";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Preview Any Link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "ਕਿਸੇ ਲਿੰਕ ਦੀ ਝਲਕ ਵੇਖੋ";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "ਆਪਣੇ Signal ਖਾਤੇ ਨੂੰ ਟਰਾਂਸਫਰ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਦੋਵੇਂ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਲੋਕਲ ਨੈੱਟਵਰਕ ਪਹੁੰਚ ਸਮਰੱਥ ਕਰਨੀ ਪਵੇਗੀ।";
@@ -2975,13 +2993,13 @@
 "LOGGING_SECTION" = "ਲੌਗ ਹੋ ਰਿਹਾ ਹੈ";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "ਡੀਬੱਗ ਲੌਗਸ Signal ਸਮੱਸਿਆਵਾਂ ਅਤੇ ਕਰੈਸ਼ਾਂ ਨੂੰ ਠੀਕ ਕਰਨ ਵਿੱਚ ਸਹਾਇਤਾ ਕਰ ਸਕਦੇ ਹਨ।";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "ਸੁਨੇਹਾ";
 
 /* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ groups in common";
+"MANY_GROUPS_IN_COMMON" = "%@ ਗਰੁੱਪ ਸਾਂਝੇ ਹਨ";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "ਸਾਰੇ ਮੀਡੀਆ";
@@ -3020,7 +3038,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "ਸਾਰਿਆਂ ਲਈ ਹਟਾਓ";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ਗੱਲਬਾਤ ਵਿੱਚ ਸ਼ਾਮਲ ਸਾਰੇ ਵਿਅਕਤੀਆਂ ਲਈ ਇਹ ਸੁਨੇਹਾ ਮਿਟਾਇਆ ਜਾਵੇਗਾ ਜੇ ਉਹ Signal ਦੇ ਤਾਜ਼ਾ ਸੰਸਕਰਣ ’ਤੇ ਹਨ। ਉਹ ਇਹ ਦੇਖ ਸਕਣਗੇ ਕਿ ਤੁਸੀਂ ਸੁਨੇਹਾ ਹਟਾਇਆ ਸੀ।";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "ਤੁਸੀਂ ਇਸ ਸੁਨੇਹਾ ਕਿਸ ਲਈ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?";
@@ -3038,34 +3056,34 @@
 "MESSAGE_ACTION_DETAILS" = "ਹੋਰ ਜਾਣਕਾਰੀ";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "ਨਵਾਂ ਈਮੇਲ ਸੁਨੇਹਾ";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ਈਮੇਲ ਕੰਨਫਿਗਰ ਨਹੀਂ ਹੈ।";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "ਇਸ ਸੁਨੇਹੇ ਨੂੰ ਅੱਗੇ ਭੇਜੋ";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "ਗਰੁੱਪ ਸੱਦੇ ਖੋਲੋ";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "ਲਿੰਕ ਖੋਲੋ";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "ਸਟਿੱਕਰ ਪੈਕ ਦੇਖੋ";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "ਕਾਲ";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime ਆਡੀਓ";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime ਵੀਡੀਓ";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "ਟੈਕਸਟ ਸੁਨੇਹਾ ਭੇਜੋ";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ਇਸ ਸੁਨੇਹੇ ਦਾ ਜਵਾਬ ਦਿਓ";
@@ -3076,8 +3094,29 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "ਮੀਡੀਆ ਸਾਂਝਾ ਕਰੋ";
 
+/* Context menu Reply button title */
+"CONTEXT_MENU_REPLY" = "ਜਵਾਬ";
+
+/* Context menu Copy button title */
+"CONTEXT_MENU_COPY" = "ਕਾਪੀ ਕਰੋ";
+
+/* Context menu Info button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu Delete button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "ਮਿਟਾਓ";
+
+/* Context menu Share button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "ਸਾਂਝਾ ਕਰੋ";
+
+/* Context menu Forward button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "ਅੱਗੇ ਭੇਜੋ ";
+
+/* Context menu Select button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "ਚੁਣੋ";
+
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "ਗਰੁੱਪ ਸੱਦੇ";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "ਸਟਿੱਕਰ ਪੈਕ";
@@ -3089,7 +3128,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "ਨਵਾਂ ਸੁਨੇਹਾ";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "ਭੇਜਣ ਦਾ ਸਮਾਂ ਕਾਪੀ ਕੀਤਾ";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "ਇਸ ਵਲੋਂ ਭੇਜੇ";
@@ -3107,13 +3146,13 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "ਅਸਫਲ ਰਿਹਾ";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "ਭੇਜਣਾ ਰੋਕਿਆ ਗਿਆ";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "ਪੜ੍ਹੇ";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ਇਸ ਨੂੰ ਭੇਜੇ";
@@ -3125,7 +3164,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "ਅਪਲੋਡ ਹੋ ਰਿਹਾ ਹੈ";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Viewed by";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "ਦੁਆਰਾ ਦੇਖਿਆ ਗਿਆ";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "ਪ੍ਰਾਪਤ ਕੀਤਾ";
@@ -3137,7 +3176,7 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "ਫਾਇਲ ਦਾ ਨਾਂ";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
+"MESSAGE_METADATA_VIEW_TITLE" = "ਸੁਨੇਹਿਆਂ ਦੇ ਵੇਰਵੇ";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ਪਾਬੰਦੀ ਲਾਓ";
@@ -3179,25 +3218,25 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ਗਰੁੱਪ ਨੂੰ  ਹਟਾ ਕੇ ਛੱਡਣਾ ਹੈ?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "ਬੇਨਤੀਆਂ ਦੀ ਧਿਆਨ ਨਾਲ ਸਮੀਖਿਆ ਕਰੋ। Signal ਨੂੰ ਉਸੇ ਨਾਂ ਦਾ ਇੱਕ ਹੋਰ ਸੰਪਰਕ ਮਿਲਿਆ ਹੈ।";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "ਤੁਹਾਡਾ ਸੰਪਰਕ";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "If you’re not sure who the request is from, review the contacts below and take action.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "ਜੇ ਤੁਹਾਨੂੰ ਇਹ ਪੱਕਾ ਨਹੀਂ ਪਤਾ ਹੈ ਕਿ ਬੇਨਤੀ ਕਿਸ ਤੋਂ ਆਈ ਹੈ, ਤਾਂ ਹੇਠਲੇ ਸੰਪਰਕਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ ਅਤੇ ਕਾਰਵਾਈ ਕਰੋ।";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "ਬੇਨਤੀ";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Review Request";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "ਬੇਨਤੀ ਦੀ ਸਮੀਖਿਆ ਕਰੋ";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "ਸੰਪਰਕ ਅੱਪਡੇਟ ਕਰੋ";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "ਬੇਨਤੀ ਦੀ ਸਮੀਖਿਆ ਕਰੋ";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "ਸਪੈਮ ਵਜੋਂ ਰਿਪੋਰਟ ਕੀਤਾ ਤੇ ਪਾਬੰਦੀ ਲਾਈ";
@@ -3209,13 +3248,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "ਪਾਬੰਦੀ ਲਾਓ";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ ਨੂੰ ਤੁਹਾਨੂੰ ਸੁਨੇਹਾ ਭੇਜਣ ਅਤੇ ਤੁਹਾਡਾ ਨਾਂ ਅਤੇ ਫ਼ੋਟੋ ਸਾਂਝੀ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ? ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਉਹਨਾਂ ਤੋਂ ਪਾਬੰਦੀ ਹਟਾ ਨਹੀਂ ਦਿੰਦੇ ਉਦੋਂ ਤੱਕ ਤੁਹਾਨੂੰ ਕੋਈ ਵੀ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੇ।";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਅਨਬਲੌਕ ਕਰਨਾ ਅਤੇ ਇਸਦੇ ਮੈਂਬਰਾਂ ਨਾਲ ਆਪਣਾ ਨਾਮ ਅਤੇ ਤਸਵੀਰ ਸਾਂਝੀ ਕਰਨੀ ਚਾਹੁੰਦੇ ਹੋ? ਜਦੋਂ ਤਕ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਅਨਬਲੌਕ ਨਹੀਂ ਕਰ ਦਿੰਦੇ ਉਦੋਂ ਤਕ ਤੁਹਾਨੂੰ ਕੋਈ ਵੀ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੇ।";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਖੋਲਣਾ ਹੈ? ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਖੋਲ ਨਹੀਂ ਲੈਂਦੇ ਉਦੋਂ ਤੱਕ ਉਹਨਾਂ ਨੂੰ ਇਹ ਪਤਾ ਨਹੀਂ ਲੱਗੇਗਾ ਕਿ ਤੁਸੀਂ ਉਹਨਾਂ ਦੇ ਸੁਨੇਹੇ ਦੇਖ ਲਏ ਹਨ।";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "ਜਾਰੀ ਰੱਖੋ";
@@ -3224,19 +3263,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ਹਟਾਓ";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = " %@ ਨਾਲ ਆਪਣੀ ਇਹ ਗੱਲਬਾਤ ਅਤੇ ਇਸਦੇ ਮੈਂਬਰਾਂ ਨਾਲ ਆਪਣਾ ਨਾਂ ਅਤੇ ਫ਼ੋਟੋ ਸਾਂਝੀ ਕਰਨੀ ਜਾਰੀ ਰੱਖਣੀ ਹੈ?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਆਪਣੀ ਚੈਟ ਅਤੇ ਇਸਦੇ ਮੈਂਬਰਾਂ ਨਾਲ ਆਪਣਾ ਨਾਂ ਅਤੇ ਫ਼ੋਟੋ ਸਾਂਝੀ ਕਰਨੀ ਜਾਰੀ ਰੱਖਣੀ ਹੈ?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ ਨੂੰ ਤੁਹਾਨੂੰ ਸੁਨੇਹਾ ਭੇਜਣ ਅਤੇ ਉਹਨਾਂ ਨਾਲ ਤੁਹਾਡਾ ਨਾਂ ਅਤੇ ਫ਼ੋਟੋ ਸਾਂਝੀ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ? ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਮਨਜ਼ੂਰ ਨਹੀਂ ਕਰ ਲੈਂਦੇ ਉਦੋਂ ਤੱਕ ਉਹਨਾਂ ਨੂੰ ਇਹ ਪਤਾ ਨਹੀਂ ਲੱਗੇਗਾ ਕਿ ਤੁਸੀਂ ਉਹਨਾਂ ਦਾ ਸੁਨੇਹਾ ਦੇਖ ਲਿਆ ਹੈ।";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣਾ ਅਤੇ ਇਸਦੇ ਮੈਂਬਰਾਂ ਨਾਲ ਆਪਣਾ ਨਾਮ ਅਤੇ ਤਸਵੀਰ ਸਾਂਝੀ ਕਰਨੀ ਚਾਹੁੰਦੇ ਹੋ? ਜਦੋਂ ਤਕ ਤੁਸੀਂ ਸਵੀਕਾਰ ਨਹੀਂ ਕਰ ਲੈਂਦੇ ਉਦੋਂ ਤਕ ਉਹਨਾਂ ਨੂੰ ਇਹ ਪਤਾ ਨਹੀਂ ਲੱਗੇਗਾ ਕਿ ਤੁਸੀਂ ਉਹਨਾਂ ਦੇ ਸੁਨੇਹੇ ਦੇਖ ਲਏ ਹਨ।";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Join this group? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣਾ ਹੈ? ਜਦੋਂ ਤਕ ਤੁਸੀਂ ਮਨਜ਼ੂਰ ਨਹੀਂ ਕਰ ਲੈਂਦੇ ਉਦੋਂ ਤਕ ਉਹਨਾਂ ਨੂੰ ਇਹ ਪਤਾ ਨਹੀਂ ਲੱਗੇਗਾ ਕਿ ਤੁਸੀਂ ਉਹਨਾਂ ਦੇ ਸੁਨੇਹੇ ਦੇਖ ਲਏ ਹਨ।";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "ਪਾਬੰਦੀ ਹਟਾਓ";
@@ -3245,10 +3284,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "ਬੇਨਤੀ ਨੂੰ ਰੱਦ ਕਰੋ";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਆਪਣੀ ਬੇਨਤੀ ਰੱਦ ਕਰਨੀ ਹੈ?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "ਤੁਹਾਡੀ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਬੇਨਤੀ ਗਰੁੱਪ ਐਡਮਿਨ ਨੂੰ ਭੇਜ ਦਿੱਤੀ ਗਈ ਹੈ। ਜਦੋਂ ਉਹ ਕਾਰਵਾਈ ਕਰਨਗੇ ਤਾਂ ਤੂਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ। ";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "ਪਹੁੰਚ ਗਿਆ";
@@ -3266,10 +3305,10 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "ਅਧੂਰਾ ਭੇਜਿਆ, ਵੇਰਵਿਆਂ ਲਈ ਛਹੂੋ";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "ਭੇਜਣ ਨੂੰ ਰੋਕਿਆ ਗਿਆ";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "ਰੋਕਿਆ";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "ਪੜ੍ਹਿਆ ਗਿਆ";
@@ -3344,7 +3383,7 @@
 "MUTED_BADGE" = "ਚੁੱਪ ਕਰਾਏ";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣੇ ਪ੍ਰੋਫ਼ਾਈਲ ਨਾਮ %1$@ ਤੋਂ ਬਦਲ ਕੇ %2$@ ਰੱਖੇ।";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ਛੱਡੋ";
@@ -3425,7 +3464,7 @@
 "NO_GROUPS_IN_COMMON" = "ਕੋਈ ਸਮੂਹ ਸਾਂਝੇ ਨਹੀਂ";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
-"NO_OTHER_GROUPS_IN_COMMON" = "No other groups in common.";
+"NO_OTHER_GROUPS_IN_COMMON" = "ਕੋਈ ਹੋਰ ਗਰੁੱਪ ਸਾਂਝੇ ਨਹੀਂ।";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "ਚੈਟ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕੋਈ ਸੰਪਰਕ ਜਾਂ ਗਰੁੱਪ ਚੁਣੋ.";
@@ -3533,10 +3572,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "ਆਪਣੇ ਸੁਨੇਹਿਆਂ ਵਿੱਚ ਥੋੜ੍ਹੀ ਹਮਦਰਦੀ ਸ਼ਾਮਲ ਕਰੋ";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "ਕਿਉਂਕਿ ਤੁਸੀਂ ਲੰਬੇ ਸਮੇਂ ਲਈ ਗੈਰ-ਸਰਗਰਮ ਹੋ, ਤੁਹਾਨੂੰ ਦੁਬਾਰਾ ਵਰਤੋਂ ਲਈ Signal ਨੂੰ ਦੁਬਾਰਾ ਰਜਿਸਟਰ ਕਰਨਾ ਪਵੇਗਾ।";
 
 /* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+"ONBOARDING_DROPPED_YDB_TITLE" = "Signal ਲਈ ਰਜਿਸਟਰ ਕਰੋ";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad ਰਜਿਸਟਰ ਕਰੋ";
@@ -3563,13 +3602,13 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "ਤੁਹਾਡੇ iPhone ਨੂੰ ਲਿੰਕ ਕਰਨ ਦੀ ਸਲਾਹ ਨਹੀਂ ਦਿੱਤੀ ਜਾਂਦੀ ਅਤੇ ਇਸ ਨਾਲ ਇਸ ਦੀਆਂ ਮੁੱਖ ਸੁਵਿਧਾਵਾਂ ਸੀਮਿਤ ਹੋ ਜਾਣਗੀਆਂ.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "ਇਜਾਜ਼ਤਾਂ ਦੀ ਮਨਜ਼ੂਰੀ ਦਿਓ";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "ਸੂਚਨਾਵਾਂ ਅਤੇ ਸੰਪਰਕਾਂ ਦੀ ਇਜਾਜ਼ਤ ਤੁਹਾਨੂੰ ਸੁਨੇਹੇ ਆਉਣ 'ਤੇ ਵੇਖਣ ਦਿੰਦੀ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਜਾਣਕਾਰ ਲੋਕਾਂ ਨੂੰ ਲੱਭਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀ ਹੈ। ਸੰਪਰਕ ਐਨਕ੍ਰਿਪਟ ਕੀਤੇ ਹੋਏ ਹਨ ਇਸ ਲਈ Signal ਸੇਵਾ ਉਨ੍ਹਾਂ ਨੂੰ ਨਹੀਂ ਵੇਖ ਸਕਦੀ।";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_TITLE" = "ਇਜਾਜ਼ਤਾਂ ਦੀ ਮਨਜ਼ੂਰੀ ਦਿਓ";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "ਚੁਣੋ ਕਿ ਕੌਣ ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਫ਼ੋਨ ਨੰਬਰ %@ ਨਾਲ Signal ਉੱਤੇ ਲੱਭ ਸਕਦਾ ਹੈ";
@@ -3578,19 +3617,19 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "ਕੌਣ ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਫ਼ੋਨ ਨੰਬਰ ਨਾਲ ਲੱਭ ਸਕਦਾ ਹੈ?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Your phone number";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "ਤੁਹਾਡਾ ਫੋਨ ਨੰਬਰ";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "ਦੁਬਾਰਾ ਅਜ਼ਮਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਮਿੰਟ ਉਡੀਕ ਕਰੋ। (%@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "ਆਪਣਾ ਫੋਨ ਨੰਬਰ ਦਰਜ ਕਰੋ";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Your Phone Number";
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "ਤੁਹਾਡਾ ਫੋਨ ਨੰਬਰ";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "ਗਲਤ ਫੋਨ ਨੰਬਰ। ਕਿਰਪਾ ਕਰਕੇ ਰਜਿਸਟਰ ਕਰਨ ਲਈ ਇੱਕ ਸਹੀ ਫੋਨ ਨੰਬਰ ਭਰੋ।";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "ਤੁਸੀਂ ਪਿੰਨ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਦੀ ਹੱਦ ਮੁੱਕੀ, ਪਰ ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਨਵਾਂ ਪਿੰਨ ਬਣਾ ਕੇ ਆਪਣੇ Signal ਖਾਤੇ ਤਾਈਂ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਦੇ ਲਈ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਸੰਭਾਲੀਆਂ ਕਿਸੇ ਵੀ ਪਰੋਫਾਈਲ ਜਾਣਕਾਰੀ ਜਾਂ ਸੈਟਿੰਗਾਂ ਤੋਂ ਬਿਨਾਂ ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।";
@@ -3617,7 +3656,7 @@
 "ONBOARDING_PIN_TITLE" = "ਆਪਣਾ ਪਿਨ ਦਰਜ ਕਰੋ";
 
 /* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
+"ONBOARDING_PROFILE_CREATION_TITLE" = "ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ";
 
 /* Placeholder text for the family name field of the profile creation view. */
 "ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "ਨਾਂ ਦਾ ਆਖਰੀ ਹਿੱਸਾ (ਚੋਣਵਾਂ)";
@@ -3635,13 +3674,13 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "ਗਲਤ ਨੰਬਰ?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Call Me";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "ਮੈਨੂੰ ਕਾਲ ਕਰੋ";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "ਮੈਨੂੰ %@ ਵਿੱਚ ਕਾਲ ਕਰੋ";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validating Code...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "ਕੋਡ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ ...";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "ਇਹ ਕੋਡ ਗਲਤ ਹੈ";
@@ -3650,13 +3689,13 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "ਕੋਡ ਦੁਬਾਰਾ ਭੇਜੋ";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Resend Code in %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "%@ ਵਿੱਚ ਕੋਡ ਦੁਬਾਰਾ ਭੇਜੋ";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%@ 'ਤੇ ਸਾਡੇ ਵੱਲੋਂ ਭੇਜਿਆ ਕੋਡ ਦਰਜ ਕਰੋ";
 
 /* Title label for the onboarding verification page */
-"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verification code";
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "ਤਸਦੀਕੀ ਕੋਡ";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "ਸੈਟਿੰਗਾਂ";
@@ -3674,58 +3713,58 @@
 "OUTGOING_CALL_FORMAT" = "ਤੁਸੀਂ %@ ਨੂੰ ਕਾਲ ਕੀਤਾ";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "ਬੇਨਤੀ ਰੱਦ ਕਰੋ";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ ਤੇ %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ ਨੂੰ ਤੁਹਾਡੇ ਰੱਦ ਕਰਨ ਬਾਰੇ ਦੱਸ ਦਿੱਤਾ ਜਾਵੇਗਾ";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "ਬੇਨਤੀ ਰੱਦ ਕਰ ਦਈਏ?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "ਕੌਇਨ ਕਲੀਨਅੱਪ ਖਰਚਾ";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "ਬੇਨਤੀ ਰੱਦ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "ਬੇਨਤੀ ਤੋਂ ਨਾਂਹ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "ਅਸਫਲ ਹੈ";
 
 /* Status indicator for incoming payments which failed to verify. */
-"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "ਨਾ-ਮੰਨਣਯੋਗ";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_FAILURE_INVALID" = "Invalid";
+"PAYMENTS_FAILURE_INVALID" = "ਨਾ-ਮੰਨਣਯੋਗ";
 
 /* Status indicator for outgoing payments which failed. */
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "ਅਸਫਲ ਹੈ";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "ਨਾਕਾਫੀ ਫੰਡ";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "ਰਸੀਦ ਪ੍ਰਾਪਤਕਰਤਾ ਨੂੰ ਨਹੀਂ ਭੇਜੀ ਜਾ ਸਕਦੀ";
 
 /* Status indicator for outgoing payments which failed to verify. */
-"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "ਨਾ-ਮੰਨਣਯੋਗ";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "ਨੋਟ ਜੋੜੋ";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "ਉਪਲੱਬਧ ਬਕਾਇਆ: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "ਭੁਗਤਾਨ ਨੂੰ ਤਸਦੀਕ ਕਰੋ";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "ਭੁਗਤਾਨ ਕਰੋ";
@@ -3734,34 +3773,34 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "ਸੇਵਾ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਹੋ ਸਕਿਆ";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "ਇਸ ਭੁਗਤਾਨ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕੋਲ ਲੋੜੀਂਦਾ MOB ਨਹੀਂ ਹੈ।";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "ਇਸ ਭੁਗਤਾਨ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕੋਲ ਲੋੜੀਂਦਾ MOB ਨਹੀਂ ਹੈ। ਤੁਹਾਡਾ ਮੌਜੂਦਾ ਬਕਾਇਆ %@ਹੈ।";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "ਗੈਰ-ਵਾਜ਼ਬ ਲੈਣ-ਦੇਣ";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "ਭੁਗਤਾਨਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ Signal ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "ਭੁਗਤਾਨ ਦੀ ਅਜੇ ਤਸਦੀਕ ਨਹੀਂ ਹੋਈ";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "ਭੁਗਤਾਨ ਪੂਰਾ ਕਰਨ ਵਿੱਚ ਅਸਫ਼ਲ। ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਚੈੱਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "ਨੈੱਟਵਰਕ ਫ਼ੀਸ";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "ਅੰਦਾਜ਼ਨ %@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "ਅਵੈਧ ਖਾਤਾ";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
@@ -3773,37 +3812,37 @@
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "ਭੁਗਤਾਨ ਕਰੋ";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "ਕੁੱਲ ਰਕਮ";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "ਕੰਮ ਚੱਲ ਰਿਹਾ ਹੈ";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "ਵੱਲ %@";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "ਬੇਨਤੀ";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "ਅਦਾਇਗੀ ਦੀ 1 ਨਵੀਂ ਸੂਚਨਾ";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ ਨੇ ਤੁਹਾਨੂੰ %2$@ਭੇਜਿਆ";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ ਅਦਾਇਗੀ ਦੀਆਂ ਨਵੀਆਂ ਸੂਚਨਾਵਾਂ";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "ਭੁਗਤਾਨ ਪੂਰਾ";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "ਗੈਰ-ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "ਭੁਗਤਾਨ ਪੂਰਾ";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...";
@@ -3812,28 +3851,28 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "ਭੇਜਿਆ";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "ਤਿਆਰੀ ਕਰ ਰਿਹਾ ਹੈ";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "ਗੈਰ-ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "ਅਗਿਆਤ ਅਸਫਲਤਾ";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "ਸੰਪੂਰਨ";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "ਗੈਰ-ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "ਸੰਪੂਰਨ";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ...";
@@ -3842,43 +3881,43 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "ਭੇਜਿਆ";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "ਤਿਆਰੀ ਕਰ ਰਿਹਾ ਹੈ";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "ਗੈਰ-ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "ਤਸਦੀਕਸ਼ੁਦਾ";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "ਅਗਿਆਤ ਅਸਫਲਤਾ";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "ਇਸ ਵਰਤੋਂਕਾਰ ਨੂੰ ਭੁਗਤਾਨ ਭੇਜਣ ਲਈ ਉਹਨਾਂ ਨੂੰ ਤੁਹਾਡੇ ਦੁਆਰਾ ਇੱਕ ਸੁਨੇਹਾ ਬੇਨਤੀ ਸਵੀਕਾਰ ਕਰਨ ਦੀ ਜ਼ਰੂਰਤ ਹੁੰਦੀ ਹੈ।";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "ਇਸ ਵਰਤੋਂਕਾਰ ਨੂੰ ਭੁਗਤਾਨ ਭੇਜਣ ਲਈ ਉਹਨਾਂ ਨੂੰ ਤੁਹਾਡੇ ਦੁਆਰਾ ਇੱਕ ਸੁਨੇਹਾ ਬੇਨਤੀ ਸਵੀਕਾਰ ਕਰਨ ਦੀ ਜ਼ਰੂਰਤ ਹੈ। ਇੱਕ ਸੁਨੇਹਾ ਬੇਨਤੀ ਬਣਾਉਣ ਲਈ ਉਹਨਾਂ ਨੂੰ ਇੱਕ ਸੁਨੇਹਾ ਭੇਜੋ।";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "ਭੁਗਤਾਨ ਨਹੀਂ ਭੇਜ ਸਕਦਾ";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "ਇਸ ਵਿਅਕਤੀ ਕੋਲ ਕੋਈ ਸਰਗਰਮ ਭੁਗਤਾਨ ਨਹੀਂ ਹਨ।";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Invalid Recipient";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "ਗੈਰ-ਵਾਜਬ ਪ੍ਰਾਪਤ ਕਰਤਾ";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "ਟ੍ਰਾਂਸਫਰ ਆਊਟ";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Received Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "ਪ੍ਰਾਪਤ ਹੋਈ ਅਦਾਇਗੀ";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Sent Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "ਭੁਗਤਾਨ ਭੇਜਿਆ";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+"PAYMENTS_UNKNOWN_PAYMENT" = "ਗੈਰ-ਵਾਜਬ ਭੁਗਤਾਨ";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "ਗਰੁੱਪ ਵਿੱਚ ਜੋੜੋ";
@@ -3917,10 +3956,10 @@
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "“%@“ ਨੂੰ ਨਾਂਹ ਕੀਤੀ";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਨੂੰ ਰੱਦ ਕਰੋ";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "%@ ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ ਰੱਦ ਕਰੋ";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "ਸੱਦੇ ਨੂੰ ਰੱਦ ਕਰੋ";
@@ -3941,16 +3980,16 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "ਗਰੁੱਪ ਦੇ ਹੋਰਨਾਂ ਮੈਂਬਰਾਂ ਵੱਲੋਂ ਸੱਦੇ ਲੋਕਾਂ ਦੇ ਵੇਰਵੇ ਨਹੀਂ ਦਿਖਾਏ ਜਾਂਦੇ. ਜੇਕਰ ਸੱਦਾ ਭੇਜੇ ਗਏ ਵਿਅਕਤੀ ਜੁੜਨ ਦਾ ਫੈਸਲਾ ਕਰਦੇ ਹਨ, ਤਾਂ ਉਹਨਾਂ ਦੀ ਜਾਣਕਾਰੀ ਗਰੁੱਪ ਦੇ ਨਾਲ ਉਸ ਸਮੇਂ ਸਾਂਝੀ ਕੀਤੀ ਜਾਵੇਗੀ. ਜਦੋਂ ਤੱਕ ਉਹ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਜਾਂਦੇ, ਉਹ ਕੋਈ ਵੀ ਸੁਨੇਹੇ ਨਹੀਂ ਦੇਖਣਗੇ.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "ਇਸ ਸੂਚੀ ’ਤੇ ਮੌਜੂਦ ਲੋਕ ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ \"%@\" ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹਨ।";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invalid Invites";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "ਨਾ-ਮੰਨਣਯੋਗ ਸੱਦੇ";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "ਹੋਰਨਾਂ ਦੁਆਰਾ ਸੱਦੇ ਗਏ";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "ਤੁਹਾਡੇ ਦੁਆਰਾ ਸੱਦੇ ਗਏ";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "ਆਉਣ ਵਾਲੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਸੰਭਾਲਣ ਵਿੱਚ ਤਰੁਟੀ";
@@ -3986,7 +4025,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "ਕੋਈ ਵੀ ਨਹੀਂ";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal 'ਤੇ ਕੋਈ ਵੀ ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਫੋਨ ਨੰਬਰ ਨਾਲ ਨਹੀਂ ਭਾਲ ਸਕੇਗਾ। ਤੁਸੀਂ ਉਹਨਾਂ ਲੋਕਾਂ ਦੇ ਸੰਪਰਕ ਦੇ ਰੂਪ ਵਿੱਚ ਨਹੀਂ ਦਿੱਸੋਗੇ ਜਿਨ੍ਹਾਂ ਕੋਲ ਤੁਹਾਡੇ ਸੰਪਰਕ ਵਿੱਚ ਤੁਹਾਡਾ ਫੋਨ ਨੰਬਰ ਹੈ ਅਤੇ ਹੋਰ ਲੋਕ ਤੁਹਾਨੂੰ ਖੋਜ ਵਿੱਚ ਉਹਨਾਂ ਦੇ ਸੰਪਰਕ ਦੇ ਰੂਪ ਵਿੱਚ ਨਹੀਂ ਲੱਭ ਪਾਉਣਗੇ।";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "ਉਦਾਹਰਨ: %@";
@@ -4223,7 +4262,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "ਇਹ %@ ਦੇ ਨਾਲ ਤੁਹਾਡੇ ਸੁਰੱਖਿਆ ਨੰਬਰ ਵਾਂਗ ਨਹੀਂ ਜਾਪਦਾ. ਕੀ ਤੁਸੀਂ ਸਹੀ ਸੰਪਰਕ ਦੀ ਤਸਦੀਕ ਕਰ ਰਹੇ ਹੋ?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "ਤੁਹਾਡੇ ਕਲਿਪਬੋਰਡ ਵਿਚਲਾ ਨੰਬਰ ਇਸ ਚੈਟ ਦੇ ਲਈ ਸਹੀ ਸੁਰੱਖਿਆ ਨੰਬਰ ਵਾਂਗ ਨਹੀਂ ਜਾਪਦਾ ਹੈ।";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal ਤੁਹਾਡੇ ਕਲਿਪਬੋਰਡ ਵਿੱਚ ਕੋਈ ਸੁਰੱਖਿਆ ਨੰਬਰ ਨਾ ਲੱਭ ਸਕੀ. ਕੀ ਤੁਸੀਂ ਉਸ ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕਾਪੀ ਕੀਤਾ ਹੈ?";
@@ -4268,7 +4307,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "ਗੱਲਾਂ ਕਰਨ ਲਈ ਵੇਹਲੇ";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "ਖੁੱਲ੍ਹ ਕੇ ਬੋਲੋ";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "ਸਾਹ ਲਵੋ";
@@ -4319,16 +4358,13 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ਪ੍ਰੋਫਾਈਲ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣ 'ਤੇ ਹੀ ਅਪਡੇਟ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ਤੁਹਾਡਾ ਪ੍ਰੋਫ਼ਾਈਲ ਸਿਰੇ-ਤੋਂ-ਸਿਰੇ ਤੱਕ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਤੁਹਾਡੇ ਪ੍ਰੋਫ਼ਾਈਲ ਅਤੇ ਇਸ ਵਿੱਚ ਕੀਤੀਆਂ ਤਬਦੀਲੀਆਂ ਨੂੰ ਤੁਹਾਡੇ ਸੰਪਰਕ ਵੇਖ ਸਕਦੇ ਹਨ, ਅਤੇ ਇਹ ਵੀ ਕਿ ਤੁਸੀਂ ਕਦੋਂ ਨਵੀਂਆਂ ਚੈਟਾਂ ਸ਼ੁਰੂ ਜਾਂ ਮਨਜ਼ੂਰ ਕਰਦੇ ਹੋ।";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "ਸੰਭਾਲੋ";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ਪ੍ਰੋਫਾਈਲ";
-
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "ਤੁਹਾਡੇ ਕੋਲ ਨਵੇਂ ਸੁਨੇਹੇ ਹੋ ਸਕਦੇ ਹਨ";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "ਪੜ੍ਹੇ ਹੋਏ ਵਜੋਂ ਚਿੰਨ੍ਹ ਲਗਾਓ";
@@ -4487,10 +4523,10 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "ਅਸੀਂ ਓਨਾਂ ਚਿਰ ਤੁਹਾਡਾ ਖਾਤਾ ਐਕਟੀਵੇਟ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਸਾਡੇ ਵੱਲੋਂ ਭੇਜੇ ਕੋਡ ਦੀ ਤਸਦੀਕ ਨਹੀਂ ਕਰ ਲੈਂਦੇ.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "ਜਾਰੀ ਰੱਖਣ ਲਈ, ਆਪਣੇ ਫੋਨ ਦਾ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ ਅਤੇ ਫੇਰ ਅਜ਼ਮਾਓ।";
 
 /* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Check Connection";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "ਕੁਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ਫੋਨ ਨੰਬਰ ਦਾ ਇਹ ਫਾਰਮਟ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ.";
@@ -4523,16 +4559,16 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "ਕੋਈ ਫੋਨ ਨੰਬਰ ਨਹੀਂ";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "A verification code will be sent to this number. Is your phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "ਇਸ ਨੰਬਰ 'ਤੇ ਤਸਦੀਕੀ ਕੋਡ ਭੇਜਿਆ ਜਾਵੇਗਾ। ਕੀ ਤੁਹਾਡਾ ਉਪਰੋਕਤ ਫੋਨ ਨੰਬਰ ਸਹੀ ਹੈ?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Number Confirmation: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "ਨੰਬਰ ਦੀ ਤਸਦੀਕ: %@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ਸੋਧੋ";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifying %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%@ ਦੀ ਤਸਦੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "ਰੱਦ ਕਰੋ";
@@ -4544,7 +4580,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "ਨਵਾਂ ਐਡਮਿਨ ਚੁਣੋ";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "ਪੁਸ਼ ਸੂਚਨਾਵਾਂ ਮੁੜ-ਰਜਿਸਟਰ ਕਰੋ";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "ਸੰਸਾਰ ਵਿੱਚ Signal ਨੂੰ ਸਭ ਤੋਂ ਵਧੀਆ ਸੁਨੇਹੇ ਭੇਜਣ/ਲੈਣ ਵਾਲੀ ਐਪ ਬਣਾਉਣ ਵਾਸਤੇ ਅਸੀਂ ਤੁਹਾਡੇ ਤੋਂ ਸੁਝਾਅ ਲੈਣਾ ਚਾਹੁੰਦੇ ਹਾਂ।";
@@ -4796,13 +4832,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "ਲਿੰਕਿੰਕ ਕੋਡ ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ਇਸ ਡਿਵਾਈਸ ਨੂੰ ਕਿਸੇ ਵੱਖਰੇ ਖਾਤੇ ਨਾਲ ਲਿੰਕ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ ਇਸ ਡਿਵਾਈਸ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ। ਕੀ ਤੁਸੀਂ ਯਕੀਨਨ ਸਾਰੇ ਇਤਿਹਾਸ (ਸੁਨੇਹੇ, ਨੱਥੀਆਂ, ਕਾਲਾਂ, ਆਦਿ) ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ? ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਉਲਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "ਸਾਰਾ ਕੁਝ ਮਿਟਾਓ";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "ਖਾਤਾ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ Signal ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਲਿੰਕ ਕਰਨ ਲਈ ਇਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।";
@@ -4859,7 +4895,7 @@
 "SECURE_SESSION_RESET" = "ਸੁਰੱਖਿਅਤ ਸੈਸ਼ਨ ਰੀਸੈੱਟ ਹੋਇਆ.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "See All";
+"SEE_ALL_BUTTON" = "ਸਾਰੇ ਵੇਖੋ";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "ਦੁਬਾਰਾ ਭੇਜੋ";
@@ -4891,6 +4927,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "ਕੀ ਤੁਸੀਂ ਹੇਠਲੇ ਨੰਬਰ ਨੂੰ Signal ਲਈ ਸੱਦਾ ਭੇਜਣਾ ਚਾਹੋਗੇ:";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "ਉੱਚਾ";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "ਸਟੈਂਡਰਡ";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal ਸਿਰੇ-ਤੋਂ-ਸਿਰੇ ਤੱਕ ਇੰਕ੍ਰਿਪਸ਼ਨ ਵਰਤਦਾ ਹੈ ਅਤੇ ਇਸ ਨੂੰ ਕਈ ਵਾਰ ਤੁਹਾਡੇ ਚੈਟ ਸ਼ੈਸ਼ਨ ਨੂੰ ਤਾਜ਼ਾ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ। ਇਹ ਤੁਹਾਡੀ ਚੈਟ ਦੀ ਸੁਰੱਖਿਆ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਨਹੀਂ ਕਰਦਾ ਹੈ, ਪਰ ਤੁਸੀਂ ਇਸ ਸੰਪਰਕ ਨਾਲ ਆਪਣੇ ਕੁਝ ਸੁਨੇਹੇ ਖੁੰਝਾ ਸਕਦੇ ਹੋ ਅਤੇ ਤੁਹਾਨੂੰ ਉਹਨਾਂ ਨੂੰ ਇਹ ਮੁੜ ਭੇਜਣ ਲਈ ਕਹਿਣਾ ਪੈ ਸਕਦਾ ਹੈ।";
 
@@ -4898,13 +4940,13 @@
 "SESSION_REFRESH_ALERT_TITLE" = "ਚੈਟ ਸੈਸ਼ਨ ਤਾਜ਼ਾ ਕੀਤਾ ਗਿਆ";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "ਫ਼ੋਟੋਆਂ ਵਿੱਚੋਂ ਚੁਣੋ";
 
 /* Title for the wallpaper presets section */
 "SET_WALLPAPER_PRESETS" = "ਪ੍ਰੀ-ਸੈੱਟ";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "ਵਾਲਪੇਪਰ ਲਾਓ";
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "ਖਾਤਾ";
@@ -4955,10 +4997,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "ਤਰੁਟੀ ਸੰਬੰਧੀ ਲੌਗ";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "ਜੇ ਸਿਸਟਮ ਸੰਪਰਕ ਫ਼ੋਟੋ ਮੌਜੂਦ ਹੋਣ ਤਾਂ ਦਿਖਾਓ";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "ਸਿਸਟਮ ਸੰਪਰਕ ਫ਼ੋਟੋ ਵਰਤੋਂ";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "ਥੀਮ";
@@ -4994,16 +5036,16 @@
 "SETTINGS_CLEAR_HISTORY" = "ਚੈਟ ਅਤੀਤ ਨੂੰ ਮਿਟਾਓ";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "ਕਾਪੀਰਾਈਟ Signal ਮਸੈਂਜਰ\n GPLv3 ਹੇਠ ਲਇਸੰਸਸ਼ੁਦਾ";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "ਡਾਟਾ ਵਰਤੋਂ";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "ਘੱਟ ਡਾਟਾ ਵਰਤੋ";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "ਖ਼ਰਾਬ ਨੈੱਟਵਰਕ ਉੱਤੇ ਘੱਟ ਡਾਟਾ ਵਰਤਣਾ ਕਾਲਾਂ ਨੂੰ ਸੁਧਾਰ ਸਕਦਾ ਹੈ।";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "ਕਾਲਾਂ ";
@@ -5012,31 +5054,40 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "ਆਵਾਜ਼ ਸੁਨੇਹੇ, ਇੱਕ ਵਾਰ ਵੇਖੋ ਮੀਡੀਆ ਅਤੇ ਸਟਿੱਕਰ (100kb ਤੋਂ ਘੱਟ) ਨੂੰ ਹਮੇਸ਼ਾਂ ਆਪੇ ਡਾਊਨਲੋਡ ਕਰੋ।";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "ਸਵੈ-ਡਾਊਨਲੋਡ";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "ਆਪੇ ਡਾਊਨਲੋਡ ਸੈਟਿੰਗਾਂ ਨੂੰ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "ਡਾਟਾ ਵਰਤੋਂ";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "ਨਵੀਆਂ ਚੈਟਾਂ ਲਈ ਡਿਫ਼ਾਲਟ ਟਾਈਮਰ";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ਖਾਤਾ ਮਿਟਾਓ";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "ਟਰਾਂਸਫ਼ਰ ਨਾ ਕਰੋ";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "ਤੁਹਾਡੇ ਕੋਲ %@ ਬਕਾਇਆ ਰਹਿੰਦਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਮਿਟਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਆਪਣੇ ਫੰਡ ਕਿਸੇ ਹੋਰ ਵਾਲੇਟ ਪਤੇ 'ਤੇ ਟ੍ਰਾਂਸਫਰ ਨਹੀਂ ਕਰਦੇ, ਤਾਂ ਤੁਸੀਂ ਇਸਨੂੰ ਸਦਾ ਲਈ ਗੁਆ ਦੇਵੋਗੇ।";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "ਬਕਾਇਆ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨਾ ਹੈ?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "ਬਕਾਏ ਟ੍ਰਾਂਸਫਰ ਕਰੋ";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "ਸਾਰਾ ਡੇਟਾ ਮਿਟਾਓ";
@@ -5051,7 +5102,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "ਅਲੋਪ ਹੋ ਜਾਣ ਵਾਲੇ ਸੁਨੇਹੇ";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "ਤੁਹਾਡੇ ਦੁਆਰਾ ਸ਼ੁਰੂ ਕੀਤੀਆਂ ਸਾਰੀਆਂ ਨਵੀਆਂ ਚੈਟਾਂ ਲਈ ਅਲੋਪ ਹੋ ਰਹੇ ਸੁਨੇਹੇ ਦਾ ਡਿਫ਼ਾਲਟ ਟਾਈਮਰ ਤੈਅ ਕਰੋ।";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal ਨੂੰ ਦਾਨ ਕਰੋ";
@@ -5075,10 +5126,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "ਸ਼ਰਤਾਂ ਅਤੇ ਪਰਦੇਦਾਰੀ ਨੀਤੀ";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "ਲਿੰਕ ਝਲਕ ਤਿਆਰ ਕਰੋ";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Retrieve link previews directly from websites for messages you send.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "ਤੁਸੀਂ ਹੁਣ ਤੁਹਾਡੇ ਦੁਆਰਾ ਭੇਜੇ ਗਏ ਸੁਨੇਹਿਆਂ ਲਈ ਸਿੱਧੇ ਕਿਸੇ ਵੀ ਵੈਬਸਾਈਟ ਤੋਂ ਲਿੰਕ ਝਲਕ ਪ੍ਰਾਪਤ ਕਰੋ।";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "ਕਦੇ ਨਹੀਂ";
@@ -5105,25 +5156,25 @@
 "SETTINGS_MESSAGING" = "ਸੁਨੇਹੇ ਲੈਣ-ਦੇਣ";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+"SETTINGS_MESSAGING_FOOTER" = "ਜਦੋਂ ਸੁਨੇਹੇ ਪੜ੍ਹੇ ਅਤੇ ਟਾਈਪ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ ਤਾਂ ਦੇਖੋ ਅਤੇ ਸਾਂਝਾ ਕਰੋ। ਜੇ ਅਸਮਰੱਥ ਕੀਤਾ ਜਾਵੇ, ਤਾਂ ਤੁਸੀਂ ਦੂਜਿਆਂ ਤੋਂ ਪੜ੍ਹੇ ਜਾਣ ਦੀਆਂ ਪੁਸ਼ਟੀਆਂ ਜਾਂ ਟਾਈਪਿੰਗ ਸੰਕੇਤਕ ਨਹੀਂ ਵੇਖੋਗੇ।";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "ਸੈਟਿੰਗਾਂ";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "ਸ਼ਾਂਤ ਚੈਟਾਂ ਸ਼ਾਮਲ ਕਰੋ";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "ਬੈਜ ਗਿਣਤੀ";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "ਜਦੋਂ ਤੁਹਾਡਾ ਫੋਨ ਲੌਕ ਹੁੰਦਾ ਹੈ ਤਾਂ ਕਾਲ ਅਤੇ ਸੁਨੇਹਿਆਂ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਦਿਖ ਸਕਦੀਆਂ ਹਨ।";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "ਸੂਚਨਾ ਸਮੱਗਰੀ";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "ਸੰਪਰਕ Signal ਉੱਤੇ ਆਇਆ";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "ਸੂਚਨਾ ਦਿਓ ਜਦੋਂ…";
@@ -5132,46 +5183,46 @@
 "SETTINGS_NOTIFICATIONS" = "ਸੂਚਨਾਵਾਂ ";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "ਸਰਗਰਮ ਕਰੋ";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "ਤੁਸੀਂ MobileCoin ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Signal ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ। ਸਾਰੇ ਭੁਗਤਾਨ MobileCoins ਅਤੇ MobileCoin ਵਾਲੇਟ ਲਈ ਵਰਤੋਂ ਦੇ ਨਿਯਮਾਂ ਦੇ ਅਧੀਨ ਹਨ। ਇਹ ਇੱਕ ਬੀਟਾ ਵਿਸ਼ੇਸ਼ਤਾ ਹੈ ਇਸ ਲਈ ਤੁਹਾਨੂੰ ਕੁਝ ਮਸਲਿਆਂ ਦਾ ਸਾਹਮਣਾ ਕਰਨਾ ਪੈ ਸਕਦਾ ਹੈ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਦੁਆਰਾ ਗੁਆਏ ਜਾਣ ਵਾਂਲੇ ਭੁਗਤਾਨ ਜਾਂ ਬਕਾਏ ਮੁੜ ਪ੍ਰਾਪਤ ਨਾ ਕੀਤੇ ਜਾ ਸਕਣ।";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activate";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ਸਰਗਰਮ ਕਰੋ";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin ਨਿਯਮ ਦੇਖੋ";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "ਫੰਡ ਜੋੜੋ";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ਫੰਡ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਆਪਣੇ ਵਾਲੇਟ ਪਤੇ ’ਤੇ MobileCoin ਭੇਜੋ। ਆਪਣੇ ਖਾਤੇ ਤੋਂ ਕਿਸੇ ਅਜਿਹੇ ਐਕਸਚੇਂਜ ’ਤੇ ਇੱਕ ਟ੍ਰਾਂਜੈਕਸ਼ਨ ਅਰੰਭ ਕਰੋ ਜੋ MobileCoin ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ, ਫਿਰ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ ਜਾਂ ਆਪਣੇ ਵਾਲੇਟ ਪਤੇ ਨੂੰ ਕਾਪੀ ਕਰੋ।";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "ਵਾਲੇ ਦਾ ਸਿਰਨਾਵਾਂ ਕਾਪੀ ਕੀਤਾ";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "ਸਾਰੇ ਭੁਗਤਾਨ";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@, %3$@ ਤੇ";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal ਵਿੱਚ ਭੁਗਤਾਨ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਰਹੇ। ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਿਸੇ ਐਕਸਚੇਂਜ ਵਿੱਚ ਫੰਡ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰ ਸਕਦੇ ਹੋ ਪਰ ਤੁਸੀਂ ਹੁਣ ਭੁਗਤਾਨ ਭੇਜ ਅਤੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਾਂ ਫੰਡ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰ ਸਕਦੇ।";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "ਭੁਗਤਾਨਾਂ ਨੂੰ ਅਸਮਰੱਥ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡਾ ਬਕਾਇਆ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਅਜ਼ਮਾਓ।";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "ਭੁਗਤਾਨਾਂ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਤੁਹਾਡਾ ਬਕਾਇਆ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਅਜ਼ਮਾਓ।";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal ਵਿੱਚ ਭੁਗਤਾਨ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਰਹੇ। ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਿਸੇ ਐਕਸਚੇਂਜ ਵਿੱਚ ਫੰਡ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰ ਸਕਦੇ ਹੋ ਪਰ ਤੁਸੀਂ ਹੁਣ ਭੁਗਤਾਨ ਭੇਜ ਅਤੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਾਂ ਫੰਡ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰ ਸਕਦੇ।";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal ਵਿੱਚ ਭੁਗਤਾਨ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਰਹੇ। ਤੁਸੀਂ ਅਜੇ ਵੀ ਕਿਸੇ ਐਕਸਚੇਂਜ ਵਿੱਚ ਫੰਡ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰ ਸਕਦੇ ਹੋ ਪਰ ਤੁਸੀਂ ਹੁਣ ਭੁਗਤਾਨ ਭੇਜ ਅਤੇ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਾਂ ਫੰਡ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰ ਸਕਦੇ।";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "ਤਬਾਦਲਾ ਸਿਰਫ਼ ਅੰਦਾਜ਼ਨ ਹੈ ਅਤੇ ਦਰੁਸਤ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦਾ ਹੈ।";
@@ -5180,43 +5231,43 @@
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "ਸਾਰੀਆਂ ਕਰੰਸੀਆਂ";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "ਬਾਕੀ ਬਕਾਏ ਟ੍ਰਾਂਸਫਰ ਕਰੋ";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deactivate";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "ਅਕਿਰਿਆਸ਼ੀਲ ਕਰੋ";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "ਭੁਗਤਾਨ ਨੂੰ ਗੈਰ- ਸਰਗਰਮ ਕਰੋ";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "ਜੇ ਤੁਸੀਂ ਭੁਗਤਾਨਾਂ ਨੂੰ ਅਯੋਗ ਕਰਦੇ ਹੋ ਤਾਂ ਤੁਸੀਂ Signal ਵਿੱਚ Mobilecoin ਭੇਜ ਜਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Deactivate Payments?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ਭੁਗਤਾਨ ਨੂੰ ਗੈਰ- ਸਰਗਰਮ ਕਰੀਏ?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "ਭੁਗਤਾਨ ਨੂੰ ਗੈਰ- ਸਰਗਰਮ ਕਰੋ?";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "ਇਹ ਸਿਫਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਕਿ ਭੁਗਤਾਨਾਂ ਨੂੰ ਅਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਸੀਂ ਆਪਣੇ ਫੰਡ ਕਿਸੇ ਹੋਰ ਵਾਲੇਟ ਪਤੇ ’ਤੇ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰ ਲਓ। ਜੇ ਤੁਸੀਂ ਹੁਣੇ ਆਪਣੇ ਫੰਡ ਟ੍ਰਾਂਸਫ਼ਰ ਨਾ ਕਰਨ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਤਾਂ ਜੇ ਤੁਸੀਂ ਭੁਗਤਾਨਾਂ ਨੂੰ ਮੁੜ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋਗੇ ਤਾਂ ਉਹ ਤੁਹਾਡੇ ਵਾਲੇਟ ਵਿੱਚ Signal ਨਾਲ ਜੁੜੇ ਰਹਿਣਗੇ।";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "ਜੇ ਤੁਸੀਂ ਭੁਗਤਾਨਾਂ ਨੂੰ ਮੁੜ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ ਤਾਂ ਤੁਹਾਡਾ ਬਕਾਇਆ Signal ਨਾਲ ਜੁੜੇ ਤੁਹਾਡੇ ਵਾਲੇਟ ਵਿੱਚ ਰਹੇਗਾ।";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "ਟ੍ਰਾਂਸਫਰ ਕੀਤੇ ਬਿਨਾਂ ਅਸਮਰੱਥ ਕਰੋ";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "ਟ੍ਰਾਂਸਫਰ ਕੀਤੇ ਬਿਨਾਂ ਅਸਮਰੱਥ ਕਰੋ";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "ਭੁਗਤਾਨ ਗੈਰ-ਸਰਗਰਮ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕੇ";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "ਵੇਰਵਾ";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "ਭੁਗਤਾਨ ਸਮਰੱਥ ਕਰਨਾ";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin ਨਵੀਂ ਪਰਦੇਦਾਰੀ ਉੱਤੇ ਅਧਾਰਿਤ ਡਿਜ਼ਿਟਲ ਕਰੰਸੀ ਹੈ।";
@@ -5225,49 +5276,49 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin ਬਾਰੇ";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "ਤੁਸੀਂ MobileCoin ਨੂੰ ਆਪਣੇ ਵਾਲੇਟ ਪਤੇ ’ਤੇ ਭੇਜ ਕੇ Signal ਵਿੱਚ ਵਰਤੋਂ ਲਈ ਫੰਡ ਪਾ ਸਕਦੇ ਹੋ।";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "ਫੰਡ ਜੋੜਣਾ";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "ਤੁਸੀਂ MobileCoin ਦਾ ਸਮਰਥਨ ਕਰਨ ਵਾਲੇ ਐਕਸਚੇਂਜ 'ਤੇ ਕਿਸੇ ਵੀ ਸਮੇਂ MobileCoin ਨੂੰ ਨਕਦ ਲੈ ਸਕਦੇ ਹੋ। ਉਸ ਐਕਸਚੇਂਜ 'ਤੇ ਸਿਰਫ ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਟ੍ਰਾਂਸਫਰ ਕਰੋ।";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "ਨਿਵੇਸ਼ ਵੇਚਣਾ";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "ਪਿੰਨ ਅੱਪਡੇਟ ਕਰੋ";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "ਜਿਆਦਾ ਬਕਾਏ ਦੇ ਨਾਲ, ਤੁਸੀਂ ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਜੋੜਨ ਲਈ ਅਲਫਾਨੁਮੈਰਿਕ ਪਿੰਨ ਨੂੰ ਅਪਡੇਟ ਕਰਨ ਦੀ ਇੱਛਾ ਰੱਖ ਸਕਦੇ ਹੋ।";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "ਆਪਣਾ ਪਿੰਨ ਅੱਪਡੇਟ ਕਰੋ";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "ਰਿਕਵਰੀ ਵਾਕ ਰਿਕਾਰਡ ਕਰੋ";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "ਤੁਹਾਡਾ ਰਿਕਵਰੀ ਸ਼ਬਦ-ਸਮੂਹ ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਖਾਤੇ ਨੂੰ ਬਹਾਲ ਕਰਨ ਦਾ ਇੱਕ ਹੋਰ ਤਰੀਕਾ ਪ੍ਰਦਾਨ ਕਰਦਾ ਹੈ।";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਰਿਕਾਰਡ ਕਰੋ";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "ਵਾਲਟ ਦਾ ਗੈਰ-ਵਾਜ਼ਬ ਸਿਰਨਾਵਾਂ";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "ਕੋਈ ਹਾਲੀਆ ਸਰਗਰਮੀ ਨਹੀਂ";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "ਕੀ ਤੁਸੀਂ ਭੁਗਤਾਨਾਂ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "ਭੁਗਤਾਨ ਚਾਲੂ ਨਹੀਂ ਹੈ";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "ਭੁਗਤਾਨ ਭੇਜਣ ਲਈ ਦੁਬਾਰਾ ਰਜਿਸਟਰ ਕਰੋ।";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "ਰਜਿਸਟਰ ਨਹੀਂ ਹੈ";
@@ -5276,40 +5327,40 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "ਭੁਗਤਾਨ ਨੂੰ ਸਰਗਰਮ ਕਰੋ";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "ਭੁਗਤਾਨ ਗੈਰ-ਸਰਗਰਮ ਕੀਤੇ।";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "ਇੱਕ ਨਵੀਂ ਨਿੱਜਤਾ ਕੇਂਦਰਿਤ ਡਿਜੀਟਲ ਮੁਦਰਾ, MobileCoin ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Signal ਦੀ ਵਰਤੋਂ ਕਰੋ। ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕਿਰਿਆਸ਼ੀਲ ਬਣਾਓ।";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "ਭੁਗਤਾਨ ਨੂੰ ਗੈਰ- ਸਰਗਰਮ ਕਰੋ";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "ਭੁਗਤਾਨ (ਬੀਟਾ) ਨਾਲ ਜਾਣ-ਪਛਾਣ";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "ਜੇ ਤੁਸੀਂ ਆਪਣੇ Signal ਪਿੰਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰਦੇ ਹੋ ਤਾਂ Signal ਨੂੰ ਦੁਬਾਰਾ ਸਥਾਪਤ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਬਕਾਇਆ ਆਪਣੇ ਆਪ ਬਹਾਲ ਹੋ ਜਾਵੇਗਾ। ਤੁਸੀਂ ਇੱਕ ਬਹਾਲੀ ਵਾਕ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਵੀ ਆਪਣਾ ਬਕਾਇਆ ਬਹਾਲ ਕਰ ਸਕਦੇ ਹੋ, ਜੋ ਕਿ ਤੁਹਾਡੇ ਲਈ ਵਿਲੱਖਣ 24-ਸ਼ਬਦਾਂ ਵਾਲਾ ਵਾਕ ਹੁੰਦਾ ਹੈ। ਇਸਨੂੰ ਲਿਖੋ ਅਤੇ ਇਸਨੂੰ ਸੁਰੱਖਿਅਤ ਜਗ੍ਹਾ 'ਤੇ ਸਟੋਰ ਕਰੋ।";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "ਫੰਡ ਜੋੜੋ";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Block Number";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "ਬਲੌਕ ਨੰਬਰ";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "ਨੈੱਟਵਰਕ ਫ਼ੀਸ";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "ਪ੍ਰਾਪਤ ਕੀਤਾ";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = " %@ਤੋਂ ਪ੍ਰਾਪਤ";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "ਭੇਜਣ ਵਾਲਾ";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ 'ਤੇ ‌‍%1$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "ਤੁਸੀਂ";
@@ -5318,31 +5369,31 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "ਭੇਜਿਆ";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@ ਨੂੰ ਭੇਜੋ ";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "ਸਥਿਤੀ";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "ਭੁਗਤਾਨ ਦੀ ਰਕਮ ਅਤੇ ਟ੍ਰਾਂਜੈਕਸ਼ਨ ਦੇ ਸਮੇਂ ਸਮੇਤ ਟ੍ਰਾਂਜੈਕਸ਼ਨ ਵੇਰਵੇ MobileCoin  ਲੈਜ਼ਰ ਦਾ ਹਿੱਸਾ ਹਨ।";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "ਜਦੋਂ ਕਿਸੇ ਟ੍ਰਾਂਜ਼ੈਕਸ਼ਨ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਅਧਿਕਾਰ ਵਿਚਲੇ ਸਿੱਕਿਆਂ ਨੂੰ ਰਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਤਾਂ ਇੱਕ \"ਸਿੱਕਾ ਕਲੀਨਅੱਪ ਫ਼ੀਸ\" ਲਗਾਈ ਜਾਂਦੀ ਹੈ। ਕਲੀਨਅੱਪ ਨਾਲ ਤੁਸੀਂ ਭੁਗਤਾਨ ਭੇਜਣਾ ਜਾਰੀ ਰੱਖ ਸਕੋਗੇ।";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "ਇਸ ਭੁਗਤਾਨ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕੋਲ ਲੋੜੀਂਦਾ MOB ਨਹੀਂ ਹੈ। ਤੁਹਾਡਾ ਮੌਜੂਦਾ ਬਕਾਇਆ %@ਹੈ।";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "ਨਾਕਾਫੀ ਬਕਾਇਆ";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%@ ਵੱਲੋਂ";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "ਵੱਲ %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "ਭੁਗਤਾਨ ਗੈਰ-ਸਰਗਰਮ ਕੀਤਾ";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "ਸਾਰੇ";
@@ -5354,79 +5405,79 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "ਭੇਜਿਆ";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "ਹਾਲੀਆ ਅਦਾਇਗੀ";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "ਇਸ ਤੋਂ ਪਹਿਲਾਂ ਕਿ ਤੁਸੀਂ ਆਪਣਾ PIN ਅਸਮਰੱਥ ਕਰ ਸਕੋ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਭੁਗਤਾਨ ਰਿਕਵਰੀ ਸ਼ਬਦ-ਸਮੂਹ ਨੂੰ ਜ਼ਰੂਰ ਰਿਕਾਰਡ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ ਤਾਂ ਜੋ ਇਹ ਯਕੀਨੀ ਬਣਾਇਆ ਜਾ ਸਕੇ ਕਿ ਤੁਸੀਂ ਆਪਣੇ ਭੁਗਤਾਨ ਖਾਤੇ ਨੂੰ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰ ਸਕੋ।";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "ਰਿਕਵਰੀ ਵਾਕ ਰਿਕਾਰਡ ਕਰੋ";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "ਭੁਗਤਾਨ ਰਿਕਵਰੀ ਵਾਕ ਰਿਕਾਰਡ ਕਰੋ";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "ਬਾਕੀ ਬਕਾਇਆ";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "ਹਟਾਓ ";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "ਭੁਗਤਾਨ ਖਾਤਾ ਬਹਾਲ ਕਰੋ";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "ਯਕੀਨੀ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣਾ ਵਾਕ ਠੀਕ ਤਰ੍ਹਾਂ ਭਰਿਆ ਹੈ।";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਤਸਦੀਕ ਕਰੋ";
 
 /* Message indicating that 'restore payments wallet' is complete. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "ਭੁਗਤਾਨ ਖਾਤਾ ਬਹਾਲ ਕੀਤਾ।";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "ਖੁਦ ਦਰਜ ਕਰੋ";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Recovery Failed";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "ਬਹਾਲੀ ਅਸਫ਼ਲ ਰਹੀ";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "ਇਹ ਨਾ-ਮੰਨਣਯੋਗ ਰਿਕਵਰੀ ਵਾਕ ਹੈ।";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "ਨਾ-ਮੰਨਣਯੋਗ ਵਾਕ";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਪੇਸਟ ਕਰੋ";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "ਬਹਾਲੀ ਵਾਕ";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਪੇਸਟ  ਕਰੋ";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "ਤੁਹਾਡਾ ਬਹਾਲੀ ਵਾਕ ਤੁਹਾਡੇ ਲਈ ਵਿਲੱਖਣ ਇੱਕ 12 ਸ਼ਬਦਾਂ ਵਾਲਾ ਵਾਕ ਹੁੰਦਾ ਹੈ। ਆਪਣੇ ਭੁਗਤਾਨ ਖਾਤੇ ਨੂੰ ਮੁੜ ਬਹਾਲ ਕਰਨ ਲਈ ਇਸ ਵਾਕ ਦੀ ਵਰਤੋਂ ਕਰੋ।";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਭਰੋ";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "ਬਹਾਲੀ ਵਾਕ";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "ਸ਼ਬਦ ਭਰੋ %@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Invalid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "ਨਾ-ਮੰਨਣਯੋਗ ਰਿਕਵਰੀ ਵਾਕ";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Word is spelled incorrectly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "ਸ਼ਬਦਾ ਦਾ ਸ਼ਬਦਜੋੜ ਗਲਤ ਹੈ।";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਭਰੋ";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ਟ੍ਰਾਂਸਫਰ ਪ੍ਰਾਪਤਕਰਤਾ ਲਈ QR ਕੋਡ ਸਕੈਨ ਕਰੋ।";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "ਸਿਰਨਾਵਾਂ ਗੈਰਵਾਜਬ ਹੈ";
@@ -5435,88 +5486,88 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR ਕੋਡ ਸਕੈਨ ਕਰੋ";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "ਭੁਗਤਾਨ ਭੇਜੋ";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "ਪ੍ਰਾਪਤਕਰਤਾ ਦੀ ਚੋਣ ਕਰੋ";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "ਕਰੰਸੀ ਵਟਾਂਦਰਾ";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "ਭੁਗਤਾਨ";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "ਤੁਸੀਂ ਆਪਣੇ Signal ਵਾਲੇਟ ਪਤੇ ’ਤੇ ਟ੍ਰਾਂਸਫ਼ਰ ਨਹੀਂ ਕਰ ਸਕਦੇ। ਕਿਸੇ ਸਮਰਥਨ ਕਰਦੀ ਐਕਸਚੇਂਜ ਵਿਖੇ ਆਪਣੇ ਖਾਤੇ ਤੋਂ ਵਾਲੇਟ ਪਤਾ ਭਰੋ।";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "ਤੁਸੀਂ ਐਕਸਚੇਂਜ ਦੁਆਰਾ ਪ੍ਰਦਾਨ ਕੀਤੇ ਗਏ ਵਾਲੇਟ ਪਤੇ ’ਤੇ ਟ੍ਰਾਂਸਫ਼ਰ ਪੂਰਾ ਕਰਕੇ MobileCoin ਨੂੰ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰ ਸਕਦੇ ਹੋ। ਵਾਲੇਟ ਪਤਾ ਨੰਬਰਾਂ ਅਤੇ ਅੱਖਰਾਂ ਦੀ ਲੜੀ ਹੁੰਦਾ ਹੈ ਜੋ ਆਮ ਤੌਰ ’ਤੇ QR ਕੋਡ ਦੇ ਹੇਠਾਂ ਹੁੰਦਾ ਹੈ।";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "ਉਸ ਵਾਲੇਟ ਪਤੇ ਦੀ ਜਾਂਚ ਕਰੋ ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "ਗਲਤ ਪਤਾ";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "ਵੱਲ: ਸਕੈਨ ਕਰੋ ਜਾਂ ਵਾਲਟ ਸਿਰਨਾਵਾਂ ਦਿਓ";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "ਐਕਸਚੇਂਜ਼ ਨੂੰ ਭੇਜੋ";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "ਐਕਸਚੇਂਜ਼ ਨੂੰ ਭੇਜੋ";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Recovery phrase setup complete.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "ਬਹਾਲੀ ਸ਼ਬਦ-ਸਮੂਹ ਦੀ ਪੂਰਨ ਹੋਇਆ।";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "ਪੁਸ਼ਟੀ ਕਰੋ";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "ਆਪਣੇ ਰਿਕਵਰੀ ਵਾਕ ਤੋਂ %1$@ ਅਤੇ %2$@ ਭਰੋ।";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "A word is incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "ਸ਼ਬਦ ਗਲਤ ਹੈ। ਫਿਰ ਅਜ਼ਮਾਓ।";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Both words are incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "ਦੋਵੇਂ ਸ਼ਬਦ ਗਲਤ ਹਨ। ਫਿਰ ਅਜ਼ਮਾਓ";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Word %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "ਸ਼ਬਦ %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਤਸਦੀਕ ਕਰੋ";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "ਬਹਾਲੀ ਵਾਕ ਕਾਪੀ ਕੀਤਾ";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "ਕਲਿਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰੋ ";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "ਜੇ ਤੁਸੀਂ ਆਪਣੇ ਰਿਕਵਰੀ ਸ਼ਬਦ-ਸਮੂਹ ਨੂੰ ਡਿਜੀਟਲ ਰੂਪ ਵਿੱਚ ਸਾਂਭਣ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਤਾਂ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਕਿਸੇ ਅਜਿਹੀ ਥਾਂ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਾਂਭਿਆ ਗਿਆ ਹੈ ਜਿੱਥੇ ਤੁਸੀਂ ਵਿਸ਼ਵਾਸ ਕਰਦੇ ਹੋ।";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰਨਾ ਹੈ?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "ਵਾਕ ਦੁਬਾਰਾ ਦੇਖੋ";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਵੇਖੋ";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "ਬਹਾਲੀ ਵਾਕ";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "ਕ੍ਰਮ ਵਿੱਚ ਹੇਠਾਂ ਦਿੱਤੇ 24 ਸ਼ਬਦ ਲਿਖੋ। ਆਪਣੀ ਸੂਚੀ ਨੂੰ ਕਿਸੇ ਸੁਰੱਖਿਅਤ ਜਗ੍ਹਾ ’ਤੇ ਸਟੋਰ ਕਰੋ।";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "ਸਕਰੀਨਸ਼ਾਟ ਨਾ ਲਵੋ ਨਾ ਹੀ ਈਮੇਲ ਰਾਹੀਂ ਭੇਜੋ।";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "ਬਹਾਲੀ ਵਾਕ";
 
 /* Title for the 'payments settings' view in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "ਭੁਗਤਾਨ (ਬੀਟਾ)";
@@ -5549,7 +5600,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "ਪਿਨ ਰਿਮਾਈਂਡਰ";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "ਪਿਨ Signal ਦੇ ਨਾਲ ਸਟੋਰ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਐਨਕ੍ਰਿਪਟਡ ਰੱਖਦੇ ਹਨ, ਇਸ ਲਈ ਤੁਸੀਂ ਹੀ ਇਸ ਨੂੰ ਵੇਖ ਸਕਦੇ ਹੋ। ਜਦੋਂ ਤੁਸੀਂ Signal ਨੂੰ ਮੁੜ-ਇੰਸਟਾਲ ਕਰਦੇ ਹੋ ਤਾਂ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ, ਸੈਟਿੰਗਾਂ, ਅਤੇ ਸੰਪਰਕ ਮੁੜ-ਬਹਾਲ ਹੋ ਜਾਣਗੇ।";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "ਆਪਣਾ ਪਿਨ ਬਦਲੋ";
@@ -5561,7 +5612,7 @@
 "SETTINGS_PINS_TITLE" = "سگنل دی PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "ਸੈਂਸਰਸ਼ਿਪ ਦੀ ਉਲੰਘਣਾ, ਰਿਲੇਅ ਕਾਲਾਂ ਅਤੇ ਸੀਲਬੰਦ ਸੈਂਡਰ ਸੈਟਿੰਗਜ਼।";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "ਉੱਨਤ";
@@ -5603,10 +5654,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "ਸਕ੍ਰੀਨ ਲੌਕ";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "ਐਪ ਸਵਿਚਰ ਵਿੱਚ ਸਕਰੀਨ ਲੁਕਾਓ";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "iOS ਫੋਨ ਐਪ ਵਿੱਚ \"ਹਾਲੀਆ\" ਸੂਚੀ ਵਿੱਚ ਕਾਲਾਂ ਦਿਖਾਓ।";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ਆਵਾਜ਼ਾਂ";
@@ -5615,31 +5666,37 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "ਕਾਲਿੰਗ";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Signal ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਟੱਚ ID, ਫੇਸ ID, ਜਾਂ ਆਪਣੇ iOS ਡਿਵਾਈਸ ਪਾਸਕੋਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "Use Face ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "Signal ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਫੇਸ ਆਈਡੀ ਦੀ ਵਰਤੋਂ ਕਰੋ।";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਆਪਣੇ ਡਿਵਾਈਸ ਪਾਸਕੋਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "Signal ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਟੱਚ ID ਦੀ ਵਰਤੋਂ ਕਰੋ।";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "ਐਪ ਦੀ ਸੁਰੱਖਿਆ";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
+"SETTINGS_SHARING_SUGGESTIONS" = "ਸੁਝਾਵਾਂ ਵਿੱਚ ਚੈਟ ਦਿਖਾਓ";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "ਦੂਜੀਆਂ ਐਪਸ ਤੋਂ ਸਾਂਝਾ ਕਰਦੇ ਸਮੇਂ Signal ਚੈਟਸ ਸੁਝਾਅ ਦੇ ਰੂਪ ਵਿੱਚ ਪ੍ਰਦਰਸ਼ਿਤ ਹੁੰਦੇ ਹਨ।";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਲੌਕ";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal ਨਾਲ ਤੁਹਾਡੇ ਫ਼ੋਨ ਨੰਬਰ ਨੂੰ ਮੁੜ ਰਜਿਸਟਰ ਕਰਨ ਲਈ Signal ਪਿੰਨ ਦੀ ਲੋੜ ਹੈ।";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "ਟਾਈਪਿੰਗ ਸੂਚਕ";
@@ -5648,7 +5705,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "ਸੀਲਡ ਪ੍ਰੇਸ਼ਕ";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ਸਟੇਟਸ ਆਈਕਨ ਦਿਖਾਓ";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ਕਿਸੇ ਵੀ ਵਿਅਕਤੀ ਤੋਂ ਇਜਾਜ਼ਤ ਦਿਓ";
@@ -5705,10 +5762,10 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal ਵਿੱਚ ਸਾਂਝਾ ਕਰੋ";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "ਸ਼ੇਅਰਿੰਗ ਸੁਝਾਵਾਂ ਨੂੰ ਅਸਮਰੱਥ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ।";
 
 /* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "ਦੂਜੀਆਂ ਐਪਸ ਤੋਂ ਸਾਂਝਾ ਕਰਦੇ ਸਮੇਂ Signal ਚੈਟਸ ਹੁਣ ਸੁਝਾਅ ਦੇ ਰੂਪ ਵਿੱਚ ਪ੍ਰਦਰਸ਼ਿਤ ਹੋ ਸਕਦੇ ਹਨ।";
 
 /* Title for sharing suggestions megaphone */
 "SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "ਸਾਂਝਾ ਕਰਨਾ ਸੌਖਾ ਬਣਾਇਆ";
@@ -5729,34 +5786,34 @@
 "SMS_INVITE_BODY" = "ਮੈਂ ਤੁਹਾਨੂੰ Signal ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਸੱਦਾ ਭੇਜ ਰਿਹਾ/ਰਹੀ ਹਾਂ! ਲਿੰਕ ਇਹ ਰਿਹਾ:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "ਸਾਂਊਂਡਜ਼ ਅਤੇ ਸੂਚਨਾਵਾਂ";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ਕੋਈ ਨਹੀਂ";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "ਪ੍ਰਮਾਣੀਕਰਣ ਪੂਰਾ।";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ਜੇ ਤੁਸੀਂ ਪ੍ਰਮਾਣੀਕਰਣ ਨੂੰ ਛੱਡਣਾ ਚੁਣਦੇ ਹੋ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਦੂਜੇ ਲੋਕਾਂ ਦੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਖੁੰਝਾ ਦਿਓ ਅਤੇ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਭੇਜੇ ਜਾਣ ਵਿੱਚ ਅਸਫ਼ਲ ਰਹਿਣ।";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ਪ੍ਰਮਾਣਿਤ ਕੀਤੇ ਬਗੈਰ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Signal 'ਤੇ ਸਪੈਮ ਨੂੰ ਰੋਕਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਤਸਦੀਕ ਨੂੰ ਪੂਰਾ ਕਰੋ।\n\nਤਸਦੀਕ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਸੀਂ ਸੁਨੇਹਾ ਭੇਜਣਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ। ਕੋਈ ਵੀ ਰੁਕੇ ਹੋਏ ਸੁਨੁਹੇ ਆਪਣੇ ਆਪ ਭੇਜੇ ਜਾਣਗੇ।";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "ਮੈਸੇਜਿੰਗ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਲਈ ਪ੍ਰਮਾਣਿਤ ਕਰੋ";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ਪ੍ਰਮਾਣੀਕਰਣ ਨੂੰ ਛੱਡੋ";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "ਤਸਦੀਕ ਕਰਨਾ ਪੂਰਾ ਹੋਇਆ";
 
 /* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "ਮੌਜੂਦਾ ਗਰੁੱਪ ਆਉਣ ਵਾਲੇ ਹਫਤਿਆਂ ਵਿੱਚ ਆਪਣੇ ਆਪ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰ ਲੈਣਗੇ।";
 
 /* Instructions for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "ਨਵਾਂ ਗਰੁੱਪ";
@@ -5822,7 +5879,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "ਸਾਡੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਕੀ ਚੱਲ ਰਿਹਾ ਹੈ";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "ਮਸਲੇ ਬਾਰੇ ਸਾਨੂੰ ਦੱਸੋ:";
@@ -5879,13 +5936,13 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ਤਸਦੀਕ ਕਰੋ";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "ਜਦੋਂ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਸੁਨੇਹਾ ਭੇਜੋਗੇ ਤਾਂ ਅਲੋਪ ਹੋਣ ਵਾਲੇ ਸੁਨੇਹੇ ਦਾ ਸਮਾਂ %@ ’ਤੇ ਸੈੱਟ ਹੋ ਜਾਵੇਗਾ।";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "ਕੋਈ ਸਾਂਝੇ ਗਰੁੱਪ ਨਹੀਂ। ਬੇਨਤੀਆਂ ਦੀ ਧਿਆਨ ਨਾਲ ਸਮੀਖਿਆ ਕਰੋ।";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ। ਬੇਨਤੀਆਂ ਦੀ ਧਿਆਨ ਨਾਲ ਸਮੀਖਿਆ ਕਰੋ।";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ਇਹ ਸੁਨੇਹਾ ਮਿਟਾਇਆ ਗਿਆ ਸੀ.";
@@ -5894,7 +5951,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@, ਅਤੇ %lu ਵਾਧੂ ਗਰੁੱਪਾਂ ਦੇ ਮੈਂਬਰ";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "ਤੁਸੀਂ ਇਸ ਚੈਟ ਵਿੱਚ ਖੁੱਦ ਲਈ ਨੋਟ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ। ਜੇਕਰ ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਨਾਲ ਕੋਈ ਲਿੰਕ ਕੀਤੀਆਂ ਹੋਈਆਂ ਡਿਵਾਈਸਾਂ ਹਨ, ਤਾਂ ਨਵੇਂ ਨੋਟ ਸਿੰਕ ਹੋ ਜਾਣਗੇ।";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ ਦੇ ਮੈਂਬਰ";
@@ -6047,7 +6104,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "ਤੁਹਾਡਾ ਡਿਵਾਈਸ ਇਸ ਫੀਚਰ ਨੂੰ ਸਮਰਥਿਤ ਨਹੀਂ ਕਰਦਾ.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "ਤੁਹਾਡਾ ਸੁਰੱਖਿਆ ਨੰਬਰ %@ ਨਾਲ ਬਦਲਿਆ, ਜਿਸ ਦਾ ਸੰਭਵ ਕਾਰਨ Signal ਮੁੜ-ਇੰਸਟਾਲ ਜਾਂ ਡਿਵਾਈਸ ਬਦਲਣਾ ਹੋ ਸਕਦਾ ਹੈ। ਨਵੇਂ ਸੁਰੱਖਿਆ ਨੰਬਰ ਦੀ ਤਸਦੀਕ ਕਰਨ ਲਈ ਤਸਦੀਕ ਨੂੰ ਛੂਹੋ। ਇਹ ਚੋਣਵਾਂ ਹੈ।";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "ਤਸਦੀਕ ਕਰੋ";
@@ -6059,7 +6116,7 @@
 "UPDATE_GROUP_FAILED" = "ਗਰੁੱਪ ਨੂੰ ਅਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ਨਵਾਂ ਗਰੁੱਪ ਅੱਪਡੇਟ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਆਪਣਾ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ ਅਤੇ ਫੇਰ ਅਜ਼ਮਾਓ।";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "ਆਪਣਾ ਪਿਨ ਬਣਾਓ";
@@ -6164,94 +6221,94 @@
 "VOICE_MESSAGE_FILE_NAME" = "ਆਵਾਜ਼ ਦਾ ਸੁਨੇਹਾ";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਪ੍ਰੈੱਸ ਕਰੋ ਤੇ ਦਬਾ ਕੇ ਰੱਖੋ।";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop 'ਤੇ ਸੈੱਟਅਪ ਪੂਰਾ ਕਰੋ.";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Contact Name";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "ਸੰਪਰਕ ਦਾ ਨਾਂ";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Blur Photo";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "ਧੁੰਧਲੀ ਫ਼ੋਟੋ";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ਜ਼ੂਮ ਕਰਨ ਲਈ ਚੂੰਢੀ ਭਰੋ, ਮੇਚ ਬਿਠਾਉਣ ਲਈ ਖਿੱਚੋ।";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "ਵਧੇਰੇ ਵਾਲਪੇਪਰਾਂ ਦੀ ਝਲਕ ਲਈ ਸਵਾਈਪ ਕਰੋ";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "ਸਾਰੀਆਂ ਚੈਟਾਂ ਲਈ ਵਾਲਪੇਪਰ ਲਾਓ।";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ ਲਈ ਵਾਲਪੇਪਰ ਲਾਓ।";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "ਝਲਕ";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Clear Chat Color";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "ਇਸ ਚੈਟ ਰੰਗ ਨੂੰ ਮਿਟਾਓ";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Clear chat color for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "ਇਸ ਚੈਟ ਲਈ ਚੈਟ ਦਾ ਰੰਗ ਮਿਟਾਈਏ?";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "ਵਾਲਪੇਪਰ ਮਿਟਾਓ";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "ਇਸ ਚੈਟ ਲਈ ਵਾਲਪੇਪਰ ਮਿਟਾਈਏ?";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ਗੂੜ੍ਹੇ ਰੰਗੇ ਥੀਮ ਡਿਮਜ਼ ਵਾਲਪੇਪਰ";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "ਵਾਲਪੇਪਰਾਂ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਅਜ਼ਮਾਓ ਜਾਂ ਜੇ ਗਲਤੀ ਬਣੀ ਰਹਿੰਦੀ ਹੈ ਤਾਂ ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "ਸਾਰੇ ਵਾਲਪੇਪਰਾਂ ਨੂੰ ਰੀਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਅਜ਼ਮਾਓ ਜਾਂ ਜੇ ਗਲਤੀ ਬਣੀ ਰਹਿੰਦੀ ਹੈ ਤਾਂ ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Reset All Colors";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "ਸਾਰੇ ਰੰਗ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "ਸਾਰੇ ਵਾਲਪੇਪਰ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "ਕੀ ਤੁਸੀਂ ਸਾਰੇ ਚੈਟ ਰੰਗਾਂ ਨੂੰ ਰੱਦ ਕਰਨਾ ਚਾਹੋਗੇ?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "ਚੈਟ ਦੇ ਰੰਗਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "ਚੈਟ ਦੇ ਰੰਗਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "ਵਾਲਪੇਪਰ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "ਮੂਲ ਰੰਗ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "ਚੈਟ ਦੇ ਰੰਗਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "ਮੂਲ ਵਾਲਪੇਪਰ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Reset Wallpapers";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "ਵਾਲਪੇਪਰ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Would you like to override all wallpapers?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "ਕੀ ਤੁਸੀਂ ਸਾਰੇ ਵਾਲਪੇਪਰਾਂ ਨੂੰ ਓਵਰਰਾਈਡ ਕਰਨਾ ਚਾਹੋਗੇ?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "ਵਾਲਪੇਪਰ ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "ਚੈਟ ਦਾ ਰੰਗ";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "ਵਾਲਪੇਪਰ ਲਾਓ";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "ਤੁਸੀਂ ਇਸ ਸੁਨੇਹੇ ਨੂੰ ਹਟਾਇਆ ਹੈ।";

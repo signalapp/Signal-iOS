@@ -112,6 +112,12 @@
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Náði því";
 
+/* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+
+/* Title for delivery issue sheet */
+"ALERT_DELIVERY_ISSUE_TITLE" = "Vandamál með afhendingu";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Henda";
 
@@ -137,7 +143,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Svar";
 
 /* notification body */
-"APN_Message" = "Ný skilaboð!";
+"APN_Message" = "Þú gætir átt ný skilaboð";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nær ekki að ræsa sig. Sendu villusmeldingakrá á support@signal.org svo við getum nýtt hana við úrvinnslu.";
@@ -213,6 +219,15 @@
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Vistað";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Hægara, meira gagnamagn";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Hraðvirkt, minna gagnamagn";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Gæði myndefnis";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Skilaboð til %@";
@@ -323,13 +338,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Hátalari";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Bæta við ljósmynd";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Veldu útlit og lit eða sérsníddu upphafsstafina þína.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Bæta við auðkennismynd";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Veldu lit";
@@ -1109,7 +1124,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Lesa meira";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Afritað á klippispjald";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Ef setan þín er endurstillt muntu í framtíðinni geta tekið við skilaboðum frá %@, en það mun ekki endurheimta nein skilaboð sem þegar hafa skemmst.";
@@ -1609,6 +1624,9 @@
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Mistókst að sækja viðhengi.";
 
+/* Error message for a decryption failure. Embeds {{sender short name}}. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Tók við tvíteknum skilaboðum.";
 
@@ -1706,7 +1724,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Útlit";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Bæta við ljósmynd";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Bjóða vinum aðgang";
@@ -1787,7 +1805,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Get ekki hafið hópsímtal";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ er útilokaður";
@@ -3076,6 +3094,27 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Deila myndefni";
 
+/* Context menu Reply button title */
+"CONTEXT_MENU_REPLY" = "Svara";
+
+/* Context menu Copy button title */
+"CONTEXT_MENU_COPY" = "Afrita";
+
+/* Context menu Info button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu Delete button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Eyða";
+
+/* Context menu Share button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Deila";
+
+/* Context menu Forward button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Áfram";
+
+/* Context menu Select button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Velja";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Boð í hóp";
 
@@ -4327,9 +4366,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Snið";
 
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "Þú gætir átt ný skilaboð";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Merkja sem lesið";
 
@@ -4891,6 +4927,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Myndirðu vilja bjóða eftirfarandi símanúmeri á Signal: ";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "Mikil";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "Staðlað";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal notar enda-í-enda dulritun og gæti þurft öðru hvoru að endurlesa spjallferilinn þinn. Þetta hefur ekki áhrif á öryggi spjallsins þíns, en þú gætir hafa misst af skilaboðum frá þessum tengilið og þú ættir kannski að biðja viðkomandi um að endursenda skilaboðin.";
 
@@ -5016,6 +5058,15 @@
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Frumstilla stillingar á sjálfvirku niðurhali";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Gagnanotkun";
@@ -5628,6 +5679,12 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Öryggi forrits";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Birta samtöl í tillögum";

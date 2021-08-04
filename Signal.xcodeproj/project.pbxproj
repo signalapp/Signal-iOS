@@ -2071,6 +2071,10 @@
 		88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageRelay.swift; sourceTree = "<group>"; };
 		88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDisappearingMessageTimerInteraction.swift; sourceTree = "<group>"; };
 		88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "audio-played-dot.json"; sourceTree = "<group>"; };
+		88E1EACA26BB283D00AD0C2D /* bn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bn; path = translations/bn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88E1EACB26BB285700AD0C2D /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = translations/gu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88E1EACC26BB286F00AD0C2D /* kn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kn; path = translations/kn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88E1EACD26BB28A400AD0C2D /* zh_HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_HK; path = translations/zh_HK.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88E34F2622F269E900966CC2 /* StorageServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceManager.swift; sourceTree = "<group>"; };
 		88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageServiceProto+Sync.swift"; sourceTree = "<group>"; };
 		88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
@@ -6150,6 +6154,9 @@
 				88928A58263F0DEB009C9B30 /* es_ES */,
 				88928A59263F0DEC009C9B30 /* mr */,
 				88928A5A263F0DEC009C9B30 /* hi */,
+				88E1EACA26BB283D00AD0C2D /* bn */,
+				88E1EACB26BB285700AD0C2D /* gu */,
+				88E1EACC26BB286F00AD0C2D /* kn */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -6229,6 +6236,7 @@
 				3495FF1425F9A0C900959D6E /* ug */,
 				88928A49263F0D3C009C9B30 /* is */,
 				88928A4A263F0DCD009C9B30 /* es_ES */,
+				88E1EACD26BB28A400AD0C2D /* zh_HK */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

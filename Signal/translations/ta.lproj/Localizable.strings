@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "இப்போது இல்லை";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "பற்றி Signal";
+"ABOUT_SECTION_TITLE" = "சிக்னலை பற்றி";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "புதிய பாதுகாப்பு எண்ணை ஒப்புக்கொள்";
@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "தொடர்பு";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "தொடர்பு கொள்ளவும் %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "தொடர்பு கொள்ள %@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "ஊடகம்";
@@ -112,6 +112,12 @@
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "அறிந்துகொண்டேன்";
 
+/* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+
+/* Title for delivery issue sheet */
+"ALERT_DELIVERY_ISSUE_TITLE" = "டெலிவரி பிரச்சினை";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "நிராகரி";
 
@@ -137,7 +143,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "பதில்";
 
 /* notification body */
-"APN_Message" = "புதிய தகவல்!";
+"APN_Message" = "உங்களிடம் புதிய செய்திகள் இருக்கலாம்";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal லைத் தொடங்க முடியாது. தயவுசெய்து பிழைத்திருத்த பதிவை support@signal.org க்கு அனுப்புங்கள், இதன்மூலம் இந்த சிக்கலை சரிசெய்யலாம்.";
@@ -213,6 +219,15 @@
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "சேமித்த";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "மெதுவான, அதிகமான இணைய தரவு";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "வேகமான, குறைந்த இணைய தரவு";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "மீடியா தரம்";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "க்கு செய்தி %@";
@@ -1608,6 +1623,9 @@
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "இணைப்பு பதிவிறக்கம் தோல்வியுற்றது.";
+
+/* Error message for a decryption failure. Embeds {{sender short name}}. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "நகல் செய்தி கிடைத்தது.";
@@ -3076,6 +3094,27 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "பகிர் மீடியா";
 
+/* Context menu Reply button title */
+"CONTEXT_MENU_REPLY" = "பதில்";
+
+/* Context menu Copy button title */
+"CONTEXT_MENU_COPY" = "நகல்";
+
+/* Context menu Info button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu Delete button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "நீக்கு";
+
+/* Context menu Share button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "பகிர்";
+
+/* Context menu Forward button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "முன்னனுப்புக";
+
+/* Context menu Select button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "தேர்வு";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "குழு அழைக்கவும்";
 
@@ -4327,9 +4366,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "விவரம்";
 
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "உங்களிடம் புதிய செய்திகள் இருக்கலாம்";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "படித்ததாக குறி ";
 
@@ -4891,6 +4927,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "பின்வரும் எண்ணை Signal லுக்கு அழைக்க விரும்புகிறீர்களா:";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "உயர்";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "தரநிலை";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal இருமுனை குறியாக்கத்தைப் (E2EE) பயன்படுத்துகிறது, மேலும் இது சில நேரங்களில் உங்கள் அரட்டை அமர்வை புதுப்பிக்க வேண்டியிருக்கும். இது உங்கள் அரட்டையின் பாதுகாப்பைப் பாதிக்காது, ஆனால் இந்த தொடர்பிலிருந்து நீங்கள் ஒரு செய்தியைத் தவறவிட்டிருக்கலாம், மேலும் அதை மீண்டும் அனுப்புமாறு அவர்களிடம் கேட்கலாம்.";
 
@@ -5016,6 +5058,15 @@
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "தானியங்கி-பதிவிறக்க அமைப்புகளை மீட்டமைக்கவும்";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "தரவு பயன்பாடு";
@@ -5628,6 +5679,12 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "பயன்பாட்டு பாதுகாப்பு";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "பரிந்துரைகளில் அரட்டைகளைக் காட்டு";

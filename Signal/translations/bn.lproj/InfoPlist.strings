@@ -1,0 +1,9 @@
+NSAppleMusicUsageDescription = "মিডিয়া সংযুক্তিসমূহ প্লে করতে Signal-কে Apple Music ব্যবহার করতে হবে।";
+NSCameraUsageDescription = "ফটোগুলি তোলা এবং ভিডিও কলগুলি করার জন্য Signal আপনার ক্যামেরা ব্যবহার করে।";
+NSContactsUsageDescription = "আপনার চেনা ইউজারদের খুঁজতে Signal আপনার কন্ট্যাক্টদের ব্যবহার করে। আমরা সার্ভারে আপনার কন্ট্যাক্টগুলি সঞ্চয় করে রাখি না।";
+NSFaceIDUsageDescription = "Signal স্ক্রিন লক ফেস ID ব্যবহার করে।";
+NSLocationWhenInUseUsageDescription = "আপনার বর্তমান অবস্থান শেয়ার করতে Signal-কে আপনার অবস্থান অ্যাক্সেস করতে হবে।";
+NSMicrophoneUsageDescription = "ফোন কল করতে ও গ্রহণ করতে এবং ভয়েস মেসেজ রেকর্ড করতে Signal-কে আপনার মাইক্রোফোন অ্যাক্সেস করতে হবে।";
+NSPhotoLibraryAddUsageDescription = "Signal ফটোগুলিকে আপনার লাইব্রেরিতে সেভ করবে।";
+NSPhotoLibraryUsageDescription = "আপনার লাইব্রেরি থেকে কোন ফটোগুলি পাঠাতে হবে Signal আপনাকে সেটি বেছে নিতে দেবে।";
+NSLocalNetworkUsageDescription = "আপনার অ্যাকাউন্টকে সরাসরি নতুন একটি ফোনে স্থানান্তরে সহায়তা করতে Signal স্থানীয় নেটওয়ার্ক ব্যবহার করে। আপনি সুনির্দিষ্টভাবে নতুন ডিভাইসে স্থানান্তরের উদ্যোগ না নিলে এটি ব্যবহৃত হবে না।";

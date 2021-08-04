@@ -112,6 +112,12 @@
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "ရပြီ";
 
+/* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+
+/* Title for delivery issue sheet */
+"ALERT_DELIVERY_ISSUE_TITLE" = "Delivery Issue";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "စွန့်ပစ်သည် ";
 
@@ -137,7 +143,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "အဖြေ ";
 
 /* notification body */
-"APN_Message" = "သတင်းစကားအသစ် ";
+"APN_Message" = "သင့်တွင် မက်ဆေ့ချ်အသစ်များ ရောက်ရှိနေပါသည်";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ကိုဖွင့်၍ မရပါ။ ကျေးဇူးပြု၍ ကျွန်ုပ်တို့ ပြဿနာ ဖြေရှင်းနိုင်ရန် support@signal.org စီသို့ ပျက်ကွက်မှုဖြေရှင်းခြင်း မှတ်တမ်းကို ပေးပို့ပေးပါ။";
@@ -213,6 +219,15 @@
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "သိမ်းဆည်းပြီး";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ စီသို့ မက်ဆေ့ချ်";
@@ -1608,6 +1623,9 @@
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "ပူးတွဲဖိုင် ဒေါင်းလုပ်ဆွဲခြင်း မအောင်မြင်ပါ။";
+
+/* Error message for a decryption failure. Embeds {{sender short name}}. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "မိတ္တူပွား မက်ဆေ့ချ် ရခဲ့ပါသည်။";
@@ -3076,6 +3094,27 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = " မီဒီယာ မျှဝေမယ်";
 
+/* Context menu Reply button title */
+"CONTEXT_MENU_REPLY" = "စာပြန်မည်";
+
+/* Context menu Copy button title */
+"CONTEXT_MENU_COPY" = "ကူးမည်";
+
+/* Context menu Info button title */
+"CONTEXT_MENU_DETAILS" = "အချက်အလက် ";
+
+/* Context menu Delete button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "ဖျက်မယ်";
+
+/* Context menu Share button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "ဝေမျှမယ်";
+
+/* Context menu Forward button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "ထပ်ဆင့် ပေးပို့မယ်";
+
+/* Context menu Select button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "ရွေးမယ်";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
 
@@ -4327,9 +4366,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "ပရိဖိုင်း";
 
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "သင့်တွင် မက်ဆေ့ချ်အသစ်များ ရောက်ရှိနေပါသည်";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "ဖတ်ပြီးကြောင်းမှတ်";
 
@@ -4891,6 +4927,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "အဆိုပါနံပါတ်ကို Signal ကို ဖိတ်ချင်ပါသလား";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "မြင့်သော";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "Standard";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal သည်အစမှအဆုံးထိ ကုဒ်ဖြင့် ပြောင်းလဲဝှက်ထား၍ သင်၏ စကားပြောဆိုမှုပိုင်းများကို တစ်ခါတစ်ရံ ပြန်တင်ဆက် ရပါလိမ့်မည်။ ၎င်းလုပ်ခြင်းသည် သင့်စကားပြောဆိုမှု၏ လုံခြုံရေးကို မထိခိုက်စေပါ၊ သို့သော် သင်သည် ဤအဆက်အသွယ်မှ မက်ဆေ့ခ်ျတစ်ခုကို လွဲချော်ပြီး ၎င်းတို့အား ပြန်လည်ပေးပို့ရန် တောင်းဆိုနိုင်သည်။";
 
@@ -5016,6 +5058,15 @@
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "အလိုအလျောက် ဒေါင်းလုပ်ခြင်း အပြင်အဆင်များကို ပြန်ချိန်ညှိမယ်";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "ဒေတာ သုံးနှုန်း";
@@ -5628,6 +5679,12 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "အပ္ပလီကေးရှင်း လုံခြုံရေး";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "အကြံပြုချက်များတွင် စကားပြောဆိုမှုချက်များ ပြပါ";

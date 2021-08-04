@@ -1,3 +1,3 @@
-• 變更你的個人資料和群組照片。 無論你是想上傳“價值千金的圖片”，或只須輸入幾個字母，還是從我們豐富多彩的新預設設定中選擇預設圖片，建立完美照片都比以往任何時候都容易。
-
-有興趣幫助改進 Signal？ 我們正在招聘。 連到 https://signal.org/workworkwork 了解更多資訊。
+• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
+• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
+• We’ve made several improvements to help make scrolling your chat list smoother.

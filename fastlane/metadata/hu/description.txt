@@ -17,7 +17,7 @@ Milliók használják napi szinten a Signal alkalmazást azonnali, ingyenes komm
 • Képzeld el - A beépített képszerkesztő lehetővé teszi a küldött fotók nyújtását, vágását, forgatását. Szöveg eszköztár is található benne, így saját szavaidat is hozzáadhatod a meglévő 1000 mellé, amivel a kép többet mond a szónál.
 
 
-Támogatásért, kérdéseivel és további információkért látogasson el ide:
+Támogatásért, kérdésekkel és további információkért látogass el ide:
 https://support.signal.org
 
 Forráskód:

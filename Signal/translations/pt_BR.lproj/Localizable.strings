@@ -112,6 +112,12 @@
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Entendi";
 
+/* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+
+/* Title for delivery issue sheet */
+"ALERT_DELIVERY_ISSUE_TITLE" = "Problema na entrega";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Descartar";
 
@@ -137,7 +143,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Atender";
 
 /* notification body */
-"APN_Message" = "Nova mensagem!";
+"APN_Message" = "Você pode ter novas mensagens";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "O Signal não pôde ser iniciado. Por favor, envie um registro de depuração para support@signal.org para que possamos verificar este problema.";
@@ -213,6 +219,15 @@
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Salvo";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Mais lento, tamanho maior";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Mais rápido, tamanho menor";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Qualidade da foto";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Enviar para %@";
@@ -323,16 +338,16 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Caixa de som";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Adicionar foto";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Escolha uma imagem e uma cor ou escreva suas iniciais.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Adicionar uma foto de perfil";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Escolha uma cor";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Escolher uma cor";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Cor";
@@ -347,7 +362,7 @@
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "foto";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Selecione um avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Escolher uma foto";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "texto";
@@ -866,7 +881,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Excluir conversa?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Somente admins podem enviar mensagens para este grupo.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Somente admins podem enviar mensagens para esse grupo.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Você não pode selecionar mais do que %@ conversas.";
@@ -1064,7 +1079,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Todos os membros";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Escolha quem pode enviar mensagens e iniciar chamadas neste grupo.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Escolha quem pode enviar mensagens e iniciar chamadas nesse grupo.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Enviar mensagens";
@@ -1109,7 +1124,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Leia mais";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Copiado para a área de transferência";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Restabelecer sua sessão lhe permitirá receber mensagens futuras de %@, mas não recuperará nehuma mensagem que já estiver corrompida.";
@@ -1609,6 +1624,9 @@
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "O download do anexo falhou.";
 
+/* Error message for a decryption failure. Embeds {{sender short name}}. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mensagem duplicada recebida.";
 
@@ -1706,7 +1724,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Aparência";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Adicionar foto";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Convidar amigos(as)";
@@ -1784,10 +1802,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ está bloqueado";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Somente admins deste grupo podem iniciar uma chamada.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Somente admins podem iniciar uma chamada nesse grupo.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Não é possível iniciar uma chamada de grupo";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Não é possível iniciar uma chamada em grupo";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ está bloqueado";
@@ -2048,22 +2066,22 @@
 "GROUP_INVITES_VIEW_TITLE" = "Convites de Membros";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "As configurações de grupo foram modificadas para permitir que todos os membros possam enviar mensagens.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "As configurações do grupo foram modificadas para permitir que todos os membros enviem mensagens.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Você modificou as configurações de grupo para permitir que todos os membros possam enviar mensagens.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Você modificou as configurações do grupo para permitir que todos os membros enviem mensagens.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ modificou as configurações de grupo para que permitir que todos os membros possam enviar mensagens.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ modificou as configurações do grupo para permitir que todos os membros enviem mensagens.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "As configurações de grupo foram modificadas para permitir que somente admins possam enviar mensagens.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "As configurações do grupo foram modificadas para permitir que somente admins enviem mensagens.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Você modificou as configurações de grupo para permitir que somente admins possam enviar mensagens.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Você modificou as configurações do grupo para permitir que somente admins enviem mensagens.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ modificou as configurações de grupo para que permitir que somente admins possam enviar mensagens.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ modificou as configurações do grupo para permitir que somente admins enviem mensagens.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Este link do grupo não é mais válido.";
@@ -2495,10 +2513,10 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Somente %@ pode enviar mensagens";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Somente %@ podem enviar mensagens";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Envie uma mensagem para um Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Envie uma mensagem para um admin";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Escolha um novo admin para este grupo antes que você saia.";
@@ -3075,6 +3093,27 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Compartilhar mídia";
+
+/* Context menu Reply button title */
+"CONTEXT_MENU_REPLY" = "Responder";
+
+/* Context menu Copy button title */
+"CONTEXT_MENU_COPY" = "Copiar";
+
+/* Context menu Info button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu Delete button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Excluir";
+
+/* Context menu Share button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Compartilhar";
+
+/* Context menu Forward button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Encaminhar";
+
+/* Context menu Select button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Selecione";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Convite do grupo";
@@ -3734,7 +3773,7 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Não foi possível contatar o serviço";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Erro de conexão ao processar o serviço";
 
 /* Indicates that a payment failed due to insufficient funds. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Você não tem MOB o suficiente para concluir este pagamento.";
@@ -4327,9 +4366,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Perfil";
 
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "Você pode ter novas mensagens";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Marcar como Lida";
 
@@ -4891,6 +4927,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Gostaria de convidar este número para o Signal?";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "Alta";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "Padrão";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "O Signal usa criptografia de ponta a ponta e pode precisar reiniciar a sessão da sua conversa, às vezes. Isso não afeta a segurança da sua conversa, mas pode ser que você tenha perdido uma mensagem deste contato e você terá que pedir para ela ser enviada novamente.";
 
@@ -5016,6 +5058,15 @@
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Redefinir as configurações de download automático";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Uso de rede";
@@ -5147,7 +5198,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Adicionar fundos";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Para adicionar fundos, envie MobileCoin para o endereço da sua carteira. Inicie uma transação de sua conta em uma exchange que suporte MobileCoin, depois escaneie o código QR ou copie o endereço da sua carteira.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Para adicionar fundos, envie MobileCoin para o endereço da sua carteira. Inicie uma transação de sua conta com uma intermediação de troca que suporte MobileCoin, depois escaneie o código QR ou copie o endereço da sua carteira.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Endereço da carteira copiado";
@@ -5159,7 +5210,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ em %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Pagamentos no Signal não estão mais disponíveis. Você ainda pode transferir fundos para uma exchange, mas não pode mais enviar e receber pagamentos ou adicionar fundos.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "O módulo de Pagamentos não está mais disponível no Signal. Você ainda pode transferir fundos para uma intermediação de troca, mas não pode mais enviar e receber pagamentos ou adicionar fundos.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Não é possível desativar o módulo de pagamentos porque o seu saldo não está disponível. Verifique a sua conexão e tente novamente.";
@@ -5168,10 +5219,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Não foi possível concluir o pagamento porque o seu saldo está indisponível. Verifique a sua conexão e tente novamente.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Pagamentos no Signal não estão mais disponíveis. Você ainda pode transferir fundos para uma exchange, mas não pode mais enviar e receber pagamentos ou adicionar fundos.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "O módulo de Pagamentos não está mais disponível no Signal. Você ainda pode transferir fundos para uma intermediação de troca, mas não pode mais enviar e receber pagamentos ou adicionar fundos.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Pagamentos no Signal não estão mais disponíveis. Você ainda pode transferir fundos para uma exchange, mas não pode mais enviar e receber pagamentos ou adicionar fundos.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "O módulo de Pagamentos não está mais disponível no Signal. Você ainda pode transferir fundos para uma intermediação de troca, mas não pode mais enviar e receber pagamentos ou adicionar fundos.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversões são apenas estimativas e podem ser imprecisas.";
@@ -5231,7 +5282,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adicionando fundos";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Você pode sacar MobileCoin a qualquer momento em uma exchange que aceite MobileCoin. Basta fazer uma transferência para sua conta nessa exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Você pode sacar MobileCoin a qualquer momento em uma intermediação de troca que aceite MobileCoin. Basta fazer uma transferência para a sua conta nessa intermediação de troca.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Sacar";
@@ -5447,10 +5498,10 @@
 "SETTINGS_PAYMENTS_TITLE" = "Pagamentos";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Você não pode transferir para seu endereço de carteira Signal. Digite o endereço da carteira de sua conta em uma exchange válida.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Você não pode transferir para o endereço da sua própria carteira Signal. Digite o endereço de uma carteira sua que esteja em uma intermediação de troca válida.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Você pode transferir MobileCoin completando uma transferência para o endereço da carteira fornecido pela exchange. O endereço da carteira é a sequência de números e letras comumente encontrada abaixo do código QR.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Você pode transferir MobileCoin fazendo uma transferência para o endereço da carteira fornecido pela intermediação de troca. O endereço da carteira é a sequência de números e letras comumente encontrada abaixo do código QR.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Verifique o endereço da carteira para o qual você está tentando fazer a transferência e tente novamente.";
@@ -5462,10 +5513,10 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Para: escaneie ou insira o endereço da carteira";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transferir para exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transferir para intermediação de troca";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transferir para exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transferir para intermediação de troca";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "A configuração da senha de recuperação foi concluída.";
@@ -5628,6 +5679,12 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Segurança do app";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Exibir conversas nas sugestões de compartilhamento";

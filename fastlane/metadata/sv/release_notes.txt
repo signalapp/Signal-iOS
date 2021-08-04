@@ -1,3 +1,3 @@
-• Ge din profil och gruppfoton en förändring. Oavsett om du vill ladda upp en "bild på tusen ord", bara skriva in några bokstäver eller välja bland en av våra färgglada nya standardinställningar, är det lättare än någonsin att skapa det perfekta fotot.
-
-Intresserad av att förbättra Signal? Vi anställer. Besök https://signal.org/workworkwork för att läsa mera.
+• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
+• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
+• We’ve made several improvements to help make scrolling your chat list smoother.

@@ -112,6 +112,12 @@
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "దొరికింది";
 
+/* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+
+/* Title for delivery issue sheet */
+"ALERT_DELIVERY_ISSUE_TITLE" = "నిర్వహణ సమస్య";
+
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "తీసివేయు";
 
@@ -137,7 +143,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "సమాధానం";
 
 /* notification body */
-"APN_Message" = "కొత్త సందేశం";
+"APN_Message" = "మీకు క్రొత్త సందేశాలు ఉండవచ్చు";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ప్రారంభించబడలేదు. దయచేసి డీబగ్ లాగ్‌ను support@signal.org కు పంపండి, తద్వారా మేము ఈ సమస్యను పరిష్కరించుటాము.";
@@ -213,6 +219,15 @@
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "భద్రపరచడం";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "నెమ్మదిగా, మరింత డేటా";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "వేగంగా, తక్కువ డేటా";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "మీడియా నాణ్యత";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ కు సందేశం";
@@ -1608,6 +1623,9 @@
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "అటాచ్మెంట్ డౌన్‌లోడ్ విఫలమైంది.";
+
+/* Error message for a decryption failure. Embeds {{sender short name}}. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "నకిలీ సందేశం అందుకుంది.";
@@ -3076,6 +3094,27 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "మీడియాను భాగస్వామ్యం చేయండి";
 
+/* Context menu Reply button title */
+"CONTEXT_MENU_REPLY" = "స్పంధించు";
+
+/* Context menu Copy button title */
+"CONTEXT_MENU_COPY" = "నకలు";
+
+/* Context menu Info button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu Delete button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "తొలగించండి";
+
+/* Context menu Share button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "పంచుకోండి";
+
+/* Context menu Forward button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "బదలాయించు";
+
+/* Context menu Select button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "ఎంచుకోండి";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "సమూహ ఆహ్వానం";
 
@@ -4327,9 +4366,6 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "వ్యక్తిత్వవర్ణన";
 
-/* Text used for push notifications received from the service when the notification service extension is unable to run. The user may or may not have new messages in this scenario. */
-"PUSH_FALLBACK_MESSAGE" = "మీకు క్రొత్త సందేశాలు ఉండవచ్చు";
-
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "చదివినట్లుగా గుర్తించు";
 
@@ -4891,6 +4927,12 @@
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "మీరు ఈ క్రింది నంబర్‌ను Signal కు ఆహ్వానించాలనుకుంటున్నారా:";
 
+/* String describing high quality sent media */
+"SENT_MEDIA_QUALITY_HIGH" = "అధికం";
+
+/* String describing standard quality sent media */
+"SENT_MEDIA_QUALITY_STANDARD" = "ప్రామాణికం";
+
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal ఎండ్-టు-ఎండ్ గుప్తీకరణను ఉపయోగిస్తుంది మరియు ఇది కొన్నిసార్లు మీ చాట్ సెషన్‌ను రిఫ్రెష్ చేయాల్సి ఉంటుంది. ఇది మీ చాట్ యొక్క భద్రతను ప్రభావితం చేయదు కాని మీరు ఈ పరిచయం నుండి ఒక సందేశాన్ని కోల్పోయి ఉండవచ్చు మరియు మీరు దాన్ని తిరిగి పంపమని వారిని అడగవచ్చు.";
 
@@ -5016,6 +5058,15 @@
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "స్వీయ-సమాచారాన్ని బదిలీచేయడం సెట్టింగ్‌లను రీసెట్ చేయండి";
+
+/* Item title for the sent media quality setting */
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+
+/* Section footer for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+
+/* Section header for the sent media section in data settings */
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "డేటా వినియోగం";
@@ -5628,6 +5679,12 @@
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "అనువర్తన భద్రత";
+
+/* The footer for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+
+/* The title for the photos and videos section in the sent media quality settings. */
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "సూచనలలో మాటామంతిలను చూపించు";
