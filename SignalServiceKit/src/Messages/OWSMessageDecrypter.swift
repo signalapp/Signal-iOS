@@ -334,7 +334,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             let contentSupportsResend = envelopeContentSupportsResend(envelope: envelope, cipherType: cipherType, transaction: transaction)
             let supportsModernResend = remoteUserSupportsSenderKey && localUserSupportsSenderKey && contentSupportsResend
 
-            if supportsModernResend {
+            if supportsModernResend && !RemoteConfig.messageResendKillSwitch {
                 Logger.info("Performing modern resend of \(contentHint) content with timestamp \(envelope.timestamp)")
 
                 switch contentHint {

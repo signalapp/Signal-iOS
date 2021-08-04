@@ -502,29 +502,21 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"gv2"] = @(YES);
     capabilities[@"gv2-2"] = @(YES);
     capabilities[@"gv2-3"] = @(YES);
+    capabilities[@"senderKey"] = @(YES);
+    capabilities[@"transfer"] = @(YES);
 
     if (RemoteConfig.announcementOnlyGroupsCapability) {
         capabilities[@"announcementGroup"] = @(YES);
     }
-
     if (SSKFeatureFlags.groupsV2MigrationSetCapability
         && !SSKDebugFlags.groupsV2migrationsDisableMigrationCapability.value) {
         capabilities[@"gv1-migration"] = @(YES);
     }
-
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
-    if (SSKDebugFlags.groupsV2memberStatusIndicators) {
-        OWSLogInfo(@"capabilities: %@", capabilities);
-    }
 
-    capabilities[@"transfer"] = @(YES);
-
-    if (RemoteConfig.senderKey) {
-        capabilities[@"senderKey"] = @(YES);
-    }
-
+    OWSLogInfo(@"capabilities: %@", capabilities);
     return [capabilities copy];
 }
 

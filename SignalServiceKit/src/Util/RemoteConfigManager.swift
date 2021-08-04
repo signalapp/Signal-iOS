@@ -227,8 +227,13 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var senderKey: Bool {
-        DebugFlags.forceSenderKey || isEnabled(.senderKey)
+    public static var senderKeyKillSwitch: Bool {
+        isEnabled(.senderKeyKillSwitch)
+    }
+
+    @objc
+    public static var messageResendKillSwitch: Bool {
+        isEnabled(.messageResendKillSwitch)
     }
 
     @objc
@@ -427,7 +432,8 @@ private struct Flags {
         case announcementOnlyGroupsCapability
         case announcementOnlyGroupsUI
         case notificationServiceExtension
-        case senderKey
+        case senderKeyKillSwitch
+        case messageResendKillSwitch
     }
 
     // Values defined in this array remain set once they are
