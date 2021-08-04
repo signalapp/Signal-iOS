@@ -133,6 +133,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 
+@property (nonatomic, nullable) NSString *syncMessageServerHash;
+
 + (nullable instancetype)findMessageWithTimestamp:(uint64_t)timestamp;
 
 - (BOOL)shouldBeSaved;

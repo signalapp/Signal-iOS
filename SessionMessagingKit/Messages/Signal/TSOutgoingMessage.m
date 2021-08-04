@@ -206,6 +206,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if (!self) {
         return self;
     }
+    
+    _syncMessageServerHash = nil;
 
     _hasSyncedTranscript = NO;
 
