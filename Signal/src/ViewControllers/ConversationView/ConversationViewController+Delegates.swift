@@ -444,6 +444,10 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
         scrollingAnimationDidStart()
     }
 
+    public func collectionViewShouldRecognizeSimultaneously(with otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return otherGestureRecognizer == collectionViewContextMenuGestureRecognizer
+    }
+
     public func scrollingAnimationDidStart() {
         AssertIsOnMainThread()
 

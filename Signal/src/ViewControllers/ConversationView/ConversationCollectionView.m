@@ -112,6 +112,13 @@ NS_ASSUME_NONNULL_BEGIN
     [super scrollRectToVisible:rect animated:animated];
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return
+        [self.layoutDelegate collectionViewShouldRecognizeSimultaneouslyWithGestureRecognizer:otherGestureRecognizer];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

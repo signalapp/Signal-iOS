@@ -150,6 +150,8 @@ extension ConversationViewController: UIScrollViewDelegate {
         scheduleScrollUpdateTimer()
 
         updateScrollingContent()
+
+        updateContextMenuInteractionIfNeeded()
     }
 
     private func scheduleScrollUpdateTimer() {
@@ -171,6 +173,12 @@ extension ConversationViewController: UIScrollViewDelegate {
                                                 repeats: false)
         self.scrollUpdateTimer = scrollUpdateTimer
         RunLoop.main.add(scrollUpdateTimer, forMode: .common)
+    }
+
+    private func updateContextMenuInteractionIfNeeded() {
+        if let contextMenuInteraction = collectionViewActiveContextMenuInteraction {
+            contextMenuInteraction.cancelPresentationGesture()
+        }
     }
 
     @objc
