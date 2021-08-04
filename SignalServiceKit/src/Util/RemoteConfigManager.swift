@@ -228,12 +228,12 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var senderKeyKillSwitch: Bool {
-        isEnabled(.senderKeyKillSwitch)
+        isEnabled(.senderKeyKillSwitch) || !FeatureFlags.senderKeyAndMessageResend
     }
 
     @objc
     public static var messageResendKillSwitch: Bool {
-        isEnabled(.messageResendKillSwitch)
+        isEnabled(.messageResendKillSwitch) || !FeatureFlags.senderKeyAndMessageResend
     }
 
     @objc

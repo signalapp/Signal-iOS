@@ -502,7 +502,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"gv2"] = @(YES);
     capabilities[@"gv2-2"] = @(YES);
     capabilities[@"gv2-3"] = @(YES);
-    capabilities[@"senderKey"] = @(YES);
     capabilities[@"transfer"] = @(YES);
 
     if (RemoteConfig.announcementOnlyGroupsCapability) {
@@ -515,8 +514,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
+    if (SSKFeatureFlags.senderKeyAndMessageResend) {
+        capabilities[@"senderKey"] = @(YES);
+    }
 
-    OWSLogInfo(@"capabilities: %@", capabilities);
+    OWSLogInfo(@"local device capabilities: %@", capabilities);
     return [capabilities copy];
 }
 
