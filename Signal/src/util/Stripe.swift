@@ -171,7 +171,7 @@ fileprivate extension Stripe {
             var parameters = [String: Any]()
 
             if let name = contact.name {
-                parameters["name"] = sharedFormat.formatNameComponents(name).nilIfEmpty
+                parameters["name"] = OWSFormat.formatNameComponents(name).nilIfEmpty
             }
 
             if let email = contact.emailAddress {

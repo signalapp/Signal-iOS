@@ -863,7 +863,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return [self displayNameForAddress:address transaction:transaction];
     }
 
-    return [self.sharedFormat formatNameComponentsShort:nameComponents];
+    return [OWSFormat formatNameComponentsShort:nameComponents];
 }
 
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address

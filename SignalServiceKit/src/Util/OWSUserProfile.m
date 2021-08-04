@@ -868,7 +868,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         return nil;
     }
 
-    return [[self.sharedFormat formatNameComponents:self.nameComponents] filterStringForDisplay];
+    return [[OWSFormat formatNameComponents:self.nameComponents] filterStringForDisplay];
 }
 
 #pragma mark - Profile Avatars Directory

@@ -21,7 +21,6 @@ extern NSNotificationName const WarmCachesNotification;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
 @class OWSDisappearingMessagesJob;
-@class OWSFormat;
 @class OWSIdentityManager;
 @class OWSLinkPreviewManager;
 @class OWSMessageDecrypter;
@@ -113,8 +112,7 @@ extern NSNotificationName const WarmCachesNotification;
                                payments:(id<Payments>)payments
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
-                         senderKeyStore:(SenderKeyStore *)senderKeyStore
-                           sharedFormat:(OWSFormat *)sharedFormat NS_DESIGNATED_INITIALIZER;
+                         senderKeyStore:(SenderKeyStore *)senderKeyStore NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -176,7 +174,6 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) id<PaymentsCurrencies> paymentsCurrenciesRef;
 @property (nonatomic, readonly) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
-@property (nonatomic, readonly) OWSFormat *sharedFormatRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

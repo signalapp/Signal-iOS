@@ -46,12 +46,12 @@ public class ProfileChanges: MTLModel {
 
     var oldFullName: String? {
         guard let oldNameComponents = oldNameComponents else { return nil }
-        return sharedFormat.formatNameComponents(oldNameComponents).filterStringForDisplay()
+        return OWSFormat.formatNameComponents(oldNameComponents).filterStringForDisplay()
     }
 
     var newFullName: String? {
         guard let newNameComponents = newNameComponents else { return nil }
-        return sharedFormat.formatNameComponents(newNameComponents).filterStringForDisplay()
+        return OWSFormat.formatNameComponents(newNameComponents).filterStringForDisplay()
     }
 
     var hasRenderableChanges: Bool {

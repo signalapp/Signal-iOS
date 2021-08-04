@@ -7,33 +7,29 @@ import Foundation
 @objc
 public class OWSFormat: NSObject {
 
+    @available(*, unavailable, message: "Do not instantiate this class.")
+    private override init() {}
+
     // We evacuate this cache in the background in case the
     // user changes a system setting that would affect
     // formatting behavior.
-    private let shortNameComponentsCache = LRUCache<String, String>(maxSize: 512,
-                                                                    nseMaxSize: 0,
-                                                                    shouldEvacuateInBackground: true)
+    private static let shortNameComponentsCache = LRUCache<String, String>(maxSize: 512,
+                                                                           nseMaxSize: 0,
+                                                                           shouldEvacuateInBackground: true)
 
     @objc
-    public override init() {
-        super.init()
-
-        SwiftSingletons.register(self)
-    }
-
-    @objc
-    public func formatNameComponents(_ nameComponents: PersonNameComponents) -> String {
+    public static func formatNameComponents(_ nameComponents: PersonNameComponents) -> String {
         formatNameComponents(nameComponents, style: .default)
     }
 
     @objc
-    public func formatNameComponentsShort(_ nameComponents: PersonNameComponents) -> String {
+    public static func formatNameComponentsShort(_ nameComponents: PersonNameComponents) -> String {
         formatNameComponents(nameComponents, style: .short)
     }
 
     @objc
-    public func formatNameComponents(_ nameComponents: PersonNameComponents,
-                                     style: PersonNameComponentsFormatter.Style) -> String {
+    public static func formatNameComponents(_ nameComponents: PersonNameComponents,
+                                            style: PersonNameComponentsFormatter.Style) -> String {
         let cacheKey = String(describing: nameComponents) + "." + String(describing: style)
         if let value = shortNameComponentsCache.get(key: cacheKey) {
             return value

@@ -116,7 +116,6 @@ NS_ASSUME_NONNULL_BEGIN
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         ChatColors *chatColors = [ChatColors new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
-        OWSFormat *sharedFormat = [OWSFormat new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -180,8 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          payments:payments
                                                                paymentsCurrencies:paymentsCurrencies
                                                             spamChallengeResolver:spamChallengeResolver
-                                                                   senderKeyStore:senderKeyStore
-                                                                     sharedFormat:sharedFormat]];
+                                                                   senderKeyStore:senderKeyStore]];
 
         appSpecificSingletonBlock();
 

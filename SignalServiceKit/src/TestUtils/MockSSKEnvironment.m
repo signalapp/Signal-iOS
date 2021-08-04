@@ -92,7 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
     id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
     SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
     SenderKeyStore *senderKeyStore = [SenderKeyStore new];
-    OWSFormat *sharedFormat = [OWSFormat new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -142,8 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  payments:payments
                        paymentsCurrencies:paymentsCurrencies
                     spamChallengeResolver:spamChallengeResolver
-                           senderKeyStore:senderKeyStore
-                             sharedFormat:sharedFormat];
+                           senderKeyStore:senderKeyStore];
 
     if (!self) {
         return nil;
