@@ -95,7 +95,7 @@ extension MessageSender {
                 .filter { thread.recipientAddresses.contains($0) }
                 .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
                 .filter { !$0.isLocalAddress }
-                .filter { udAccessMap[$0]?.udAccess.udAccessMode == UnidentifiedAccessMode.enabled }
+                .filter { [.enabled, .unrestricted].contains(udAccessMap[$0]?.udAccess.udAccessMode) }
                 .filter { $0.isValid }
         }
     }
@@ -557,7 +557,7 @@ extension MessageSender {
     ) throws -> Promise<OWSHTTPResponse> {
 
         // Sender key messages use an access key composed of every recipient's individual access key.
-        let allAccessKeys = recipients.compactMap { udAccessMap[$0.address]?.udAccess.udAccessKey }
+        let allAccessKeys = recipients.compactMap { udAccessMap[$0.address]?.udAccess.senderKeyUDAccessKey }
         guard recipients.count == allAccessKeys.count else {
             throw OWSAssertionError("Incomplete access key set")
         }
