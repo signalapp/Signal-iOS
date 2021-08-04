@@ -25,7 +25,7 @@ public protocol CVComponent: AnyObject {
                    componentView: CVComponentView,
                    renderItem: CVRenderItem) -> Bool
 
-    func findLongPressHandler(sender: UILongPressGestureRecognizer,
+    func findLongPressHandler(sender: UIGestureRecognizer,
                               componentDelegate: CVComponentDelegate,
                               componentView: CVComponentView,
                               renderItem: CVRenderItem) -> CVLongPressHandler?
@@ -105,7 +105,7 @@ public class CVComponentBase: NSObject {
         return false
     }
 
-    public func findLongPressHandler(sender: UILongPressGestureRecognizer,
+    public func findLongPressHandler(sender: UIGestureRecognizer,
                                      componentDelegate: CVComponentDelegate,
                                      componentView: CVComponentView,
                                      renderItem: CVRenderItem) -> CVLongPressHandler? {

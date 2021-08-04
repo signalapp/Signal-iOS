@@ -821,7 +821,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return false
     }
 
-    public override func findLongPressHandler(sender: UILongPressGestureRecognizer,
+    public override func findLongPressHandler(sender: UIGestureRecognizer,
                                               componentDelegate: CVComponentDelegate,
                                               componentView: CVComponentView,
                                               renderItem: CVRenderItem) -> CVLongPressHandler? {

@@ -264,6 +264,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
     private let backdropView: UIVisualEffectView
 
     private var tapGestureRecognizer: UILongPressGestureRecognizer?
+    private var highlightHoverGestureRecognizer: UIGestureRecognizer?
 
     public var isScrolling: Bool {
         didSet {
@@ -300,8 +301,16 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
         let tapGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
         tapGestureRecognizer.delegate = self
         tapGestureRecognizer.minimumPressDuration = 0
+
         addGestureRecognizer(tapGestureRecognizer)
         self.tapGestureRecognizer = tapGestureRecognizer
+
+        if #available(iOS 13.4, *) {
+            let highlightHoverGestureRecognizer = UIHoverGestureRecognizer(target: self, action: #selector(hoverGestureRecognized(sender:)))
+            highlightHoverGestureRecognizer.delegate = self
+            addGestureRecognizer(highlightHoverGestureRecognizer)
+            self.highlightHoverGestureRecognizer = highlightHoverGestureRecognizer
+        }
 
         layer.cornerRadius = cornerRadius
         layer.masksToBounds = true
@@ -360,6 +369,17 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             handleGestureChanged(locationInView: sender.location(in: scrollView))
         } else if sender.state == .ended {
             handleGestureEnded(locationInView: sender.location(in: scrollView))
+        }
+    }
+
+    @objc
+    func hoverGestureRecognized(sender: UIGestureRecognizer) {
+        if sender.state == .began || sender.state == .changed {
+            handleGestureChanged(locationInView: sender.location(in: scrollView))
+        } else if sender.state == .ended {
+            for actionRow in actionViews {
+                actionRow.isHighlighted = false
+            }
         }
     }
 

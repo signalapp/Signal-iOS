@@ -20,7 +20,11 @@ extension ConversationViewController {
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
             let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
-            interaction.initiateContextMenuGesture(locationInView: screenPoint)
+            var presentImmediately = false
+            if let secondaryClickRecognizer = collectionViewContextMenuSecondaryClickRecognizer, secondaryClickRecognizer.state == .ended {
+                presentImmediately = true
+            }
+            interaction.initiateContextMenuGesture(locationInView: screenPoint, presentImmediately: presentImmediately)
         } else {
             let messageActionsViewController = MessageActionsViewController(itemViewModel: itemViewModel,
                                                                             focusedView: cell,

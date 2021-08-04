@@ -76,7 +76,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         super.init()
     }
 
-    public func initiateContextMenuGesture(locationInView: CGPoint) {
+    public func initiateContextMenuGesture(locationInView: CGPoint, presentImmediately: Bool) {
         self.locationInView = locationInView
         gestureEligibleForMenuPresentation = true
 
@@ -105,27 +105,30 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
         self.targetedPreview = targetedPreview
 
-        UIView.animate(
-            withDuration: sourceViewBounceDuration,
-            delay: 0,
-            options: [.curveEaseInOut, .beginFromCurrentState],
-            animations: {
-                targetedPreview.view?.transform = .scale(0.95)
-            },
-            completion: { finished in
-                let shouldPresent = finished && self.gestureEligibleForMenuPresentation
+        if presentImmediately {
+            self.presentMenu(locationInView: self.locationInView, presentImmediately: true)
+        } else {
+            UIView.animate(
+                withDuration: sourceViewBounceDuration,
+                delay: 0,
+                options: [.curveEaseInOut, .beginFromCurrentState],
+                animations: {
+                    targetedPreview.view?.transform = .scale(0.95)
+                },
+                completion: { finished in
+                    let shouldPresent = finished && self.gestureEligibleForMenuPresentation
 
-                if shouldPresent {
-                    self.presentMenu(locationInView: self.locationInView)
-                    // Animate back out
-                    self.gestureEligibleForMenuPresentation = false
+                    if shouldPresent {
+                        self.presentMenu(locationInView: self.locationInView, presentImmediately: false)
+                        // Animate back out
+                        self.gestureEligibleForMenuPresentation = false
+                    }
                 }
-            }
-        )
-
+            )
+        }
     }
 
-    public func presentMenu(locationInView: CGPoint) {
+    public func presentMenu(locationInView: CGPoint, presentImmediately: Bool) {
         guard let view = self.view else {
             owsFailDebug("Missing view")
             return
@@ -146,15 +149,15 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
             return
         }
 
-        presentMenu(window: window, contextMenuConfiguration: configuration, targetedPreview: targetedPreview)
+        presentMenu(window: window, contextMenuConfiguration: configuration, targetedPreview: targetedPreview, presentImmediately: presentImmediately)
     }
 
-    public func presentMenu(window: UIWindow, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) {
+    public func presentMenu(window: UIWindow, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview, presentImmediately: Bool) {
         delegate?.contextMenuInteraction(self, willDisplayMenuForConfiguration: contextMenuConfiguration)
         ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
 
         let menuAccessory = menuAccessory(configuration: contextMenuConfiguration)
-        let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, initiatingGestureRecognizer: initiatingGestureRecognizer(), menuAccessory: menuAccessory)
+        let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, initiatingGestureRecognizer: initiatingGestureRecognizer(), menuAccessory: menuAccessory, presentImmediately: presentImmediately)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
 
@@ -200,13 +203,12 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         let locationInView = sender.location(in: self.view)
         switch sender.state {
         case .began:
-            initiateContextMenuGesture(locationInView: locationInView)
+            initiateContextMenuGesture(locationInView: locationInView, presentImmediately: false)
         case .ended, .cancelled:
             gestureEligibleForMenuPresentation = false
         default:
             break
         }
-        presentMenu(locationInView: locationInView)
     }
 }
 

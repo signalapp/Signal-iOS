@@ -444,7 +444,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         return false
     }
 
-    public override func findLongPressHandler(sender: UILongPressGestureRecognizer,
+    public override func findLongPressHandler(sender: UIGestureRecognizer,
                                               componentDelegate: CVComponentDelegate,
                                               componentView: CVComponentView,
                                               renderItem: CVRenderItem) -> CVLongPressHandler? {

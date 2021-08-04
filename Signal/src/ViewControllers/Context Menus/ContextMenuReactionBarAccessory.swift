@@ -10,6 +10,8 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
     public var didSelectReactionHandler: ((TSMessage, String, Bool) -> Void)? // = {(message: TSMessage, reaction: String, isRemoving: Bool) -> Void in }
 
     private var reactionPicker: MessageReactionPicker
+    private var highlightHoverGestureRecognizer: UIGestureRecognizer?
+    private var highlightClickGestureRecognizer: UIGestureRecognizer?
 
     public init(
         thread: TSThread,
@@ -25,6 +27,17 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
         super.init(accessoryView: reactionPicker, accessoryAlignment: alignment)
         reactionPicker.delegate = self
         reactionPicker.isHidden = true
+
+        if #available(iOS 13.4, *) {
+            let highlightHoverGestureRecognizer = UIHoverGestureRecognizer(target: self, action: #selector(hoverGestureRecognized(sender:)))
+            reactionPicker.addGestureRecognizer(highlightHoverGestureRecognizer)
+            self.highlightHoverGestureRecognizer = highlightHoverGestureRecognizer
+
+            let highlightClickGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(hoverClickGestureRecognized(sender:)))
+            highlightClickGestureRecognizer.buttonMaskRequired = [.primary]
+            reactionPicker.addGestureRecognizer(highlightClickGestureRecognizer)
+            self.highlightClickGestureRecognizer = highlightClickGestureRecognizer
+        }
     }
 
     override func animateIn(
@@ -52,6 +65,16 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
         completion: @escaping () -> Void
     ) {
         reactionPicker.playDismissalAnimation(duration: duration, completion: completion)
+    }
+
+    @objc
+    func hoverGestureRecognized(sender: UIGestureRecognizer) {
+        reactionPicker.updateFocusPosition(sender.location(in: reactionPicker), animated: true)
+    }
+
+    @objc
+    func hoverClickGestureRecognized(sender: UIGestureRecognizer) {
+        touchLocationInViewDidEnd(locationInView: sender.location(in: reactionPicker))
     }
 
     override func touchLocationInViewDidChange(locationInView: CGPoint) {
