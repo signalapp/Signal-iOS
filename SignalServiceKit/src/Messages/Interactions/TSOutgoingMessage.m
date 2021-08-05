@@ -1451,7 +1451,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return dataProto;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     NSError *error;
     SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:thread transaction:transaction];

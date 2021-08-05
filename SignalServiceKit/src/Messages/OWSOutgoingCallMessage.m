@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     builder.callMessage = [self buildCallMessage:thread transaction:transaction];
