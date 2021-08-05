@@ -470,6 +470,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
+    
+    if (message.isDeleted) {
+        self.messageCellType = OWSMessageCellType_DeletedMessage;
+        return;
+    }
 
     // Check for quoted replies _before_ media album handling,
     // since that logic may exit early.

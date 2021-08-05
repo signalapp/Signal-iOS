@@ -234,7 +234,7 @@ extension MessageReceiver {
             if let serverHash = messageToDelete.serverHash {
                 SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
             }
-            messageToDelete.remove(with: transaction)
+            messageToDelete.updateForDeletion(with: transaction)
         }
     }
     

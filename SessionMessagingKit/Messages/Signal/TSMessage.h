@@ -39,6 +39,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @property (nonatomic, readonly, nullable) NSString *openGroupInvitationName;
 @property (nonatomic, readonly, nullable) NSString *openGroupInvitationURL;
 @property (nonatomic, nullable) NSString *serverHash;
+@property (nonatomic) BOOL isDeleted;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -81,6 +82,8 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)updateForDeletionWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 
