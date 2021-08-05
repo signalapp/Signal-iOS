@@ -16,7 +16,9 @@ public class ConversationViewController: OWSViewController {
 
     public let viewState: CVViewState
     public let loadCoordinator: CVLoadCoordinator
+    @objc
     public let layout: ConversationViewLayout
+    @objc
     public let collectionView: ConversationCollectionView
     public let searchController: ConversationSearchController
 

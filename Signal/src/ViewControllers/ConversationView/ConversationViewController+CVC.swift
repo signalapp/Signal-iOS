@@ -47,6 +47,7 @@ extension ConversationViewController {
         loadCoordinator.canLoadNewerItems
     }
 
+    @objc
     public var currentRenderStateDebugDescription: String {
         renderState.debugDescription
     }
@@ -653,15 +654,23 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             for item in items {
                 Logger.warn("item: \(item.debugDescription)")
             }
+            Logger.warn("Layout: \(self.layout.debugDescription)")
+            Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
+            Logger.warn("renderState: \(update.renderState.debugDescription)")
         }
 
         // We use an obj-c free function so that we can handle NSException.
+        let scrollContinuityWrapper = ScrollContinuityWrapper(scrollContinuity: scrollContinuity)
+        var lastKnownDistanceFromBottomWrapper: NSNumber?
+        if let lastKnownDistanceFromBottom = updateToken.lastKnownDistanceFromBottom {
+            lastKnownDistanceFromBottomWrapper = NSNumber(value: Double(lastKnownDistanceFromBottom))
+        }
         self.collectionView.cvc_performBatchUpdates(batchUpdatesBlock,
                                                     completion: completion,
                                                     failure: logFailureBlock,
                                                     animated: shouldAnimateUpdate,
-                                                    scrollContinuity: scrollContinuity,
-                                                    lastKnownDistanceFromBottom: updateToken.lastKnownDistanceFromBottom,
+                                                    scrollContinuityWrapper: scrollContinuityWrapper,
+                                                    lastKnownDistanceFromBottom: lastKnownDistanceFromBottomWrapper,
                                                     cvc: self)
     }
 

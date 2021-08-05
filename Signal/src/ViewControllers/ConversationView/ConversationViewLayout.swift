@@ -47,6 +47,17 @@ public enum ScrollContinuity: CustomStringConvertible {
 // MARK: -
 
 @objc
+public class ScrollContinuityWrapper: NSObject {
+    let scrollContinuity: ScrollContinuity
+
+    public required init(scrollContinuity: ScrollContinuity) {
+        self.scrollContinuity = scrollContinuity
+    }
+}
+
+// MARK: -
+
+@objc
 public protocol ConversationViewLayoutItem {
 
     var interactionUniqueId: String { get }
@@ -194,6 +205,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         invalidateLayout()
     }
 
+    @objc
     public override func invalidateLayout() {
         AssertIsOnMainThread()
 
@@ -204,6 +216,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         ensureState()
     }
 
+    @objc
     public override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
         AssertIsOnMainThread()
 
@@ -458,6 +471,17 @@ public class ConversationViewLayout: UICollectionViewLayout {
         updateCompletionCounter.get() > 0
     }
 
+    @objc
+    public func willPerformBatchUpdates(scrollContinuityWrapper: ScrollContinuityWrapper,
+                                        lastKnownDistanceFromBottom lastKnownDistanceFromBottomNumber: NSNumber?) {
+        var lastKnownDistanceFromBottom: CGFloat?
+        if let lastKnownDistanceFromBottomNumber = lastKnownDistanceFromBottomNumber {
+            lastKnownDistanceFromBottom = CGFloat(lastKnownDistanceFromBottomNumber.doubleValue)
+        }
+        willPerformBatchUpdates(scrollContinuity: scrollContinuityWrapper.scrollContinuity,
+                                lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
+    }
+
     public func willPerformBatchUpdates(scrollContinuity: ScrollContinuity,
                                         lastKnownDistanceFromBottom: CGFloat?) {
         AssertIsOnMainThread()
@@ -582,6 +606,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return nil
     }
 
+    @objc
     public func didPerformBatchUpdates() {
         AssertIsOnMainThread()
         owsAssertDebug(!isReloadingData)
@@ -598,12 +623,14 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
     }
 
+    @objc
     public func didCompleteBatchUpdates() {
         AssertIsOnMainThread()
 
         updateCompletionCounter.decrementOrZero()
     }
 
+    @objc
     public func willReloadData() {
         AssertIsOnMainThread()
         owsAssertDebug(!isReloadingData)
@@ -618,6 +645,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         delegateScrollContinuityMode = .enabled(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
     }
 
+    @objc
     public func didReloadData() {
         AssertIsOnMainThread()
         owsAssertDebug(isReloadingData)
