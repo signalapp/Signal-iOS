@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 public struct EmojiWithSkinTones: Hashable {
@@ -27,6 +27,8 @@ public struct EmojiWithSkinTones: Hashable {
         }
     }
 }
+
+// MARK: -
 
 extension Emoji {
     private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
@@ -56,5 +58,13 @@ extension Emoji {
     init?(_ string: String) {
         guard let emojiWithSkinTonePermutation = EmojiWithSkinTones(rawValue: string) else { return nil }
         self = emojiWithSkinTonePermutation.baseEmoji
+    }
+}
+
+// MARK: -
+
+extension String {
+    var isSingleEmojiWithoutCoreText: Bool {
+        EmojiWithSkinTones(rawValue: self) != nil
     }
 }
