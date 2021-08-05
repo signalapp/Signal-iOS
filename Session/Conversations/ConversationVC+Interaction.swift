@@ -546,22 +546,28 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
-        let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let deleteLocallyAction = UIAlertAction.init(title: "Delete just for me", style: .destructive) { _ in
-            self.deleteLocally(viewItem)
+        if viewItem.interaction.interactionType() == .outgoingMessage {
+            let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
+            let deleteLocallyAction = UIAlertAction.init(title: "Delete just for me", style: .destructive) { _ in
+                self.deleteLocally(viewItem)
+            }
+            alertVC.addAction(deleteLocallyAction)
+            
+            var title = "Delete for everyone"
+            if !viewItem.isGroupThread {
+                title = "Delete for me and \(viewItem.interaction.thread.name())"
+            }
+            let deleteRemotelyAction = UIAlertAction.init(title: title, style: .destructive) { _ in
+                self.deleteForEveryone(viewItem)
+            }
+            alertVC.addAction(deleteRemotelyAction)
+            
+            let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
+            alertVC.addAction(cancelAction)
+            self.navigationController?.presentAlert(alertVC)
+        } else {
+            deleteLocally(viewItem)
         }
-        var title = "Delete for everyone"
-        if !viewItem.isGroupThread {
-            title = "Delete for me and \(viewItem.interaction.thread.name())"
-        }
-        let deleteRemotelyAction = UIAlertAction.init(title: title, style: .destructive) { _ in
-            self.deleteForEveryone(viewItem)
-        }
-        let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
-        alertVC.addAction(deleteLocallyAction)
-        alertVC.addAction(deleteRemotelyAction)
-        alertVC.addAction(cancelAction)
-        self.navigationController?.presentAlert(alertVC)
     }
     
     private func buildUsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
