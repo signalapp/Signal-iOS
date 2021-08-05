@@ -24,6 +24,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
                 let collectionViewContextMenuSecondaryClickRecognizer = UITapGestureRecognizer()
                 collectionViewContextMenuSecondaryClickRecognizer.addTarget(self, action: #selector(handleSecondaryClickGesture))
                 collectionViewContextMenuSecondaryClickRecognizer.buttonMaskRequired = [.secondary]
+                collectionViewContextMenuSecondaryClickRecognizer.delegate = self
                 collectionView.addGestureRecognizer(collectionViewContextMenuSecondaryClickRecognizer)
                 self.collectionViewContextMenuSecondaryClickRecognizer = collectionViewContextMenuSecondaryClickRecognizer
             }
@@ -90,6 +91,14 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         let currentIsLongPressOrTap = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer || gestureRecognizer == collectionViewTapGestureRecognizer)
         let otherIsLongPressOrTap = (otherGestureRecognizer == collectionViewLongPressGestureRecognizer || otherGestureRecognizer == collectionViewContextMenuGestureRecognizer || otherGestureRecognizer == collectionViewTapGestureRecognizer)
         return currentIsLongPressOrTap && otherIsLongPressOrTap
+    }
+
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive event: UIEvent) -> Bool {
+        if #available(iOS 13.4, *), collectionViewContextMenuSecondaryClickRecognizer == gestureRecognizer {
+            return event.buttonMask == .secondary
+        }
+
+        return true
     }
 
     // MARK: -
