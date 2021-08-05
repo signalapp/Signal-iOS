@@ -212,6 +212,23 @@ public extension JobQueue {
         }
     }
 
+    func pruneStaleJobs() {
+        guard CurrentAppContext().isMainApp else { return }
+        guard isEnabled else { return }
+
+        guard !DebugFlags.suppressBackgroundActivity else {
+            // Don't process queues.
+            return
+        }
+        databaseStorage.write { transaction in
+            let staleRecords = self.finder.staleReadyRecords(label: self.jobRecordLabel, transaction: transaction)
+            Logger.info("Pruning stale \(self.jobRecordLabel) JobRecords exclusively for previous process: \(staleRecords.count)")
+            for jobRecord in staleRecords {
+                jobRecord.anyRemove(transaction: transaction)
+            }
+        }
+    }
+
     /// Unless you need special handling, your setup method can be as simple as
     ///
     ///     func setup() {
@@ -231,6 +248,7 @@ public extension JobQueue {
 
         DispatchQueue.global().async(.promise) {
             self.restartOldJobs()
+            self.pruneStaleJobs()
         }.done { [weak self] in
             guard let self = self else {
                 return
@@ -326,6 +344,7 @@ public protocol JobRecordFinder {
 
     func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType?
     func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) -> [JobRecordType]
+    func staleReadyRecords(label: String, transaction: ReadTransaction) -> [JobRecordType]
     func enumerateJobRecords(label: String, transaction: ReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void)
     func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void)
 }
@@ -334,6 +353,11 @@ extension JobRecordFinder {
     public func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType? {
         var result: JobRecordType?
         self.enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, stopPointer in
+            if let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier?.int32Value,
+               exclusiveProcessIdentifier != ProcessInfo.processInfo.processIdentifier {
+                // Skip job records that aren't for the current process, we can't run these.
+                return
+            }
             result = jobRecord
             stopPointer.pointee = true
         }
@@ -343,6 +367,16 @@ extension JobRecordFinder {
     public func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) -> [JobRecordType] {
         var result: [JobRecordType] = []
         self.enumerateJobRecords(label: label, status: status, transaction: transaction) { jobRecord, _ in
+            result.append(jobRecord)
+        }
+        return result
+    }
+
+    public func staleReadyRecords(label: String, transaction: ReadTransaction) -> [JobRecordType] {
+        let currentProcessIdentifier = ProcessInfo.processInfo.processIdentifier
+        var result: [JobRecordType] = []
+        self.enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, _ in
+            guard let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier?.int32Value, exclusiveProcessIdentifier != currentProcessIdentifier else { return }
             result.append(jobRecord)
         }
         return result
