@@ -75,7 +75,20 @@ final class ContextMenuVC : UIViewController {
         } else {
             timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
         }
-        let menuHeight = self.updateMenu()
+        // Menu
+        let menuBackgroundView = UIView()
+        menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
+        menuBackgroundView.layer.cornerRadius = ContextMenuVC.menuCornerRadius
+        menuBackgroundView.layer.masksToBounds = true
+        menuView.addSubview(menuBackgroundView)
+        menuBackgroundView.pin(to: menuView)
+        let actionViews = ContextMenuVC.actions(for: viewItem, delegate: delegate).map { ActionView(for: $0, dismiss: snDismiss) }
+        let menuStackView = UIStackView(arrangedSubviews: actionViews)
+        menuStackView.axis = .vertical
+        menuView.addSubview(menuStackView)
+        menuStackView.pin(to: menuView)
+        view.addSubview(menuView)
+        let menuHeight = CGFloat(actionViews.count) * ContextMenuVC.actionViewHeight
         let spacing = Values.smallSpacing
         let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
         if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {
@@ -105,25 +118,6 @@ final class ContextMenuVC : UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         menuView.layer.shadowPath = UIBezierPath(roundedRect: menuView.bounds, cornerRadius: ContextMenuVC.menuCornerRadius).cgPath
-    }
-    
-    func updateMenu(forDelete: Bool = false) -> CGFloat {
-        // Menu: return the menuHeight
-        menuView.subviews.forEach({ $0.removeFromSuperview() })
-        let menuBackgroundView = UIView()
-        menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
-        menuBackgroundView.layer.cornerRadius = ContextMenuVC.menuCornerRadius
-        menuBackgroundView.layer.masksToBounds = true
-        menuView.addSubview(menuBackgroundView)
-        menuBackgroundView.pin(to: menuView)
-        let actions = forDelete ? ContextMenuVC.deleteActions(for: viewItem, delegate: delegate) : ContextMenuVC.actions(for: viewItem, delegate: delegate)
-        let actionViews = actions.map { ActionView(for: $0, dismiss: snDismiss) }
-        let menuStackView = UIStackView(arrangedSubviews: actionViews)
-        menuStackView.axis = .vertical
-        menuView.addSubview(menuStackView)
-        menuStackView.pin(to: menuView)
-        view.addSubview(menuView)
-        return CGFloat(actionViews.count) * ContextMenuVC.actionViewHeight
     }
 
     // MARK: Interaction
