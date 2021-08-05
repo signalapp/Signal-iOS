@@ -908,7 +908,8 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
 
         let heroImageSize = sentHeroImageSize(state: state,
-                                              conversationStyle: conversationStyle)
+                                              conversationStyle: conversationStyle,
+                                              maxWidth: maxWidth)
         rootStackSubviewInfos.append(heroImageSize.asManualSubviewInfo)
 
         var maxLabelWidth = (maxWidth -
@@ -931,10 +932,11 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
     }
 
     func sentHeroImageSize(state: LinkPreviewState,
-                           conversationStyle: ConversationStyle) -> CGSize {
+                           conversationStyle: ConversationStyle,
+                           maxWidth: CGFloat) -> CGSize {
 
         let imageHeightWidthRatio = (state.imagePixelSize.height / state.imagePixelSize.width)
-        let maxMessageWidth = conversationStyle.maxMessageWidth
+        let maxMessageWidth = min(maxWidth, conversationStyle.maxMessageWidth)
 
         let minImageHeight: CGFloat = maxMessageWidth * 0.5
         let maxImageHeight: CGFloat = maxMessageWidth
