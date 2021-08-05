@@ -857,6 +857,7 @@ CREATE
             ,"messageTimestamp" INTEGER NOT NULL
             ,"authorPhoneNumber" TEXT
             ,"authorUuid" TEXT
+            ,"messageUniqueId" TEXT
         )
 ;
 
@@ -1072,6 +1073,7 @@ CREATE
             ,"messageTimestamp" INTEGER NOT NULL
             ,"authorPhoneNumber" TEXT
             ,"authorUuid" TEXT
+            ,"messageUniqueId" TEXT
         )
 ;
 
