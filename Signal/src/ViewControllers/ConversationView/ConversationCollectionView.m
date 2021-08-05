@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark -
-
 @implementation ConversationCollectionView
 
 - (void)setFrame:(CGRect)frame
@@ -117,6 +115,31 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return
         [self.layoutDelegate collectionViewShouldRecognizeSimultaneouslyWithGestureRecognizer:otherGestureRecognizer];
+}
+
+@end
+
+#pragma mark -
+
+@implementation ObjCTry
+
++ (void)perform:(ObjCTryBlock)tryBlock failureBlock:(ObjCTryFailureBlock)failureBlock label:(NSString *)label
+{
+    @try {
+        tryBlock();
+    } @catch (NSException *exception) {
+        OWSLogError(@"Exception: %@.", label);
+        OWSLogError(@"Exception stack: %@.", exception.callStackSymbols);
+        OWSFailDebug(@"Exception: %@ of type: %@ with reason: %@, user info: %@.",
+            exception.description,
+            exception.name,
+            exception.reason,
+            exception.userInfo);
+
+        failureBlock();
+
+        @throw exception;
+    }
 }
 
 @end
