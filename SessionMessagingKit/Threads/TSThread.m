@@ -314,6 +314,13 @@ BOOL IsNoteToSelfEnabled(void)
     if (interaction.isDynamicInteraction) {
         return NO;
     }
+    
+    if ([interaction isKindOfClass:[TSMessage class]]) {
+        TSMessage *message = (TSMessage *)interaction;
+        if (message.isDeleted) {
+            return NO;
+        }
+    }
 
     return YES;
 }

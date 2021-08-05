@@ -228,8 +228,11 @@ extension MessageReceiver {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         if let author = message.author, let timestamp = message.timestamp,
            let messageToDelete = userPublicKey == message.sender ? TSOutgoingMessage.find(withTimestamp: timestamp) : TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction) {
-            if let incomingMessage = messageToDelete as? TSIncomingMessage, let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
-                SSKEnvironment.shared.notificationsManager!.cancelNotification(notificationIdentifier)
+            if let incomingMessage = messageToDelete as? TSIncomingMessage {
+                incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                if let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
+                    SSKEnvironment.shared.notificationsManager!.cancelNotification(notificationIdentifier)
+                }
             }
             if let serverHash = messageToDelete.serverHash {
                 SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
