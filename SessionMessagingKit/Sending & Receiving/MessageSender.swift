@@ -340,6 +340,7 @@ public final class MessageSender : NSObject {
                 tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
             }
             tsMessage.save(with: transaction)
+            NotificationCenter.default.post(name: .messageSentStatusDidChange, object: nil, userInfo: nil)
             // Start the disappearing messages timer if needed
             OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }

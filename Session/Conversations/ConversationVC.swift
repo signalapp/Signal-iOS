@@ -205,6 +205,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleGroupUpdatedNotification), name: .groupThreadUpdated, object: nil)
         notificationCenter.addObserver(self, selector: #selector(sendScreenshotNotificationIfNeeded), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleMessageSentStatusChanged), name: .messageSentStatusDidChange, object: nil)
         // Mentions
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: thread.uniqueId!)
         // Draft
@@ -319,7 +320,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             baselineKeyboardHeight = newHeight
             self.messagesTableView.keyboardHeight = newHeight
         }
-        let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
         scrollButtonConstraint?.constant = -(newHeight + 16)
         let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
         self.messagesTableView.contentOffset.y = newContentOffsetY
@@ -353,7 +353,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 case .delete:
                     self.messagesTableView.deleteRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                 case .insert:
-                    print("[Test] INSERT")
                     // Perform inserts before updates
                     self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .none)
                     if update.viewItem?.interaction is TSOutgoingMessage {
@@ -362,7 +361,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                         shouldScrollToBottom = self.isCloseToBottom
                     }
                 case .update:
-                    print("[Test] UPDATE")
                     self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                 default: preconditionFailure()
                 }
@@ -409,6 +407,24 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     @objc private func handleGroupUpdatedNotification() {
         thread.reload() // Needed so that thread.isCurrentUserMemberInGroup() is up to date
         reloadInputViews()
+    }
+    
+    @objc private func handleMessageSentStatusChanged() {
+        DispatchQueue.main.async {
+            guard let indexPaths = self.messagesTableView.indexPathsForVisibleRows else { return }
+            var indexPathsToReload: [IndexPath] = []
+            for indexPath in indexPaths {
+                guard let cell = self.messagesTableView.cellForRow(at: indexPath) as? VisibleMessageCell else { continue }
+                let isLast = (indexPath.item == (self.messagesTableView.numberOfRows(inSection: 0) - 1))
+                guard !isLast else { continue }
+                if !cell.messageStatusImageView.isHidden {
+                    indexPathsToReload.append(indexPath)
+                }
+            }
+            UIView.performWithoutAnimation {
+                self.messagesTableView.reloadRows(at: indexPathsToReload, with: .none)
+            }
+        }
     }
     
     // MARK: General
