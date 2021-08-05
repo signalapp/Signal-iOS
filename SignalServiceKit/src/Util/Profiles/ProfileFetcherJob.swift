@@ -485,7 +485,7 @@ public class ProfileFetcherJob: NSObject {
         if let profileKey = versionedProfileRequest?.profileKey {
             return profileKey
         }
-        owsFailDebug("Missing profileKey used in versioned profile request.")
+        Logger.warn("Missing profileKey used in versioned profile request.")
         let profileAddress = profile.address
         if let profileKey = (databaseStorage.read { transaction in
             self.profileManager.profileKey(for: profileAddress,
