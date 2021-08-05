@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark -
+
 @implementation ConversationCollectionView
 
 - (void)setFrame:(CGRect)frame
@@ -115,124 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return
         [self.layoutDelegate collectionViewShouldRecognizeSimultaneouslyWithGestureRecognizer:otherGestureRecognizer];
-}
-
-#pragma mark -
-
-- (void)cvc_reloadDataWithAnimated:(BOOL)animated cvc:(ConversationViewController *)cvc
-{
-    OWSAssertIsOnMainThread();
-
-    @try {
-        [cvc.layout willReloadData];
-        if (animated) {
-            [super reloadData];
-        } else {
-            [UIView performWithoutAnimation:^{ [super reloadData]; }];
-        }
-        [cvc.layout invalidateLayout];
-        [cvc.layout didReloadData];
-    } @catch (NSException *exception) {
-        OWSLogWarn(@"currentRenderStateDebugDescription: %@", cvc.currentRenderStateDebugDescription);
-        OWSLogError(@"exception stack: %@.", exception.callStackSymbols);
-        OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
-            exception.description,
-            exception.name,
-            exception.reason,
-            exception.userInfo);
-        @throw exception;
-    }
-}
-
-- (void)cvc_performBatchUpdates:(CVCPerformBatchUpdatesBlock)batchUpdates
-                     completion:(CVCPerformBatchUpdatesCompletion)completion
-                        failure:(CVCPerformBatchUpdatesFailure)failure
-                       animated:(BOOL)animated
-        scrollContinuityWrapper:(ScrollContinuityWrapper *)scrollContinuityWrapper
-    lastKnownDistanceFromBottom:(nullable NSNumber *)lastKnownDistanceFromBottom
-                            cvc:(ConversationViewController *)cvc
-{
-    OWSAssertIsOnMainThread();
-
-    @try {
-        void (^updateBlock)(void) = ^{
-            @try {
-                ConversationViewLayout *layout = cvc.layout;
-                [layout willPerformBatchUpdatesWithScrollContinuityWrapper:scrollContinuityWrapper
-                                               lastKnownDistanceFromBottom:lastKnownDistanceFromBottom];
-                [cvc.collectionView
-                    performBatchUpdates:^{ batchUpdates(); }
-                    completion:^(BOOL finished) {
-                        OWSAssertIsOnMainThread();
-
-                        @try {
-                            [layout didCompleteBatchUpdates];
-
-                            completion(finished);
-                        } @catch (NSException *exception) {
-                            OWSLogWarn(
-                                @"currentRenderStateDebugDescription: %@", cvc.currentRenderStateDebugDescription);
-                            OWSLogError(@"exception stack: %@.", exception.callStackSymbols);
-                            OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
-                                exception.description,
-                                exception.name,
-                                exception.reason,
-                                exception.userInfo);
-
-                            failure();
-
-                            @throw exception;
-                        }
-                    }];
-                [layout didPerformBatchUpdates];
-
-                [BenchManager completeEventWithEventId:@"message-send"];
-            } @catch (NSException *exception) {
-                OWSLogWarn(@"currentRenderStateDebugDescription: %@", cvc.currentRenderStateDebugDescription);
-                OWSLogError(@"exception stack: %@.", exception.callStackSymbols);
-                OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
-                    exception.description,
-                    exception.name,
-                    exception.reason,
-                    exception.userInfo);
-
-                failure();
-
-                @throw exception;
-            }
-        };
-
-        if (animated) {
-            updateBlock();
-        } else {
-            // HACK: We use `UIView.animateWithDuration:0` rather than `UIView.performWithAnimation` to work around a
-            // UIKit Crash like:
-            //
-            //     *** Assertion failure in -[ConversationViewLayout prepareForCollectionViewUpdates:],
-            //     /BuildRoot/Library/Caches/com.apple.xbs/Sources/UIKit_Sim/UIKit-3600.7.47/UICollectionViewLayout.m:760
-            //     *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'While
-            //     preparing update a visible view at <NSIndexPath: 0xc000000011c00016> {length = 2, path = 0 - 142}
-            //     wasn't found in the current data model and was not in an update animation. This is an internal
-            //     error.'
-            //
-            // I'm unclear if this is a bug in UIKit, or if we're doing something crazy in
-            // ConversationViewLayout#prepareLayout. To reproduce, rapidily insert and delete items into the
-            // conversation. See `DebugUIMessages#thrashCellsInThread:`
-            [UIView animateWithDuration:0.0 animations:updateBlock];
-        }
-    } @catch (NSException *exception) {
-        OWSLogWarn(@"currentRenderStateDebugDescription: %@", cvc.currentRenderStateDebugDescription);
-        OWSLogError(@"exception stack: %@.", exception.callStackSymbols);
-        OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
-            exception.description,
-            exception.name,
-            exception.reason,
-            exception.userInfo);
-
-        failure();
-
-        @throw exception;
-    }
 }
 
 @end
