@@ -81,7 +81,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     
     private lazy var snContentView = UIView()
     
-    private lazy var messageStatusImageView: UIImageView = {
+    internal lazy var messageStatusImageView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .scaleAspectFit
         result.layer.cornerRadius = VisibleMessageCell.messageStatusImageViewSize / 2

@@ -205,6 +205,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         notificationCenter.addObserver(self, selector: #selector(addOrRemoveBlockedBanner), name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleGroupUpdatedNotification), name: .groupThreadUpdated, object: nil)
         notificationCenter.addObserver(self, selector: #selector(sendScreenshotNotificationIfNeeded), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleMessageSentStatusChanged), name: .messageSentStatusDidChange, object: nil)
         // Mentions
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: thread.uniqueId!)
         // Draft
@@ -319,13 +320,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             baselineKeyboardHeight = newHeight
             self.messagesTableView.keyboardHeight = newHeight
         }
-        let margin = (self.lastPageTop - self.messagesTableView.contentOffset.y)
-        // HACK: If the keyboard is coming up and we're very close to the bottom, scroll to the
-        // bottom. This "fixes" an issue where the conversation would randomly scroll up sometimes
-        // when bringing up the keyboard.
-        if newHeight > 200 && margin <= 2 {
-            scrollToBottom(isAnimated: false)
-        }
         scrollButtonConstraint?.constant = -(newHeight + 16)
         let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
         self.messagesTableView.contentOffset.y = newContentOffsetY
@@ -353,60 +347,34 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             return messagesTableView.reloadData()
         }
         var shouldScrollToBottom = false
-        let shouldAnimate = conversationUpdate.shouldAnimateUpdates
         let batchUpdates: () -> Void = {
             for update in conversationUpdate.updateItems! {
                 switch update.updateItemType {
                 case .delete:
-                    self.messagesTableView.deleteRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
+                    self.messagesTableView.deleteRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                 case .insert:
                     // Perform inserts before updates
-                    self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .fade)
+                    self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .none)
                     if update.viewItem?.interaction is TSOutgoingMessage {
                         shouldScrollToBottom = true
                     } else {
                         shouldScrollToBottom = self.isCloseToBottom
                     }
                 case .update:
-                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
-                    shouldScrollToBottom = self.isCloseToBottom
+                    self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                 default: preconditionFailure()
                 }
             }
         }
-        let batchUpdatesCompletion: (Bool) -> Void = { isFinished in
-            if shouldScrollToBottom {
-                self.scrollToBottom(isAnimated: true)
-            } else {
-                // This is a workaround for an issue where after an attachment is sent without the keyboard showing before,
-                // once the keyboard shows, the table view's content offset can be wrong and the last message won't completely show.
-                // This is caused by the main run loop calling some table view update method that sets the content offset back to
-                // the previous value when the keyboard is shown.
-                self.messagesTableView.reloadData()
-            }
-            self.markAllAsRead()
-        }
-        if shouldAnimate {
-            messagesTableView.performBatchUpdates(batchUpdates, completion: batchUpdatesCompletion)
-        } else {
-            // HACK: We use `UIView.animateWithDuration:0` rather than `UIView.performWithAnimation` to work around a
-            // UIKit Crash like:
-            //
-            //     *** Assertion failure in -[ConversationViewLayout prepareForCollectionViewUpdates:],
-            //     /BuildRoot/Library/Caches/com.apple.xbs/Sources/UIKit_Sim/UIKit-3600.7.47/UICollectionViewLayout.m:760
-            //     *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'While
-            //     preparing update a visible view at <NSIndexPath: 0xc000000011c00016> {length = 2, path = 0 - 142}
-            //     wasn't found in the current data model and was not in an update animation. This is an internal
-            //     error.'
-            //
-            // I'm unclear if this is a bug in UIKit, or if we're doing something crazy in
-            // ConversationViewLayout#prepareLayout. To reproduce, rapidily insert and delete items into the
-            // conversation.
-            UIView.animate(withDuration: 0) {
-                self.messagesTableView.performBatchUpdates(batchUpdates, completion: batchUpdatesCompletion)
+        UIView.performWithoutAnimation {
+            messagesTableView.performBatchUpdates(batchUpdates) { _ in
                 if shouldScrollToBottom {
                     self.scrollToBottom(isAnimated: false)
                 }
+                self.markAllAsRead()
+            }
+            if shouldScrollToBottom {
+                self.scrollToBottom(isAnimated: false)
             }
         }
     }
@@ -439,6 +407,24 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     @objc private func handleGroupUpdatedNotification() {
         thread.reload() // Needed so that thread.isCurrentUserMemberInGroup() is up to date
         reloadInputViews()
+    }
+    
+    @objc private func handleMessageSentStatusChanged() {
+        DispatchQueue.main.async {
+            guard let indexPaths = self.messagesTableView.indexPathsForVisibleRows else { return }
+            var indexPathsToReload: [IndexPath] = []
+            for indexPath in indexPaths {
+                guard let cell = self.messagesTableView.cellForRow(at: indexPath) as? VisibleMessageCell else { continue }
+                let isLast = (indexPath.item == (self.messagesTableView.numberOfRows(inSection: 0) - 1))
+                guard !isLast else { continue }
+                if !cell.messageStatusImageView.isHidden {
+                    indexPathsToReload.append(indexPath)
+                }
+            }
+            UIView.performWithoutAnimation {
+                self.messagesTableView.reloadRows(at: indexPathsToReload, with: .none)
+            }
+        }
     }
     
     // MARK: General

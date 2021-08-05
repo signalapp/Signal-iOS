@@ -118,12 +118,14 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         delegate?.handleJobSucceeded(self)
         SNMessagingKitConfiguration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobID)
         Storage.shared.write(with: { transaction in
-            var interaction: TSInteraction?
+            var message: TSMessage?
             let transaction = transaction as! YapDatabaseReadWriteTransaction
             TSDatabaseSecondaryIndexes.enumerateMessages(withTimestamp: self.message.sentTimestamp!, with: { _, key, _ in
-                interaction = TSInteraction.fetch(uniqueId: key, transaction: transaction)
+                message = TSMessage.fetch(uniqueId: key, transaction: transaction)
             }, using: transaction)
-            interaction?.touch(with: transaction) // To refresh the associated message cell and hide the loader
+            if let message = message {
+                MessageInvalidator.invalidate(message, with: transaction)
+            }
         }, completion: { })
     }
     
