@@ -135,13 +135,17 @@ public class NotificationActionHandler: NSObject {
                 throw OWSAssertionError("Unexpected interaction type.")
             }
 
-            return firstly(on: .main) { () -> Promise<Void> in
-                self.databaseStorage.read { transaction in
-                    ThreadUtil.sendMessageNonDurablyPromise(
-                        body: MessageBody(text: replyText, ranges: .empty),
+            return firstly(on: .global()) { () -> Promise<Void> in
+                self.databaseStorage.write { transaction in
+                    let preparer = OutgoingMessagePreparer(
+                        messageBody: MessageBody(text: replyText, ranges: .empty),
+                        mediaAttachments: [],
                         thread: thread,
+                        quotedReplyModel: nil,
                         transaction: transaction
                     )
+                    preparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
+                    return ThreadUtil.enqueueMessagePromise(message: preparer.unpreparedMessage, transaction: transaction)
                 }
             }.recover(on: .global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
@@ -183,10 +187,11 @@ public class NotificationActionHandler: NSObject {
 
             return firstly(on: .global()) { () -> Promise<Void> in
                 self.databaseStorage.write { transaction in
-                    ReactionManager.localUserReactedWithNonDurableSend(
+                    ReactionManager.localUserReacted(
                         to: incomingMessage,
                         emoji: "👍",
                         isRemoving: false,
+                        isHighPriority: true,
                         transaction: transaction
                     )
                 }

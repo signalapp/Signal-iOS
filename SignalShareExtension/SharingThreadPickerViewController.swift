@@ -174,27 +174,22 @@ extension SharingThreadPickerViewController {
             let linkPreviewDraft = approvalLinkPreviewDraft
 
             sendToThreads { thread in
-                let (promise, resolver) = Promise<Void>.pending()
-
-                let message = self.databaseStorage.read { transaction in
-                    return ThreadUtil.sendMessageNonDurably(
-                        body: body,
+                return self.databaseStorage.write { transaction in
+                    let preparer = OutgoingMessagePreparer(
+                        messageBody: body,
+                        mediaAttachments: [],
                         thread: thread,
                         quotedReplyModel: nil,
-                        linkPreviewDraft: linkPreviewDraft,
                         transaction: transaction
-                    ) { error in
-                        if let error = error {
-                            resolver.reject(error)
-                        } else {
-                            resolver.fulfill(())
-                        }
-                    }
+                    )
+                    preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+                    self.outgoingMessages.append(preparer.unpreparedMessage)
+                    return ThreadUtil.enqueueMessagePromise(
+                        message: preparer.unpreparedMessage,
+                        isHighPriority: true,
+                        transaction: transaction
+                    )
                 }
-
-                self.outgoingMessages.append(message)
-
-                return promise
             }
         } else if isContactShare {
             guard let contactShare = approvedContactShare else {
@@ -202,28 +197,20 @@ extension SharingThreadPickerViewController {
             }
 
             sendToThreads { thread in
-                let (promise, resolver) = Promise<Void>.pending()
-
-                if let avatarImage = contactShare.avatarImage {
-                    self.databaseStorage.write { transaction in
-                        contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
-                    }
+                return self.databaseStorage.write { transaction in
+                    let builder = TSOutgoingMessageBuilder(thread: thread)
+                    builder.contactShare = contactShare.dbRecord
+                    let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
+                    builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+                    let message = builder.build()
+                    message.anyInsert(transaction: transaction)
+                    self.outgoingMessages.append(message)
+                    return ThreadUtil.enqueueMessagePromise(
+                        message: message,
+                        isHighPriority: true,
+                        transaction: transaction
+                    )
                 }
-
-                let message = ThreadUtil.sendMessageNonDurably(
-                    contactShare: contactShare.dbRecord,
-                    thread: thread
-                ) { error in
-                    if let error = error {
-                        resolver.reject(error)
-                    } else {
-                        resolver.fulfill(())
-                    }
-                }
-
-                self.outgoingMessages.append(message)
-
-                return promise
             }
         } else {
             guard let approvedAttachments = approvedAttachments else {
@@ -231,7 +218,7 @@ extension SharingThreadPickerViewController {
             }
 
             sendToConversations { conversations in
-                return AttachmentMultisend.sendApprovedMediaNonDurably(
+                return AttachmentMultisend.sendApprovedMediaFromShareExtension(
                     conversations: conversations,
                     approvalMessageBody: self.approvalMessageBody,
                     approvedAttachments: approvedAttachments,
@@ -495,8 +482,15 @@ extension SharingThreadPickerViewController {
         owsAssertDebug(!outgoingMessages.isEmpty)
 
         var promises = [Promise<Void>]()
-        for message in outgoingMessages {
-            promises.append(messageSender.sendMessage(.promise, message.asPreparer))
+        databaseStorage.write { transaction in
+            for message in outgoingMessages {
+                promises.append(messageSenderJobQueue.add(
+                    .promise,
+                    message: message.asPreparer,
+                    isHighPriority: true,
+                    transaction: transaction
+                ))
+            }
         }
 
         let dismissSendProgress = showSendProgress()

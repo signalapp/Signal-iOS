@@ -853,7 +853,7 @@ class DebugUIGroupsV2: DebugUIPage {
         })
 
         for message in messages {
-            ThreadUtil.sendMessageNonDurably(message: message)
+            messageSender.sendMessage(message.asPreparer, success: {}, failure: { _ in })
         }
     }
 
@@ -907,7 +907,7 @@ class DebugUIGroupsV2: DebugUIPage {
         })
 
         for message in messages {
-            ThreadUtil.sendMessageNonDurably(message: message)
+            messageSender.sendMessage(message.asPreparer, success: {}, failure: { _ in })
         }
     }
 

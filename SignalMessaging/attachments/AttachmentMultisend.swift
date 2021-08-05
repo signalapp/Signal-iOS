@@ -75,7 +75,7 @@ public class AttachmentMultisend: Dependencies {
         }
     }
 
-    public class func sendApprovedMediaNonDurably(
+    public class func sendApprovedMediaFromShareExtension(
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment],
@@ -146,9 +146,13 @@ public class AttachmentMultisend: Dependencies {
             let outgoingMessages = try BroadcastMediaUploader.upload(attachmentIdMap: attachmentIdMap)
 
             var messageSendPromises = [Promise<Void>]()
-            databaseStorage.write { _ in
+            databaseStorage.write { transaction in
                 for message in outgoingMessages {
-                    messageSendPromises.append(ThreadUtil.sendMessageNonDurablyPromise(message: message))
+                    messageSendPromises.append(ThreadUtil.enqueueMessagePromise(
+                        message: message,
+                        isHighPriority: true,
+                        transaction: transaction
+                    ))
                 }
             }
 

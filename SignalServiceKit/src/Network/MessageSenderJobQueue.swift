@@ -64,9 +64,29 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         )
     }
 
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func addPromise(
+        message: OutgoingMessagePreparer,
+        removeMessageAfterSending: Bool,
+        limitToCurrentProcessLifetime: Bool,
+        isHighPriority: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) -> AnyPromise {
+        return AnyPromise(add(
+            .promise,
+            message: message,
+            removeMessageAfterSending: removeMessageAfterSending,
+            limitToCurrentProcessLifetime: limitToCurrentProcessLifetime,
+            isHighPriority: isHighPriority,
+            transaction: transaction
+        ))
+    }
+
     public func add(
         _ namespace: PMKNamespacer,
         message: OutgoingMessagePreparer,
+        removeMessageAfterSending: Bool = false,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
@@ -156,7 +176,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // 110 retries will yield ~24 hours of retry.
     public static let maxRetries: UInt = 110
     public let requiresInternet: Bool = true
-    public var isEnabled: Bool { CurrentAppContext().isMainApp }
+    public var isEnabled: Bool { true }
     public var runningOperations = AtomicArray<MessageSenderOperation>()
 
     public var jobRecordLabel: String {

@@ -1662,34 +1662,8 @@ public class GroupManager: NSObject {
                                                thread: TSGroupThread,
                                                attachment: GroupUpdateMessageAttachment? = nil) -> Promise<Void> {
         if thread.isGroupV1Thread {
-            return firstly(on: .global()) { () -> Promise<Void> in
-                if let attachment = attachment {
-                    // v1 group update with avatar.
-                    owsAssertDebug(TSGroupModel.isValidGroupAvatarData(attachment.dataSource.data))
-                    return self.messageSender.sendTemporaryAttachment(.promise,
-                                                                      dataSource: attachment.dataSource,
-                                                                      contentType: attachment.contentType,
-                                                                      message: message)
-                } else {
-                    // v1 group update without avatar.
-                    return self.messageSender.sendMessage(.promise, message.asPreparer)
-                }
-            }.recover(on: .global()) { error in
-                if isNetworkFailureOrTimeout(error) {
-                    Logger.error("Error sending v1 group update: \(error)")
-                } else {
-                    owsFailDebug("Error sending v1 group update: \(error)")
-                }
-                if message.wasSentToAnyRecipient {
-                    // If a v1 group update was successfully sent to any
-                    // group member, consider it a success. The group update
-                    // is "out in the wild". If some members did not receive
-                    // the update, we rely on other mechanisms for group state
-                    // to converge.
-                } else {
-                    throw error
-                }
-            }
+            owsFailDebug("GV1 group updates no longer supported")
+            return Promise.value(())
         } else {
             // v2 group update.
             //
@@ -1801,13 +1775,16 @@ public class GroupManager: NSObject {
         }
         messageBuilder.additionalRecipients = Array(additionalRecipients)
         let message = messageBuilder.build()
-        messageSender.sendMessage(message.asPreparer,
-                                  success: {
-                                    Logger.info("Successfully sent message.")
-                                  },
-                                  failure: { error in
-                                    owsFailDebug("Failed to send message with error: \(error)")
-                                  })
+        messageSenderJobQueue.add(
+            .promise,
+            message: message.asPreparer,
+            isHighPriority: true,
+            transaction: transaction
+        ).done {
+            Logger.info("Successfully sent message.")
+        }.catch { error in
+            owsFailDebug("Failed to send message with error: \(error)")
+        }
     }
 
     // MARK: - Group Database

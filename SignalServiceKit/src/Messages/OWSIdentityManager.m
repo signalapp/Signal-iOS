@@ -5,6 +5,7 @@
 #import "OWSIdentityManager.h"
 #import "NSNotificationCenter+OWS.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalServiceKit/AppContext.h>
@@ -718,34 +719,48 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     // DURABLE CLEANUP - we could replace the custom durability logic in this class
     // with a durable JobQueue.
-    [self.messageSender sendMessage:nullMessage.asPreparer
-        success:^{
-            OWSLogInfo(@"Successfully sent verification state NullMessage");
-            [self.messageSender sendMessage:message.asPreparer
-                success:^{
-                    OWSLogInfo(@"Successfully sent verification state sync message");
-
-                    // Record that this verification state was successfully synced.
+    [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messageSenderJobQueue addPromiseWithMessage:nullMessage.asPreparer
+                                removeMessageAfterSending:NO
+                            limitToCurrentProcessLifetime:YES
+                                           isHighPriority:NO
+                                              transaction:transaction]
+            .then(^{
+                OWSLogInfo(@"Successfully sent verification state NullMessage");
                 [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+                    [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
+                                            removeMessageAfterSending:NO
+                                        limitToCurrentProcessLifetime:YES
+                                                       isHighPriority:NO
+                                                          transaction:transaction]
+                        .then(^{
+                            OWSLogInfo(@"Successfully sent verification state sync message");
+
+                            // Record that this verification state was successfully synced.
+                            [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+                                [self clearSyncMessageForAddress:message.verificationForRecipientAddress
+                                                     transaction:transaction];
+                            }];
+                        })
+                        .catch(^(NSError *error) {
+                            OWSLogError(@"Failed to send verification state sync message with error: %@", error);
+                        });
+                }];
+            })
+            .catch(^(NSError *error) {
+                OWSLogError(@"Failed to send verification state NullMessage with error: %@", error);
+                if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                    OWSLogInfo(
+                        @"Removing retries for syncing verification state, since user is no longer registered: %@",
+                        message.verificationForRecipientAddress);
+                    // Otherwise this will fail forever.
+                    [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
                         [self clearSyncMessageForAddress:message.verificationForRecipientAddress
                                              transaction:transaction];
-                }];
+                    }];
                 }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send verification state sync message with error: %@", error);
-                }];
-        }
-        failure:^(NSError *_Nonnull error) {
-            OWSLogError(@"Failed to send verification state NullMessage with error: %@", error);
-            if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
-                OWSLogInfo(@"Removing retries for syncing verification state, since user is no longer registered: %@",
-                    message.verificationForRecipientAddress);
-                // Otherwise this will fail forever.
-                [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
-                    [self clearSyncMessageForAddress:message.verificationForRecipientAddress transaction:transaction];
-                }];
-            }
-        }];
+            });
+    }];
 }
 
 - (void)clearSyncMessageForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction

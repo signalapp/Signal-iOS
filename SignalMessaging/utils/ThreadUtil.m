@@ -174,64 +174,6 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-// MARK: Non-Durable Sending
-
-// We might want to generate a link preview here.
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
-                                              thread:(TSThread *)thread
-                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                    linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                         transaction:(SDSAnyReadTransaction *)transaction
-                                          completion:(void (^)(NSError *_Nullable error))completion
-{
-    OWSAssertDebug(completion);
-
-    return [self sendMessageNonDurablyWithBody:messageBody
-                              mediaAttachments:@[]
-                                        thread:thread
-                              quotedReplyModel:quotedReplyModel
-                              linkPreviewDraft:linkPreviewDraft
-                                   transaction:transaction
-                                    completion:completion];
-}
-
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithBody:(MessageBody *)messageBody
-                                    mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
-                                              thread:(TSThread *)thread
-                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                    linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                         transaction:(SDSAnyReadTransaction *)transaction
-                                          completion:(void (^)(NSError *_Nullable error))completion
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(thread);
-    OWSAssertDebug(completion);
-
-    OutgoingMessagePreparer *outgoingMessagePreparer =
-        [[OutgoingMessagePreparer alloc] initWithMessageBody:messageBody
-                                            mediaAttachments:mediaAttachments
-                                                      thread:thread
-                                            quotedReplyModel:quotedReplyModel
-                                                 transaction:transaction];
-
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-        [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:writeTransaction];
-
-        [writeTransaction addAsyncCompletionOffMain:^{
-            [self.messageSender sendMessage:outgoingMessagePreparer
-                success:^{ dispatch_async(dispatch_get_main_queue(), ^{ completion(nil); }); }
-                failure:^(
-                    NSError *_Nonnull error) { dispatch_async(dispatch_get_main_queue(), ^{ completion(error); }); }];
-        }];
-    });
-
-    TSOutgoingMessage *message = outgoingMessagePreparer.unpreparedMessage;
-    if (message.hasRenderableContent) {
-        [thread donateSendMessageIntentWithTransaction:transaction];
-    }
-    return message;
-}
-
 + (nullable MessageSticker *)messageStickerForStickerDraft:(MessageStickerDraft *)stickerDraft
                                                transaction:(SDSAnyWriteTransaction *)transaction
 {

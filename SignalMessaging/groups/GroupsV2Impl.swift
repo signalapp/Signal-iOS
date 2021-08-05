@@ -408,7 +408,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let message = OWSDynamicOutgoingMessage(thread: contactThread) {
                 contentProtoData
             }
-            ThreadUtil.sendMessageNonDurably(message: message)
+            databaseStorage.asyncWrite { transaction in
+                Self.messageSenderJobQueue.add(message: message.asPreparer, limitToCurrentProcessLifetime: true, transaction: transaction)
+            }
         }
     }
 

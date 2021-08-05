@@ -110,7 +110,13 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         let endSessionMessage = EndSessionMessage(thread: self.contactThread)
 
         firstly {
-            return self.messageSender.sendMessage(.promise, endSessionMessage.asPreparer)
+            databaseStorage.write { transaction in
+                ThreadUtil.enqueueMessagePromise(
+                    message: endSessionMessage,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
         }.done {
             Logger.info("successfully sent EndSessionMessage.")
             self.databaseStorage.write { transaction in

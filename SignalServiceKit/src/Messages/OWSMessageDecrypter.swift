@@ -201,21 +201,28 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         store.setDate(Date(), key: senderId, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
-            let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread)
-            Self.messageSender.sendMessage(nullMessage.asPreparer, success: {
-                Logger.info("Successfully sent null message after session reset " +
-                                "for undecryptable message from \(senderId)")
-            }, failure: { error in
-                let nsError = error as NSError
-                if nsError.domain == OWSSignalServiceKitErrorDomain &&
-                    nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
-                    Logger.info("Failed to send null message after session reset for " +
-                                    "for undecryptable message from \(senderId) (\(error))")
-                } else {
-                    owsFailDebug("Failed to send null message after session reset " +
-                                    "for undecryptable message from \(senderId) (\(error))")
+            Self.databaseStorage.write { transaction in
+                let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread)
+                Self.messageSenderJobQueue.add(
+                    .promise,
+                    message: nullMessage.asPreparer,
+                    isHighPriority: true,
+                    transaction: transaction
+                ).done {
+                    Logger.info("Successfully sent null message after session reset " +
+                                    "for undecryptable message from \(senderId)")
+                }.catch { error in
+                    let nsError = error as NSError
+                    if nsError.domain == OWSSignalServiceKitErrorDomain &&
+                        nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
+                        Logger.info("Failed to send null message after session reset for " +
+                                        "for undecryptable message from \(senderId) (\(error))")
+                    } else {
+                        owsFailDebug("Failed to send null message after session reset " +
+                                        "for undecryptable message from \(senderId) (\(error))")
+                    }
                 }
-            })
+            }
         }
     }
 
@@ -245,18 +252,25 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         )
 
         transaction.addAsyncCompletionOffMain {
-            let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread)
-            Self.messageSender.sendMessage(profileKeyMessage.asPreparer, success: {
-                Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")
-            }, failure: { error in
-                let nsError = error as NSError
-                if nsError.domain == OWSSignalServiceKitErrorDomain &&
-                    nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
-                    Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
-                } else {
-                    owsFailDebug("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
+            Self.databaseStorage.write { transaction in
+                let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread)
+                Self.messageSenderJobQueue.add(
+                    .promise,
+                    message: profileKeyMessage.asPreparer,
+                    isHighPriority: true,
+                    transaction: transaction
+                ).done {
+                    Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")
+                }.catch { error in
+                    let nsError = error as NSError
+                    if nsError.domain == OWSSignalServiceKitErrorDomain &&
+                        nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
+                        Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
+                    } else {
+                        owsFailDebug("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
+                    }
                 }
-            })
+            }
         }
     }
 
