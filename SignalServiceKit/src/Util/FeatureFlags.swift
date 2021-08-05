@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-public enum FeatureBuild: Int {
+private enum FeatureBuild: Int {
     case dev
     case internalPreview
     case qa
@@ -18,20 +18,9 @@ extension FeatureBuild {
     func includes(_ level: FeatureBuild) -> Bool {
         return self.rawValue <= level.rawValue
     }
-
-    public var buildName: String {
-        switch self {
-        case .dev: return "Signal Debug"
-        case .internalPreview: return "Signal Internal Preview"
-        case .qa: return "Signal Internal"
-        case .openPreview: return "Signal Preview"
-        case .beta: return "Signal Beta"
-        case .production: return "Signal"
-        }
-    }
 }
 
-public let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
 // MARK: -
 
@@ -199,6 +188,9 @@ public class FeatureFlags: BaseFlags {
 
     @objc
     public static let senderKeyAndMessageResend = build.includes(.qa)
+
+    @objc
+    public static let forceEnableGiphyMP4 = build.includes(.beta)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in

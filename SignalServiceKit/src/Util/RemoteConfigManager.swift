@@ -187,7 +187,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var giphySendAsMP4: Bool {
-        isEnabled(.giphySendAsMP4) || build.includes(.beta)
+        isEnabled(.giphySendAsMP4) || FeatureFlags.forceEnableGiphyMP4
     }
 
     @objc

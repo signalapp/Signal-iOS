@@ -599,9 +599,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         owsFailDebug("Fatal error occurred: \(errorString).")
         guard DebugFlags.testPopulationErrorAlerts else { return }
 
-        let titleFormat = NSLocalizedString("ERROR_NOTIFICATION_TITLE_FORMAT", comment: "Format string for an error alert notification title. Embeds {{ build name }}")
+        let title = NSLocalizedString("ERROR_NOTIFICATION_TITLE", comment: "Format string for an error alert notification title.")
         let messageFormat = NSLocalizedString("ERROR_NOTIFICATION_MESSAGE_FORMAT", comment: "Format string for an error alert notification message. Embes {{ error string }}")
-        let title = String(format: titleFormat, build.buildName)
         let message = String(format: messageFormat, errorString)
 
         DispatchQueue.main.async {
