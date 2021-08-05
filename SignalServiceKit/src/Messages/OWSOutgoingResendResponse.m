@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingResendResponse.h"
@@ -43,7 +43,8 @@
                                                          address:address
                                                      transaction:transaction];
     } else if (didPerformSessionReset) {
-        OWSLogInfo(@"Failed to find MSL record for resend request: %lli. Will reply with Null message", failedTimestamp);
+        OWSLogInfo(
+            @"Failed to find MSL record for resend request: %lli. Will reply with Null message", failedTimestamp);
     } else {
         OWSLogInfo(@"Failed to find MSL record for resend request: %lli. Declining to respond.", failedTimestamp);
         return nil;
@@ -97,7 +98,9 @@
     }
 }
 
-- (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress wasSentByUD:(BOOL)wasSentByUD transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress
+                    wasSentByUD:(BOOL)wasSentByUD
+                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     [super updateWithSentRecipient:recipientAddress wasSentByUD:wasSentByUD transaction:transaction];
 
@@ -135,7 +138,8 @@
 
 - (void)resetSenderKeyDeliveryRecordIfNecessaryForThreadId:(NSString *)threadId
                                                    address:(SignalServiceAddress *)address
-                                               transaction:(SDSAnyWriteTransaction *)transaction {
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAssertDebug(threadId);
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
