@@ -653,6 +653,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             for item in items {
                 Logger.warn("item: \(item.debugDescription)")
             }
+            Logger.warn("Layout: \(self.layout.debugDescription)")
+            Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
+            Logger.warn("renderState: \(update.renderState.debugDescription)")
         }
 
         // We use an obj-c free function so that we can handle NSException.
