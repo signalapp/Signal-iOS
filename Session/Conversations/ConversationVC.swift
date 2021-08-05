@@ -351,11 +351,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             for update in conversationUpdate.updateItems! {
                 switch update.updateItemType {
                 case .delete:
-                    self.messagesTableView.deleteRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
+                    self.messagesTableView.deleteRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                 case .insert:
                     print("[Test] INSERT")
                     // Perform inserts before updates
-                    self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .fade)
+                    self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .none)
                     if update.viewItem?.interaction is TSOutgoingMessage {
                         shouldScrollToBottom = true
                     } else {
@@ -368,14 +368,16 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 }
             }
         }
-        messagesTableView.performBatchUpdates(batchUpdates) { _ in
-            if shouldScrollToBottom {
-                self.scrollToBottom(isAnimated: true)
+        UIView.performWithoutAnimation {
+            messagesTableView.performBatchUpdates(batchUpdates) { _ in
+                if shouldScrollToBottom {
+                    self.scrollToBottom(isAnimated: false)
+                }
+                self.markAllAsRead()
             }
-            self.markAllAsRead()
-        }
-        if shouldScrollToBottom {
-            self.scrollToBottom(isAnimated: false)
+            if shouldScrollToBottom {
+                self.scrollToBottom(isAnimated: false)
+            }
         }
     }
     

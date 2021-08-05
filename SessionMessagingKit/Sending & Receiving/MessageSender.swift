@@ -330,19 +330,16 @@ public final class MessageSender : NSObject {
         if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
             // Track the open group server message ID
             tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
-            tsMessage.save(with: transaction)
             // Mark the message as sent
             var recipients = [ message.recipient! ]
             if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
                 let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction), thread.isClosedGroup {
                 recipients = thread.groupModel.groupMemberIds
             }
-            if !tsMessage.wasSentToAnyRecipient {
-                recipients.forEach { recipient in
-                    tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
-                }
-                MessageInvalidator.invalidate(tsMessage, with: transaction)
+            recipients.forEach { recipient in
+                tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
             }
+            tsMessage.save(with: transaction)
             // Start the disappearing messages timer if needed
             OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }
