@@ -11,7 +11,7 @@
     private override init() { }
     
     @objc public static func invalidate(_ message: TSMessage, with transaction: YapDatabaseReadWriteTransaction) {
-        guard let id = message.uniqueId else { return }
+        guard let id = message.uniqueId, !isInvalidated(message) else { return }
         invalidatedMessages.insert(id)
         message.touch(with: transaction)
     }

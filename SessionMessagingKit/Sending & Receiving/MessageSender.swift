@@ -337,10 +337,12 @@ public final class MessageSender : NSObject {
                 let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction), thread.isClosedGroup {
                 recipients = thread.groupModel.groupMemberIds
             }
-            recipients.forEach { recipient in
-                tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
+            if !tsMessage.wasSentToAnyRecipient {
+                recipients.forEach { recipient in
+                    tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
+                }
+                MessageInvalidator.invalidate(tsMessage, with: transaction)
             }
-            MessageInvalidator.invalidate(tsMessage, with: transaction)
             // Start the disappearing messages timer if needed
             OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }
@@ -359,6 +361,8 @@ public final class MessageSender : NSObject {
 
     public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        tsMessage.update(sendingError: error, transaction: transaction as! YapDatabaseReadWriteTransaction)
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        tsMessage.update(sendingError: error, transaction: transaction)
+        MessageInvalidator.invalidate(tsMessage, with: transaction)
     }
 }

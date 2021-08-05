@@ -353,6 +353,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 case .delete:
                     self.messagesTableView.deleteRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .fade)
                 case .insert:
+                    print("[Test] INSERT")
                     // Perform inserts before updates
                     self.messagesTableView.insertRows(at: [ IndexPath(row: Int(update.newIndex), section: 0) ], with: .fade)
                     if update.viewItem?.interaction is TSOutgoingMessage {
