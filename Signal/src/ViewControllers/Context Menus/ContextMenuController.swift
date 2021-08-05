@@ -76,12 +76,26 @@ private class ContextMenuHostView: UIView {
         }
     }
 
+    var dismissButton: UIButton? {
+        didSet {
+            oldValue?.removeFromSuperview()
+            if let dismissButton = dismissButton {
+                addSubview(dismissButton)
+
+                if DebugFlags.showContextMenuDebugRects {
+                    dismissButton.addBorder(with: UIColor.blue)
+                }
+            }
+        }
+    }
+
     lazy var previewSourceFrame: CGRect = delegate?.contextMenuViewPreviewSourceFrame(self) ?? CGRect.zero
     private let minPreviewScaleFactor: CGFloat = 0.1
 
     override func layoutSubviews() {
         super.layoutSubviews()
         blurView?.frame = bounds
+        dismissButton?.frame = bounds
 
         let animationState = delegate?.contextMenuViewAnimationState(self) ?? .none
 
@@ -286,6 +300,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     private let springDamping: CGFloat = 0.8
     private let springInitialVelocity: CGFloat = 1.0
 
+    private let dismissButton = UIButton(type: .custom)
+
     private var previewShadowVisible = false {
         didSet {
             self.previewView?.layer.shadowOpacity = previewShadowVisible ? 0.3 : 0
@@ -334,22 +350,27 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         contextMenuView.previewViewAlignment = contextMenuPreview.alignment
         view = contextMenuView
 
+        view.accessibilityViewIsModal = true
+
+        dismissButton.isAccessibilityElement = true
+        dismissButton.accessibilityLabel = NSLocalizedString("DISMISS_CONTEXT_MENU", comment: "Dismiss context menu accessibility label")
+        dismissButton.addTarget(self, action: #selector(dismissButtonTapped(sender:)), for: .touchUpInside)
         contextMenuView.blurView = blurView
+        contextMenuView.dismissButton = dismissButton
         contextMenuView.previewView = contextMenuPreview.snapshot
+        contextMenuView.previewView?.isAccessibilityElement = true
+        contextMenuView.previewView?.accessibilityLabel = NSLocalizedString("MESSAGE_PREVIEW", comment: "Context menu message preview accessibility label")
         contextMenuView.accessoryViews = accessoryViews
 
         self.previewView?.isHidden = true
         self.previewView?.layer.shadowRadius = 12
         self.previewView?.layer.shadowOffset = CGSize(width: 0, height: 4)
         self.previewView?.layer.shadowColor = UIColor.ows_black.cgColor
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureRecognized(sender:)))
-        view.addGestureRecognizer(tapGesture)
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        blurView.frame = view.bounds
+    @objc
+    private func dismissButtonTapped(sender: UIButton) {
+        delegate?.contextMenuControllerRequestsDismissal(self)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -497,6 +518,10 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
 
     // MARK: Gesture Recognizer Support
     public func gestureDidChange() {
+        guard !UIAccessibility.isVoiceOverRunning else {
+            return
+        }
+
         if let locationInView = gestureRecognizer?.location(in: view) {
 
             if !gestureExitedDeadZone {
@@ -608,11 +633,6 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
             return CGRect.zero
         }
         return view.convert(sourceView.frame, from: sourceView.superview)
-    }
-
-    @objc
-    private func tapGestureRecognized(sender: UIGestureRecognizer) {
-        delegate?.contextMenuControllerRequestsDismissal(self)
     }
 
     @objc
