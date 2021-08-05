@@ -35,7 +35,7 @@ final class DeletedMessageView : UIView {
         // Body label
         let titleLabel = UILabel()
         titleLabel.lineBreakMode = .byTruncatingTail
-        titleLabel.text = "This message has been deleted."
+        titleLabel.text = NSLocalizedString("message_deleted", comment: "")
         titleLabel.textColor = textColor
         titleLabel.font = .systemFont(ofSize: Values.smallFontSize)
         // Stack view

@@ -549,3 +549,4 @@
 "vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
 "vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
 "view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
+"message_deleted" = "This message has been deleted";
