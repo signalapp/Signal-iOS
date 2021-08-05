@@ -1111,7 +1111,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return false
     }
 
-    public override func findLongPressHandler(sender: UILongPressGestureRecognizer,
+    public override func findLongPressHandler(sender: UIGestureRecognizer,
                                               componentDelegate: CVComponentDelegate,
                                               componentView: CVComponentView,
                                               renderItem: CVRenderItem) -> CVLongPressHandler? {

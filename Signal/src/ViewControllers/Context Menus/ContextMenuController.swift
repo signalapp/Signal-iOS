@@ -274,6 +274,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     var gestureRecognizer: UIGestureRecognizer?
     var localPanGestureRecoginzer: UIPanGestureRecognizer?
 
+    private let presentImmediately: Bool
+
     private var gestureExitedDeadZone: Bool = false
     private let deadZoneRadius: CGFloat = 40
     private var initialTouchLocation: CGPoint?
@@ -308,13 +310,14 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         configuration: ContextMenuConfiguration,
         preview: ContextMenuTargetedPreview,
         initiatingGestureRecognizer: UIGestureRecognizer?,
-        menuAccessory: ContextMenuActionsAccessory?
+        menuAccessory: ContextMenuActionsAccessory?,
+        presentImmediately: Bool
     ) {
         self.contextMenuConfiguration = configuration
         self.contextMenuPreview = preview
         self.gestureRecognizer = initiatingGestureRecognizer
         self.menuAccessory = menuAccessory
-
+        self.presentImmediately = presentImmediately
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -374,7 +377,10 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         let shiftPreview = finalFrame != initialFrame
 
         // Match initial transform
-        previewView.transform = CGAffineTransform.scale(0.95)
+        if !presentImmediately {
+            previewView.transform = CGAffineTransform.scale(0.95)
+        }
+
         previewView.isHidden = false
         contextMenuPreview.view?.isHidden = true
 

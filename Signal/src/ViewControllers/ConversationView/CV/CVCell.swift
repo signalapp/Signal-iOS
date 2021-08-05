@@ -286,7 +286,7 @@ public extension CVRootComponentHost {
                                                   renderItem: renderItem)
     }
 
-    func findLongPressHandler(sender: UILongPressGestureRecognizer,
+    func findLongPressHandler(sender: UIGestureRecognizer,
                               componentDelegate: CVComponentDelegate) -> CVLongPressHandler? {
         guard let renderItem = renderItem else {
             owsFailDebug("Missing renderItem.")

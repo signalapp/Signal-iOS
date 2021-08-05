@@ -19,6 +19,15 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
             collectionViewContextMenuGestureRecognizer.minimumPressDuration = 0.2
             collectionViewContextMenuGestureRecognizer.delegate = self
             collectionView.addGestureRecognizer(collectionViewContextMenuGestureRecognizer)
+
+            if #available(iOS 13.4, *) {
+                let collectionViewContextMenuSecondaryClickRecognizer = UITapGestureRecognizer()
+                collectionViewContextMenuSecondaryClickRecognizer.addTarget(self, action: #selector(handleSecondaryClickGesture))
+                collectionViewContextMenuSecondaryClickRecognizer.buttonMaskRequired = [.secondary]
+                collectionView.addGestureRecognizer(collectionViewContextMenuSecondaryClickRecognizer)
+                self.collectionViewContextMenuSecondaryClickRecognizer = collectionViewContextMenuSecondaryClickRecognizer
+            }
+
         }
 
         collectionViewPanGestureRecognizer.addTarget(self, action: #selector(handlePanGesture))
@@ -157,6 +166,18 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         @unknown default:
             owsFailDebug("Invalid state.")
         }
+    }
+
+    @objc func handleSecondaryClickGesture(_ sender: UITapGestureRecognizer) {
+        guard let cell = findCell(forGesture: sender) else {
+            return
+        }
+        guard let longPressHandler = cell.findLongPressHandler(sender: sender,
+                                                               componentDelegate: componentDelegate) else {
+            return
+        }
+
+        longPressHandler.startContextMenuGesture(cell: cell)
     }
 
     private func findLongPressHandler(sender: UILongPressGestureRecognizer) -> CVLongPressHandler? {
