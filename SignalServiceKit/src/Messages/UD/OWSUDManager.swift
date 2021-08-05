@@ -49,6 +49,11 @@ extension UnidentifiedAccessMode: CustomStringConvertible {
 public class OWSUDAccess: NSObject {
     @objc
     public let udAccessKey: SMKUDAccessKey
+    public var senderKeyUDAccessKey: SMKUDAccessKey {
+        // If unrestricted, we use a zeroed out key instead of a random key
+        // This ensures we don't scribble over the rest of our composite key when talking to the multi_recipient endpoint
+        udAccessMode == .unrestricted ? .zeroedKey : udAccessKey
+    }
 
     @objc
     public let udAccessMode: UnidentifiedAccessMode
