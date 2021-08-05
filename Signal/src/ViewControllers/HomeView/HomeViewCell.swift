@@ -760,8 +760,6 @@ public class HomeViewCell: UITableViewCell {
                                ])
             return snippetText
         case .none:
-            // TODO: Is this expected?
-            owsFailDebug("No snippet.")
             return NSAttributedString(string: "")
         }
     }
