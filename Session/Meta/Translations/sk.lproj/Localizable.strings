@@ -550,3 +550,6 @@
 "vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
 "view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
 "message_deleted" = "This message has been deleted";
+"delete_message_for_me" = "Delete just for me";
+"delete_message_for_everyone" = "Delete for everyone";
+"delete_message_for_me_and_recipient" = "Delete for me and %@";

@@ -548,21 +548,21 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func delete(_ viewItem: ConversationViewItem) {
         if viewItem.interaction.interactionType() == .outgoingMessage {
             let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-            let deleteLocallyAction = UIAlertAction.init(title: "Delete just for me", style: .destructive) { _ in
+            let deleteLocallyAction = UIAlertAction.init(title: NSLocalizedString("delete_message_for_me", comment: ""), style: .destructive) { _ in
                 self.deleteLocally(viewItem)
             }
             alertVC.addAction(deleteLocallyAction)
             
-            var title = "Delete for everyone"
+            var title = NSLocalizedString("delete_message_for_everyone", comment: "")
             if !viewItem.isGroupThread {
-                title = "Delete for me and \(viewItem.interaction.thread.name())"
+                title = String(format: NSLocalizedString("delete_message_for_me_and_recipient", comment: ""), viewItem.interaction.thread.name())
             }
             let deleteRemotelyAction = UIAlertAction.init(title: title, style: .destructive) { _ in
                 self.deleteForEveryone(viewItem)
             }
             alertVC.addAction(deleteRemotelyAction)
             
-            let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction.init(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil)
             alertVC.addAction(cancelAction)
             self.navigationController?.presentAlert(alertVC)
         } else {
