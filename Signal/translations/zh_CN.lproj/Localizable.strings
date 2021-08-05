@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "知道了";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "发送问题";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "放弃";
@@ -873,6 +876,27 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "未命名的联系人";
+
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "复制";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "删除";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "信息";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "转发";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "回复";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "选择";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "分享";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "此对话会在此设备上删除。";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "分享媒体文件";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "回复";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "复制";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "信息";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "删除";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "分享";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "转发";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "选择";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "群组邀请";

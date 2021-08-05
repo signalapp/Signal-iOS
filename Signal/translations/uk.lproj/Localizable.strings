@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Ясно";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблема з Доставкою";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Відхилити";
@@ -227,7 +230,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Швидше, менше даних";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Якість Медіа";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Повідомлення до %@";
@@ -873,6 +876,27 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Безіменний контакт";
+
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Копіювати";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Видалити";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Інформація";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Переслати";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Відповісти";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Вибрати";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Поділитися";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Чат буде видалено з цього пристрою.";
@@ -2390,7 +2414,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ схвалив запит на приєднання до групи від %1$@.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ скасував надіслання запиту на приєднання до групи.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ скасував надсилання запиту на приєднання до групи.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Ви відхилили запит на приєднання до групи від %@.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Поділитися медіа";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Відповісти";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Копіювати";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Інформація";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Видалити";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Поділитися";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Переслати";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Вибрати";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Запрошення до групи";

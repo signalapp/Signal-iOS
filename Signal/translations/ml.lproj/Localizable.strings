@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "മനസ്സിലായി";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "ഡെലിവറി പ്രശ്നം";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "കളയുക";
@@ -221,10 +224,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "സംരക്ഷിച്ചു";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "സാവധാനം, കൂടുതൽ ഡാറ്റ";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "വേഗത്തിൽ, കുറഞ്ഞ ഡാറ്റ";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
@@ -341,10 +344,10 @@
 "AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "ഒരു രൂപം തിരഞ്ഞെടുക്കുക കൂടാതെ നിങ്ങളുടെ ഇനീഷ്യലുകൾ വർണ്ണിക്കുക അല്ലെങ്കിൽ ഇഷ്ടാനുസൃതമാക്കുക.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "ഒരു പ്രൊഫൈൽ ഫോട്ടോ ചേർക്കുക";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
@@ -458,7 +461,7 @@
 "BUTTON_DONE" = "ചെയ്‌തു";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "Duplicate";
+"BUTTON_DUPLICATE" = "തനിപ്പകർപ്പ്";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "തിരുത്തുക";
@@ -482,7 +485,7 @@
 "BUTTON_SELECT" = "തിരഞ്ഞെടുക്കൂ";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Set";
+"BUTTON_SET" = "സജ്ജമാക്കുക";
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "പങ്കിടുക";
@@ -605,13 +608,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "നിറം നിങ്ങൾക്ക് മാത്രം ദൃശ്യമാണ്.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "നിറം നിങ്ങൾക്ക് മാത്രം ദൃശ്യമാണ്.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "നിറം നിങ്ങൾക്ക് മാത്രം ദൃശ്യമാണ്.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
@@ -635,7 +638,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
+"CHAT_COLORS_AUTO_TOOLTIP" = "വാൾപേപ്പറിന്റെ നിറവുമായി സ്വയമേവ പൊരുത്തപ്പെടുന്നു";
 
 /* Action text for char colors megaphone */
 "CHAT_COLORS_MEGAPHONE_ACTION" = "ദൃശ്യത";
@@ -873,6 +876,27 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "പേരില്ലാത്ത കോൺടാക്ട്";
+
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "പകർത്തുക";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "ഇല്ലാതാക്കൂ";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "ഫോർവേഡ് ചെയ്യുക";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "മറുപടി";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "തിരഞ്ഞെടുക്കൂ";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "പങ്കിടുക";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ഈ ചാറ്റ് ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കംചെയ്യും.";
@@ -1139,22 +1163,22 @@
 "CURRENCY_PICKER_VIEW_TITLE" = "കറൻസി സജ്ജമാക്കുക";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "ഗ്രേഡിയന്റ്";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "ഹ്യൂ";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturation";
+"CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "സാച്ചുറേഷൻ";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "ഖരം";
 
 /* Title for the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Drag to change the direction of the gradient";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "ഗ്രേഡിയന്റിന്റെ ദിശ മാറ്റാൻ വലിച്ചിടുക";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ഇത് കുറച്ച് മിനിറ്റുകൾ എടുക്കും.";
@@ -3094,27 +3118,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "മീഡിയ പങ്കിടുക";
 
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "മറുപടി";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "പകർത്തുക";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "ഇല്ലാതാക്കൂ";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "പങ്കിടുക";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "ഫോർവേഡ് ചെയ്യുക";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "തിരഞ്ഞെടുക്കൂ";
-
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
 
@@ -3896,7 +3899,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "ഈ ഉപയോക്താവിന് ഒരു പേയ്മെന്റ് അയയ്ക്കുന്നതിന് അവർ നിത്തിൽ നിന്ന് ഒരു സന്ദേശ അഭ്യർത്ഥന സ്വീകരിക്കേണ്ടതുണ്ട്. ഒരു സന്ദേശ അഭ്യർത്ഥന സൃഷ്ടിക്കുന്നതിന് അവർക്ക് ഒരു സന്ദേശം അയയ്ക്കുക.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
@@ -4931,7 +4934,7 @@
 "SENT_MEDIA_QUALITY_HIGH" = "ഉയർന്ന";
 
 /* String describing standard quality sent media */
-"SENT_MEDIA_QUALITY_STANDARD" = "Standard";
+"SENT_MEDIA_QUALITY_STANDARD" = "സ്റ്റാൻഡേർഡ്";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal ആദ്യാവസാന-എൻക്രിപ്ഷൻ ഉപയോക്കുന്നതിനാൽ ചിലപ്പോൾ മുമ്പത്തെ ചാറ്റുകൾ പുതുക്കേണ്ടി വരും. ഇത് ചാറ്റിന്റെ സുരക്ഷയെ ബാധിക്കില്ല, പക്ഷെ ഈ കോണ്ടാക്ടിൽ നിന്നുള്ളൊരു മെസ്സേജ്  നിങ്ങൾക്ക് നഷ്ടപെട്ടിരിക്കാം, എങ്കിൽ അതവരോട് നിങ്ങൾക്ക് വീണ്ടുമയക്കാൻ പറയാം.";
@@ -5102,7 +5105,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങൾ";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "നിങ്ങൾ ആരംഭിച്ച എല്ലാ പുതിയ ചാറ്റുകൾക്കും ഒരു സ്ഥിരസ്ഥിതി അപ്രത്യക്ഷമാകുന്ന സന്ദേശ ടൈമർ ക്രമീകരിക്കുക.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal-ന് സംഭാവന ചെയ്യുക";
@@ -5177,7 +5180,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Notify when…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "എപ്പോൾ അറിയിക്കുക...";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "അറിയിപ്പുകൾ";
@@ -5546,7 +5549,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "നിങ്ങളുടെ വീണ്ടെടുക്കൽ വാക്യം ഡിജിറ്റലായി സംഭരിക്കാൻ നിങ്ങൾ തീരുമാനിക്കുകയാണെങ്കിൽ, നിങ്ങൾ വിശ്വസിക്കുന്ന എവിടെയെങ്കിലും അത് സുരക്ഷിതമായി സംഭരിക്കപ്പെടുന്നുവെന്ന് ഉറപ്പാക്കുക.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";

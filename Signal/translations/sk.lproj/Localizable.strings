@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Chápem";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problém s doručením";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Správu, nálepku, reakciu, potvrdenie o prečítaní, alebo médium od %@ vám nebolo možné doručiť. Možno sa vám to pokúsili poslať priamo, alebo v skupine.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Zahodiť";
@@ -874,6 +877,27 @@
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Nepomenovaný kontakt";
 
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Kopírovať";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Vymazať";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Preposlať";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Odpovedať";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Vybrať";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Zdieľať";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tento chat sa vymaže z tohto zariadenia.";
 
@@ -1625,7 +1649,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Sťahovanie prílohy zlyhalo.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Správu od %@ sa nepodarilo doručiť";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Prijatá duplikovaná správa.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Zdieľať médiá";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Odpovedať";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Kopírovať";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Vymazať";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Zdieľať";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Preposlať";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Vybrať";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Pozvánka do skupiny";
@@ -5060,13 +5063,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Resetovať nastavenia automatického sťahovania médií";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kvalita odosielaných médií";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Zvoľte kvalitu pre  vami odosielané fotky a videá.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Odosielané médiá";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Využitie dát";
@@ -5681,10 +5684,10 @@
 "SETTINGS_SECURITY_TITLE" = "Zabezpečenie aplikácie";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Odosielanie médií vo vysokej kvalite využije viac dát.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Fotky a videá";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Zobraziť konverzácie v návrhoch";

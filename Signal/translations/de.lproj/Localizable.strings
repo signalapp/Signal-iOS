@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Verstanden";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Zustellungsproblem";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Eine Nachricht, ein Sticker, eine Reaktion, eine Lesebestätigung oder ein Medieninhalt von %@ konnte dir nicht zugestellt werden. Der Versand wurde in einer direkten Unterhaltung oder einer Gruppenunterhaltung versucht.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Verwerfen";
@@ -874,6 +877,27 @@
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Unbenannter Kontakt";
 
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Kopieren";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Löschen";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Weiterleiten";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Antworten";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Auswählen";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Teilen";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Diese Unterhaltung wird von diesem Gerät gelöscht.";
 
@@ -1625,7 +1649,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Anhang konnte nicht heruntergeladen werden.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Eine Nachricht von %@ konnte nicht zugestellt werden";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Nachricht doppelt erhalten.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Medieninhalte teilen";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Antworten";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Kopieren";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Löschen";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Teilen";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Weiterleiten";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Auswählen";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Gruppeneinladung";
@@ -5063,7 +5066,7 @@
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Wähle die Qualität, mit der Fotos und Videos versendet werden.";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
@@ -5681,10 +5684,10 @@
 "SETTINGS_SECURITY_TITLE" = "App-Sicherheit";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Zum Senden von Medien mit hoher Qualität wird mehr Datenvolumen genutzt.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Fotos und Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Unterhaltungen in Vorschlägen anzeigen";

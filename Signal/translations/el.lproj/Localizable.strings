@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Εντάξει";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "Θέμα κατά τη παράδοση";
+"ALERT_DELIVERY_ISSUE_TITLE" = "Θέμα κατά την παράδοση";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Κάποιο μήνυμα, αντίδραση, αποδεικτικό ανάγνωσης ή πολυμέσο από τον/την %@ δεν μπόρεσε να σου παραδοθεί. Προσπάθησε να στείλει είτε σε σένα απ' ευθείας είτε σε κάποια ομάδα.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Απόρριψη";
@@ -874,6 +877,27 @@
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Ανώνυμη επαφή";
 
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Αντιγραφή";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Διαγραφή";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Πληροφορίες";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Προώθηση";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Απάντηση";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Επιλογή";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Μοιράσου";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Αυτή η συνομιλία θα διαγραφεί από αυτή τη συσκευή.";
 
@@ -1625,7 +1649,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Αποτυχία ανάκτησης του συνημμένου.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Ένα μήνυμα από τον/την %@ δεν μπόρεσε να παραδοθεί";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Έλαβες ένα διπλότυπο μήνυμα.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Κοινοποίηση πολυμέσων";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Απάντηση";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Αντιγραφή";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Διαγραφή";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Μοιράσου";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Προώθηση";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Επέλεξε";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Πρόσκληση σε ομάδα";
@@ -5060,13 +5063,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Επαναφορά ρυθμίσεων αυτόματου κατεβάσματος";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Ποιότητα απεσταλμένων πολυμέσων";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Επέλεξε την ποιότητα των φωτογραφιών και βίντεο που στέλνεις.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Απεσταλμένα πολυμέσα";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Χρήση δεδομένων";
@@ -5681,10 +5684,10 @@
 "SETTINGS_SECURITY_TITLE" = "Ασφάλεια εφαρμογής";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Η αποστολή πολυμέσων υψηλής ποιότητας θα καταναλώνει περισσότερα δεδομένα.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Φωτογραφίες και Βίντεο";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Εμφάνιση συνομιλιών στις Προτάσεις";

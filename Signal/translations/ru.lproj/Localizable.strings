@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Понятно";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Ошибка доставки";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Сообщение, стикер, реакцию, уведомление о прочтении или медиа-файл от %@ не удалось доставить вам. Этот человек мог отправить вышеуказанное напрямую вам или в какую-нибудь группу.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Сбросить";
@@ -874,6 +877,27 @@
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Безымянный контакт";
 
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Копировать";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Удалить";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Информация";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Переслать";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Ответить";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Выбрать";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Поделиться";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Этот чат будет удалён с этого устройства.";
 
@@ -1625,7 +1649,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Не удалось скачать вложение.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Не удалось доставить сообщение от %@";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Получен дубликат сообщения.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Поделиться медиа";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Ответить";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Копировать";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Информация";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Удалить";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Поделиться";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Пересылка";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Выберите";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Приглашение в группу";
@@ -5060,13 +5063,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Сбросить настройки автоматического скачивания";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Качество отправляемого медиа";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Выберите, в каком качестве вы хотите отправлять фото и видео.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Отправляемое медиа";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Использование данных";
@@ -5681,10 +5684,10 @@
 "SETTINGS_SECURITY_TITLE" = "Безопасность приложения";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Отправление медиа в высоком качестве использует больше данных.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Фото и видео";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Показывать чаты в предложениях";

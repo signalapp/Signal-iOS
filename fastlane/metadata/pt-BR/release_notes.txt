@@ -1,3 +1,3 @@
-• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
-• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
-• We’ve made several improvements to help make scrolling your chat list smoother.
+• Uma imagem pode valer 1.000 palavras, mas agora você pode enviá-la em 4k. Use o novo seletor de qualidade para escolher quando enviar fotos em alta resolução. Você também pode definir como padrão o envio de fotos sempre em alta resolução, em Configurações > Uso de dados.
+• Quando você pressionar uma mensagem, um novo menu permitirá que você reaja, responda ou exclua a mensagem rapidamente.
+• Fizemos várias melhorias de desempenho na sua lista de conversas.

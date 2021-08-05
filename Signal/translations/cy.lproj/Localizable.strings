@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Iawn, rwy'n deall";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Mater Cyflenwi";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Taflu";
@@ -873,6 +876,27 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Cysylltiad Dienw";
+
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Copïo";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Dileu";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Ymlaen";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Ymateb";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Dewis";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Rhannu";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Bydd y sgwrs hon yn cael ei dileu o'r ddyfais hon.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Rhannu Cyfryngau";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Ymateb";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Copïo";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Dileu";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Rhannu";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Ymlaen";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Dewis";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Gwahoddiad Grŵp";

@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Во ред";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблем со испорака";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Откажи";
@@ -873,6 +876,27 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Неименуван контакт";
+
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Копирај";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Избриши";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Препрати";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Одговори";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Одбери";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Сподели";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Овој разговор ќе биде избришан од овој уред.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Сподели медија";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Одговори";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Копирај";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Избриши";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Сподели";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Препрати";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Одбери";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";

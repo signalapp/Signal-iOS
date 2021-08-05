@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Đã rõ";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Vấn đề Truyền tải";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Bỏ";
@@ -873,6 +876,27 @@
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Liên hệ Chưa lưu tên";
+
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "Sao chép";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "Xóa";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Chuyển tiếp";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "Trả lời";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "Chọn";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "Chia sẻ";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tin nhắn này sẽ bị xoá khỏi thiết bị này.";
@@ -3093,27 +3117,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Chia sẻ tệp đa phương tiện";
-
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "Trả lời";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "Sao chép";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Xóa";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "Chia sẻ";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Chuyển tiếp";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Chọn";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Lời mời Nhóm";

@@ -113,10 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "ਸਮਝ ਗਏ";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "ਡਿਲਿਵਰੀ ਮਸਲਾ";
+
+/* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "ਰੱਦ ਕਰੋ";
@@ -874,6 +877,27 @@
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "ਬਿਨਾਂ ਨਾਮ ਦੇ ਸੰਪਰਕ";
 
+/* Context menu button title */
+"CONTEXT_MENU_COPY" = "ਕਾਪੀ ਕਰੋ";
+
+/* Context menu button title */
+"CONTEXT_MENU_DELETE_MESSAGE" = "ਮਿਟਾਓ";
+
+/* Context menu button title */
+"CONTEXT_MENU_DETAILS" = "Info";
+
+/* Context menu button title */
+"CONTEXT_MENU_FORWARD_MESSAGE" = "ਅੱਗੇ ਭੇਜੋ ";
+
+/* Context menu button title */
+"CONTEXT_MENU_REPLY" = "ਜਵਾਬ";
+
+/* Context menu button title */
+"CONTEXT_MENU_SELECT_MESSAGE" = "ਚੁਣੋ";
+
+/* Context menu button title */
+"CONTEXT_MENU_SHARE_MEDIA" = "ਸਾਂਝਾ ਕਰੋ";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ਇਸ ਚੈਟ ਨੂੰ ਇਸ ਡਿਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।";
 
@@ -1565,7 +1589,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "ਰੁ਼ਝੇ";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "ਕਾਲ ਅਸਫਲ ਰਹੀ.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "ਕਾਲ ਅਸਫਲ ਰਹੀ।";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "ਸੰਪਰਕਾਂ ਨੂੰ ਐਕਸੈਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ.";
@@ -3094,27 +3118,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "ਮੀਡੀਆ ਸਾਂਝਾ ਕਰੋ";
 
-/* Context menu Reply button title */
-"CONTEXT_MENU_REPLY" = "ਜਵਾਬ";
-
-/* Context menu Copy button title */
-"CONTEXT_MENU_COPY" = "ਕਾਪੀ ਕਰੋ";
-
-/* Context menu Info button title */
-"CONTEXT_MENU_DETAILS" = "Info";
-
-/* Context menu Delete button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "ਮਿਟਾਓ";
-
-/* Context menu Share button title */
-"CONTEXT_MENU_SHARE_MEDIA" = "ਸਾਂਝਾ ਕਰੋ";
-
-/* Context menu Forward button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "ਅੱਗੇ ਭੇਜੋ ";
-
-/* Context menu Select button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "ਚੁਣੋ";
-
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "ਗਰੁੱਪ ਸੱਦੇ";
 
@@ -4271,10 +4274,10 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal ਉਪਭੋਗਤਾਵਾਂ ਦਾ ਹਰ ਇੱਕ ਜੋੜਾ ਇੱਕ ਵਿਲੱਖਣ ਸੁਰੱਖਿਆ ਨੰਬਰ ਸਾਂਝਾ ਕਰਦਾ ਹੈ. ਦੁਬਾਰਾ ਜਾਂਚ ਕਰੋ ਕਿ %@ *ਤੁਹਾਡੇ* ਵਿਲੱਖਣ ਸੁਰੱਖਿਆ ਨੰਬਰ ਨੂੰ ਦਿਖਾ ਰਿਹਾ ਹੋਵੇ.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "ਤੁਸੀਂ Signal ਦਾ ਪੁਰਾਣਾ ਸੰਸਕਰਣ ਵਰਤ ਰਹੇ ਹੋ. ਤੁਹਾਨੂੰ ਤਸਦੀਕ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਅਪਡੇਟ ਕਰਨ ਦੀ ਜ਼ਰੂਰਤ ਹੋਵੇਗੀ.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "ਤੁਸੀਂ Signal ਦਾ ਪੁਰਾਣਾ ਸੰਸਕਰਣ ਵਰਤ ਰਹੇ ਹੋ। ਤੁਹਾਨੂੰ ਤਸਦੀਕ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਅਪਡੇਟ ਕਰਨ ਦੀ ਜ਼ਰੂਰਤ ਹੋਵੇਗੀ।";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "ਤੁਹਾਡਾ ਸਾਥੀ Signal ਦਾ ਪੁਰਾਣਾ ਸੰਸਕਰਣ ਵਰਤ ਰਿਹਾ ਹੈ. ਤੁਹਾਡੇ ਵੱਲੋਂ ਤਸਦੀਕ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਅਪਡੇਟ ਕਰਨ ਦੀ ਜ਼ਰੂਰਤ ਹੋਵੇਗੀ.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "ਤੁਹਾਡਾ ਸਾਥੀ Signal ਦਾ ਪੁਰਾਣਾ ਸੰਸਕਰਣ ਵਰਤ ਰਿਹਾ ਹੈ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਤਸਦੀਕ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ ਅਪਡੇਟ ਕਰਨ ਦੀ ਜ਼ਰੂਰਤ ਹੋਵੇਗੀ।";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "ਸਕੈਨ ਕੀਤਾ ਕੋਡ ਸੁਰੱਖਿਆ ਨੰਬਰ ਵਾਂਗ ਨਹੀਂ ਜਾਪਦਾ. ਕੀ ਤੁਸੀਂ ਦੋਨੋਂ Signal ਦੇ ਨਵੀਨਤਮ ਸੰਸਕਰਣ 'ਤੇ ਹੋ?";
@@ -4634,7 +4637,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "ਸਾਡਾ Signal ਸੁਰੱਖਿਆ ਨੰਬਰ:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ ਦੇ ਨਾਲ ਤੁਹਾਡਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਬਦਲ ਗਿਆ ਹੈ. ਤੁਸੀਂ ਇਸਦੀ ਤਸਦੀਕ ਕਰਨਾ ਚਾਹ ਸਕਦੇ ਹੋ.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ ਦੇ ਨਾਲ ਤੁਹਾਡਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਬਦਲ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਇਸਦੀ ਤਸਦੀਕ ਕਰਨਾ ਚਾਹ ਸਕਦੇ ਹੋ।";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "ਆਪਣੇ ਸੰਪਰਕ ਦੇ ਡਿਵਾਈਸ 'ਤੇ QR ਕੋਡ ਸਕੈਨ ਕਰੋ.";
@@ -4892,7 +4895,7 @@
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "ਆਪਣਾ ਖਾਤਾ ਟ੍ਰਾਂਸਫਰ ਕਰਨ ਲਈ ਆਪਣੇ ਪੁਰਾਣੇ iPad 'ਤੇ Signal ਚਲਾਓ";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "ਸੁਰੱਖਿਅਤ ਸੈਸ਼ਨ ਰੀਸੈੱਟ ਹੋਇਆ.";
+"SECURE_SESSION_RESET" = "ਸੁਰੱਖਿਅਤ ਸੈਸ਼ਨ ਰੀਸੈੱਟ ਹੋਇਆ।";
 
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "ਸਾਰੇ ਵੇਖੋ";
@@ -5306,7 +5309,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਰਿਕਾਰਡ ਕਰੋ";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "ਵਾਲਟ ਦਾ ਗੈਰ-ਵਾਜ਼ਬ ਸਿਰਨਾਵਾਂ";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "ਵਾਲਟ ਦਾ ਗੈਰ-ਵਾਜ਼ਬ ਸਿਰਨਾਵਾਂਧ";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "ਕੋਈ ਹਾਲੀਆ ਸਰਗਰਮੀ ਨਹੀਂ";
@@ -5870,7 +5873,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "ਅਨਇੰਸਟਾਲ ਕਰੋ";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ ਦੇ ਨਾਲ ਤੁਹਾਡਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਮੇਲ ਖਾਂਦਾ ਹੈ. ਤੁਸੀਂ ਇਸ ਸੰਪਰਕ 'ਤੇ ਤਸਦੀਕਸ਼ੁਦਾ ਵਜੋਂ ਚਿੰਨ੍ਹ ਲਗਾ ਸਕਦੇ ਹੋ.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ ਦੇ ਨਾਲ ਤੁਹਾਡਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਮੇਲ ਖਾਂਦਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਸੰਪਰਕ 'ਤੇ ਤਸਦੀਕਸ਼ੁਦਾ ਵਜੋਂ ਚਿੰਨ੍ਹ ਲਗਾ ਸਕਦੇ ਹੋ।";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "ਸੁਰੱਖਿਆ ਨੰਬਰ ਮਿਲ ਗਿਆ!";
@@ -6098,7 +6101,7 @@
 "UNREAD_ACTION" = "ਨਾ-ਪੜ੍ਹੇ";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "ਅਸਮਰਥਿਤ ਅਟੈਚਮੈਂਟ ਕਿਸਮ ਪ੍ਰਾਪਤ ਹੋਈ.";
+"UNSUPPORTED_ATTACHMENT" = "ਅਸਮਰਥਿਤ ਅਟੈਚਮੈਂਟ ਕਿਸਮ ਪ੍ਰਾਪਤ ਹੋਈ।";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "ਤੁਹਾਡਾ ਡਿਵਾਈਸ ਇਸ ਫੀਚਰ ਨੂੰ ਸਮਰਥਿਤ ਨਹੀਂ ਕਰਦਾ.";
