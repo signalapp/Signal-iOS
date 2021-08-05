@@ -551,6 +551,17 @@ public extension String {
     }
 
     var isSingleEmoji: Bool {
+        if CurrentAppContext().isNSE {
+            // It is not safe to use CoreText in the NSE.
+            return self.isSingleEmojiWithoutCoreText
+        } else {
+            // This implementation of isSingleEmoji is faster
+            // than isSingleEmojiWithoutCoreText.
+            return self.isSingleEmojiDefault
+        }
+    }
+
+    private var isSingleEmojiDefault: Bool {
         glyphCount == 1 && containsEmoji
     }
 

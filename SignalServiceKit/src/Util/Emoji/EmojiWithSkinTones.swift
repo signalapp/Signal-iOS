@@ -3,10 +3,10 @@
 //
 
 public struct EmojiWithSkinTones: Hashable {
-    let baseEmoji: Emoji
-    let skinTones: [Emoji.SkinTone]?
+    public let baseEmoji: Emoji
+    public let skinTones: [Emoji.SkinTone]?
 
-    init(baseEmoji: Emoji, skinTones: [Emoji.SkinTone]? = nil) {
+    public init(baseEmoji: Emoji, skinTones: [Emoji.SkinTone]? = nil) {
         self.baseEmoji = baseEmoji
 
         // Deduplicate skin tones, while preserving order. This allows for
@@ -19,7 +19,7 @@ public struct EmojiWithSkinTones: Hashable {
         }
     }
 
-    var rawValue: String {
+    public var rawValue: String {
         if let skinTones = skinTones {
             return baseEmoji.emojiPerSkinTonePermutation?[skinTones] ?? baseEmoji.rawValue
         } else {
@@ -33,13 +33,13 @@ public struct EmojiWithSkinTones: Hashable {
 extension Emoji {
     private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
 
-    static func allAvailableEmojiByCategoryWithPreferredSkinTones(transaction: SDSAnyReadTransaction) -> [Category: [EmojiWithSkinTones]] {
+    public static func allAvailableEmojiByCategoryWithPreferredSkinTones(transaction: SDSAnyReadTransaction) -> [Category: [EmojiWithSkinTones]] {
         return Category.allCases.reduce(into: [Category: [EmojiWithSkinTones]]()) { result, category in
             result[category] = category.emoji.filter { $0.available }.map { $0.withPreferredSkinTones(transaction: transaction) }
         }
     }
 
-    func withPreferredSkinTones(transaction: SDSAnyReadTransaction) -> EmojiWithSkinTones {
+    public func withPreferredSkinTones(transaction: SDSAnyReadTransaction) -> EmojiWithSkinTones {
         guard let rawSkinTones = Self.keyValueStore.getObject(forKey: rawValue, transaction: transaction) as? [String] else {
             return EmojiWithSkinTones(baseEmoji: self, skinTones: nil)
         }
@@ -47,7 +47,7 @@ extension Emoji {
         return EmojiWithSkinTones(baseEmoji: self, skinTones: rawSkinTones.compactMap { SkinTone(rawValue: $0) })
     }
 
-    func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: SDSAnyWriteTransaction) {
+    public func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: SDSAnyWriteTransaction) {
         if let preferredSkinTonePermutation = preferredSkinTonePermutation {
             Self.keyValueStore.setObject(preferredSkinTonePermutation.map { $0.rawValue }, key: rawValue, transaction: transaction)
         } else {

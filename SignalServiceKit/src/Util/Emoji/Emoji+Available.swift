@@ -8,7 +8,7 @@ extension Emoji {
     private static let availableStore = SDSKeyValueStore(collection: "Emoji+availableStore")
     private static let iosVersionKey = "iosVersion"
 
-    static func warmAvailableCache() {
+    public static func warmAvailableCache() {
         owsAssertDebug(!Thread.isMainThread)
 
         guard CurrentAppContext().hasUI else { return }

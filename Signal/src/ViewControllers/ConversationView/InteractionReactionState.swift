@@ -33,7 +33,7 @@ public class InteractionReactionState: NSObject {
         reactionsByEmoji = allReactions.reduce(
             into: [Emoji: [OWSReaction]]()
         ) { result, reaction in
-            guard let emoji = Emoji(reaction.emoji) else {
+            guard let emoji = Emoji(rawValue: reaction.emoji) else {
                 return owsFailDebug("Skipping reaction with unknown emoji \(reaction.emoji)")
             }
 
