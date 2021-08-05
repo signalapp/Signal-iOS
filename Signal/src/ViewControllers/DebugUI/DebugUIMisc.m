@@ -524,6 +524,7 @@ NS_ASSUME_NONNULL_BEGIN
     [queuedMessage anyInsertWithTransaction:transaction];
     [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage
                               removeMessageAfterSending:NO
+                                         isHighPriority:NO
                                                   label:MessageSenderJobQueue.jobRecordLabel
                                             transaction:transaction
                                                   error:&error] anyInsertWithTransaction:transaction];

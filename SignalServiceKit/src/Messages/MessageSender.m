@@ -1493,7 +1493,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message
 {
-    return message.hasRenderableContent ? NSOperationQueuePriorityHigh : NSOperationQueuePriorityNormal;
+    return message.hasRenderableContent ? NSOperationQueuePriorityNormal : NSOperationQueuePriorityLow;
 }
 
 @end

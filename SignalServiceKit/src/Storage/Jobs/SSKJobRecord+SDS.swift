@@ -42,6 +42,7 @@ public struct JobRecordRecord: SDSRecord {
     public let isMediaMessage: Bool?
     public let serverDeliveryTimestamp: UInt64?
     public let exclusiveProcessIdentifier: Int32?
+    public let isHighPriority: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -61,6 +62,7 @@ public struct JobRecordRecord: SDSRecord {
         case isMediaMessage
         case serverDeliveryTimestamp
         case exclusiveProcessIdentifier
+        case isHighPriority
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -101,6 +103,7 @@ public extension JobRecordRecord {
         isMediaMessage = row[14]
         serverDeliveryTimestamp = row[15]
         exclusiveProcessIdentifier = row[16]
+        isHighPriority = row[17]
     }
 }
 
@@ -254,6 +257,7 @@ extension SSKJobRecord {
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
             let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")
+            let isHighPriority: Bool = try SDSDeserialization.required(record.isHighPriority, name: "isHighPriority")
             let isMediaMessage: Bool = try SDSDeserialization.required(record.isMediaMessage, name: "isMediaMessage")
             let messageId: String? = record.messageId
             let removeMessageAfterSending: Bool = try SDSDeserialization.required(record.removeMessageAfterSending, name: "removeMessageAfterSending")
@@ -267,6 +271,7 @@ extension SSKJobRecord {
                                              sortId: sortId,
                                              status: status,
                                              invisibleMessage: invisibleMessage,
+                                             isHighPriority: isHighPriority,
                                              isMediaMessage: isMediaMessage,
                                              messageId: messageId,
                                              removeMessageAfterSending: removeMessageAfterSending,
@@ -356,6 +361,7 @@ extension SSKJobRecord: DeepCopyable {
             } else {
                invisibleMessage = nil
             }
+            let isHighPriority: Bool = modelToCopy.isHighPriority
             let isMediaMessage: Bool = modelToCopy.isMediaMessage
             let messageId: String? = modelToCopy.messageId
             let removeMessageAfterSending: Bool = modelToCopy.removeMessageAfterSending
@@ -369,6 +375,7 @@ extension SSKJobRecord: DeepCopyable {
                                              sortId: sortId,
                                              status: status,
                                              invisibleMessage: invisibleMessage,
+                                             isHighPriority: isHighPriority,
                                              isMediaMessage: isMediaMessage,
                                              messageId: messageId,
                                              removeMessageAfterSending: removeMessageAfterSending,
@@ -525,6 +532,7 @@ extension SSKJobRecordSerializer {
     static let isMediaMessageColumn = SDSColumnMetadata(columnName: "isMediaMessage", columnType: .int, isOptional: true)
     static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true)
     static let exclusiveProcessIdentifierColumn = SDSColumnMetadata(columnName: "exclusiveProcessIdentifier", columnType: .int64, isOptional: true)
+    static let isHighPriorityColumn = SDSColumnMetadata(columnName: "isHighPriority", columnType: .int, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -547,7 +555,8 @@ extension SSKJobRecordSerializer {
         attachmentIdColumn,
         isMediaMessageColumn,
         serverDeliveryTimestampColumn,
-        exclusiveProcessIdentifierColumn
+        exclusiveProcessIdentifierColumn,
+        isHighPriorityColumn
         ])
 }
 
@@ -953,8 +962,9 @@ class SSKJobRecordSerializer: SDSSerializer {
         let isMediaMessage: Bool? = nil
         let serverDeliveryTimestamp: UInt64? = nil
         let exclusiveProcessIdentifier: Int32? = archiveOptionalNSNumber(model.exclusiveProcessIdentifier, conversion: { $0.int32Value })
+        let isHighPriority: Bool? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority)
     }
 }
 

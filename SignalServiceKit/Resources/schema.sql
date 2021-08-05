@@ -242,6 +242,7 @@ CREATE
             ,"isMediaMessage" BOOLEAN
             ,"serverDeliveryTimestamp" INTEGER
             ,"exclusiveProcessIdentifier" INTEGER
+            ,"isHighPriority" BOOLEAN
         )
 ;
 

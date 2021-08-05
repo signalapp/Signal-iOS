@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 /// Durably enqueues a message for sending.
 ///
@@ -35,22 +36,51 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: 
 
     @objc(addMessage:transaction:)
+    @available(swift, obsoleted: 1.0)
     public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
         self.add(
             message: message,
             removeMessageAfterSending: false,
             exclusiveToCurrentProcessIdentifier: false,
+            isHighPriority: false,
+            resolver: nil,
             transaction: transaction
         )
     }
 
-    public func add(message: OutgoingMessagePreparer, limitToCurrentProcessLifetime: Bool, transaction: SDSAnyWriteTransaction) {
+    public func add(
+        message: OutgoingMessagePreparer,
+        limitToCurrentProcessLifetime: Bool = false,
+        isHighPriority: Bool = false,
+        transaction: SDSAnyWriteTransaction
+    ) {
         self.add(
             message: message,
             removeMessageAfterSending: false,
             exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
+            isHighPriority: isHighPriority,
+            resolver: nil,
             transaction: transaction
         )
+    }
+
+    public func add(
+        _ namespace: PMKNamespacer,
+        message: OutgoingMessagePreparer,
+        limitToCurrentProcessLifetime: Bool = false,
+        isHighPriority: Bool = false,
+        transaction: SDSAnyWriteTransaction
+    ) -> Promise<Void> {
+        return Promise { resolver in
+            self.add(
+                message: message,
+                removeMessageAfterSending: false,
+                exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
+                isHighPriority: isHighPriority,
+                resolver: resolver,
+                transaction: transaction
+            )
+        }
     }
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
@@ -79,15 +109,20 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 message: message,
                 removeMessageAfterSending: isTemporaryAttachment,
                 exclusiveToCurrentProcessIdentifier: false,
+                isHighPriority: false,
+                resolver: nil,
                 transaction: transaction
             )
         }
     }
 
+    private var jobResolvers = AtomicDictionary<String, Resolver<Void>>()
     private func add(
         message: OutgoingMessagePreparer,
         removeMessageAfterSending: Bool,
         exclusiveToCurrentProcessIdentifier: Bool,
+        isHighPriority: Bool,
+        resolver: Resolver<Void>?,
         transaction: SDSAnyWriteTransaction
     ) {
         assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
@@ -96,6 +131,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             let jobRecord = try SSKMessageSenderJobRecord(
                 message: messageRecord,
                 removeMessageAfterSending: removeMessageAfterSending,
+                isHighPriority: isHighPriority,
                 label: self.jobRecordLabel,
                 transaction: transaction
             )
@@ -103,6 +139,9 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
             }
             self.add(jobRecord: jobRecord, transaction: transaction)
+            if let resolver = resolver {
+                jobResolvers[jobRecord.uniqueId] = resolver
+            }
         } catch {
             message.unpreparedMessage.update(sendingError: error, transaction: transaction)
         }
@@ -154,7 +193,12 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             throw JobError.obsolete(description: "message no longer exists")
         }
 
-        let operation = MessageSenderOperation(message: message, jobRecord: jobRecord)
+        let operation = MessageSenderOperation(
+            message: message,
+            jobRecord: jobRecord,
+            resolver: jobResolvers.pop(jobRecord.uniqueId)
+        )
+        operation.queuePriority = jobRecord.isHighPriority ? .high : MessageSender.queuePriority(for: message)
 
         // Media messages run on their own queue to not block future non-media sends,
         // but should not start sending until all previous operations have executed.
@@ -167,7 +211,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         // send before A and B, but CAN send before C.
         if jobRecord.isMediaMessage, let sendQueue = senderQueues[message.uniqueThreadId] {
             let orderMaintainingOperation = Operation()
-            orderMaintainingOperation.queuePriority = MessageSender.queuePriority(for: message)
+            orderMaintainingOperation.queuePriority = operation.queuePriority
             sendQueue.addOperation(orderMaintainingOperation)
             operation.addDependency(orderMaintainingOperation)
         }
@@ -258,14 +302,14 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     // MARK: Init
 
     let message: TSOutgoingMessage
+    private var resolver: Resolver<Void>?
 
-    init(message: TSOutgoingMessage, jobRecord: SSKMessageSenderJobRecord) {
+    init(message: TSOutgoingMessage, jobRecord: SSKMessageSenderJobRecord, resolver: Resolver<Void>?) {
         self.message = message
         self.jobRecord = jobRecord
+        self.resolver = resolver
 
         super.init()
-
-        self.queuePriority = MessageSender.queuePriority(for: message)
     }
 
     // MARK: OWSOperation
@@ -288,6 +332,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
                 self.message.removeTemporaryAttachments(with: transaction)
             }
         }
+        resolver?.fulfill(())
     }
 
     override public func didReportError(_ error: Error) {
@@ -315,5 +360,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
                 self.message.anyRemove(transaction: transaction)
             }
         }
+        resolver?.reject(error)
     }
 }

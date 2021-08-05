@@ -323,12 +323,19 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             guard delegate.areTypingIndicatorsEnabled() else { return }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
-            databaseStorage.write { transaction in
-                messageSenderJobQueue.add(
-                    message: message.asPreparer,
-                    limitToCurrentProcessLifetime: true,
-                    transaction: transaction
-                )
+
+            firstly {
+                databaseStorage.write { transaction in
+                    messageSenderJobQueue.add(
+                        .promise,
+                        message: message.asPreparer,
+                        limitToCurrentProcessLifetime: true,
+                        isHighPriority: true,
+                        transaction: transaction
+                    )
+                }
+            }.catch { error in
+                Logger.error("Error: \(error)")
             }
         }
     }

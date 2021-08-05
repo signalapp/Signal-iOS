@@ -109,7 +109,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addMessageSendLog
         case updatePendingReadReceipts
         case addSendCompletionToMessageSendLog
-        case addExclusiveProcessIdentifierToJobRecord
+        case addExclusiveProcessIdentifierAndHighPriorityToJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -152,7 +152,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 26
+    public static let grdbSchemaVersionLatest: UInt = 27
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1296,11 +1296,13 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addExclusiveProcessIdentifierToJobRecord.rawValue) { db in
+        migrator.registerMigration(MigrationId.addExclusiveProcessIdentifierAndHighPriorityToJobRecord.rawValue) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "exclusiveProcessIdentifier", .integer)
+                    table.add(column: "isHighPriority", .boolean)
                 }
+                try db.execute(sql: "UPDATE model_SSKJobRecord SET isHighPriority = 0")
             } catch {
                 owsFail("Error: \(error)")
             }

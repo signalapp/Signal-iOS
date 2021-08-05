@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithMessage:(TSOutgoingMessage *)message
                removeMessageAfterSending:(BOOL)removeMessageAfterSending
+                          isHighPriority:(BOOL)isHighPriority
                                    label:(NSString *)label
                              transaction:(SDSAnyReadTransaction *)transaction
                                    error:(NSError **)outError
@@ -48,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _removeMessageAfterSending = removeMessageAfterSending;
+    _isHighPriority = isHighPriority;
     _threadId = message.uniqueThreadId;
 
     return self;
@@ -67,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                 invisibleMessage:(nullable TSOutgoingMessage *)invisibleMessage
+                  isHighPriority:(BOOL)isHighPriority
                   isMediaMessage:(BOOL)isMediaMessage
                        messageId:(nullable NSString *)messageId
        removeMessageAfterSending:(BOOL)removeMessageAfterSending
@@ -85,6 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _invisibleMessage = invisibleMessage;
+    _isHighPriority = isHighPriority;
     _isMediaMessage = isMediaMessage;
     _messageId = messageId;
     _removeMessageAfterSending = removeMessageAfterSending;
