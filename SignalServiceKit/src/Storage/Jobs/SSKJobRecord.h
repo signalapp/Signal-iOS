@@ -46,11 +46,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, SSKJobRecordStatus){
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
+      exclusiveProcessIdentifier:(nullable NSNumber *)exclusiveProcessIdentifier
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:));
 
 // clang-format on
 
@@ -60,6 +61,12 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:
 
 // GRDB TODO: Replace sortId column with autoincremented id column
 @property (nonatomic, readonly) UInt64 sortId;
+@property (nonatomic, readonly, nullable) NSNumber *exclusiveProcessIdentifier;
+
+- (void)flagAsExclusiveForCurrentProcessIdentifier;
+
+- (void)updateWithExclusiveForCurrentProcessIdentifierWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(flagAsOnlyValidForCurrentProcessIdentifier(transaction:));
 
 - (BOOL)saveAsStartedWithTransaction:(SDSAnyWriteTransaction *)transaction
                                error:(NSError **)outError NS_SWIFT_NAME(saveAsStarted(transaction:));

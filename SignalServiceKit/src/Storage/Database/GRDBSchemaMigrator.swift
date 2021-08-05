@@ -109,6 +109,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addMessageSendLog
         case updatePendingReadReceipts
         case addSendCompletionToMessageSendLog
+        case addExclusiveProcessIdentifierToJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1290,6 +1291,16 @@ public class GRDBSchemaMigrator: NSObject {
                         WHERE payloadId = old.payloadId AND sendComplete = true;
                     END;
                 """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addExclusiveProcessIdentifierToJobRecord.rawValue) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "exclusiveProcessIdentifier", .integer)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }

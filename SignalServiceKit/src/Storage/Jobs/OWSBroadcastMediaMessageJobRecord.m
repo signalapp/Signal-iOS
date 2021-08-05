@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
+      exclusiveProcessIdentifier:(nullable NSNumber *)exclusiveProcessIdentifier
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
@@ -47,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
+        exclusiveProcessIdentifier:exclusiveProcessIdentifier
                       failureCount:failureCount
                              label:label
                             sortId:sortId

@@ -41,6 +41,7 @@ public struct JobRecordRecord: SDSRecord {
     public let attachmentId: String?
     public let isMediaMessage: Bool?
     public let serverDeliveryTimestamp: UInt64?
+    public let exclusiveProcessIdentifier: Int32?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -59,6 +60,7 @@ public struct JobRecordRecord: SDSRecord {
         case attachmentId
         case isMediaMessage
         case serverDeliveryTimestamp
+        case exclusiveProcessIdentifier
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -98,6 +100,7 @@ public extension JobRecordRecord {
         attachmentId = row[13]
         isMediaMessage = row[14]
         serverDeliveryTimestamp = row[15]
+        exclusiveProcessIdentifier = row[16]
     }
 }
 
@@ -129,6 +132,7 @@ extension SSKJobRecord {
         case .broadcastMediaMessageJobRecord:
 
             let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.exclusiveProcessIdentifier, name: "exclusiveProcessIdentifier", conversion: { NSNumber(value: $0) })
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let sortId: UInt64 = UInt64(recordId)
@@ -138,6 +142,7 @@ extension SSKJobRecord {
 
             return OWSBroadcastMediaMessageJobRecord(grdbId: recordId,
                                                      uniqueId: uniqueId,
+                                                     exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                                      failureCount: failureCount,
                                                      label: label,
                                                      sortId: sortId,
@@ -147,6 +152,7 @@ extension SSKJobRecord {
         case .incomingContactSyncJobRecord:
 
             let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.exclusiveProcessIdentifier, name: "exclusiveProcessIdentifier", conversion: { NSNumber(value: $0) })
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let sortId: UInt64 = UInt64(recordId)
@@ -155,6 +161,7 @@ extension SSKJobRecord {
 
             return OWSIncomingContactSyncJobRecord(grdbId: recordId,
                                                    uniqueId: uniqueId,
+                                                   exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                                    failureCount: failureCount,
                                                    label: label,
                                                    sortId: sortId,
@@ -164,6 +171,7 @@ extension SSKJobRecord {
         case .incomingGroupSyncJobRecord:
 
             let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.exclusiveProcessIdentifier, name: "exclusiveProcessIdentifier", conversion: { NSNumber(value: $0) })
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let sortId: UInt64 = UInt64(recordId)
@@ -172,6 +180,7 @@ extension SSKJobRecord {
 
             return OWSIncomingGroupSyncJobRecord(grdbId: recordId,
                                                  uniqueId: uniqueId,
+                                                 exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                                  failureCount: failureCount,
                                                  label: label,
                                                  sortId: sortId,
@@ -181,6 +190,7 @@ extension SSKJobRecord {
         case .sessionResetJobRecord:
 
             let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.exclusiveProcessIdentifier, name: "exclusiveProcessIdentifier", conversion: { NSNumber(value: $0) })
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let sortId: UInt64 = UInt64(recordId)
@@ -189,6 +199,7 @@ extension SSKJobRecord {
 
             return OWSSessionResetJobRecord(grdbId: recordId,
                                             uniqueId: uniqueId,
+                                            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                             failureCount: failureCount,
                                             label: label,
                                             sortId: sortId,
@@ -198,6 +209,7 @@ extension SSKJobRecord {
         case .jobRecord:
 
             let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.exclusiveProcessIdentifier, name: "exclusiveProcessIdentifier", conversion: { NSNumber(value: $0) })
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let sortId: UInt64 = UInt64(recordId)
@@ -205,6 +217,7 @@ extension SSKJobRecord {
 
             return SSKJobRecord(grdbId: recordId,
                                 uniqueId: uniqueId,
+                                exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                 failureCount: failureCount,
                                 label: label,
                                 sortId: sortId,
@@ -213,6 +226,7 @@ extension SSKJobRecord {
         case .messageDecryptJobRecord:
 
             let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.exclusiveProcessIdentifier, name: "exclusiveProcessIdentifier", conversion: { NSNumber(value: $0) })
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let sortId: UInt64 = UInt64(recordId)
@@ -222,6 +236,7 @@ extension SSKJobRecord {
 
             return SSKMessageDecryptJobRecord(grdbId: recordId,
                                               uniqueId: uniqueId,
+                                              exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                               failureCount: failureCount,
                                               label: label,
                                               sortId: sortId,
@@ -232,6 +247,7 @@ extension SSKJobRecord {
         case .messageSenderJobRecord:
 
             let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.exclusiveProcessIdentifier, name: "exclusiveProcessIdentifier", conversion: { NSNumber(value: $0) })
             let failureCount: UInt = record.failureCount
             let label: String = record.label
             let sortId: UInt64 = UInt64(recordId)
@@ -245,6 +261,7 @@ extension SSKJobRecord {
 
             return SSKMessageSenderJobRecord(grdbId: recordId,
                                              uniqueId: uniqueId,
+                                             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                              failureCount: failureCount,
                                              label: label,
                                              sortId: sortId,
@@ -321,6 +338,7 @@ extension SSKJobRecord: DeepCopyable {
         if let modelToCopy = self as? SSKMessageSenderJobRecord {
             assert(type(of: modelToCopy) == SSKMessageSenderJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = modelToCopy.exclusiveProcessIdentifier
             let failureCount: UInt = modelToCopy.failureCount
             let label: String = modelToCopy.label
             let sortId: UInt64 = modelToCopy.sortId
@@ -345,6 +363,7 @@ extension SSKJobRecord: DeepCopyable {
 
             return SSKMessageSenderJobRecord(grdbId: id,
                                              uniqueId: uniqueId,
+                                             exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                              failureCount: failureCount,
                                              label: label,
                                              sortId: sortId,
@@ -359,6 +378,7 @@ extension SSKJobRecord: DeepCopyable {
         if let modelToCopy = self as? SSKMessageDecryptJobRecord {
             assert(type(of: modelToCopy) == SSKMessageDecryptJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = modelToCopy.exclusiveProcessIdentifier
             let failureCount: UInt = modelToCopy.failureCount
             let label: String = modelToCopy.label
             let sortId: UInt64 = modelToCopy.sortId
@@ -368,6 +388,7 @@ extension SSKJobRecord: DeepCopyable {
 
             return SSKMessageDecryptJobRecord(grdbId: id,
                                               uniqueId: uniqueId,
+                                              exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                               failureCount: failureCount,
                                               label: label,
                                               sortId: sortId,
@@ -379,6 +400,7 @@ extension SSKJobRecord: DeepCopyable {
         if let modelToCopy = self as? OWSSessionResetJobRecord {
             assert(type(of: modelToCopy) == OWSSessionResetJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = modelToCopy.exclusiveProcessIdentifier
             let failureCount: UInt = modelToCopy.failureCount
             let label: String = modelToCopy.label
             let sortId: UInt64 = modelToCopy.sortId
@@ -387,6 +409,7 @@ extension SSKJobRecord: DeepCopyable {
 
             return OWSSessionResetJobRecord(grdbId: id,
                                             uniqueId: uniqueId,
+                                            exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                             failureCount: failureCount,
                                             label: label,
                                             sortId: sortId,
@@ -397,6 +420,7 @@ extension SSKJobRecord: DeepCopyable {
         if let modelToCopy = self as? OWSIncomingGroupSyncJobRecord {
             assert(type(of: modelToCopy) == OWSIncomingGroupSyncJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = modelToCopy.exclusiveProcessIdentifier
             let failureCount: UInt = modelToCopy.failureCount
             let label: String = modelToCopy.label
             let sortId: UInt64 = modelToCopy.sortId
@@ -405,6 +429,7 @@ extension SSKJobRecord: DeepCopyable {
 
             return OWSIncomingGroupSyncJobRecord(grdbId: id,
                                                  uniqueId: uniqueId,
+                                                 exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                                  failureCount: failureCount,
                                                  label: label,
                                                  sortId: sortId,
@@ -415,6 +440,7 @@ extension SSKJobRecord: DeepCopyable {
         if let modelToCopy = self as? OWSIncomingContactSyncJobRecord {
             assert(type(of: modelToCopy) == OWSIncomingContactSyncJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = modelToCopy.exclusiveProcessIdentifier
             let failureCount: UInt = modelToCopy.failureCount
             let label: String = modelToCopy.label
             let sortId: UInt64 = modelToCopy.sortId
@@ -423,6 +449,7 @@ extension SSKJobRecord: DeepCopyable {
 
             return OWSIncomingContactSyncJobRecord(grdbId: id,
                                                    uniqueId: uniqueId,
+                                                   exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                                    failureCount: failureCount,
                                                    label: label,
                                                    sortId: sortId,
@@ -433,6 +460,7 @@ extension SSKJobRecord: DeepCopyable {
         if let modelToCopy = self as? OWSBroadcastMediaMessageJobRecord {
             assert(type(of: modelToCopy) == OWSBroadcastMediaMessageJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = modelToCopy.exclusiveProcessIdentifier
             let failureCount: UInt = modelToCopy.failureCount
             let label: String = modelToCopy.label
             let sortId: UInt64 = modelToCopy.sortId
@@ -443,6 +471,7 @@ extension SSKJobRecord: DeepCopyable {
 
             return OWSBroadcastMediaMessageJobRecord(grdbId: id,
                                                      uniqueId: uniqueId,
+                                                     exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                                      failureCount: failureCount,
                                                      label: label,
                                                      sortId: sortId,
@@ -454,6 +483,7 @@ extension SSKJobRecord: DeepCopyable {
             let modelToCopy = self
             assert(type(of: modelToCopy) == SSKJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: NSNumber? = modelToCopy.exclusiveProcessIdentifier
             let failureCount: UInt = modelToCopy.failureCount
             let label: String = modelToCopy.label
             let sortId: UInt64 = modelToCopy.sortId
@@ -461,6 +491,7 @@ extension SSKJobRecord: DeepCopyable {
 
             return SSKJobRecord(grdbId: id,
                                 uniqueId: uniqueId,
+                                exclusiveProcessIdentifier: exclusiveProcessIdentifier,
                                 failureCount: failureCount,
                                 label: label,
                                 sortId: sortId,
@@ -493,6 +524,7 @@ extension SSKJobRecordSerializer {
     static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true)
     static let isMediaMessageColumn = SDSColumnMetadata(columnName: "isMediaMessage", columnType: .int, isOptional: true)
     static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true)
+    static let exclusiveProcessIdentifierColumn = SDSColumnMetadata(columnName: "exclusiveProcessIdentifier", columnType: .int64, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -514,7 +546,8 @@ extension SSKJobRecordSerializer {
         threadIdColumn,
         attachmentIdColumn,
         isMediaMessageColumn,
-        serverDeliveryTimestampColumn
+        serverDeliveryTimestampColumn,
+        exclusiveProcessIdentifierColumn
         ])
 }
 
@@ -919,8 +952,9 @@ class SSKJobRecordSerializer: SDSSerializer {
         let attachmentId: String? = nil
         let isMediaMessage: Bool? = nil
         let serverDeliveryTimestamp: UInt64? = nil
+        let exclusiveProcessIdentifier: Int32? = archiveOptionalNSNumber(model.exclusiveProcessIdentifier, conversion: { $0.int32Value })
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier)
     }
 }
 

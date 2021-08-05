@@ -125,6 +125,7 @@
     "JobRecordRecord.attachmentIdMap": 4, 
     "JobRecordRecord.contactThreadId": 5, 
     "JobRecordRecord.envelopeData": 6, 
+    "JobRecordRecord.exclusiveProcessIdentifier": 14, 
     "JobRecordRecord.failureCount": 1, 
     "JobRecordRecord.invisibleMessage": 7, 
     "JobRecordRecord.isMediaMessage": 12, 
