@@ -67,7 +67,7 @@ extension Storage {
         pointer.state = state
         pointer.save(with: transaction)
         guard let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) else { return }
-        tsMessage.touch(with: transaction)
+        MessageInvalidator.invalidate(tsMessage, with: transaction)
     }
     
     /// Also touches the associated message.
@@ -75,7 +75,7 @@ extension Storage {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         stream.save(with: transaction)
         guard let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) else { return }
-        tsMessage.touch(with: transaction)
+        MessageInvalidator.invalidate(tsMessage, with: transaction)
     }
 
     private static let receivedMessageTimestampsCollection = "ReceivedMessageTimestampsCollection"

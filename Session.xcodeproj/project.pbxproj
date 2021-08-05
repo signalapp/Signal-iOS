@@ -169,6 +169,7 @@
 		B8269D2925C7A4B400488AB4 /* InputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D2825C7A4B400488AB4 /* InputView.swift */; };
 		B8269D3325C7A8C600488AB4 /* InputViewButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D3225C7A8C600488AB4 /* InputViewButton.swift */; };
 		B8269D3D25C7B34D00488AB4 /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8269D3C25C7B34D00488AB4 /* InputTextView.swift */; };
+		B82A0C3826B9098200C1BCE3 /* MessageInvalidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82A0C3726B9098200C1BCE3 /* MessageInvalidator.swift */; };
 		B82B40882399EB0E00A248E7 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40872399EB0E00A248E7 /* LandingVC.swift */; };
 		B82B408A2399EC0600A248E7 /* FakeChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B40892399EC0600A248E7 /* FakeChatView.swift */; };
 		B82B408C239A068800A248E7 /* RegisterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82B408B239A068800A248E7 /* RegisterVC.swift */; };
@@ -1149,6 +1150,7 @@
 		B8269D2825C7A4B400488AB4 /* InputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputView.swift; sourceTree = "<group>"; };
 		B8269D3225C7A8C600488AB4 /* InputViewButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewButton.swift; sourceTree = "<group>"; };
 		B8269D3C25C7B34D00488AB4 /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
+		B82A0C3726B9098200C1BCE3 /* MessageInvalidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInvalidator.swift; sourceTree = "<group>"; };
 		B82B40872399EB0E00A248E7 /* LandingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		B82B40892399EC0600A248E7 /* FakeChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeChatView.swift; sourceTree = "<group>"; };
 		B82B408B239A068800A248E7 /* RegisterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterVC.swift; sourceTree = "<group>"; };
@@ -3115,6 +3117,7 @@
 				C33FDBC1255A581700E217F9 /* General.swift */,
 				B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */,
 				B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */,
+				B82A0C3726B9098200C1BCE3 /* MessageInvalidator.swift */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
 				C3A71D4825589FF20043A11F /* NSData+messagePadding.m */,
@@ -4746,6 +4749,7 @@
 				C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,
 				C32C5AB0256DBE8F003C73A2 /* TSOutgoingMessage.m in Sources */,
+				B82A0C3826B9098200C1BCE3 /* MessageInvalidator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5063,7 +5067,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 286;
+				CURRENT_PROJECT_VERSION = 287;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5132,7 +5136,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 286;
+				CURRENT_PROJECT_VERSION = 287;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -5193,7 +5197,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 286;
+				CURRENT_PROJECT_VERSION = 287;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5263,7 +5267,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 286;
+				CURRENT_PROJECT_VERSION = 287;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6148,7 +6152,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 286;
+				CURRENT_PROJECT_VERSION = 287;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6216,7 +6220,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 286;
+				CURRENT_PROJECT_VERSION = 287;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

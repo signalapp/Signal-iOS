@@ -822,9 +822,13 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Can't find holdover view item.");
             return [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
         }
-        if (!viewItem.hasCachedLayoutState) {
-            [updatedItemSet addObject:itemId];
-            [updatedNeighborItemSet addObject:itemId];
+        
+        if ([viewItem.interaction isKindOfClass:TSMessage.class]) {
+            TSMessage *message = (TSMessage *)viewItem.interaction;
+            if ([MessageInvalidator isInvalidated:message]) {
+                [updatedItemSet addObject:itemId];
+                [updatedNeighborItemSet addObject:itemId];
+            }
         }
     }
 
@@ -864,6 +868,10 @@ NS_ASSUME_NONNULL_BEGIN
                                               oldViewItemCount:oldItemIdList.count
                                         updatedNeighborItemSet:updatedNeighborItemSet];
 
+    for (NSString *itemID in updatedItemSet) {
+        [MessageInvalidator markAsUpdated:itemID];
+    }
+    
     return [self.delegate
         conversationViewModelDidUpdate:[ConversationUpdate diffUpdateWithUpdateItems:updateItems
                                                                 shouldAnimateUpdates:shouldAnimateUpdates]];

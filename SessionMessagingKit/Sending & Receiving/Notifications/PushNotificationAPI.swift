@@ -88,13 +88,7 @@ public final class PushNotificationAPI : NSObject {
         }
         // Subscribe to all closed groups
         Storage.shared.getUserClosedGroupPublicKeys().forEach { closedGroupPublicKey in
-            let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(closedGroupPublicKey)
-            let threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID))
-            if threadOrNil?.isMuted == true {
-                // Do nothing
-            } else {
-                performOperation(.subscribe, for: closedGroupPublicKey, publicKey: publicKey)
-            }
+            performOperation(.subscribe, for: closedGroupPublicKey, publicKey: publicKey)
         }
         return promise
     }

@@ -70,7 +70,7 @@ final class DownloadAttachmentModal : Modal {
         contact.isTrusted = true
         Storage.write(with: { transaction in
             Storage.shared.setContact(contact, using: transaction)
-            message.touch(with: transaction)
+            MessageInvalidator.invalidate(message, with: transaction)
         }, completion: {
             Storage.shared.resumeAttachmentDownloadJobsIfNeeded(for: message.uniqueThreadId)
         })
