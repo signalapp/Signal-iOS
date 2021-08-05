@@ -212,6 +212,10 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             addSubview(titleLabel)
             addSubview(iconView)
             addSubview(seperatorView)
+
+            isAccessibilityElement = true
+            accessibilityLabel = titleLabel.text
+            accessibilityTraits = .button
         }
 
         required init(coder: NSCoder) {
