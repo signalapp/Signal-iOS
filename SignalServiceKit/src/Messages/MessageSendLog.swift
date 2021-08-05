@@ -79,6 +79,12 @@ public class MessageSendLog: NSObject {
         for message: TSOutgoingMessage,
         transaction writeTx: SDSAnyWriteTransaction
     ) -> NSNumber? {
+
+        guard !RemoteConfig.messageResendKillSwitch else {
+            Logger.info("Resend kill switch activated. Ignoring MSL payload save.")
+            return nil
+        }
+
         guard message.shouldRecordSendLog else { return nil }
 
         var payload = Payload(
@@ -128,6 +134,12 @@ public class MessageSendLog: NSObject {
         timestamp: Date,
         transaction readTx: SDSAnyReadTransaction
     ) -> Payload? {
+
+        guard !RemoteConfig.messageResendKillSwitch else {
+            Logger.info("Resend kill switch activated. Ignoring MSL lookup.")
+            return nil
+        }
+
         guard timestamp.isAfter(payloadExpirationDate) else {
             Logger.info("Ignoring payload lookup for timestamp before expiration")
             return nil
@@ -159,6 +171,10 @@ public class MessageSendLog: NSObject {
         recipientDeviceId: Int64,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
+        guard !RemoteConfig.messageResendKillSwitch else {
+            Logger.info("Resend kill switch activated. Ignoring MSL recipient save.")
+            return
+        }
         do {
             try Recipient(
                 payloadId: payloadId,
@@ -177,6 +193,10 @@ public class MessageSendLog: NSObject {
         recipientDeviceId: Int64,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
+        guard !RemoteConfig.messageResendKillSwitch else {
+            Logger.info("Resend kill switch activated. Ignoring MSL recipient save.")
+            return
+        }
         do {
             let payloadAlias = TableAlias()
             let targets: [Recipient] = try Recipient

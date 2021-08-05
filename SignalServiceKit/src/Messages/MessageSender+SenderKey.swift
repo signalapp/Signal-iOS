@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -76,6 +76,10 @@ extension MessageSender {
     ) -> [SignalServiceAddress] {
         // Sender key requires GV2
         guard thread.isGroupV2Thread else { return [] }
+        guard !RemoteConfig.senderKeyKillSwitch else {
+            Logger.info("Sender key kill switch activated. No recipients support sender key.")
+            return []
+        }
 
         return databaseStorage.read { readTx in
             guard let localAddress = self.tsAccountManager.localAddress else {
@@ -632,4 +636,3 @@ extension MessageSender {
         return try JSONDecoder().decode(ResponseBody410.self, from: data)
     }
 }
-

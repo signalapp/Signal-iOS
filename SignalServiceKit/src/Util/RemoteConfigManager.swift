@@ -187,7 +187,7 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var giphySendAsMP4: Bool {
-        isEnabled(.giphySendAsMP4)
+        isEnabled(.giphySendAsMP4) || build.includes(.beta)
     }
 
     @objc
@@ -227,8 +227,13 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var senderKey: Bool {
-        DebugFlags.forceSenderKey || isEnabled(.senderKey)
+    public static var senderKeyKillSwitch: Bool {
+        isEnabled(.senderKeyKillSwitch) || !FeatureFlags.senderKeyAndMessageResend
+    }
+
+    @objc
+    public static var messageResendKillSwitch: Bool {
+        isEnabled(.messageResendKillSwitch) || !FeatureFlags.senderKeyAndMessageResend
     }
 
     @objc
@@ -427,7 +432,8 @@ private struct Flags {
         case announcementOnlyGroupsCapability
         case announcementOnlyGroupsUI
         case notificationServiceExtension
-        case senderKey
+        case senderKeyKillSwitch
+        case messageResendKillSwitch
     }
 
     // Values defined in this array remain set once they are
