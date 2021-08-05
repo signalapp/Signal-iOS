@@ -36,7 +36,21 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     @objc(addMessage:transaction:)
     public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
-        self.add(message: message, removeMessageAfterSending: false, transaction: transaction)
+        self.add(
+            message: message,
+            removeMessageAfterSending: false,
+            exclusiveToCurrentProcessIdentifier: false,
+            transaction: transaction
+        )
+    }
+
+    public func add(message: OutgoingMessagePreparer, limitToCurrentProcessLifetime: Bool, transaction: SDSAnyWriteTransaction) {
+        self.add(
+            message: message,
+            removeMessageAfterSending: false,
+            exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
+            transaction: transaction
+        )
     }
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
@@ -61,21 +75,33 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     @objc(addMessage:isTemporaryAttachment:)
     public func add(message: OutgoingMessagePreparer, isTemporaryAttachment: Bool) {
         databaseStorage.asyncWrite { transaction in
-            self.add(message: message,
-                     removeMessageAfterSending: isTemporaryAttachment,
-                     transaction: transaction)
-
+            self.add(
+                message: message,
+                removeMessageAfterSending: isTemporaryAttachment,
+                exclusiveToCurrentProcessIdentifier: false,
+                transaction: transaction
+            )
         }
     }
 
-    private func add(message: OutgoingMessagePreparer, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
+    private func add(
+        message: OutgoingMessagePreparer,
+        removeMessageAfterSending: Bool,
+        exclusiveToCurrentProcessIdentifier: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
         assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
         do {
             let messageRecord = try message.prepareMessage(transaction: transaction)
-            let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord,
-                                                          removeMessageAfterSending: removeMessageAfterSending,
-                                                          label: self.jobRecordLabel,
-                                                          transaction: transaction)
+            let jobRecord = try SSKMessageSenderJobRecord(
+                message: messageRecord,
+                removeMessageAfterSending: removeMessageAfterSending,
+                label: self.jobRecordLabel,
+                transaction: transaction
+            )
+            if exclusiveToCurrentProcessIdentifier {
+                jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
+            }
             self.add(jobRecord: jobRecord, transaction: transaction)
         } catch {
             message.unpreparedMessage.update(sendingError: error, transaction: transaction)
