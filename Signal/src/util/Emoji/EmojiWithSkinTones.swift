@@ -68,6 +68,6 @@ extension String {
     // * This will reject "lone modifiers".
     // * This will reject certain edge cases such as 🌈️.
     var isSingleEmojiUsingEmojiWithSkinTones: Bool {
-        EmojiWithSkinTones(rawValue: self, skipSingleEmojiCheck: true) != nil
+        EmojiWithSkinTones(rawValue: self) != nil
     }
 }
