@@ -974,7 +974,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteLocallyAction
 {
+    TSMessage *message = (TSMessage *)self.interaction;
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [MessageInvalidator invalidate:message with:transaction];
         [self.interaction removeWithTransaction:transaction];
         if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
             [LKStorage.shared cancelPendingMessageSendJobIfNeededForMessage:self.interaction.timestamp using:transaction];
@@ -984,7 +986,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteRemotelyAction
 {
-    // TODO: closed group and one-on-one chat
     TSMessage *message = (TSMessage *)self.interaction;
     
     if (self.isGroupThread) {

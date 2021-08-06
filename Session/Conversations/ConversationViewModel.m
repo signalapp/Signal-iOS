@@ -823,13 +823,18 @@ NS_ASSUME_NONNULL_BEGIN
             return [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
         }
         
-        if ([viewItem.interaction isKindOfClass:TSMessage.class]) {
-            TSMessage *message = (TSMessage *)viewItem.interaction;
-            if ([MessageInvalidator isInvalidated:message]) {
-                [updatedItemSet addObject:itemId];
-                [updatedNeighborItemSet addObject:itemId];
-            }
+        if (!viewItem.hasCachedLayoutState) {
+            [updatedItemSet addObject:itemId];
+            [updatedNeighborItemSet addObject:itemId];
         }
+        
+//        if ([viewItem.interaction isKindOfClass:TSMessage.class]) {
+//            TSMessage *message = (TSMessage *)viewItem.interaction;
+//            if ([MessageInvalidator isInvalidated:message]) {
+//                [updatedItemSet addObject:itemId];
+//                [updatedNeighborItemSet addObject:itemId];
+//            }
+//        }
     }
 
     // 3. Updates.
