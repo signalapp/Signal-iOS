@@ -1,3 +1,3 @@
-• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
+• O fotografie poate valora 1000 de cuvinte, dar acum le puteți trimite în 4k. Utilizați noul selector de calitate pentru a trimite opțional fotografii de rezoluție mai mare. Puteți seta să trimiteți în mod implicit fotografii de rezoluție mai mare din Setări > Utilizare date.
 • When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
 • We’ve made several improvements to help make scrolling your chat list smoother.

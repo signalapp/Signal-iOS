@@ -293,8 +293,13 @@ public protocol CVComponentView {
 
     // Allows component opportunity to configure and return a subview for context menu previews
     @objc optional func contextMenuContentView() -> UIView?
-    // Called when bounce in animation for context menu completes
-    @objc optional func contextMenuSourceAnimationComplete()
+
+    // Called when the context menu presentation will begin,
+    // can be used to configure component view below presenting context menu
+    @objc optional func contextMenuPresentationWillBegin()
+
+    // Called once the context menu presentation ends
+    @objc optional func contextMenuPresentationDidEnd()
 }
 
 // MARK: -

@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "我知道了";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "來自 %@ 的一則訊息、貼圖、心情、已讀標記或媒體無法在此聊天中向您送達。";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "送遞問題";
@@ -4298,25 +4298,25 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "不妨寫句話自我介紹一下…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "無謂焫著";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "抬頭尚有天空 埋頭尚有智慧";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "咖啡の戀ing";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "無盛世 無亂世 坐在咖啡店";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "密密實實";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "清風不識字";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "有空講人話";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "即使要蒙著我嘴 我亦可高呼";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "☝️息尚存";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "無制限OTの自肥中";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "人間有味是清歡";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "狂人物語";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "新世紀 我請你要有準備";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "關於";

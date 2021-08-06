@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "নতুন সদস্য যোগ করুন";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "ইতিমধ্যেই সদস্য";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "ইতিমধ্যেই সদস্য হয়েছেন";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ ইতিমধ্যেই %@-এর সদস্য";
@@ -116,7 +116,7 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "পাঠাতে সমস্যা";
+"ALERT_DELIVERY_ISSUE_TITLE" = "পাঠানোর ক্ষেত্রে সমস্যা";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
@@ -134,7 +134,7 @@
 "ALERT_SAVE" = "সংরক্ষণ";
 
 /* Message for UI  warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "এই ব্যক্তির সাথে আপনি কোনও একই গ্রুপে নেই। অনাকাঙ্ক্ষিত মেসেজ এড়াতে স্বীকার করার আগে অনুরোধগুলি পর্যালোচনা করুন।";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "আপনার এবং এই ব্যক্তির মধ্যে কোনও কমন গ্রুপ নেই। অনাকাঙ্ক্ষিত মেসেজ পাওয়া এড়াতে গ্রহণ করার পূর্বে অনুরোধগুলো যত্ন সহকারে পর্যালোচনা করুন।";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "আপনার এই গ্রুপের সাথে মিলযুক্ত কোন সদস্য নেই। অনাকাঙ্ক্ষিত মেসেজ এড়াতে স্বীকার করার আগে অনুরোধগুলি সতর্কতার সাথে পর্যালোচনা করুন।";
@@ -224,7 +224,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "সংরক্ষিত";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "আরও ধীর, বেশি ডেটা";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "আরও ধীরগতি, আরও ডেটা";
 
 /* Subtitle for the 'standard' option for media quality. */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "আরও দ্রুত, কম ডেটা";
@@ -461,7 +461,7 @@
 "BUTTON_DONE" = "শেষ";
 
 /* Label for the 'duplicate' button. */
-"BUTTON_DUPLICATE" = "নকল করুন";
+"BUTTON_DUPLICATE" = "ডুপ্লিকেট";
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "সম্পাদনা করুন";
@@ -608,13 +608,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "আরেকটি বুদবুদ";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "কেবলমাত্র আপনি রংটি কেবল দেখতে পাবেন।";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "কেবলমাত্র আপনি রঙটি দেখতে পাবেন।";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "কেবলমাত্র আপনি রংটি দেখতে পাবেন।";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "কেবলমাত্র আপনি রঙটি দেখতে পাবেন।";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "কেবলমাত্র আপনি রংটি দেখতে পাবেন।";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "কেবলমাত্র আপনি রঙটি দেখতে পাবেন।";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "স্বয়ংক্রিয়";
@@ -626,19 +626,19 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "এই কাস্টম রংটি %@টি চ্যাটে ব্যবহৃত হয়েছে। আপনি কি এটি সব চ্যাটের জন্য মুছতে চান?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "রং মুছুন";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "রঙ মুছুন";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "চ্যাটের রং";
+"CHAT_COLOR_SETTINGS_TITLE" = "চ্যাটের রঙ";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "রং সম্পাদনা করুন";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "রঙ সম্পাদনা করুন";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "এই রংটি %@টি চ্যাট-এ ব্যবহৃত হয়েছে। আপনি কি সব চ্যাটের জন্য এই পরিবর্তনগুলি সেভ করতে চান?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "ওয়ালপেপারের সাথে রং স্বয়ংক্রিয়ভাবে মেলান";
+"CHAT_COLORS_AUTO_TOOLTIP" = "ওয়ালপেপারের রং স্বয়ংক্রিয়ভাবে ম্যাচ করে";
 
 /* Action text for char colors megaphone */
 "CHAT_COLORS_MEGAPHONE_ACTION" = "অ্যাপিয়ারেন্স";
@@ -650,7 +650,7 @@
 "CHAT_COLORS_MEGAPHONE_TITLE" = "চ্যাটের রং কাস্টম করুন";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "চ্যাটের রং ও ওয়ালপেপার";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "চ্যাটের রঙ ও ওয়ালপেপার";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "ক্লিপবোর্ডের সাথে তুলনা করুন";
@@ -1076,7 +1076,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "নতুন পরিচিতি সৃষ্টি করুন";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "কোনও একই গ্রুপ নেই";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "একই রকমের আর কোনও গ্রুপ নেই";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
 "CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1টি গ্রুপ মিল আছে";
@@ -1178,7 +1178,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "কাস্টম রং";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "গ্রেডিয়েন্টের দিক পরিবর্তন করতে টানুন";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "গ্রেডিয়েন্টের দিক পরিবর্তন করতে টেনে আনুন";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "এই কয়েক মিনিট সময় নিতে পারে.";
@@ -1433,7 +1433,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "দিন";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "সক্রিয় করা অবস্থায়, এই চ্যাটে পাঠানো ও আসা নতুন বার্তাগুলি দেখার পর অদৃশ্য হয়ে যাবে।";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "সক্রিয় থাকা অবস্থায়, এই চ্যাট থেকে পাঠানো ও এখানে আসা নতুন মেসেজ দেখার পর অদৃশ্য হয়ে যাবে।";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "বর্তমানে %@ এর পরে বার্তাগুলি অদৃশ্য হয়ে যায়";
@@ -1868,7 +1868,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@-এর কাছ থেকে অডিও ও ভিডিও গ্রহণ করা যাবে না";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "এর কারণ হতে পারে যে হয় তারা আপনার নিরাপত্তা নাম্বার যাচাই করেনি, নতুবা তাদের ডিভাইসে কোন সমস্যা হয়েছে বা তারা আপনাকে ব্লক করেছেন।";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "এর কারণ হতে পারে যে হয় তারা আপনার পরিবর্তিত নিরাপত্তা নাম্বার ভেরিফাই করেননি, নতুবা তাদের ডিভাইসে কোন সমস্যা হয়েছে বা তারা আপনাকে ব্লক করেছেন।";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@-এর কাছ থেকে অডিও ও ভিডিও গ্রহণ করা যাবে না";
@@ -1910,7 +1910,7 @@
 "GROUP_CALL_RECONNECTING" = "পুনঃসংযুক্ত হচ্ছে";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "কেউ একজন এই কলে এমন একটি নিরাপত্তা নাম্বার দিয়ে যোগ দিয়েছে যা পরিবর্তিত হয়েছে।";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "কেউ একজন এই কলে এমন একটি নিরাপত্তা নাম্বার দিয়ে যোগ দিয়েছেন যা পরিবর্তিত হয়েছে।";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "স্ক্রিন শেয়ার দেখতে উপরের দিকে সোয়াইপ করুন";
@@ -1949,7 +1949,7 @@
 "GROUP_CALL_YOU_ARE_HERE" = "আপনি গ্রুপ কলে আছেন";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
-"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "আপনি (আরেকটি ডিভাইসে)";
+"GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "আপনি (অন্য ডিভাইসে আছেন)";
 
 /* Body for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_BODY" = "বিনামূল্যে এনক্রিপ্ট করা গ্রুপ কল শুরু করতে একটি নতুন গ্রুপ খুলুন";
@@ -1976,7 +1976,7 @@
 "GROUP_DESCRIPTION_PLACEHOLDER" = "গ্রুপের বিবরণ যোগ করুন...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "গ্রুপের বিবরণ এই গ্রুপের সদস্যদের ও আমন্ত্রিত লোকজনের কাছে দৃশ্যমান হবে।";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "এই গ্রুপের সদস্য ও আমন্ত্রিত লোকজন গ্রুপের বিবরণগুলি দেখতে পারবেন।";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "গ্রুপের বিবরণ";
@@ -2042,7 +2042,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "অ্যাডমিনের অনুমোদন বন্ধ থাকা অবস্থায় গ্রুপ লিঙ্ক চালু করা হয়েছে।";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "আপনি অ্যাডমিনের অনুমোদন সহ গ্রুপ লিঙ্কটি চালু করেছেন।";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "আপনি অ্যাডমিনের অনুমোদন ছাড়াই গ্রুপ লিঙ্কটি চালু করেছেন।";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "অ্যাডমিনের অনুমোদন বন্ধ থাকা অবস্থায় %@ গ্রুপ লিঙ্ক চালু করেছেন।";
@@ -2090,7 +2090,7 @@
 "GROUP_INVITES_VIEW_TITLE" = "সদস্য আমন্ত্রণ";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "সকল সদস্যদের মেসেজ পাঠানোর অনুমতি দিতে গ্রুপের সেটিংস পরিবর্তন করা হয়েছে।";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "সকল সদস্যকে মেসেজ পাঠানোর অনুমতি দিতে গ্রুপের সেটিংস পরিবর্তন করা হয়েছে।";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "সকল সদস্যকে বার্তা পাঠানোর অনুমতি দিতে আপনি গ্রুপের সেটিংস পরিবর্তন করেছেন।";
@@ -2108,7 +2108,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "কেবলমাত্র অ্যাডমিনদের মেসেজ পাঠানোর অনুমতি দিতে %@ গ্রুপের সেটিংস পরিবর্তন করেছেন।";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "এই গ্রুপ লিঙ্কটি আর বৈধ থাকবে না।";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "এই গ্রুপ লিঙ্কটি আর বৈধ নেই।";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "গ্রুপে যোগ দেওয়া যাবে না";
@@ -2132,7 +2132,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "অনুগ্রহ করে আবার চেষ্টা করুন।";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "এটি কোনও বৈধ গ্রুপ লিঙ্ক নয়। নিশ্চিত করুন যে পুরো লিঙ্কটি অটুট রয়েছে এবং যোগ দেওয়ার আগে সেটি ঠিক করে নিন।";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "এটি কোনও বৈধ গ্রুপের লিঙ্ক নয়। যোগ দেওয়ার আগে নিশ্চিত হয়ে নিন যে লিঙ্কটি সম্পূর্ণ এবং সঠিকভাবে রয়েছে।";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "অবৈধ লিঙ্ক";
@@ -2162,7 +2162,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "গ্রুপ লিঙ্কটির মাধ্যমে বন্ধুদের আপনার গ্রুপে আমন্ত্রণ জানান";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "এই কোডটি স্ক্যান করে যেকেউ আপনার গ্রুপে যোগদান করতে পারবেন। আপনার সেই সেটিংটি চালু করে থাকলে অ্যাডমিনদের এখনও নতুন সদস্যদের অনুমোদন করতে হবে।";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "এই কোডটি স্ক্যান করে যে কেউ আপনার গ্রুপে যোগদান করতে পারবেন। আপনার সেই সেটিংটি চালু করা থাকলে অ্যাডমিনদের এখনও নতুন সদস্যদের অনুমোদন করতে হবে।";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "কোড শেয়ার করুন";
@@ -2171,7 +2171,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR কোড";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "নতুন সদস্যকে অনুমোদন করুন";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "নতুন সদস্যদের অনুমোদন দিন";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "লিঙ্ক কপি করুন";
@@ -2306,7 +2306,7 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "সদস্য";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "সদস্যের পর্যালোচনা করুন";
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "সদস্যদের পর্যালোচনা করুন";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ জন গ্রুপ সদস্যের নাম একই, নিম্নের সদস্যদের পর্যালোচনা করুন বা কোনও পদক্ষেপ নিন।";
@@ -2483,7 +2483,7 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ গ্রুপের বিবরণ সরিয়েছেন।";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = " গ্রুপের বিবরণ পরিবর্তন করা হয়েছে।";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "গ্রুপের বিবরণ পরিবর্তন করা হয়েছে।";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "আপনি গ্রুপের বিবরণ পরিবর্তন করেছেন।";
@@ -2564,7 +2564,7 @@
 "GROUPS_INVITE_FRIENDS_BUTTON" = "বন্ধুকে আমন্ত্রণ জানান";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "লিগ্যাসি গ্রুপ হল এমন গ্রুপ যা অ্যাডমিন এবং আরও বর্ণনামূলক গ্রুপ আপডেটগুলির মতো নতুন গ্রুপ ফিচারের সাথে সামঞ্জস্যপূর্ণ নয়।";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "লিগ্যাসি গ্রুপ হচ্ছে এমন ধরনের গ্রুপ যেগুলো নতুন গ্রুপের ফিচার যেমন অ্যাডমিন ও অন্যান্য বিস্তারিত গ্রুপ আপডেটের সাথে সামঞ্জস্যপূর্ণ নয়।";
 
 /* Title for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "লিগ্যাসি গ্রুপ কী?";
@@ -2579,7 +2579,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "একটি নতুন গ্রুপ তৈরি করতে, সকল সদস্যকে Signal-এর সর্বশেষ সংস্করণটিতে আপডেট করতে হবে।";
 
 /* Title for the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "পুরোনো বনাম নতুন গ্রুপ";
+"GROUPS_LEGACY_GROUP_ALERT_TITLE" = "লিগ্যাসি বনাম নতুন গ্রুপ";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@mentions ও অ্যাডমিনের মতো নতুন ফিচার সক্রিয় করতে গ্রুপটি আপগ্রেড করুন। যে সদস্যরা এই গ্রুপটিতে তাদের নাম বা ফটো শেয়ার করেননি তাদেরকে যোগদান করার জন্য আমন্ত্রণ জানানো হবে। %@।";
@@ -2594,7 +2594,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "যখন গ্রুপের সকল সদস্য Signal-এর এমন সংস্করণ ব্যবহার করছেন যা নতুন গ্রুপে যোগদানের উপযোগী, তখন গ্রুপটি আপগ্রেড করা হবে।";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "আপগ্রেড করার আগে সমস্ত মেসেজের ইতিহাস এবং মিডিয়া রাখা থাকবে।";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "আপগ্রেড করার আগে সমস্ত মেসেজের ইতিহাস এবং মিডিয়া রাখা হবে।";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "এই গ্রুপটি তৈরি করা যাবে না কারণ 1 জন সদস্য Signal-এর পুরোনো সংস্করণ ব্যবহার করছে। তারা Signal আপডেট করার পর আপনি তাদেরকে নিয়ে নতুন স্টাইলের গ্রুপ তৈরি করতে পারবেন অথবা গ্রুপটি তৈরি করার আগে তাদেরকে সরিয়ে দিন।";
@@ -2642,7 +2642,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "লিগ্যাসি গ্রুপ";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "আপনাকে আবার এই গ্রুপে যোগদানের জন্য একটি আমন্ত্রণ স্বীকার করতে হবে এবং আপনি স্বীকার না করা পর্যন্ত গ্রুপের মেসেজ পাবেন না।";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "আপনাকে আবার এই গ্রুপে যোগদানের জন্য একটি আমন্ত্রণ স্বীকার করতে হবে এবং আপনি স্বীকার না করা পর্যন্ত গ্রুপের কোনও মেসেজ পাবেন না।";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "গ্রুপটি আপগ্রেড করুন";
@@ -2651,10 +2651,10 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@mentions ও অ্যাডমিনের মতো নতুন ফিচারগুলির সুবিধা পেতে, গ্রুপটি আপগ্রেড করুন।";
 
 /* Title for the 'migrated group' alert view. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "নতুন কি কি গ্রুপ রয়েছে?";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "নতুন কোন কোন গ্রুপ রয়েছে?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "আপগ্রেড করার আগে সমস্ত মেসেজের ইতিহাস এবং মিডিয়া রাখা রয়েছে।";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "আপগ্রেড করার আগে সমস্ত মেসেজের ইতিহাস এবং মিডিয়া রাখা হয়েছে।";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "নতুন গ্রুপে @mentions এবং গ্রুপ অ্যাডমিনের মতো ফিচার রয়েছে এবং ভবিষ্যতে আরও ফিচার সমর্থন করবে।";
@@ -2681,7 +2681,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "নতুন গ্রুপটি আপগ্রেড হওয়ার সময় এই সদস্যদের স্বয়ংক্রিয়ভাবে যোগ করা যায়নি:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "আপগ্রেড করার আগে সমস্ত মেসেজের ইতিহাস এবং মিডিয়া রাখা আছে।";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "আপগ্রেড করার আগে সমস্ত মেসেজের ইতিহাস এবং মিডিয়া রাখা হয়েছে।";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "এই সদস্যকে গ্রুপটি থেকে সরানো হয়েছে এবং তারা আপগ্রেড না করা পর্যন্ত গ্রুপটিতে পুনরায় যোগ দিতে পারবেন না:";
@@ -2690,16 +2690,16 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "এই সদস্যদের গ্রুপটি থেকে সরানো হয়েছে এবং তারা আপগ্রেড না করা পর্যন্ত গ্রুপটিতে পুনরায় যোগ দিতে পারবেন না:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "এই গ্রুপে পুনরায় যোগ দিতে এই সদস্যকে একটি আমন্ত্রণ স্বীকার করতে হবে, এবং তারা সেটি স্বীকার না করা পর্যন্ত গ্রুপ মেসেজ পাবেন না:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "এই গ্রুপে আবার যোগ দিতে এই সদস্যকে একটি আমন্ত্রণ স্বীকার করতে হবে, এবং তারা সেটি স্বীকার না করা পর্যন্ত গ্রুপ মেসেজ পাবেন না:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "এই গ্রুপে পুনরায় যোগ দিতে এই সদস্যদেরকে একটি আমন্ত্রণ স্বীকার করতে হবে এবং তারা সেটি স্বীকার না করা পর্যন্ত গ্রুপ মেসেজগুলি পাবেন না:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "এই সদস্যটি নতুন গ্রুপে যোগ দিতে সমর্থ নন এবং গ্রুপটি থেকে তাকে সরানো হবে।";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "এই সদস্যটি নতুন গ্রুপে যোগদানের যোগ্য নন এবং তাকে গ্রুপটি থেকে সরানো হবে।";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "এই সদস্যরা নতুন গ্রুপে যোগ দিতে পারবেন না এবং গ্রুপটি থেকে তাদের সরানো হবে:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "এই সদস্যরা নতুন গ্রুপে যোগদানের যোগ্য নন এবং তাদেরকে গ্রুপটি থেকে সরানো হবে:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "নতুন গ্রুপে আপগ্রেড করুন";
@@ -2735,7 +2735,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal গ্রুপগুলি %@ জন বা তার কম সদস্য নিয়ে সবচেয়ে ভালো কাজ করে। এর চেয়ে বেশি সদস্য যোগ করলে মেসেজ পাঠাতে ও পেতে বিলম্ব হয়।";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "সুপারিশকৃত সদস্য সীমায় পৌঁছেছে";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "সুপারিশকৃত সদস্য সর্বোচ্চ সীমায় পৌঁছেছে";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "যেকোনওভাবে নতুন সদস্যকে যোগ করবেন?";
@@ -2792,7 +2792,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "যেকোন জায়গা অস্পষ্ট করতে আঁকুন";
+"IMAGE_EDITOR_BLUR_HINT" = "যেকোনও জায়গা অস্পষ্ট করতে আঁকুন";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "ফেস অস্পষ্ট করুন";
@@ -2987,7 +2987,7 @@
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "নিষ্ক্রিয় করুন";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "যেকোনো লিঙ্কের প্রিভিউ দেখুন";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "যেকোনও লিঙ্কের প্রিভিউ দেখুন";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "আপনার Signal অ্যাকাউন্ট স্থানান্তর করতে, আপনাকে উভয় ডিভাইসে স্থানীয় নেটওয়ার্ক অ্যাক্সেস সক্ষম করতে হবে।";
@@ -3143,7 +3143,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME ধরণ";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "একে পাঠানো হয়েছে";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "যাকে ডেলিভার করা হয়েছে";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "ব্যর্থ হয়েছে";
@@ -3188,7 +3188,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ব্লক করুন এবং মুছুন";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "স্প্যাম রিপোর্ট করুন ও ব্লক করুন";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "স্প্যামের রিপোর্ট করুন ও ব্লক করুন";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ব্লক করা লোকজন আপনাকে কল করতে বা আপনাকে মেসেজ পাঠাতে পারবেন না।";
@@ -3275,7 +3275,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@-কে কি আপনাকে মেসেজ পাঠাতে দেবেন এবং তাদের সাথে আপনার নাম ও ফটো শেয়ার করবেন? আপনি স্বীকার না করা পর্যন্ত তারা জানবেন না যে আপনি তাদের মেসেজটি দেখেছেন।";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "এই গ্রুপটিতে যোগ দিয়ে এটির সদস্যদের সাথে আপনার নাম ও ফটো শেয়ার করবেন? আপনি স্বীকার না করা পর্যন্ত আপনার যে তাদের মেসেজগুলি দেখেছেন তা তারা জানবেন না।";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "এই গ্রুপে যোগ দিয়ে এটির সদস্যদের সাথে আপনার নাম ও ফটো তাদের সাথে শেয়ার করবেন? আপনি স্বীকার না করা পর্যন্ত আপনি যে তাদের মেসেজগুলি দেখেছেন তা তারা জানবেন না।";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "এই গ্রুপে যোগ দেবেন? আপনি স্বীকার না করা পর্যন্ত তারা জানবেন না যে আপনি তাদের মেসেজ দেখেছেন।";
@@ -3287,7 +3287,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "অনুরোধ বাতিল করুন";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "এই গ্রুপটিতে যোগ দেওয়ার জন্য আপনার অনুরোধ বাতিল করবেন?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "এই গ্রুপে যোগ দেওয়ার আপনার অনুরোধটি কি বাতিল করবেন?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "যোগদান করার জন্য আপনার অনুরোধ গ্রুপ অ্যাডমিনের কাছে পাঠানো হয়েছে। তারা কোনও পদক্ষেপ নিলে আপনাকে জানানো হবে।";
@@ -3527,7 +3527,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "কাস্টম সাউন্ড যোগ করুন...";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "নাম, বিষয়বস্তু এবং ক্রিয়া";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "নাম, কনটেন্ট ও পদক্ষেপ";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "শুধুমাত্র নাম";
@@ -3908,13 +3908,13 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "এই ব্যক্তিটি পেমেন্ট সক্রিয় করেননি।";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "অবৈধ প্রাপক";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "প্রাপক সঠিক নয়";
 
 /* Label for 'transfer out' payments. */
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "স্থানান্তর করুন";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "পেমেন্ট এসেছে";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "পেমেন্ট পেয়েছে";
 
 /* Indicator for unidentified outgoing payments. */
 "PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "পেমেন্ট পাঠানো হয়েছে";
@@ -4136,7 +4136,7 @@
 "PIN_CREATION_ERROR_TITLE" = "পিন তৈরি করতে ব্যর্থ হয়েছে";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "পিন Signal-এ রক্ষিত তথ্য এনক্রিপ্টেড রাখে যাতে কেবল আপনিই সেগুলি পড়তে পারেন। আপনি পুনরায় ইনস্টল করার পর আপনার প্রোফাইল, সেটিংস, ও কন্ট্যাক্টগুলি পুনর্বহাল হবে। অ্যাপটি চালু করতে আপনার পিন দরকার হবে না।";
+"PIN_CREATION_EXPLANATION" = "পিনগুলি এনক্রিপ্ট করা Signal-এর সাথে তথ্য সঞ্চয় করে রাখে যাতে কেবলমাত্র আপনিই সেগুলি পড়তে পারেন। আপনি পুনরায় ইনস্টল করার পর আপনার প্রোফাইল, সেটিংস ও কন্ট্যাক্টগুলি পুনর্বহাল হবে। অ্যাপটি চালু করতে আপনার পিনের দরকার হবে না।";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "পিনগুলি সম্পর্কে আরও জানুন";
@@ -4295,7 +4295,7 @@
 "PROCEED_BUTTON" = "এগিয়ে যান";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "আপনার সম্পর্কে কয়েক শব্দ লিখুন...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "আপনার সম্পর্কে কিছু লিখুন...";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "দয়ালু হোন";
@@ -4304,7 +4304,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "কফি প্রেমিক";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "একক্রিপ্ট করা হয়েছে";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "এনক্রিপ্ট করা হয়েছে";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "বিনা দ্বিধায় চ্যাট করুন";
@@ -4601,7 +4601,7 @@
 "RESEARCH_MODAL_PLEA" = "<bold>আমরা গোপনীয়তায় বিশ্বাস করি।</bold>\n\nSignal আপনাকে ট্র্যাক করে না কিংবা আপনার ডেটা সংগ্রহ করে না। সবার জন্য Signal-কে আরো উন্নত করতে, আমরা ব্যবহারকারীদের মতামতের উপর নির্ভর করি, <bold> এবং আমরা আপনার মতামত শুনতে চাই</bold>।\n\nআপনি কিভাবে Signal ব্যবহার করেন সেটি বুঝতে আমরা একটি সমীক্ষা করছি। আমাদের সমীক্ষায় আপনাকে শনাক্তকারী কোন তথ্য সংগ্রহ করা হয় না। আপনি বাড়তি কোন মতামত শেয়ার করতে আগ্রহী হলে, আপনি আপনার কন্ট্যাক্ট তথ্য দেওয়ার অপশন রয়েছে।\n\nআপনার কয়েক মিনিট সময় থাকলে এবং যদি কোন মতামত থাকে, আমরা আপনার কাছ থেকে শুনতে আগ্রহী।";
 
 /* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "সমীক্ষায় অংশ নিন";
+"RESEARCH_MODAL_TAKE_SURVEY" = "জরিপে অংশ নিন";
 
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signal গবেষণা";
@@ -4622,7 +4622,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "যাইহোক পাঠান";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "নিম্নোক্ত লোকজন পুনরায় ইনস্টল করে থাকতে পারেন অথবা ডিভাইসগুলি বদলে ফেলতে পারেন। গোপনীয়তা নিশ্চিত করতে আপনার নিরাপত্তা নাম্বার তাদের সাথে যাচাই করুন।";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "নিম্নোক্ত লোকজন পুনরায় ইনস্টল করে থাকতে পারেন অথবা ডিভাইসগুলি বদলে ফেলতে পারেন। গোপনীয়তা নিশ্চিত করতে আপনার নিরাপত্তা নাম্বার তাদের সাথে ভেরিফাই করুন।";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "আগে যাচাইকৃত";
@@ -4835,7 +4835,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "সংযুক্তিকরণ কোড আনতে অক্ষম";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ডিভাইসটিকে ভিন্ন একটি অ্যাকাউন্টের সাথে লিঙ্ক করতে, আপনাকে প্রথমে ডিভাইসটি রিসেট করতে হবে। আপনি কি সব ইতিহাস (মেসেজ, অ্যাটাচমেন্ট, কল প্রভৃতি) মুছে ফেলার ব্যাপারে নিশ্চিত? এই পদক্ষেপটি প্রত্যাবর্তিত করা যাবে না।";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ডিভাইসটিকে ভিন্ন একটি অ্যাকাউন্টের সাথে লিঙ্ক করতে, আপনাকে প্রথমে ডিভাইসটি রিসেট করতে হবে। আপনি কি সব ইতিহাস (মেসেজ, সংযুক্তি, কল প্রভৃতি) মুছে ফেলার ব্যাপারে নিশ্চিত? এই পদক্ষেপটি প্রত্যাবর্তিত করা যাবে না।";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "সবকিছু মুছে দিন";
@@ -4946,7 +4946,7 @@
 "SET_WALLPAPER_CHOOSE_PHOTO" = "ফটো থেকে বেছে নিন";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "প্রিসেট";
+"SET_WALLPAPER_PRESETS" = "পূর্ব-নির্ধারিত";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "ওয়ালপেপার সেট করুন";
@@ -5081,7 +5081,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "অ্যাকাউন্ট মুছে দিন";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "স্থানান্তর করবেন না";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "ট্রান্সফার করবেন না";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "আপনার ব্যালেন্সের পরিমাণ %@। অ্যাকাউন্টটি মুছে ফেলার আগে আপনি আপনার ফান্ডগুলি আরেকটি ওয়ালেট ঠিকানায় স্থানান্তর না করলে, আপনি চিরতরে এগুলি হারাবেন।";
@@ -5105,7 +5105,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "অদৃশ্য হওয়া বার্তা";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "আপনার সূচনাকৃত সব নতুন চ্যাটের জন্য মেসেজ অদৃশ্য হওয়ার ডিফল্ট সময় সেট করুন।";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "আপনার শুরু করা সব নতুন চ্যাটের জন্য মেসেজ অদৃশ্য হওয়ার ডিফল্ট সময় সেট করুন।";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Signal-এ দান করুন";
@@ -5120,7 +5120,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "আপনি @signalapp ব্যবহার করে আমার কাছে পৌঁছাতে পারেন। এটি এখনই নিন: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "চ্যাটের রং ও ওয়ালপেপার";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "চ্যাটের রঙ ও ওয়ালপেপার";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "বার্তার শব্দ";
@@ -5129,7 +5129,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "শর্তাদি এবং গোপনীয়তা নীতি";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "লিঙ্কের প্রিভিউগুলি তৈরি করুন";
+"SETTINGS_LINK_PREVIEWS" = "লিঙ্কের প্রিভিউ তৈরি করুন";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "আপনার পাঠানো মেসেজের জন্য ওয়েবসাইটগুলি থেকে সরাসরি লিঙ্কের প্রিভিউ পুনরুদ্ধার করুন।";
@@ -5141,7 +5141,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi ও সেলুলার";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "ওয়াই-ফাই";
 
 /* Label for the 'audio' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "অডিও";
@@ -5180,7 +5180,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "কন্ট্যাক্ট Signal-এ যোগদান করেছেন";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "অবগত করুন যখন...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "জানান, যখন...";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "বিজ্ঞপ্তিগুলি";
@@ -5195,13 +5195,13 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "সক্রিয় করুন";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin শর্তাবলী দেখুন";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin-এর শর্তাবলী দেখুন";
 
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "ফান্ড যোগ করুন";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ফান্ডগুলি যোগ করতে আপনার ওয়ালেট ঠিকানায় MobileCoin প্রেরণ করুন। আপনার অ্যাকাউন্ট থেকে এমন কোনও লেনদেন শুরু করুন যা MobileCoin সমর্থন করে, তারপরে QR কোডটি স্ক্যান করুন বা আপনার ওয়ালেট ঠিকানাটি কপি করুন।";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ফান্ড যোগ করতে আপনার ওয়ালেটের ঠিকানায় MobileCoin পাঠান। আপনার অ্যাকাউন্ট থেকে এমন কোনও লেনদেন শুরু করুন যা MobileCoin-কে সাপোর্ট করে, তারপরে QR কোডটি স্ক্যান করুন বা আপনার ওয়ালেটের ঠিকানাটি কপি করুন।";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "ওয়ালেট ঠিকানা কপি করা হয়েছে";
@@ -5213,7 +5213,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%3$@-এ %1$@%2$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal -এ পেমেন্ট আর উপলভ্য নেই। আপনি এখনও কোনও এক্সচেঞ্জে আপনার ফান্ডগুলি স্থানান্তর করতে পারেন, তবে আপনি আর পেমেন্ট পাঠাতে এবং গ্রহণ করতে বা ফান্ডগুলি যোগ করতে পারবেন না।";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal -এ পেমেন্ট আর উপলভ্য নেই। আপনি এখনও কোনও এক্সচেঞ্জে আপনার ফান্ডগুলি ট্রান্সফার করতে পারেন তবে আপনি আর পেমেন্টগুলি প্রেরণ এবং গ্রহণ করতে বা ফান্ড যোগ করতে পারবেন না।";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "আপনার ব্যালেন্স উপলভ্য না থাকায় পেমেন্ট বন্ধ করা যাবে না। আপনার সংযোগটি পরীক্ষা করে আবার চেষ্টা করুন।";
@@ -5222,10 +5222,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "আপনার ব্যালেন্স উপলভ্য না থাকায় পেমেন্ট বন্ধ করা যায়নি। আপনার সংযোগটি পরীক্ষা করে আবার চেষ্টা করুন।";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal -এ পেমেন্ট আর উপলভ্য নেই। আপনি এখনও কোনও এক্সচেঞ্জে আপনার ফান্ডগুলি স্থানান্তর করতে পারেন তবে আপনি আর পেমেন্ট প্রেরণ এবং গ্রহণ করতে বা ফান্ডগুলি যোগ করতে পারবেন না।";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal-এ পেমেন্ট আর উপলভ্য নেই। আপনি এখনও কোনও এক্সচেঞ্জে আপনার ফান্ডগুলি ট্রান্সফার করতে পারেন তবে আপনি আর পেমেন্টগুলি প্রেরণ এবং গ্রহণ করতে বা ফান্ড যোগ করতে পারবেন না।";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal -এ পেমেন্ট আর উপলভ্য নেই। আপনি এখনও কোনও এক্সচেঞ্জে আপনার ফান্ডগুলি স্থানান্তর করতে পারেন তবে আপনি আর ফান্ডগুলি প্রেরণ এবং গ্রহণ করতে বা ফান্ড যোগ করতে পারবেন না।";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal-এ পেমেন্ট আর উপলভ্য নেই। আপনি এখনও কোনও এক্সচেঞ্জে আপনার ফান্ডগুলি ট্রান্সফার করতে পারেন তবে আপনি আর পেমেন্টগুলি প্রেরণ এবং গ্রহণ করতে বা ফান্ড যোগ করতে পারবেন না।";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "রূপান্তরগুলি অনুমান নির্ভর এবং সঠিক নাও হতে পারে।";
@@ -5234,7 +5234,7 @@
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "সকল মুদ্রা";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "অবশিষ্ট ব্যালেন্স স্থানান্তর করুন";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "অবশিষ্ট ব্যালেন্স ট্রান্সফার করুন";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "বন্ধ করুন";
@@ -5258,10 +5258,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "আপনি পেমেন্ট পুনঃসক্রিয় করা বেছে নিলে আপনার ব্যালান্স Signal-এর সাথে লিঙ্ক করা আপনার ওয়ালেটে থাকবে।";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "স্থানান্তর না করেই বন্ধ করবেন?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "ট্রান্সফার না করেই বন্ধ করবেন?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "স্থানান্তর না করেই বন্ধ করুন";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "ট্রান্সফার না করেই বন্ধ করুন";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
 "SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "পেমেন্ট বন্ধ করা যায়নি";
@@ -5279,22 +5279,22 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin সম্পর্কে";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "আপনার ওয়ালেট ঠিকানায় MobileCoin পাঠানোর মাধ্যমে আপনি Signal-এ ব্যবহারের জন্য ফান্ডগুলি পাঠাতে পারেন।";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "আপনার ওয়ালেটের ঠিকানায় MobileCoin পাঠানোর মাধ্যমে আপনি Signal-এ ব্যবহারের জন্য ফান্ড পাঠাতে পারেন।";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "ফান্ড যোগ হচ্ছে";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "আপনি MobileCoin-কে MobileCoin সমর্থন করে এমন বিনিময় হারে যেকোনো সময় টাকায় রূপান্তর করতে পারবেন। কেবল আপনার অ্যাকাউন্টে সেই বিনিময় হারে টাকা স্থানান্তর করুন।";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoin-কে সাপোর্ট করে এমন যেকোনও কিছুর বিনিময়ে আপনি MobileCoin ক্যাশ আউট করতে পারবেন। কেবল সেটির বিনিময়ে আপনার অ্যাকাউন্টে টাকা ট্রান্সফার করুন।";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "ক্যাশিং আউট";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "ক্যাশ আউট";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "পিন আপডেট করুন";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "বেশি ব্যালেন্সের ক্ষেত্রে আপনি আলফানিউমেরিক পিনে আপডেট করতে চাইতে পারেন যাতে আপনার অ্যাকাউন্টে অধিক সুরক্ষা যোগ করা যায়।";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "বেশি ব্যালেন্সের ক্ষেত্রে আপনার অ্যাকাউন্টে অধিক সুরক্ষা যোগ করতে আপনি আলফানিউমেরি পিন-এ আপডেট করতে চাইতে পারেন।";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "আপনার পিন আপডেট করুন";
@@ -5360,7 +5360,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@-এর থেকে প্রাপ্ত";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "পাঠিয়েছেন";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "প্রেরক";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = " %2$@-এ %1$@";
@@ -5378,7 +5378,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "অবস্থা";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "লেনদেনের বিস্তারিতের মধ্যে রয়েছে পেমেন্টের পরিমাণ এবং লেনদেনের সময় MobileCoin লেজার-এর অংশ।";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "লেনদেনের বিস্তারিত বিবরণের মধ্যে রয়েছে পেমেন্টের পরিমাণ এবং লেনদেনের সময় যা MobileCoin লেজার-এর একটি অংশ।";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "যখন আপনার দখলে থাকা কয়েন কোনও লেনদেন সম্পন্ন করার কাজে সংযুক্ত করা যাবে না, তখন “কয়েন ক্লিনআপ ফি” ধার্য করা হয়। ক্লিনআপের ফলে আপনি পেমেন্ট পাঠানো অব্যাহত রাখতে পারবেন।";
@@ -5435,7 +5435,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "রিকভারি ফ্রেজ নিশ্চিত করুন";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "পেমেন্ট অ্যাকাউন্ট পুনর্বহাল হয়েছে।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "পেমেন্ট অ্যাকাউন্ট পুনর্বহাল করা হয়েছে।";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "ম্যানুয়ালি লিখুন";
@@ -5462,7 +5462,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "আপনার রিকভারি ফ্রেজ হল 12-শব্দ বিশিষ্ট বাক্যাংশ যা আপনার জন্য অনন্য। আপনার পেমেন্ট অ্যাকাউন্ট পুনর্বহাল করতে এটি ব্যবহার করুন।";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "রিকভারি ফ্রেজটি লিখুন";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "রিকভারি ফ্রেজ লিখুন";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "রিকভারি ফ্রেজ";
@@ -5504,7 +5504,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "আপনি আপনার Signal ওয়ালেট ঠিকানায় স্থানান্তর করতে পারবেন না। আপনার অ্যাকাউন্ট থেকে একটি সমর্থিত এক্সচেঞ্জে ওয়ালেট ঠিকানাটি লিখুন।";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "এক্সচেঞ্জ প্রদত্ত ওয়ালেট ঠিকানায় স্থানান্তর সম্পন্ন করে আপনি MobileCoin স্থানান্তর করতে পারেন। ওয়ালেট ঠিকানাটি হল সাধারণত QR কোডের নীচে সবচেয়ে সাধারণ সংখ্যা এবং বর্ণ বিশিষ্ট স্ট্রিং। ";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "এক্সচেঞ্জের দেওয়া ওয়ালেটের ঠিকানায় ট্রান্সফার সম্পন্ন করে আপনি MobileCoin ট্রান্সফার করতে পারেন। ওয়ালেটের ঠিকানাটি হল সাধারণত QR কোডের নিচে থাকা সবচেয়ে বেশি সংখ্যা এবং বর্ণগুলির একটি লাইন।";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "আপনি যে ওয়ালেট ঠিকানাটিতে স্থানান্তর করতে চাচ্ছেন সেটি যাচাই করে আবার চেষ্টা করুন।";
@@ -5807,7 +5807,7 @@
 "SPAM_CAPTCHA_SHEET_BODY" = "Signal-এ স্প্যাম প্রতিরোধে সহায়তা করতে, অনুগ্রহ করে যাচাইকরণ সম্পন্ন করুন।\n\nযাচাই করার পর, আপনি মেসেজ পাঠানো অব্যাহত রাখতে পারবেন। স্থগিত করা যেকোনো মেসেজ স্বয়ংক্রিয়ভাবে পাঠানো হবে।";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "মেসেজিং অব্যাহত রাখতে যাচাই করুন";
+"SPAM_CAPTCHA_SHEET_TITLE" = "মেসেজ পাঠানো চালিয়ে যেতে ভেরিফাই করুন";
 
 /* Action to skip verification */
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "যাচাইকরণ এড়িয়ে যান";
@@ -5942,7 +5942,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "আপনি যখন তাদের মেসেজ পাঠাবেন, মেসেজ অদৃশ্য হওয়ার সময়টি %@-এ সেট করা হবে।";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "কোনও একই গ্রুপ নেই। অনুরোধগুলি সতর্কতার সাথে পর্যালোচনা করুন।";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "একইরকম কোনও গ্রুপ নেই। সতর্কতার সাথে অনুরোধগুলি পর্যালোচনা করুন।";
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "এই গ্রুপে কোনও কন্ট্যাক্ট নেই। অনুরোধগুলি সতর্কতার সাথে পর্যালোচনা করুন।";
@@ -6272,28 +6272,28 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "সব ওয়ালপেপার রিসেট করা যায়নি, অনুগ্রহ করে পরে আবার চেষ্টা করুন অথবা ত্রুটি চলতেই থাকলে সহায়তা বিভাগে যোগাযোগ করুন।";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "সব রং রিসেট করুন";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "সব রঙ রিসেট করুন";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "সব ওয়ালপেপার রিসেট করুন";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "সবকটি ওয়ালপেপার রিসেট করুন";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "আপনি কি সব চ্যাটের রং বাতিল করতে চান?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "আপনি কি সবকটি চ্যাটের রঙ বাতিল করতে চান?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "চ্যাটের রং রিসেট করুন";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "চ্যাটের রঙ রিসেট করুন";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "চ্যাটের রং রিসেট করুন";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "চ্যাটের রঙ রিসেট করুন";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "ওয়ালপেপার রিসেট করুন";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "ডিফল্ট রং-এ রিসেট করুন";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "ডিফল্ট রং রিসেট করুন";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "চ্যাটের রং রিসেট করুন";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "চ্যাটের রঙ রিসেট করুন";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "ডিফল্ট ওয়ালপেপারে রিসেট করুন";
@@ -6302,7 +6302,7 @@
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "ওয়ালপেপারগুলি রিসেট করুন";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "আপনি কি সব ওয়ালপেপার বাতিল করতে চান?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "আপনি কি সবগুলি ওয়ালপেপার বাতিল করতে চান?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "ওয়ালপেপার রিসেট করুন";

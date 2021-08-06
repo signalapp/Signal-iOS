@@ -29,10 +29,10 @@
 "ACCESSIBILITY_LABEL_STICKER" = "સ્ટીકર";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "વૉઇસ મેસેજ";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "વૉઈસ મેસેજ";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "વૉઇસ મેસેજ %@ સેકન્ડ";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "વૉઈસ મેસેજ %@ સેકન્ડ";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal કૉલ";
@@ -635,7 +635,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "રંગને સંપાદિત કરો";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "આ રંગનો ઉપયોગ %@ ચેટમાં થાય છે. શું તમે બધી ચેટ માટે ફેરફારોને સાચવવા માંગો છો?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "આ રંગનો ઉપયોગ %@ ચેટમાં થાય છે. શું તમે બધી ચેટ માટે ફેરફારોને સેવ કરવા માંગો છો?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "વૉલપેપર સાથે રંગને આપમેળે મેળ ખાતો કરે છે";
@@ -827,10 +827,10 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "અન્ય";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "પેમેન્ટ";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "પેમેન્ટ્સ";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "પેમેન્ટ";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "પેમેન્ટ્સ";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "અમે કેવી રીતે મદદ કરી શકીએ?";
@@ -953,7 +953,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "અક્ષમ";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ગ્રુપનું નામ, ફોટો, વર્ણન, અને મેસેજ અદ્રશ્ય થવાના ટાઇમરને કોણ સંપાદિત કરી શકે તે પસંદ કરો.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ગ્રુપનું નામ, ફોટો, ડિસ્ક્રિપ્શન, અને મેસેજ અદ્રશ્ય થવાના ટાઇમરને કોણ સંપાદિત કરી શકે તે પસંદ કરો.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ઓડિયો";
@@ -1013,25 +1013,25 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "હંમેશાં સૂચિત કરો";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "જો મ્યુટ કરેલ હોય તો સૂચિત ન કરો";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "જો મ્યૂટ કરેલ હોય તો સૂચિત ન કરો";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "જ્યારે તમારો મ્યુટ ચેટમાં ઉલ્લેખ થાય છે ત્યારે સૂચનાઓ પ્રાપ્ત કરવી છે?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "જ્યારે તમારો મ્યૂટ ચેટમાં ઉલ્લેખ થાય છે ત્યારે સૂચનાઓ પ્રાપ્ત કરવી છે?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ઉલ્લેખો";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "સંદેશ";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "મેસેજ";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "... માટે આ ચેટને મ્યુટ કરો";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "... માટે આ ચેટને મ્યૂટ કરો";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "હંમેશાં";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "મ્યુટ કરો";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "મ્યૂટ કરો";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 કલાક";
@@ -1058,25 +1058,25 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "હંમેશાં";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "હંમેશાં મ્યુટ કરેલ છે";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "હંમેશાં મ્યૂટ કરેલ છે";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "મ્યુટ કરેલ છે";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "મ્યૂટ કરેલ છે";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ ત્યાં સુધી";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ સુધી મ્યુટ ન થાય ત્યાં સુધી મ્યુટ કરેલ છે";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ સુધી મ્યુટ ન થાય ત્યાં સુધી મ્યૂટ કરેલ છે";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ સમાન ગ્રુપ";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "કોમનમાં %@ સમાન ગ્રુપ";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "નવો સંપર્ક બનાવો";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "કોઈ સમાન ગ્રુપ નથી";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "કોમનમાં કોઈ ગ્રુપ નથી";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
 "CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 સમાન ગ્રુપ";
@@ -1103,7 +1103,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "બધા સભ્યો";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "આ ગ્રુપમાં કોણ મેસેજ મોકલી શકે છે અને કૉલ શરૂ કરી શકે છે તે પસંદ કરો.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "આ ગ્રુપમાં કોણ મેસેજ મોકલી શકે છે અને કૉલ્સ શરૂ કરી શકે છે તે પસંદ કરો.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "મેસેજ મોકલો";
@@ -1538,7 +1538,7 @@
 "EDIT_ITEM_COPY_ACTION" = "કૉપિ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "હેય\n\nતાજેતરમાં હું મારા iPhone પર ચેટને ખાનગી રાખવા માટે Signal નો ઉપયોગ કરી રહ્યો છું. હું ઇચ્છું છું કે તમે પણ તેને ઇન્સ્ટોલ કરો, તેથી આપણે આપણા મેસેજ વાંચી શકીએ છીએ અથવા આપણા કૉલ સાંભળી શકીએ છીએ.\n\nSignal iPhones અને Android માટે ઉપલબ્ધ છે. તેને અહીં મેળવો:%@ \n\nSignal તમારી હાલની મેસેજિંગ એપ્લિકેશનની જેમ કામ કરે છે. આપણે ઇમેજ અને વિડીયો મોકલી શકીએ છીએ, કૉલ કરી શકીએ છીએ અને ગ્રુપ ચેટ શરૂ કરી શકીએ છીએ. સૌથી સારી વાત એ છે કે, તેમાનું કઇં કોઈ જોઈ શકતું નથી, Signal બનાવનારા લોકો પણ નહીં!\n\nતમે ઓપન વ્હિસ્પર સિસ્ટમ્સ વિશે વધુ વાંચી શકો છો, જે લોકો Signal બનાવે છે, અહીં: %@";
+"EMAIL_INVITE_BODY" = "હેય\n\nતાજેતરમાં હું મારા iPhone પર ચેટને ખાનગી રાખવા માટે Signal નો ઉપયોગ કરી રહ્યો છું. હું ઇચ્છું છું કે તમે પણ તેને ઇન્સ્ટોલ કરો, તેથી આપણે આપણા મેસેજ વાંચી શકીએ છીએ અથવા આપણા કૉલ્સ સાંભળી શકીએ છીએ.\n\nSignal iPhones અને Android માટે ઉપલબ્ધ છે. તેને અહીં મેળવો:%@ \n\nSignal તમારી હાલની મેસેજિંગ એપ્લિકેશનની જેમ કામ કરે છે. આપણે ઇમેજ અને વિડિયો મોકલી શકીએ છીએ, કૉલ્સ કરી શકીએ છીએ અને ગ્રુપ ચેટ શરૂ કરી શકીએ છીએ. સૌથી સારી વાત એ છે કે, તેમાનું કઇં કોઈ જોઈ શકતું નથી, Signal બનાવનારા લોકો પણ નહીં!\n\nતમે ઓપન વ્હિસ્પર સિસ્ટમ્સ વિશે વધુ વાંચી શકો છો, જે લોકો Signal બનાવે છે, અહીં: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "ચાલો Signal પર સ્વિચ કરીએ";
@@ -1742,7 +1742,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "જોડાણ";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "શરૂ કરો";
+"GET_STARTED_BANNER_TITLE" = "શરૂઆત  કરો";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "દેખાવ";
@@ -1868,7 +1868,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ તરફથી ઓડિયો અને વિડિયો પ્રાપ્ત કરી શકતા નથી";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "આ એટલા માટે હોઈ શકે છે કારણ કે તેઓએ તમારા સલામતી નંબર પરિવર્તનની ચકાસણી કરી નથી, તેમના ડિવાઇસમાં સમસ્યા છે, અથવા તેઓએ તમને બ્લૉક કર્યા છે.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "આ એટલા માટે હોઈ શકે છે કારણ કે તેઓએ તમારા સલામતી નંબર બદલાવની ચકાસણી કરી નથી, તેમના ડિવાઇસમાં સમસ્યા છે, અથવા તેઓએ તમને બ્લૉક કર્યા છે.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@ તરફથી ઓડિયો અને વિડિયો પ્રાપ્ત કરી શકતા નથી";
@@ -1952,7 +1952,7 @@
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "તમે (બીજા ડિવાઇસ પર)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "એક ફ્રી એન્ક્રિપ્ટેડ ગ્રુપ કૉલ ચાલુ કરવા માટે એક નવું ગ્રુપ શરૂ કરો";
+"GROUP_CALLS_MEGAPHONE_BODY" = "એક ફ્રી એન્ક્રિપ્ટેડ ગ્રુપ કૉલ ચાલુ કરવા માટે એક નવું ગ્રુપ ઓપન કરો";
 
 /* Title for group calls megaphone */
 "GROUP_CALLS_MEGAPHONE_TITLE" = "ગ્રુપ કોલ્સનો પરિચય";
@@ -1973,16 +1973,16 @@
 "GROUP_DESCRIPTION_MORE" = "વધારે";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "ગ્રુપનું વર્ણન ઉમેરો...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "ગ્રુપનું ડિસ્ક્રિપ્શન ઉમેરો...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ગ્રુપનું વર્ણન આ ગ્રુપના સભ્યો અને આમંત્રિત કરાયેલા લોકોને દેખાશે.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ગ્રુપનું ડિસ્ક્રિપ્શન આ ગ્રુપના સભ્યો અને આમંત્રિત કરાયેલા લોકોને દેખાશે.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "ગ્રુપનું વર્ણન";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "ગ્રુપનું ડિસ્ક્રિપ્શન";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "ગ્રુપનું વર્ણન (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "ગ્રુપનું ડિસ્ક્રિપ્શન (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "એક અમાન્ય આમંત્રણ ઉમેરવામાં આવ્યું હતું.";
@@ -2141,7 +2141,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "આ ગ્રુપમાં જોડાવા માટે આ ડિવાઇસ પર Signal અપડેટ કરો.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ગ્રુપ લિંક મારફતે જોડાનારા નવા સભ્યોને મંજૂરી આપવા માટે એડમિનની જરૂર છે.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ગ્રુપ લિંક મારફતે જોડાનારા નવા સભ્યોને મંજૂરી આપવા માટે એડમિનની આવશ્યકતા છે.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "નવા સભ્યોને મંજૂરી આપો";
@@ -2309,10 +2309,10 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "સભ્યોની સમીક્ષા કરો";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ ગ્રુપના સભ્યોના સમાન નામ છે, નીચેના સભ્યોની સમીક્ષા કરો અથવા પગલાં લેવાનું પસંદ કરો.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ ગ્રુપના સભ્યોના સમાન નામ છે, નીચેના સભ્યોની સમીક્ષા કરો અથવા કાર્યવાહી કરવાનું પસંદ કરો.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ ગ્રુપના સભ્યોનું નામ એક જ છે, નીચેના સભ્યોની સમીક્ષા કરો અથવા પગલાં લેવાનું પસંદ કરો.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ ગ્રુપના સભ્યોનું નામ એક જ છે, નીચેના સભ્યોની સમીક્ષા કરો અથવા કાર્યવાહી કરવાનું પસંદ કરો.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ ગ્રુપના સભ્યોનું નામ એક જ છે.";
@@ -2474,22 +2474,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ એ ગ્રુપને અપડેટ કર્યું.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "ગ્રુપનું વર્ણન દૂર કરવામાં આવ્યું હતું.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "ગ્રુપનું ડિસ્ક્રિપ્શન દૂર કરવામાં આવ્યું હતું.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "તમે ગ્રુપનું વર્ણન દૂર કર્યું.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "તમે ગ્રુપનું ડિસ્ક્રિપ્શન દૂર કર્યું.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ એ ગ્રુપનું વર્ણન દૂર કર્યું.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ એ ગ્રુપનું ડિસ્ક્રિપ્શન દૂર કર્યું.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "ગ્રુપનું વર્ણન બદલવામાં આવ્યું હતું.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "ગ્રુપનું ડિસ્ક્રિપ્શન બદલવામાં આવ્યું હતું.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "તમે ગ્રુપનું વર્ણન બદલી દીધું";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "તમે ગ્રુપનું ડિસ્ક્રિપ્શન બદલી દીધું";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ એ ગ્રુપનું વર્ણન બદલાવ્યું.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ એ ગ્રુપનું ડિસ્ક્રિપ્શન બદલાવ્યું.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "ગ્રુપનું નામ દૂર કરવામાં આવ્યું હતું.";
@@ -2582,7 +2582,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "લિગેસી બનામ નવા ગ્રુપ";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@ઉલ્લેખો અને એડમિન જેવા નવા ફીચર્સ સક્રિય કરવા માટે આ ગ્રુપને અપગ્રેડ કરો. જે સભ્યો આ ગ્રુપમાં પોતાનું નામ અથવા ફોટો શેર કર્યો નથી તેમને જોડાવા માટે આમંત્રણ આપવામાં આવશે.%@";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "@ઉલ્લેખો અને એડમિન જેવા નવા ફીચર સક્રિય કરવા માટે આ ગ્રુપને અપગ્રેડ કરો. જે સભ્યો આ ગ્રુપમાં પોતાનું નામ અથવા ફોટો શેર કર્યો નથી તેમને જોડાવા માટે આમંત્રણ આપવામાં આવશે.%@";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "નવા ગ્રુપમાં અપગ્રેડ કરી શકતા નથી";
@@ -2630,7 +2630,7 @@
 "GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "આ જૂના ગ્રુપને નવા ગ્રુપમાં અપગ્રેડ કરી શકાતું નથી કારણ કે તે ઘણું મોટું છે. %@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "આ એક જૂનું ગ્રુપ છે. @ઉલ્લેખો અને એડમિન જેવા નવા ફીચર્સની ઍક્સેસ કરવા માટે, %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "આ એક જૂનું ગ્રુપ છે. @ઉલ્લેખો અને એડમિન જેવા નવા ફીચરને ઍક્સેસ કરવા માટે, %@";
 
 /* Title for the the 'dropped group member' banner. */
 "GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 મેમ્બરને નવા ગ્રુપમાં ફરીથી ઉમેરી શકાયો નહીં. શું તમે હવે તેમને ઉમેરવા માંગો છો?";
@@ -2648,7 +2648,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ગ્રુપને અપગ્રેડ કરો";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@mentions અને એડમિન જેવા નવા ફીચરની ઍક્સેસ કરવા માટે આ ગ્રુપને અપગ્રેડ કરો.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@ઉલ્લેખો અને એડમિન જેવા નવા ફીચરની ઍક્સેસ કરવા માટે આ ગ્રુપને અપગ્રેડ કરો.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "નવા ગ્રુપ શું છે??";
@@ -2657,7 +2657,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "અપગ્રેડ પહેલાના તમામ મેસેજ હિસ્ટ્રી અને મીડિયા રાખવામાં આવ્યા છે.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "નવા ગ્રુપમાં @ઉલ્લેખો અને ગ્રુપ એડમિન્સ જેવા ફીચર્સ છે, અને તે ભવિષ્યમાં વધુ ફીચર્સને ટેકો આપશે.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "નવા ગ્રુપમાં @ઉલ્લેખો અને ગ્રુપ એડમિન્સ જેવા ફીચર છે, અને તે ભવિષ્યમાં વધુ ફીચરને ટેકો આપશે.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "નવા ગ્રુપ";
@@ -2903,7 +2903,7 @@
 "KEY_COMMAND_ATTACHMENTS" = "જોડાણો બતાવો";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "ચેટની માહિતી પર જાઓ";
+"KEY_COMMAND_CONVERSATION_INFO" = "ચેટ સંબંધી માહિતી પર જાઓ";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "ફોકસ ઇનપુટ બાર";
@@ -3083,7 +3083,7 @@
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "નવો ઇમેઇલ મેસેજ";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ઇમેઇલ કન્ફિગર થયેલ નથી.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ઇમેઇલ કન્ફિગર કરેલ નથી.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "આ મેસેજ ફોરવર્ડ કરો";
@@ -3095,7 +3095,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "લિંક ઓપન કરો";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "સ્ટિકર પેક જુઓ";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "સ્ટીકર પેક જુઓ";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "કૉલ";
@@ -3227,13 +3227,13 @@
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "તમારા સંપર્ક";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "જો તમને ખાતરી ન હોય કે વિનંતી કોની છે, તો નીચેના સંપર્કોની સમીક્ષા કરો અને પગલાં કરો.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "જો તમને ખાતરી ન હોય કે વિનંતી કોની છે, તો નીચેના સંપર્કોની સમીક્ષા કરો અને કાર્યવાહી કરો.";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "વિનંતી";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "વિનંતીની સમીક્ષા";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "વિનંતીની સમીક્ષા કરો";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "સંપર્કને અપડેટ કરો";
@@ -3251,13 +3251,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "અવરોધિત કરો";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ ને તમને મેસેજ કરવા દો અને તેમની સાથે તમારું નામ અને ફોટો શેર કરવા છે? જ્યાં સુધી તમે તેમને અનબ્લોક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ ને તમને મેસેજ કરવા દો અને તેમની સાથે તમારું નામ અને ફોટો શેર કરવા છે? જ્યાં સુધી તમે તેમને અનબ્લૉક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "આ ગ્રુપને અનબ્લોક કરવું છે અને તેના સભ્યો સાથે તમારું નામ અને ફોટો શેર કરવા છે? જ્યાં સુધી તમે તેમને અનબ્લોક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "આ ગ્રુપને અનબ્લૉક કરવું છે અને તેના સભ્યો સાથે તમારું નામ અને ફોટો શેર કરવા છે? જ્યાં સુધી તમે તેમને અનબ્લૉક નહીં કરો ત્યાં સુધી તમને કોઈ મેસેજ પ્રાપ્ત થશે નહીં.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "આ ગ્રુપને અનબ્લોક કરવું છે? જ્યાં સુધી તમે તેમને અનબ્લોક ન કરો ત્યાં સુધી તેઓ જાણશે નહીં કે તમે તેમના મેસેજ જોયા છે.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "આ ગ્રુપને અનબ્લૉક કરવું છે? જ્યાં સુધી તમે તેમને અનબ્લૉક ન કરો ત્યાં સુધી તેઓ જાણશે નહીં કે તમે તેમના મેસેજ જોયા છે.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "ચાલુ રાખો";
@@ -3290,7 +3290,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "આ ગ્રુપમાં જોડાવાની તમારી વિનંતીને રદ કરીએ?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "ગ્રુપ એડમિનને તમારી જોડાવા માટેની વિનંતી મોકલવામાં આવી છે. જ્યારે તેઓ પગલાં લેશે ત્યારે તમને સૂચિત કરવામાં આવશે.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "ગ્રુપ એડમિનને તમારી જોડાવા માટેની વિનંતી મોકલવામાં આવી છે. જ્યારે તેઓ કાર્યવાહી કરશે ત્યારે તમને સૂચિત કરવામાં આવશે.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "પહોંચી ગયું";
@@ -3383,7 +3383,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "તમે હાલમાં તમારા એકાઉન્ટ સાથે લિંક કરી શકતા મહત્તમ ડિવાઇસ પર પહોંચી ગયા છો. કૃપા કરીને કોઈ ડિવાઇસ દૂર કરો અને ફરીથી પ્રયાસ કરો.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "મ્યુટ કરેલ";
+"MUTED_BADGE" = "મ્યૂટ કરેલ છે";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "તાજેતરમાં જ તેમનું પ્રોફાઇલ નામ %1$@માંથી %2$@માં બદલ્યું.";
@@ -3467,7 +3467,7 @@
 "NO_GROUPS_IN_COMMON" = "કોમનમાં કોઈ ગ્રુપ નથી";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
-"NO_OTHER_GROUPS_IN_COMMON" = "અન્ય કોઈ ગ્રુપ સમાન નથી.";
+"NO_OTHER_GROUPS_IN_COMMON" = "અન્ય કોઈ ગ્રુપ કોમનમાં નથી.";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "ચેટિંગ શરૂ કરવા માટે સંપર્ક અથવા ગ્રુપ પસંદ કરો.";
@@ -3620,7 +3620,7 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "તમારા નંબર દ્વારા તમને કોણ શોધી શકે છે?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "તમારા ફોન નંબર";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "તમારો ફોન નંબર";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "કૃપા કરીને ફરીથી પ્રયાસ કરતા પહેલાં થોડી મિનિટો રાહ જુઓ. (%@)";
@@ -3983,7 +3983,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "અન્ય ગ્રુપ સભ્યો દ્વારા આમંત્રિત લોકોની વિગતો બતાવવામાં આવી નથી. જો આમંત્રિતો જોડાવાનું પસંદ કરે છે, તો તે સમયે તેમની માહિતી ગ્રુપ સાથે શેર કરવામાં આવશે. તેઓ જોડાશે ત્યાં સુધી તેઓ ગ્રુપમાં કોઈ મેસેજ જોશે નહીં.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "આ સૂચિના લોકો ગ્રુપ લિંક મારફતે \"%@\" માં જોડાવાનો પ્રયાસ કરી રહ્યા છે.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "આ લિસ્ટના લોકો ગ્રુપ લિંક મારફતે \"%@\" માં જોડાવાનો પ્રયાસ કરી રહ્યા છે.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "અમાન્ય આમંત્રણો";
@@ -4136,7 +4136,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN બનાવવાનું નિષ્ફળ થયું";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN એન્ક્રિપ્ટ થયેલ Signal સાથે માહિતીને સંગ્રહિત રાખે છે જેથી ફક્ત તમે જ તેનો ઉપયોગ કરી શકો. જ્યારે તમે ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારી પ્રોફાઇલ, સેટિંગ્સ અને સંપર્કો રિસ્ટોર થશે. એપ ખોલવા માટે તમારે તમારા PIN ની જરૂર નહીં પડે.";
+"PIN_CREATION_EXPLANATION" = "PIN એન્ક્રિપ્ટ થયેલ Signal સાથે માહિતીને સંગ્રહિત રાખે છે જેથી ફક્ત તમે જ તેને ઍક્સેસ કરી શકો. જ્યારે તમે ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારી પ્રોફાઇલ, સેટિંગ્સ અને સંપર્કો રિસ્ટોર થશે. એપ્લિકેશન ઓપન કરવા માટે તમારે તમારા PIN ની જરૂર નહીં પડે.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "PIN વિશે વધુ જાણો";
@@ -4169,7 +4169,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "રજીસ્ટ્રેશન લૉક બંધ કરીએ?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "PIN અક્ષમ કરો";
+"PIN_CREATION_SKIP" = "PIN ને અક્ષમ કરો";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "તમારો PIN બનાવો";
@@ -5048,19 +5048,19 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "ઓછા ડેટાનો વપરાશ કરો";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "ઓછા ડેટાનો ઉપયોગ ખરાબ નેટવર્ક પર કૉલમાં સુધારો કરી શકે છે.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "ઓછા ડેટાનો ઉપયોગ ખરાબ નેટવર્ક પર કૉલ્સમાં સુધારો કરી શકે છે.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "કૉલ્સ";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "વૉઇસ મેસેજ, વ્યૂ-એક વખત મીડિયા, અને સ્ટીકર (100kb) હંમેશાં ઓટો-ડાઉનલોડ કરવામાં આવે છે.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "વૉઈસ મેસેજ, વ્યૂ-એક વખત મીડિયા, અને સ્ટીકર (100kb) હંમેશાં ઓટો-ડાઉનલોડ કરવામાં આવે છે.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "ઓટો-ડાઉનલોડ";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "ઓડિયો-ડાઉનલોડ સેટિંગ્સને રિસેટ કરો";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "ઓટો-ડાઉનલોડ સેટિંગ્સને રિસેટ કરો";
 
 /* Item title for the sent media quality setting */
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
@@ -5084,7 +5084,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "સ્થાનાંતર કરશો નહીં";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "તમારી પાસે %@ નું બેલેન્સ છે છે. જો તમે તમારું એકાઉન્ટ કાઢી નાંખતા પહેલાં તમારા ફંડને બીજા વૉલેટ સરનામાં પર સ્થાનાંતરિત નહીં કરો, તો તમે તેને કાયમ માટે ગુમાવી દેશો.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "તમારી પાસે %@ નું બેલેન્સ છે છે. જો તમે તમારું એકાઉન્ટ કાઢી નાંખતા પહેલાં તમારા ફંડને બીજા વૉલેટ એડ્રેસ પર સ્થાનાંતરિત નહીં કરો, તો તમે તેને કાયમ માટે ગુમાવી દેશો.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "પેમેન્ટ બેલેન્સને સ્થાનાંતરિત કરવું છે?";
@@ -5108,7 +5108,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "તમે શરૂ કરેલી બધી નવી ચેટ માટે ડિફોલ્ટ અદ્રશ્ય મેસેજ ટાઈમર સેટ કરો.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Signal ને દાન આપો";
+"SETTINGS_DONATE" = "Signal ને ફાળો આપો";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "મદદ";
@@ -5165,7 +5165,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "સેટિંગ્સ";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "મ્યુટ કરેલ ચેટ સામેલ કરો";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "મ્યૂટ કરેલ ચેટ સામેલ કરો";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "બેજ કાઉન્ટ";
@@ -5201,19 +5201,19 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "ફંડ ઉમેરો";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ફંડ ઉમેરવા માટે, MobileCoin ને તમારા વૉલેટ સરનામા પર મોકલો. MobileCoin ને સપોર્ટ કરે તેવા એક્સચેન્જ પર તમારા એકાઉન્ટમાંથી ટ્રાન્ઝેક્શન શરૂ કરો, પછી QR કોડ સ્કૅન કરો અથવા તમારા વૉલેટ સરનામાની કૉપિ કરો.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ફંડ ઉમેરવા માટે, MobileCoin ને તમારા વૉલેટ એડ્રેસ પર મોકલો. MobileCoin ને સપોર્ટ કરે તેવા એક્સચેન્જ પર તમારા એકાઉન્ટમાંથી ટ્રાન્ઝેક્શન શરૂ કરો, પછી QR કોડ સ્કૅન કરો અથવા તમારા વૉલેટ એડ્રેસની કૉપિ કરો.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "વૉલેટ સરનામું કૉપિ કરેલ છે";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "વૉલેટ એડ્રેસ કૉપિ કરેલ છે";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "બધા પેમેન્ટ";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "બધા પેમેન્ટ્સ";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%3$@ પર %1$@%2$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal માં પેમેન્ટ હવે ઉપલબ્ધ નથી. તમે હજી પણ એક્સચેન્જમાં ફંડ સ્થાનાંતરિત કરી શકો છો પરંતુ તમે હવે પેમેન્ટ મોકલી શકતા નથી અને મેળવી શકતા નથી અથવા ફંડ ઉમેરી શકતા નથી.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal પર પેમેન્ટ્સ હવે ઉપલબ્ધ નથી. તમે હજી પણ એક્સચેન્જમાં ફંડ સ્થાનાંતરિત કરી શકો છો પરંતુ તમે હવે પેમેન્ટ મોકલી શકતા નથી અને મેળવી શકતા નથી અથવા ફંડ ઉમેરી શકતા નથી.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "પેમેન્ટ નિષ્ક્રિય કરી શકતા નથી કારણ કે તમારું બેલેન્સ ઉપલબ્ધ નથી. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયાસ કરો.";
@@ -5222,10 +5222,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "પેમેન્ટ પૂર્ણ કરી શક્યા નહીં કારણ કે તમારું બેલેન્સ ઉપલબ્ધ નથી. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયાસ કરો.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal માં પેમેન્ટ હવે ઉપલબ્ધ નથી. તમે હજી પણ એક્સચેન્જમાં ફંડ સ્થાનાંતરિત કરી શકો છો પરંતુ તમે હવે પેમેન્ટ મોકલી શકતા નથી અને મેળવી શકતા નથી અથવા ફંડ ઉમેરી શકતા નથી.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal પર પેમેન્ટ્સ હવે ઉપલબ્ધ નથી. તમે હજી પણ એક્સચેન્જમાં ફંડ સ્થાનાંતરિત કરી શકો છો પરંતુ તમે હવે પેમેન્ટ મોકલી શકતા નથી અને મેળવી શકતા નથી અથવા ફંડ ઉમેરી શકતા નથી.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal માં પેમેન્ટ હવે ઉપલબ્ધ નથી. તમે હજી પણ એક્સચેન્જમાં ફંડ સ્થાનાંતરિત કરી શકો છો પરંતુ તમે હવે પેમેન્ટ મોકલી શકતા નથી અને મેળવી શકતા નથી અથવા ફંડ ઉમેરી શકતા નથી.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signal પર પેમેન્ટ્સ હવે ઉપલબ્ધ નથી. તમે હજી પણ એક્સચેન્જમાં ફંડ સ્થાનાંતરિત કરી શકો છો પરંતુ તમે હવે પેમેન્ટ મોકલી શકતા નથી અને મેળવી શકતા નથી અથવા ફંડ ઉમેરી શકતા નથી.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "રૂપાંતરણ એ ફક્ત અંદાજો છે અને સચોટ ન હોઈ શકે.";
@@ -5240,22 +5240,22 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "નિષ્ક્રિય કરો";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "પેમેન્ટને નિષ્ક્રિય કરો";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "પેમેન્ટ્સને નિષ્ક્રિય કરો";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "જો તમે પેમેન્ટ્સ નિષ્ક્રિય કરો છો તો તમે Signal માં Mobilecoin મોકલી શકશો નહીં અથવા પ્રાપ્ત કરી શકશો નહીં.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "પેમેન્ટને નિષ્ક્રિય કરવું છે?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "પેમેન્ટ્સને નિષ્ક્રિય કરવું છે?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "પેમેન્ટને નિષ્ક્રિય કરો";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "પેમેન્ટ્સને નિષ્ક્રિય કરો";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "એવી ભલામણ કરવામાં આવે છે કે તમે પેમેન્ટને નિષ્ક્રિય કરતા પહેલા તમારા ફંડને બીજા વૉલેટ સરનામાં પર સ્થાનાંતરિત કરો. જો તમે હવે તમારા ફંડને સ્થાનાંતરિત ન કરવાનું પસંદ કરો છો, તો જો તમે પેમેન્ટ્સને  ફરીથી સક્રિય કરો છો તો તે Signal સાથે જોડાયેલા તમારા વૉલેટમાં રહેશે.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "એવી ભલામણ કરવામાં આવે છે કે તમે પેમેન્ટ્સને નિષ્ક્રિય કરતા પહેલા તમારા ફંડને બીજા વૉલેટ એડ્રેસ પર સ્થાનાંતરિત કરો. જો તમે હવે તમારા ફંડને સ્થાનાંતરિત ન કરવાનું પસંદ કરો છો, તો જો તમે પેમેન્ટ્સને ફરીથી સક્રિય કરો છો તો તે Signal સાથે લિંક થયેલા તમારા વૉલેટમાં રહેશે.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "જો તમે પેમેન્ટને ફરીથી સક્રિય કરવાનું પસંદ કરો છો તો તમારું બેલેન્સ Signal સાથે જોડાયેલા તમારા વૉલેટમાં રહેશે.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "જો તમે પેમેન્ટને ફરીથી સક્રિય કરવાનું પસંદ કરો છો તો તમારું બેલેન્સ Signal સાથે લિંક થયેલા તમારા વૉલેટમાં રહેશે.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "સ્થાનાંતરિત કર્યા વિના નિષ્ક્રિય કરવું છે?";
@@ -5270,7 +5270,7 @@
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "વિગતો";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "પેમેન્ટને સક્રિય કરો";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "પેમેન્ટ્સને સક્ષમ કરો";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin એ એક નવું ગોપનીયતા કેન્દ્રિત ડિજિટલ ચલણ છે.";
@@ -5279,7 +5279,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin વિશે";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "તમે તમારા વૉલેટ સરનામાં પર MobileCoin મોકલીને Signal માં ઉપયોગ માટે ફંડ ઉમેરી શકો છો.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "તમે તમારા વૉલેટ એડ્રેસ પર MobileCoin મોકલીને Signal માં ઉપયોગ માટે ફંડ ઉમેરી શકો છો.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "ફંડ ઉમેરી રહ્યા છીએ";
@@ -5288,7 +5288,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "તમે MobileCoin ને સપોર્ટ કરતી એક્સચેન્જ પર ગમે ત્યારે MobileCoin ને કેશ આઉટ કરી શકો છો. ફક્ત તે એક્સચેન્જ પર તમારા એકાઉન્ટમાં સ્થાનાંતરિત કરો.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "કેશ આઉટ કરી રહ્યા છીએ";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "કેશ આઉટ કરવું";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PIN અપડેટ કરો";
@@ -5306,10 +5306,10 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "તમારો રિકવરી ફ્રેઝ તમને તમારા પેમેન્ટ ખાતાને રિસ્ટોર કરવાની બીજી રીત આપે છે.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "રિકવરી ફ્રેઝએ રેકોર્ડ કરો";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "રિકવરી ફ્રેઝને રેકોર્ડ કરો";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "અમાન્ય વૉલેટ સરનામું";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "અમાન્ય વૉલેટ એડ્રેસ";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "હજી સુધી કોઈ તાજેતરની પ્રવૃત્તિ નથી.";
@@ -5318,7 +5318,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "શું તમે પેમેન્ટને સક્ષમ કરવા માંગો છો?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "પેમેન્ટ સક્ષમ કરેલ નથી";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "પેમેન્ટ્સ સક્ષમ કરેલ નથી";
 
 /* Message for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "પેમેન્ટ મોકલવા માટે ફરીથી રજીસ્ટર કરો.";
@@ -5327,22 +5327,22 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "રજીસ્ટર નથી";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "પેમેન્ટ સક્રિય કરો";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "પેમેન્ટ્સ સક્રિય કરો";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "પેમેન્ટને સક્રિય કર્યું.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "પેમેન્ટ્સને સક્રિય કર્યું.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "MobileCoin મોકલવા અને પ્રાપ્ત કરવા માટે Signal નો ઉપયોગ કરો, જે એક નવી ગોપનીયતા કેન્દ્રિત ડિજિટલ ચલણ છે. શરૂ કરવા માટે સક્રિય કરો.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "પેમેન્ટને ફરીથી સક્રિય કરો";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "પેમેન્ટ્સને ફરીથી સક્રિય કરો";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "પેમેંટ્સ (બીટા)નો પરિચય";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "પેમેન્ટ્સ (બીટા)નો પરિચય";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "જો તમે તમારા Signal પિનની પુષ્ટિ કરો છો તો તમે Signal ને ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારું બેલેન્સ આપોઆપ રિસ્ટોર થશે. તમે રિકવરી ફ્રેઝનો ઉપયોગ કરીને તમારું બેલેન્સ પણ રિસ્ટોર કરી શકો છો, જે તમારા માટે અનન્ય 24 શબ્દોનો ફ્રેઝ છે. તેને લખી ને સલામત સ્થળે સંગ્રહકરો.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "જો તમે તમારા Signal પિનની પુષ્ટિ કરો છો તો તમે Signal ને ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારું બેલેન્સ આપોઆપ રિસ્ટોર થશે. તમે રિકવરી ફ્રેઝનો ઉપયોગ કરીને તમારું બેલેન્સ પણ રિસ્ટોર કરી શકો છો, જે તમારા માટે અનન્ય 24 શબ્દોનો ફ્રેઝ છે. તેને લખી ને સલામત સ્થળે સંગ્રહિત કરો.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "ફંડ ઉમેરો";
@@ -5384,7 +5384,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "જ્યારે તમારા કબજામાં રહેલા કોઇનને ટ્રાન્ઝેક્શન પૂર્ણ કરવા માટે જોડી શકાય નહીં ત્યારે \"કોઇન ક્લીન અપ ફી\" લેવામાં આવે છે. ક્લીનઅપ તમને પેમેન્ટ મોકલવાનું ચાલુ રાખવાની મંજૂરી આપશે.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "તમારી પાસે આ પેમેન્ટ પૂર્ણ કરવા માટે પૂરતું MOB નથી. તમારું વર્તમાન બેલેન્સ %@ છે ";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "આ પેમેન્ટ પૂર્ણ કરવા માટે તમારી પાસે પૂરતું MOB નથી. તમારું વર્તમાન બેલેન્સ %@ છે ";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "અપૂરતું બેલેન્સ";
@@ -5408,7 +5408,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "મોકલ્યો";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "તાજેતરના પેમેન્ટ";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "તાજેતરના પેમેન્ટ્સ";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "તમે તમારો પિન અક્ષમ કરી શકો તે પહેલાં, તમે તમારા પેમેન્ટ એકાઉન્ટને રિકવરી કરી શકો છો તેની ખાતરી કરવા માટે તમારે તમારા પેમેન્ટ રિકવરી ફ્રેઝને રેકોર્ડ કરવું આવશ્યક છે.";
@@ -5417,7 +5417,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "રિકવરી ફ્રેઝને રેકોર્ડ કરો";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "પેમેન્ટ રિકવરી ફ્રેઝને રેકોર્ડ કરો";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "પેમેન્ટ્સ રિકવરી ફ્રેઝને રેકોર્ડ કરો";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "બાકીનું બેલેન્સ";
@@ -5459,7 +5459,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "રિકવરી ફ્રેઝને પેસ્ટ કરો";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "તમારો રિકવરી ફ્રેઝ તમારા માટે અનન્ય 12 શબ્દોનો ફ્રેઝ છે. તમારા પેમેન્ટ એકાઉન્ટને ફરીથી ઇન્સ્ટોલ કરવા માટે તેનો ઉપયોગ કરો.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "તમારો રિકવરી ફ્રેઝ તમારા માટે અનન્ય 12 શબ્દોનો ફ્રેઝ છે. તમારા પેમેન્ટ એકાઉન્ટને રિસ્ટોર કરવા માટે તેનો ઉપયોગ કરો.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "રિકવરી ફેઝ દાખલ કરો";
@@ -5483,7 +5483,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "સ્થાનાંતરિત મેળવનાર માટે QR કોડ સ્કૅન કરો.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "અમાન્ય સરનામું";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "અમાન્ય એડ્રેસ";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR કોડ સ્કેન કરો";
@@ -5501,19 +5501,19 @@
 "SETTINGS_PAYMENTS_TITLE" = "પેમેન્ટ્સ";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "તમે તમારા Signal વૉલેટ સરનામાં પર સ્થાનાંતરિત કરી શકતા નથી. આધારભૂત એક્સચેન્જ પર તમારા એકાઉન્ટમાંથી વૉલેટ સરનામું દાખલ કરો.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "તમે તમારા Signal વૉલેટ એડ્રેસ પર સ્થાનાંતરિત કરી શકતા નથી. આધારભૂત એક્સચેન્જ પર તમારા એકાઉન્ટમાંથી વૉલેટ એડ્રેસ દાખલ કરો.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "તમે એક્સચેન્જ દ્વારા પૂરા પાડવામાં આવેલા વૉલેટ સરનામાંમાં સ્થાનાનતરણ પૂર્ણ કરીને MobileCoin ને સ્થાનાંતરિત કરી શકો છો. વૉલેટ સરનામું એ સામાન્ય રીતે QR કોડની નીચે સંખ્યાઓ અને અક્ષરોની સ્ટ્રિંગ છે.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "તમે એક્સચેન્જ દ્વારા પૂરા પાડવામાં આવેલા વૉલેટ એડ્રેસમાં સ્થાનાંતરણ પૂર્ણ કરીને MobileCoin ને સ્થાનાંતરિત કરી શકો છો. વૉલેટ એડ્રેસ એ સામાન્ય રીતે QR કોડની નીચે સંખ્યાઓ અને અક્ષરોની string છે.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "તમે જે વૉલેટ સરનામાં પર ટ્રાન્સફર કરવાનો પ્રયાસ કરી રહ્યા છો તે ચકાસો અને ફરીથી પ્રયાસ કરો.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "તમે જે વૉલેટ એડ્રેસ પર ટ્રાન્સફર કરવાનો પ્રયાસ કરી રહ્યા છો તે ચકાસો અને ફરીથી પ્રયાસ કરો.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "ખોટું સરનામું";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "ખોટું એડ્રેસ";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "માટે: વૉલેટ સરનામું સ્કૅન કરો અથવા દાખલ કરો";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "માટે: વૉલેટ એડ્રેસ સ્કૅન કરો અથવા દાખલ કરો";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "એક્સચેન્જ પર સ્થાનાંતરિત કરો";
@@ -5576,7 +5576,7 @@
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "પેમેન્ટ્સ (બીટા)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "તમારું વૉલેટ સરનામું";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "તમારું વૉલેટ એડ્રેસ";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "ફોન નંબર દ્વારા મને શોધો";
@@ -5603,7 +5603,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN રિમાઇન્ડર્સ";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN એન્ક્રિપ્ટ થયેલ Signal સાથે માહિતીને સંગ્રહિત રાખે છે જેથી ફક્ત તમે જ તેનો ઉપયોગ કરી શકો. તમારો PIN રિકવર કરી શકાતો નથી. જ્યારે તમે Signal ને ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારી પ્રોફાઇલ, સેટિંગ્સ અને સંપર્કો રિસ્ટોર થશે.";
+"SETTINGS_PINS_FOOTER" = "PIN એન્ક્રિપ્ટ થયેલ Signal સાથે માહિતીને સંગ્રહિત રાખે છે જેથી ફક્ત તમે જ તેને ઍક્સેસ કરી શકો. તમારો PIN રિકવર કરી શકાતો નથી. જ્યારે તમે Signal ને ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારી પ્રોફાઇલ, સેટિંગ્સ અને સંપર્કો રિસ્ટોર થશે.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "તમારો PIN બદલો";
@@ -5615,7 +5615,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "સેન્સરશીપ અવરોધ, રિલે કૉલ અને સીલ કરેલ મોકલનારના સેટિંગ્સ.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "સેન્સરશીપ અવરોધ, રિલે કૉલ્સ અને સીલ કરેલ મોકલનારના સેટિંગ્સ.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "વધુ";
@@ -5657,10 +5657,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "સ્ક્રીન લૉક";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "App Switcher માં સ્ક્રીન છુપાવો";
+"SETTINGS_SCREEN_SECURITY" = "એપ્લિકેશન Switcher માં સ્ક્રીન છુપાવો";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "iOS ફોન એપ્લિકેશનમાં \"તાજેતરની\" સૂચિમાં કૉલ બતાવો.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "iOS ફોન એપ્લિકેશનમાં \"તાજેતરની\" લિસ્ટમાં કૉલ્સ બતાવો.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "અવાજો";
@@ -5810,7 +5810,7 @@
 "SPAM_CAPTCHA_SHEET_TITLE" = "મેસેજિંગ ચાલુ રાખવા માટે ચકાસો";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ચકાસણી છોડી દો";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ચકાસણી સ્કિપ કરો";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "ચકાસણી પૂર્ણ કરો";
@@ -5828,7 +5828,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "નવા ગ્રુપ અહીં છે!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "નવા ગ્રુપ ફીચરમાં @mentions, એડમિન અને વધુનો સમાવેશ થાય છે. ટેપ કરીને તેને અજમાવો:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "નવા ગ્રુપ ફીચરમાં @ઉલ્લેખો, એડમિન અને વધુનો સમાવેશ થાય છે. ટેપ કરીને તેને અજમાવો:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "સ્ટીકર મેસેજ";
@@ -6128,7 +6128,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PIN વિશે વધુ જાણો";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN એન્ક્રિપ્ટ થયેલ Signal સાથે માહિતીને સંગ્રહિત રાખે છે જેથી ફક્ત તમે જ તેનો ઉપયોગ કરી શકો. જ્યારે તમે ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારી પ્રોફાઇલ, સેટિંગ્સ અને સંપર્કો રિસ્ટોર થશે. એપ ખોલવા માટે તમારે તમારા PIN ની જરૂર નહીં પડે.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN એન્ક્રિપ્ટ થયેલ Signal સાથે માહિતીને સંગ્રહિત રાખે છે જેથી ફક્ત તમે જ તેને ઍક્સેસ કરી શકો. જ્યારે તમે ફરીથી ઇન્સ્ટોલ કરો ત્યારે તમારી પ્રોફાઇલ, સેટિંગ્સ અને સંપર્કો રિસ્ટોર થશે. એપ્લિકેશન ઓપન કરવા માટે તમારે તમારા PIN ની જરૂર નહીં પડે.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN રજૂ કરી રહ્યા છીએ";

@@ -90,7 +90,7 @@ private class ContextMenuHostView: UIView {
     }
 
     lazy var previewSourceFrame: CGRect = delegate?.contextMenuViewPreviewSourceFrame(self) ?? CGRect.zero
-    private let minPreviewScaleFactor: CGFloat = 0.5
+    private let minPreviewScaleFactor: CGFloat = 0.1
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -549,10 +549,6 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
 
     public func gestureDidEnd() {
         guard !UIAccessibility.isVoiceOverRunning else {
-            return
-        }
-
-        guard localPanGestureRecoginzer == nil else {
             return
         }
 

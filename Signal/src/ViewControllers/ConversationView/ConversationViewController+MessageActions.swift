@@ -15,7 +15,8 @@ extension ConversationViewController {
             return
         }
         if FeatureFlags.contextMenus {
-            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewContextMenuGestureRecognizer)
+            let keyboardActive = inputToolbar?.isInputViewFirstResponder() ?? false
+            let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: itemViewModel, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewContextMenuGestureRecognizer, keyboardWasActive: keyboardActive)
             collectionViewActiveContextMenuInteraction = interaction
             cell.addInteraction(interaction)
             let cellCenterPoint = cell.frame.center
@@ -101,6 +102,14 @@ extension ConversationViewController {
 
     public var isPresentingMessageActions: Bool {
         self.messageActionsViewController != nil
+    }
+
+    public var isPresentingContextMenu: Bool {
+        if let interaction = viewState.collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
+            return true
+        }
+
+        return false
     }
 
     @objc
@@ -293,12 +302,26 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         // Reset scroll view pan gesture recognizer, so CV does not scroll behind context menu post presentation on user swipe
         collectionView.panGestureRecognizer.isEnabled = false
         collectionView.panGestureRecognizer.isEnabled = true
+
+        if let contextInteraction = interaction as? ChatHistoryContextMenuInteraction, let cell = contextInteraction.view as? CVCell, let componentView = cell.componentView {
+            componentView.contextMenuPresentationWillBegin?()
+        }
+
         dismissKeyBoard()
     }
 
     public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {
+
+    }
+
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration: ContextMenuConfiguration) {
         if let contextInteraction = interaction as? ChatHistoryContextMenuInteraction, let cell = contextInteraction.view as? CVCell, let componentView = cell.componentView {
-            componentView.contextMenuSourceAnimationComplete?()
+            componentView.contextMenuPresentationDidEnd?()
+
+            if contextInteraction.keyboardWasActive {
+                popKeyBoard()
+            }
+
         }
 
         collectionViewActiveContextMenuInteraction = nil

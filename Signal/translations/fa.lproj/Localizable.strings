@@ -143,7 +143,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "درباره درخواست‌های تبادل پیام";
 
 /* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "پاسخ دهید";
+"ANSWER_CALL_BUTTON_TITLE" = "پاسخ دادن";
 
 /* notification body */
 "APN_Message" = "پیام‌ جدید دارید";
@@ -710,7 +710,7 @@
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "تایید نشده";
 
 /* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "شماره‌ی ثبت نشده";
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "شماره‌ٔ ثبت نشده";
 
 /* Label for the 'edit name' button in the contact share approval view. */
 "CONTACT_EDIT_NAME_BUTTON" = "ویرایش";
@@ -1457,7 +1457,7 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "هفته";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "رد";
+"DISMISS_BUTTON_TEXT" = "نادیده گرفتن";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "محل دورزدن سانسور";
@@ -1577,7 +1577,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "سفر و مکان‌ها";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "هیچ کدام از مخاطبین شما سیگنال را نصب نکرده‌اند.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "هیچ کدام از مخاطبین شما از سیگنال استفاده نمی‌کنند.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "چرا از کسی دعوت نمی‌کنید؟";
@@ -1712,7 +1712,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "کد امنیتی شما با %@ به تازگی تغییر کرده است. بهتر است قبل از ارسال دوباره این ‍پیام آن را تایید نمایید.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "تایید کد امنیتی ناموفق بود!";
+"FAILED_VERIFICATION_TITLE" = "تأیید شمارهٔ امنیتی ناموفق بود!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "علامت‌گذاری به عنوان تائید شده";
@@ -2954,7 +2954,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "اتصال دستگاه ناموفق بود";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your chats, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "این دستگاه قادر خواهد بود تا مخاطبین و گروه های شما را ببیند، به گفتگوهای شما دسترسی داشته باشد، و با نام شما پیام ارسال کند.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "اتصال به این دستگاه؟";
@@ -2966,7 +2966,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "کد QR نمایش یافته بر روی دستگاهی که می‌خواهید متصل شوید، اسکن کنید.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "برای پیوند دادن یک دستگاه جدید کد QR را اسکن کنید.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "اتصال به دستگاه جدید";
@@ -4265,7 +4265,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "این به نظر شبیه کد امنیتی شما با %@ نیست. مطمئنید که در حال تأیید مخاطب درستی هستید؟";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "شمارهٔ موجود در کلیپ‌بورد شما شبیه شمارهٔ امنیتی برای این گفتگو نیست.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "سیگنال هیچ کد امنیتی در کلیپ بورد شما پیدا نکرد. آیا آن را به درستی کپی کرده اید؟";
@@ -4520,7 +4520,7 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "شناره را وارد کنید";
 
 /* No comment provided by engineer. */
-"REGISTRATION_ERROR" = "ثبت‌نام ناموفق";
+"REGISTRATION_ERROR" = "خطای ثبت‌نام";
 
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لطفا برای فعال شدن حساب خود، کدی که به شما فرستاده‌ایم را تائید کنید.";
@@ -4574,7 +4574,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "در حال احراز %@...";
 
 /* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "رد تماس";
+"REJECT_CALL_BUTTON_TITLE" = "رد کردن";
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "شماره تلفنی که سعی در ثبت آن دارید ، قبلاً روی سرور دیگری ثبت شده ، لطفاً از آن‌جا بیرون آمده و دوباره امتحان کنید. ";
@@ -4583,7 +4583,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "انتخاب مدیر جدید";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "درخواست ثبت‌نام مجدد برای اعلان‌های ارسالی";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "To make Signal the best messaging app on the planet, we’d love to hear your feedback.";
@@ -4814,7 +4814,7 @@
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "نام ، نام کاربری یا شماره";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "جستجو با اسم یا شماره";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "جستجو با نام یا شماره";
 
 /* placeholder text in an empty search field */
 "SEARCH_FIELD_PLACE_HOLDER_TEXT" = "جستجو";
@@ -5036,10 +5036,10 @@
 "SETTINGS_CHATS" = "گفتگوها";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "پاک کردن تاریخچهٔ گفتگو";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "حق تکثیر پیام‌رسان سیگنال\nگواهی شده تحت GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "مصرف داده";
@@ -5657,7 +5657,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "قفل صفحه نمایش";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "پنهان کردن صفحه هنگام تعویض برنامه‌ها";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
@@ -5681,7 +5681,7 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Use Touch ID to unlock Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "امنیت برنامه";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";

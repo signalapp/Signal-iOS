@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Entendido";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "No se ha podido entregar un mensaje, sticker, adjunto, reacción o notificación de lectura de %@ en este chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Fallo en la entrega";
@@ -230,7 +230,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Rápida, menos datos";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Calidad de fotos/vídeos";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Calidad de fotos y vídeos";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Mensaje para %@";
@@ -5063,13 +5063,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Restablecer ajustes de descarga automática";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Calidad de fotos/vídeos enviados";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Calidad de fotos y vídeos";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Selecciona la calidad de las fotos y vídeos que envías";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Fotos/vídeos enviados";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Fotos y vídeos enviados";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Uso de datos";
@@ -5687,7 +5687,7 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Se usarán más datos al seleccionar la opción de alta calidad.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Fotos y vídeos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Calidad";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Mostrar chats en sugerencias";
