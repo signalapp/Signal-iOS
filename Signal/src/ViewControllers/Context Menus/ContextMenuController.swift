@@ -109,6 +109,15 @@ private class ContextMenuHostView: UIView {
         if let accessories = accessoryViews {
             var accessoryFrames: [CGRect] = []
             for accessory in accessories {
+
+                let animationState = delegate?.contextMenuViewAnimationState(self) ?? .none
+                guard !(accessory.animateAccessoryPresentationAlongsidePreview && animationState == .animateOut) else {
+                    if let targetFrame = accessory.targetAnimateOutFrame, accessory.accessoryView.frame.size == CGSize.zero {
+                        accessory.accessoryView.frame = targetFrame
+                    }
+                    continue
+                }
+
                 layoutAccessoryView(accessory)
 
                 var frame = accessory.accessoryView.frame
@@ -260,12 +269,6 @@ private class ContextMenuHostView: UIView {
 
     private func layoutAccessoryView(_ accessory: ContextMenuTargetedPreviewAccessory) {
         let previewFrame = delegate?.contextMenuViewPreviewFrameForAccessoryLayout(self) ?? CGRect.zero
-
-        let animationState = delegate?.contextMenuViewAnimationState(self) ?? .none
-        guard !(accessory.animateAccessoryPresentationAlongsidePreview && animationState == .animateOut) else {
-            return
-        }
-
         accessory.accessoryView.frame = adjustAccessoryFrameForContentRect(accessoryFrame(accessory, previewFrame: previewFrame))
     }
 }
@@ -366,6 +369,12 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         self.previewView?.layer.shadowRadius = 12
         self.previewView?.layer.shadowOffset = CGSize(width: 0, height: 4)
         self.previewView?.layer.shadowColor = UIColor.ows_black.cgColor
+
+        for accessory in accessoryViews {
+            if accessory.animateAccessoryPresentationAlongsidePreview {
+                accessory.accessoryView.isHidden = true
+            }
+        }
     }
 
     @objc
@@ -403,15 +412,21 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         }
 
         previewView.isHidden = false
+        for accessory in accessoryViews {
+            if accessory.animateAccessoryPresentationAlongsidePreview {
+                accessory.accessoryView.isHidden = false
+            }
+        }
         contextMenuPreview.view?.isHidden = true
 
         if shiftPreview {
             previewView.frame = initialFrame
 
             let yDelta = finalFrame.y - initialFrame.y
+            let heightDelta = finalFrame.height - initialFrame.height
             for accessory in accessoryViews {
                 if accessory.animateAccessoryPresentationAlongsidePreview {
-                    accessory.accessoryView.frame.y -= yDelta
+                    accessory.accessoryView.frame.y -= (yDelta + heightDelta)
                 }
             }
 
@@ -424,7 +439,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
                 animations: {
                     for accessory in self.accessoryViews {
                         if accessory.animateAccessoryPresentationAlongsidePreview {
-                            accessory.accessoryView.frame.y += yDelta
+                            accessory.accessoryView.frame.y += (yDelta + heightDelta)
                         }
                     }
                     self.previewView?.frame = finalFrame
@@ -464,7 +479,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         let dispatchGroup = DispatchGroup()
         animationState = .animateOut
         dispatchGroup.enter()
-        UIView.animate(withDuration: animationDuration / 2.0) {
+        UIView.animate(withDuration: animationDuration) {
             self.blurView.effect = nil
             self.blurView.backgroundColor = nil
             self.previewShadowVisible = false
@@ -479,7 +494,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         if shiftPreview {
 
             let yDelta = finalFrame.y - initialFrame.y
-
+            let heightDelta = finalFrame.height - initialFrame.height
             dispatchGroup.enter()
             UIView.animate(
                 withDuration: animationDuration,
@@ -490,7 +505,10 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
                 animations: {
                     for accessory in self.accessoryViews {
                         if accessory.animateAccessoryPresentationAlongsidePreview {
-                            accessory.accessoryView.frame.y += yDelta
+                            var frame = accessory.accessoryView.frame
+                            frame.y += (yDelta + heightDelta)
+                            accessory.accessoryView.frame = frame
+                            accessory.targetAnimateOutFrame = frame
                         }
                     }
                     self.previewView?.frame = finalFrame
