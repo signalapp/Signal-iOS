@@ -1687,6 +1687,12 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Network Error";
 
+/* Format string for an error alert notification message. Embes {{ error string }} */
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+
+/* Format string for an error alert notification title. */
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
 

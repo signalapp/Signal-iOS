@@ -282,8 +282,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             // Always show these notifications
             return true
         case .internalError:
-            // Only show internal errors on internal builds
-            return DebugFlags.internalErrorAlerts
+            // Only show errors alerts on builds run by a test population (beta, internal, etc.)
+            return DebugFlags.testPopulationErrorAlerts
         case .incomingMessageWithActions_CanReply,
              .incomingMessageWithActions_CannotReply,
              .incomingMessageWithoutActions,

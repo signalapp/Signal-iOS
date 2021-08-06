@@ -407,7 +407,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                  thread: contactThread,
                                                  transaction: transaction)
 
-            self.notificationsManager?.notifyInternalUsers(
+            self.notificationsManager?.notifyTestPopulation(
                 ofErrorMessage: "Failed decryption of envelope: \(envelope.timestamp)")
         }
 

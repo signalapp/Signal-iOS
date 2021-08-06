@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-enum FeatureBuild: Int {
+private enum FeatureBuild: Int {
     case dev
     case internalPreview
     case qa
@@ -20,7 +20,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
 // MARK: -
 
@@ -189,6 +189,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let senderKeyAndMessageResend = build.includes(.qa)
 
+    @objc
+    public static let forceEnableGiphyMP4 = build.includes(.beta)
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -239,7 +242,7 @@ public class DebugFlags: BaseFlags {
     public static let keepWebSocketOpenInBackground = false
 
     @objc
-    public static let internalErrorAlerts = build.includes(.qa)
+    public static let testPopulationErrorAlerts = build.includes(.beta)
 
     @objc
     public static let audibleErrorLogging = build.includes(.qa)
