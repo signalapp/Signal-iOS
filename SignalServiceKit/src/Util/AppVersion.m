@@ -130,6 +130,17 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
     OWSLogInfo(@"Device Model: %@", [[self class] hardwareInfoString]);
 
+    if (SSKDebugFlags.internalLogging) {
+        NSString *_Nullable bundleName = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleName"];
+        if (bundleName.length > 0) {
+            OWSLogInfo(@"Bundle Name: %@", bundleName);
+        }
+        NSString *_Nullable bundleDisplayName = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+        if (bundleDisplayName.length > 0) {
+            OWSLogInfo(@"Bundle Display Name: %@", bundleDisplayName);
+        }
+    }
+
     NSDictionary<NSString *, NSString *> *buildDetails =
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
     OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
