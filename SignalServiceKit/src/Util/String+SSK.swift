@@ -553,10 +553,10 @@ public extension String {
     var isSingleEmoji: Bool {
         if CurrentAppContext().isNSE {
             // It is not safe to use CoreText in the NSE.
-            return self.isSingleEmojiWithoutCoreText
+            return self.isSingleEmojiUsingEmojiWithSkinTones
         } else {
             // This implementation of isSingleEmoji is faster
-            // than isSingleEmojiWithoutCoreText.
+            // than isSingleEmojiUsingEmojiWithSkinTones.
             return self.isSingleEmojiUsingCoreText
         }
     }
@@ -565,7 +565,7 @@ public extension String {
         glyphCount == 1 && containsEmoji
     }
 
-    var isSingleEmojiWithoutCoreText: Bool {
+    var isSingleEmojiUsingEmojiWithSkinTones: Bool {
         EmojiWithSkinTones(rawValue: self, skipSingleEmojiCheck: true) != nil
     }
 

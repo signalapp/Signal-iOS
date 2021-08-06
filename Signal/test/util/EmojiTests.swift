@@ -12,7 +12,7 @@ class EmojiTests: SignalBaseTest {
         super.setUp()
     }
 
-    func test_roundtrip() {
+    func testSimpleEmojiCases() {
         XCTAssertFalse("".isSingleEmoji)
         XCTAssertTrue("😃".isSingleEmoji)
         XCTAssertFalse("😃😃".isSingleEmoji)
@@ -21,13 +21,13 @@ class EmojiTests: SignalBaseTest {
         XCTAssertFalse("😃 ".isSingleEmoji)
         XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmoji)
 
-        XCTAssertFalse("".isSingleEmojiWithoutCoreText)
-        XCTAssertTrue("😃".isSingleEmojiWithoutCoreText)
-        XCTAssertFalse("😃😃".isSingleEmojiWithoutCoreText)
-        XCTAssertFalse("a".isSingleEmojiWithoutCoreText)
-        XCTAssertFalse(" 😃".isSingleEmojiWithoutCoreText)
-        XCTAssertFalse("😃 ".isSingleEmojiWithoutCoreText)
-        XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmojiWithoutCoreText)
+        XCTAssertFalse("".isSingleEmojiUsingEmojiWithSkinTones)
+        XCTAssertTrue("😃".isSingleEmojiUsingEmojiWithSkinTones)
+        XCTAssertFalse("😃😃".isSingleEmojiUsingEmojiWithSkinTones)
+        XCTAssertFalse("a".isSingleEmojiUsingEmojiWithSkinTones)
+        XCTAssertFalse(" 😃".isSingleEmojiUsingEmojiWithSkinTones)
+        XCTAssertFalse("😃 ".isSingleEmojiUsingEmojiWithSkinTones)
+        XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmojiUsingEmojiWithSkinTones)
 
         XCTAssertFalse("".isSingleEmojiUsingCoreText)
         XCTAssertTrue("😃".isSingleEmojiUsingCoreText)
@@ -44,7 +44,9 @@ class EmojiTests: SignalBaseTest {
         XCTAssertFalse(" 😃".isSingleEmojiUsingCount)
         XCTAssertFalse("😃 ".isSingleEmojiUsingCount)
         XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmojiUsingCount)
+    }
 
+    func testEmojiCounts() {
         XCTAssertEqual("".count, 0)
         XCTAssertEqual("😃".count, 1)
         XCTAssertEqual("😃😃".count, 2)
@@ -60,12 +62,13 @@ class EmojiTests: SignalBaseTest {
         XCTAssertEqual(" 😃".count, 2)
         XCTAssertEqual("😃 ".count, 2)
         XCTAssertEqual("👨‍👩‍👧‍👦".count, 1)
+    }
 
+    func testFancyEmojiCases() {
         do {
             // Valid emoji with skin tones.
             let fancyEmoji = EmojiWithSkinTones(baseEmoji: .manWithGuaPiMao, skinTones: [.mediumDark]).rawValue
-            XCTAssertTrue(fancyEmoji.isSingleEmoji)
-            XCTAssertTrue(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
@@ -74,8 +77,7 @@ class EmojiTests: SignalBaseTest {
         do {
             // Invalid emoji with skin tones.
             let fancyEmoji = EmojiWithSkinTones(baseEmoji: .blueberries, skinTones: [.mediumDark]).rawValue
-            XCTAssertTrue(fancyEmoji.isSingleEmoji)
-            XCTAssertTrue(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
@@ -85,10 +87,10 @@ class EmojiTests: SignalBaseTest {
             // Black Diamond Suit Emoji
             let fancyEmoji = "\u{2666}" // ♦
             // EmojiWithSkinTones doesn't recognize this as an emoji...
-            XCTAssertFalse(fancyEmoji.isSingleEmoji)
-            XCTAssertFalse(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             // But CoreText+EmojiRanges does...
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
+            // So does count+EmojiRanges does...
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
         }
@@ -97,8 +99,7 @@ class EmojiTests: SignalBaseTest {
             // Black Diamond Suit Emoji
             // Adding 'Variation Selector-16':
             let fancyEmoji = "\u{2666}\u{FE0F}" // ♦️
-            XCTAssertTrue(fancyEmoji.isSingleEmoji)
-            XCTAssertTrue(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
@@ -107,8 +108,7 @@ class EmojiTests: SignalBaseTest {
         do {
             // Thumbs up sign:
             let fancyEmoji = "\u{1F44D}" // 👍
-            XCTAssertTrue(fancyEmoji.isSingleEmoji)
-            XCTAssertTrue(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
@@ -118,8 +118,7 @@ class EmojiTests: SignalBaseTest {
             // Thumbs up sign:
             // Adding 'Emoji Modifier Fitzpatrick Type-4':
             let fancyEmoji = "\u{1F44D}\u{1F3FD}" // 👍🏽
-            XCTAssertTrue(fancyEmoji.isSingleEmoji)
-            XCTAssertTrue(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
@@ -128,8 +127,7 @@ class EmojiTests: SignalBaseTest {
         do {
             // Man, Woman, Girl, Boy
             let fancyEmoji = "\u{1F468}\u{1F469}\u{1F467}\u{1F466}" // 👨👩👧👦
-            XCTAssertFalse(fancyEmoji.isSingleEmoji)
-            XCTAssertFalse(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertFalse(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertEqual(fancyEmoji.count, 4)
         }
@@ -138,8 +136,7 @@ class EmojiTests: SignalBaseTest {
             // Man, Woman, Girl, Boy
             // Adding 'Zero Width Joiner' between each
             let fancyEmoji = "\u{1F468}\u{200D}\u{1F469}\u{200D}\u{1F467}\u{200D}\u{1F466}" // 👨‍👩‍👧‍👦
-            XCTAssertTrue(fancyEmoji.isSingleEmoji)
-            XCTAssertTrue(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
@@ -148,10 +145,10 @@ class EmojiTests: SignalBaseTest {
         do {
             let fancyEmoji = "🏳"
             // EmojiWithSkinTones doesn't recognize this as an emoji...
-            XCTAssertFalse(fancyEmoji.isSingleEmoji)
-            XCTAssertFalse(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             // But CoreText+EmojiRanges does...
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
+            // So does count+EmojiRanges does...
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
         }
@@ -159,14 +156,58 @@ class EmojiTests: SignalBaseTest {
         do {
             let fancyEmoji = "🌈️"
             // EmojiWithSkinTones doesn't recognize this as an emoji...
-            XCTAssertFalse(fancyEmoji.isSingleEmoji)
-            XCTAssertFalse(fancyEmoji.isSingleEmojiWithoutCoreText)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             // But CoreText+EmojiRanges does...
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
+            // So does count+EmojiRanges does...
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
+            XCTAssertEqual(fancyEmoji.count, 1)
+        }
+
+        do {
+            // Not an emoji.
+            let fancyEmoji = "a"
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingCoreText)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingCount)
+            XCTAssertEqual(fancyEmoji.count, 1)
+        }
+
+        do {
+            // Empty string.
+            let fancyEmoji = ""
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingCoreText)
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingCount)
+            XCTAssertEqual(fancyEmoji.count, 0)
+        }
+
+        do {
+            // Not an emoji; just a isolated modifier.
+            // 'Emoji Modifier Fitzpatrick Type-4':
+            let fancyEmoji = "\u{1F3FD}"
+            // But this is considered an emoji by all measures.
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
         }
 
+        do {
+            // Not an emoji; just a isolated modifier.
+            // 'Variation Selector-16':
+            let fancyEmoji = "\u{FE0F}"
+            // EmojiWithSkinTones doesn't recognize this as an emoji...
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
+            // But CoreText+EmojiRanges does...
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
+            // So does count+EmojiRanges does...
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
+            XCTAssertEqual(fancyEmoji.count, 1)
+        }
+    }
+
+    func testMoreEmojiCases() {
         let moreEmojis = [
             "😍",
             "👩🏽",
@@ -244,15 +285,10 @@ class EmojiTests: SignalBaseTest {
             "🇨🇦"
         ]
         for emoji in moreEmojis {
-            if !emoji.isSingleEmoji {
-                Logger.warn("!isSingleEmoji: '\(emoji)'")
+            if !emoji.isSingleEmojiUsingEmojiWithSkinTones {
+                Logger.warn("!isSingleEmojiUsingEmojiWithSkinTones: '\(emoji)'")
             }
-            XCTAssertTrue(emoji.isSingleEmoji)
-
-            if !emoji.isSingleEmojiWithoutCoreText {
-                Logger.warn("!isSingleEmojiWithoutCoreText: '\(emoji)'")
-            }
-            XCTAssertTrue(emoji.isSingleEmojiWithoutCoreText)
+            XCTAssertTrue(emoji.isSingleEmojiUsingEmojiWithSkinTones)
 
             if !emoji.isSingleEmojiUsingCoreText {
                 Logger.warn("!isSingleEmojiUsingCoreText: '\(emoji)'")
