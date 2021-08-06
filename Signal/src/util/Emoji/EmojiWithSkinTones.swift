@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 public struct EmojiWithSkinTones: Hashable {
@@ -56,5 +56,18 @@ extension Emoji {
     init?(_ string: String) {
         guard let emojiWithSkinTonePermutation = EmojiWithSkinTones(rawValue: string) else { return nil }
         self = emojiWithSkinTonePermutation.baseEmoji
+    }
+}
+
+// MARK: -
+
+extension String {
+    // This is slightly more accurate than String.isSingleEmoji,
+    // but slower.
+    //
+    // * This will reject "lone modifiers".
+    // * This will reject certain edge cases such as 🌈️.
+    var isSingleEmojiUsingEmojiWithSkinTones: Bool {
+        EmojiWithSkinTones(rawValue: self) != nil
     }
 }

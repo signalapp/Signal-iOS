@@ -186,8 +186,6 @@ class NSEEnvironment: Dependencies {
         // App isn't ready until storage is ready AND all version migrations are complete.
         guard storageCoordinator.isStorageReady && areVersionMigrationsComplete else { return }
 
-        Logger.verbose("isSingleEmoji check: \("a".isSingleEmoji)")
-
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
