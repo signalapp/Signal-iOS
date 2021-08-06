@@ -118,7 +118,7 @@ public class HomeViewInfo: Dependencies {
 
         self.isBlocked = Self.blockingManager.isThreadBlocked(thread)
 
-        self.lastMessageDate = lastMessageForInbox?.receivedAtDate()
+        self.lastMessageDate = lastMessageForInbox?.timestampDate()
 
         self.snippet = Self.buildHVSnippet(thread: thread,
                                            isBlocked: isBlocked,

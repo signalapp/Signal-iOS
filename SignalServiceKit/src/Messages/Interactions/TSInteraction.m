@@ -224,6 +224,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return [NSDate ows_dateWithMillisecondsSince1970:self.receivedAtTimestamp];
 }
 
+- (NSDate *)timestampDate
+{
+    return [NSDate ows_dateWithMillisecondsSince1970:self.timestamp];
+}
+
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other
 {
     OWSAssertDebug(other);
