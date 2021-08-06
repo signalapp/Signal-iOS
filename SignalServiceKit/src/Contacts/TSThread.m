@@ -414,7 +414,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
         if (needsToClearLastVisibleSortId) {
             [self clearLastVisibleInteractionWithTransaction:transaction];
         }
-
+        [self scheduleTouchFinalizationWithTransaction:transaction];
         return;
     }
 
