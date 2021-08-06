@@ -60,11 +60,3 @@ extension Emoji {
         self = emojiWithSkinTonePermutation.baseEmoji
     }
 }
-
-// MARK: -
-
-extension String {
-    var isSingleEmojiWithoutCoreText: Bool {
-        EmojiWithSkinTones(rawValue: self) != nil
-    }
-}

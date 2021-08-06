@@ -557,12 +557,20 @@ public extension String {
         } else {
             // This implementation of isSingleEmoji is faster
             // than isSingleEmojiWithoutCoreText.
-            return self.isSingleEmojiDefault
+            return self.isSingleEmojiUsingCoreText
         }
     }
 
-    private var isSingleEmojiDefault: Bool {
+    var isSingleEmojiUsingCoreText: Bool {
         glyphCount == 1 && containsEmoji
+    }
+
+    var isSingleEmojiWithoutCoreText: Bool {
+        EmojiWithSkinTones(rawValue: self, skipSingleEmojiCheck: true) != nil
+    }
+
+    var isSingleEmojiUsingCount: Bool {
+        count == 1 && containsEmoji
     }
 
     var containsEmoji: Bool {
