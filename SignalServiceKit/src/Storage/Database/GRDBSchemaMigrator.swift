@@ -1299,7 +1299,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.addExclusiveProcessIdentifierAndHighPriorityToJobRecord.rawValue) { db in
             do {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "exclusiveProcessIdentifier", .integer)
+                    table.add(column: "exclusiveProcessIdentifier", .text)
                     table.add(column: "isHighPriority", .boolean)
                 }
                 try db.execute(sql: "UPDATE model_SSKJobRecord SET isHighPriority = 0")

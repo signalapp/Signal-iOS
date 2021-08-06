@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     limitToCurrentProcessLifetime:YES
                                                    isHighPriority:NO
                                                       transaction:transaction]
-                    .then(^{
+                    .thenInBackground(^{
                         OWSLogInfo(@"Successfully sent %lu %@ receipts to sender.",
                             (unsigned long)receiptSet.timestamps.count,
                             receiptName);
@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
                         // with a durable JobQueue.
                         [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
                     })
-                    .catch(^(NSError *error) {
+                    .catchInBackground(^(NSError *error) {
                         OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
 
                         if (error.domain == OWSSignalServiceKitErrorDomain

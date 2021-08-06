@@ -191,6 +191,7 @@ public extension JobQueue {
     }
 
     func restartOldJobs() {
+        guard CurrentAppContext().isMainApp else { return }
         guard isEnabled else { return }
 
         guard !DebugFlags.suppressBackgroundActivity else {
@@ -353,8 +354,8 @@ extension JobRecordFinder {
     public func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType? {
         var result: JobRecordType?
         self.enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, stopPointer in
-            if let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier?.int32Value,
-               exclusiveProcessIdentifier != ProcessInfo.processInfo.processIdentifier {
+            if let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier,
+               exclusiveProcessIdentifier != SSKJobRecord.currentProcessIdentifier {
                 // Skip job records that aren't for the current process, we can't run these.
                 return
             }
@@ -373,10 +374,10 @@ extension JobRecordFinder {
     }
 
     public func staleReadyRecords(label: String, transaction: ReadTransaction) -> [JobRecordType] {
-        let currentProcessIdentifier = ProcessInfo.processInfo.processIdentifier
         var result: [JobRecordType] = []
         self.enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, _ in
-            guard let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier?.int32Value, exclusiveProcessIdentifier != currentProcessIdentifier else { return }
+            guard let exclusiveProcessIdentifier = jobRecord.exclusiveProcessIdentifier,
+                  exclusiveProcessIdentifier != SSKJobRecord.currentProcessIdentifier else { return }
             result.append(jobRecord)
         }
         return result

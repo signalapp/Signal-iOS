@@ -324,8 +324,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
 
-            firstly {
-                databaseStorage.write { transaction in
+            firstly(on: .global()) {
+                SDSDatabaseStorage.shared.write { transaction in
                     messageSenderJobQueue.add(
                         .promise,
                         message: message.asPreparer,

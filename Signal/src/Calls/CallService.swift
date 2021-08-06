@@ -898,7 +898,7 @@ extension CallService: CallManagerDelegate {
                 withContactAddress: SignalServiceAddress(uuid: recipientUuid),
                 transaction: transaction
             )
-        }.then { thread throws -> Promise<Void> in
+        }.then(on: .global()) { thread throws -> Promise<Void> in
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
 

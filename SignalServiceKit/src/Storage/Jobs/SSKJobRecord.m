@@ -15,7 +15,7 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 @property (nonatomic) SSKJobRecordStatus status;
 @property (nonatomic) UInt64 sortId;
-@property (nonatomic, nullable) NSNumber *exclusiveProcessIdentifier;
+@property (nonatomic, nullable) NSString *exclusiveProcessIdentifier;
 
 @end
 
@@ -49,7 +49,7 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-      exclusiveProcessIdentifier:(nullable NSNumber *)exclusiveProcessIdentifier
+      exclusiveProcessIdentifier:(nullable NSString *)exclusiveProcessIdentifier
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
@@ -87,9 +87,17 @@ NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 #pragma mark -
 
++ (NSString *)currentProcessIdentifier
+{
+    static NSString *processIdentifier = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{ processIdentifier = [NSUUID UUID].UUIDString; });
+    return processIdentifier;
+}
+
 - (void)flagAsExclusiveForCurrentProcessIdentifier
 {
-    self.exclusiveProcessIdentifier = @(NSProcessInfo.processInfo.processIdentifier);
+    self.exclusiveProcessIdentifier = [[self class] currentProcessIdentifier];
 }
 
 - (void)updateWithExclusiveForCurrentProcessIdentifierWithTransaction:(SDSAnyWriteTransaction *)transaction

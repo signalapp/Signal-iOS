@@ -241,7 +241,7 @@ CREATE
             ,"attachmentId" TEXT
             ,"isMediaMessage" BOOLEAN
             ,"serverDeliveryTimestamp" INTEGER
-            ,"exclusiveProcessIdentifier" INTEGER
+            ,"exclusiveProcessIdentifier" TEXT
             ,"isHighPriority" BOOLEAN
         )
 ;

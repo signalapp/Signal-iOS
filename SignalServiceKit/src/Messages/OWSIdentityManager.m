@@ -725,7 +725,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                             limitToCurrentProcessLifetime:YES
                                            isHighPriority:NO
                                               transaction:transaction]
-            .then(^{
+            .thenInBackground(^{
                 OWSLogInfo(@"Successfully sent verification state NullMessage");
                 [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
                     [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
@@ -733,7 +733,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                         limitToCurrentProcessLifetime:YES
                                                        isHighPriority:NO
                                                           transaction:transaction]
-                        .then(^{
+                        .thenInBackground(^{
                             OWSLogInfo(@"Successfully sent verification state sync message");
 
                             // Record that this verification state was successfully synced.
@@ -742,12 +742,12 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                      transaction:transaction];
                             }];
                         })
-                        .catch(^(NSError *error) {
+                        .catchInBackground(^(NSError *error) {
                             OWSLogError(@"Failed to send verification state sync message with error: %@", error);
                         });
                 }];
             })
-            .catch(^(NSError *error) {
+            .catchInBackground(^(NSError *error) {
                 OWSLogError(@"Failed to send verification state NullMessage with error: %@", error);
                 if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
                     OWSLogInfo(

@@ -766,11 +766,11 @@ public class BlockingManager: NSObject {
                 .promise,
                 message: message.asPreparer,
                 transaction: transaction
-            ).done {
+            ).done(on: .global()) {
                 Logger.info("Successfully sent blocked phone numbers sync message")
 
                 // Record the last block list which we successfully synced..
-                databaseStorage.write { transaction in
+                Self.databaseStorage.write { transaction in
                     state.saveSyncedState(transaction: transaction)
                 }
             }.catch { error in

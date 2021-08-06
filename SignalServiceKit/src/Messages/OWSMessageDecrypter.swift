@@ -208,10 +208,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     message: nullMessage.asPreparer,
                     isHighPriority: true,
                     transaction: transaction
-                ).done {
+                ).done(on: .global()) {
                     Logger.info("Successfully sent null message after session reset " +
                                     "for undecryptable message from \(senderId)")
-                }.catch { error in
+                }.catch(on: .global()) { error in
                     let nsError = error as NSError
                     if nsError.domain == OWSSignalServiceKitErrorDomain &&
                         nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
@@ -259,9 +259,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     message: profileKeyMessage.asPreparer,
                     isHighPriority: true,
                     transaction: transaction
-                ).done {
+                ).done(on: .global()) {
                     Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")
-                }.catch { error in
+                }.catch(on: .global()) { error in
                     let nsError = error as NSError
                     if nsError.domain == OWSSignalServiceKitErrorDomain &&
                         nsError.code == OWSErrorCode.untrustedIdentity.rawValue {

@@ -174,21 +174,23 @@ extension SharingThreadPickerViewController {
             let linkPreviewDraft = approvalLinkPreviewDraft
 
             sendToThreads { thread in
-                return self.databaseStorage.write { transaction in
-                    let preparer = OutgoingMessagePreparer(
-                        messageBody: body,
-                        mediaAttachments: [],
-                        thread: thread,
-                        quotedReplyModel: nil,
-                        transaction: transaction
-                    )
-                    preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
-                    self.outgoingMessages.append(preparer.unpreparedMessage)
-                    return ThreadUtil.enqueueMessagePromise(
-                        message: preparer.unpreparedMessage,
-                        isHighPriority: true,
-                        transaction: transaction
-                    )
+                return firstly(on: .global()) { () -> Promise<Void> in
+                    return self.databaseStorage.write { transaction in
+                        let preparer = OutgoingMessagePreparer(
+                            messageBody: body,
+                            mediaAttachments: [],
+                            thread: thread,
+                            quotedReplyModel: nil,
+                            transaction: transaction
+                        )
+                        preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+                        self.outgoingMessages.append(preparer.unpreparedMessage)
+                        return ThreadUtil.enqueueMessagePromise(
+                            message: preparer.unpreparedMessage,
+                            isHighPriority: true,
+                            transaction: transaction
+                        )
+                    }
                 }
             }
         } else if isContactShare {
@@ -197,19 +199,21 @@ extension SharingThreadPickerViewController {
             }
 
             sendToThreads { thread in
-                return self.databaseStorage.write { transaction in
-                    let builder = TSOutgoingMessageBuilder(thread: thread)
-                    builder.contactShare = contactShare.dbRecord
-                    let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
-                    builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
-                    let message = builder.build()
-                    message.anyInsert(transaction: transaction)
-                    self.outgoingMessages.append(message)
-                    return ThreadUtil.enqueueMessagePromise(
-                        message: message,
-                        isHighPriority: true,
-                        transaction: transaction
-                    )
+                return firstly(on: .global()) { () -> Promise<Void> in
+                    return self.databaseStorage.write { transaction in
+                        let builder = TSOutgoingMessageBuilder(thread: thread)
+                        builder.contactShare = contactShare.dbRecord
+                        let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
+                        builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+                        let message = builder.build()
+                        message.anyInsert(transaction: transaction)
+                        self.outgoingMessages.append(message)
+                        return ThreadUtil.enqueueMessagePromise(
+                            message: message,
+                            isHighPriority: true,
+                            transaction: transaction
+                        )
+                    }
                 }
             }
         } else {
