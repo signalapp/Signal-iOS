@@ -6,7 +6,7 @@
 
 extension EmojiWithSkinTones {
     init?(rawValue: String) {
-		guard rawValue.isSingleEmoji else { return nil }
+        guard rawValue.isSingleEmoji else { return nil }
         if rawValue == "😀" {
             self.init(baseEmoji: .grinning, skinTones: nil)
         } else if rawValue == "😃" {
