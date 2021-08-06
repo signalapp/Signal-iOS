@@ -3,10 +3,10 @@
 //
 
 public struct EmojiWithSkinTones: Hashable {
-    public let baseEmoji: Emoji
-    public let skinTones: [Emoji.SkinTone]?
+    let baseEmoji: Emoji
+    let skinTones: [Emoji.SkinTone]?
 
-    public init(baseEmoji: Emoji, skinTones: [Emoji.SkinTone]? = nil) {
+    init(baseEmoji: Emoji, skinTones: [Emoji.SkinTone]? = nil) {
         self.baseEmoji = baseEmoji
 
         // Deduplicate skin tones, while preserving order. This allows for
@@ -19,7 +19,7 @@ public struct EmojiWithSkinTones: Hashable {
         }
     }
 
-    public var rawValue: String {
+    var rawValue: String {
         if let skinTones = skinTones {
             return baseEmoji.emojiPerSkinTonePermutation?[skinTones] ?? baseEmoji.rawValue
         } else {
@@ -28,18 +28,16 @@ public struct EmojiWithSkinTones: Hashable {
     }
 }
 
-// MARK: -
-
 extension Emoji {
     private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
 
-    public static func allAvailableEmojiByCategoryWithPreferredSkinTones(transaction: SDSAnyReadTransaction) -> [Category: [EmojiWithSkinTones]] {
+    static func allAvailableEmojiByCategoryWithPreferredSkinTones(transaction: SDSAnyReadTransaction) -> [Category: [EmojiWithSkinTones]] {
         return Category.allCases.reduce(into: [Category: [EmojiWithSkinTones]]()) { result, category in
             result[category] = category.emoji.filter { $0.available }.map { $0.withPreferredSkinTones(transaction: transaction) }
         }
     }
 
-    public func withPreferredSkinTones(transaction: SDSAnyReadTransaction) -> EmojiWithSkinTones {
+    func withPreferredSkinTones(transaction: SDSAnyReadTransaction) -> EmojiWithSkinTones {
         guard let rawSkinTones = Self.keyValueStore.getObject(forKey: rawValue, transaction: transaction) as? [String] else {
             return EmojiWithSkinTones(baseEmoji: self, skinTones: nil)
         }
@@ -47,7 +45,7 @@ extension Emoji {
         return EmojiWithSkinTones(baseEmoji: self, skinTones: rawSkinTones.compactMap { SkinTone(rawValue: $0) })
     }
 
-    public func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: SDSAnyWriteTransaction) {
+    func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: SDSAnyWriteTransaction) {
         if let preferredSkinTonePermutation = preferredSkinTonePermutation {
             Self.keyValueStore.setObject(preferredSkinTonePermutation.map { $0.rawValue }, key: rawValue, transaction: transaction)
         } else {
@@ -58,5 +56,18 @@ extension Emoji {
     init?(_ string: String) {
         guard let emojiWithSkinTonePermutation = EmojiWithSkinTones(rawValue: string) else { return nil }
         self = emojiWithSkinTonePermutation.baseEmoji
+    }
+}
+
+// MARK: -
+
+extension String {
+    // This is slightly more accurate than String.isSingleEmoji,
+    // but slower.
+    //
+    // * This will reject "lone modifiers".
+    // * This will reject certain edge cases such as 🌈️.
+    var isSingleEmojiUsingEmojiWithSkinTones: Bool {
+        EmojiWithSkinTones(rawValue: self, skipSingleEmojiCheck: true) != nil
     }
 }

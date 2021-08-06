@@ -21,7 +21,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     }
 
     private var allEmoji: [Emoji] {
-        return emojiCounts.compactMap { Emoji(rawValue: $0.emoji) }
+        return emojiCounts.compactMap { Emoji($0.emoji) }
     }
 
     init(reactionState: InteractionReactionState, message: TSMessage) {
@@ -96,7 +96,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         emojiCountsCollectionView.items = [allReactionsItem] + emojiCounts.map { (emojiCount) in
             EmojiItem(emoji: emojiCount.emoji,
                       count: emojiCount.count) { [weak self] in
-                self?.setSelectedEmoji(Emoji(rawValue: emojiCount.emoji))
+                self?.setSelectedEmoji(Emoji(emojiCount.emoji))
             }
         }
     }

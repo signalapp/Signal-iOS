@@ -6,7 +6,7 @@
 
 /// A sorted representation of all available emoji
 // swiftlint:disable all
-public enum Emoji: String, CaseIterable, Equatable {
+enum Emoji: String, CaseIterable, Equatable {
     case grinning = "😀"
     case smiley = "😃"
     case smile = "😄"

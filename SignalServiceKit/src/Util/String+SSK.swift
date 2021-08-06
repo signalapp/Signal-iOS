@@ -520,57 +520,13 @@ extension UnicodeScalar {
 
 public extension String {
     var glyphCount: Int {
-        let richText: NSAttributedString
-        if #available(iOS 11.2, *) {
-            richText = NSAttributedString(string: self)
-        } else {
-            // We must manually bridge the string to an NSString
-            // *before* creating it to workaround a bug on iOS
-            // versions prior to 11.2 where we would encounter
-            // a swift precondition while the bridging recurses
-            // backward through the UTF16. We can bypass this check
-            // by bridging ourselves before initializing the attributed
-            // string. Even though we have to do `as String` to initialize
-            // the NSAttributedString, Swift is smart enough to skip the
-            // bridging in that case as it moves to ObjC. It's possible
-            // doing this is unsafe and something in NSString may be
-            // accessing out-of-bounds memory that the precondition
-            // was catching.
-            //
-            // The precondition is only encountered when the string
-            // contains U+FE0F following U+FEOF ZWJ U+anything which
-            // has become a pattern in newer emoji sequences.
-            //
-            // The swift code in question:
-            // https://github.com/apple/swift/blob/b0eafeed9fcf5c37d8c4996a4e91dee7a00dc592/stdlib/public/core/StringUTF16View.swift#L161
-            let string = NSString(string: self)
-            richText = NSAttributedString(string: string as String)
-        }
-        let line = CTLineCreateWithAttributedString(richText)
-        return CTLineGetGlyphCount(line)
+        // String.count reflects the number of user-visible characters
+        // the will be rendered by UILabel, UITextView, etc.
+        count
     }
 
     var isSingleEmoji: Bool {
-        if CurrentAppContext().isNSE {
-            // It is not safe to use CoreText in the NSE.
-            return self.isSingleEmojiUsingEmojiWithSkinTones
-        } else {
-            // This implementation of isSingleEmoji is faster
-            // than isSingleEmojiUsingEmojiWithSkinTones.
-            return self.isSingleEmojiUsingCoreText
-        }
-    }
-
-    var isSingleEmojiUsingCoreText: Bool {
         glyphCount == 1 && containsEmoji
-    }
-
-    var isSingleEmojiUsingEmojiWithSkinTones: Bool {
-        EmojiWithSkinTones(rawValue: self, skipSingleEmojiCheck: true) != nil
-    }
-
-    var isSingleEmojiUsingCount: Bool {
-        count == 1 && containsEmoji
     }
 
     var containsEmoji: Bool {
