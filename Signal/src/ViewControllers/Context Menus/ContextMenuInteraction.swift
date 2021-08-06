@@ -16,6 +16,8 @@ public protocol ContextMenuInteractionDelegate: AnyObject {
                                 willDisplayMenuForConfiguration: ContextMenuConfiguration)
     func contextMenuInteraction(_ interaction: ContextMenuInteraction,
                                 willEndForConfiguration: ContextMenuConfiguration)
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction,
+                                didEndForConfiguration: ContextMenuConfiguration)
 
 }
 
@@ -153,13 +155,14 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     }
 
     public func presentMenu(window: UIWindow, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview, presentImmediately: Bool) {
-        delegate?.contextMenuInteraction(self, willDisplayMenuForConfiguration: contextMenuConfiguration)
-        ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
 
         let menuAccessory = menuAccessory(configuration: contextMenuConfiguration)
         let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, initiatingGestureRecognizer: initiatingGestureRecognizer(), menuAccessory: menuAccessory, presentImmediately: presentImmediately)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
+
+        delegate?.contextMenuInteraction(self, willDisplayMenuForConfiguration: contextMenuConfiguration)
+        ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
 
         window.addSubview(contextMenuController.view)
         contextMenuController.view.frame = window.bounds
@@ -178,18 +181,22 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     }
 
     public func dismissMenu(animated: Bool, completion: @escaping() -> Void ) {
-        if let configuarion = self.configuration {
-            delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
+        guard let configuration = self.configuration else {
+            return
         }
+
+        delegate?.contextMenuInteraction(self, willEndForConfiguration: configuration)
 
         if animated {
             contextMenuController?.animateOut({
                 completion()
+                self.delegate?.contextMenuInteraction(self, didEndForConfiguration: configuration)
                 self.contextMenuController?.view.removeFromSuperview()
                 self.contextMenuController = nil
             })
         } else {
             targetedPreview?.view?.isHidden = false
+            delegate?.contextMenuInteraction(self, didEndForConfiguration: configuration)
             completion()
             self.contextMenuController?.view.removeFromSuperview()
             self.contextMenuController = nil
@@ -245,6 +252,7 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     public let itemViewModel: CVItemViewModelImpl
     public let thread: TSThread
     public let messageActions: [MessageAction]
+    public let keyboardWasActive: Bool
     public let chatHistoryLongPressGesture: UIGestureRecognizer?
     public var contextMenuVisible: Bool {
         return contextMenuController != nil
@@ -260,11 +268,13 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         itemViewModel: CVItemViewModelImpl,
         thread: TSThread,
         messageActions: [MessageAction],
-        initiatingGestureRecognizer: UIGestureRecognizer?
+        initiatingGestureRecognizer: UIGestureRecognizer?,
+        keyboardWasActive: Bool
     ) {
         self.itemViewModel = itemViewModel
         self.thread = thread
         self.messageActions = messageActions
+        self.keyboardWasActive = keyboardWasActive
         self.chatHistoryLongPressGesture = initiatingGestureRecognizer
         super.init(delegate: delegate)
     }
@@ -280,17 +290,22 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     }
 
     public func initiatingGestureRecognizerDidEnd() {
-        cancelPresentationGesture()
+
+        if contextMenuController == nil {
+            cancelPresentationGesture()
+        } else {
+            contextMenuController?.gestureDidEnd()
+        }
+
     }
 
     public func cancelPresentationGesture() {
         gestureEligibleForMenuPresentation = false
 
-        if contextMenuController == nil, let configuarion = self.configuration {
-            delegate?.contextMenuInteraction(self, willEndForConfiguration: configuarion)
+        if contextMenuController == nil, let configuration = self.configuration {
+            delegate?.contextMenuInteraction(self, willEndForConfiguration: configuration)
+            delegate?.contextMenuInteraction(self, didEndForConfiguration: configuration)
         }
-
-        contextMenuController?.gestureDidEnd()
     }
 
     public override func initiatingGestureRecognizer() -> UIGestureRecognizer? {

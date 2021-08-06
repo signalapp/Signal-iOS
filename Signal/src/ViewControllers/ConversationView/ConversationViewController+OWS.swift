@@ -124,6 +124,8 @@ extension ConversationViewController {
             // If content inset didn't change, no need to update content offset.
         } else if !hasAppearedAndHasAppliedFirstLoad {
             // Do nothing.
+        } else if isPresentingContextMenu {
+            // Do nothing
         } else if wasScrolledToBottom {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             scrollToBottomOfLoadWindow(animated: false)

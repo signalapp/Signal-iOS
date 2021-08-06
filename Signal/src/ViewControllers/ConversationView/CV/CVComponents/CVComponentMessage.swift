@@ -1494,7 +1494,12 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         }
 
-        public func contextMenuSourceAnimationComplete() {
+        public func contextMenuPresentationWillBegin() {
+            avatarView.isHidden = true
+        }
+
+        public func contextMenuPresentationDidEnd() {
+            avatarView.isHidden = false
             chatColorView.animationsEnabled = false
         }
 
