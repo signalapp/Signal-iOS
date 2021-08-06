@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rozumiem";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nie udało się dostarczyć Ci wiadomości, naklejki, reakcji, potwierdzenia przeczytania lub multimediów od %@, w tej rozmowie.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problem z dostarczeniem wiadomości";
@@ -1013,7 +1013,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Zawsze powiadamiaj";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nie powiadamiaj, gdy wyciszona";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nie powiadamiaj, gdy wyciszono";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Powiadamiać, gdy zostaniesz wspomniany(a) w wyciszonych rozmowach?";

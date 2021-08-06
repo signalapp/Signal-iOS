@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Capito";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Non è stato possibile consegnarti un messaggio, un adesivo, una reazione, una conferma di lettura o un media da %@ in questa chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problema di consegna";

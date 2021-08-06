@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rozumím";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Z tohoto chatu vám od %@ nemohla být doručena zpráva, nálepka, reakce, potvrzení o přečtení nebo médium.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Potíže s doručením";
