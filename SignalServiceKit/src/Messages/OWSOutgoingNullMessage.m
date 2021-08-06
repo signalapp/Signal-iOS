@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSOutgoingNullMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSOutgoingNullMessage.h>
 #import <SignalServiceKit/OWSVerificationStateSyncMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 

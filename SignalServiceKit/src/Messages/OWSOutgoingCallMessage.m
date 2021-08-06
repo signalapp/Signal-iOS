@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSOutgoingCallMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/ProtoUtils.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     builder.callMessage = [self buildCallMessage:thread transaction:transaction];

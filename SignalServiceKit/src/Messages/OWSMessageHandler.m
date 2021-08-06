@@ -93,7 +93,10 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 
     // SKDM's are not mutually exclusive with other content types
     if (content.hasSenderKeyDistributionMessage) {
-        [message appendString:@" + SenderKeyDistributionMessage"];
+        if (message.length > 0) {
+            [message appendString:@" + "];
+        }
+        [message appendString:@"SenderKeyDistributionMessage"];
     }
 
     if (message.length > 0) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingResendResponse.h"
@@ -7,10 +7,9 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface OWSOutgoingResendResponse ()
-@property (strong, nonatomic, readonly) SignalServiceAddress *address;
-@property (assign, nonatomic, readonly) int64_t deviceId;
-@property (strong, nonatomic, readonly) NSDate *originalSentDate;
-@property (assign, nonatomic, readonly) BOOL didPerformSessionReset;
+@property (nonatomic, readonly, nullable) NSData *originalMessagePlaintext;
+@property (nonatomic, readonly, nullable) NSString *originalThreadId;
+@property (nonatomic) BOOL didAppendSKDM;
 @end
 
 @implementation OWSOutgoingResendResponse
@@ -30,98 +29,91 @@
                                                            timestamp:originalSentDate
                                                          transaction:transaction];
 
-    if (!payloadRecord && !didPerformSessionReset) {
-        OWSLogInfo(@"No stored payload record and no session reset. Declining to send response.");
-        return nil;
-    }
+    TSThread *targetThread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:targetThread];
 
     if (payloadRecord) {
-        OWSLogInfo(@"Found an MSL record for resend request: %@", originalSentDate);
-
-        NSString *originalThreadId = payloadRecord.uniqueThreadId;
-        TSThread *originalThread = [TSThread anyFetchWithUniqueId:originalThreadId transaction:transaction];
-        if (originalThread.isGroupThread) {
-            TSGroupThread *groupThread = (TSGroupThread *)originalThread;
-            OWSLogDebug(@"Resetting delivery record in response to failed send to %@ in %@", address, originalThreadId);
-            [self.senderKeyStore resetSenderKeyDeliveryRecordFor:groupThread address:address writeTx:transaction];
-        }
-    } else {
-        OWSLogInfo(@"Did not find an MSL record for resend request: %@", originalSentDate);
-    }
-
-    TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    if (payloadRecord.sentTimestamp) {
+        OWSLogInfo(@"Found an MSL record for resend request: %lli", failedTimestamp);
+        // We should inherit the timestamp of the failed message. This allows the recipient of this message
+        // to correlate the resend response with the original failed message.
         builder.timestamp = payloadRecord.sentTimestamp.ows_millisecondsSince1970;
+        // We also want to reset the delivery record for the failing address if this was a sender key group
+        // This will be re-marked as delivered on success if we included an SKDM in the resend response
+        [self resetSenderKeyDeliveryRecordIfNecessaryForThreadId:payloadRecord.uniqueThreadId
+                                                         address:address
+                                                     transaction:transaction];
+    } else if (didPerformSessionReset) {
+        OWSLogInfo(
+            @"Failed to find MSL record for resend request: %lli. Will reply with Null message", failedTimestamp);
+    } else {
+        OWSLogInfo(@"Failed to find MSL record for resend request: %lli. Declining to respond.", failedTimestamp);
+        return nil;
     }
 
     self = [super initOutgoingMessageWithBuilder:builder];
     if (self) {
-        _address = address;
-        _deviceId = deviceId;
-        _originalSentDate = originalSentDate;
-        _didPerformSessionReset = didPerformSessionReset;
+        _originalMessagePlaintext = payloadRecord.plaintextContent;
+        _originalThreadId = payloadRecord.uniqueThreadId;
     }
     return self;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug([self.recipientAddresses containsObject:self.address]);
     OWSAssertDebug(self.recipientAddresses.count == 1);
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
-    // We should re-fetch the payload to be certain that it has not been deleted.
-    Payload *payloadRecord = [MessageSendLog fetchPayloadWithAddress:self.address
-                                                            deviceId:self.deviceId
-                                                           timestamp:self.originalSentDate
-                                                         transaction:transaction];
+    SignalServiceAddress *recipient = self.recipientAddresses.firstObject;
 
-    NSError *error = nil;
-    SSKProtoContentBuilder *contentBuilder = nil;
+    SSKProtoContentBuilder *_Nullable contentBuilder = nil;
 
-    if (payloadRecord.plaintextContent) {
-        contentBuilder = [[[SSKProtoContent alloc] initWithSerializedData:payloadRecord.plaintextContent
-                                                                    error:&error] asBuilder];
-        if (!contentBuilder || error) {
-            OWSFailDebug(@"Failed to rebuild MSL proto: %@", error);
-        } else {
-            NSString *originalThreadId = payloadRecord.uniqueThreadId;
-            TSThread *originalThread = [TSThread anyFetchWithUniqueId:originalThreadId transaction:transaction];
-            if (originalThread.isGroupThread && [originalThread.recipientAddresses containsObject:self.address]) {
-                __unused TSGroupThread *groupThread = (TSGroupThread *)originalThread;
-                // TODO: Append current sender key to proto
-            }
-        }
+    if (self.originalMessagePlaintext) {
+        contentBuilder = [self resentProtoBuilderFromPlaintext:self.originalMessagePlaintext];
+    }
+    if (!contentBuilder) {
+        contentBuilder = [self nullMessageProtoBuilder];
+    }
+    if (!contentBuilder) {
+        OWSFailDebug(@"Failed to construct content builder");
+        return nil;
     }
 
-    if (!contentBuilder && self.didPerformSessionReset) {
-        // Outgoing messages set their timestamp in init.
-        // If this is a resent message, it should have the timestamp of the original message
-        // If this is a null message signaling session reset, it should have the current time.
-        //
-        // If an MSL entry exists during -init, but then the entry is deleted by the time
-        // this message can be sent: We may send a null message with the old timestamp. The
-        // receiver would interpret this to mean that the orignal message *was* a null message.
-        // TODO: Can we update the timestamp retroactively?
-        SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
-        SSKProtoNullMessage *nullMessage = [nullMessageBuilder buildAndReturnError:&error];
+    TSThread *originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
+    if (originalThread.isGroupThread && [originalThread.recipientAddresses containsObject:recipient]) {
+        TSGroupThread *groupThread = (TSGroupThread *)originalThread;
+        NSData *skdmBytes = [self.senderKeyStore skdmBytesForGroupThread:groupThread writeTx:transaction];
+        [contentBuilder setSenderKeyDistributionMessage:skdmBytes];
 
-        if (!nullMessage) {
-            OWSFailDebug(@"Failed to build null message: %@", error);
-            return nil;
-        }
-
-        contentBuilder = [SSKProtoContent builder];
-        [contentBuilder setNullMessage:nullMessage];
+        self.didAppendSKDM = (skdmBytes != nil);
     }
 
+    NSError *_Nullable error = nil;
     NSData *plaintextMessage = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (!plaintextMessage || error) {
         OWSFailDebug(@"Failed to build plaintext message: %@", error);
+        return nil;
+    } else {
+        return plaintextMessage;
     }
-    return plaintextMessage;
+}
+
+- (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress
+                    wasSentByUD:(BOOL)wasSentByUD
+                    transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super updateWithSentRecipient:recipientAddress wasSentByUD:wasSentByUD transaction:transaction];
+
+    // Message was sent! Re-mark the recipient as having been sent an SKDM
+    if (self.didAppendSKDM) {
+        TSThread *originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
+        if (originalThread.isGroupThread) {
+            TSGroupThread *groupThread = (TSGroupThread *)originalThread;
+            [self.senderKeyStore recordSenderKeySentFor:groupThread to:recipientAddress writeTx:transaction error:nil];
+        } else {
+            OWSFailDebug(@"Appended an SKDM but not a group thread. Not expected.");
+        }
+    }
 }
 
 - (BOOL)shouldRecordSendLog
@@ -142,6 +134,53 @@
 - (SealedSenderContentHint)contentHint
 {
     return SealedSenderContentHintDefault;
+}
+
+- (void)resetSenderKeyDeliveryRecordIfNecessaryForThreadId:(NSString *)threadId
+                                                   address:(SignalServiceAddress *)address
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(threadId);
+    OWSAssertDebug(address);
+    OWSAssertDebug(transaction);
+
+    TSThread *originalThread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
+    if (originalThread.isGroupThread) {
+        // Only group threads support sender key
+        TSGroupThread *groupThread = (TSGroupThread *)originalThread;
+        OWSLogDebug(@"Resetting delivery record in response to failed send to %@ in %@", address, threadId);
+        [self.senderKeyStore resetSenderKeyDeliveryRecordFor:groupThread address:address writeTx:transaction];
+    }
+}
+
+- (nullable SSKProtoContentBuilder *)resentProtoBuilderFromPlaintext:(NSData *)plaintext
+{
+    NSError *_Nullable error = nil;
+    SSKProtoContent *_Nullable content = [[SSKProtoContent alloc] initWithSerializedData:plaintext error:&error];
+
+    if (!content || error) {
+        OWSFailDebug(@"Failed to build resent content %@", error);
+        return nil;
+    } else {
+        return [content asBuilder];
+    }
+}
+
+- (nullable SSKProtoContentBuilder *)nullMessageProtoBuilder
+{
+    NSError *_Nullable error = nil;
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
+
+    SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
+    SSKProtoNullMessage *nullMessage = [nullMessageBuilder buildAndReturnError:&error];
+    [contentBuilder setNullMessage:nullMessage];
+
+    if (!contentBuilder || error) {
+        OWSFailDebug(@"Failed to build content builder %@", error);
+        return nil;
+    } else {
+        return contentBuilder;
+    }
 }
 
 @end

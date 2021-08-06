@@ -309,7 +309,7 @@ extension MessageSender {
                         return Promise(messageSend.asAnyPromise)
                     }.map(on: self.senderKeyQueue) { _ -> SignalServiceAddress in
                         try self.databaseStorage.write { writeTx in
-                            try self.senderKeyStore.recordSenderKeyDelivery(
+                            try self.senderKeyStore.recordSenderKeySent(
                                 for: thread,
                                 to: messageSend.address,
                                 writeTx: writeTx)

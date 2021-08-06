@@ -53,8 +53,9 @@ public class SenderKeyStore: NSObject {
         return Array(addressesNeedingSenderKey)
     }
 
-    /// Records that the current sender key for the `thread` has been delivered to `participant`
-    public func recordSenderKeyDelivery(
+    /// Records that the current sender key for the `thread` has been sent to `participant`
+    @objc
+    public func recordSenderKeySent(
         for thread: TSGroupThread,
         to address: SignalServiceAddress,
         writeTx: SDSAnyWriteTransaction) throws {
@@ -77,7 +78,7 @@ public class SenderKeyStore: NSObject {
         storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
             guard let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
-                owsFailDebug("Failed to look up metadata")
+                Logger.info("Failed to look up senderkey metadata")
                 return
             }
             var updatedMetadata = existingMetadata
@@ -115,6 +116,7 @@ public class SenderKeyStore: NSObject {
         }
     }
 
+    @objc
     public func skdmBytesForGroupThread(_ groupThread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> Data? {
         do {
             guard let localAddress = ProtocolAddress.localAddress, localAddress.uuid != nil else {

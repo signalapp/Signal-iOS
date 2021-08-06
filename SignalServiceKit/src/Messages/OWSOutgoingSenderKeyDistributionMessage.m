@@ -34,7 +34,7 @@
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     [builder setSenderKeyDistributionMessage:self.serializedSKDM];

@@ -516,6 +516,11 @@ public class DebugFlags: BaseFlags {
                                                        details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org."))
 
     @objc
+    public static let delayedMessageResend = TestableFlag(false,
+                                                          title: LocalizationNotNeeded("Delayed message resend"),
+                                                          details: LocalizationNotNeeded("Waits 10s before responding to a resend request."))
+
+    @objc
     public static let forceAnnouncementOnlyGroupsCapability = build.includes(.production)
 
     @objc

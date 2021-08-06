@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSOutgoingSyncMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/ProtoUtils.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [SSKProtoSyncMessage builder];
 }
 
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     SSKProtoSyncMessage *_Nullable syncMessage = [self buildSyncMessageWithTransaction:transaction];
     if (!syncMessage) {

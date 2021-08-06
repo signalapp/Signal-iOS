@@ -99,8 +99,20 @@ extension OWSMessageManager {
                 transaction: writeTx
             )
 
-            if let resendResponse = resendResponse {
-                messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: writeTx)
+            let sendBlock = { (transaction: SDSAnyWriteTransaction) in
+                if let resendResponse = resendResponse {
+                    Self.messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: transaction)
+                }
+            }
+
+            if DebugFlags.delayedMessageResend.get() {
+                DispatchQueue.sharedUtility.asyncAfter(deadline: .now() + 10) {
+                    Self.databaseStorage.asyncWrite { writeTx in
+                        sendBlock(writeTx)
+                    }
+                }
+            } else {
+                sendBlock(writeTx)
             }
 
         } catch {
