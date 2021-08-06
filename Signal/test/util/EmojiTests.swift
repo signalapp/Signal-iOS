@@ -13,14 +13,6 @@ class EmojiTests: SignalBaseTest {
     }
 
     func testSimpleEmojiCases() {
-        XCTAssertFalse("".isSingleEmoji)
-        XCTAssertTrue("😃".isSingleEmoji)
-        XCTAssertFalse("😃😃".isSingleEmoji)
-        XCTAssertFalse("a".isSingleEmoji)
-        XCTAssertFalse(" 😃".isSingleEmoji)
-        XCTAssertFalse("😃 ".isSingleEmoji)
-        XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmoji)
-
         XCTAssertFalse("".isSingleEmojiUsingEmojiWithSkinTones)
         XCTAssertTrue("😃".isSingleEmojiUsingEmojiWithSkinTones)
         XCTAssertFalse("😃😃".isSingleEmojiUsingEmojiWithSkinTones)
@@ -28,6 +20,7 @@ class EmojiTests: SignalBaseTest {
         XCTAssertFalse(" 😃".isSingleEmojiUsingEmojiWithSkinTones)
         XCTAssertFalse("😃 ".isSingleEmojiUsingEmojiWithSkinTones)
         XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmojiUsingEmojiWithSkinTones)
+        XCTAssertTrue("👨🏿‍🤝‍👨🏻".isSingleEmojiUsingEmojiWithSkinTones)
 
         XCTAssertFalse("".isSingleEmojiUsingCoreText)
         XCTAssertTrue("😃".isSingleEmojiUsingCoreText)
@@ -36,6 +29,8 @@ class EmojiTests: SignalBaseTest {
         XCTAssertFalse(" 😃".isSingleEmojiUsingCoreText)
         XCTAssertFalse("😃 ".isSingleEmojiUsingCoreText)
         XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmojiUsingCoreText)
+        // CoreText considers this two glyphs.
+        XCTAssertFalse("👨🏿‍🤝‍👨🏻".isSingleEmojiUsingCoreText)
 
         XCTAssertFalse("".isSingleEmojiUsingCount)
         XCTAssertTrue("😃".isSingleEmojiUsingCount)
@@ -44,16 +39,19 @@ class EmojiTests: SignalBaseTest {
         XCTAssertFalse(" 😃".isSingleEmojiUsingCount)
         XCTAssertFalse("😃 ".isSingleEmojiUsingCount)
         XCTAssertTrue("👨‍👩‍👧‍👦".isSingleEmojiUsingCount)
+        XCTAssertTrue("👨🏿‍🤝‍👨🏻".isSingleEmojiUsingCount)
     }
 
     func testEmojiCounts() {
-        XCTAssertEqual("".count, 0)
-        XCTAssertEqual("😃".count, 1)
-        XCTAssertEqual("😃😃".count, 2)
-        XCTAssertEqual("a".count, 1)
-        XCTAssertEqual(" 😃".count, 2)
-        XCTAssertEqual("😃 ".count, 2)
-        XCTAssertEqual("👨‍👩‍👧‍👦".count, 1)
+        XCTAssertEqual("".glyphCount, 0)
+        XCTAssertEqual("😃".glyphCount, 1)
+        XCTAssertEqual("😃😃".glyphCount, 2)
+        XCTAssertEqual("a".glyphCount, 1)
+        XCTAssertEqual(" 😃".glyphCount, 2)
+        XCTAssertEqual("😃 ".glyphCount, 2)
+        XCTAssertEqual("👨‍👩‍👧‍👦".glyphCount, 1)
+        // CoreText considers this two glyphs.
+        XCTAssertEqual("👨🏿‍🤝‍👨🏻".glyphCount, 2)
 
         XCTAssertEqual("".count, 0)
         XCTAssertEqual("😃".count, 1)
@@ -62,6 +60,7 @@ class EmojiTests: SignalBaseTest {
         XCTAssertEqual(" 😃".count, 2)
         XCTAssertEqual("😃 ".count, 2)
         XCTAssertEqual("👨‍👩‍👧‍👦".count, 1)
+        XCTAssertEqual("👨🏿‍🤝‍👨🏻".count, 1)
     }
 
     func testFancyEmojiCases() {
@@ -138,6 +137,16 @@ class EmojiTests: SignalBaseTest {
             let fancyEmoji = "\u{1F468}\u{200D}\u{1F469}\u{200D}\u{1F467}\u{200D}\u{1F466}" // 👨‍👩‍👧‍👦
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCoreText)
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
+            XCTAssertEqual(fancyEmoji.count, 1)
+        }
+
+        do {
+            // This emoji has two skin tones.
+            let fancyEmoji = "👨🏿‍🤝‍👨🏻"
+            XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
+            // CoreText considers this two glyphs.
+            XCTAssertFalse(fancyEmoji.isSingleEmojiUsingCoreText)
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingCount)
             XCTAssertEqual(fancyEmoji.count, 1)
         }
