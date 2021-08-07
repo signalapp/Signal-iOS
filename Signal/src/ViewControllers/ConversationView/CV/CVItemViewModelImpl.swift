@@ -61,10 +61,7 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
     public var wasRemotelyDeleted: Bool {
         AssertIsOnMainThread()
 
-        guard let message = interaction as? TSMessage else {
-            return false
-        }
-        return message.wasRemotelyDeleted
+        return (interaction as? TSMessage)?.wasRemotelyDeleted == true
     }
 
     public var audioAttachmentStream: TSAttachmentStream? {

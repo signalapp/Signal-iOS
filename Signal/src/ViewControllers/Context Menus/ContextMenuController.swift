@@ -27,7 +27,7 @@ private class ContextMenuHostView: UIView {
 
     private var contentAreaInsets: UIEdgeInsets {
         let constPadding: CGFloat = 22
-        let minHorizPadding: CGFloat = 16
+        let minHorizPadding: CGFloat = 8
         return UIEdgeInsets(top: safeAreaInsets.top + constPadding,
                      leading: max(safeAreaInsets.leading, minHorizPadding),
                      bottom: safeAreaInsets.bottom + constPadding,
