@@ -477,6 +477,7 @@ public final class CallService: NSObject {
 
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = false
+        // TODO: Should we return nil if connect() return false?
         call.groupCall.connect()
 
         return call
@@ -494,7 +495,10 @@ public final class CallService: NSObject {
 
         // If we're not yet connected, connect now. This may happen if, for
         // example, the call ended unexpectedly.
-        if call.groupCall.localDeviceState.connectionState == .notConnected { call.groupCall.connect() }
+        if call.groupCall.localDeviceState.connectionState == .notConnected {
+            // TODO: Should we return nil if connect() return false?
+            call.groupCall.connect()
+        }
 
         // If we're not yet joined, join now. In general, it's unexpected that
         // this method would be called when you're already joined, but it is

@@ -554,7 +554,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)addHairlineWithColor:(UIColor *)color
 {
-    [self insertHairlineWithColor:color atIndex:self.arrangedSubviews.count];
+    [self insertHairlineWithColor:color atIndex:(NSInteger)self.arrangedSubviews.count];
 }
 
 - (void)insertHairlineWithColor:(UIColor *)color atIndex:(NSInteger)index
@@ -563,7 +563,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     hairlineView.backgroundColor = color;
     [hairlineView autoSetDimension:ALDimensionHeight toSize:1];
 
-    [self insertArrangedSubview:hairlineView atIndex:index];
+    [self insertArrangedSubview:hairlineView atIndex:(NSInteger)index];
 }
 
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor

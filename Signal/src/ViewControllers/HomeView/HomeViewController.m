@@ -896,13 +896,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                animated:isAnimated];
 }
 
-- (BOOL)isConversationActiveForThread:(TSThread *)thread
-{
-    OWSAssertDebug(thread);
-
-    return [self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId];
-}
-
 #pragma mark Old Style
 
 - (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext

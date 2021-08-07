@@ -28,38 +28,38 @@ class DebugUINotifications: DebugUIPage {
         if let contactThread = thread as? TSContactThread {
             sectionItems += [
                 OWSTableItem(title: "All Notifications in Sequence") { [weak self] in
-                    self?.notifyForEverythingInSequence(contactThread: contactThread)
+                    _ = self?.notifyForEverythingInSequence(contactThread: contactThread)
                 },
                 OWSTableItem(title: "Incoming Call") { [weak self] in
-                    self?.notifyForIncomingCall(thread: contactThread)
+                    _ = self?.notifyForIncomingCall(thread: contactThread)
                 },
                 OWSTableItem(title: "Call Missed") { [weak self] in
-                    self?.notifyForMissedCall(thread: contactThread)
+                    _ = self?.notifyForMissedCall(thread: contactThread)
                 },
                 OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
+                    _ = self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
                 },
                 OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
+                    _ = self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
                 }
             ]
         }
 
         sectionItems += [
             OWSTableItem(title: "Last Incoming Message") { [weak self] in
-                self?.notifyForIncomingMessage(thread: thread)
+                _ = self?.notifyForIncomingMessage(thread: thread)
             },
 
             OWSTableItem(title: "Notify For Error Message") { [weak self] in
-                self?.notifyForErrorMessage(thread: thread)
+                _ = self?.notifyForErrorMessage(thread: thread)
             },
 
             OWSTableItem(title: "Notify For Threadless Error Message") { [weak self] in
-                self?.notifyUserForThreadlessErrorMessage()
+                _ = self?.notifyUserForThreadlessErrorMessage()
             },
 
             OWSTableItem(title: "Notify of New Signal Users") { [weak self] in
-                self?.notifyOfNewUsers()
+                _ = self?.notifyOfNewUsers()
             }
 
         ]

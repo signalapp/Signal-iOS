@@ -99,7 +99,7 @@ public class SignalServiceProfile: NSObject {
                     return value
                 } else {
                     if requireCapability {
-                        Logger.verbose("capabilitiesJson: \(capabilitiesJson)")
+                        Logger.verbose("capabilitiesJson: \(String(describing: capabilitiesJson))")
                         owsFailDebug("Missing capability: \(capabilityKey).")
                     } else {
                         Logger.warn("Missing capability: \(capabilityKey).")
