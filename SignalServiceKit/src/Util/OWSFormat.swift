@@ -30,7 +30,7 @@ public class OWSFormat: NSObject {
     @objc
     public static func formatNameComponents(_ nameComponents: PersonNameComponents,
                                             style: PersonNameComponentsFormatter.Style) -> String {
-        let cacheKey = String(describing: nameComponents) + ".\(style)"
+        let cacheKey = String(describing: nameComponents) + ".\(style.rawValue)"
         if let value = shortNameComponentsCache.get(key: cacheKey) {
             return value
         }
