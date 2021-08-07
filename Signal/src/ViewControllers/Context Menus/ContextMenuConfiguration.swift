@@ -87,6 +87,7 @@ public class ContextMenuTargetedPreviewAccessory {
     var landscapeAccessoryAlignment: AccessoryAlignment?
 
     var animateAccessoryPresentationAlongsidePreview: Bool = false
+    var targetAnimateOutFrame: CGRect?
 
     weak var delegate: ContextMenuTargetedPreviewAccessoryInteractionDelegate?
 

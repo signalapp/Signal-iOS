@@ -1672,7 +1672,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
             avatarView.image = componentView.avatarView.image
             avatarView.frame = componentView.avatarView.bounds
-            let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.leading, .exterior), (.bottom, .interior)], alignmentOffset: CGPoint(x: -8, y: 0))
+            let isRTL = CurrentAppContext().isRTL
+            let horizontalEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isRTL ? .trailing : .leading
+            let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(horizontalEdgeAlignment, .exterior), (.bottom, .interior)], alignmentOffset: CGPoint(x: (isRTL ? 8 : -8), y: 0))
             let avatarViewAccessory = ContextMenuTargetedPreviewAccessory(accessoryView: avatarView, accessoryAlignment: alignment)
             avatarViewAccessory.animateAccessoryPresentationAlongsidePreview = true
             return [avatarViewAccessory]

@@ -284,10 +284,11 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
         var alignment: ContextMenuTargetedPreview.Alignment = .center
         let interactionType = contextInteraction.itemViewModel.interaction.interactionType()
+        let isRTL = CurrentAppContext().isRTL
         if interactionType == .incomingMessage {
-            alignment = .left
+            alignment = isRTL ? .right : .left
         } else if interactionType == .outgoingMessage {
-            alignment = .right
+            alignment = isRTL ? .left : .right
         }
 
         if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {

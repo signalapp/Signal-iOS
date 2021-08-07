@@ -58,6 +58,12 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
         return message.isViewOnceMessage
     }
 
+    public var wasRemotelyDeleted: Bool {
+        AssertIsOnMainThread()
+
+        return (interaction as? TSMessage)?.wasRemotelyDeleted == true
+    }
+
     public var audioAttachmentStream: TSAttachmentStream? {
         AssertIsOnMainThread()
 
@@ -199,6 +205,11 @@ extension CVItemViewModelImpl {
         guard !isViewOnce else {
             return
         }
+
+        guard !wasRemotelyDeleted else {
+            return
+        }
+
         let attachments = shareableAttachments
         guard !attachments.isEmpty else {
             return
@@ -208,6 +219,10 @@ extension CVItemViewModelImpl {
 
     var canForwardMessage: Bool {
         guard !isViewOnce else {
+            return false
+        }
+
+        guard !wasRemotelyDeleted else {
             return false
         }
 

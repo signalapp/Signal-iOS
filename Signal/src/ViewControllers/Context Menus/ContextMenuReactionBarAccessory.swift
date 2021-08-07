@@ -21,9 +21,11 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
         self.itemViewModel = itemViewModel
 
         reactionPicker = MessageReactionPicker(selectedEmoji: itemViewModel?.reactionState?.localUserEmoji, delegate: nil)
+        let isRTL = CurrentAppContext().isRTL
         let isIncomingMessage = itemViewModel?.interaction.interactionType() == .incomingMessage
-        let alignmnetOffset = isIncomingMessage && thread.isGroupThread ? -22 : 0
-        let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.top, .exterior), (isIncomingMessage ? .leading : .trailing, .interior)], alignmentOffset: CGPoint(x: alignmnetOffset, y: -12))
+        let alignmnetOffset = isIncomingMessage && thread.isGroupThread ? (isRTL ? 22 : -22) : 0
+        let horizontalEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isIncomingMessage ? (isRTL ? .trailing : .leading) : (isRTL ? .leading : .trailing)
+        let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.top, .exterior), (horizontalEdgeAlignment, .interior)], alignmentOffset: CGPoint(x: alignmnetOffset, y: -12))
         super.init(accessoryView: reactionPicker, accessoryAlignment: alignment)
         reactionPicker.delegate = self
         reactionPicker.isHidden = true
