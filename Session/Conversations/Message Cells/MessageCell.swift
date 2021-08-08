@@ -1,5 +1,11 @@
 import UIKit
 
+public enum SwipeState {
+    case began
+    case ended
+    case cancelled
+}
+
 class MessageCell : UITableViewCell {
     weak var delegate: MessageCellDelegate?
     var viewItem: ConversationViewItem? { didSet { update() } }
@@ -55,6 +61,7 @@ protocol MessageCellDelegate : AnyObject {
     func handleViewItemLongPressed(_ viewItem: ConversationViewItem)
     func handleViewItemTapped(_ viewItem: ConversationViewItem, gestureRecognizer: UITapGestureRecognizer)
     func handleViewItemDoubleTapped(_ viewItem: ConversationViewItem)
+    func handleViewItemSwiped(_ viewItem: ConversationViewItem, state: SwipeState)
     func showFullText(_ viewItem: ConversationViewItem)
     func openURL(_ url: URL)
     func handleReplyButtonTapped(for viewItem: ConversationViewItem)
