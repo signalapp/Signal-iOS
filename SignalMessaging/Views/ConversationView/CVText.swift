@@ -135,8 +135,8 @@ public struct CVLabelConfig {
         self.text.apply(label: label)
     }
 
-    public func measure(maxWidth: CGFloat, context: CVText.Context) -> CGSize {
-        let size = CVText.measureLabel(config: self, maxWidth: maxWidth, context: context)
+    public func measure(maxWidth: CGFloat, textContext: CVText.TextContext) -> CGSize {
+        let size = CVText.measureLabel(config: self, maxWidth: maxWidth, textContext: textContext)
         if size.width > maxWidth {
             owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
         }
@@ -232,7 +232,59 @@ public class CVText {
 
     private static var cacheMeasurements = true
 
-    private static let cacheSize: Int = 500
+    // MARK: - TextContext
+
+    // We use NSTextStorage to measure text.
+    // NSTextStorage.processEditing() posts notifications to main thread
+    // and in doing so blocks on the main thread.
+    // Therefore it is not safe to simultaneously do measurement on two
+    // threads if one of them is the main thread unless we use separate
+    // UnfairLocks or we can hit deadlock. If we use separate UnfairLocks
+    // we need to use separate caches.
+    public enum TextContext {
+        case mainThread
+        case homeViewAsync
+        case conversationViewAsync
+
+        static var forHomeView: TextContext {
+            if Thread.isMainThread {
+                return .mainThread
+            } else {
+                return .homeViewAsync
+            }
+        }
+
+        static var forConversationView: TextContext {
+            if Thread.isMainThread {
+                return .mainThread
+            } else {
+                return .conversationViewAsync
+            }
+        }
+    }
+    private class ContextState {
+        let unfairLock = UnfairLock()
+        let labelCache: LRUCache<CacheKey, CGSize>
+        let bodyTextLabelCache: LRUCache<CacheKey, CGSize>
+
+        init(cacheSize: Int) {
+            labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
+            bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
+        }
+    }
+    private static let mainThreadContextState = ContextState(cacheSize: 200)
+    private static let homeViewAsyncContextState = ContextState(cacheSize: 200)
+    private static let conversationViewAsyncContextState = ContextState(cacheSize: 500)
+    private static func contextState(forTextContext textContext: TextContext) -> ContextState {
+        switch textContext {
+        case .mainThread:
+            return Self.mainThreadContextState
+        case .homeViewAsync:
+            return Self.homeViewAsyncContextState
+        case .conversationViewAsync:
+            return Self.conversationViewAsyncContextState
+        }
+    }
 
     // MARK: - UILabel
 
@@ -252,26 +304,6 @@ public class CVText {
 
     private static func buildCacheKey(configKey: String, maxWidth: CGFloat) -> CacheKey {
         "\(configKey),\(maxWidth)"
-    }
-
-    public enum TextContext {
-        case homeView
-        case conversationView
-    }
-    private class ContextState {
-        let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
-        let bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
-        let unfairLock = UnfairLock()
-    }
-    private static let homeViewContextState = ContextState()
-    private static let conversationViewContextState = ContextState()
-    private static func contextState(forTextContext textContext: TextContext) -> ContextState {
-        switch textContext {
-        case .homeView:
-            return Self.homeViewContextState
-        case .conversationView:
-            return Self.conversationViewContextState
-        }
     }
 
     public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode,
