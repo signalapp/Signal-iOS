@@ -136,6 +136,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)deleteLocallyAction;
 - (void)deleteRemotelyAction;
 
+- (void)deleteAction; // Remove this after the unsend request is enabled
+
 - (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;
 

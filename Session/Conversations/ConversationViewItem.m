@@ -1031,6 +1031,50 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
 }
 
+// Remove this after the unsend request is enabled
+- (void)deleteAction
+{
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.interaction removeWithTransaction:transaction];
+        if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+            [LKStorage.shared cancelPendingMessageSendJobIfNeededForMessage:self.interaction.timestamp using:transaction];
+        }
+    }];
+    
+    if (self.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+        
+        // Only allow deletion on incoming and outgoing messages
+        OWSInteractionType interationType = self.interaction.interactionType;
+        if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
+        
+        // Make sure it's an open group message
+        TSMessage *message = (TSMessage *)self.interaction;
+        if (!message.isOpenGroupMessage) return;
+
+        // Get the open group
+        SNOpenGroupV2 *openGroupV2 = [LKStorage.shared getV2OpenGroupForThreadID:groupThread.uniqueId];
+        if (openGroup == nil && openGroupV2 == nil) return;
+
+        // If it's an incoming message the user must have moderator status
+        if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+            NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
+            if (openGroupV2 != nil) {
+                if (![SNOpenGroupAPIV2 isUserModerator:userPublicKey forRoom:openGroupV2.room onServer:openGroupV2.server]) { return; }
+            }
+        }
+        
+        // Delete the message
+        BOOL wasSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
+        if (openGroupV2 != nil) {
+            [[SNOpenGroupAPIV2 deleteMessageWithServerID:message.openGroupServerMessageID fromRoom:openGroupV2.room onServer:openGroupV2.server].catch(^(NSError *error) {
+                // Roll back
+                [self.interaction save];
+            }) retainUntilComplete];
+        }
+    }
+}
+
 - (BOOL)hasBodyTextActionContent
 {
     return self.hasBodyText && self.displayableBodyText.fullText.length > 0;

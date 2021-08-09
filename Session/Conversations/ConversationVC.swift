@@ -4,7 +4,8 @@
 // • Photo rounding (the small corners don't have the correct rounding)
 // • Remaining search glitchiness
 
-final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
+final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {    
+    let isUnsendRequesEnabled = false // Switch this to true if unsend request is done on all platforms
     let thread: TSThread
     let focusedMessageID: String? // This isn't actually used ATM
     var unreadViewItems: [ConversationViewItem] = []

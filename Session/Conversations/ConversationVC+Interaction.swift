@@ -555,6 +555,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
+        if (!self.isUnsendRequesEnabled) {
+            viewItem.deleteAction()
+            return
+        }
         
         func showInputAccessoryView() {
             UIView.animate(withDuration: 0.25, animations: {
