@@ -214,85 +214,18 @@ public struct CVTextViewConfig {
 public class CVText {
     public typealias CacheKey = String
 
-    public enum MeasurementMode { case view, layoutManager }
-
-    private static var reuseLabels: Bool {
-        false
-    }
-    public static var defaultLabelMeasurementMode: MeasurementMode {
-        .layoutManager
-    }
-
-    private static var reuseTextViews: Bool {
-        false
-    }
-    public static var defaultTextViewMeasurementMode: MeasurementMode {
-        .layoutManager
-    }
-
     private static var cacheMeasurements = true
 
-    // MARK: - ContextState
-
-    // We use NSTextStorage to measure text. During measurement,
-    // NSTextStorage.processEditing() posts notifications to main thread
-    // and in doing so blocks on the main thread.
-    // If the main thread is using CVText to do text measurement, it
-    // might be blocked waiting to acquire the UnfairLock.
-    // Therefore it is not safe to simultaneously do measurement on two
-    // threads if one of them is the main thread unless we use separate
-    // UnfairLocks or we can hit deadlock. If we use separate UnfairLocks
-    // we need to use separate caches.
-    private class ContextState {
-        let unfairLock = UnfairLock()
-        let labelCache: LRUCache<CacheKey, CGSize>
-        let bodyTextLabelCache: LRUCache<CacheKey, CGSize>
-
-        init(cacheSize: Int) {
-            labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
-            bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
-        }
-    }
-    private static let mainThreadContextState = ContextState(cacheSize: 300)
-    private static let offMainThreadContextState = ContextState(cacheSize: 500)
-    private static func currentContextState() -> ContextState {
-        Thread.isMainThread ? mainThreadContextState : offMainThreadContextState
-    }
+    private static let cacheSize: Int = 500
 
     // MARK: - UILabel
-
-    private static let label_main = UILabel()
-    private static let label_workQueue = UILabel()
-    private static var labelForMeasurement: UILabel {
-        guard reuseLabels else {
-            return UILabel()
-        }
-
-        if Thread.isMainThread {
-            return label_main
-        } else {
-            return label_workQueue
-        }
-    }
 
     private static func buildCacheKey(configKey: String, maxWidth: CGFloat) -> CacheKey {
         "\(configKey),\(maxWidth)"
     }
+    private static let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
-    public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode,
-                                    config: CVLabelConfig,
-                                    maxWidth: CGFloat) -> CGSize {
-        let contextState = Self.currentContextState()
-        return contextState.unfairLock.withLock {
-            measureLabelLocked(mode: mode, config: config, maxWidth: max(0, maxWidth), contextState: contextState)
-        }
-    }
-
-    private static func measureLabelLocked(mode: MeasurementMode = defaultLabelMeasurementMode,
-                                           config: CVLabelConfig,
-                                           maxWidth: CGFloat,
-                                           contextState: ContextState) -> CGSize {
-        let labelCache = contextState.labelCache
+    public static func measureLabel(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = labelCache.get(key: cacheKey) {
@@ -303,12 +236,7 @@ public class CVText {
         if config.text.stringValue.isEmpty {
             result = .zero
         } else {
-            switch mode {
-            case .layoutManager:
-                result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
-            case .view:
-                result = measureLabelUsingView(config: config, maxWidth: maxWidth)
-            }
+            result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
             owsAssertDebug(result.isNonEmpty)
         }
 
@@ -319,14 +247,16 @@ public class CVText {
         return result.ceil
     }
 
-    private static func measureLabelUsingView(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        let label = labelForMeasurement
+    #if TESTABLE_BUILD
+    public static func measureLabelUsingView(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
+        let label = UILabel()
         config.applyForMeasurement(label: label)
         var size = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)).ceil
         // Truncate to available space if necessary.
         size.width = min(size.width, maxWidth)
         return size
     }
+    #endif
 
     private static func measureLabelUsingLayoutManager(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
@@ -338,18 +268,9 @@ public class CVText {
 
     // MARK: - CVBodyTextLabel
 
-    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config,
-                                            maxWidth: CGFloat) -> CGSize {
-        let contextState = Self.currentContextState()
-        return contextState.unfairLock.withLock {
-            measureBodyTextLabelLocked(config: config, maxWidth: maxWidth, contextState: contextState)
-        }
-    }
+    private static let bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
-    private static func measureBodyTextLabelLocked(config: CVBodyTextLabel.Config,
-                                                   maxWidth: CGFloat,
-                                                   contextState: ContextState) -> CGSize {
-        let bodyTextLabelCache = contextState.bodyTextLabelCache
+    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CGSize {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = bodyTextLabelCache.get(key: cacheKey) {

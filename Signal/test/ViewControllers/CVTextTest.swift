@@ -269,7 +269,7 @@ class CVTextTest: SignalBaseTest {
 
         for config in configs {
             for possibleWidth: CGFloat in stride(from: 100, to: 2000, by: 50) {
-                let viewSize = CVText.measureLabel(mode: .view, config: config, maxWidth: possibleWidth)
+                let viewSize = CVText.measureLabelUsingView(config: config, maxWidth: possibleWidth)
                 let defaultSize = CVText.measureLabel(config: config, maxWidth: possibleWidth)
                 XCTAssertEqual(viewSize.width, defaultSize.width)
                 XCTAssertEqual(viewSize.height, defaultSize.height)
