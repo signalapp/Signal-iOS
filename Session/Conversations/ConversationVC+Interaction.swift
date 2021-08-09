@@ -567,7 +567,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             })
         }
         
-        if viewItem.interaction.interactionType() == .outgoingMessage {
+        if viewItem.interaction.interactionType() == .outgoingMessage,
+           let message = viewItem.interaction as? TSMessage, message.serverHash != nil  {
             let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
             let deleteLocallyAction = UIAlertAction.init(title: NSLocalizedString("delete_message_for_me", comment: ""), style: .destructive) { _ in
                 self.deleteLocally(viewItem)
@@ -599,7 +600,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     private func buildUsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
-        if let message = viewItem.interaction as? TSMessage, message.isOpenGroupMessage { return nil } 
+        if let message = viewItem.interaction as? TSMessage,
+           message.isOpenGroupMessage || message.serverHash == nil { return nil }
         let unsendRequest = UnsendRequest()
         switch viewItem.interaction.interactionType() {
         case .incomingMessage:
