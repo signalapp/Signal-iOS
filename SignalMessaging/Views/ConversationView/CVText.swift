@@ -135,8 +135,8 @@ public struct CVLabelConfig {
         self.text.apply(label: label)
     }
 
-    public func measure(maxWidth: CGFloat) -> CGSize {
-        let size = CVText.measureLabel(config: self, maxWidth: maxWidth)
+    public func measure(maxWidth: CGFloat, context: CVText.Context) -> CGSize {
+        let size = CVText.measureLabel(config: self, maxWidth: maxWidth, context: context)
         if size.width > maxWidth {
             owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
         }
@@ -253,16 +253,42 @@ public class CVText {
     private static func buildCacheKey(configKey: String, maxWidth: CGFloat) -> CacheKey {
         "\(configKey),\(maxWidth)"
     }
-    private static let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
-    private static let unfairLock = UnfairLock()
 
-    public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
-        unfairLock.withLock {
-            measureLabelLocked(mode: mode, config: config, maxWidth: max(0, maxWidth))
+    public enum TextContext {
+        case homeView
+        case conversationView
+    }
+    private class ContextState {
+        let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
+        let bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
+        let unfairLock = UnfairLock()
+    }
+    private static let homeViewContextState = ContextState()
+    private static let conversationViewContextState = ContextState()
+    private static func contextState(forTextContext textContext: TextContext) -> ContextState {
+        switch textContext {
+        case .homeView:
+            return Self.homeViewContextState
+        case .conversationView:
+            return Self.conversationViewContextState
         }
     }
 
-    private static func measureLabelLocked(mode: MeasurementMode = defaultLabelMeasurementMode, config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
+    public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode,
+                                    config: CVLabelConfig,
+                                    maxWidth: CGFloat,
+                                    textContext: TextContext) -> CGSize {
+        let contextState = Self.contextState(forTextContext: textContext)
+        return contextState.unfairLock.withLock {
+            measureLabelLocked(mode: mode, config: config, maxWidth: max(0, maxWidth), contextState: contextState)
+        }
+    }
+
+    private static func measureLabelLocked(mode: MeasurementMode = defaultLabelMeasurementMode,
+                                           config: CVLabelConfig,
+                                           maxWidth: CGFloat,
+                                           contextState: ContextState) -> CGSize {
+        let labelCache = contextState.labelCache
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = labelCache.get(key: cacheKey) {
@@ -308,15 +334,19 @@ public class CVText {
 
     // MARK: - CVBodyTextLabel
 
-    private static let bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
-
-    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CGSize {
-        unfairLock.withLock {
-            measureBodyTextLabelLocked(config: config, maxWidth: maxWidth)
+    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config,
+                                            maxWidth: CGFloat,
+                                            textContext: TextContext) -> CGSize {
+        let contextState = Self.contextState(forTextContext: textContext)
+        return contextState.unfairLock.withLock {
+            measureBodyTextLabelLocked(config: config, maxWidth: maxWidth, contextState: contextState)
         }
     }
 
-    private static func measureBodyTextLabelLocked(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CGSize {
+    private static func measureBodyTextLabelLocked(config: CVBodyTextLabel.Config,
+                                                   maxWidth: CGFloat,
+                                                   contextState: ContextState) -> CGSize {
+        let bodyTextLabelCache = contextState.bodyTextLabelCache
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = bodyTextLabelCache.get(key: cacheKey) {
