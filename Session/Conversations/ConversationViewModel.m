@@ -835,8 +835,8 @@ NS_ASSUME_NONNULL_BEGIN
         // to show the date header of the deleted message if needed
         for (NSString *deletedItemId in deletedItemIdSet) {
             NSUInteger oldIndex = [oldItemIdList indexOfObject:deletedItemId];
-            id<ConversationViewItem> _Nullable nextItemId = (oldIndex + 1 < oldItemIdList.count ? oldItemIdList[oldIndex + 1] : nil);
-            if (nextItemId != nil) {
+            if (oldIndex != NSNotFound && oldIndex + 1 < oldItemIdList.count) {
+                NSString *nextItemId = oldItemIdList[oldIndex + 1];
                 [updatedItemSet addObject:nextItemId];
                 [updatedNeighborItemSet addObject:nextItemId];
             }
