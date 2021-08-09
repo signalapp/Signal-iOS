@@ -237,6 +237,8 @@ public class CVText {
     // We use NSTextStorage to measure text. During measurement,
     // NSTextStorage.processEditing() posts notifications to main thread
     // and in doing so blocks on the main thread.
+    // If the main thread is using CVText to do text measurement, it
+    // might be blocked waiting to acquire the UnfairLock.
     // Therefore it is not safe to simultaneously do measurement on two
     // threads if one of them is the main thread unless we use separate
     // UnfairLocks or we can hit deadlock. If we use separate UnfairLocks
