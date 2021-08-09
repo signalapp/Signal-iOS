@@ -39,9 +39,9 @@ class MessageReceiptSet: NSObject, Codable {
 extension OWSOutgoingReceiptManager {
     @objc
     func fetchAllReceiptSets(type: OWSReceiptType, transaction: SDSAnyReadTransaction) -> [SignalServiceAddress: MessageReceiptSet] {
-        let allAddresses = store(for: type)
+        let allAddresses = Set(store(for: type)
             .allKeys(transaction: transaction)
-            .compactMap { SignalServiceAddress(identifier: $0) }
+            .compactMap { SignalServiceAddress(identifier: $0) })
 
         let tuples = allAddresses.map { ($0, fetchReceiptSet(type: type, address: $0, transaction: transaction)) }
         return Dictionary(uniqueKeysWithValues: tuples)
