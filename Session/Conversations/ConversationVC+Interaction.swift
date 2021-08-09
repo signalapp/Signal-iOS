@@ -468,6 +468,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             }
         }
     }
+    
+    func handleViewItemSwiped(_ viewItem: ConversationViewItem, state: SwipeState) {
+        switch state {
+        case .began:
+            messagesTableView.isScrollEnabled = false
+        case .ended, .cancelled:
+            messagesTableView.isScrollEnabled = true
+        }
+    }
 
     func showFailedMessageSheet(for tsMessage: TSOutgoingMessage) {
         let thread = self.thread

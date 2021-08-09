@@ -475,9 +475,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        guard let viewItem = viewItem else { return }
         let viewsToMove = [ bubbleView, profilePictureView, replyButton, timerView, messageStatusImageView ]
         let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
         switch gestureRecognizer.state {
+        case .began:
+            delegate?.handleViewItemSwiped(viewItem, state: .began)
         case .changed:
             // The idea here is to asymptotically approach a maximum drag distance
             let damping: CGFloat = 20
@@ -495,8 +498,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             previousX = translationX
         case .ended, .cancelled:
             if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold {
+                delegate?.handleViewItemSwiped(viewItem, state: .ended)
                 reply()
             } else {
+                delegate?.handleViewItemSwiped(viewItem, state: .cancelled)
                 resetReply()
             }
         default: break
