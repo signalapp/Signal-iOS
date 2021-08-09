@@ -1552,26 +1552,7 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
                 guard hasServiceE164 else {
                     return nil
                 }
-
-                guard let serviceE164 = serviceE164 else {
-                    owsFailDebug("serviceE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !serviceE164.isEmpty else {
-                    owsFailDebug("serviceE164 was unexpectedly empty")
-                    return nil
-                }
-
-                guard PhoneNumber.resemblesE164(serviceE164) else {
-                    if DebugFlags.internalLogging {
-                        Logger.warn("serviceE164 was malformed: \(serviceE164).")
-                    }
-                    owsFailDebug("serviceE164 was malformed.")
-                    return nil
-                }
-
-                return serviceE164
+                return ProtoUtils.parseProtoE164(serviceE164, name: "serviceE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
