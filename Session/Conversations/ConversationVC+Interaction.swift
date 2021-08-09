@@ -599,6 +599,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     private func buildUsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
+        if let message = viewItem.interaction as? TSMessage, message.isOpenGroupMessage { return nil } 
         let unsendRequest = UnsendRequest()
         switch viewItem.interaction.interactionType() {
         case .incomingMessage:
