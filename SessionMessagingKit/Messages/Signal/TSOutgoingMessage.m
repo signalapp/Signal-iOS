@@ -563,6 +563,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              }];
 }
 
+#pragma mark - Delete
+
+- (void)updateForDeletionWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super updateForDeletionWithTransaction:transaction];
+    [self removeWithTransaction:transaction];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
