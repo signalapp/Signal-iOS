@@ -1552,7 +1552,8 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
                 guard hasServiceE164 else {
                     return nil
                 }
-                return ProtoUtils.parseProtoE164(serviceE164, name: "serviceE164")
+
+                return ProtoUtils.parseProtoE164(serviceE164, name: "StorageServiceProtos_ContactRecord.serviceE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
