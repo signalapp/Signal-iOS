@@ -194,7 +194,7 @@ static NSTimeInterval launchStartedAt;
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
-    LKAppMode appMode = [NSUserDefaults.standardUserDefaults integerForKey:@"appMode"];
+    LKAppMode appMode = [self getAppModeOrSystemDefault];
     [self setCurrentAppMode:appMode];
 
     if (@available(iOS 11, *)) {
@@ -245,7 +245,7 @@ static NSTimeInterval launchStartedAt;
 
     [self ensureRootViewController];
 
-    LKAppMode appMode = [NSUserDefaults.standardUserDefaults integerForKey:@"appMode"];
+    LKAppMode appMode = [self getCurrentAppMode];
     [self setCurrentAppMode:appMode];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
