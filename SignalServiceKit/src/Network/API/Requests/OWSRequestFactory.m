@@ -516,7 +516,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
-    if (SSKFeatureFlags.senderKeyAndMessageResend) {
+
+    // For internal builds, this will always be true
+    // For beta builds, this is only true if you have an internal feature flag set
+    // This means that internal users won't be able to link new devices on beta builds
+    if (RemoteConfig.senderKeyPermitted) {
         capabilities[@"senderKey"] = @(YES);
     }
 
