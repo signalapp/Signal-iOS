@@ -952,7 +952,6 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
                     actionSheet.dismiss(animated: true)
                 }
             ),
-            .hStretchingSpacer(),
             buildOutputQualityButton(
                 title: ImageQualityLevel.high.localizedString,
                 subtitle: NSLocalizedString(
@@ -969,6 +968,8 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         buttonStack.isLayoutMarginsRelativeArrangement = true
         buttonStack.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 24)
         buttonStack.axis = .horizontal
+        buttonStack.spacing = 20
+        buttonStack.distribution = .fillEqually
 
         let titleLabel = UILabel()
         titleLabel.font = .ows_dynamicTypeSubheadlineClamped
@@ -1000,6 +1001,8 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         subtitleLabel.font = .ows_dynamicTypeCaption1Clamped
         subtitleLabel.textColor = Theme.darkThemePrimaryColor
         subtitleLabel.text = subtitle
+        subtitleLabel.lineBreakMode = .byWordWrapping
+        subtitleLabel.numberOfLines = 0
 
         let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stackView.alignment = .center
