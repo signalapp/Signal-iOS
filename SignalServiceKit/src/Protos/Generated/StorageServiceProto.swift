@@ -1563,6 +1563,14 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
                     return nil
                 }
 
+                guard PhoneNumber.resemblesE164(serviceE164) else {
+                    if DebugFlags.internalLogging {
+                        Logger.warn("serviceE164 was malformed: \(serviceE164).")
+                    }
+                    owsFailDebug("serviceE164 was malformed.")
+                    return nil
+                }
+
                 return serviceE164
             }()
 

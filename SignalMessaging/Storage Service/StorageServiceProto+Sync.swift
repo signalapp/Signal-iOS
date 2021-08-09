@@ -21,7 +21,15 @@ extension StorageServiceProtoContactRecord: Dependencies {
         var builder = StorageServiceProtoContactRecord.builder()
 
         if let phoneNumber = address.phoneNumber {
-            builder.setServiceE164(phoneNumber)
+            if PhoneNumber.resemblesE164(phoneNumber) {
+                builder.setServiceE164(phoneNumber)
+            } else {
+                if DebugFlags.internalLogging {
+                    Logger.warn("Invalid e164: \(phoneNumber).")
+                }
+                // TODO: Should we clean up the database?
+                owsFailDebug("Invalid e164: \(phoneNumber)")
+            }
         }
 
         if let uuidString = address.uuidString {
@@ -87,7 +95,6 @@ extension StorageServiceProtoContactRecord: Dependencies {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid
         }
-
         // Our general merge philosophy is that the latest value on the service
         // is always right. There are some edge cases where this could cause
         // user changes to get blown away, such as if you're changing values
