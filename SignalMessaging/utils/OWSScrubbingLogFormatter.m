@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScrubbingLogFormatter.h"
@@ -93,6 +93,24 @@ NS_ASSUME_NONNULL_BEGIN
     return regex;
 }
 
+- (NSRegularExpression *)longHexRegex
+{
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Any hex string of 12 chars (6 bytes) or more.
+        // Example: A321CCE01BA2C85D
+        NSError *error;
+        regex = [NSRegularExpression regularExpressionWithPattern:@"[\\da-f]{9,}([\\da-f]{3})"
+                                                          options:NSRegularExpressionCaseInsensitive
+                                                            error:&error];
+        if (error || !regex) {
+            OWSFail(@"could not compile regular expression: %@", error);
+        }
+    });
+    return regex;
+}
+
 - (NSString *__nullable)formatLogMessage:(DDLogMessage *)logMessage
 {
     NSString *logString = [super formatLogMessage:logMessage];
@@ -133,6 +151,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                            options:0
                                                              range:NSMakeRange(0, [logString length])
                                                       withTemplate:@"[ REDACTED_IPV4_ADDRESS:...$1 ]"];
+
+    NSRegularExpression *longHexRegex = self.longHexRegex;
+    logString = [longHexRegex stringByReplacingMatchesInString:logString
+                                                       options:0
+                                                         range:NSMakeRange(0, [logString length])
+                                                  withTemplate:@"[ REDACTED_HEX:...$1 ]"];
 
     return logString;
 }
