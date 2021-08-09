@@ -226,20 +226,24 @@ extension MessageReceiver {
         guard message.sender == message.author else { return }
         let userPublicKey = getUserHexEncodedPublicKey()
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        if let author = message.author, let timestamp = message.timestamp,
-           let messageToDelete = userPublicKey == message.sender ? TSOutgoingMessage.find(withTimestamp: timestamp) : TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction) {
-            if let incomingMessage = messageToDelete as? TSIncomingMessage {
-                incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
-                if let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
-                    UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notificationIdentifier])
-                    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
-                    
+        if let author = message.author, let timestamp = message.timestamp {
+            let localMessage: TSMessage?
+            if userPublicKey == message.sender { localMessage = TSOutgoingMessage.find(withTimestamp: timestamp) }
+            else { localMessage = TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction) }
+            
+            if let messageToDelete = localMessage {
+                if let incomingMessage = messageToDelete as? TSIncomingMessage {
+                    incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                    if let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
+                        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notificationIdentifier])
+                        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
+                    }
                 }
+                if let serverHash = messageToDelete.serverHash {
+                    SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
+                }
+                messageToDelete.updateForDeletion(with: transaction)
             }
-            if let serverHash = messageToDelete.serverHash {
-                SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
-            }
-            messageToDelete.updateForDeletion(with: transaction)
         }
     }
     
