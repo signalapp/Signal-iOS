@@ -70,7 +70,7 @@ public enum CVTextValue: Equatable, Hashable {
 public struct CVLabelConfig {
     public typealias CacheKey = String
 
-    fileprivate let text: CVTextValue
+    public let text: CVTextValue
     public let font: UIFont
     public let textColor: UIColor
     public let numberOfLines: Int
@@ -151,7 +151,7 @@ public struct CVLabelConfig {
         "CVLabelConfig: \(text.debugDescription)"
     }
 
-    fileprivate var cacheKey: CacheKey {
+    public var cacheKey: CacheKey {
         // textColor doesn't affect measurement.
         "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(numberOfLines),\(lineBreakMode.rawValue),\(textAlignment?.rawValue ?? 0)"
     }
