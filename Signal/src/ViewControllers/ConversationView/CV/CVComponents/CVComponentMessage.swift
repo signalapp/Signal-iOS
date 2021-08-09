@@ -1491,7 +1491,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 chatColorView.animationsEnabled = true
                 return chatColorView
             }
+        }
 
+        public func contextMenuAuxiliaryContentView() -> UIView? {
+            reactionsSwipeToReplyWrapper
         }
 
         public func contextMenuPresentationWillBegin() {

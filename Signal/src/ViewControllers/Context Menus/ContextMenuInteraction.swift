@@ -37,7 +37,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
                     delay: 0,
                     options: [.curveEaseInOut, .beginFromCurrentState],
                     animations: {
-                        self.targetedPreview?.view?.transform = CGAffineTransform.identity
+                        self.targetedPreview?.view.transform = CGAffineTransform.identity
                     },
                     completion: nil
                 )
@@ -115,7 +115,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
                 delay: 0,
                 options: [.curveEaseInOut, .beginFromCurrentState],
                 animations: {
-                    targetedPreview.view?.transform = .scale(0.95)
+                    targetedPreview.view.transform = .scale(0.95)
                 },
                 completion: { finished in
                     let shouldPresent = finished && self.gestureEligibleForMenuPresentation
@@ -195,7 +195,8 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
                 self.contextMenuController = nil
             })
         } else {
-            targetedPreview?.view?.isHidden = false
+            targetedPreview?.view.isHidden = false
+            targetedPreview?.auxiliaryView?.isHidden = false
             delegate?.contextMenuInteraction(self, didEndForConfiguration: configuration)
             completion()
             self.contextMenuController?.view.removeFromSuperview()

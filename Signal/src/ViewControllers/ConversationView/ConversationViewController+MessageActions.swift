@@ -292,7 +292,9 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         }
 
         if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {
-            return ContextMenuTargetedPreview(view: contentView, alignment: alignment, accessoryViews: accessories)
+            let preview = ContextMenuTargetedPreview(view: contentView, alignment: alignment, accessoryViews: accessories)
+            preview.auxiliaryView = componentView.contextMenuAuxiliaryContentView?()
+            return preview
         } else {
             return ContextMenuTargetedPreview(view: cell, alignment: alignment, accessoryViews: accessories)
 

@@ -294,6 +294,10 @@ public protocol CVComponentView {
     // Allows component opportunity to configure and return a subview for context menu previews
     @objc optional func contextMenuContentView() -> UIView?
 
+    // Allows component opportunity to configure and return an auxiliary content subview for context menu previews
+    // This will only be used if contextMenuContentView() is implemented
+    @objc optional func contextMenuAuxiliaryContentView() -> UIView?
+
     // Called when the context menu presentation will begin,
     // can be used to configure component view below presenting context menu
     @objc optional func contextMenuPresentationWillBegin()
