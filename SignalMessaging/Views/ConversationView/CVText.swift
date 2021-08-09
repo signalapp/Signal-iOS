@@ -232,13 +232,8 @@ public class CVText {
             return result
         }
 
-        let result: CGSize
-        if config.text.stringValue.isEmpty {
-            result = .zero
-        } else {
-            result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
-            owsAssertDebug(result.isNonEmpty)
-        }
+        let result = measureLabelUsingLayoutManager(config: config, maxWidth: maxWidth)
+        owsAssertDebug(result.isNonEmpty || config.text.stringValue.isEmpty)
 
         if cacheMeasurements {
             labelCache.set(key: cacheKey, value: result.ceil)
@@ -249,6 +244,9 @@ public class CVText {
 
     #if TESTABLE_BUILD
     public static func measureLabelUsingView(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
+        guard !config.text.stringValue.isEmpty else {
+            return.zero
+        }
         let label = UILabel()
         config.applyForMeasurement(label: label)
         var size = label.sizeThatFits(CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)).ceil
@@ -258,7 +256,10 @@ public class CVText {
     }
     #endif
 
-    private static func measureLabelUsingLayoutManager(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
+    static func measureLabelUsingLayoutManager(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
+        guard !config.text.stringValue.isEmpty else {
+            return.zero
+        }
         let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
         textContainer.maximumNumberOfLines = config.numberOfLines
         textContainer.lineBreakMode = config.lineBreakMode
