@@ -830,6 +830,17 @@ NS_ASSUME_NONNULL_BEGIN
                 [updatedNeighborItemSet addObject:itemId];
             }
         }
+        
+        // Add the following item of a deleted message to update
+        // to show the date header of the deleted message if needed
+        for (NSString *deletedItemId in deletedItemIdSet) {
+            NSUInteger oldIndex = [oldItemIdList indexOfObject:deletedItemId];
+            id<ConversationViewItem> _Nullable nextItemId = (oldIndex + 1 < oldItemIdList.count ? oldItemIdList[oldIndex + 1] : nil);
+            if (nextItemId != nil) {
+                [updatedItemSet addObject:nextItemId];
+                [updatedNeighborItemSet addObject:nextItemId];
+            }
+        }
     }
 
     // 3. Updates.
