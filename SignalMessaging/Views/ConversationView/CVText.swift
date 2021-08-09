@@ -135,8 +135,8 @@ public struct CVLabelConfig {
         self.text.apply(label: label)
     }
 
-    public func measure(maxWidth: CGFloat, textContext: CVText.TextContext) -> CGSize {
-        let size = CVText.measureLabel(config: self, maxWidth: maxWidth, textContext: textContext)
+    public func measure(maxWidth: CGFloat) -> CGSize {
+        let size = CVText.measureLabel(config: self, maxWidth: maxWidth)
         if size.width > maxWidth {
             owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
         }
@@ -232,36 +232,15 @@ public class CVText {
 
     private static var cacheMeasurements = true
 
-    // MARK: - TextContext
+    // MARK: - ContextState
 
-    // We use NSTextStorage to measure text.
+    // We use NSTextStorage to measure text. During measurement,
     // NSTextStorage.processEditing() posts notifications to main thread
     // and in doing so blocks on the main thread.
     // Therefore it is not safe to simultaneously do measurement on two
     // threads if one of them is the main thread unless we use separate
     // UnfairLocks or we can hit deadlock. If we use separate UnfairLocks
     // we need to use separate caches.
-    public enum TextContext {
-        case mainThread
-        case homeViewAsync
-        case conversationViewAsync
-
-        static var forHomeView: TextContext {
-            if Thread.isMainThread {
-                return .mainThread
-            } else {
-                return .homeViewAsync
-            }
-        }
-
-        static var forConversationView: TextContext {
-            if Thread.isMainThread {
-                return .mainThread
-            } else {
-                return .conversationViewAsync
-            }
-        }
-    }
     private class ContextState {
         let unfairLock = UnfairLock()
         let labelCache: LRUCache<CacheKey, CGSize>
@@ -272,18 +251,10 @@ public class CVText {
             bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
         }
     }
-    private static let mainThreadContextState = ContextState(cacheSize: 200)
-    private static let homeViewAsyncContextState = ContextState(cacheSize: 200)
-    private static let conversationViewAsyncContextState = ContextState(cacheSize: 500)
-    private static func contextState(forTextContext textContext: TextContext) -> ContextState {
-        switch textContext {
-        case .mainThread:
-            return Self.mainThreadContextState
-        case .homeViewAsync:
-            return Self.homeViewAsyncContextState
-        case .conversationViewAsync:
-            return Self.conversationViewAsyncContextState
-        }
+    private static let mainThreadContextState = ContextState(cacheSize: 300)
+    private static let offMainThreadContextState = ContextState(cacheSize: 500)
+    private static func currentContextState() -> ContextState {
+        Thread.isMainThread ? mainThreadContextState : offMainThreadContextState
     }
 
     // MARK: - UILabel
@@ -308,9 +279,8 @@ public class CVText {
 
     public static func measureLabel(mode: MeasurementMode = defaultLabelMeasurementMode,
                                     config: CVLabelConfig,
-                                    maxWidth: CGFloat,
-                                    textContext: TextContext) -> CGSize {
-        let contextState = Self.contextState(forTextContext: textContext)
+                                    maxWidth: CGFloat) -> CGSize {
+        let contextState = Self.currentContextState()
         return contextState.unfairLock.withLock {
             measureLabelLocked(mode: mode, config: config, maxWidth: max(0, maxWidth), contextState: contextState)
         }
@@ -367,9 +337,8 @@ public class CVText {
     // MARK: - CVBodyTextLabel
 
     public static func measureBodyTextLabel(config: CVBodyTextLabel.Config,
-                                            maxWidth: CGFloat,
-                                            textContext: TextContext) -> CGSize {
-        let contextState = Self.contextState(forTextContext: textContext)
+                                            maxWidth: CGFloat) -> CGSize {
+        let contextState = Self.currentContextState()
         return contextState.unfairLock.withLock {
             measureBodyTextLabelLocked(config: config, maxWidth: maxWidth, contextState: contextState)
         }
