@@ -28,7 +28,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
                     Logger.warn("Invalid e164: \(phoneNumber).")
                 }
                 // TODO: Should we clean up the database?
-                owsFailDebug("Invalid e164: \(phoneNumber)")
+                owsFailDebug("Invalid e164.")
             }
         }
 
