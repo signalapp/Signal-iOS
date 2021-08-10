@@ -114,37 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLayoutSubviews];
 
-    [self updateMinZoomScale];
-    [self centerMediaViewConstraints];
-}
-
-- (void)updateMinZoomScale
-{
-    if (!self.image) {
-        self.scrollView.minimumZoomScale = 1.f;
-        self.scrollView.maximumZoomScale = 1.f;
-        self.scrollView.zoomScale = 1.f;
-        return;
-    }
-
-    CGSize viewSize = self.scrollView.bounds.size;
-    UIImage *image = self.image;
-    OWSAssertDebug(image);
-
-    if (image.size.width == 0 || image.size.height == 0) {
-        OWSFailDebug(@"Invalid image dimensions. %@", NSStringFromCGSize(image.size));
-        return;
-    }
-
-    CGFloat scaleWidth = viewSize.width / image.size.width;
-    CGFloat scaleHeight = viewSize.height / image.size.height;
-    CGFloat minScale = MIN(scaleWidth, scaleHeight);
-
-    if (minScale != self.scrollView.minimumZoomScale) {
-        self.scrollView.minimumZoomScale = minScale;
-        self.scrollView.maximumZoomScale = minScale * 8;
-        self.scrollView.zoomScale = minScale;
-    }
+    [self updateZoomScaleAndConstraints];
 }
 
 - (void)zoomOutAnimated:(BOOL)isAnimated
@@ -293,9 +263,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     LoopingVideoView *view = [[LoopingVideoView alloc] init];
     view.video = video;
-
-    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
-                         forConstraints:^{ [view autoSetDimensionsToSize:self.image.size]; }];
     return view;
 }
 
@@ -315,12 +282,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     VideoPlayerView *playerView = [VideoPlayerView new];
     playerView.player = player.avPlayer;
-
-    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
-                         forConstraints:^{
-                             [playerView autoSetDimensionsToSize:self.image.size];
-                         }];
-
     return playerView;
 }
 
@@ -388,6 +349,91 @@ NS_ASSUME_NONNULL_BEGIN
     [self pauseVideo];
 }
 
+#pragma mark -
+
+- (void)updateZoomScaleAndConstraints
+{
+    // We want a default layout that...
+    //
+    // * Has the media visually centered.
+    // * If the media content is larger than the screen, it should be
+    //   zoomed to just barely fit.
+    // * If the media content is smaller than the screen, it should
+    //   appear at the "natural" size where its content resolution
+    //   matches screen resolution.
+    // * We should be able to safely zoom.
+    // * The "min zoom scale" should satisfy the requirements above.
+    // * The user should be able to scale in 4x.
+    //
+    // We use constraint-based layout and adjust
+    // UIScrollView.minimumZoomScale, etc.
+
+    // Determine the media's aspect ratio and content resolution.
+    //
+    // * mediaView.intrinsicContentSize is most accurate, but
+    //   may not be available yet for media that is loaded async.
+    // * The self.image.size should always be available if the
+    //   media is valid.
+    CGSize mediaSize = CGSizeZero;
+    CGSize mediaIntrinsicSize = self.mediaView.intrinsicContentSize;
+    CGSize mediaDefaultSize = self.image.size;
+    if (mediaIntrinsicSize.width > 0 && mediaIntrinsicSize.height > 0) {
+        mediaSize = mediaIntrinsicSize;
+    } else if (mediaDefaultSize.width > 0 && mediaDefaultSize.height > 0) {
+        mediaSize = mediaDefaultSize;
+    }
+
+    CGSize scrollViewSize = self.scrollView.bounds.size;
+
+    if (mediaSize.width <= 0 ||
+        mediaSize.height <= 0 ||
+        scrollViewSize.width <= 0 ||
+        scrollViewSize.height <= 0) {
+        // Invalid content or view state.
+
+        self.scrollView.minimumZoomScale = 1.f;
+        self.scrollView.maximumZoomScale = 1.f;
+        self.scrollView.zoomScale = 1.f;
+
+        self.mediaViewTopConstraint.constant = 0;
+        self.mediaViewBottomConstraint.constant = 0;
+        self.mediaViewLeadingConstraint.constant = 0;
+        self.mediaViewTrailingConstraint.constant = 0;
+
+        return;
+    }
+
+    CGSize newMediaSize
+        = CGSizeMake(MIN(scrollViewSize.width, mediaSize.width), MIN(scrollViewSize.height, mediaSize.height));
+    OWSAssertDebug(newMediaSize.width > 0);
+    OWSAssertDebug(newMediaSize.height > 0);
+
+    CGFloat scaleWidth = scrollViewSize.width / newMediaSize.width;
+    CGFloat scaleHeight = scrollViewSize.height / newMediaSize.height;
+    CGFloat minScale = MIN(scaleWidth, scaleHeight);
+
+    // UIScrollView transforms its content.
+    // Therefore its subviews operate in a different coordinate system.
+    // These constraints should reflect the _transformed_ frame of the mediaView,
+    // so we need to scale by the minScale.
+    CGSize newMediaSizeScaled = CGSizeScale(newMediaSize, minScale);
+    CGFloat yOffset = MAX(0, (scrollViewSize.height - newMediaSizeScaled.height) / 2);
+    CGFloat xOffset = MAX(0, (scrollViewSize.width - newMediaSizeScaled.width) / 2);
+    self.mediaViewTopConstraint.constant = yOffset;
+    self.mediaViewBottomConstraint.constant = yOffset;
+    self.mediaViewLeadingConstraint.constant = xOffset;
+    self.mediaViewTrailingConstraint.constant = -xOffset;
+
+    self.scrollView.minimumZoomScale = minScale;
+    self.scrollView.maximumZoomScale = minScale * 8;
+
+    if (self.scrollView.zoomScale < minScale) {
+        self.scrollView.zoomScale = minScale;
+    }
+
+    [self.view layoutIfNeeded];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (nullable UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
@@ -395,26 +441,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self.mediaView;
 }
 
-- (void)centerMediaViewConstraints
-{
-    OWSAssertDebug(self.scrollView);
-
-    CGSize scrollViewSize = self.scrollView.bounds.size;
-    CGSize mediaSize = self.mediaView.frame.size;
-
-    CGFloat yOffset = MAX(0, (scrollViewSize.height - mediaSize.height) / 2);
-    self.mediaViewTopConstraint.constant = yOffset;
-    self.mediaViewBottomConstraint.constant = yOffset;
-
-    CGFloat xOffset = MAX(0, (scrollViewSize.width - mediaSize.width) / 2);
-    self.mediaViewLeadingConstraint.constant = xOffset;
-    self.mediaViewTrailingConstraint.constant = -xOffset;
-}
-
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-    [self centerMediaViewConstraints];
-    [self.view layoutIfNeeded];
+    [self updateZoomScaleAndConstraints];
 }
 
 - (void)resetMediaFrame
