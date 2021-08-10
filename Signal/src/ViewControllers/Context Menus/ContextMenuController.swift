@@ -415,6 +415,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         contextMenuView.auxiliaryPreviewView?.isAccessibilityElement = false
         contextMenuView.accessoryViews = accessoryViews
 
+        self.previewView?.isUserInteractionEnabled = false
         self.previewView?.isHidden = true
         self.previewView?.layer.shadowRadius = 12
         self.previewView?.layer.shadowOffset = CGSize(width: 0, height: 4)
