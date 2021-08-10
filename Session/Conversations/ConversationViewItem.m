@@ -470,6 +470,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
+    
+    if (message.isDeleted) {
+        self.messageCellType = OWSMessageCellType_DeletedMessage;
+        return;
+    }
 
     // Check for quoted replies _before_ media album handling,
     // since that logic may exit early.
@@ -967,6 +972,66 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return [self saveMediaAlbumItems:mediaAlbumItems];
 }
 
+- (void)deleteLocallyAction
+{
+    TSMessage *message = (TSMessage *)self.interaction;
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [MessageInvalidator invalidate:message with:transaction];
+        [self.interaction removeWithTransaction:transaction];
+        if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+            [LKStorage.shared cancelPendingMessageSendJobIfNeededForMessage:self.interaction.timestamp using:transaction];
+        }
+    }];
+}
+
+- (void)deleteRemotelyAction
+{
+    TSMessage *message = (TSMessage *)self.interaction;
+    
+    if (self.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+        
+        // Only allow deletion on incoming and outgoing messages
+        OWSInteractionType interationType = self.interaction.interactionType;
+        if (interationType != OWSInteractionType_IncomingMessage && interationType != OWSInteractionType_OutgoingMessage) return;
+        
+        if (groupThread.isOpenGroup) {
+            // Make sure it's an open group message
+            if (!message.isOpenGroupMessage) return;
+
+            // Get the open group
+            SNOpenGroupV2 *openGroupV2 = [LKStorage.shared getV2OpenGroupForThreadID:groupThread.uniqueId];
+            if (openGroupV2 == nil) return;
+
+            // If it's an incoming message the user must have moderator status
+            if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+                NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
+                if (![SNOpenGroupAPIV2 isUserModerator:userPublicKey forRoom:openGroupV2.room onServer:openGroupV2.server]) { return; }
+            }
+            
+            // Delete the message
+            [[SNOpenGroupAPIV2 deleteMessageWithServerID:message.openGroupServerMessageID fromRoom:openGroupV2.room onServer:openGroupV2.server].catch(^(NSError *error) {
+                // Roll back
+                [self.interaction save];
+            }) retainUntilComplete];
+        } else {
+            NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:groupThread.groupModel.groupId];
+            [[SNSnodeAPI deleteMessageForPublickKey:groupPublicKey serverHashes:@[message.serverHash]].catch(^(NSError *error) {
+                // Roll back
+                [self.interaction save];
+            }) retainUntilComplete];
+        }
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)self.interaction.thread;
+        [[SNSnodeAPI deleteMessageForPublickKey:contactThread.contactSessionID serverHashes:@[message.serverHash]].catch(^(NSError *error) {
+            // Roll back
+            [self.interaction save];
+        }) retainUntilComplete];
+    }
+    
+}
+
+// Remove this after the unsend request is enabled
 - (void)deleteAction
 {
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isUserMentioned;
 
+@property (nonatomic, readonly, nullable) NSString *notificationIdentifier;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body
@@ -62,7 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
                   serverTimestamp:(nullable NSNumber *)serverTimestamp
                   wasReceivedByUD:(BOOL)wasReceivedByUD
           openGroupInvitationName:(nullable NSString *)openGroupInvitationName
-           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL NS_DESIGNATED_INITIALIZER;
+           openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                       serverHash:(nullable NSString*)serverHash NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -87,6 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
 // convenience method for expiring a message which was just read
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)setNotificationIdentifier:(NSString * _Nullable)notificationIdentifier
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

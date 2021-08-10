@@ -124,6 +124,7 @@ public enum MessageReceiver {
             if let dataExtractionNotification = DataExtractionNotification.fromProto(proto) { return dataExtractionNotification }
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
             if let configurationMessage = ConfigurationMessage.fromProto(proto) { return configurationMessage }
+            if let unsendRequest = UnsendRequest.fromProto(proto) { return unsendRequest }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
             return nil
         }()

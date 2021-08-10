@@ -7,37 +7,37 @@ extension ContextMenuVC {
         let work: () -> Void
 
         static func reply(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = "Reply"
+            let title = NSLocalizedString("context_menu_reply", comment: "")
             return Action(icon: UIImage(named: "ic_reply")!, title: title) { delegate?.reply(viewItem) }
         }
 
         static func copy(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = "Copy"
+            let title = NSLocalizedString("copy", comment: "")
             return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copy(viewItem) }
         }
 
         static func copySessionID(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = "Copy Session ID"
+            let title = NSLocalizedString("vc_conversation_settings_copy_session_id_button_title", comment: "")
             return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copySessionID(viewItem) }
         }
 
         static func delete(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = "Delete"
+            let title = NSLocalizedString("TXT_DELETE_TITLE", comment: "")
             return Action(icon: UIImage(named: "ic_trash")!, title: title) { delegate?.delete(viewItem) }
         }
 
         static func save(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = "Save"
+            let title = NSLocalizedString("context_menu_save", comment: "")
             return Action(icon: UIImage(named: "ic_download")!, title: title) { delegate?.save(viewItem) }
         }
 
         static func ban(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = "Ban User"
+            let title = NSLocalizedString("context_menu_ban_user", comment: "")
             return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.ban(viewItem) }
         }
         
         static func banAndDeleteAllMessages(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = "Ban and Delete All"
+            let title = NSLocalizedString("context_menu_ban_and_delete_all", comment: "")
             return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.banAndDeleteAllMessages(viewItem) }
         }
     }
@@ -82,7 +82,7 @@ extension ContextMenuVC {
 }
 
 // MARK: Delegate
-protocol ContextMenuActionDelegate : class {
+protocol ContextMenuActionDelegate : AnyObject {
     
     func reply(_ viewItem: ConversationViewItem)
     func copy(_ viewItem: ConversationViewItem)

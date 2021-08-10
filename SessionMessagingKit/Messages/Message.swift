@@ -11,6 +11,7 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     public var groupPublicKey: String?
     public var openGroupServerMessageID: UInt64?
     public var openGroupServerTimestamp: UInt64?
+    public var serverHash: String?
 
     public var ttl: UInt64 { 14 * 24 * 60 * 60 * 1000 }
     public var isSelfSendValid: Bool { false }
@@ -35,6 +36,7 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         if let groupPublicKey = coder.decodeObject(forKey: "groupPublicKey") as! String? { self.groupPublicKey = groupPublicKey }
         if let openGroupServerMessageID = coder.decodeObject(forKey: "openGroupServerMessageID") as! UInt64? { self.openGroupServerMessageID = openGroupServerMessageID }
         if let openGroupServerTimestamp = coder.decodeObject(forKey: "openGroupServerTimestamp") as! UInt64? { self.openGroupServerTimestamp = openGroupServerTimestamp }
+        if let serverHash = coder.decodeObject(forKey: "serverHash") as! String? { self.serverHash = serverHash }
     }
 
     public func encode(with coder: NSCoder) {
@@ -47,6 +49,7 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         coder.encode(groupPublicKey, forKey: "groupPublicKey")
         coder.encode(openGroupServerMessageID, forKey: "openGroupServerMessageID")
         coder.encode(openGroupServerTimestamp, forKey: "openGroupServerTimestamp")
+        coder.encode(serverHash, forKey: "serverHash")
     }
 
     // MARK: Proto Conversion

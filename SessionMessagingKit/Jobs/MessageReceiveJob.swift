@@ -3,6 +3,7 @@ import PromiseKit
 
 public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let data: Data
+    public let serverHash: String?
     public let openGroupMessageServerID: UInt64?
     public let openGroupID: String?
     public let isBackgroundPoll: Bool
@@ -15,8 +16,9 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
     public static let maxFailureCount: UInt = 10
 
     // MARK: Initialization
-    public init(data: Data, openGroupMessageServerID: UInt64? = nil, openGroupID: String? = nil, isBackgroundPoll: Bool) {
+    public init(data: Data, serverHash: String? = nil, openGroupMessageServerID: UInt64? = nil, openGroupID: String? = nil, isBackgroundPoll: Bool) {
         self.data = data
+        self.serverHash = serverHash
         self.openGroupMessageServerID = openGroupMessageServerID
         self.openGroupID = openGroupID
         self.isBackgroundPoll = isBackgroundPoll
@@ -32,6 +34,7 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
             let id = coder.decodeObject(forKey: "id") as! String?,
             let isBackgroundPoll = coder.decodeObject(forKey: "isBackgroundPoll") as! Bool? else { return nil }
         self.data = data
+        self.serverHash = coder.decodeObject(forKey: "serverHash") as! String?
         self.openGroupMessageServerID = coder.decodeObject(forKey: "openGroupMessageServerID") as! UInt64?
         self.openGroupID = coder.decodeObject(forKey: "openGroupID") as! String?
         self.isBackgroundPoll = isBackgroundPoll
@@ -41,6 +44,7 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
 
     public func encode(with coder: NSCoder) {
         coder.encode(data, forKey: "data")
+        coder.encode(serverHash, forKey: "serverHash")
         coder.encode(openGroupMessageServerID, forKey: "openGroupMessageServerID")
         coder.encode(openGroupID, forKey: "openGroupID")
         coder.encode(isBackgroundPoll, forKey: "isBackgroundPoll")
@@ -62,6 +66,7 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
             do {
                 let isRetry = (self.failureCount != 0)
                 let (message, proto) = try MessageReceiver.parse(self.data, openGroupMessageServerID: self.openGroupMessageServerID, isRetry: isRetry, using: transaction)
+                message.serverHash = self.serverHash
                 try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: self.openGroupID, isBackgroundPoll: self.isBackgroundPoll, using: transaction)
                 self.handleSuccess()
                 seal.fulfill(())

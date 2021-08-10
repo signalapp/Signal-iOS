@@ -117,7 +117,7 @@ public final class ClosedGroupPoller : NSObject {
                 guard let envelope = SNProtoEnvelope.from(json) else { return }
                 do {
                     let data = try envelope.serializedData()
-                    let job = MessageReceiveJob(data: data, isBackgroundPoll: false)
+                    let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: false)
                     SNMessagingKitConfiguration.shared.storage.write { transaction in
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }

@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
+    OWSMessageCellType_DeletedMessage
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -132,7 +133,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)copyTextAction;
 - (void)shareMediaAction;
 - (void)saveMediaAction;
-- (void)deleteAction;
+- (void)deleteLocallyAction;
+- (void)deleteRemotelyAction;
+
+- (void)deleteAction; // Remove this after the unsend request is enabled
 
 - (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;

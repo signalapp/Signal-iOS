@@ -48,7 +48,7 @@ public final class BackgroundPoller : NSObject {
                         // messages failed to parse.
                         guard let envelope = SNProtoEnvelope.from(json),
                             let data = try? envelope.serializedData() else { return nil }
-                        let job = MessageReceiveJob(data: data, isBackgroundPoll: true)
+                        let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
                         return job.execute()
                     }
                     return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects

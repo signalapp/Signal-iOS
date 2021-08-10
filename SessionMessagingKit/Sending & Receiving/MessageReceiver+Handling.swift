@@ -1,4 +1,5 @@
 import SignalCoreKit
+import SessionSnodeKit
 
 extension MessageReceiver {
 
@@ -14,6 +15,7 @@ extension MessageReceiver {
         case let message as DataExtractionNotification: handleDataExtractionNotification(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
+        case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
@@ -218,6 +220,34 @@ extension MessageReceiver {
     
     
     
+    // MARK: - Unsend Requests
+    
+    public static func handleUnsendRequest(_ message: UnsendRequest, using transaction: Any) {
+        guard message.sender == message.author else { return }
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        if let author = message.author, let timestamp = message.timestamp {
+            let localMessage: TSMessage?
+            if userPublicKey == message.sender { localMessage = TSOutgoingMessage.find(withTimestamp: timestamp) }
+            else { localMessage = TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction) }
+            
+            if let messageToDelete = localMessage {
+                if let incomingMessage = messageToDelete as? TSIncomingMessage {
+                    incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                    if let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
+                        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notificationIdentifier])
+                        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
+                    }
+                }
+                if let serverHash = messageToDelete.serverHash {
+                    SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
+                }
+                messageToDelete.updateForDeletion(with: transaction)
+            }
+        }
+    }
+    
+    
     // MARK: - Visible Messages
 
     @discardableResult
@@ -288,6 +318,7 @@ extension MessageReceiver {
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
+        tsIncomingMessage.setNotificationIdentifier(UUID().uuidString, transaction: transaction)
         DispatchQueue.main.async {
             Storage.read { transaction in
                 SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)

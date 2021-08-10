@@ -338,6 +338,118 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
 
 #endif
 
+// MARK: - SNProtoUnsendRequest
+
+@objc public class SNProtoUnsendRequest: NSObject {
+
+    // MARK: - SNProtoUnsendRequestBuilder
+
+    @objc public class func builder(timestamp: UInt64, author: String) -> SNProtoUnsendRequestBuilder {
+        return SNProtoUnsendRequestBuilder(timestamp: timestamp, author: author)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoUnsendRequestBuilder {
+        let builder = SNProtoUnsendRequestBuilder(timestamp: timestamp, author: author)
+        return builder
+    }
+
+    @objc public class SNProtoUnsendRequestBuilder: NSObject {
+
+        private var proto = SessionProtos_UnsendRequest()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(timestamp: UInt64, author: String) {
+            super.init()
+
+            setTimestamp(timestamp)
+            setAuthor(author)
+        }
+
+        @objc public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        @objc public func setAuthor(_ valueParam: String) {
+            proto.author = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoUnsendRequest {
+            return try SNProtoUnsendRequest.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoUnsendRequest.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_UnsendRequest
+
+    @objc public let timestamp: UInt64
+
+    @objc public let author: String
+
+    private init(proto: SessionProtos_UnsendRequest,
+                 timestamp: UInt64,
+                 author: String) {
+        self.proto = proto
+        self.timestamp = timestamp
+        self.author = author
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoUnsendRequest {
+        let proto = try SessionProtos_UnsendRequest(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_UnsendRequest) throws -> SNProtoUnsendRequest {
+        guard proto.hasTimestamp else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
+        }
+        let timestamp = proto.timestamp
+
+        guard proto.hasAuthor else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: author")
+        }
+        let author = proto.author
+
+        // MARK: - Begin Validation Logic for SNProtoUnsendRequest -
+
+        // MARK: - End Validation Logic for SNProtoUnsendRequest -
+
+        let result = SNProtoUnsendRequest(proto: proto,
+                                          timestamp: timestamp,
+                                          author: author)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoUnsendRequest {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoUnsendRequest? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SNProtoContent
 
 @objc public class SNProtoContent: NSObject {
@@ -365,6 +477,9 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
         }
         if let _value = dataExtractionNotification {
             builder.setDataExtractionNotification(_value)
+        }
+        if let _value = unsendRequest {
+            builder.setUnsendRequest(_value)
         }
         return builder
     }
@@ -395,6 +510,10 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
             proto.dataExtractionNotification = valueParam.proto
         }
 
+        @objc public func setUnsendRequest(_ valueParam: SNProtoUnsendRequest) {
+            proto.unsendRequest = valueParam.proto
+        }
+
         @objc public func build() throws -> SNProtoContent {
             return try SNProtoContent.parseProto(proto)
         }
@@ -416,18 +535,22 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
 
     @objc public let dataExtractionNotification: SNProtoDataExtractionNotification?
 
+    @objc public let unsendRequest: SNProtoUnsendRequest?
+
     private init(proto: SessionProtos_Content,
                  dataMessage: SNProtoDataMessage?,
                  receiptMessage: SNProtoReceiptMessage?,
                  typingMessage: SNProtoTypingMessage?,
                  configurationMessage: SNProtoConfigurationMessage?,
-                 dataExtractionNotification: SNProtoDataExtractionNotification?) {
+                 dataExtractionNotification: SNProtoDataExtractionNotification?,
+                 unsendRequest: SNProtoUnsendRequest?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.receiptMessage = receiptMessage
         self.typingMessage = typingMessage
         self.configurationMessage = configurationMessage
         self.dataExtractionNotification = dataExtractionNotification
+        self.unsendRequest = unsendRequest
     }
 
     @objc
@@ -466,6 +589,11 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
             dataExtractionNotification = try SNProtoDataExtractionNotification.parseProto(proto.dataExtractionNotification)
         }
 
+        var unsendRequest: SNProtoUnsendRequest? = nil
+        if proto.hasUnsendRequest {
+            unsendRequest = try SNProtoUnsendRequest.parseProto(proto.unsendRequest)
+        }
+
         // MARK: - Begin Validation Logic for SNProtoContent -
 
         // MARK: - End Validation Logic for SNProtoContent -
@@ -475,7 +603,8 @@ extension SNProtoTypingMessage.SNProtoTypingMessageBuilder {
                                     receiptMessage: receiptMessage,
                                     typingMessage: typingMessage,
                                     configurationMessage: configurationMessage,
-                                    dataExtractionNotification: dataExtractionNotification)
+                                    dataExtractionNotification: dataExtractionNotification,
+                                    unsendRequest: unsendRequest)
         return result
     }
 

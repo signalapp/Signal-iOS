@@ -555,7 +555,83 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
-        viewItem.deleteAction()
+        if (!self.isUnsendRequesEnabled) {
+            viewItem.deleteAction()
+            return
+        }
+        
+        func showInputAccessoryView() {
+            UIView.animate(withDuration: 0.25, animations: {
+                self.inputAccessoryView?.isHidden = false
+                self.inputAccessoryView?.alpha = 1
+            })
+        }
+        
+        if viewItem.interaction.interactionType() == .outgoingMessage,
+           let message = viewItem.interaction as? TSMessage, message.serverHash != nil  {
+            let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
+            let deleteLocallyAction = UIAlertAction.init(title: NSLocalizedString("delete_message_for_me", comment: ""), style: .destructive) { _ in
+                self.deleteLocally(viewItem)
+                showInputAccessoryView()
+            }
+            alertVC.addAction(deleteLocallyAction)
+            
+            var title = NSLocalizedString("delete_message_for_everyone", comment: "")
+            if !viewItem.isGroupThread {
+                title = String(format: NSLocalizedString("delete_message_for_me_and_recipient", comment: ""), viewItem.interaction.thread.name())
+            }
+            let deleteRemotelyAction = UIAlertAction.init(title: title, style: .destructive) { _ in
+                self.deleteForEveryone(viewItem)
+                showInputAccessoryView()
+            }
+            alertVC.addAction(deleteRemotelyAction)
+            
+            let cancelAction = UIAlertAction.init(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel) {_ in
+                showInputAccessoryView()
+            }
+            alertVC.addAction(cancelAction)
+            
+            self.inputAccessoryView?.isHidden = true
+            self.inputAccessoryView?.alpha = 0
+            self.presentAlert(alertVC)
+        } else {
+            deleteLocally(viewItem)
+        }
+    }
+    
+    private func buildUsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
+        if let message = viewItem.interaction as? TSMessage,
+           message.isOpenGroupMessage || message.serverHash == nil { return nil }
+        let unsendRequest = UnsendRequest()
+        switch viewItem.interaction.interactionType() {
+        case .incomingMessage:
+            if let incomingMessage = viewItem.interaction as? TSIncomingMessage {
+                unsendRequest.author = incomingMessage.authorId
+            }
+        case .outgoingMessage: unsendRequest.author = getUserHexEncodedPublicKey()
+        default: return nil// Should never occur
+        }
+        unsendRequest.timestamp = viewItem.interaction.timestamp
+        return unsendRequest
+    }
+    
+    func deleteLocally(_ viewItem: ConversationViewItem) {
+        viewItem.deleteLocallyAction()
+        if let unsendRequest = buildUsendRequest(viewItem) {
+            SNMessagingKitConfiguration.shared.storage.write { transaction in
+                MessageSender.send(unsendRequest, to: .contact(publicKey: getUserHexEncodedPublicKey()), using: transaction).retainUntilComplete()
+            }
+        }
+    }
+    
+    func deleteForEveryone(_ viewItem: ConversationViewItem) {
+        viewItem.deleteLocallyAction()
+        viewItem.deleteRemotelyAction()
+        if let unsendRequest = buildUsendRequest(viewItem) {
+            SNMessagingKitConfiguration.shared.storage.write { transaction in
+                MessageSender.send(unsendRequest, in: self.thread, using: transaction as! YapDatabaseReadWriteTransaction)
+            }
+        }
     }
     
     func save(_ viewItem: ConversationViewItem) {

@@ -14,6 +14,7 @@ public final class Snode : NSObject, NSCoding { // NSObject/NSCoding conformance
         case getSwarm = "get_snodes_for_pubkey"
         case getMessages = "retrieve"
         case sendMessage = "store"
+        case deleteMessage = "delete"
         case oxenDaemonRPCCall = "oxend_request"
         case getInfo = "info"
         case clearAllData = "delete_all"

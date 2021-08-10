@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
                   wasReceivedByUD:(BOOL)wasReceivedByUD
           openGroupInvitationName:(nullable NSString *)openGroupInvitationName
            openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                       serverHash:(nullable NSString *)serverHash
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -66,7 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
                              quotedMessage:quotedMessage
                                linkPreview:linkPreview
                    openGroupInvitationName:openGroupInvitationName
-                    openGroupInvitationURL:openGroupInvitationURL];
+                    openGroupInvitationURL:openGroupInvitationURL
+                                serverHash:serverHash];
 
     if (!self) {
         return self;
@@ -77,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     _read = NO;
     _serverTimestamp = serverTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
+    _notificationIdentifier = nil;
 
     return self;
 }
@@ -126,6 +129,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     return (self.body != nil && [self.body containsString:[NSString stringWithFormat:@"@%@", userPublicKey]]) || (self.quotedMessage != nil && [self.quotedMessage.authorId isEqualToString:userPublicKey]);
+}
+
+- (void)setNotificationIdentifier:(NSString * _Nullable)notificationIdentifier transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction
+{
+    _notificationIdentifier = notificationIdentifier;
+    [self saveWithTransaction:transaction];
 }
 
 #pragma mark - OWSReadTracking

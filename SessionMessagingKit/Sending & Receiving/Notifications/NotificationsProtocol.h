@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                             inThread:(TSThread *)thread
                          transaction:(YapDatabaseReadTransaction *)transaction;
 
+- (void)cancelNotification:(NSString *)identifier;
 - (void)clearAllNotifications;
 
 @end

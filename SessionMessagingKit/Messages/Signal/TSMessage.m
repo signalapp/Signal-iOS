@@ -65,6 +65,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                  openGroupInvitationName:(nullable NSString *)openGroupInvitationName
                   openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
+                              serverHash:(nullable NSString *)serverHash
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -84,6 +85,8 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     _openGroupServerMessageID = 0;
     _openGroupInvitationName = openGroupInvitationName;
     _openGroupInvitationURL = openGroupInvitationURL;
+    _serverHash = serverHash;
+    _isDeleted = false;
 
     return self;
 }
@@ -418,6 +421,23 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSMessage *message) {
                                  [message setLinkPreview:linkPreview];
+                             }];
+}
+
+- (void)updateForDeletionWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSMessage *message) {
+                                [message setBody:nil];
+                                [message setServerHash:nil];
+                                for (NSString *attachmentId in message.attachmentIds) {
+                                    TSAttachment *_Nullable attachment =
+                                        [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+                                    if (attachment) {
+                                        [attachment removeWithTransaction:transaction];
+                                    }
+                                }
+                                [message setIsDeleted:true];
                              }];
 }
 

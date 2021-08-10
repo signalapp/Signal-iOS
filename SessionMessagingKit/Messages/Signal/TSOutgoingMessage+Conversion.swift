@@ -30,7 +30,8 @@ import SessionUtilitiesKit
             quotedMessage: TSQuotedMessage.from(visibleMessage.quote),
             linkPreview: OWSLinkPreview.from(visibleMessage.linkPreview),
             openGroupInvitationName: visibleMessage.openGroupInvitation?.name,
-            openGroupInvitationURL: visibleMessage.openGroupInvitation?.url
+            openGroupInvitationURL: visibleMessage.openGroupInvitation?.url,
+            serverHash: visibleMessage.serverHash
         )
     }
 }

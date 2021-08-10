@@ -202,7 +202,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         doubleTapGestureRecognizer.numberOfTapsRequired = 2
         addGestureRecognizer(doubleTapGestureRecognizer)
         tapGestureRecognizer.require(toFail: doubleTapGestureRecognizer)
-        addGestureRecognizer(panGestureRecognizer)
     }
     
     // MARK: Updating
@@ -275,6 +274,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         timerView.isHidden = !viewItem.isExpiringMessage
         timerViewOutgoingMessageConstraint.isActive = (direction == .outgoing)
         timerViewIncomingMessageConstraint.isActive = (direction == .incoming)
+        // Swipe to reply
+        if (message.isDeleted) {
+            removeGestureRecognizer(panGestureRecognizer)
+        } else {
+            addGestureRecognizer(panGestureRecognizer)
+        }
     }
     
     private func populateHeader(for viewItem: ConversationViewItem) {
@@ -389,6 +394,10 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 snContentView.addSubview(documentView)
                 documentView.pin(to: snContentView)
             }
+        case .deletedMessage:
+            let deletedMessageView = DeletedMessageView(viewItem: viewItem, textColor: bodyLabelTextColor)
+            snContentView.addSubview(deletedMessageView)
+            deletedMessageView.pin(to: snContentView)
         default: return
         }
     }

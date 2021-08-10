@@ -22,7 +22,8 @@ public extension TSIncomingMessage {
             serverTimestamp: visibleMessage.openGroupServerTimestamp as NSNumber?,
             wasReceivedByUD: true,
             openGroupInvitationName: visibleMessage.openGroupInvitation?.name,
-            openGroupInvitationURL: visibleMessage.openGroupInvitation?.url
+            openGroupInvitationURL: visibleMessage.openGroupInvitation?.url,
+            serverHash: visibleMessage.serverHash
         )
         result.openGroupServerMessageID = openGroupServerMessageID
         return result

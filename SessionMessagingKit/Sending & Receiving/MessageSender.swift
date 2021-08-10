@@ -134,8 +134,9 @@ public final class MessageSender : NSObject {
         // • a configuration message
         // • a sync message
         // • a closed group control message of type `new`
+        // • an unsend request
         let isNewClosedGroupControlMessage = given(message as? ClosedGroupControlMessage) { if case .new = $0.kind { return true } else { return false } } ?? false
-        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage || isNewClosedGroupControlMessage else {
+        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage || isNewClosedGroupControlMessage || message is UnsendRequest else {
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
@@ -207,12 +208,15 @@ public final class MessageSender : NSObject {
             let promiseCount = promises.count
             var errorCount = 0
             promises.forEach {
-                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { _ in
+                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse in
                     guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                     isSuccess = true
                     storage.write(with: { transaction in
+                        let json = rawResponse as? JSON
+                        let hash = json?["hash"] as? String
+                        message.serverHash = hash
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
-                        var shouldNotify = (message is VisibleMessage && !isSyncMessage)
+                        var shouldNotify = ((message is VisibleMessage || message is UnsendRequest) && !isSyncMessage)
                         /*
                         if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
                             shouldNotify = true
@@ -328,6 +332,10 @@ public final class MessageSender : NSObject {
         Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         // Get the visible message if possible
         if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
+            // When the sync message is successfully sent, the hash value of this TSOutgoingMessage
+            // will be replaced by the hash value of the sync message. Since the hash value of the
+            // real message has no use when we delete a message. It is OK to let it be.
+            tsMessage.serverHash = message.serverHash
             // Track the open group server message ID
             tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
             // Mark the message as sent
