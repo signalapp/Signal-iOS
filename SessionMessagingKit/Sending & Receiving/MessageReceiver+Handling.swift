@@ -52,7 +52,7 @@ extension MessageReceiver {
     public static func showTypingIndicatorIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         func showTypingIndicatorsIfNeeded() {
@@ -70,7 +70,7 @@ extension MessageReceiver {
     public static func hideTypingIndicatorIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         func hideTypingIndicatorsIfNeeded() {
@@ -88,7 +88,7 @@ extension MessageReceiver {
     public static func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         func cancelTypingIndicatorsIfNeeded() {
@@ -110,7 +110,7 @@ extension MessageReceiver {
     private static func handleDataExtractionNotification(_ message: DataExtractionNotification, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard message.groupPublicKey == nil,
-            let thread = TSContactThread.getWithContactSessionID(message.sender!, transaction: transaction) else { return }
+            let thread = TSContactThread.fetch(for: message.sender!, using: transaction) else { return }
         let type: TSInfoMessageType
         switch message.kind! {
         case .screenshot: type = .screenshotNotification
@@ -140,7 +140,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: syncTarget ?? senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
@@ -160,7 +160,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: syncTarget ?? senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)

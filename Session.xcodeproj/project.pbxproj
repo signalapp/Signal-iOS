@@ -266,7 +266,7 @@
 		B8D64FCB25BA78A90029CFC0 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		B8D84EA325DF745A005A043E /* LinkPreviewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84EA225DF745A005A043E /* LinkPreviewState.swift */; };
 		B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */; };
-		B8DE1FB426C22F2F0079C9CE /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DE1FB326C22F2F0079C9CE /* File.swift */; };
+		B8DE1FB426C22F2F0079C9CE /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DE1FB326C22F2F0079C9CE /* CallManager.swift */; };
 		B8DE1FB626C22FCB0079C9CE /* CallMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DE1FB526C22FCB0079C9CE /* CallMessage.swift */; };
 		B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */; };
 		B8EB20F02640F7F000773E52 /* OpenGroupInvitationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */; };
@@ -1248,7 +1248,7 @@
 		B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OnionRequests.swift"; sourceTree = "<group>"; };
 		B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Convenience.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Convenience.swift"; sourceTree = "<group>"; };
 		B8DE1FAF26C228780079C9CE /* SignalRingRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SignalRingRTC.framework; path = Dependencies/SignalRingRTC.framework; sourceTree = "<group>"; };
-		B8DE1FB326C22F2F0079C9CE /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		B8DE1FB326C22F2F0079C9CE /* CallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
 		B8DE1FB526C22FCB0079C9CE /* CallMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessage.swift; sourceTree = "<group>"; };
 		B8EB20E6263F7E4B00773E52 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+OpenGroupInvitation.swift"; sourceTree = "<group>"; };
@@ -2334,17 +2334,10 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
-		B8DE1FB126C22AF20079C9CE /* Calls */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Calls;
-			sourceTree = "<group>";
-		};
 		B8DE1FB226C22F1F0079C9CE /* Calls */ = {
 			isa = PBXGroup;
 			children = (
-				B8DE1FB326C22F2F0079C9CE /* File.swift */,
+				B8DE1FB326C22F2F0079C9CE /* CallManager.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -3534,7 +3527,6 @@
 			children = (
 				C3F0A58F255C8E3D007BE2A3 /* Meta */,
 				C36096BC25AD1C3E008B62B2 /* Backups */,
-				B8DE1FB126C22AF20079C9CE /* Calls */,
 				C360969C25AD18BA008B62B2 /* Closed Groups */,
 				B835246C25C38AA20089A44F /* Conversations */,
 				C32B405424A961E1001117B5 /* Dependencies */,
@@ -4693,7 +4685,7 @@
 				B8856ECE256F1E58001CE70E /* OWSPreferences.m in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C32C5DC0256DD743003C73A2 /* Poller.swift in Sources */,
-				B8DE1FB426C22F2F0079C9CE /* File.swift in Sources */,
+				B8DE1FB426C22F2F0079C9CE /* CallManager.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
 				C3A3A171256E1D25004D228D /* SSKReachabilityManager.swift in Sources */,
 				B8DE1FB626C22FCB0079C9CE /* CallMessage.swift in Sources */,
