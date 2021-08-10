@@ -295,9 +295,7 @@ NS_ASSUME_NONNULL_BEGIN
     view.video = video;
 
     [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
-                         forConstraints:^{
-        [view autoSetDimensionsToSize:self.image.size];
-    }];
+                         forConstraints:^{ [view autoSetDimensionsToSize:self.image.size]; }];
     return view;
 }
 
