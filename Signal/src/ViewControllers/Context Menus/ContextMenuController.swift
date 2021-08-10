@@ -10,6 +10,7 @@ protocol ContextMenuControllerDelegate: AnyObject {
 
 private protocol ContextMenuViewDelegate: AnyObject {
     func contextMenuViewPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect
+    func contextMenuViewAuxPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect
     func contextMenuViewAnimationState(_ contextMenuView: ContextMenuHostView) -> ContextMenuAnimationState
     func contextMenuViewPreviewFrameForAccessoryLayout(_ contextMenuView: ContextMenuHostView) -> CGRect
 }
@@ -56,6 +57,19 @@ private class ContextMenuHostView: UIView {
         }
     }
 
+    var auxiliaryPreviewView: UIView? {
+        didSet {
+            oldValue?.removeFromSuperview()
+            if let view = auxiliaryPreviewView {
+                addSubview(view)
+
+                if DebugFlags.showContextMenuDebugRects {
+                    view.addBorder(with: UIColor.blue)
+                }
+            }
+        }
+    }
+
     var accessoryViews: [ContextMenuTargetedPreviewAccessory]? {
         didSet {
             if let oldAccessoryViews = oldValue {
@@ -90,6 +104,8 @@ private class ContextMenuHostView: UIView {
     }
 
     lazy var previewSourceFrame: CGRect = delegate?.contextMenuViewPreviewSourceFrame(self) ?? CGRect.zero
+    lazy var auxPreviewSourceFrame: CGRect = delegate?.contextMenuViewAuxPreviewSourceFrame(self) ?? CGRect.zero
+
     private let minPreviewScaleFactor: CGFloat = 0.1
 
     override func layoutSubviews() {
@@ -98,11 +114,17 @@ private class ContextMenuHostView: UIView {
         dismissButton?.frame = bounds
 
         let animationState = delegate?.contextMenuViewAnimationState(self) ?? .none
-
+        var auxVerticalOffset: CGFloat = 0
         if let previewView = self.previewView {
             // Let the controller manage the preview's frame if animating
             if animationState != .animateOut {
                 previewView.frame = targetPreviewFrame()
+            }
+
+            if let auxView = auxiliaryPreviewView {
+                auxView.sizeToFit()
+                auxView.frame = targetAuxiliaryPreviewFrame(previewFrame: previewView.frame)
+                auxVerticalOffset = max(auxView.frame.maxY - previewView.frame.maxY, 0)
             }
         }
 
@@ -118,7 +140,7 @@ private class ContextMenuHostView: UIView {
                     continue
                 }
 
-                layoutAccessoryView(accessory)
+                layoutAccessoryView(accessory, auxVerticalOffset: auxVerticalOffset)
 
                 var frame = accessory.accessoryView.frame
 
@@ -149,13 +171,15 @@ private class ContextMenuHostView: UIView {
 
     private func targetPreviewFrame() -> CGRect {
         var previewFrame = previewSourceFrame
+        let auxPreviewFrame = auxPreviewSourceFrame
+        let auxVerticalOffset = max(auxPreviewFrame.maxY - previewSourceFrame.maxY, 0)
         let contentRect = bounds.inset(by: contentAreaInsets)
 
         // Check for Y-offset shift first, aligning to bottom accessory
-        let minX: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).x }.min() ?? 0
-        let maxX: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).maxX }.max() ?? 0
-        var minY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).y }.min() ?? 0
-        var maxY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame).maxY }.max() ?? 0
+        let minX: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame, auxVerticalOffset: auxVerticalOffset).x }.min() ?? 0
+        let maxX: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame, auxVerticalOffset: auxVerticalOffset).maxX }.max() ?? 0
+        var minY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame, auxVerticalOffset: auxVerticalOffset).y }.min() ?? 0
+        var maxY: CGFloat = accessoryViews?.map { accessoryFrame($0, previewFrame: previewFrame, auxVerticalOffset: auxVerticalOffset).maxY }.max() ?? 0
         minY = min(minY, previewFrame.minY)
         maxY = max(maxY, previewFrame.maxY)
 
@@ -209,7 +233,22 @@ private class ContextMenuHostView: UIView {
         return previewFrame
     }
 
-    private func accessoryFrame(_ accessory: ContextMenuTargetedPreviewAccessory, previewFrame: CGRect) -> CGRect {
+    private func targetAuxiliaryPreviewFrame(previewFrame: CGRect) -> CGRect {
+        guard let auxView = auxiliaryPreviewView else {
+            return CGRect.zero
+        }
+
+        let auxSourceFrame = auxPreviewSourceFrame
+        let previewSourceFrame = previewSourceFrame
+        let scaleFactor = previewFrame.width / previewSourceFrame.width
+        let originOffset = CGPointScale(CGPointSubtract(auxSourceFrame.origin, previewSourceFrame.origin), scaleFactor)
+        var frame = auxView.frame
+        frame.origin = CGPointAdd(originOffset, previewFrame.origin)
+        frame.size = CGSizeScale(auxSourceFrame.size, scaleFactor)
+        return frame
+    }
+
+    private func accessoryFrame(_ accessory: ContextMenuTargetedPreviewAccessory, previewFrame: CGRect, auxVerticalOffset: CGFloat) -> CGRect {
         var accessoryFrame = CGRect.zero
         accessory.accessoryView.sizeToFit()
         accessoryFrame.size = accessory.accessoryView.frame.size
@@ -234,6 +273,7 @@ private class ContextMenuHostView: UIView {
                 accessoryFrame.x = previewFrame.x
             case (.bottom, .exterior):
                 accessoryFrame.y = previewFrame.maxY
+                accessoryFrame.y += auxVerticalOffset
             case (.bottom, .interior):
                 accessoryFrame.y = previewFrame.maxY - accessoryFrame.height
             }
@@ -267,9 +307,9 @@ private class ContextMenuHostView: UIView {
         return updatedFrame
     }
 
-    private func layoutAccessoryView(_ accessory: ContextMenuTargetedPreviewAccessory) {
+    private func layoutAccessoryView(_ accessory: ContextMenuTargetedPreviewAccessory, auxVerticalOffset: CGFloat) {
         let previewFrame = delegate?.contextMenuViewPreviewFrameForAccessoryLayout(self) ?? CGRect.zero
-        accessory.accessoryView.frame = adjustAccessoryFrameForContentRect(accessoryFrame(accessory, previewFrame: previewFrame))
+        accessory.accessoryView.frame = adjustAccessoryFrameForContentRect(accessoryFrame(accessory, previewFrame: previewFrame, auxVerticalOffset: auxVerticalOffset))
     }
 }
 
@@ -283,6 +323,14 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     var previewView: UIView? {
         if let hostView = view as? ContextMenuHostView {
             return hostView.previewView
+        }
+
+        return nil
+    }
+
+    var auxiliaryPreviewView: UIView? {
+        if let hostView = view as? ContextMenuHostView {
+            return hostView.auxiliaryPreviewView
         }
 
         return nil
@@ -363,12 +411,16 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         contextMenuView.previewView = contextMenuPreview.snapshot
         contextMenuView.previewView?.isAccessibilityElement = true
         contextMenuView.previewView?.accessibilityLabel = NSLocalizedString("MESSAGE_PREVIEW", comment: "Context menu message preview accessibility label")
+        contextMenuView.auxiliaryPreviewView = contextMenuPreview.auxiliarySnapshot
+        contextMenuView.auxiliaryPreviewView?.isAccessibilityElement = false
         contextMenuView.accessoryViews = accessoryViews
 
         self.previewView?.isHidden = true
         self.previewView?.layer.shadowRadius = 12
         self.previewView?.layer.shadowOffset = CGSize(width: 0, height: 4)
         self.previewView?.layer.shadowColor = UIColor.ows_black.cgColor
+
+        self.auxiliaryPreviewView?.isHidden = true
 
         for accessory in accessoryViews {
             if accessory.animateAccessoryPresentationAlongsidePreview {
@@ -412,15 +464,21 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         }
 
         previewView.isHidden = false
+        auxiliaryPreviewView?.isHidden = false
+
         for accessory in accessoryViews {
             if accessory.animateAccessoryPresentationAlongsidePreview {
                 accessory.accessoryView.isHidden = false
             }
         }
-        contextMenuPreview.view?.isHidden = true
+        contextMenuPreview.view.isHidden = true
+        contextMenuPreview.auxiliaryView?.isHidden = true
 
         if shiftPreview {
             previewView.frame = initialFrame
+
+            let finalAuxFrame = auxiliaryPreviewView?.frame ?? CGRect.zero
+            auxiliaryPreviewView?.frame = auxPreviewSourceFrame()
 
             let yDelta = finalFrame.y - initialFrame.y
             let heightDelta = finalFrame.height - initialFrame.height
@@ -444,6 +502,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
                     }
                     self.previewView?.frame = finalFrame
                     self.previewView?.transform = CGAffineTransform.identity
+
+                    self.auxiliaryPreviewView?.frame = finalAuxFrame
                 }) { _ in
                     self.animationState = .none
             }
@@ -512,6 +572,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
                         }
                     }
                     self.previewView?.frame = finalFrame
+                    self.auxiliaryPreviewView?.frame = self.auxPreviewSourceFrame()
                 },
                 completion: { _ in
                     dispatchGroup.leave()
@@ -528,7 +589,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         }
 
         dispatchGroup.notify(queue: .main) {
-            self.contextMenuPreview.view?.isHidden = false
+            self.contextMenuPreview.view.isHidden = false
+            self.contextMenuPreview.auxiliaryView?.isHidden = false
             self.animationState = .none
             completion()
         }
@@ -631,6 +693,10 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         return previewSourceFrame()
     }
 
+    fileprivate func contextMenuViewAuxPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect {
+        return auxPreviewSourceFrame()
+    }
+
     fileprivate func contextMenuViewAnimationState(_ contextMenuView: ContextMenuHostView) -> ContextMenuAnimationState {
         return animationState
     }
@@ -646,11 +712,15 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     // MARK: Private
 
     private func previewSourceFrame() -> CGRect {
-        guard let sourceView = contextMenuPreview.view else {
-            owsFailDebug("Expected source view")
+        return view.convert(contextMenuPreview.view.frame, from: contextMenuPreview.view.superview)
+    }
+
+    private func auxPreviewSourceFrame() -> CGRect {
+        guard let auxPreview = contextMenuPreview.auxiliaryView else {
             return CGRect.zero
         }
-        return view.convert(sourceView.frame, from: sourceView.superview)
+
+        return view.convert(auxPreview.frame, from: auxPreview.superview)
     }
 
     @objc

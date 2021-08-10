@@ -139,12 +139,20 @@ public class ContextMenuTargetedPreview {
         case right
     }
 
-    public let view: UIView?
+    public let view: UIView
+    public var auxiliaryView: UIView? {
+        didSet {
+            if let auxView = auxiliaryView {
+                if let snapshot = auxView.snapshotView(afterScreenUpdates: false) {
+                    self.auxiliarySnapshot = snapshot
+                }
+            }
+        }
+    }
     public let snapshot: UIView?
+    public var auxiliarySnapshot: UIView?
     public let alignment: Alignment
     public let accessoryViews: [ContextMenuTargetedPreviewAccessory]
-
-    private var previewFrame: CGRect = CGRect.zero
 
     /// Default targeted preview initializer
     /// View must be in a window
