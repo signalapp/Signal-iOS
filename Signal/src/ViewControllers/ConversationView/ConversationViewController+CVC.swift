@@ -76,6 +76,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         updateConversationStyle()
     }
 
+    func updateAccessibilityCustomActionsForCell(_ cell: CVItemCell) {
+        if let cvcell = cell as? CVCell {
+            updateAccessibilityCustomActionsForCell(cell: cvcell)
+        }
+    }
+
     func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken {
         AssertIsOnMainThread()
 
