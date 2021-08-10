@@ -245,7 +245,7 @@ public class CVText {
     #if TESTABLE_BUILD
     public static func measureLabelUsingView(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         guard !config.text.stringValue.isEmpty else {
-            return.zero
+            return .zero
         }
         let label = UILabel()
         config.applyForMeasurement(label: label)
@@ -258,7 +258,7 @@ public class CVText {
 
     static func measureLabelUsingLayoutManager(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         guard !config.text.stringValue.isEmpty else {
-            return.zero
+            return .zero
         }
         let textContainer = NSTextContainer(size: CGSize(width: maxWidth, height: .greatestFiniteMagnitude))
         textContainer.maximumNumberOfLines = config.numberOfLines
