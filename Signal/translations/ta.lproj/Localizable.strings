@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "அறிந்துகொண்டேன்";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "ஒரு செய்தி, ஓட்டி, எதிர்வினை, ரசீது வாசிக்கவும் அல்லது ஊடகம் இருந்து உங்களுக்கு வழங்க முடியவில்லை %@ இதில் அரட்டை.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "டெலிவரி பிரச்சினை";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "ஒரு செய்தி, ஓட்டி, எதிர்வினை, ரசீது வாசிக்கவும் அல்லது ஊடகம் இருந்து உங்களுக்கு வழங்க முடியவில்லை %@. . அவர்கள் அதை உங்களுக்கு நேரடியாக அனுப்ப முயற்சித்திருக்கலாம் அல்லது ஏகுழு.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "நிராகரி";
@@ -884,7 +884,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "நீக்கு";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "தகவல்";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "முன்னனுப்புக";
@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "நிராகரி";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "சூழல் மெனுவை நிராகரிக்கவும்";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "தணிக்கை சுற்றறிக்கை இடம்";
@@ -1652,7 +1652,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "இணைப்பு பதிவிறக்கம் தோல்வியுற்றது.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "இருந்து ஒரு செய்தி %@ வழங்க முடியவில்லை";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "நகல் செய்தி கிடைத்தது.";
@@ -3185,7 +3185,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "செய்தி விவரங்கள்";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "செய்தி முன்னோட்டம்";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "தடு ";
@@ -5069,13 +5069,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "தானியங்கி-பதிவிறக்க அமைப்புகளை மீட்டமைக்கவும்";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "ஊடகத் தரம் அனுப்பப்பட்டது";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "நீங்கள் புகைப்படங்கள் மற்றும் வீடியோக்களை அனுப்பும் தரத்தை தேர்வு செய்யவும்.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "அனுப்பப்பட்டது ஊடகம்";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "தரவு பயன்பாடு";
@@ -5690,10 +5690,10 @@
 "SETTINGS_SECURITY_TITLE" = "பயன்பாட்டு பாதுகாப்பு";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "உயர்தரத்தை அனுப்புகிறது ஊடகம் அதிக தரவைப் பயன்படுத்தும்.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "புகைப்படங்கள் மற்றும் வீடியோக்கள்";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "பரிந்துரைகளில் அரட்டைகளைக் காட்டு";
