@@ -187,7 +187,10 @@ public class FeatureFlags: BaseFlags {
     public static let newLinkDeviceScheme = build.includes(.dev)
 
     @objc
-    public static let senderKeyAndMessageResend = build.includes(.qa)
+    public static let forceSenderKeyAndMessageResend = build.includes(.qa)
+
+    @objc
+    public static let permitSenderKeyAndMessageResend = build.includes(.beta)
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in

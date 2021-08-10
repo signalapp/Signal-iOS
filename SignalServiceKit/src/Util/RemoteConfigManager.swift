@@ -223,7 +223,14 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var senderKeyPermitted: Bool {
-        isEnabled(.senderKey) || FeatureFlags.senderKeyAndMessageResend
+        // Internal population should be allowed to run beta builds and still
+        // support sender key as long as the user is in the RemoteConfig cohort
+        let isEnabled = isEnabled(.senderKey) && FeatureFlags.permitSenderKeyAndMessageResend
+
+        // Internal builds will always support sender key
+        let forceEnabled = FeatureFlags.forceSenderKeyAndMessageResend
+
+        return isEnabled || forceEnabled
     }
 
     @objc
