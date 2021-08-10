@@ -224,10 +224,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Opgeslagen";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Langzamer, meer gegevensoverdracht";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Langzamer, meer dataoverdracht";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Sneller, minder gegevensoverdracht";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Sneller, minder dataoverdracht";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Mediakwaliteit";
@@ -893,7 +893,7 @@
 "CONTEXT_MENU_REPLY" = "Reageren";
 
 /* Context menu button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Kies";
+"CONTEXT_MENU_SELECT_MESSAGE" = "Selecteren";
 
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "Delen via andere app";
@@ -1458,6 +1458,9 @@
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Sluiten";
+
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censuuromzeilingslocatie";
@@ -3180,6 +3183,9 @@
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Berichtdetails";
+
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blokkeren";

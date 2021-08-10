@@ -1459,6 +1459,9 @@
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
 
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "País donde evitar censura";
 
@@ -3180,6 +3183,9 @@
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Detalles del mensaje";
+
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Bloquear";
@@ -5378,7 +5384,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Estado";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Los detalles de la transacción incluyen la cantidad y fecha del pago, pero no el origen y el destino, y figuran en el libro-registro de MobileCoin. ";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Los detalles de la transacción incluyen la cantidad y fecha del pago, pero no el origen y el destino, y figuran en el libro mayor de MobileCoin. ";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "La tasa de «limpieza de monedas» se aplica cuando tus monedas no se pueden combinar para completar un pago. La limpieza te permite continuar enviado pagos.";

@@ -224,10 +224,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Зачувано";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Побавно, повеќе податоци";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Побрзо, помалку податоци";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
@@ -347,7 +347,7 @@
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Додадете слика на профилот";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
@@ -608,13 +608,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "Бојата е видлива само за вас.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "Бојата е видлива само за вас.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "The color is visible to only you.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "Бојата е видлива само за вас.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
@@ -1458,6 +1458,9 @@
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Откажи";
+
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Локација за заобиколување на цензурата";
@@ -3181,6 +3184,9 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
 
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
+
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Блокирај";
 
@@ -3383,7 +3389,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Го достигнавте максимумот на уреди кои можете моментално да ги поврзете со вашата сметка. Ве молиме отстранете уред и обидете се повторно.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Muted";
+"MUTED_BADGE" = "Исклучен звук";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -5105,7 +5111,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Изчезнувачки пораки";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Поставете стандарден тајмер за пораки што исчезнуваат за сите нови разговори започнати од вас.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Донирајте на Signal";

@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "فهمیدم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "یک پیام، استیکر، واکنش، رسید خوانده شدن، یا رسانه از %@ نتوانست به شما در این گفتگو تحویل داده شود.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "اشکال تحویل";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "یک پیام، استیکر، واکنش، رسید خوانده شدن، یا رسانه از %@ نتوانست به شما تحویل داده شود. آن‌ها ممکن است آن را به طور مستقیم، یا در یک گروه به شما ارسال کرده باشند.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "دور انداختن";
@@ -230,7 +230,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "سریع‌تر، دادهٔ کمتر";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "کیفیت رسانه";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "پیام به %@";
@@ -644,13 +644,13 @@
 "CHAT_COLORS_MEGAPHONE_ACTION" = "ظاهر برنامه";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "حالا شما می‌توانید رنگ‌های درون گفتگوهای خود را با گرادیان‌ها و موارد دیگر تغییر دهید.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "رنگ‌های سفارشی گفتگو";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "رنگ و کاغذدیواری گفتگو";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "مقایسه با کلیپ‌بورد";
@@ -677,7 +677,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "شما میتوانید دسترسی مخاطبان را در قسمت تنظیمات iOS فعال  کنید تا ببینید کدام یک از مخاطب های شما کاربرهای سیگنال هستند.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "این گزینه برنامه را از طریق پاک کردن پیام‌های شما بازنشانی می‌کند. برنامه پس از کامل شدن این فرایند بسته خواهد شد.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "آیا مطمئن هستید که میخواهید تمام داده ها را پاک کنید؟";
@@ -905,7 +905,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "فقط مدیران می‌توانند در این گروه پیام ارسال کنند.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "نمی توانید بیش از %@ گپ را انتخاب کنید.";
@@ -953,7 +953,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "غیرفعال";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "انتخاب کنید چه کسانی می‌توانند نام، عکس، توضیحات و زمان‌سنج پیام‌های ناپدید شوندهٔ گروه را ویرایش کنند.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "صوتی";
@@ -1103,7 +1103,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "همه اعضا";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "انتخاب کنید چه کسانی می‌توانند در این گروه پیام ارسال و تماس‌ها را آغاز کنند.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "ارسال پیام";
@@ -1253,13 +1253,13 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "ریدایرکشن گیت هاب";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "اطلاعات دربارهٔ گزارش‌های عیب‌یابی";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "حذف حساب کاربری";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "این گزینه حساب کاربری سیگنال شما را حذف کرده و برنامه را بازنشانی می‌کند. برنامه پس از کامل شدن این فرایند بسته می‌شود.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "آیا از حذف حساب کاربری خود اطمینان دارید؟";
@@ -1268,16 +1268,16 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "پیش‌شماره کشور";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "حذف حساب کاربری ناموفق بود. مطمئن شوید Wi-Fi یا داده‌های تلفن همراه روشن شده است، و دوباره امتحان کنید.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "این گزینه اطلاعات حساب کاربری، پروفایل، و تمامی پیام‌های شما را پاک می‌کند.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "در حال حذف حساب کاربری...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "اتصال اینترنت وجود ندارد. مطمئن شوید که Wi-Fi یا داده‌های تلفن همراه روشن شده است، سپس دوباره امتحان کنید.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "شماره تلفن";
@@ -1289,7 +1289,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "حذف حساب کاربری";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "شماره‌تلفنی که وارد کردید با حساب کاربری شما همخوانی ندارد.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "همه پیام های موجود در گفتگو حذف شود؟";
@@ -1458,6 +1458,9 @@
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "نادیده گرفتن";
+
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "محل دورزدن سانسور";
@@ -3180,6 +3183,9 @@
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "جزئیات پیام";
+
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "مسدود سازی";
@@ -5120,7 +5126,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "شما میتوانید از طریق signalapp@ به من دسترسی پیدا کنید. همین الان آن را دریافت کنید:  https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chat Color & Wallpaper";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "رنگ و کاغذدیواری گفتگو";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صدای پیام";

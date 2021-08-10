@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "У реду";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Порука, налепница, реакција, потврда о читању или медиј од %@ није вам достављен.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблем у испоруци";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Порука, налепница, реакција, потврда о читању или медиј од %@ није могло да се испоручи. Можда су то покушали да вам пошаљу директно или у групи.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Одбаци";
@@ -884,7 +884,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "Избриши";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "Инфо";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Проследи";
@@ -1459,6 +1459,9 @@
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Одбаци";
 
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Заобилазак цензуре локације";
 
@@ -1649,7 +1652,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Преузимање прилога није успело.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Порука од %@ није могла да се испоручи";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Примљен је дупликат поруке.";
@@ -3180,6 +3183,9 @@
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Детаљи поруке";
+
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Блокирај";
@@ -5063,13 +5069,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Ресетујте поставке ауто-преузимања";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Квалитет сланог медија";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Изаберите квалитет у који шаљете фотографије и видео записе.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Слање медија";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Коришћене податке";
@@ -5684,10 +5690,10 @@
 "SETTINGS_SECURITY_TITLE" = "Безбедност апликације";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Слање висококвалитетних медија користиће више података.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Слике и видео";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Прикажи ћаскања у предлозима";

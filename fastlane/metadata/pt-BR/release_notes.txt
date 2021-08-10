@@ -1,3 +1,4 @@
 • Uma imagem pode valer 1.000 palavras, mas agora você pode enviá-la em 4k. Use o novo seletor de qualidade para escolher quando enviar fotos em alta resolução. Você também pode definir como padrão o envio de fotos sempre em alta resolução, em Configurações > Uso de dados.
 • Quando você pressionar uma mensagem, um novo menu permitirá que você reaja, responda ou exclua a mensagem rapidamente.
+• Introducing “My Daily Life”, a new animated sticker pack by artist Plastic Thing. 
 • Fizemos várias melhorias de desempenho na sua lista de conversas.

@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "കോൺടാക്ട്";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%@-നായി ബന്ധപ്പെടുക";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "മീഡിയ";
@@ -32,7 +32,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "ശബ്ദ സന്ദേശം";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "ശബ്ദ സന്ദേശം %@ സെക്കൻഡ്";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal കോൾ";
@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "'%2$@'-യിലേക്ക് '%1$@' ചേർക്കുക?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "പുതിയ അംഗത്തെ ചേർക്കുക";
@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "മനസ്സിലായി";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "ഈ ചാറ്റിൽ %@ എന്നതിൽ നിന്ന് ഒരു സന്ദേശം-മോ സ്റ്റിക്കറോ പ്രതികരണമോ വായിച്ച രസീതോ മീഡിയയോ നിങ്ങൾക്ക് വേണ്ടി ഡെലിവർ ചെയ്യാൻ കഴിഞ്ഞില്ല.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "ഡെലിവറി പ്രശ്നം";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "ഒരു സന്ദേശം-മോ സ്റ്റിക്കറോ പ്രതികരണമോ വായിച്ച രസീതോ മീഡിയയോ %@ എന്നതിൽ നിന്ന് നിങ്ങൾക്ക് വേണ്ടി ഡെലിവർ ചെയ്യാൻ കഴിഞ്ഞില്ല. അവർ അത് നിങ്ങൾക്ക് നേരിട്ടോ അല്ലെങ്കിൽ ഒരു ഗ്രൂപ്പിലോ അയയ്ക്കാൻ ശ്രമിച്ചിരിക്കാം.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "കളയുക";
@@ -140,7 +140,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "ഈ ഗ്രൂപ്പുമായി നിങ്ങൾക്ക് പൊതുവായി അംഗങ്ങളില്ല. അനാവശ്യ സന്ദേശങ്ങൾ ഒഴിവാക്കുന്നതിന് സ്വീകരിക്കുന്നതിന് മുമ്പ് അഭ്യർത്ഥനകൾ ശ്രദ്ധാപൂർവ്വം അവലോകനം ചെയ്യുക.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "സന്ദേശ അഭ്യർത്ഥനകളെക്കുറിച്ച്";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "ഉത്തരം";
@@ -230,7 +230,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "വേഗത്തിൽ, കുറഞ്ഞ ഡാറ്റ";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "മീഡിയ ഗുണം";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = " %@- നുള്ള സന്ദേശം";
@@ -341,7 +341,7 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "സ്പീക്കർ";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "ഫോട്ടോ ചേർക്കുക";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "ഒരു രൂപം തിരഞ്ഞെടുക്കുക കൂടാതെ നിങ്ങളുടെ ഇനീഷ്യലുകൾ വർണ്ണിക്കുക അല്ലെങ്കിൽ ഇഷ്ടാനുസൃതമാക്കുക.";
@@ -350,7 +350,7 @@
 "AVATAR_BUILDER_MEGAPHONE_TITLE" = "ഒരു പ്രൊഫൈൽ ഫോട്ടോ ചേർക്കുക";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "ഒരു നിറം തിരഞ്ഞെടുക്കുക";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "നിറം";
@@ -359,16 +359,16 @@
 "AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "വാചകം";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "ക്യാമറ";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "ഫോട്ടോ";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "ഒരു അവതാർ തിരഞ്ഞെടുക്കുക";
 
 /* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "വാചകം";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "തിരികെ പോകുക";
@@ -599,13 +599,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "രാ‍ജ്യം തിരഞ്ഞെടുക്കുക";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "ചാറ്റ് നിറത്തിന്റെ ഒരു പ്രിവ്യൂ ഇതാ";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Here’s a preview of the chat color.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "ചാറ്റ് നിറത്തിന്റെ ഒരു പ്രിവ്യൂ ഇതാ";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "Another bubble";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "മറ്റൊരു കുമിള";
 
 /* The outgoing bubble text when setting a chat color. */
 "CHAT_COLOR_OUTGOING_MESSAGE" = "നിറം നിങ്ങൾക്ക് മാത്രം ദൃശ്യമാണ്.";
@@ -617,25 +617,25 @@
 "CHAT_COLOR_OUTGOING_MESSAGE_2" = "നിറം നിങ്ങൾക്ക് മാത്രം ദൃശ്യമാണ്.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+"CHAT_COLOR_SETTINGS_AUTO" = "ഓട്ടോ";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "This custom color is used in 1 chat. Do you want to delete it?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "ഈ ഇഷ്ടാനുസൃത നിറം 1 ചാറ്റിൽ ഉപയോഗിക്കുന്നു. അത് ഇല്ലാതാക്കണോ?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "This custom color is used in %@ chats. Do you want to delete it for all chats?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "ഈ ഇഷ്ടാനുസൃത നിറം %@ ചാറ്റുകളിൽ ഉപയോഗിക്കുന്നു. എല്ലാ ചാറ്റുകൾക്കും ഇത് ഇല്ലാതാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Delete Color";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "നിറം ഇല്ലാതാക്കുക";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "ചാറ്റ് നിറം";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edit Color";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "നിറം എഡിറ്റ് ചെയ്യുക";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "This color is used in %@ chats. Do you want to save changes for all chats?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "ഈ നിറം %@ ചാറ്റുകളിൽ ഉപയോഗിക്കുന്നു. എല്ലാ ചാറ്റുകൾക്കും മാറ്റങ്ങൾ സംരക്ഷിക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "വാൾപേപ്പറിന്റെ നിറവുമായി സ്വയമേവ പൊരുത്തപ്പെടുന്നു";
@@ -644,13 +644,13 @@
 "CHAT_COLORS_MEGAPHONE_ACTION" = "ദൃശ്യത";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "ഗ്രേഡിയന്റുകളും മറ്റും ഉപയോഗിച്ച് നിങ്ങളുടെ ചാറ്റുകളിലെ നിറങ്ങൾ ഇപ്പോൾ നിങ്ങൾക്ക് മാറ്റാനാകും.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "ഇഷ്ടാനുസൃത ചാറ്റ് നിറങ്ങൾ";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "ചാറ്റ് നിറം & വാള്‍പേപ്പര്‍";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "ക്ലിപ്പ്‌ബോർഡുമായി താരതമ്യം ചെയ്യുക";
@@ -677,7 +677,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ആരൊക്കെ Signal  ഉപയോഗിക്കുന്നു എന്നറിയാൻ നിങ്ങൾക്ക് iOS സെറ്റിംഗ്സ് ആപ്പിൽ കോൺടാക്സ് അക്സസ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_DATA_TEXT" = "നിങ്ങളുടെ സന്ദേശങ്ങള്‍ ഇല്ലാതാക്കിക്കൊണ്ട് ഇത് ആപ്ലിക്കേഷൻ പുനഃസജ്ജമാക്കും. ഈ പ്രക്രിയ പൂർത്തിയായശേഷം ആപ്പ് അടയ്ക്കും.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "നിങ്ങൾക്ക് എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കാൻ ആഗ്രഹമുണ്ടോ?";
@@ -809,19 +809,19 @@
 "CONTACT_SUPPORT" = "കോൺടാക്ട് സഹായം";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "ഒരു പുതിയ ഫീച്ചർ അഭ്യർത്ഥിക്കാൻ ഞാൻ ആഗ്രഹിക്കുന്നു";
 
 /* A brief localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "സവിശേഷത അഭ്യർത്ഥന";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "ആപ്പിൽ എനിക്ക് ഫീഡ്ബാക്ക് ഉണ്ട്";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "ആപ്പ് ഫീഡ്ബാക്ക്";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Something else";
+"CONTACT_SUPPORT_FILTER_OTHER" = "വേറെ എന്തെങ്കിലും";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "മറ്റുള്ളവ";
@@ -884,7 +884,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "ഇല്ലാതാക്കൂ";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "വിവരം";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "ഫോർവേഡ് ചെയ്യുക";
@@ -905,7 +905,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ചാറ്റ് ഇല്ലാതാക്കണോ?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "അഡ്മിൻമാർക്ക് മാത്രമേ ഈ ഗ്രൂപ്പിലേക്ക് സന്ദേശങ്ങള്‍ അയയ്ക്കാൻ കഴിയൂ.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "നിങ്ങൾക്ക് %@ ചാറ്റുകളേക്കാൾ കൂടുതൽ തിരഞ്ഞെടുക്കാൻ കഴിയില്ല.";
@@ -1025,7 +1025,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "സന്ദേശം";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mute this chat for…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ഇതിനായി ഈ ചാറ്റ് മ്യൂട്ടുചെയ്യുക ...";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "എല്ലായ്പ്പോഴും";
@@ -1058,7 +1058,7 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "എല്ലായ്പ്പോഴും";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Always muted";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "എല്ലായ്പ്പോഴും മ്യൂട്ടുചെയ്തു";
 
 /* Button to unmute the chat */
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "നിശബ്ദമാക്കി";
@@ -1067,7 +1067,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ വരെ";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ വരെ നിശബ്ദമാക്കി";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
 "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "സാമാന്യമായി %@ ഗ്രൂപ്പുകൾ ഉണ്ട്";
@@ -1103,10 +1103,10 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "എല്ലാ അംഗങ്ങൾക്കും";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "ഈ ഗ്രൂപ്പിൽ ആർക്കാണ് സന്ദേശങ്ങള്‍ അയയ്ക്കാനും കോളുകൾ ആരംഭിക്കാനും കഴിയുന്നതെന്ന് തിരഞ്ഞെടുക്കുക.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "സന്ദേശങ്ങള്‍ അയയ്ക്കുക";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "അഡ്‌മിൻ‌മാർക്ക് മാത്രം";
@@ -1124,7 +1124,7 @@
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "വീഡിയോ";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "സമ്പർക്ക വിശദാംശങ്ങൾ";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "പ്രൊഫൈൽ പങ്കിടുക";
@@ -1133,10 +1133,10 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "കോൺടാക്ടുകളിലേക്ക് ചേർക്കുക";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ sent:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ അയച്ചത്:";
 
 /* Format for sender info for outgoing messages. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "You sent:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "നിങ്ങൾ അയച്ചു:";
 
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "എല്ലാം ഇല്ലാതാക്കൂ";
@@ -1148,7 +1148,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "കൂടുതൽ വായിക്കുക";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = " നിങ്ങളുടെ സെഷൻ റീസെറ്റ് ചെയ്യുന്നത് ഭാവിയിൽ %@ ൽ നിന്ന് സന്ദേശങ്ങൾ സ്വീകരിക്കാൻ നിങ്ങളെ അനുവദിക്കും, പക്ഷേ നേരത്തെ തന്നെ പിശക് സംഭവിച്ച സന്ദേശങ്ങൾ അത് വീണ്ടെടുക്കുകയില്ല.";
@@ -1175,7 +1175,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "ഖരം";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "ഇഷ്‌ടാനുസൃത നിറം";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "ഗ്രേഡിയന്റിന്റെ ദിശ മാറ്റാൻ വലിച്ചിടുക";
@@ -1259,7 +1259,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "അക്കൗണ്ട് ഇല്ലാതാക്കുക";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "ഇത് നിങ്ങളുടെ Signal അക്കൗണ്ട് ഇല്ലാതാക്കുകയും ആപ്ലിക്കേഷൻ പുന:സജ്ജമാക്കുകയും ചെയ്യും. ഈ പ്രക്രിയ പൂർത്തിയായശേഷം ആപ്പ് അടയ്ക്കും.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "നിങ്ങൾക്ക് നിങ്ങളുടെ അക്കൌണ്ട് ഇല്ലാതക്കണം എന്നത് ഉറപ്പാണോ?";
@@ -1268,28 +1268,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "രാജ്യ കോഡ്";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "അക്കൗണ്ട് ഡിലീറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു. വൈ-ഫൈ അല്ലെങ്കിൽ മൊബൈൽ ഡാറ്റ ഓണാണെന്ന് ഉറപ്പാക്കുക, തുടർന്ന് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "ഇത് നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ, പ്രൊഫൈൽ ഒപ്പം നിങ്ങളുടെ എല്ലാ സന്ദേശങ്ങള്‍-ളും ഇല്ലാതാക്കും.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "അക്കൗണ്ട് ഇല്ലാതാക്കുന്നു...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "ഇന്റർനെറ്റ് കണക്ഷൻ ഇല്ല. വൈ-ഫൈ അല്ലെങ്കിൽ മൊബൈൽ ഡാറ്റ ഓണാണെന്ന് ഉറപ്പാക്കുക, തുടർന്ന് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "ഫോൺ നമ്പർ";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "നിങ്ങളുടെ Signal നമ്പർ സ്ഥിരീകരിക്കുക";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "അക്കൗണ്ട് ഇല്ലാതാക്കുക";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "നിങ്ങൾ നൽകിയ ഫോൺ നമ്പർ നിങ്ങളുടെ അക്കൗണ്ടുമായി പൊരുത്തപ്പെടുന്നില്ല.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "ചാറ്റിലെ  എല്ലാ സന്ദേശങ്ങളും ഇല്ലാതാക്കണോ?";
@@ -1310,10 +1310,10 @@
 "DEREGISTRATION_WARNING" = "ഡിവൈസ് ഇതുവരെ രജിസ്റ്റർ ചെയ്യപ്പെട്ടിട്ടില്ല.  നിങ്ങളുടെ ഫോൺ നമ്പർ Signal ലുമായി രജിസ്റ്റർ ചെയ്തിരിക്കുന്നത് മറ്റൊരു ഡിവൈസിൽ ആയിരിക്കും. റീ-രജിസ്റ്റർ ചെയ്യാൻ ടാപ് ചെയ്യുക.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "അവസാനത്തെ സജീവമായ %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "%@ ലിങ്ക് ചെയ്തു ";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ഡിവൈസ് ലിസ്റ്റ് അപ്ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.";
@@ -1427,7 +1427,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ഈ ചാറ്റിലെ സന്ദേശങ്ങൾ %@ ശേഷം അപ്രത്യക്ഷമാകും.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "ഇഷ്ടാനുസൃത സമയം";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "ദിവസങ്ങൾ";
@@ -1451,13 +1451,16 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "സെക്കൻഡ്";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "പ്രാപ്തമാക്കുമ്പോൾ, നിങ്ങൾ ആരംഭിച്ച പുതിയ സംഭാഷണങ്ങളിൽ അയയ്ക്കുകയും സ്വീകരിക്കുകയും ചെയ്യുന്ന പുതിയ സന്ദേശങ്ങള്‍ കണ്ടശേഷം അപ്രത്യക്ഷമാകും.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "ആഴ്ചകൾ";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "ഒഴിവാക്കുക";
+
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "സെൻസർഷിപ്പ് സർക്കംവെൻഷൻ ലൊക്കേഷൻ";
@@ -1475,37 +1478,37 @@
 "DONATION_MEGAPHONE_TITLE" = "Signal-ന് സംഭാവന ചെയ്യുക";
 
 /* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+"DONATION_VIEW_AMOUNT_LABEL" = "സംഭാവന തുക";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "ഇഷ്ടാനുസൃത തുക നൽകുക";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal-ലേക്കുള്ള സംഭാവന";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "സംഭാവന ചെയ്യാനുള്ള മറ്റ് വഴികൾ";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "സംഭാവന ചെയ്യാൻ ഒരു വലിയ തുക തിരഞ്ഞെടുക്കുക";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "സംഭാവന നൽകാൻ ഒരു ചെറിയ തുക തിരഞ്ഞെടുക്കുക";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "സംഭാവന ചെയ്യാൻ ഒരു തുക തിരഞ്ഞെടുക്കുക";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "നിങ്ങളെപ്പോലുള്ളവരാണ് Signal പ്രവർത്തിപ്പിക്കുന്നത്.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "ആഗോള ആശയവിനിമയം പ്രാപ്തമാക്കുകയും ചെയ്യുന്ന ഓപ്പൺ സോഴ്സ് സ്വകാര്യതാ സാങ്കേതികവിദ്യ വികസിപ്പിക്കുന്നതിനുള്ള ദൗത്യത്തിന് Signal-ലെ ടീം പ്രതിജ്ഞാബദ്ധമാണ്. നിങ്ങളുടെ സംഭാവന ഈ കാരണം ഇന്ധനമാക്കുന്നു. പരസ്യങ്ങളൊന്നുമില്ല. ട്രാക്കറുകൾ ഇല്ല. തമാശ ഇല്ല.\n\nസ്വകാര്യവും തൽക്ഷണവുമായ ആശയവിനിമയത്തിനായി ലോകമെമ്പാടുമുള്ള ദശലക്ഷക്കണക്കിന് ആളുകൾ ഉപയോഗിക്കുന്ന ഒരു ആപ്പിന്റെ വികസനം, സെർവറുകൾ, ബാൻഡ് വിഡ്ത്ത് എന്നിവയ്ക്ക് പണം നൽകാൻ നിങ്ങളുടെ സംഭാവന സഹായിക്കുന്നു.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "എന്തിനാണ് സംഭാവന നൽകുന്നത്?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS സെറ്റിംഗ്സ് ആപ്പിൽ നിങ്ങൾക്ക് അക്സസ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
@@ -1637,7 +1640,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "സെർവർ തകരാർ. ദയവായി അൽപ്പ സമയത്തിന് ശേഷം ശ്രമിക്കുക.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "സന്ദേശം അയയ്ക്കുന്നതിന് മുമ്പ് സെർവറിന് ഉപയോക്തൃ പരിശോധന ആവശ്യമാണ്.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "അറിയാത്ത ഒരു തകരാർ സംഭവിച്ചിരിക്കുന്നു.";
@@ -1649,7 +1652,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "അറ്റാച്ച്‌മെൻ്റ് ഡൗൺലോഡ് ചെയ്യുന്നത് പരാജയപ്പെട്ടു.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "%@-ൽ നിന്നുള്ള ഒരു സന്ദേശം കൈമാറാൻ കഴിഞ്ഞില്ല";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ഒരു ഡ്യൂപ്ലിക്കേറ്റ് സന്ദേശം ലഭിച്ചിരിക്കുന്നു.";
@@ -1748,7 +1751,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "ദൃശ്യത";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "ഫോട്ടോ ചേർക്കുക";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "സുഹൃത്തുക്കളെ ക്ഷണിക്കുക";
@@ -1829,7 +1832,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "ഈ ഗ്രൂപ്പിന്റെ അഡ്മിൻമാർക്ക് മാത്രമേ ഒരു കോൾ ആരംഭിക്കാൻ കഴിയൂ.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "ഗ്രൂപ്പ് കോൾ ആരംഭിക്കാനാകില്ല";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@- - നെ തടഞ്ഞിരിക്കുന്നു";
@@ -1904,7 +1907,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ ഈ കോളിൽ ഉണ്ട്";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ അവതരിപ്പിക്കുന്നു";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "റീകണക്ടിംഗ്";
@@ -1913,7 +1916,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "മാറ്റിയ സുരക്ഷാ നമ്പറുമായി ആരോ ഈ കോളിൽ ചേർന്നിട്ടുണ്ട്.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "സ്ക്രീൻ പങ്കിടൽ കാണാൻ മുകളിലേക്ക് സ്വൈപ്പുചെയ്യുക";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "ആരോ ഒരു ഗ്രൂപ്പ് കോൾ ആരംഭിച്ചു";
@@ -1973,16 +1976,16 @@
 "GROUP_DESCRIPTION_MORE" = "കൂടുതൽ";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "ഗ്രൂപ്പ് വിവരണം ചേർക്കുക...";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ഗ്രൂപ്പ് വിവരണങ്ങൾ ഈ ഗ്രൂപ്പിലെ അംഗങ്ങൾക്കും ക്ഷണിക്കപ്പെട്ട ആളുകൾക്കും ദൃശ്യമാകും.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "ഗ്രൂപ്പ് വിവരണം";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "ഗ്രൂപ്പ് വിവരണം (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "അസാധുവായ ഒരു ക്ഷണം ചേർത്തിരിക്കുന്നു.";
@@ -2030,22 +2033,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ഗ്രൂപ്പ് ലിങ്ക് ഓഫാക്കി";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "അഡ്മിൻ അനുമതിയോടെ ഗ്രൂപ്പ് ലിങ്ക് ഓണാക്കി.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "അഡ്‌മിൻ അംഗീകാരം ഓണായിരിക്കെ നിങ്ങൾ ഗ്രൂപ്പ് ലിങ്ക് ഓണാക്കി.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "അഡ്മിൻ അംഗീകാരത്തോടെ %@ ഗ്രൂപ്പ് ലിങ്ക് ഓണാക്കി.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "അഡ്മിൻ അനുമതി ഓഫ് ചെയ്തുകൊണ്ട് ഗ്രൂപ്പ് ലിങ്ക് ഓണാക്കി.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "അഡ്‌മിൻ അംഗീകാരം ഓഫായിരിക്കെ നിങ്ങൾ ഗ്രൂപ്പ് ലിങ്ക് ഓണാക്കി.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "'ഓഫ്-ൽ അഡ്മിൻ അനുമതിയോടെ ഗ്രൂപ്പ് ലിങ്ക് %@ ഓണാക്കി.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "ഗ്രൂപ്പ് ലിങ്ക് പുനഃസജ്ജമാക്കി.";
@@ -2057,22 +2060,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ ഗ്രൂപ്പ് ലിങ്ക് പുനഃസജ്ജമാക്കി.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "ഗ്രൂപ്പ് ലിങ്കിനായി അഡ്മിൻ അംഗീകാരം ഓഫാക്കി.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "ഗ്രൂപ്പ് ലിങ്കിനായുള്ള  അഡ്‌മിൻ അംഗീകാരം നിങ്ങൾ ഓഫാക്കി.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "ഗ്രൂപ്പ് ലിങ്കിനായുള്ള അഡ്മിൻ അംഗീകാരം %@ ഓഫാക്കി.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "ഗ്രൂപ്പ് ലിങ്കിനായി അഡ്മിൻ അംഗീകാരം ഓണാക്കി.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "ഗ്രൂപ്പ് ലിങ്കിനായുള്ള  അഡ്‌മിൻ അംഗീകാരം നിങ്ങൾ ഓണാക്കി.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "ഗ്രൂപ്പ് ലിങ്കിനായുള്ള അഡ്മിൻ അംഗീകാരം %@ ഓണാക്കി.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ നെ സ്വമേധയാ ഈ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ നിങ്ങൾക്ക് കഴിയില്ല.  അവരെ അംഗത്വമെടുക്കാൻ ക്ഷണിക്കേണ്ടതുണ്ട്, അവർ അത് സ്വീകരിക്കുന്നത് വരെ ഗ്രൂപ്പ് സന്ദേശങ്ങളൊന്നും കാണാൻ സാധിക്കുകയില്ല.";
@@ -2096,7 +2099,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "എല്ലാ അംഗങ്ങളെയും സന്ദേശങ്ങൾ അയയ്ക്കാൻ അനുവദിക്കുന്നതിന് നിങ്ങൾ ഗ്രൂപ്പ് ക്രമീകരണങ്ങൾ മാറ്റി.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "എല്ലാ അംഗങ്ങളും സന്ദേശങ്ങള്‍ അയയ്ക്കാൻ അനുവദിക്കുന്നതിന് %@ ഗ്രൂപ്പ് ക്രമീകരണങ്ങൾ മാറ്റി.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "അഡ്മിൻമാർക്ക് സന്ദേശങ്ങള്‍ അയയ്ക്കാൻ മാത്രം അനുവദിക്കുന്നതിന് ഗ്രൂപ്പ് ക്രമീകരണങ്ങൾ മാറ്റി.";
@@ -2105,7 +2108,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "അഡ്മിൻമാർക്ക് സന്ദേശങ്ങൾ അയയ്ക്കാൻ മാത്രം അനുവദിക്കുന്നതിന് നിങ്ങൾ ഗ്രൂപ്പ് ക്രമീകരണങ്ങൾ മാറ്റി.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "അഡ്മിൻമാർക്ക് സന്ദേശങ്ങള്‍ അയയ്ക്കാൻ മാത്രം അനുവദിക്കുന്നതിന് %@ ഗ്രൂപ്പ് ക്രമീകരണങ്ങൾ മാറ്റി.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ഈ ഗ്രൂപ്പ് ലിങ്ക് സജീവമല്ല.";
@@ -2297,7 +2300,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "അംഗങ്ങൾ";
 
 /* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ group members have similar names.";
+"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ ഗ്രൂപ്പ് അംഗങ്ങൾക്ക് സമാനമായ പേരുകളുണ്ട്.";
 
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "അവലോകനം ചെയ്യാൻ ടാപ്പുചെയ്യുക";
@@ -2309,13 +2312,13 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "അംഗങ്ങളെ അവലോകനം ചെയ്യുക";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ group members have similar names, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ ഗ്രൂപ്പ് അംഗങ്ങൾക്ക് സമാനമായ പേരുകൾ ഉണ്ട്, താഴെയുള്ള അംഗങ്ങളെ അവലോകനം ചെയ്യുക അല്ലെങ്കിൽ നടപടി യെടുക്കാൻ തിരഞ്ഞെടുക്കുക.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ group members have the same name, review the members below or choose to take action.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ ഗ്രൂപ്പ് അംഗങ്ങൾക്ക് ഒരേ പേരുണ്ട്, താഴെയുള്ള അംഗങ്ങളെ അവലോകനം ചെയ്യുക, അല്ലെങ്കിൽ നടപടി യെടുക്കാൻ തിരഞ്ഞെടുക്കുക.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
+"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ ഗ്രൂപ്പ് അംഗങ്ങൾക്ക് ഒരേ പേരുണ്ട്.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "ഗ്രൂപ്പിന്റെ പേര് (ആവശ്യമാണ്)";
@@ -2474,22 +2477,22 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്‌തു.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "ഗ്രൂപ്പ് വിവരണം നീക്കം ചെയ്തു.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് വിവരണം നീക്കം ചെയ്തു.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ഗ്രൂപ്പ് വിവരണം നീക്കം ചെയ്തു.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "ഗ്രൂപ്പ് വിവരണം മാറ്റി.";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് വിവരണം മാറ്റി.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ changed the group description.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ഗ്രൂപ്പ് വിവരണം മാറ്റി.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "ഗ്രൂപ്പിൻ്റെ പേര് നീക്കം ചെയ്തിരിക്കുന്നു.";
@@ -2537,10 +2540,10 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "അഡ്മിൻസ്";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "%@ മാത്രമേ സന്ദേശങ്ങള്‍ അയയ്ക്കാൻ കഴിയൂ";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "ഒരു അഡ്മിന് സന്ദേശം അയക്കുക";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "നിങ്ങൾ പുറത്ത് പോകുന്നതിന് മുൻപ് ഈ ഗ്രൂപ്പിനായി ഒരു പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കൂ.";
@@ -2864,7 +2867,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "സ്റ്റിക്കറുകൾ";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "റെക്കോർഡ് ചെയ്യാൻ ഇരട്ട തൊടുക. അയയ്ക്കാൻ റിലീസ് ചെയുക അല്ലെങ്കില് റദ്ദാക്കാൻ ഇടത്തേക്കിലേക്ക് സ്ലൈഡുചെയ്യുക. റെക്കോർഡിംഗ് ലോക്ക് ചെയ്യുന്നതിന് ഇരട്ട തൊടുക ഒപ്പം സ്ലൈഡ് ചെയ്യുക.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "വോയിസ് മെസേജ്";
@@ -2933,7 +2936,7 @@
 "KEY_COMMAND_STICKERS" = "സ്റ്റിക്കറുകൾ കാണിക്കുക";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "ചാറ്റ് അൺആർക്കൈവ് ചെയ്യുക";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "കൂടുതലറിവ് നേടുക";
@@ -2966,7 +2969,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "നിങ്ങൾ ലിങ്ക് ചെയ്യാൻ ആഗ്രഹിക്കുന്ന ഡിവൈസിൽ ഡിസ്പ്ലേ ചെയ്തിരിക്കുന്ന QR കോഡ് സ്‌കാൻ ചെയ്യുക.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scan QR Code to link a new device.";
+"LINK_NEW_DEVICE_SUBTITLE" = "പുതിയ ഉപകരണം ലിങ്ക് ചെയ്യുന്നതിന് ക്യുആർ കോഡ് സ്കാൻ ചെയ്യുക.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "പുതിയ ഡിവൈസ് ലിങ്ക് ചെയ്യുക";
@@ -2990,7 +2993,7 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "ഏതെങ്കിലും ലിങ്ക് പ്രിവ്യൂ ചെയ്യുക";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "നിങ്ങളുടെ Signal അക്കൗണ്ട് ട്രാൻസ്ഫർ ചെയ്യുന്നതിന്, രണ്ട് ഉപകരണങ്ങളിലും പ്രാദേശിക നെറ്റ്‌വർക്ക് ആക്‌സസ് പ്രവർത്തനക്ഷമമാക്കേണ്ടതുണ്ട്.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "സഹായം ആവശ്യമുണ്ടോ?";
@@ -2999,13 +3002,13 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "ഓരോ ഉപകരണത്തിലും, ക്രമീകരണങ്ങൾ തുറക്കുക";
 
 /* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Local Network”";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "\"ലോക്കൽ നെറ്റ്‌വർക്ക്\" ഓണാക്കുക";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Navigate to Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Signal-ലേക്ക് നാവിഗേറ്റ് ചെയ്യുക";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Local Network Access";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "ലോക്കൽ നെറ്റ്‌വർക്ക് ആക്‌സസ് ഓണാക്കുക";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "പേര് അല്ലെങ്കിൽ വിലാസം ഉപയോഗിച്ച് തിരയുക";
@@ -3017,7 +3020,7 @@
 "LOGGING_SECTION" = "ലോഗിംഗ്";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Debug logs can help Signal fix issues and crashes.";
+"LOGGING_SECTION_FOOTER" = "പ്രശ്നങ്ങളും ക്രാഷുകളും പരിഹരിക്കാൻ Signal-നെ ഡീബഗ് ലോഗുകൾ സഹായിക്കും.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "സന്ദേശം";
@@ -3080,34 +3083,34 @@
 "MESSAGE_ACTION_DETAILS" = "കൂടുതൽ വിവരങ്ങൾ";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "പുതിയ ഇമെയിൽ സന്ദേശം";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "ഇമെയിൽ കോൺഫിഗർ ചെയ്തിട്ടില്ല.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "ഈ സന്ദേശം ഫോർവേഡ് ചെയ്യുക";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "ഗ്രൂപ്പ് ക്ഷണം തുറക്കുക";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Open Link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "ലിങ്ക് തുറക്കുക";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "View Sticker Pack";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "സ്റ്റിക്കർ പായ്ക്ക് കാണുക";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "കോൾ ചെയ്യുക";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "ഫെയ്‌സ്‌ടൈം ഓഡിയോ";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "ഫെയ്‌സ്‌ടൈം വീഡിയോ";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "ടെക്സ്റ്റ് സന്ദേശം അയയ്ക്കുക";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ഈ സന്ദേശത്തിന് മറുപടി നൽകുക";
@@ -3119,7 +3122,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "മീഡിയ പങ്കിടുക";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "ഗ്രൂപ്പ് ക്ഷണം";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "സ്റ്റിക്കർ പാക്ക്";
@@ -3131,7 +3134,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "പുതിയ സന്ദേശം";
 
 /* Toast indicating that the user has copied the sent timestamp. */
-"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Sent time copied";
+"MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "അയച്ച സമയം പകർത്തി";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "അയച്ചത്";
@@ -3149,13 +3152,13 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "പരാജയപ്പെട്ടു";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Sending paused";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "അയയ്ക്കുന്നത് താൽക്കാലികമായി നിർത്തുന്നു";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "വായിച്ചത്";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending to";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "-ലേക്ക് അയയ്ക്കുന്നു";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "അയച്ചത്";
@@ -3179,7 +3182,10 @@
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "ഫയൽ നാമം";
 
 /* Title for the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
+"MESSAGE_METADATA_VIEW_TITLE" = "സന്ദേശം വിശദാംശങ്ങൾ";
+
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "തടയുക";
@@ -3188,7 +3194,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ബ്ലോക്ക് ചെയ്ത് ഇല്ലാതാക്കുക";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "സ്പാം റിപ്പോർട്ട് ചെയ്ത, ബ്ലോക്ക് ചെയ്യുക";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ബ്ലോക്ക് ചെയ്യപ്പെട്ട ആളുകൾക്ക് നിങ്ങളെ വിളിക്കാനോ നിങ്ങൾക്ക് മെസേജ് അയയ്ക്കാനോ കഴിയില്ല.";
@@ -3257,7 +3263,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "ഈ ഗ്രൂപ്പിനെ അൺ‌ബ്ലോക്ക് ചെയ്ത് നിങ്ങളുടെ പേരും ഫോട്ടോയും അതിന്റെ അംഗങ്ങളുമായി പങ്കിടണോ? നിങ്ങൾ അൺ‌ബ്ലോക്ക് ചെയ്യുന്നതു വരെ നിങ്ങൾക്ക് സന്ദേശങ്ങളൊന്നും ലഭിക്കില്ല.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "ഈ ഗ്രൂപ്പ് അൺബ്ലോക്ക് ചെയ്യണോ? നിങ്ങൾ അവരുടെ സന്ദേശങ്ങള്‍ അൺബ്ലോക്ക് ചെയ്യുന്നതുവരെ നിങ്ങൾ കണ്ടതായി അവർക്കറിയില്ല.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "തുടരുക";
@@ -3311,7 +3317,7 @@
 "MESSAGE_STATUS_PENDING" = "അയയ്‌ക്കുന്നത് താൽക്കാലികമായി നിർത്തി";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "താൽക്കാലികമായി നിർത്തി";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "വായിച്ചു";
@@ -3488,7 +3494,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "നിങ്ങളുടെ %@ റിസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് സന്ദേശങ്ങൾ ലഭിച്ചേക്കാം.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "പുതിയ സന്ദേശങ്ങള്‍-ക്കുള്ള അറിയിപ്പുകൾ ലഭിക്കുന്നതിന്:";
 
 /* First step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "ചുവടെയുള്ള “ക്രമീകരണങ്ങളിലേക്ക് പോകുക” ടാപ്പുചെയ്യുക";
@@ -3575,10 +3581,10 @@
 "ONBOARDING_CAPTCHA_TITLE" = "നിങ്ങളുടെ സന്ദേശങ്ങളിൽ ഒരു മനുഷ്യത്വ സ്പർശം കൂട്ടിച്ചേർക്കുക";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "നിങ്ങൾ വളരെക്കാലമായി നിഷ്ക്രിയരായതിനാൽ, Signal ഉപയോഗിക്കാൻ നിങ്ങൾ വീണ്ടും രജിസ്റ്റർ ചെയ്യണം.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+"ONBOARDING_DROPPED_YDB_TITLE" = "Signal വേണ്ടി രജിസ്റ്റർ ചെയ്യുക";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "ഐപാഡ് രജിസ്റ്റർ ചെയ്യുക";
@@ -3608,13 +3614,13 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "അനുമതികൾ അനുവദിക്കുക";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "അറിയിപ്പുകളും കോൺ‌ടാക്റ്റുകൾ-ളും അനുവദിക്കുന്നത് സന്ദേശങ്ങള്‍ വരുമ്പോൾ കാണാനും നിങ്ങൾക്ക് അറിയാവുന്ന ആളുകളെ കണ്ടെത്താൻ നിങ്ങളെ സഹായിക്കാനും നിങ്ങളെ അനുവദിക്കുന്നു. കോൺ‌ടാക്റ്റുകൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നു, അതിനാൽ Signal സേവനത്തിന് അവ കാണാൻ കഴിയില്ല";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "അനുമതികൾ അനുവദിക്കുക";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "നിങ്ങളുടെ ഫോൺ നമ്പർ %@ ഉപയോഗിച്ച് Signal-ൽ നിങ്ങളെ കണ്ടെത്താൻ ആർക്കാണ് കഴിയുകഎന്ന് തിരഞ്ഞെടുക്കുക";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "നിങ്ങളുടെ നമ്പർ ഉപയോഗിച്ച് ആർക്കാണ് നിങ്ങളെ കണ്ടെത്താൻ കഴിയുക?";
@@ -3629,7 +3635,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE" = "നിങ്ങളുടെ ഫോൺ നമ്പർ നൽകുക";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Your Phone Number";
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "നിങ്ങളുടെ ഫോൺ നമ്പർ";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "അസാധുവായ ഫോൺ നമ്പർ .രജിസ്റ്റർ ചെയ്യുന്നതിനായി സാധുവായ ഒരു ഫോൺ നമ്പർ നൽകുക.";
@@ -3680,10 +3686,10 @@
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "എന്നെ വിളിക്കൂ";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "എന്നെ %@-ൽ വിളിക്കുക";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validating Code...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "കോഡ് സാധൂകരിക്കുന്നു...";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "ഈ കോഡ് തെറ്റാണ്";
@@ -3692,7 +3698,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "കോഡ് വീണ്ടും അയയ്‌ക്കുക";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Resend Code in %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "%@-ൽ കോഡ് വീണ്ടും അയയ്ക്കുക";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%@ ലേക്ക് ഞങ്ങൾ അയച്ച കോഡ് നൽകുക";
@@ -3716,22 +3722,22 @@
 "OUTGOING_CALL_FORMAT" = "നിങ്ങൾ %@-നെ വിളിച്ചു ";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "അഭ്യർത്ഥന നിരസിക്കുക";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%2$@- ൽ %1$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "നിങ്ങൾ നിരസിച്ചതായി %@-ന് അറിയിക്കും.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "ഈ അഭ്യർത്ഥന നിരസിക്കണോ?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "നാണയശുചീകരണ ഫീസ്";
 
 /* Error indicating that a payment request could not be cancelled. */
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "അഭ്യർത്ഥന റദ്ദാക്കാൻ കഴിഞ്ഞില്ല.";
@@ -3752,61 +3758,61 @@
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "പരാജയപ്പെട്ടു";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insufficient Funds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "അപര്യാപ്തമായ ഫണ്ടുകൾ";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "സ്വീകർത്താവിന് രസീത് അയയ്ക്കാൻ കഴിഞ്ഞില്ല";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "അസാധു";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "കുറിപ്പ് ചേര്ക്കുക";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "ലഭ്യമായ ബാലൻസ്: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "പേയ്മെന്റ് സ്ഥിരീകരിക്കുക";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "പണമടയ്ക്കുക";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
-"PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
+"PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@%2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "സേവനവുമായി ബന്ധപ്പെടാൻ കഴിഞ്ഞില്ല";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "ഈ പേയ്മെന്റ് പൂർത്തിയാക്കാൻ നിങ്ങൾക്ക് മതിയായ എംഓബി ഇല്ല.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "ഈ പേയ്മെന്റ് പൂർത്തിയാക്കാൻ നിങ്ങൾക്ക് മതിയായ എംഓബി ഇല്ല. നിങ്ങളുടെ നിലവിലെ ബാലൻസ് %@ ആണ്.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "അസാധുവായ ഇടപാട്";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "പേയ്മെന്റുകൾ ഉപയോഗിക്കുന്നതിന് Signal അപ്ഡേറ്റ് ചെയ്യുക.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "പേയ്മെന്റ് ഇതുവരെ പരിശോധിച്ചിട്ടില്ല";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "പേയ്മെന്റ് പൂർത്തിയാക്കാനായില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "നെറ്റ്‌വർക്ക് ഫീസ്";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "കണക്കാക്കിയ %@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Invalid Amount";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "അസാധുവായ തുക";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* Placeholder for the new payment or payment request message. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "കുറിപ്പ്";
@@ -3815,37 +3821,37 @@
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "പണമടയ്ക്കുക";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "മൊത്തം തുക";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "പ്രോസസ് ചെയ്യുന്നു";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "%@-ലേക്ക്";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "അഭ്യർത്ഥിക്കുക";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1 പുതിയ പേയ്മെന്റ് അറിയിപ്പ്";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ നിങ്ങൾക്ക് %2$@ അയച്ചു";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ പുതിയ പേയ്മെന്റ് അറിയിപ്പുകൾ";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "പേയ്മെന്റ് പൂർത്തിയായി";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "പരിശോധിച്ചിട്ടില്ല";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "പരിശോധിച്ചു ";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "പേയ്മെന്റ് പൂർത്തിയായി";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "അയയ്ക്കുന്നു…";
@@ -3854,28 +3860,28 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "അയച്ചു";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "തയ്യാറെടുക്കുന്നു";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "പരിശോധിച്ചിട്ടില്ല";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "പരിശോധിച്ചു ";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "അജ്ഞാതപരാജയം";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "പൂർത്തിയായി";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "പരിശോധിച്ചിട്ടില്ല";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "പരിശോധിച്ചു ";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "പൂർത്തിയായി";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "അയയ്ക്കുന്നു…";
@@ -3884,43 +3890,43 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "അയച്ചു";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "തയ്യാറെടുക്കുന്നു";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "പരിശോധിച്ചിട്ടില്ല";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "പരിശോധിച്ചു ";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "അജ്ഞാതപരാജയം";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "ഈ ഉപയോക്താവിന് ഒരു പേയ്മെന്റ് അയയ്ക്കുന്നതിന് അവർ നിത്തിൽ നിന്ന് ഒരു സന്ദേശം അഭ്യർത്ഥന സ്വീകരിക്കേണ്ടതുണ്ട്.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "ഈ ഉപയോക്താവിന് ഒരു പേയ്മെന്റ് അയയ്ക്കുന്നതിന് അവർ നിത്തിൽ നിന്ന് ഒരു സന്ദേശ അഭ്യർത്ഥന സ്വീകരിക്കേണ്ടതുണ്ട്. ഒരു സന്ദേശ അഭ്യർത്ഥന സൃഷ്ടിക്കുന്നതിന് അവർക്ക് ഒരു സന്ദേശം അയയ്ക്കുക.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "പേയ്മെന്റ് അയയ്ക്കാൻ കഴിയില്ല";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "ഈ വ്യക്തി പേയ്‌മെന്റുകൾ സജീവമാക്കിയിട്ടില്ല.";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "അസാധുവായ സ്വീകർത്താവ്";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "ട്രാൻസ്ഫർ ഔട്ട്";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Received Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "പേയ്മെന്റ് ലഭിച്ചു";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Sent Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "പേയ്മെന്റ് അയച്ചു";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+"PAYMENTS_UNKNOWN_PAYMENT" = "അസാധുവായ പേയ്മെന്റ്";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
@@ -3932,7 +3938,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "അഭ്യർത്ഥന നിരസിക്കുക";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\"ൽ നിന്നുള്ള അഭ്യർത്ഥന നിരസിക്കണോ?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ 1 വ്യക്തിയെ ക്ഷണിച്ചിരിക്കുന്നു";
@@ -3956,13 +3962,13 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "അഭ്യർത്ഥനകൾ കാണുക";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Denied “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%@\" നിഷേധിച്ചു.";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "അസാധുവായ ക്ഷണം പിൻവലിക്കുക";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "അസാധുവായ %@ ക്ഷണങ്ങൾ റദ്ദാക്കുക";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "ക്ഷണം റദ്ദാക്കുക";
@@ -3989,10 +3995,10 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "അസാധുവായ ക്ഷണങ്ങൾ";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "മറ്റുള്ളവർ ക്ഷണിച്ചു";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "നിങ്ങൾ കൊണ്ട് ക്ഷണിച്ചു";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "വരുന്ന സന്ദേശങ്ങൾ കൈകാര്യം ചെയ്യുന്നതിലുള്ള പിശക്";
@@ -4124,7 +4130,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "പിൻ അപ്രാപ്‌തമാക്കുക";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "If you disable the PIN, you will lose all data when you re-register Signal unless you transfer it from another iOS device. You can not turn on Registration Lock while the PIN is disabled.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "നിങ്ങൾ പിൻ പ്രവർത്തനരഹിതമാക്കുകയാണെങ്കിൽ, നിങ്ങൾ മറ്റൊരു ഐഒഎസ് ഉപകരണത്തിൽ നിന്ന് കൈമാറ്റം ചെയ്യുന്നില്ലെങ്കിൽ Signal വീണ്ടും രജിസ്റ്റർ ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് എല്ലാ ഡാറ്റയും നഷ്ടപ്പെടും. പിൻ പ്രവർത്തനരഹിതമിരിക്കെ നിങ്ങൾക്ക് രജിസ്ട്രേഷൻ ലോക്ക് ഓണാക്കാൻ കഴിയില്ല.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "മുന്നറിയിപ്പ്";
@@ -4163,7 +4169,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "ഓഫ് ആക്കുക";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "To disable your PIN, you first have to turn off Registration Lock.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "നിങ്ങളുടെ പിൻ പ്രവർത്തനരഹിതമാക്കാൻ, നിങ്ങൾ ആദ്യം രജിസ്ട്രേഷൻ ലോക്ക് ഓഫാക്കേണ്ടതുണ്ട്.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "രജിസ്ട്രേഷൻ ലോക്ക് ഓഫ് ചെയ്യണോ?";
@@ -4178,10 +4184,10 @@
 "PIN_CREATION_WEAK_ERROR" = "കരുത്തുറ്റ ഒരു PIN തിരഞ്ഞെടുക്കുക";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "നിങ്ങളുടെ പിൻ പ്രവർത്തനരഹിതമാക്കാൻ കഴിഞ്ഞില്ല. ഞങ്ങൾ പിന്നീട് നിങ്ങളെ വീണ്ടും പ്രേരിപ്പിക്കും.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "PIN Disable Failed";
+"PIN_DISABLE_ERROR_TITLE" = "പിൻ പ്രവർത്തനരഹിതമാക്കുന്നത് പരാജയപ്പെട്ടു";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "നിങ്ങളുടെ PIN ഓർമ്മയിൽ നിൽക്കുന്നതിന് നിങ്ങളെ സഹായിക്കുന്നതിനായി, സമയാസമയങ്ങളിൽ അത് നൽകാൻ ഞങ്ങൾ നിങ്ങളോട് ആവശ്യപ്പെടും.  ഞങ്ങൾ കുറഞ്ഞ അധിക സമയങ്ങളിൽ ആവശ്യപ്പെടും.";
@@ -4205,7 +4211,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "ഞങ്ങൾ നിങ്ങളെ നാളെ വീണ്ടും ഓർമ്മപ്പെടുത്തും.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "രണ്ടാഴ്ചയ്ക്കുള്ളിൽ ഞങ്ങൾ നിങ്ങളെ വീണ്ടും ഓർമ്മപ്പെടുത്തും.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "ഒരാഴ്‌ചയ്‌ക്കുള്ളിൽ ഞങ്ങൾ നിങ്ങളെ വീണ്ടും ഓർമ്മപ്പെടുത്തും.";
@@ -4310,7 +4316,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "ചാറ്റ് ചെയ്യാൻ സമയമുണ്ടേ";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "സ്വതന്ത്രമായി സംസാരിക്കുക";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "ഒരു ഇടവേളയിലാണ്";
@@ -4322,13 +4328,13 @@
 "PROFILE_BIO_VIEW_TITLE" = "കുറിച്ച്";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "About (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "(%@) കുറിച്ച്";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ changed their profile name from %@ to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ അവരുടെ പ്രൊഫൈൽ പേര് %@-ൽ നിന്ന് %@-ആയി മാറ്റി.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ അവരുടെ പ്രൊഫൈൽ പേര് %@ ആയി മാറ്റി.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "നിങ്ങളുടെ പേര്";
@@ -4361,7 +4367,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ഇൻ്റർനെറ്റുമായി കണക്ട് ചെയ്യുമ്പോൾ മാത്രമേ പ്രൊഫൈൽ അപ്ഡേറ്റ് ചെയ്യാൻ സാധിക്കുകയുള്ളൂ.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "നിങ്ങളുടെ പ്രൊഫൈൽ എൻഡ്-ടു-എൻഡ് എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നു. നിങ്ങളുടെ പ്രൊഫൈലും അതിലേക്കുള്ള മാറ്റങ്ങളും നിങ്ങളുടെ കോൺ‌ടാക്റ്റുകൾ-ക്കും ദൃശ്യമാകും കൂടാതെ നിങ്ങൾ പുതിയ ചാറ്റുകൾ ആരംഭിക്കുകയോ സ്വീകരിക്കുകയോ ചെയ്യുമ്പോളും.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "സംരക്ഷിക്കുക";
@@ -4526,7 +4532,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "ഞങ്ങൾ നിങ്ങൾക്ക് അയച്ച് തന്ന കോഡ് നിങ്ങൾ പരിശോധിച്ച് ഉറപ്പാക്കുന്നത് വരെ ഞങ്ങൾക്ക് നിങ്ങളുടെ അക്കൗണ്ട് സജീവമാക്കാൻ കഴിയില്ല.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "തുടരാൻ, നിങ്ങളുടെ ഫോണിന്റെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "കണക്ഷൻ പരിശോധിക്കുക";
@@ -4562,10 +4568,10 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "ഫോൺ നമ്പർ ഇല്ല";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "A verification code will be sent to this number. Is your phone number above correct?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "ഈ നമ്പറിലേക്ക് ഒരു പരിശോധനാ കോഡ് അയയ്ക്കും. മുകളിലുള്ള നിങ്ങളുടെ ഫോൺ നമ്പർ ശരിയാണോ?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Number Confirmation: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "നമ്പർ സ്ഥിരീകരണം: %@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "തിരുത്തുക";
@@ -4583,7 +4589,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കുക";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register Push Notifications";
+"REREGISTER_FOR_PUSH" = "പുഷ് അറിയിപ്പുകൾ വീണ്ടും രജിസ്റ്റർ ചെയ്യുക";
 
 /* Body for research megaphone */
 "RESEARCH_MEGAPHONE_BODY" = "ഭൂമിയിലെ മികച്ച സന്ദേശമയയ്‌ക്കൽ അപ്ലിക്കേഷനായി Signal - നെ മാറ്റുന്നതിന്, നിങ്ങളുടെ ഫീഡ്‌ബാക്ക് കേൾക്കാൻ ഞങ്ങൾ ആഗ്രഹിക്കുന്നു.";
@@ -4592,13 +4598,13 @@
 "RESEARCH_MEGAPHONE_TITLE" = "നിങ്ങളുടെ അഭിപ്രായം Signal - നോട് പറയുക";
 
 /* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "The survey is hosted by Surveygizmo at the secure domain surveys.signalusers.org";
+"RESEARCH_MODAL_FOOTER" = "സർവേഗിസ്മോ സുരക്ഷിതമായ ഡൊമെയ്‌നായ surveys.signalusers.org-ൽ സർവേ ഹോസ്റ്റ് ചെയ്യുന്നു.";
 
 /* Button text for declining the research modal */
 "RESEARCH_MODAL_NO_THANKS" = "വേണ്ട, നന്ദി";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>We believe in privacy.</bold>\n\nSignal doesn’t track you or collect your data. To improve Signal for everyone, we rely on user feedback, <bold>and we’d love yours</bold>.\n\nWe’re running a survey to understand how you use Signal. Our survey doesn't collect any data that will identify you. If you’re interested in sharing additional feedback, you'll have the option to provide contact information.\n\nIf you have a few minutes and feedback to offer, we’d love to hear from you.";
+"RESEARCH_MODAL_PLEA" = "<bold>ഞങ്ങൾ സ്വകാര്യതയിൽ വിശ്വസിക്കുന്നു.</bold>\n\nSignal നിങ്ങളെ ട്രാക്ക് ചെയ്യുകയോ ഡാറ്റ ശേഖരിക്കുകയോ ചെയ്യുന്നില്ല. എല്ലാവർക്കും Signal മെച്ചപ്പെടുത്തുന്നതിന്, ഞങ്ങൾ ഉപയോക്തൃ ഫീഡ്ബാക്കിനെ ആശ്രയിക്കുന്നു, <bold>ഞങ്ങൾ നിങ്ങളുടേതിനെ ഇഷ്ടപ്പെടും</bold>.\n\nനിങ്ങൾ Signal എങ്ങനെ ഉപയോഗിക്കുന്നുവെന്ന് മനസ്സിലാക്കാൻ ഞങ്ങൾ ഒരു സർവേ നടത്തുന്നു. നിങ്ങളെ തിരിച്ചറിയുന്ന ഒരു ഡാറ്റയും ഞങ്ങളുടെ സർവേ ശേഖരിക്കുന്നില്ല. അധിക ഫീഡ്ബാക്ക് പങ്കിടാൻ നിങ്ങൾക്ക് താൽപ്പര്യമുണ്ടെങ്കിൽ, സമ്പർക്ക വിവരങ്ങൾ നൽകുന്നതിനുള്ള ഓപ്ഷൻ നിങ്ങൾക്ക് ലഭിക്കും.\n\nനിങ്ങൾക്ക് കുറച്ച് മിനിറ്റുകളും ഫീഡ്ബാക്കും വാഗ്ദാനം ചെയ്യാൻ ഉണ്ടെങ്കിൽ, നിങ്ങളിൽ നിന്ന് കേൾക്കാൻ ഞങ്ങൾ ആഗ്രഹിക്കുന്നു.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "സർവേ എടുക്കുക";
@@ -4610,7 +4616,7 @@
 "RETRY_BUTTON_TEXT" = "വീണ്ടും ശ്രമിക്കുക";
 
 /* Button to return to current group call */
-"RETURN_CALL_PILL_BUTTON" = "Return";
+"RETURN_CALL_PILL_BUTTON" = "മടങ്ങിവരവ്";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ഏത് വിധേനയും ഗ്രൂപ്പിൽ ചേർക്കുക";
@@ -4835,13 +4841,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "ലിങ്കിംഗ് കോഡ് കണ്ടെത്താൻ കഴിയുന്നില്ല";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ഈ ഉപകരണത്തെ മറ്റൊരു അക്കൗണ്ടിലേക്ക് ലിങ്ക് ചെയ്യുന്നതിന്, നിങ്ങൾ ആദ്യം ഈ ഉപകരണം പുന:ക്രമീകരിക്കണം. എല്ലാ ചരിത്രവും (സന്ദേശങ്ങള്‍, അറ്റാച്ച്മെന്റുകൾ, കോളുകൾ മുതലായവ) ഇല്ലാതാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുവെന്ന് നിങ്ങൾക്ക് ഉറപ്പാണോ? ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "എല്ലാം ഇല്ലാതാക്കുക";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "അക്കൗണ്ട് പൊരുത്തപ്പെടുന്നില്ല";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "നിങ്ങളുടെ ഫോണുമായി ലിങ്കുചെയ്യുന്നതിന് ഈ ഉപകരണത്തിൽ സിഗ്നൽ അപ്‌ഡേറ്റുചെയ്യുക.";
@@ -5000,10 +5006,10 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "എറർ ലോഗുകൾ";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Display system contact photos if available.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "ലഭ്യമെങ്കിൽ സിസ്റ്റം കോൺടാക്റ്റ് ഫോട്ടോകൾ പ്രദർശിപ്പിക്കുക.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Use System Contact Photos";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "സിസ്റ്റം കോൺടാക്റ്റ് ഫോട്ടോകൾ ഉപയോഗിക്കുക";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "തീം";
@@ -5039,58 +5045,58 @@
 "SETTINGS_CLEAR_HISTORY" = "ചാറ്റിന്റെ ചരിത്രം മായ്ക്കുക";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "പകർപ്പവകാശ Signal സന്ദേശകന്‍\nജിപിഎൽവി3 പ്രകാരം ലൈസൻസ്";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "ഡാറ്റ ഉപയോഗം";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "കുറഞ്ഞ ഡാറ്റ ഉപയോഗിക്കുക";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "കുറഞ്ഞ ഡാറ്റ ഉപയോഗിക്കുന്നത് മോശം നെറ്റ്‌വർക്കുകളിലെ കോളുകൾ മെച്ചപ്പെടുത്താം.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "കോളുകൾ";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "വോയ്‌സ് സന്ദേശങ്ങള്‍-ളും, ഒരിക്കൽ മാത്രം കാണുന്ന മീഡിയയും, സ്റ്റിക്കറുകളും (100kb- ൽ താഴെ) എപ്പോഴും സ്വയമേവ ഡൗൺലോഡ് ചെയ്യപ്പെടും.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Auto-Download";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "സ്വയം ഡൗൺലോഡ്";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "സ്വയം ഡൗൺലോഡ് ക്രമീകരണങ്ങൾ പുന:സജ്ജമാക്കുക";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "മീഡിയ നിലവാരം അയച്ചു";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "നിങ്ങൾ ഫോട്ടോകളും വീഡിയോകളും അയയ്ക്കുന്ന ഗുണനിലവാരം തിരഞ്ഞെടുക്കുക.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "അയച്ച മീഡിയ";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "ഡാറ്റ ഉപയോഗം";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "പുതിയ ചാറ്റുകൾക്കുള്ള സ്ഥിരസ്ഥിതി ടൈമർ";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "അക്കൗണ്ട് ഇല്ലാതാക്കുക";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "ട്രാൻസ്ഫർ ചെയ്യരുത്";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "നിങ്ങൾക്ക് %@-ന്റെ ബാലൻസ് ഉണ്ട്. നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കുന്നതിന് മുമ്പ് മറ്റൊരു വാലറ്റ് വിലാസത്തിലേക്ക് നിങ്ങളുടെ ഫണ്ടുകൾ ട്രാൻസ്ഫർ ചെയ്തില്ലെങ്കിൽ, നിങ്ങൾക്ക് അത് എന്നെന്നേക്കുമായി നഷ്ടപ്പെടും";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "പേയ്‌മെന്റ് ബാലൻസ് ട്രാൻസ്ഫർ ചെയ്യുന്നുണ്ടോ?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "ബാലൻസ് ട്രാൻസ്ഫർ ചെയുക";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "എല്ലാ ഡാറ്റയും ഇല്ലാതാക്കുക";
@@ -5120,7 +5126,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "നിങ്ങൾക്ക് ഞാനുമായി ബന്ധപ്പെടാം @signalapp. ഇപ്പോൾ തന്നെ അത് നേടൂ: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chat Color & Wallpaper";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "ചാറ്റ് നിറം & വാള്‍പേപ്പര്‍";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "സന്ദേശ ശബ്ദം";
@@ -5129,7 +5135,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "നിബന്ധനകളും സ്വകാര്യതാ നയവും";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "ലിങ്ക് പ്രിവ്യൂകൾ സൃഷ്ടിക്കുക";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "നിങ്ങൾ അയയ്‌ക്കുന്ന സന്ദേശങ്ങൾക്കായി വെബ്‌സൈറ്റുകളിൽ നിന്ന് ലിങ്ക് പ്രിവ്യൂകൾ നേരിട്ട് വീണ്ടെടുക്കുക.";
@@ -5159,25 +5165,25 @@
 "SETTINGS_MESSAGING" = "സന്ദേശ വിനിമയം";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
+"SETTINGS_MESSAGING_FOOTER" = "സന്ദേശങ്ങള്‍ വായിക്കുകയും ടൈപ്പ് ചെയ്യുകയും ചെയ്യുമ്പോൾ കാണുകയും പങ്കിടുകയും ചെയ്യുക. പ്രവർത്തനരഹിതമാണെങ്കിൽ, മറ്റുള്ളവരിൽ നിന്ന് വായിച്ച രസീതുകളോ ടൈപ്പിംഗ് സൂചകങ്ങളോ നിങ്ങൾ കാണില്ല.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "ക്രമീകരണങ്ങൾ";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "നിശബ്ദമാക്കിയ ചാറ്റുകൾ ഉൾപ്പെടുത്തുക";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "ബാഡ്ജ് എണ്ണം";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "നിങ്ങളുടെ ഫോൺ ലോക്ക് ചെയ്തിരിക്കുമ്പോൾ കോൾ, സന്ദേശം അറിയിപ്പുകൾ ദൃശ്യമാകും.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "നോട്ടിഫിക്കേഷൻ ഉള്ളടക്കം";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "കോൺടാക്റ്റ് Signal-ൽ ചേരുന്നു";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "എപ്പോൾ അറിയിക്കുക...";
@@ -5189,37 +5195,37 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "സജീവമാക്കുക";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "മൊബൈൽ കോയിൻ അയയ്ക്കാനും സ്വീകരിക്കാനും നിങ്ങൾക്ക് Signal ഉപയോഗിക്കാം. എല്ലാ പണമിടപാടുകളും മൊബൈൽ കോയിനുകൾക്കായുള്ള ഉപയോഗ വ്യവസ്ഥകൾക്കും മൊബൈൽ കോയിൻ വാലറ്റിനും വിധേയമാണ്. ഇതൊരു ബീറ്റ സവിശേഷതയാണ്, അതിനാൽ നിങ്ങൾക്ക് ചില പ്രശ്നങ്ങൾ നേരിട്ടേക്കാം, നിങ്ങൾക്ക് വീണ്ടെടുക്കാനാകാത്ത പേയ്‌മെന്റുകളോ ബാലൻസുകളോ നഷ്ടപ്പെട്ടേക്കാം.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "സജീവമാക്കുക";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "മൊബൈൽകോയിൻ നിബന്ധനകൾ കാണുക";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "ഫണ്ടുകൾ ചേർക്കുക";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
 "SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ഫണ്ടുകൾ ചേർക്കുന്നതിന്, നിങ്ങളുടെ വാലറ്റ് വിലാസത്തിലേക്ക് മൊബൈൽ കോയിൻ അയയ്ക്കുക. മൊബൈൽ കോയിൻ പിന്തുണയ്ക്കുന്ന ഒരു എക്സ്ചേഞ്ചിൽ നിങ്ങളുടെ അക്കൗണ്ടിൽ നിന്ന് ഒരു ട്രാൻസാക്ഷൻ ആരംഭിക്കുക, തുടർന്ന് ക്യുആർ കോഡ് സ്കാൻ ചെയ്യുക അല്ലെങ്കിൽ നിങ്ങളുടെ വാലറ്റ് വിലാസം പകർത്തുക.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "വാലറ്റ് വിലാസം പകർത്തി";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "എല്ലാ പേയ്മെന്റുകളും";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%3$@-ൽ %1$@%2$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signal-ലെ പേയ്‌മെന്റുകൾ ഇനി ലഭ്യമല്ല. നിങ്ങൾക്ക് ഇപ്പോഴും ഒരു എക്സ്ചേഞ്ചിലേക്ക് ഫണ്ടുകൾ ട്രാൻസ്ഫർ ചെയ്യാൻ കഴിയും, എന്നാൽ നിങ്ങൾക്ക് ഇനി പേയ്മെന്റുകൾ അയയ്ക്കാനും കൂടാതെ സ്വീകരിക്കാനും അല്ലെങ്കിൽ ഫണ്ടുകൾ ചേർക്കാനോ കഴിയില്ല.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "നിങ്ങളുടെ ബാലൻസ് ലഭ്യമല്ലാത്തതിനാൽ പേയ്‌മെന്റുകൾ നിർജ്ജീവമാക്കാൻ കഴിയില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "നിങ്ങളുടെ ബാലൻസ് ലഭ്യമല്ലാത്തതിനാൽ പേയ്മെന്റ് പൂർത്തിയാക്കാനായില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signal-ലെ പേയ്‌മെന്റുകൾ ഇനി ലഭ്യമല്ല. നിങ്ങൾക്ക് ഇപ്പോഴും ഒരു എക്സ്ചേഞ്ചിലേക്ക് ഫണ്ടുകൾ ട്രാൻസ്ഫർ ചെയ്യാൻ കഴിയും, എന്നാൽ നിങ്ങൾക്ക് ഇനി പേയ്മെന്റുകൾ അയയ്ക്കാനും കൂടാതെ സ്വീകരിക്കാനും അല്ലെങ്കിൽ ഫണ്ടുകൾ ചേർക്കാനോ കഴിയില്ല.";
@@ -5234,43 +5240,43 @@
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "എല്ലാ കറൻസികളും";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "ബാക്കിയുള്ള ബാലൻസ് ട്രാൻസ്ഫർ ചെയുക ";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "നിർജ്ജീവമാക്കുക";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "പേയ്‌മെന്റുകൾ നിർജ്ജീവമാക്കുക";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "നിങ്ങൾ പേയ്മെന്റുകൾ നിർജ്ജീവമാക്കുകയാണെങ്കിൽ നിങ്ങൾക്ക് Signal-ൽ മൊബൈൽകോയിൻ അയയ്ക്കാനോ സ്വീകരിക്കാനോ കഴിയില്ല.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "പേയ്‌മെന്റുകൾ നിർജ്ജീവമാക്കണോ?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deactivate Payments";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "പേയ്‌മെന്റുകൾ നിർജ്ജീവമാക്കുക";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "പേയ്മെന്റുകൾ നിർജ്ജീവമാക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ ഫണ്ടുകൾ മറ്റൊരു വാലറ്റ് വിലാസത്തിലേക്ക് ട്രാൻസ്ഫർ ചെയ്യാൻ ശുപാർശ ചെയ്യുന്നു. നിങ്ങളുടെ ഫണ്ടുകൾ ഇപ്പോൾ ട്രാൻസ്ഫർ ചെയ്യാതിരിക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുക്കുകയാണെങ്കിൽ, നിങ്ങൾ പേയ്മെന്റുകൾ വീണ്ടും സജീവമാക്കുകയാണെങ്കിൽ, Signal-മായി ബന്ധിപ്പിച്ചിട്ടുള്ള നിങ്ങളുടെ വാലറ്റിൽ അവ തുടരും.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "പേയ്‌മെന്റുകൾ വീണ്ടും സജീവമാക്കാൻ നിങ്ങൾ തീരുമാനിക്കുകയാണെങ്കിൽ, Signal-മായി ബന്ധിപ്പിച്ചിട്ടുള്ള നിങ്ങളുടെ വാലറ്റിൽ നിങ്ങളുടെ ബാലൻസ് തുടരും.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "ട്രാൻസ്ഫർ ചെയ്യാതെ നിർജ്ജീവമാക്കുക?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "ട്രാൻസ്ഫർ ചെയ്യാതെ നിർജ്ജീവമാക്കുക";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "പേയ്മെന്റുകൾ നിർജ്ജീവമാക്കാൻ കഴിഞ്ഞില്ല";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "വിശദാംശങ്ങൾ";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "പേയ്മെന്റുകൾ പ്രവർത്തനക്ഷമമാക്കുക";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "മൊബൈൽകോയിൻ ഒരു പുതിയ സ്വകാര്യത കേന്ദ്രീകൃത ഡിജിറ്റൽ കറൻസിയാണ്.";
@@ -5282,7 +5288,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "നിങ്ങളുടെ വാലറ്റ് വിലാസത്തിലേക്ക് മൊബൈൽകോയിൻ അയച്ചുകൊണ്ട് Signal-ൽ ഉപയോഗിക്കുന്നതിനുള്ള ഫണ്ടുകൾ നിങ്ങൾക്ക് ചേർക്കാം.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "ഫണ്ടുകൾ ചേർക്കുന്നു";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "മൊബൈൽ കോയിൻ പിന്തുണയ്ക്കുന്ന ഒരു എക്സ്ചേഞ്ചിൽ നിങ്ങൾക്ക് ഏത് സമയത്തും മൊബൈൽ കോയിൻ ക്യാഷ് ചെയ്യാം. ആ എക്സ്ചേഞ്ചിൽ നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് ഒരു ട്രാൻസ്ഫർ നടത്തുക.";
@@ -5300,7 +5306,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "നിങ്ങളുടെ PIN പുതുക്കുക";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "റിക്കവറി വാക്യം രേഖപ്പെടുത്തുക";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "നിങ്ങളുടെ പേയ്മെന്റ് അക്കൗണ്ട് പുന:സ്ഥാപിക്കുന്നതിന് നിങ്ങളുടെ വീണ്ടെടുക്കൽ വാക്യം നിങ്ങൾക്ക് മറ്റൊരു മാർഗം നൽകുന്നു.";
@@ -5309,19 +5315,19 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "വീണ്ടെടുക്കൽ വാക്യം രേഖപ്പെടുത്തുക";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "അസാധുവായ വാലറ്റ് വിലാസം";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "സമീപകാല പ്രവർത്തനങ്ങളൊന്നുമില്ല.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "പേയ്‌മെന്റുകൾ പ്രാപ്തമാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "പേയ്‌മെന്റുകൾ പ്രവർത്തനക്ഷമമാക്കിയിട്ടില്ല";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "പേയ്മെന്റുകൾ അയയ്ക്കാൻ വീണ്ടും രജിസ്റ്റർ ചെയ്യുക.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "രജിസ്റ്റർ ചെയ്തിട്ടില്ല";
@@ -5330,40 +5336,40 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "പേയ്മെന്റുകൾ സജീവമാക്കുക";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "പേയ്‌മെന്റുകൾ സജീവമാക്കി.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "സ്വകാര്യതയിൽ ശ്രദ്ധ കേന്ദ്രീകരിക്കുന്ന ഒരു പുതിയ ഡിജിറ്റൽ കറൻസി മൊബൈൽകോയിൻ അയയ്ക്കാനും സ്വീകരിക്കാനും Signal ഉപയോഗിക്കുക. ആരംഭിക്കാൻ സജീവമാക്കുക.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "പേയ്‌മെന്റുകൾ വീണ്ടും സജീവമാക്കുക";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "പേയ്‌മെന്റുകൾ അവതരിപ്പിക്കുന്നു (ബീറ്റ)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "നിങ്ങളുടെ Signal പിൻ സ്ഥിരീകരിക്കുകയാണെങ്കിൽ, നിങ്ങൾ Signal വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ നിങ്ങളുടെ ബാലൻസ് സ്വയമേവ പുനഃസ്ഥാപിക്കപ്പെടും. നിങ്ങൾക്ക് അതുല്യമായ 24 വാക്കുകളുള്ള വാക്യമായ ഒരു വീണ്ടെടുക്കൽ വാക്യം ഉപയോഗിച്ച് നിങ്ങൾക്ക് നിങ്ങളുടെ ബാലൻസ് പുനസ്ഥാപിക്കാനും കഴിയും. അത് എഴുതി സുരക്ഷിതമായ സ്ഥലത്ത് സൂക്ഷിക്കുക.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "ഫണ്ടുകൾ ചേർക്കുക";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "നമ്പർ തടയുക";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "നെറ്റ്‌വർക്ക് ഫീസ്";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "ലഭിച്ചു";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@-ൽ നിന്ന് ലഭിച്ചു";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Sent By";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "അയച്ചത്";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ൽ%1$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "നിങ്ങൾ";
@@ -5372,7 +5378,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "അയച്ചു";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@-ലേക്ക് അയച്ചു";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "സ്റ്റാറ്റസ്";
@@ -5384,16 +5390,16 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "നിങ്ങളുടെ കൈവശമുള്ള നാണയങ്ങൾ ഒരു ഇടപാട് പൂർത്തിയാക്കാൻ സംയോജിപ്പിക്കാൻ കഴിയാത്തപ്പോൾ ഒരു \"നാണയം വൃത്തിയാക്കൽ ഫീസ്\" ഈടാക്കുന്നു. പേയ്മെന്റുകൾ അയയ്ക്കുന്നത് തുടരാൻ ക്ലീനപ്പ് നിങ്ങളെ അനുവദിക്കും.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "ഈ പേയ്മെന്റ് പൂർത്തിയാക്കാൻ നിങ്ങൾക്ക് മതിയായ എംഓബി ഇല്ല. നിങ്ങളുടെ നിലവിലെ ബാലൻസ് %@ ആണ്.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "അപര്യാപ്തമായ ബാലൻസ്";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "From %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%@-ൽ നിന്ന്";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "%@-ലേക്ക്";
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "പേയ്‌മെന്റുകൾ നിർജ്ജീവമാക്കി.";
@@ -5408,79 +5414,79 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "അയച്ചു";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Recent Payments";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "സമീപകാല പേയ്മെന്റുകൾ";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "നിങ്ങളുടെ പിന് പ്രവർത്തനരഹിതമാക്കുന്നതിന് മുമ്പ്, നിങ്ങളുടെ പേയ്മെന്റ് അക്കൗണ്ട് വീണ്ടെടുക്കാൻ കഴിയുമെന്ന് ഉറപ്പാക്കുന്നതിന് നിങ്ങളുടെ പേയ്മെന്റുകൾ വീണ്ടെടുക്കൽ വാക്യം നിങ്ങൾ റെക്കോർഡ് ചെയ്യണം.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "റിക്കവറി വാക്യം രേഖപ്പെടുത്തുക";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "പേയ്മെന്റ് വീണ്ടെടുക്കൽ വാചകം രേഖപ്പെടുത്തുക";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "ശേഷിക്കുന്ന ബാലൻസ്";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "നീക്കംചെയ്യൂ";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "ഒരു പേയ്മെന്റ് അക്കൗണ്ട് പുന:സ്ഥാപിക്കുക";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "നിങ്ങളുടെ വാചകം നിങ്ങൾ ശരിയായി നൽകിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "വീണ്ടെടുക്കൽ വാചകം സ്ഥിരീകരിക്കുക";
 
 /* Message indicating that 'restore payments wallet' is complete. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "പേയ്മെന്റ് അക്കൗണ്ട് പുനഃസ്ഥാപിച്ചു.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "സ്വമേധയാ നൽകുക";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Recovery Failed";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "വീണ്ടെടുക്കൽ പരാജയപ്പെട്ടു";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "ഇത് സാധുവായ വീണ്ടെടുക്കൽ വാക്യമല്ല.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "അസാധുവായ വാചകം";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "ക്ലിപ്പ്ബോർഡിൽ നിന്ന് ഒട്ടിക്കുക";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "വീണ്ടെടുക്കൽ വാചകം";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "വീണ്ടെടുക്കൽ വാചകം ഒട്ടിക്കുക";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "നിങ്ങളുടെ വീണ്ടെടുക്കൽ വാക്യം നിങ്ങൾക്ക് അതുല്യമായ 12 വാക്കുകളുള്ള വാക്യമാണ്. നിങ്ങളുടെ പേയ്മെന്റ് അക്കൗണ്ട് പുന:സ്ഥാപിക്കാൻ ഇത് ഉപയോഗിക്കുക.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "വീണ്ടെടുക്കൽ വാക്യാംശം നൽകുക";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "വീണ്ടെടുക്കൽ വാചകം";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "%@ എന്ന വാക്ക് നൽകുക";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Invalid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "അസാധുവായ വീണ്ടെടുക്കൽ വാചകം.";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Word is spelled incorrectly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "വാക്ക് തെറ്റായി എഴുതിയിരിക്കുന്നു.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Enter Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "വീണ്ടെടുക്കൽ വാക്യാംശം നൽകുക";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ട്രാൻസ്ഫർ സ്വീകർത്താവിനായി ക്യുആർ കോഡ് സ്കാൻ ചെയ്യുക.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "അസാധുവായ വിലാസം";
@@ -5489,88 +5495,88 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR കോഡ് സ്‌കാൻ ചെയ്യുക";
 
 /* Label for 'send payment' button in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
+"SETTINGS_PAYMENTS_SEND_PAYMENT" = "പേയ്മെന്റ് അയയ്ക്കുക";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "സ്വീകർത്താവിനെ തിരഞ്ഞെടുക്കുക";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "കറൻസി പരിവർത്തനം";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "പേയ്മെന്റുകൾ";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "നിങ്ങളുടെ Signal വാലറ്റ് വിലാസത്തിലേക്ക് നിങ്ങൾക്ക് ട്രാൻസ്ഫർ ചെയ്യാൻ കഴിയില്ല. പിന്തുണയുള്ള എക്സ്ചേഞ്ചിൽ നിങ്ങളുടെ അക്കൗണ്ടിൽ നിന്ന് വാലറ്റ് വിലാസം നൽകുക.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "എക്സ്ചേഞ്ച് നൽകുന്ന വാലറ്റ് വിലാസത്തിലേക്ക് ഒരു ട്രാൻസ്ഫർ പൂർത്തിയാക്കി ക്കൊണ്ട് നിങ്ങൾക്ക് മൊബൈൽ കോയിൻ ട്രാൻസ്ഫർ ചെയ്യാം. ക്യുആർ കോഡിന് ഏറ്റവും താഴെ യുള്ള സംഖ്യകളുടെയും അക്ഷരങ്ങളുടെയും സ്ട്രിംഗാണ് വാലറ്റ് വിലാസം.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "നിങ്ങൾ ട്രാൻസ്ഫർ ചെയ്യാൻ ശ്രമിക്കുന്ന വാലറ്റ് വിലാസം പരിശോധിക്കുക, വീണ്ടും ശ്രമിക്കുക.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "തെറ്റായ വിലാസം";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "ഇതിലേക്ക്: വാലറ്റ് വിലാസം സ്കാൻ ചെയ്യുക അല്ലെങ്കിൽ നൽകുക";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "എക്സ്ചേഞ്ചിലേക്ക് ട്രാൻസ്ഫർ";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "എക്സ്ചേഞ്ചിലേക്ക് ട്രാൻസ്ഫർ";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Recovery phrase setup complete.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "റിക്കവറി വാക്യാംശ സജ്ജീകരണം പൂർത്തിയായി.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "സ്ഥിരീകരിക്കുക";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "നിങ്ങളുടെ വീണ്ടെടുക്കൽ വാക്യത്തിൽ നിന്ന് %1$@, %2$@ എന്നീ വാക്കുകൾ നൽകുക.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "A word is incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "ഒരു വാക്ക് തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Both words are incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "രണ്ട് വാക്കുകളും തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Word %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "വാക്ക്  %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "വീണ്ടെടുക്കൽ വാചകം സ്ഥിരീകരിക്കുക";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "വീണ്ടെടുക്കൽ വാചകം പകർത്തി";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "ക്ലിപ്പ്ബോർഡിലേയ്ക്ക് പകർത്തുക";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "നിങ്ങളുടെ വീണ്ടെടുക്കൽ വാക്യം ഡിജിറ്റലായി സംഭരിക്കാൻ നിങ്ങൾ തീരുമാനിക്കുകയാണെങ്കിൽ, നിങ്ങൾ വിശ്വസിക്കുന്ന എവിടെയെങ്കിലും അത് സുരക്ഷിതമായി സംഭരിക്കപ്പെടുന്നുവെന്ന് ഉറപ്പാക്കുക.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "ക്ലിപ്പ്ബോർഡിലേയ്ക്ക് പകർത്തുക?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "വാക്യാംശം വീണ്ടും കാണുക";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "വീണ്ടെടുക്കൽ വാചകം കാണുക";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "വീണ്ടെടുക്കൽ വാചകം";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "ഇനിപ്പറയുന്ന 24 വാക്കുകൾ ക്രമത്തിൽ എഴുതുക. നിങ്ങളുടെ പട്ടിക സുരക്ഷിതമായ സ്ഥലത്ത് സൂക്ഷിക്കുക.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "സ്ക്രീൻഷോട്ട് അല്ലെങ്കിൽ ഇമെയിൽ വഴി അയയ്ക്കരുത്.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "വീണ്ടെടുക്കൽ വാചകം";
 
 /* Title for the 'payments settings' view in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "പേയ്‌മെന്റുകൾ (ബീറ്റ)";
@@ -5603,7 +5609,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "പിൻ ഓർമ്മപ്പെടുത്തലുകൾ";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Signal-ൽ സൂക്ഷിച്ചിരിക്കുന്ന വിവരങ്ങൾ എൻക്രിപ്‌റ്റ് ചെയ്‌ത നിലയിൽ പിനുകൾ സൂക്ഷിക്കുന്നു, അതിനാൽ നിങ്ങൾക്ക് മാത്രമേ അത് ആക്‌സസ് ചെയ്യാൻ കഴിയൂ. നിങ്ങളുടെ പിൻ വീണ്ടെടുക്കാൻ കഴിയില്ല. നിങ്ങൾ Signal വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ നിങ്ങളുടെ പ്രൊഫൈൽ, ക്രമീകരണങ്ങൾ, കോൺ‌ടാക്റ്റുകൾ, എന്നിവ പുന:സ്ഥാപിക്കും.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "നിങ്ങളുടെ പിൻ മാറ്റുക";
@@ -5615,7 +5621,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "സെൻസർഷിപ്പ് മറികടക്കൽ, റിലേ കോളുകൾ, സീൽ ചെയ്ത അയയ്ക്കുന്നക്രമീകരണങ്ങൾ.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "വിപുലമായ";
@@ -5657,10 +5663,10 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "സ്‌ക്രീൻ ലോക്ക്";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Hide Screen in App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "ആപ്പ് സ്വിച്ചറിൽ സ്ക്രീൻ മറയ്ക്കുക";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Show calls in the “Recents” list in the iOS Phone app.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "ഐഒഎസ് ഫോൺ ആപ്പിലെ \"സമീപകാല\" ലിസ്റ്റിലെ കോളുകൾ കാണിക്കുക.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ശബ്ദങ്ങൾ";
@@ -5669,37 +5675,37 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "കോളിംഗ്";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "Use Touch ID, Face ID, or your iOS device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL" = "Signal അൺലോക്ക് ചെയ്യുന്നതിന് ടച്ച് ഐഡി, ഫെയ്സ് ഐഡി അല്ലെങ്കിൽ നിങ്ങളുടെ ഐഒഎസ് ഉപകരണ പാസ്കോഡ് ഉപയോഗിക്കുക.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_FACEID" = "Signal അൺലോക്കുചെയ്യാൻ Face ID ഉപയോഗിക്കുക.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Use your device passcode to unlock Signal.";
+"SETTINGS_SECURITY_DETAIL_PASSCODE" = "Signal അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഉപകരണ പാസ്കോഡ് ഉപയോഗിക്കുക.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Signal അൺലോക്കുചെയ്യാൻ Touch ID ഉപയോഗിക്കുക.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "App Security";
+"SETTINGS_SECURITY_TITLE" = "ആപ്പ് സുരക്ഷ";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "ഉയർന്ന നിലവാരമുള്ള മീഡിയ അയയ്ക്കുന്നത് കൂടുതൽ ഡാറ്റ ഉപയോഗിക്കും.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "ഫോട്ടോകളും വീഡിയോകളും";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "നിർദ്ദേശങ്ങളിൽ ചാറ്റുകൾ കാണിക്കുക";
 
 /* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "മറ്റ് ആപ്പുകളിൽ നിന്ന് പങ്കിടുമ്പോൾ Signal ചാറ്റുകൾ നിർദ്ദേശങ്ങളായി പ്രദർശിപ്പിക്കപ്പെടുന്നു.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "രജിസ്ട്രേഷൻ ലോക്ക്";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal-മായി നിങ്ങളുടെ ഫോൺ നമ്പർ വീണ്ടും രജിസ്റ്റർ ചെയ്യുന്നതിന് നിങ്ങളുടെ Signal പിൻ ആവശ്യമാണ്.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "ടൈപ്പിംഗ് ഇൻഡിക്കേറ്ററുകൾ";
@@ -5708,7 +5714,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "സീൽ ചെയ്യപ്പെട്ട സെൻഡർ";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "സ്റ്റാറ്റസ് ഐക്കൺ കാണിക്കുക";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ഏതൊരാളിൽ നിന്നും അനുവദിക്കുക";
@@ -5753,7 +5759,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "അറ്റാച്ച്‌‌മെന്റ് അയയ്ക്കാൻ കഴിയുന്നില്ല";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%2$@-യുടെ %1$@ അപ്‌ലോഡ് ചെയ്യുന്നു...";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "അപ്‌ലോഡ് ചെയ്യുന്നു...";
@@ -5765,10 +5771,10 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal ലേക്ക് പങ്കിടുക";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "Failed to disable sharing suggestions.";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "നിർദ്ദേശങ്ങൾ പങ്കിടുന്നത് പ്രവർത്തനരഹിതമാക്കുന്നതിൽ പരാജയപ്പെട്ടു.";
 
 /* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal chats can now be displayed as suggestions when sharing from other apps.";
+"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "മറ്റ് ആപ്പുകളിൽ നിന്ന് പങ്കിടുമ്പോൾ Signal ചാറ്റുകൾ ഇപ്പോൾ നിർദ്ദേശങ്ങളായി പ്രദർശിപ്പിക്കാൻ കഴിയും.";
 
 /* Title for sharing suggestions megaphone */
 "SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "പങ്കിടൽ ഇപ്പോൾ എളുപ്പമായി";
@@ -5789,28 +5795,28 @@
 "SMS_INVITE_BODY" = "Signal ഇൻസ്റ്റാൾ ചെയ്യാൻ ഞാൻ നിങ്ങളെ ക്ഷണിക്കുന്നു! ലിങ്ക് ഇതാ ഇവിടെ:";
 
 /* table cell label in conversation settings */
-"SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
+"SOUND_AND_NOTIFICATION_SETTINGS" = "ശബ്ദങ്ങൾ & അറിയിപ്പുകൾ";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ഒന്നുമില്ല";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "പരിശോധന പൂർത്തിയായി.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "നിങ്ങൾ പരിശോധിച്ചുറപ്പിക്കൽ ഒഴിവാക്കാൻ തീരുമാനിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് മറ്റ് ആളുകളിൽ നിന്നുള്ള സന്ദേശങ്ങൾ നഷ്ടപ്പെട്ടേക്കാം, നിങ്ങളുടെ സന്ദേശങ്ങള്‍ അയയ്ക്കുന്നതിൽ പരാജയപ്പെട്ടേക്കാം.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "പരിശോധിച്ചുറപ്പിക്കാതെ തുടരണോ?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Signal-ലെ സ്പാം തടയുന്നതിന് സഹായിക്കുന്നതിന്, പരിശോധിച്ചുറപ്പിക്കൽ പൂർത്തിയാക്കുക.\n\nപരിശോധിച്ചുറപ്പിച്ചശേഷം, നിങ്ങൾക്ക് സന്ദേശ വിനിമയം തുടരാം. താൽക്കാലികമായി നിർത്തിയ സന്ദേശങ്ങള്‍ സ്വയമേവ അയയ്ക്കപ്പെടും.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
+"SPAM_CAPTCHA_SHEET_TITLE" = "സന്ദേശ വിനിമയം തുടരുന്നതിന് പരിശോധിക്കുക";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "പരിശോധിച്ചുറപ്പിക്കൽ ഒഴിവാക്കുക";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "പരിശോധന പൂർത്തിയാക്കുക";
@@ -5882,7 +5888,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "ഞങ്ങളെ സമീപിക്കുക";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "എന്താണ് സംഭവിക്കുന്നതെന്ന് ഞങ്ങളോട് പറയുക";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "പ്രശ്നത്തെക്കുറിച്ച് ഞങ്ങളോട് പറയുക:";
@@ -5906,10 +5912,10 @@
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS പതിപ്പ്: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "പ്രാദേശികം: %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "ലോഗ് യുആർഎൽ: %@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "സിഗ്നൽ പതിപ്പ്: %@";
@@ -5939,7 +5945,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "പരിശോധിക്കുക";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "നിങ്ങൾ സന്ദേശം-യയ്‌ക്കുമ്പോൾ അപ്രത്യക്ഷമാകുന്ന സന്ദേശം സമയം %@ ആയി സജ്ജീകരിക്കും.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "പൊതുവായി ഗ്രൂപ്പുകളൊന്നുമില്ല. അഭ്യർത്ഥനകൾ ശ്രദ്ധാപൂർവ്വം അവലോകനം ചെയ്യുക.";
@@ -6107,7 +6113,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "നിങ്ങളുടെ ഡിവൈസ് ഈ ഫീച്ചർ സപ്പോർട്ട് ചെയ്യുന്നില്ല.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Signal വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്തതുകൊണ്ടോ ഉപകരണങ്ങൾ മാറ്റിയതുകൊണ്ടോ %@ ഉള്ള നിങ്ങളുടെ സുരക്ഷാ നമ്പർ മാറ്റപ്പെടാൻ സാധ്യതയുണ്ട്. പുതിയ സുരക്ഷാ നമ്പർ സ്ഥിരീകരിക്കുന്നതിന് പരിശോധിച്ചുറപ്പിക്കാൻ തൊടുക. ഇത് ഓപ്ഷണൽ ആണ്.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "ഉറപ്പാക്കു";
@@ -6251,10 +6257,10 @@
 "WALLPAPER_PREVIEW_TITLE" = "പ്രിവ്യൂ";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Clear Chat Color";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "ചാറ്റ് നിറം മായ്‌ക്കുക";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Clear chat color for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "ഈ ചാറ്റിനായി ചാറ്റ് നിറം മായ്‌ക്കുക-ണോ?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "വാള്‍പേപ്പര്‍ മായ്‌ക്കുക";
@@ -6272,7 +6278,7 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "വാൾപേപ്പറുകൾ പുനഃസജ്ജമാക്കാൻ കഴിഞ്ഞില്ല, ദയവായി പിന്നീട് വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ പിശക് തുടരുകയാണെങ്കിൽ പിന്തുണയുമായി ബന്ധപ്പെടുക.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Reset All Colors";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "എല്ലാ നിറങ്ങളും പുന:സജ്ജമാക്കുക";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "വാള്‍പേപ്പറുകള്‍ എല്ലാം പുനഃക്രമീകരിക്കുക";
@@ -6281,31 +6287,31 @@
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "എല്ലാ ചാറ്റ് നിറങ്ങളും അസാധുവാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "ചാറ്റ് നിറങ്ങൾ പുന:സജ്ജീകരിക്കുക";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "ചാറ്റ് നിറം പുന:സജ്ജമാക്കുക";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "വാള്‍പേപ്പര്‍ പുന:സജ്ജമാക്കുക";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "സ്ഥിര നിറങ്ങൾ പുന:സജ്ജമാക്കുക";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "ചാറ്റ് നിറങ്ങൾ പുന:സജ്ജീകരിക്കുക";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "സ്ഥിരസ്ഥിതി വാള്‍പേപ്പര്‍ പുന:സജ്ജമാക്കുക";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Reset Wallpapers";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "വാള്‍പേപ്പറുകള്‍ പുന:സജ്ജമാക്കുക";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "എല്ലാ വാൾപേപ്പറുകളും അസാധുവാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "വാൾപേപ്പർ പുന:സജ്ജമാക്കുക";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "ചാറ്റ് നിറം";

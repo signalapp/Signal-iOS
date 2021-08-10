@@ -116,7 +116,7 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "Delivery Issue";
+"ALERT_DELIVERY_ISSUE_TITLE" = "Dambudziko re Kutumira";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
@@ -146,7 +146,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Daira";
 
 /* notification body */
-"APN_Message" = "You may have new messages";
+"APN_Message" = "Unogona kuva ne tsamba itsva";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal haisi kusimuka. Tapota tumira debug log ku support@signal.org kuti tironde dambudziko iri.";
@@ -224,10 +224,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Zvachengetwa";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Nonoka,data rakawanda";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Kurumidza, data shoma";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
@@ -341,13 +341,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Tepfenura";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Wedzera Mufananidzo";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Wedzera mufananidzi we homwe";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Sarudza Ruvara";
@@ -887,7 +887,7 @@
 "CONTEXT_MENU_DETAILS" = "Ruzivo";
 
 /* Context menu button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Forward";
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Govera";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Pindura";
@@ -905,7 +905,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Dzima Nhaurwa?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Vatariri chete vanogona kutumira tsamba kuboka rino.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Haugone kusarudza nhaurwa dzinopfuura %@.";
@@ -998,7 +998,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ achagona kushandura boka ne nhengo dzaro.";
 
 /* Label for 'member invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Invites";
+"CONVERSATION_SETTINGS_MEMBER_INVITES" = "Kukokwa";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Requests & Invites";
@@ -1459,6 +1459,9 @@
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Siya";
 
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Nzvimbo iri kunzvengwa kuvharirwa";
 
@@ -1748,10 +1751,10 @@
 "GET_STARTED_CARD_APPEARANCE" = "Mamiriro  ";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Wedzera Mufananidzo";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Koka shamwari";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Boka nyowani";
@@ -2318,7 +2321,7 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ group members have the same name.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "Zita re Boka(Rinodiwa)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "Zita re Boka";
@@ -2438,10 +2441,10 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ adzora masimba ehutariri kubva kuna %2$@.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Requests";
+"GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Zvikumbiro";
 
 /* Label for the 'pending invites' mode of the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Kukokwa";
 
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
@@ -2534,13 +2537,13 @@
 "GROUP_YOU_LEFT" = "Wabuda muboka.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "vatariri";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Taura ne Mutariri";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Sarudza mutariri mutsva weboka rino usati wabuda.";
@@ -2561,7 +2564,7 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Vharira %@";
 
 /* Label for 'invite friends to group' button. */
-"GROUPS_INVITE_FRIENDS_BUTTON" = "Invite friends";
+"GROUPS_INVITE_FRIENDS_BUTTON" = "Koka shamwari";
 
 /* Body text for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "Mapoka matsvaru mapoka asinga endererane ne zviri mu Boka Itsva sevatariri uye zviziso zveboka zvakadzama.";
@@ -3180,6 +3183,9 @@
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Message Details";
+
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Vhara";

@@ -1013,7 +1013,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Notifică întotdeauna";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Fără notificări dacă e pe mod silențios";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Fără notificări pe mod silențios";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Dorești să primești notificări atunci când ești menționat în convorbiri silențioase?";
@@ -1458,6 +1458,9 @@
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Revocare";
+
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Locație ocolire cenzură";
@@ -2327,7 +2330,7 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ a acceptat o invitație la grup.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a acceptat invitația ta la grup.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a acceptat invitația dvs. la grup.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ a acceptat o invitație la grup de la %2$@.";
@@ -2348,7 +2351,7 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "O persoană invitată de către %@ a refuzat invitația la grup.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a refuzat invitația ta la grup.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a refuzat invitația dvs. la grup.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ este acum administrator";
@@ -2528,7 +2531,7 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Nu ai putut fi adăugat la noul grup și ai fost invitat să te înscrii";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membri nu au putut fi adăugați la noul grup și au fost invitați să se alăture.";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Ați părăsit grupul.";
@@ -2582,10 +2585,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Grupuri vechi vs. grupuri noi";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Actualizează acest grup pentru a activa noi funcționalități cum ar fi @mențiuni și abilitatea de a administra grupul. Membrii care nu și-au partajat numele și poza de profil cu acest grup vor fi invitați să se alăture. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Actualizați acest grup pentru a activa noi funcționalități cum ar fi @mențiuni și abilitatea de a administra grupul. Membrii care nu și-au partajat numele și poza de profil cu acest grup vor fi invitați să se alăture. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Nu se poate actualiza la noile grupuri";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Nu se poate actualiza la noul grup";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Acest grup vechi nu poate fi actualizat la noile grupuri din cauza numărului mare de membri. Dimensiunea maximă a grupului este de %@. ";
@@ -3181,6 +3184,9 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Detalii mesaj";
 
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
+
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blochează";
 
@@ -3734,10 +3740,10 @@
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Comision de curățare monedă";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Cererea nu a putut fi anulată.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Cererea nu a putut fi refuzată.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Eșuat";
@@ -3755,7 +3761,7 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Fonduri insuficiente";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Confirmarea nu a putut fi trimisă destinatarului";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
@@ -3776,13 +3782,13 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Serviciul nu a putut fi contactat";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Nu aveți suficient MOB pentru a finaliza această plată.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Nu aveți suficient MOB pentru a finaliza această plată. Soldul dvs. curent este %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Tranzacție invalidă";
@@ -3791,7 +3797,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualizați Signal pentru a folosi plățile.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Plata nu a fost încă verificată";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Plata nu s-a putut finaliza. Verificați conexiunea și încercați din nou.";
@@ -3827,7 +3833,7 @@
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Cerere";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1 notificare nouă de plată";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
 "PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ v-a trimis %2$@";
@@ -3839,7 +3845,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Plată finalizată";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Neverificat";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Verificat";
@@ -3854,10 +3860,10 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Trimis";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Se pregătește";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Neverificat";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Verificat";
@@ -3869,7 +3875,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complet";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Neverificat";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Verificat";
@@ -3884,10 +3890,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Trimis";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Se pregătește";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Neverificat";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Verificat";
@@ -3896,13 +3902,13 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Eroare necunoscută";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Pentru a trimite o plată către acest utilizator, el trebuie să accepte o solicitare de mesaj din partea dvs.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Pentru a trimite o plată acestui utilizator, trebuie să accepte o solicitare de mesaj din partea dvs. Pentru a crea o solicitare de mesaj, trebuie să-i trimiteți un mesaj.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Pentru a trimite o plată către acest utilizator, el trebuie să accepte o solicitare de mesaj din partea dvs. Trimiteți-i un mesaj pentru a crea o solicitare.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Can’t send payment";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Nu puteți trimite plata";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Aceasta persoană nu a activat plățile.";
@@ -5081,10 +5087,10 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Șterge Contul";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Nu transfera";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Aveți un sold de %@. Dacă nu vă transferați fondurile către adresa unui alt portofel înainte de a vă șterge contul, acestea vor fi pierdute definitiv.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
@@ -5384,7 +5390,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Un \"comision de curațare monedă\" este perceput când monedele pe care le dețineți nu pot fi combinate pentru a finaliza o tranzacție. Curățarea vă permite să continuați efectuarea de plăți.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nu aveți suficient MOB pentru a finaliza această plată. Soldul dvs. curent este %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Fonduri insuficiente";
@@ -6041,10 +6047,10 @@
 "UNKNOWN_COUNTRY_NAME" = "Țară necunoscută";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Unul dintre dispozitivele tale a trimis un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Unul dintre dispozitivele dvs. a trimis un mesaj ce nu poate fi procesat sau afișat aici deoarece utilizează o nouă funcționalitate Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ ți-a trimis un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ v-a trimis un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Ați primit un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
@@ -6056,10 +6062,10 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Actualizat la ultima versiune de Signal. Acum puteți primi acest tip de mesaj pe dispozitiv.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Îl puteți ruga pe %@ să retrimită acest mesaj din moment ce folosiți acum o versiune actualizată de Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Îl puteți ruga pe %@ să retrimită acest mesaj acum că folosiți o versiune actualizată de Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Îl puteți ruga pe expeditor să retrimită acest mesaj din moment ce folosiți acum o versiune actualizată de Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Îl puteți ruga pe expeditor să retrimită acest mesaj acum că folosiți o versiune actualizată de Signal.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Necunoscut";

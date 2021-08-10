@@ -11,7 +11,7 @@
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "ಲಗತ್ತು";
 
 /* Accessibility label for audio. */
-"ACCESSIBILITY_LABEL_AUDIO" = "ಆಡಿಯೋ";
+"ACCESSIBILITY_LABEL_AUDIO" = "ಆಡಿಯೊ";
 
 /* Accessibility label for contact. */
 "ACCESSIBILITY_LABEL_CONTACT" = "ಸಂಪರ್ಕ";
@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "ಸ್ಟಿಕ್ಕರ್";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "ಧ್ವನಿ ಮೆಸೇಜ್";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "ಧ್ವನಿ ಸಂದೇಶ";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "%@ ಸೆಕೆಂಡುಗಳ ಧ್ವನಿ ಸಂದೇಶ";
@@ -50,10 +50,10 @@
 "ACTION_TAP_TO_DOWNLOAD" = "ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "ವೀಡಿಯೋ ಕರೆ";
+"ACTION_VIDEO_CALL" = "ವೀಡಿಯೊ ಕರೆ";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "ಸದಸ್ಯನನ್ನು ಸೇರಿಸಿ";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ";
 
 /* Label for the 'add group members' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ";
@@ -89,7 +89,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "“%1$@” ಅವರನ್ನು “%2$@” ಗೆ ಸೇರಿಸಬೇಕೇ?";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "ಹೊಸ ಸದಸ್ಯನನ್ನು ಸೇರಿಸಿ";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "ಹೊಸ ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "ಈಗಾಗಲೇ ಸದಸ್ಯರಾಗಿದ್ದಾರೆ";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ಅವರನ್ನು %@ ಗೆ ಸೇರಿಸಲಾಗಿದೆ";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "ಒಂದು ಗುಂಪಿಗೆ ಸೇರಿಸಿ";
+"ADD_TO_GROUP_TITLE" = "ಗುಂಪಿಗೆ ಸೇರಿಸಿ";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "ಈ ಬಳಕೆದಾರರೊಂದಿಗೆ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಹಂಚಿಕೊಳ್ಳಲು ನೀವು ಬಯಸುವಿರಾ?";
@@ -140,7 +140,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "ಈ ಗುಂಪಿನ ಯಾವುದೇ ಸದಸ್ಯರು ನಿಮ್ಮೊಂದಿಗಿಲ್ಲ. ಅನಗತ್ಯ ಸಂದೇಶಗಳನ್ನು ತಪ್ಪಿಸಲು ಕೋರಿಕೆಗಳನ್ನು ಸ್ವೀಕರಿಸುವ ಮುನ್ನ ಅವುಗಳನ್ನು ಗಮನವಿಟ್ಟು ಪರಿಶೀಲಿಸಿ.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "ಮೆಸೇಜ್ ಕೋರಿಕೆಗಳ ಬಗ್ಗೆ";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "ಸಂದೇಶ ವಿನಂತಿಗಳ ಬಗ್ಗೆ";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "ಉತ್ತರಿಸಿ";
@@ -275,7 +275,7 @@
 "ATTACHMENT_HINT" = "ಕಳುಹಿಸಲು ಮೀಡಿಯಾವನ್ನು ಆರಿಸಿ";
 
 /* A button to open the camera from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_CAMERA" = "ಕ್ಯಾಮೆರಾ";
+"ATTACHMENT_KEYBOARD_CAMERA" = "ಕ್ಯಾಮರಾ";
 
 /* A button to select a contact from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CONTACT" = "ಸಂಪರ್ಕ";
@@ -311,7 +311,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ಬೆಂಬಲಿಸದ ಫೈಲ್";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_AUDIO" = "ಆಡಿಯೋ";
+"ATTACHMENT_TYPE_AUDIO" = "ಆಡಿಯೊ";
 
 /* Short text label for a file attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_FILE" = "ಫೈಲ್";
@@ -332,7 +332,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ಧ್ವನಿ ಸಂದೇಶ";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ಆಡಿಯೋ ಸಂದೇಶ";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ಆಡಿಯೊ ಸಂದೇಶ";
 
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "ಆಡಿಯೊ ಕರೆ";
@@ -521,7 +521,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ ಕರೆ ಮಾಡಿದವರ ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆ ಬದಲಾಗಿರುವ ಕಾರಣ ತಪ್ಪಿದ ಕರೆ.";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "ಕರೆಗೆ ವಾಪಸಾಗಿ";
+"CALL_RETURN_BUTTON" = "ಕರೆಗೆ ಹಿಂತಿರುಗಿ";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "ಉತ್ತರವಿಲ್ಲ";
@@ -551,7 +551,7 @@
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "ಉತ್ತರಿಸಿ";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "ಆಡಿಯೋ";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "ಆಡಿಯೊ";
 
 /* label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "ನಿರಾಕರಿಸಿ";
@@ -578,7 +578,7 @@
 "CALLBACK_BUTTON_TITLE" = "ಹಿಂತಿರುಗಿ ಕರೆ ಮಾಡಿ";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "ನಿಮ್ಮ ಕ್ಯಾಮೆರಾ ಆಫ್ ಆಗಿದೆ";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಆಫ್ ಆಗಿದೆ";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal ಬಳಕೆದಾರ";
@@ -587,7 +587,7 @@
 "CAMERA_BUTTON_HINT" = "ಚಿತ್ರವನ್ನು ತೆಗೆಯಿರಿ ಮತ್ತು ನಂತರ ಕಳುಹಿಸಿ";
 
 /* Accessibility label for camera button. */
-"CAMERA_BUTTON_LABEL" = "ಕ್ಯಾಮೆರಾ";
+"CAMERA_BUTTON_LABEL" = "ಕ್ಯಾಮರಾ";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "ನೀವು ಈ ಬಳಕೆದಾರರೊಂದಿಗೆ ಸಂದೇಶಗಳನ್ನು ವಿನಿಮಯ ಮಾಡಿಕೊಳ್ಳುವವರೆಗೆ ಅವರನ್ನು ದೃಢೀಕರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.";
@@ -617,7 +617,7 @@
 "CHAT_COLOR_OUTGOING_MESSAGE_2" = "ಬಣ್ಣ ನಿಮಗೆ ಮಾತ್ರ ಕಾಣಿಸುತ್ತದೆ.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "ಸ್ವಯಂ";
+"CHAT_COLOR_SETTINGS_AUTO" = "ಸ್ವಯಂಚಾಲಿತ";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "1 ಚಾಟ್‌ನಲ್ಲಿ ಈ ಕಸ್ಟಮ್‌ ಬಣ್ಣವನ್ನು ಬಳಸಲಾಗಿದೆ. ಇದನ್ನು ನೀವು ಅಳಿಸ ಬಯಸುವಿರಾ?";
@@ -626,7 +626,7 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "ಈ ಕಸ್ಟಮ್‌ ಬಣ್ಣವನ್ನು %@ ಚಾಟ್‌ಗಳಲ್ಲಿ ಬಳಲಾಗಿದೆ. ಎಲ್ಲಾ ಚಾಟ್‌ಗಳಲ್ಲಿ ಇದನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "ಬಣ್ಣವನ್ನು ಅಳಿಸಿ";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "ಬಣ್ಣ ಅಳಿಸಿ";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "ಚಾಟ್ ಬಣ್ಣ";
@@ -842,10 +842,10 @@
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "ಪ್ರಶ್ನೆ";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "ಯಾವುದೋ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "ಯಾವುದೋ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "ಯಾವುದೋ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "ಯಾವುದೋ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "ನಿಮ್ಮ ಬೆಂಬಲ ವಿನಂತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು Signal ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.";
@@ -956,7 +956,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ಗುಂಪಿನ ಹೆಸರು, ಫೋಟೋ, ವಿವರಣೆ ಮತ್ತು ಸಂದೇಶಗಳ ಕಣ್ಮರೆಯಾಗುವಿಕೆಯ ಸಮಯವನ್ನು ಯಾರು ಎಡಿಟ್ ಮಾಡಬಹುದು ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ಆಡಿಯೋ";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ಆಡಿಯೊ";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "ನೀವು ಇನ್ನು ಮುಂದೆ ಈ ಬಳಕೆದಾರರಿಂದ ಸಂದೇಶಗಳು ಅಥವಾ ನವೀಕರಣಗಳನ್ನು ಸ್ವೀಕರಿಸುವುದಿಲ್ಲ.";
@@ -1010,7 +1010,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ ಸದಸ್ಯರು";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "ಯಾವಾಗಲೂ ಸೂಚಿಸು";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "ಯಾವಾಗಲೂ ಸೂಚನೆ ನೀಡಿ";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "ಮ್ಯೂಟ್ ಆಗಿದ್ದರೆ ಸೂಚಿಸಬೇಡಿ";
@@ -1070,7 +1070,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ ವರೆಗೂ ಮ್ಯೂಟ್‌ ಮಾಡಲಾಗಿದೆ";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "ನೀವಿಬ್ಬರೂ %@ ಗುಂಪುಗಳಲ್ಲಿ ಇರುವಿರಿ";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ ಗುಂಪುಗಳಲ್ಲಿ ನೀವಿಬ್ಬರೂ ಇರುವಿರಿ";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "ಹೊಸ ಸಂಪರ್ಕವನ್ನು ರಚಿಸಿ";
@@ -1112,7 +1112,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "ಆಡ್ಮಿನ್‌‌ಗಳು ಮಾತ್ರ";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ಗುಂಪು ಅನ್‌ಬ್ಲಾಕ್ ಮಾಡಿ";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "ಗುಂಪನ್ನು ಅನ್‌ಬ್ಲಾಕ್ ಮಾಡಿ";
 
 /* Label for 'unblock user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "ಬಳಕೆದಾರನನ್ನು ಅನ್‌ಬ್ಲಾಕ್ ಮಾಡಿ";
@@ -1409,7 +1409,7 @@
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ವೃತ್ತದೊಳಗೆ ಇರಿಸಿ";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ವೃತ್ತದೊಳಗೆ ಇರಿಸಿ";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_TITLE" = "ನಿಮ್ಮ ಹೊಸ ಸಾಧನವನ್ನು ಎತ್ತರಕ್ಕೆ ಕ್ಯಾಮರಾಕ್ಕೆ ಹಿಡಿಯಿರಿ";
@@ -1418,7 +1418,7 @@
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "ಎರಡೂ ಸಾಧನಗಳನ್ನು ಪರಸ್ಪರ ಹತ್ತಿರ ಇರಿಸಿ. ಯಾವುದೇ ಒಂದು ಸಾಧನವನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ ಮತ್ತು Signal ಅನ್ನು ತೆರೆದೇ ಇರಿಸಿ. ";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "ಡೇಟಾ ವರ್ಗಾಯಿಸುತ್ತಿದೆ";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "ಡೇಟಾ ವರ್ಗಾವಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "ಕಣ್ಮರೆಯಾಗುತ್ತಿದೆ ಸಂದೇಶಗಳು";
@@ -1459,6 +1459,9 @@
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "ವಜಾಗೊಳಿಸಿ";
 
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ಸೆನ್ಸಾರ್‌‌ಶಿಪ್ ಸರ್ಕಮ್ವೆನ್ಶನ್ ಸ್ಥಳ";
 
@@ -1472,7 +1475,7 @@
 "DONATION_MEGAPHONE_CANCEL" = "ಇಲ್ಲ, ಧನ್ಯವಾದಗಳು";
 
 /* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Signalಗೆ ದಾನ ಮಾಡಿ";
+"DONATION_MEGAPHONE_TITLE" = "Signal ಗೆ ದಾನ ಮಾಡಿ";
 
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "ಕೊಡುಗೆಯ ಮೊತ್ತ";
@@ -1715,7 +1718,7 @@
 "FAILED_VERIFICATION_TITLE" = "ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆಯನ್ನು ದೃಢೀಕರಿಸುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "ದೃಢೀಕರಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "ಪರಿಶೀಲಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ";
 
 /* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "ಸೆಷನ್ ರೀಸೆಟ್ ಮಾಡಿ";
@@ -1979,7 +1982,7 @@
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ಗ್ರೂಪ್ ವಿವರಗಳು ಈ ಗ್ರೂಪ್‌ನ ಸದಸ್ಯರಿಗೆ ಮತ್ತು ಆಹ್ವಾನಿಸಿದ ಜನರಿಗೆ ಮಾತ್ರ ಕಾಣಿಸುತ್ತವೆ.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "ಗುಂಪು ವಿವರಣೆ";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "ಗುಂಪಿನ ವಿವರಣೆ";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "ಗುಂಪು ವಿವರಣೆ (%@)";
@@ -2111,7 +2114,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ಈ ಗುಂಪಿನ ಲಿಂಕ್ ಇನ್ನು ಮುಂದೆ ಮಾನ್ಯವಾಗಿರುವುದಿಲ್ಲ.";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "ಗುಂಪನ್ನು ಸೇರಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "ಗುಂಪನ್ನು ಸೇರಲು ಸಾಧ್ಯವಿಲ್ಲ";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "ಗುಂಪು";
@@ -2150,7 +2153,7 @@
 "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "ಲಿಂಕ್‌ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "ಲಿಂಕ್‌ ಹಂಚಿ";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ";
 
 /* Subtitle for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "ಸ್ನೇಹಿತರು ಈ ಗುಂಪಿಗೆ ತ್ವರಿತವಾಗಿ ಸೇರಿಕೊಳ್ಳಲು ಈ ಲಿಂಕ್‌ ಅನ್ನು ಅವರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ.";
@@ -2168,7 +2171,7 @@
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "ಕೋಡ್ ಹಂಚಿಕೊಳ್ಳಿ";
 
 /* The title for the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_TITLE" = "ಕ್ಯೂಆರ್‌ ಕೋಡ್";
+"GROUP_LINK_QR_CODE_VIEW_TITLE" = "ಕ್ಯುಆರ್‌ ಕೋಡ್";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
 "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "ಹೊಸ ಸದಸ್ಯರನ್ನು ಅನುಮೋದಿಸಿ";
@@ -2183,7 +2186,7 @@
 "GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ಗುಂಪಿನ ಲಿಂಕ್ ಮೂಲಕ ಹೊಸ ಸದಸ್ಯರು ಸೇರುವುದನ್ನು ಅನುಮೋದಿಸಲು ಅಡ್ಮಿನ್ ಅಗತ್ಯವಿರುತ್ತದೆ.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "ಲಿಂಕ್ ಅನ್ನು ಮರುಹೊಂದಿಸು";
+"GROUP_LINK_VIEW_RESET_LINK" = "ರೀಸೆಟ್ ಲಿಂಕ್";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "ನೀವು ಖಚಿತವಾಗಿ ಗುಂಪಿನ ಲಿಂಕ್ ಅನ್ನು ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತೀರಾ? ಪ್ರಸ್ತುತ ಲಿಂಕ್ ಅನ್ನು ಬಳಸಿ ಇನ್ನು ಮುಂದೆ ಗುಂಪನ್ನು ಸೇರಲು ಜನರಿಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.";
@@ -2195,7 +2198,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "ಹಂಚಿಕೊಳ್ಳಿ ";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "ಕ್ಯೂಆರ್‌ ಕೋಡ್";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "ಕ್ಯುಆರ್‌ ಕೋಡ್";
 
 /* Label for the 'share group link via Signal' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Signal ನಿಂದ ಹಂಚಿಕೊಳ್ಳಿ";
@@ -2513,7 +2516,7 @@
 "GROUP_WAS_MIGRATED" = "ಈ ಗುಂಪನ್ನು ಹೊಸ ಗುಂಪಿಗೆ ಅಪ್‌‌ಗ್ರೇಡ್ ಮಾಡಲಾಗಿದೆ.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "1 ಸದಸ್ಯರನ್ನು ಹೊಸ ಗುಂಪಿಗೆ ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "ಒಬ್ಬ ಸದಸ್ಯರನ್ನು ಹೊಸ ಗುಂಪಿಗೆ ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "ನಿಮ್ಮನ್ನು ಹೊಸ ಗುಂಪಿಗೆ ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ.";
@@ -2603,7 +2606,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "ಈ ಗುಂಪನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ, ಏಕೆಂದರೆ %@ರ ಸದಸ್ಯರು Signal ನ ಹಳೆಯ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದಾರೆ. ಅವರು Signal ಅನ್ನು ನವೀಕರಣ ಮಾಡಿದ ಬಳಿಕ ಹೊಸ ಶೈಲಿಯ ಗುಂಪನ್ನು ನೀವು ರಚಿಸಬಹುದು, ಅಥವಾ ಗುಂಪನ್ನು ರಚಿಸುವ ಮುನ್ನ ಅವರನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "ಈ ಗುಂಪನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ, ಏಕೆಂದರೆ ಒಬ್ಬ ಸದಸ್ಯರು Signal ನ ಹಳೆ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದಾರೆ. ಅವರು Signal ಅನ್ನು ನವೀಕರಣ ಮಾಡಿದ ಬಳಿಕ ಹೊಸ ಶೈಲಿಯ ಗುಂಪನ್ನುನೀವು ರಚಿಸಬಹುದು, ಅಥವಾ ಗುಂಪು ರಚಿಸುವ ಮುನ್ನ ಅವರನ್ನು ತೆಗೆದುಹಾಕಬಹುದು. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "ಈ ಗುಂಪನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ, ಏಕೆಂದರೆ 1 ಸದಸ್ಯರು Signal ನ ಹಳೆ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದಾರೆ. ಅವರು Signal ಅನ್ನು ನವೀಕರಣ ಮಾಡಿದ ಬಳಿಕ ಹೊಸ ಶೈಲಿಯ ಗುಂಪನ್ನುನೀವು ರಚಿಸಬಹುದು, ಅಥವಾ ಗುಂಪು ರಚಿಸುವ ಮುನ್ನ ಅವರನ್ನು ತೆಗೆದುಹಾಕಬಹುದು. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "ಈ ಗುಂಪನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ, ಏಕೆಂದರೆ %1$@ ರ ಸದಸ್ಯರು Signal ನ ಹಳೆಯ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದಾರೆ. ಅವರು Signal ಅನ್ನು ನವೀಕರಣ ಮಾಡಿದ ಬಳಿಕ ಹೊಸ ಶೈಲಿಯ ಗುಂಪನ್ನು ನೀವು ರಚಿಸಬಹುದು, ಅಥವಾ ಗುಂಪನ್ನು ರಚಿಸುವ ಮುನ್ನ ಅವರನ್ನು ತೆಗೆದುಹಾಕಬಹುದು. %2$@";
@@ -2696,7 +2699,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "ಈ ಸದಸ್ಯರು ಮತ್ತೊಮ್ಮೆ ಈ ಗುಂಪಿಗೆ ಸೇರಲು ಆಹ್ವಾನವನ್ನು ಸ್ವೀಕರಿಸುವ ಅಗತ್ಯವಿದೆ ಮತ್ತು ಅವರು ಸ್ವೀಕರಿಸುವವರೆಗೆ ಗುಂಪಿನ ಸಂದೇಶಗಳನ್ನು ಸ್ವೀಕರಿಸುವುದಿಲ್ಲ:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "ಈ ಸದಸ್ಯರು ಹೊಸ ಗುಂಪುಗಳನ್ನು ಸೇರಲು ಅರ್ಹರಾಗಿಲ್ಲ, ಆದ್ದರಿಂದ ಗುಂಪಿನಿಂದ ಅವರನ್ನು ತೆಗೆದುಹಾಕಲಾಗುವುದು:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "ಈ ಸದಸ್ಯರು ಹೊಸ ಗುಂಪುಗಳಿಗೆ ಸೇರಲು ಅರ್ಹರಾಗಿಲ್ಲ, ಆದ್ದರಿಂದ ಗುಂಪಿನಿಂದ ಅವರನ್ನು ತೆಗೆದುಹಾಕಲಾಗುವುದು:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "ಈ ಸದಸ್ಯರು ಹೊಸ ಗುಂಪುಗಳನ್ನು ಸೇರಲು ಅರ್ಹರಿಲ್ಲ . ಆದ್ದರಿಂದ ಈ ಗುಂಪಿನಿಂದ ಅವರನ್ನು ತೆಗೆಯಲಾಗುವುದು ";
@@ -2705,7 +2708,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "ಹೊಸ ಗುಂಪಿಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "ಈ ಗುಂಪನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡು";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "ಈ ಗುಂಪನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ";
 
 /* Message for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "ಈ ಗುಂಪನ್ನು ಈಗಲೇ ಹೊಸ ಗುಂಪಿಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.";
@@ -2834,7 +2837,7 @@
 "IN_CALL_RINGING" = "ರಿಂಗ್ ಆಗುತ್ತಿದೆ…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "ಆಡಿಯೊ ಕರೆ";
+"IN_CALL_RINGING_AUDIO" = "ಆಡಿಯೊ ಕರೆ...";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "ವೀಡಿಯೊ ಕರೆ...";
@@ -2948,7 +2951,7 @@
 "LEAVE_GROUP_FAILED" = "ಗುಂಪನ್ನು ತೊರೆಯುವಾಗ ದೋಷ ಸಂಭವಿಸಿದೆ.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "ಈ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಮಾನ್ಯವಾಗಿಲ್ಲ. ನೀವು ಲಿಂಕ್ ಮಾಡಲು ಬಯಸುವ ಸಾಧನದಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ನೀವು ಸ್ಕ್ಯಾನ್ ಮಾಡುತ್ತಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "ಈ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಮಾನ್ಯವಾಗಿಲ್ಲ. ನೀವು ಲಿಂಕ್ ಮಾಡಲು ಬಯಸುವ ಸಾಧನದಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ನೀವು ಸ್ಕ್ಯಾನ್ ಮಾಡುತ್ತಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡುವುದು ವಿಫಲವಾಗಿದೆ";
@@ -2963,10 +2966,10 @@
 "LINK_DEVICE_RESTART" = "ಮರುಪ್ರಯತ್ನಿಸಿ";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "ನೀವು ಲಿಂಕ್ ಮಾಡಲು ಬಯಸುವ ಸಾಧನದಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ನೀವು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "ನೀವು ಲಿಂಕ್ ಮಾಡಲು ಬಯಸುವ ಸಾಧನದಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ನೀವು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "ಹೊಸ ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡಲು QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.";
+"LINK_NEW_DEVICE_SUBTITLE" = "ಹೊಸ ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡಲು ಕ್ಯುಆರ್‌ ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ಹೊಸ ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡಿ";
@@ -3059,7 +3062,7 @@
 "MESSAGE_ACTION_COPY_TEXT" = "ಸಂದೇಶ ಪಠ್ಯವನ್ನು ನಕಲಿಸಿ";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "ಪ್ರತಿಯೊಬ್ಬರಿಗಾಗಿ ಅಳಿಸಿ";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "ಎಲ್ಲರಿಗೂ ಅಳಿಸು";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ಅವರು Signal ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿದ್ದರೆ ಚಾಟ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರಿಗೂ ಈ ಸಂದೇಶವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ನೀವು ಸಂದೇಶವನ್ನು ಅಳಿಸಿದ್ದೀರಿ ಎಂಬುದನ್ನು ಅವರು ನೋಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
@@ -3143,7 +3146,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME ವಿಧ";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "ಅವರಿಗೆ ತಲುಪಿಸಲಾಗಿದೆ";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "ಇವರಿಗೆ ತಲುಪಿಸಲಾಗಿದೆ";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "ವಿಫಲವಾಗಿದೆ";
@@ -3152,7 +3155,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "ಕಳುಹಿಸುವುದನ್ನು ಪಾಸ್‌ ಮಾಡಲಾಗಿದೆ";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "ಅವರು ಓದಿದ್ದಾರೆ";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "ಇವರು ಓದಿದ್ದಾರೆ";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "ಅವರಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ";
@@ -3181,6 +3184,9 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "ಸಂದೇಶದ ವಿವರಗಳು";
 
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
+
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ನಿರ್ಬಂಧಿಸಿ";
 
@@ -3188,7 +3194,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ನಿರ್ಬಂಧಿಸಿ ಮತ್ತು ಅಳಿಸಿ";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "ಸ್ಪ್ಯಾಮ್‌ ಎಂದು ರಿಪೋರ್ಟ್‌ ಮಾಡಿ ಮತ್ತು ಬ್ಲಾಕ್‌ ಮಾಡಿ";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "ಸ್ಪ್ಯಾಮ್ ವರದಿ ಮಾಡಿ ಮತ್ತು ಬ್ಲಾಕ್ ಮಾಡಿ";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "ನಿರ್ಬಂಧಿತ ಜನರು ನಿಮಗೆ ಕರೆ ಮಾಡಲು ಅಥವಾ ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.";
@@ -3233,13 +3239,13 @@
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "ಕೋರಿಕೆ";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "ಕೋರಿಕೆಯನ್ನು ಪರಿಶೀಲಿಸಿ";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "ವಿನಂತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ";
 
 /* A button that updates a known contact's information to resolve a name collision */
-"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "ನವೀಕರಿಸಿ ಸಂಪರ್ಕ";
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "ಸಂಪರ್ಕ ನವೀಕರಿಸಿ";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "ಕೋರಿಕೆಯನ್ನು ಪರಿಶೀಲಿಸಿ";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "ವಿನಂತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "ಸ್ಪ್ಯಾಮ್ ಎಂದು ವರದಿ ಮಾಡಲಾಗಿದೆ ಮತ್ತು ಬ್ಲಾಕ್ ಮಾಡಲಾಗಿದೆ.";
@@ -3464,7 +3470,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ಫೋನ್ ಸಂಖ್ಯೆಯ ಮೂಲಕ ಸಂಪರ್ಕಗಳನ್ನು ಹುಡುಕಿ";
 
 /* A string describing that the user has no groups in common with another user */
-"NO_GROUPS_IN_COMMON" = "ನೀವಿಬ್ಬರೂ ಯಾವುದೇ ಗ್ರೂಪ್‌ಗಳಲ್ಲಿಲ್ಲ";
+"NO_GROUPS_IN_COMMON" = "ನೀವಿಬ್ಬರೂ ಒಂದೇ ಗುಂಪುಗಳಲ್ಲಿಲ್ಲ";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "ಬೇರೆ ಯಾವುದೇ ಗುಂಪುಗಳು ಸಾಮಾನ್ಯವಾಗಿಲ್ಲ.";
@@ -3491,7 +3497,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "ಹೊಸ ಸಂದೇಶಗಳಿಗಾಗಿ ನೋಟಿಫಿಕೇಷನ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲು:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "ಕೆಳಗಿನ “ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ” ಕ್ಲಿಕ್ ಮಾಡಿ";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "ಕೆಳಗಿನ “ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ” ಟ್ಯಾಪ್ ಮಾಡಿ";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "“ನೋಟಿಫಿಕೇಷನ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ” ಆನ್ ಮಾಡಿ";
@@ -3620,13 +3626,13 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "ನಿಮ್ಮ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ನಿಮ್ಮನ್ನು ಯಾರು ಹುಡುಕಬಹುದು?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "ನಿಮ್ಮಫೋನ್‌ ಸಂಖ್ಯೆ";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "ನಿಮ್ಮ ಫೋನ್‌ ಸಂಖ್ಯೆ";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸುವ ಮುನ್ನ ಕೆಲವು ನಿಮಿಷ ಕಾಯಿರಿ. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "ನಿಮ್ಮ ಫೋನ್‌ ನಂಬರ್ ನಮೂ";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "ನಿಮ್ಮ ಫೋನ್‌ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "ನಿಮ್ಮ ಫೋನ್‌ ಸಂಖ್ಯೆ";
@@ -3638,7 +3644,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "ನೀವು ಪಿನ್ ಊಹೆಗಳನ್ನು ಮಿತಿಯನ್ನು ಮೀರಿದ್ದೀರಿ, ಆದರೆ ಹೊಸ ಪಿನ್ ರಚಿಸುವ ಮೂಲಕ ನಿಮ್ಮ Signal ಖಾತೆಯನ್ನು ನೀವು ಇನ್ನೂ ಪ್ರವೇಶಿಸಬಹುದು. ನಿಮ್ಮ ಖಾಸಗಿತನ ಮತ್ತು ಸುರಕ್ಷತೆಗಾಗಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಯಾವುದೇ ಉಳಿಸಿದ ಪ್ರೊಫೈಲ್ ಮಾಹಿತಿ ಅಥವಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಲ್ಲದೆ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "ಪಿನ್‌ಗಳ ಬಗ್ಗೆ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ. ";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "ಪಿನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ. ";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "ನಿಮ್ಮ ಖಾಸಗಿತನ ಮತ್ತು ನಿಮ್ಮ ಖಾತೆಯ ಸುರಕ್ಷತೆಯನ್ನು ರಕ್ಷಿಸಲು, ನಾವು ಅದನ್ನು 7 ದಿನಗಳವರೆಗೆ ಲಾಕ್ ಮಾಡಿದ್ದೇವೆ..\n\n7 ದಿನಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ, ನಿಮ್ಮ ಪಿನ್ ಅಗತ್ಯವಿಲ್ಲದೇ ಈ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಮರು ನೋಂದಾಯಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ. ಎಲ್ಲಾ ವಿಷಯವನ್ನು ಅಳಿಸಿಹಾಕಲಾಗುತ್ತದೆ.";
@@ -3752,7 +3758,7 @@
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "ವಿಫಲವಾಗಿದೆ";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "ಬ್ಯಾಲೆನ್ಸ್‌ ಸಾಕಾಗುವಷ್ಟಿಲ್ಲ";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "ಸಾಕಷ್ಟು ಹಣವಿಲ್ಲ";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
 "PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "ಸ್ವೀಕೃತಿಯನ್ನು ಸ್ವೀಕೃತಿದಾರರಿಗೆ ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ";
@@ -3914,10 +3920,10 @@
 "PAYMENTS_TRANSFER_OUT_PAYMENT" = "ಹೊರಕ್ಕೆ ವರ್ಗಾಯಿಸಿ";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "ಪೇಮೆಂಟ್‌ ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "ಪೇಮೆಂಟ್ ಸ್ವೀಕರಿಸಲಾಗಿದೆ";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "ಕಳುಹಿಸಲಾದ ಪೇಮೆಂಟ್‌";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "ಪೇಮೆಂಟ್ ಕಳುಹಿಸಲಾಗಿದೆ";
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "ಅಮಾನ್ಯವಾದ ಪೇಮೆಂಟ್‌";
@@ -3929,7 +3935,7 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "“%@” ಅವರನ್ನು ಗುಂಪಿಗೆ ಸೇರಿಸುವುದೇ?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "ವಿನಂತಿಯನ್ನು ನಿರಾಕರಿಸು";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "ವಿನಂತಿಯನ್ನು ನಿರಾಕರಿಸಿ";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "“%@” ಅವರ ವಿನಂತಿಯನ್ನು ನಿರಾಕರಿಸುವುದೇ?";
@@ -3965,7 +3971,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "%@ ಅಮಾನ್ಯವಾದ ಆಹ್ವಾನಗಳನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ ";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "ಆಹ್ವಾನ ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "ಆಹ್ವಾನವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" ರಿಂದ ಕಳುಹಿಸಿದ ಗುಂಪು ಆಹ್ವಾನಗಳನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವುದೇ?";
@@ -3989,7 +3995,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "ಅಮಾನ್ಯವಾದ ಆಹ್ವಾನಗಳು";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "ಗುಂಪಿನ ಇತರ ಸದಸ್ಯರು ಆಹ್ವಾನಿಸಿದ ಜನರು";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "ಇತರರು ಆಹ್ವಾನಿಸಿದ ಜನರು";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "ನೀವು ಆಹ್ವಾನಿಸಿದ ಜನರು";
@@ -3998,16 +4004,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "ಒಳಬರುವ ಸಂದೇಶವನ್ನು ನಿರ್ವಹಿಸುವಲ್ಲಿ ದೋಷ";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "ನೋಟ-ಒಂದು ಮಾಧ್ಯಮ";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "ಏಕ ವೀಕ್ಷಣೆ ಮೀಡಿಯಾ";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "ಮಾಧ್ಯಮ";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "ನೋಟ-ಒಂದು ಫೋಟೋ";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "ಏಕ ವೀಕ್ಷಣೆ ಫೋಟೋ";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "ನೋಟ-ಒಂದು ವೀಡಿಯೊ";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "ಏಕ ವೀಕ್ಷಣೆ ವೀಡಿಯೊ";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "ಫೋಟೋ ವೀಕ್ಷಿಸಿ";
@@ -4241,7 +4247,7 @@
 "PINS_MEGAPHONE_TOAST" = "ಪಿನ್ ರಚಿಸಲಾಗಿದೆ. ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "ಪಿನ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "ಪಿನ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "ಮೀಡಿಯಾ ಪ್ಲೇ ಮಾಡಿ";
@@ -4289,7 +4295,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆ ದೃಢೀಕರಿಸಿ";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "ದೃಢೀಕರಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ";
+"PRIVACY_VERIFY_BUTTON" = "ಪರಿಶೀಲಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "ಮುಂದುವರಿಯಿರಿ";
@@ -4403,7 +4409,7 @@
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "ಲಗತ್ತು";
 
 /* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "ಆಡಿಯೋ";
+"QUOTED_REPLY_TYPE_AUDIO" = "ಆಡಿಯೊ";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
@@ -4424,7 +4430,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = " ನಿಮ್ಮ ಆಲ್ಬಂಗೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = " ನಿಮ್ಮ ಆಡಿಯೋಗೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = " ನಿಮ್ಮ ಆಡಿಯೊಗೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = " ನಿಮ್ಮ ಸಂಪರ್ಕ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಗೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
@@ -4445,7 +4451,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "ಇದಕ್ಕೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = " ನಿಮ್ಮ ವೀಡಿಯೋಗೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = " ನಿಮ್ಮ ವೀಡಿಯೊಗೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "ನಿಮ್ಮ ವ್ಯೂ-ಒನ್ಸ್ ಮೀಡಿಯಾಕ್ಕೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
@@ -4616,10 +4622,10 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ಯಾವುದೇ ರೀತಿಯಲ್ಲಿ ಗುಂಪಿಗೆ ಸೇರಿಸಿ";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "ಯಾವುದೇ ರೀತಿಯಲ್ಲಿ ಕರೆ ಮಾಡಿ";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "ಹೇಗಾದರೂ ಕರೆ ಮಾಡಿ";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "ಯಾವುದೇ ರೀತಿಯಲ್ಲಿ ಕಳುಹಿಸಿ";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "ಹೇಗಾದರೂ ಕಳುಹಿಸಿ";
 
 /* Message for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "ಈ ಕೆಳಗಿನ ಜನರು ಸಾಧನಗಳನ್ನು ಪುನಃ ಇನ್‌‌ಸ್ಟಾಲ್ ಮಾಡಿರಬಹುದು ಅಥವಾ ಬದಲಾಯಿಸಿರಬಹುದು. ಗೌಪ್ಯತೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ಅವರೊಂದಿಗೆ ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆಯನ್ನು ದೃಢೀಕರಿಸಿ.";
@@ -4640,10 +4646,10 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ನೊಂದಿಗೆ ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆ ಬದಲಾಗಿದೆ. ನೀವು ಅದನ್ನು ದೃಢೀಕರಿಸಲು ಬಯಸಬಹುದು.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "ನಿಮ್ಮ ಸಂಪರ್ಕದ ಸಾಧನದಲ್ಲಿ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.";
+"SCAN_CODE_INSTRUCTIONS" = "ನಿಮ್ಮ ಸಂಪರ್ಕದ ಸಾಧನದಲ್ಲಿ ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
+"SCAN_QR_CODE_VIEW_TITLE" = "ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "ಇನ್‌ಸ್ಟಂಟ್";
@@ -4889,7 +4895,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "ನಿಮ್ಮ ಐಪ್ಯಾಡ್ ಅನ್ನು ಲಿಂಕ್ ಮಾಡಲು ಸಹಾಯ ಪಡೆಯಿರಿ";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
 
 /* header text before the user can transfer to this device */
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "ನಿಮ್ಮ ಖಾತೆಯನ್ನು ವರ್ಗಾಯಿಸಲು ನಿಮ್ಮ ಹಳೆಯ ಐಪ್ಯಾಡ್‌ನಲ್ಲಿ Signal ಅನ್ನು ಆರಂಭಿಸಿ";
@@ -4898,7 +4904,7 @@
 "SECURE_SESSION_RESET" = "ಸುರಕ್ಷಿತ ಅವಧಿ ಮರುಹೊಂದಿಸಲಾಗಿದೆ.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "ಎಲ್ಲವನ್ನೂ ನೋಡಿ";
+"SEE_ALL_BUTTON" = "ಎಲ್ಲವನ್ನು ನೋಡಿ";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "ಪುನಃ ಕಳುಹಿಸಿ";
@@ -4991,7 +4997,7 @@
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "ಪಿನ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN ಸಕ್ರಿಯಗೊಳಿಸು";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "PIN ಸಕ್ರಿಯಗೊಳಿಸಿ";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ಡೀಬಗ್ ಲಾಗ್ ಗ‌‌‌ಳನ್ನು ಸಲ್ಲಿಸಿ";
@@ -5108,7 +5114,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "ನೀವು ಆರಂಭಿಸಿದ ಎಲ್ಲ ಹೊಸ ಚಾಟ್‌ಗಳಿಗೆ ಡೀಫಾಲ್ಟ್ ಕಣ್ಮರೆಯಾಗುವ ಮೆಸೇಜ್ ಟೈಮರ್ ಅನ್ನು ನಿಗದಿಸಿ.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Signalಗೆ ದಾನ ಮಾಡಿ";
+"SETTINGS_DONATE" = "Signal ಗೆ ದಾನ ಮಾಡಿ";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "ಸಹಾಯ";
@@ -5144,7 +5150,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "ವೈಫೈ";
 
 /* Label for the 'audio' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "ಆಡಿಯೋ";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "ಆಡಿಯೊ";
 
 /* Label for the 'document' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "ದಾಖಲೆಗಳು";
@@ -5177,7 +5183,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "ಅಧಿಸೂಚನೆ ವಿಷಯ";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "ಸಂಪರ್ಕ Signal ಗೆ ಸೇರಿದ್ದಾರೆ";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "ಸಂಪರ್ಕದವರು Signal ಗೆ ಸೇರಿದ್ದಾರೆ";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "ಈ ಸಮಯದಲ್ಲಿ ನನಗೆ ತಿಳಿಸಿ...";
@@ -5195,13 +5201,13 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ಸಕ್ರಿಯಗೊಳಿಸಿ";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "ಮೊಬೈಲ್‌ಕಾಯಿನ್‌ ನಿಯಮಗಳನ್ನು ವೀಕ್ಷಿಸಿ";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin ನಿಯಮಗಳನ್ನು ವೀಕ್ಷಿಸಿ";
 
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "ಫಂಡ್‌ಗಳನ್ನು ಸೇರಿಸಿ";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ಫಂಡ್‌ಗಳನ್ನು ಸೇರಿಸಲು, ನಿಮ್ಮ ವಾಲೆಟ್ ವಿಳಾಸಕ್ಕೆ ಮೊಬೈಲ್‌ಕಾಯಿನ್‌ ಕಳುಹಿಸಿ. ಮೊಬೈಲ್‌ಕಾಯಿನ್ ಬೆಂಬಲಿಸುವ ವಿನಿಮಯದಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಯಿಂದ ವಹಿವಾಟನ್ನು ಆರಂಭಿಸಿ, ನಂತರ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಅಥವಾ ನಿಮ್ಮ ವಾಲೆಟ್ ವಿಳಾಸವನ್ನು ನಕಲು ಮಾಡಿ.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ಫಂಡ್‌ಗಳನ್ನು ಸೇರಿಸಲು, ನಿಮ್ಮ ವಾಲೆಟ್ ವಿಳಾಸಕ್ಕೆ ಮೊಬೈಲ್‌ಕಾಯಿನ್‌ ಕಳುಹಿಸಿ. ಮೊಬೈಲ್‌ಕಾಯಿನ್ ಬೆಂಬಲಿಸುವ ವಿನಿಮಯದಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಯಿಂದ ವಹಿವಾಟನ್ನು ಆರಂಭಿಸಿ, ನಂತರ ಕ್ಯುಆರ್‌ ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಅಥವಾ ನಿಮ್ಮ ವಾಲೆಟ್ ವಿಳಾಸವನ್ನು ನಕಲು ಮಾಡಿ.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "ವ್ಯಾಲೆಟ್‌ ವಿಳಾಸವನ್ನು ನಕಲಿಸಲಾಗಿದೆ";
@@ -5243,10 +5249,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "ಪೇಮೆಂಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "ನೀವು ಪೇಮೆಂಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದರೆ Signal ನಲ್ಲಿ ಮೊಬೈಲ್‌ಕಾಯಿನ್‌ ಅನ್ನು ಕಳುಹಿಸಲು ಅಥವಾ ಸ್ವೀಕರಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುದಿಲ್ಲ.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "ನೀವು ಪೇಮೆಂಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದರೆ Signal ನಲ್ಲಿ Mobilecoin ಅನ್ನು ಕಳುಹಿಸಲು ಅಥವಾ ಸ್ವೀಕರಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುದಿಲ್ಲ.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ಪೇಮೆಂಟ್ಸ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದೇ?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ಪೇಮೆಂಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದೇ?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "ಪೇಮೆಂಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು";
@@ -5261,7 +5267,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "ವರ್ಗಾವಣೆ ಮಾಡದೇ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದೇ?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "ವರ್ಗಾಯಿಸದೇ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "ವರ್ಗಾಯಿಸದೆ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
 "SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "ಪೇಮೆಂಟ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ";
@@ -5285,7 +5291,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "ಫಂಡ್‌ಗಳನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "ಮೊಬೈಲ್‌ಕಾಯಿನ್ ಬೆಂಬಲಿಸುವ ವಿನಿಮಯದಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ನೀವು ಮೊಬೈಲ್‌ಕಾಯಿನ್ ಅನ್ನು ನಗದು ಮಾಡಿಕೊಳ್ಳಬಹುದು. ಆ ವಿನಿಮಯದಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಗೆ ಕೇವಲ ವರ್ಗಾವಣೆ ಮಾಡಿಕೊಳ್ಳಿ";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "MobileCoin ಬೆಂಬಲಿಸುವ ವಿನಿಮಯದಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ನೀವು MobileCoin ಅನ್ನು ನಗದು ಮಾಡಿಕೊಳ್ಳಬಹುದು. ಆ ವಿನಿಮಯದಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಗೆ ಕೇವಲ ವರ್ಗಾವಣೆ ಮಾಡಿಕೊಳ್ಳಿ.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "ನಗದು ಮಾಡಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ";
@@ -5306,7 +5312,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "ನಿಮ್ಮ ಪೇಮೆಂಟ್‌ಗಳ ಖಾತೆಯನ್ನು ರಿಸ್ಟೋರ್ ಮಾಡಲು ನಿಮ್ಮ ರಿಕವರಿ ಪದಗುಚ್ಛವು ಇನ್ನೊಂದು ವಿಧಾನವಾಗಿರುತ್ತದೆ.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "ಪ್ರತಿ ಹಂತವನ್ನು ರೆಕಾರ್ಡ್‌ ಮಾಡಿ";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ರೆಕಾರ್ಡ್‌ ಮಾಡಿ";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "ಅಮಾನ್ಯವಾದ ವ್ಯಾಲೆಟ್‌ ವಿಳಾಸ";
@@ -5339,7 +5345,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಮರುಸಕ್ರಿಯಗೊಳಿಸಿ";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "ಪೇಮೆಂಟ್‌ಗಳನ್ನು ಪರಿಚಯಿಸಲಾಗುತ್ತಿದೆ (ಬೀಟಾ)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "ಪಾವತಿಗಳನ್ನು ಪರಿಚಯಿಸಲಾಗುತ್ತಿದೆ (ಬೀಟಾ)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "ನೀವು Signal ಅನ್ನು ಮತ್ತೆ ಇನ್ಸ್‌ಸ್ಟಾಲ್‌ ಮಾಡಿದಾಗ ನಿಮ್ಮ Signal ಪಿನ್‌ ಅನ್ನು ದೃಢೀಕರಿಸಿದರೆ ನಿಮ್ಮ ಬ್ಯಾಲೆನ್ಸ್‌ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರಿಸ್ಟೋರ್‌ ಆಗಲಿದೆ. ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಬ್ಯಾಲೆನ್ಸ್‌ ಅನ್ನು ರಿಸ್ಟೋರ್‌ ಮಾಡಬಹುದು, ಅದು ನಿಮ್ಮ 24-ಪದದ ವಿಶಿಷ್ಟ ಪದಗುಚ್ಛವಾಗಿರುತ್ತದೆ. ಅದನ್ನು ಬರೆದುಕೊಳ್ಳಿ ಮತ್ತು ಸುರಕ್ಷಿತ ಸ್ಥಳದಲ್ಲಿ ಇಟ್ಟುಕೊಳ್ಳಿ.";
@@ -5348,7 +5354,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "ಫಂಡ್‌ಗಳನ್ನು ಸೇರಿಸಿ";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "ಸಂಖ್ಯೆಯನ್ನು ನಿರ್ಬಂಧಿಸಿ";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "ಸಂಖ್ಯೆಯನ್ನು ಬ್ಲಾಕ್ ಮಾಡಿ";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "ನೆಟ್‌ವರ್ಕ್‌ ಶುಲ್ಕ";
@@ -5438,7 +5444,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "ಪೇಮೆಂಟ್ಸ್‌ ಖಾತೆಯನ್ನು ರಿಸ್ಟೋರ್‌ ಮಾಡಲಾಗಿದೆ.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "ಮ್ಯಾನುಯಲ್ಲಿ ನಮೂದಿಸಿ";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "ಹಸ್ತಚಾಲಿತವಾಗಿ ನಮೂದಿಸಿ";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "ರಿಕವರಿ ವಿಫಲಗೊಂಡಿದೆ";
@@ -5450,7 +5456,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "ಅಮಾನ್ಯವಾದ ಪದಗುಚ್ಛ";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ಅಂಟಿಸು";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ಅಂಟಿಸಿ";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "ರಿಕವರಿ ಪದಗುಚ್ಛ";
@@ -5480,13 +5486,13 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ನಮೂದಿಸಿ";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ವರ್ಗಾವಣೆ ಸ್ವೀಕೃತಿದಾರರಿಗಾಗಿ QR ಕೋಡ್‌ ಅನ್ನು ಸ್ಕ್ಯಾನ್‌ ಮಾಡಿ.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ವರ್ಗಾವಣೆ ಸ್ವೀಕೃತಿದಾರರಿಗಾಗಿ ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್‌ ಮಾಡಿ.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "ಅಮಾನ್ಯ ವಿಳಾಸ";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
+"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "ಕ್ಯುಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "ಪೇಮೆಂಟ್‌ ಕಳುಹಿಸಿ";
@@ -5504,7 +5510,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "ನಿಮ್ಮ Signal ವ್ಯಾಲೆಟ್‌ ವಿಳಾಸಕ್ಕೆ ನೀವು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಖಾತೆಯಿಂದ ಬೆಂಬಲಿತ ವಿನಿಮಯದಲ್ಲಿ ವ್ಯಾಲೆಟ್‌ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "ವಿನಿಮಯದ ಮೂಲಕ ಒದಗಿಸಿದ ವಾಲೆಟ್ ವಿಳಾಸಕ್ಕೆ ವರ್ಗಾವಣೆ ಪೂರ್ಣಗೊಳಿಸಿ ಮೊಬೈಲ್‌ಕಾಯಿನ್ ಅನ್ನು ನೀವು ವರ್ಗಾವಣೆ ಮಾಡಬಹುದು. ವಾಲೆಟ್ ವಿಳಾಸ ಎಂಬುದು ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಅಕ್ಷರಗಳ ಸ್ಟ್ರಿಂಗ್‌ ಆಗಿದ್ದು, ಸಾಮಾನ್ಯವಾಗಿ ಕ್ಯೂಆರ್‌ ಕೋಡ್‌ನ ಕೆಳಗೆ ಇರುತ್ತದೆ.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "ವಿನಿಮಯದ ಮೂಲಕ ಒದಗಿಸಿದ ವಾಲೆಟ್ ವಿಳಾಸಕ್ಕೆ ವರ್ಗಾವಣೆ ಪೂರ್ಣಗೊಳಿಸಿ ಮೊಬೈಲ್‌ಕಾಯಿನ್ ಅನ್ನು ನೀವು ವರ್ಗಾವಣೆ ಮಾಡಬಹುದು. ವಾಲೆಟ್ ವಿಳಾಸ ಎಂಬುದು ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಅಕ್ಷರಗಳ ಸ್ಟ್ರಿಂಗ್‌ ಆಗಿದ್ದು, ಸಾಮಾನ್ಯವಾಗಿ ಕ್ಯುಆರ್‌ ಕೋಡ್‌ನ  ಕೆಳಗೆ ಇರುತ್ತದೆ.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "ನೀವು ವರ್ಗಾಯಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ವ್ಯಾಲೆಟ್‌ ವಿಳಾಸವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.";
@@ -5516,10 +5522,10 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "ಗೆ: ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಅಥವಾ ವಾಲೆಟ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "ವಿನಿಮಯಕ್ಕೆ ಕಳುಹಿಸಿ";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "ವಿನಿಮಯಕ್ಕಾಗಿ ವರ್ಗಾಯಿಸಿ";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "ವಿನಿಮಯಕ್ಕೆ ಕಳುಹಿಸಿ";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "ವಿನಿಮಯಕ್ಕಾಗಿ ವರ್ಗಾಯಿಸಿ";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "ರಿಕವರಿ ಪದಗುಚ್ಛ ಹೊಂದಿಸುವುದು ಪೂರ್ಣಗೊಂಡಿದೆ";
@@ -5708,7 +5714,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "ಪ್ರದರ್ಶನ ಸೂಚಕಗಳು";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ಸ್ಥಿತಿ ಐಕಾನ್ ತೋರಿಸು";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ಸ್ಟೇಟಸ್ ಐಕಾನ್ ತೋರಿಸಿ";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ಯಾರಿಂದಲೂ ಅನುಮತಿಸಿ";
@@ -5801,16 +5807,16 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ನೀವು ದೃಢೀಕರಣ ಮಾಡದಿರುವುದನ್ನು ಆರಿಸಿಕೊಂಡರೆ ನೀವು ಇತರೆ ಜನರ ಹೊಸ ಸಂದೇಶಗಳನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ನಿಮ್ಮ ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲು ವಿಫಲವಾಗಬಹುದು.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ದೃಢೀಕರಿಸದೇ ಮುಂದುವರಿಯುವುದೇ?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ಪರಿಶೀಲಿಸದೇ ಮುಂದುವರಿಯುವುದೇ?";
 
 /* Body for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_BODY" = "Signal ನಲ್ಲಿ ಸ್ಪ್ಯಾನ್‌ ಅನ್ನು ತಡೆಯಲು ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ದಯವಿಟ್ಟು ದೃಢೀಕರಣವನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.\n\nದೃಢೀಕರಣದ ಬಳಿಕ ಸಂದೇಶ ಮಾಡುವುದನ್ನು ನೀವು ಮುಂದುವರಿಸಬಹುದು. ಯಾವುದೇ ಪಾಸ್‌ ಮಾಡಲಾದ ಸಂದೇಶಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "ಸಂದೇಶ ಕಳುಹಿಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ದೃಢೀಕರಿಸಿ";
+"SPAM_CAPTCHA_SHEET_TITLE" = "ಸಂದೇಶ ಕಳುಹಿಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಪರಿಶೀಲಿಸಿ";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ದೃಢೀಕರಣವನ್ನು ಬಿಡಿ";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ಪರಿಶೀಲನೆ ತೊರೆಯಿರಿ";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "ದೃಢೀಕರಣ ಪೂರ್ಣಗೊಳಿಸಿ";
@@ -6233,7 +6239,7 @@
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "ಸಂಪರ್ಕದ ಹೆಸರು";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "ಬ್ಲರ್‌ ಫೋಟೋ";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "ಮಸುಕಾದ ಫೋಟೋ";
 
 /* The incoming bubble text when setting a photo */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ಝೂಮ್‌ ಮಾಡಲು ಪಿಂಚ್ ಮಾಡಿ, ಹೊಂದಿಸಲು ಎಳೆಯಿರಿ.";
@@ -6263,7 +6269,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "ಈ ಚಾಟ್‌ಗೆ ವಾಲ್‌ಪೇಪರ್‌ ತೆಗೆಯಿರಿ";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ಡಾರ್ಕ್‌ ಮೋಡ್‌ನಿಂದ ವಾಲ್‌ಪೇಪರ್ ಮಂದವಾಗುತ್ತದೆ";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ಡಾರ್ಕ್‌ ಥೀಮ್‌ನಿಂದ ವಾಲ್‌ಪೇಪರ್ ಮಂದವಾಗುತ್ತದೆ";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "ಎಲ್ಲಾ ವಾಲ್‌ಪೇಪರ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ದಯವಿಟ್ಟು ಮತ್ತೆ ನಂತರ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ದೋಷ ಮುಂದುವರಿದರೆ ಸಹಾಯಕ್ಕೆ ಸಂಪರ್ಕಿಸಿ.";
@@ -6281,10 +6287,10 @@
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "ಎಲ್ಲ ಚಾಟ್ ಕಲರ್‌ಗಳನ್ನು ನೀವು ಓವರ್‌ರೈಡ್‌ ಮಾಡಲು ಬಯಸುತ್ತೀರಿ?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "ಚಾಟ್‌ ಬಣ್ಣವನ್ನು ಮರುಹೊಂದಿಸಿ";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "ಚಾಟ್‌ ಬಣ್ಣಗಳನ್ನು ಮರುಹೊಂದಿಸಿ";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "ಚಾಟ್‌ ಬಣ್ಣ ಮರುಹೊಂದಿಸಿ";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "ಚಾಟ್‌ ಬಣ್ಣವನ್ನು ಮರುಹೊಂದಿಸಿ";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "ವಾಲ್‌ಪೇಪರ್‌ ಮರುಹೊಂದಿಸಿ";
@@ -6293,7 +6299,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "ಡೀಫಾಲ್ಟ್‌ ಬಣ್ಣಗಳನ್ನು ಮರುಹೊಂದಿಸಿ";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "ಚಾಟ್‌ ಬಣ್ಣವನ್ನು ಮರುಹೊಂದಿಸಿ";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "ಚಾಟ್‌ ಬಣ್ಣಗಳನ್ನು ಮರುಹೊಂದಿಸಿ";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "ಡೀಫಾಲ್ಟ್‌ ವಾಲ್‌ಪೇಪರ್‌ ಮರುಹೊಂದಿಸಿ";
