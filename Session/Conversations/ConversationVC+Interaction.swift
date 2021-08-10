@@ -555,7 +555,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
-        if (!self.isUnsendRequesEnabled) {
+        if (!self.isUnsendRequestsEnabled) {
             viewItem.deleteAction()
             return
         }
@@ -599,7 +599,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }
     }
     
-    private func buildUsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
+    private func buildUnsendRequest(_ viewItem: ConversationViewItem) -> UnsendRequest? {
         if let message = viewItem.interaction as? TSMessage,
            message.isOpenGroupMessage || message.serverHash == nil { return nil }
         let unsendRequest = UnsendRequest()
@@ -609,7 +609,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 unsendRequest.author = incomingMessage.authorId
             }
         case .outgoingMessage: unsendRequest.author = getUserHexEncodedPublicKey()
-        default: return nil// Should never occur
+        default: return nil // Should never occur
         }
         unsendRequest.timestamp = viewItem.interaction.timestamp
         return unsendRequest
@@ -617,7 +617,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func deleteLocally(_ viewItem: ConversationViewItem) {
         viewItem.deleteLocallyAction()
-        if let unsendRequest = buildUsendRequest(viewItem) {
+        if let unsendRequest = buildUnsendRequest(viewItem) {
             SNMessagingKitConfiguration.shared.storage.write { transaction in
                 MessageSender.send(unsendRequest, to: .contact(publicKey: getUserHexEncodedPublicKey()), using: transaction).retainUntilComplete()
             }
@@ -627,7 +627,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     func deleteForEveryone(_ viewItem: ConversationViewItem) {
         viewItem.deleteLocallyAction()
         viewItem.deleteRemotelyAction()
-        if let unsendRequest = buildUsendRequest(viewItem) {
+        if let unsendRequest = buildUnsendRequest(viewItem) {
             SNMessagingKitConfiguration.shared.storage.write { transaction in
                 MessageSender.send(unsendRequest, in: self.thread, using: transaction as! YapDatabaseReadWriteTransaction)
             }

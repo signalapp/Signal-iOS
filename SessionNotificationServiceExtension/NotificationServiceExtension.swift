@@ -67,7 +67,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                                 return self.completeSilenty()
                             }
                         }
-                        // Store the notification identifier for unsend request to cancel this notification
+                        // Store the notification ID for unsend requests to later cancel this notification
                         tsIncomingMessage.setNotificationIdentifier(request.identifier, transaction: transaction)
                     case let unsendRequest as UnsendRequest:
                         MessageReceiver.handleUnsendRequest(unsendRequest, using: transaction)

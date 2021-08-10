@@ -228,9 +228,11 @@ extension MessageReceiver {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         if let author = message.author, let timestamp = message.timestamp {
             let localMessage: TSMessage?
-            if userPublicKey == message.sender { localMessage = TSOutgoingMessage.find(withTimestamp: timestamp) }
-            else { localMessage = TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction) }
-            
+            if userPublicKey == message.sender {
+                localMessage = TSOutgoingMessage.find(withTimestamp: timestamp)
+            } else {
+                localMessage = TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction)
+            }
             if let messageToDelete = localMessage {
                 if let incomingMessage = messageToDelete as? TSIncomingMessage {
                     incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
@@ -246,6 +248,7 @@ extension MessageReceiver {
             }
         }
     }
+    
     
     
     // MARK: - Visible Messages
