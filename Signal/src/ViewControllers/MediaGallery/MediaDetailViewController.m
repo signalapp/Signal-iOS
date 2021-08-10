@@ -424,14 +424,15 @@ NS_ASSUME_NONNULL_BEGIN
     self.mediaViewLeadingConstraint.constant = xOffset;
     self.mediaViewTrailingConstraint.constant = -xOffset;
 
+    CGFloat maxScale = minScale * 8;
     self.scrollView.minimumZoomScale = minScale;
-    self.scrollView.maximumZoomScale = minScale * 8;
+    self.scrollView.maximumZoomScale = maxScale;
 
     if (self.scrollView.zoomScale < minScale) {
         self.scrollView.zoomScale = minScale;
+    } else if (self.scrollView.zoomScale > maxScale) {
+        self.scrollView.zoomScale = maxScale;
     }
-
-    [self.view layoutIfNeeded];
 }
 
 #pragma mark - UIScrollViewDelegate
