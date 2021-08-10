@@ -503,10 +503,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"gv2-2"] = @(YES);
     capabilities[@"gv2-3"] = @(YES);
     capabilities[@"transfer"] = @(YES);
+    capabilities[@"announcementGroup"] = @(YES);
 
-    if (RemoteConfig.announcementOnlyGroupsCapability) {
-        capabilities[@"announcementGroup"] = @(YES);
-    }
+    // If the storage service requires (or will require) secondary devices
+    // to have a capability in order to be linked, we might need to always
+    // set that capability here if isSecondaryDevice is true.
+
     if (SSKFeatureFlags.groupsV2MigrationSetCapability
         && !SSKDebugFlags.groupsV2migrationsDisableMigrationCapability.value) {
         capabilities[@"gv1-migration"] = @(YES);
@@ -514,7 +516,11 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
-    if (SSKFeatureFlags.senderKeyAndMessageResend) {
+
+    // For internal builds, this will always be true
+    // For beta builds, this is only true if you have an internal feature flag set
+    // This means that internal users won't be able to link new devices on beta builds
+    if (RemoteConfig.senderKeyPermitted) {
         capabilities[@"senderKey"] = @(YES);
     }
 

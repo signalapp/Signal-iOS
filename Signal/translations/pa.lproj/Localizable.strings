@@ -1070,13 +1070,13 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ ਤੱਕ ਮੌਨ ਹੈ";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ ਗਰੁੱਪ ਸਾਂਝੇ";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ ਗਰੁੱਪ ਸਾਂਝੇ ਹਨ";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "ਨਵਾਂ ਸੰਪਰਕ ਬਣਾਓ";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "ਕੋਈ ਗਰੁੱਪ ਸਾਂਝੇ ਨਹੀਂ";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "ਕੋਈ ਸਮੂਹ ਸਾਂਝੇ ਨਹੀਂ";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
 "CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 ਗਰੁੱਪ ਸਾਂਝਾ";
@@ -1458,6 +1458,9 @@
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "ਖਾਰਜ ਕਰੋ";
+
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ਸੈਂਸਰਸ਼ਿਪ ਤਰਤੀਬ ਟਿਕਾਣਾ";
@@ -2057,7 +2060,7 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਲਿੰਕ ਨੂੰ ਰੀਸੈੱਟ ਕੀਤਾ।";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "ਗੁਰੱਪ ਲਿੰਕ ਲਈ ਪ੍ਰਬੰਧਕ ਪ੍ਰਵਾਨਗੀ ਬੰਦ ਕੀਤੀ ਗਈ ਸੀ।";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "ਗੁਰੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਪ੍ਰਵਾਨਗੀ ਬੰਦ ਕੀਤੀ ਗਈ ਸੀ।";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਮਨਜ਼ੂਰੀ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
@@ -2066,7 +2069,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ਨੇ ਗਰੁੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਮਨਜ਼ੂਰੀ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "ਗੁਰੱਪ ਲਿੰਕ ਲਈ ਪ੍ਰਬੰਧਕ ਪ੍ਰਵਾਨਗੀ ਚਾਲੂ ਕੀਤੀ ਗਈ ਸੀ।";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "ਗੁਰੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਪ੍ਰਵਾਨਗੀ ਚਾਲੂ ਕੀਤੀ ਗਈ ਸੀ।";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "ਤੁਸੀਂ ਗਰੁੱਪ ਲਿੰਕ ਲਈ ਐਡਮਿਨ ਦੀ ਮਨਜ਼ੂਰੀ ਨੂੰ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ।";
@@ -2108,7 +2111,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ ਨੇ ਗਰੁੱਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਤਾਂ ਜੋ ਸਿਰਫ਼ ਐਡਮਿਨ ਹੀ ਸੁਨੇਹੇ ਭੇਜ ਸਕਣ।";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ਇਹ ਸਮੂਹ ਲਿੰਕ ਹੁਣ ਸਰਗਰਮ ਨਹੀਂ ਹੈ।";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ਇਹ ਗਰੁੱਪ ਲਿੰਕ ਹੁਣ ਸਰਗਰਮ ਨਹੀਂ ਹੈ।";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ";
@@ -2162,7 +2165,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "ਗਰੁੱਪ ਲਿੰਕ ਰਾਹੀਂ ਦੋਸਤਾਂ ਨੂੰ ਆਪਣੇ ਗਰੁੱਪ ਲਈ ਸੱਦਾ ਦਿਓ";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ਜੋ ਲੋਕ ਇਸ ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਦੇ ਹਨ ਉਹ ਤੁਹਾਡੇ ਸਮੂਹ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਸਕਣਗੇ। ਐਡਮਿਨਜ਼ ਨੂੰ ਅਜੇ ਵੀ ਨਵੇਂ ਮੈਂਬਰਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਦੀ ਜ਼ਰੂਰਤ ਹੋਵੇਗੀ ਜੇ ਤੁਹਾਡੀ ਉਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ।";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "ਜੋ ਲੋਕ ਇਸ ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰਦੇ ਹਨ ਉਹ ਤੁਹਾਡੇ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਸਕਣਗੇ। ਐਡਮਿਨਜ਼ ਨੂੰ ਅਜੇ ਵੀ ਨਵੇਂ ਮੈਂਬਰਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਦੀ ਜ਼ਰੂਰਤ ਹੋਵੇਗੀ ਜੇ ਤੁਹਾਡੀ ਉਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ।";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "ਕੋਡ ਸਾਂਝਾ ਕਰੋ";
@@ -2720,7 +2723,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "ਨਵੇਂ ਗਰੁੱਪ ਲਈ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ਇਸ ਗਰੁੱਪ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "ਗਰੁੱਪ ਛੱਡਣ ਤੋਂ ਪਹਿਲਾਂ ਇਸ ਗਰੁੱਪ ਲਈ ਕੋਈ ਨਵਾਂ ਐਡਮਿਨ ਚੁਣੋ।";
@@ -3180,6 +3183,9 @@
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "ਸੁਨੇਹਿਆਂ ਦੇ ਵੇਰਵੇ";
+
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ਪਾਬੰਦੀ ਲਾਓ";
@@ -5249,7 +5255,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ਭੁਗਤਾਨ ਨੂੰ ਗੈਰ- ਸਰਗਰਮ ਕਰੀਏ?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "ਭੁਗਤਾਨ ਨੂੰ ਗੈਰ- ਸਰਗਰਮ ਕਰੋ?";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "ਭੁਗਤਾਨ ਨੂੰ ਗੈਰ- ਸਰਗਰਮ ਕਰੋ";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "ਇਹ ਸਿਫਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਕਿ ਭੁਗਤਾਨਾਂ ਨੂੰ ਅਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਸੀਂ ਆਪਣੇ ਫੰਡ ਕਿਸੇ ਹੋਰ ਵਾਲੇਟ ਪਤੇ ’ਤੇ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰ ਲਓ। ਜੇ ਤੁਸੀਂ ਹੁਣੇ ਆਪਣੇ ਫੰਡ ਟ੍ਰਾਂਸਫ਼ਰ ਨਾ ਕਰਨ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਤਾਂ ਜੇ ਤੁਸੀਂ ਭੁਗਤਾਨਾਂ ਨੂੰ ਮੁੜ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋਗੇ ਤਾਂ ਉਹ ਤੁਹਾਡੇ ਵਾਲੇਟ ਵਿੱਚ Signal ਨਾਲ ਜੁੜੇ ਰਹਿਣਗੇ।";

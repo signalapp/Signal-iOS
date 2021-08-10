@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "わかりました";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "このチャットで、 %@ からのメッセージ、ステッカー、メディア、リアクションまたは既読通知をあなたに配信できませんでした。";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "配信エラー";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%@ からのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配信できませんでした。直接またはグループで、送信しようとしているかもしれません。";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "破棄する";
@@ -884,7 +884,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "削除";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "詳細";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "転送";
@@ -1459,6 +1459,9 @@
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "キャンセル";
 
+/* Dismiss context menu accessibility label */
+"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "検閲回避場所";
 
@@ -1649,7 +1652,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "添付ファイルのダウンロードに失敗しました。";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "%@ からのメッセージを配信できませんでした";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "重複したメッセージを受信しました。";
@@ -3181,6 +3184,9 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "メッセージの詳細";
 
+/* Context menu message preview accessibility label */
+"MESSAGE_PREVIEW" = "Message Preview";
+
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ブロックする";
 
@@ -4325,7 +4331,7 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "自己紹介 (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ はプロフィール名前を %@ から %@ に変更しました。";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ はプロフィール名を %@ から %@ に変更しました。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ はプロフィール名を %@ に変更しました。";

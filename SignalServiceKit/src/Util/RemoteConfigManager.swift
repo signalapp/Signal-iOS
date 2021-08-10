@@ -196,11 +196,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var announcementOnlyGroupsCapability: Bool {
-        DebugFlags.forceAnnouncementOnlyGroupsCapability || isEnabled(.announcementOnlyGroupsCapability)
-    }
-
-    @objc
     public static var announcementOnlyGroupsUI: Bool {
         DebugFlags.forceAnnouncementOnlyGroupsUI || isEnabled(.announcementOnlyGroupsUI)
     }
@@ -228,7 +223,14 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var senderKeyPermitted: Bool {
-        isEnabled(.senderKey) || FeatureFlags.senderKeyAndMessageResend
+        // Internal population should be allowed to run beta builds and still
+        // support sender key as long as the user is in the RemoteConfig cohort
+        let isEnabled = isEnabled(.senderKey) && FeatureFlags.permitSenderKeyAndMessageResend
+
+        // Internal builds will always support sender key
+        let forceEnabled = FeatureFlags.forceSenderKeyAndMessageResend
+
+        return isEnabled || forceEnabled
     }
 
     @objc
@@ -434,7 +436,6 @@ private struct Flags {
         case paymentsResetKillSwitch
         case giphySendAsMP4
         case viewedReceiptSending
-        case announcementOnlyGroupsCapability
         case announcementOnlyGroupsUI
         case notificationServiceExtension
         case senderKeyKillSwitch

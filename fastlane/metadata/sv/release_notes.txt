@@ -1,3 +1,4 @@
-• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
-• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
-• We’ve made several improvements to help make scrolling your chat list smoother.
+• En bild kan vara värd 1k ord, men nu kan du skicka dem på 4k. Använd den nya kvalitetsväljaren för att eventuellt skicka foton med högre upplösning. Du kan också som standard alltid skicka foton med högre upplösning i Inställningar > Dataanvändning.
+• När du trycker länge på ett meddelande låter en snabb ny meny dig snabbt reagera, svara, ta bort och mer.
+• Introducing “My Daily Life”, a new animated sticker pack by artist Plastic Thing. 
+• Vi har gjort flera förbättringar för att göra rullningen i din chattlista smidigare.

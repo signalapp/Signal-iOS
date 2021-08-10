@@ -187,7 +187,10 @@ public class FeatureFlags: BaseFlags {
     public static let newLinkDeviceScheme = build.includes(.dev)
 
     @objc
-    public static let senderKeyAndMessageResend = build.includes(.qa)
+    public static let forceSenderKeyAndMessageResend = build.includes(.qa)
+
+    @objc
+    public static let permitSenderKeyAndMessageResend = build.includes(.beta)
 
     @objc
     public static let forceEnableGiphyMP4 = build.includes(.beta)
@@ -519,9 +522,6 @@ public class DebugFlags: BaseFlags {
     public static let delayedMessageResend = TestableFlag(false,
                                                           title: LocalizationNotNeeded("Delayed message resend"),
                                                           details: LocalizationNotNeeded("Waits 10s before responding to a resend request."))
-
-    @objc
-    public static let forceAnnouncementOnlyGroupsCapability = build.includes(.production)
 
     @objc
     public static let forceAnnouncementOnlyGroupsUI = build.includes(.qa)
