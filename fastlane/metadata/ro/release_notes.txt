@@ -1,3 +1,3 @@
 • O fotografie poate valora 1000 de cuvinte, dar acum le puteți trimite în 4k. Utilizați noul selector de calitate pentru a trimite opțional fotografii de rezoluție mai mare. Puteți seta să trimiteți în mod implicit fotografii de rezoluție mai mare din Setări > Utilizare date.
-• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
-• We’ve made several improvements to help make scrolling your chat list smoother.
+• Când apăsați lung pe un mesaj, un nou meniu rapid vă permite să reacționați, să răspundeți, să ștergeți și multe altele.
+• Am făcut mai multe îmbunătățiri pentru a ajuta la o derulare mai lină a listei dvs. de conversații.
