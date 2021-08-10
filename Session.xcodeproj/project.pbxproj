@@ -266,6 +266,8 @@
 		B8D64FCB25BA78A90029CFC0 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		B8D84EA325DF745A005A043E /* LinkPreviewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84EA225DF745A005A043E /* LinkPreviewState.swift */; };
 		B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */; };
+		B8DE1FB426C22F2F0079C9CE /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DE1FB326C22F2F0079C9CE /* File.swift */; };
+		B8DE1FB626C22FCB0079C9CE /* CallMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DE1FB526C22FCB0079C9CE /* CallMessage.swift */; };
 		B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */; };
 		B8EB20F02640F7F000773E52 /* OpenGroupInvitationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */; };
 		B8F5F52925EC4F8A003BF8D4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F52825EC4F8A003BF8D4 /* BlockListUIUtils.m */; };
@@ -1245,6 +1247,9 @@
 		B8D8F19225661BF80092EF10 /* Storage+Messaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Messaging.swift"; sourceTree = "<group>"; };
 		B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OnionRequests.swift"; sourceTree = "<group>"; };
 		B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Convenience.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Convenience.swift"; sourceTree = "<group>"; };
+		B8DE1FAF26C228780079C9CE /* SignalRingRTC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SignalRingRTC.framework; path = Dependencies/SignalRingRTC.framework; sourceTree = "<group>"; };
+		B8DE1FB326C22F2F0079C9CE /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		B8DE1FB526C22FCB0079C9CE /* CallMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessage.swift; sourceTree = "<group>"; };
 		B8EB20E6263F7E4B00773E52 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+OpenGroupInvitation.swift"; sourceTree = "<group>"; };
 		B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupInvitationView.swift; sourceTree = "<group>"; };
@@ -2329,6 +2334,21 @@
 			path = Shared;
 			sourceTree = "<group>";
 		};
+		B8DE1FB126C22AF20079C9CE /* Calls */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Calls;
+			sourceTree = "<group>";
+		};
+		B8DE1FB226C22F1F0079C9CE /* Calls */ = {
+			isa = PBXGroup;
+			children = (
+				B8DE1FB326C22F2F0079C9CE /* File.swift */,
+			);
+			path = Calls;
+			sourceTree = "<group>";
+		};
 		B8F5F61925EDE4B0003BF8D4 /* Data Extraction */ = {
 			isa = PBXGroup;
 			children = (
@@ -2376,6 +2396,7 @@
 			isa = PBXGroup;
 			children = (
 				C3C2A7702553A41E00C340D1 /* ControlMessage.swift */,
+				B8DE1FB526C22FCB0079C9CE /* CallMessage.swift */,
 				C300A5BC2554B00D00555489 /* ReadReceipt.swift */,
 				C300A5D22554B05A00555489 /* TypingIndicator.swift */,
 				C34A977325A3E34A00852C71 /* ClosedGroupControlMessage.swift */,
@@ -3239,6 +3260,7 @@
 				C32C5BB9256DC7C4003C73A2 /* To Do */,
 				C3BBE0752554CDA60050F1E3 /* Configuration.swift */,
 				C3BBE07F2554CDD70050F1E3 /* Storage.swift */,
+				B8DE1FB226C22F1F0079C9CE /* Calls */,
 				B8B3201F258B1A540020074B /* Contacts */,
 				C32C5BCB256DC818003C73A2 /* Database */,
 				C300A5BB2554AFFB00555489 /* Messages */,
@@ -3457,6 +3479,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B8DE1FAF26C228780079C9CE /* SignalRingRTC.framework */,
 				C35E8AA22485C72300ACB629 /* SwiftCSV.framework */,
 				B847570023D568EB00759540 /* SignalServiceKit.framework */,
 				3496955F21A2FC8100DCFE74 /* CloudKit.framework */,
@@ -3511,6 +3534,7 @@
 			children = (
 				C3F0A58F255C8E3D007BE2A3 /* Meta */,
 				C36096BC25AD1C3E008B62B2 /* Backups */,
+				B8DE1FB126C22AF20079C9CE /* Calls */,
 				C360969C25AD18BA008B62B2 /* Closed Groups */,
 				B835246C25C38AA20089A44F /* Conversations */,
 				C32B405424A961E1001117B5 /* Dependencies */,
@@ -4204,6 +4228,7 @@
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/Sodium/Sodium.framework",
+				"${PODS_ROOT}/WebRTC/WebRTC.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/ZXingObjC/ZXingObjC.framework",
@@ -4226,6 +4251,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sodium.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZXingObjC.framework",
@@ -4667,8 +4693,10 @@
 				B8856ECE256F1E58001CE70E /* OWSPreferences.m in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C32C5DC0256DD743003C73A2 /* Poller.swift in Sources */,
+				B8DE1FB426C22F2F0079C9CE /* File.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
 				C3A3A171256E1D25004D228D /* SSKReachabilityManager.swift in Sources */,
+				B8DE1FB626C22FCB0079C9CE /* CallMessage.swift in Sources */,
 				C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */,
 				B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */,
 				C32C5D24256DD4C0003C73A2 /* MentionsManager.swift in Sources */,
@@ -6165,6 +6193,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Dependencies",
 				);
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -6233,6 +6262,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Dependencies",
 				);
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

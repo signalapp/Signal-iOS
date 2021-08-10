@@ -466,6 +466,9 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
         if let _value = dataMessage {
             builder.setDataMessage(_value)
         }
+        if let _value = callMessage {
+            builder.setCallMessage(_value)
+        }
         if let _value = receiptMessage {
             builder.setReceiptMessage(_value)
         }
@@ -492,6 +495,10 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
         @objc public func setDataMessage(_ valueParam: SNProtoDataMessage) {
             proto.dataMessage = valueParam.proto
+        }
+
+        @objc public func setCallMessage(_ valueParam: SNProtoCallMessage) {
+            proto.callMessage = valueParam.proto
         }
 
         @objc public func setReceiptMessage(_ valueParam: SNProtoReceiptMessage) {
@@ -527,6 +534,8 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
     @objc public let dataMessage: SNProtoDataMessage?
 
+    @objc public let callMessage: SNProtoCallMessage?
+
     @objc public let receiptMessage: SNProtoReceiptMessage?
 
     @objc public let typingMessage: SNProtoTypingMessage?
@@ -539,6 +548,7 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
     private init(proto: SessionProtos_Content,
                  dataMessage: SNProtoDataMessage?,
+                 callMessage: SNProtoCallMessage?,
                  receiptMessage: SNProtoReceiptMessage?,
                  typingMessage: SNProtoTypingMessage?,
                  configurationMessage: SNProtoConfigurationMessage?,
@@ -546,6 +556,7 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
                  unsendRequest: SNProtoUnsendRequest?) {
         self.proto = proto
         self.dataMessage = dataMessage
+        self.callMessage = callMessage
         self.receiptMessage = receiptMessage
         self.typingMessage = typingMessage
         self.configurationMessage = configurationMessage
@@ -567,6 +578,11 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
         var dataMessage: SNProtoDataMessage? = nil
         if proto.hasDataMessage {
             dataMessage = try SNProtoDataMessage.parseProto(proto.dataMessage)
+        }
+
+        var callMessage: SNProtoCallMessage? = nil
+        if proto.hasCallMessage {
+            callMessage = try SNProtoCallMessage.parseProto(proto.callMessage)
         }
 
         var receiptMessage: SNProtoReceiptMessage? = nil
@@ -600,6 +616,7 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
         let result = SNProtoContent(proto: proto,
                                     dataMessage: dataMessage,
+                                    callMessage: callMessage,
                                     receiptMessage: receiptMessage,
                                     typingMessage: typingMessage,
                                     configurationMessage: configurationMessage,
@@ -623,6 +640,142 @@ extension SNProtoContent {
 
 extension SNProtoContent.SNProtoContentBuilder {
     @objc public func buildIgnoringErrors() -> SNProtoContent? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SNProtoCallMessage
+
+@objc public class SNProtoCallMessage: NSObject {
+
+    // MARK: - SNProtoCallMessageType
+
+    @objc public enum SNProtoCallMessageType: Int32 {
+        case offer = 1
+        case answer = 2
+        case provisionalAnswer = 3
+    }
+
+    private class func SNProtoCallMessageTypeWrap(_ value: SessionProtos_CallMessage.TypeEnum) -> SNProtoCallMessageType {
+        switch value {
+        case .offer: return .offer
+        case .answer: return .answer
+        case .provisionalAnswer: return .provisionalAnswer
+        }
+    }
+
+    private class func SNProtoCallMessageTypeUnwrap(_ value: SNProtoCallMessageType) -> SessionProtos_CallMessage.TypeEnum {
+        switch value {
+        case .offer: return .offer
+        case .answer: return .answer
+        case .provisionalAnswer: return .provisionalAnswer
+        }
+    }
+
+    // MARK: - SNProtoCallMessageBuilder
+
+    @objc public class func builder(type: SNProtoCallMessageType, sdp: String) -> SNProtoCallMessageBuilder {
+        return SNProtoCallMessageBuilder(type: type, sdp: sdp)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoCallMessageBuilder {
+        let builder = SNProtoCallMessageBuilder(type: type, sdp: sdp)
+        return builder
+    }
+
+    @objc public class SNProtoCallMessageBuilder: NSObject {
+
+        private var proto = SessionProtos_CallMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(type: SNProtoCallMessageType, sdp: String) {
+            super.init()
+
+            setType(type)
+            setSdp(sdp)
+        }
+
+        @objc public func setType(_ valueParam: SNProtoCallMessageType) {
+            proto.type = SNProtoCallMessageTypeUnwrap(valueParam)
+        }
+
+        @objc public func setSdp(_ valueParam: String) {
+            proto.sdp = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoCallMessage {
+            return try SNProtoCallMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoCallMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_CallMessage
+
+    @objc public let type: SNProtoCallMessageType
+
+    @objc public let sdp: String
+
+    private init(proto: SessionProtos_CallMessage,
+                 type: SNProtoCallMessageType,
+                 sdp: String) {
+        self.proto = proto
+        self.type = type
+        self.sdp = sdp
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoCallMessage {
+        let proto = try SessionProtos_CallMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_CallMessage) throws -> SNProtoCallMessage {
+        guard proto.hasType else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+        let type = SNProtoCallMessageTypeWrap(proto.type)
+
+        guard proto.hasSdp else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
+        }
+        let sdp = proto.sdp
+
+        // MARK: - Begin Validation Logic for SNProtoCallMessage -
+
+        // MARK: - End Validation Logic for SNProtoCallMessage -
+
+        let result = SNProtoCallMessage(proto: proto,
+                                        type: type,
+                                        sdp: sdp)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoCallMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoCallMessage.SNProtoCallMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoCallMessage? {
         return try! self.build()
     }
 }
