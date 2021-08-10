@@ -119,16 +119,40 @@ extension TSInteraction {
         if placeholder.supportsReplacement {
             placeholder.replaceWithInteraction(self, writeTx: transaction)
             return true
-        } else {
+        } else if placeholder.uniqueThreadId == uniqueThreadId {
             // We've found the placeholder for the replacement message, but it is no longer eligible
             // for replacement. We now want to preserve this placeholder as a permanent error message.
             //
-            // In many places we assume interaction timestamps are unique for a thread. To workaround
-            // this expectation, we ever so slightly decrement the timestamp of the expired placeholder.
-            Logger.info("Placeholder not eligible for replacement. Updating timestamp")
-            placeholder.anyUpdate(transaction: transaction) { interaction in
-                (interaction as? OWSRecoverableDecryptionPlaceholder)?.decrementTimestamp()
+            // In many places we assume interaction timestamps are unique for a thread. So we adjust the timestamp
+            // to preserve this uniqueness. It's likely nothing will collide, but we walk back over a small window
+            // to find an opening just in case.
+            let timestampWindow = (placeholder.timestamp - 10 ..< placeholder.timestamp).reversed()
+
+            let newTimestamp = timestampWindow.first { candidate in
+                guard candidate > 0 else { return false }
+
+                do {
+                    return try InteractionFinder.interactions(withTimestamp: candidate, filter: { interaction in
+                        interaction.uniqueThreadId == placeholder.uniqueThreadId
+                    }, transaction: transaction).isEmpty
+                } catch {
+                    owsFailDebug("\(error)")
+                    return false
+                }
             }
+
+            if let newTimestamp = newTimestamp, newTimestamp > 0 {
+                Logger.info("Placeholder not eligible for replacement. Updating timestamp")
+                placeholder.anyUpdate(transaction: transaction) { interaction in
+                    (interaction as? OWSRecoverableDecryptionPlaceholder)?.adjustTimestamp(newTimestamp)
+                }
+            } else {
+                Logger.warn("Placeholder not eligible for replacement. Failed to find free timestamp. Deleting placeholder.")
+                placeholder.anyRemove(transaction: transaction)
+            }
+            return false
+        } else {
+            Logger.info("Placeholder not eligible for replacement. No need to adjust timestamp")
             return false
         }
     }

@@ -57,10 +57,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
-- (void)decrementTimestamp
+- (void)adjustTimestamp:(uint64_t)timestamp
 {
-    OWSAssert(self.timestamp > 1);
-    self.timestamp = self.timestamp - 1;
+    OWSAssert(timestamp > 0);
+    self.timestamp = timestamp;
 }
 
 - (BOOL)isVisible
