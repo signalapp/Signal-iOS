@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSAttachmentStream.h"
 #import "NSData+Image.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/Threading.h>
@@ -10,7 +11,6 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentPointer.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 #import <YYImage/YYImage.h>
 
@@ -469,6 +469,10 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         return YES;
     }
 
+    if (self.isLoopingVideo && self.isValidVideo) {
+        return YES;
+    }
+
     return NO;
 }
 
@@ -888,9 +892,10 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
             }
 
             if (originalSizePoints.width <= thumbnailDimensionPoints
-                && originalSizePoints.height <= thumbnailDimensionPoints) {
+                && originalSizePoints.height <= thumbnailDimensionPoints && self.isImage) {
                 // There's no point in generating a thumbnail if the original is smaller than the
-                // thumbnail size.
+                // thumbnail size. Only do this for images. We still need to generate thumbnails
+                // for videos.
                 NSString *originalFilePath = self.originalFilePath;
                 UIImage *_Nullable originalImage = self.originalImage;
                 if (originalImage == nil) {

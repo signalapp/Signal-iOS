@@ -893,7 +893,7 @@
 "CONTEXT_MENU_REPLY" = "返信";
 
 /* Context menu button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "以下のいずれかを行います";
+"CONTEXT_MENU_SELECT_MESSAGE" = "選択して削除";
 
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "共有";
@@ -5069,13 +5069,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "自動ダウンロードの設定をリセットする";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "メディアの品質";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "送信する写真と動画の品質を選択できます。";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "メディア";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "データ通信量";
@@ -5690,10 +5690,10 @@
 "SETTINGS_SECURITY_TITLE" = "アプリのセキュリティ";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "メディアを送信する際、高画質で送信すると、より多くのデータを消費します。";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "写真と動画";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Siriからの提案にチャットを表示する";

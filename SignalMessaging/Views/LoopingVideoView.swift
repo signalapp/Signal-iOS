@@ -10,30 +10,29 @@ import PromiseKit
 /// Any LoopingVideoViews playing this instance will all be kept in sync
 @objc
 public class LoopingVideo: NSObject {
-    fileprivate let playerItemPromise: Guarantee<AVPlayerItem?>
-    fileprivate var playerItem: AVPlayerItem? { playerItemPromise.value.flatMap { $0 } }
-    fileprivate var asset: AVAsset? { playerItem?.asset }
+    fileprivate let assetPromise: Guarantee<AVAsset?>
+    fileprivate var asset: AVAsset? { assetPromise.value.flatMap { $0 } }
 
     @objc
     public init?(url: URL) {
         guard OWSMediaUtils.isVideoOfValidContentTypeAndSize(path: url.path) else {
             return nil
         }
-        playerItemPromise = firstly(on: .global(qos: .userInitiated)) {
-            let asset = AVAsset(url: url)
-            let item = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
-            return OWSMediaUtils.isValidVideo(asset: asset) ? item : nil
-        }
+        assetPromise = firstly(on: .global(qos: .userInitiated)) { AVAsset(url: url) }
         super.init()
     }
 
+    func createPlayerItem() -> AVPlayerItem? {
+        guard let asset = asset else { return nil }
+        let item = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
+        return OWSMediaUtils.isValidVideo(asset: asset) ? item : nil
+    }
+
     deinit {
-        playerItem?.cancelPendingSeeks()
         asset?.cancelLoading()
     }
 }
 
-// TODO: Multicast for syncing up two views?
 private class LoopingVideoPlayer: AVPlayer {
 
     override init() {
@@ -123,19 +122,21 @@ public class LoopingVideoView: UIView {
         didSet {
             guard video !== oldValue else { return }
             player.replaceCurrentItem(with: nil)
+            invalidateIntrinsicContentSize()
 
-            if let itemPromise = video?.playerItemPromise {
-                itemPromise.done(on: .global(qos: .userInitiated)) { item in
-                    guard item === self.video?.playerItem else { return }
+            if let assetPromise = video?.assetPromise {
+                assetPromise.done(on: .global(qos: .userInitiated)) { asset in
+                    guard asset === self.video?.asset else { return }
 
-                    if let item = item {
-                        self.player.replaceCurrentItem(with: item)
+                    if let asset = asset {
+                        let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
+                        self.player.replaceCurrentItem(with: playerItem)
                         self.player.play()
+
+                        DispatchQueue.main.async { self.invalidateIntrinsicContentSize() }
                     }
                 }
             }
-            displayReadyObserver = nil
-            invalidateIntrinsicContentSize()
         }
     }
 
@@ -171,8 +172,8 @@ public class LoopingVideoView: UIView {
         guard let asset = video?.asset else {
             // If we have an outstanding promise, invalidate the size once it's complete
             // If there isn't, -noIntrinsicMetric is valid
-            if video?.playerItemPromise.isPending == true {
-                video?.playerItemPromise.done { _ in self.invalidateIntrinsicContentSize() }
+            if video?.assetPromise.isPending == true {
+                video?.assetPromise.done { _ in self.invalidateIntrinsicContentSize() }
             }
             return CGSize(square: UIView.noIntrinsicMetric)
         }
@@ -184,53 +185,5 @@ public class LoopingVideoView: UIView {
                 CGSize(width: max($0.width, $1.width),
                        height: max($0.height, $1.height))
             }
-    }
-
-    // MARK: - Placeholder Images
-
-    /// AVKit may not have the video ready in time for display. If a closure is provided here, LoopingAnimationView will invoke the closure to
-    /// fetch a placeholder image to present in the meantime while the video is prepared.
-    /// This image will be removed once the video is ready to play.
-    public var placeholderProvider: (() -> UIImage?)?
-
-    private var placeholderView: UIImageView?
-    private var displayReadyObserver: NSKeyValueObservation?
-
-    override public func draw(_ rect: CGRect) {
-        defer { super.draw(rect) }
-        guard video != nil else { return }
-        let isDisplayingPlaceholder = (placeholderView != nil)
-
-        // If we aren't ready for display, add an imageView to present the placeholder. Start listening
-        // for any changes so we can clean this up when the video layer is ready.
-        if !playerLayer.isReadyForDisplay,
-           !isDisplayingPlaceholder,
-           let placeholderProvider = placeholderProvider {
-
-            // First, set up our observer so we are notified once we can drop the placeholder
-            displayReadyObserver = playerLayer.observe(
-                \.isReadyForDisplay,
-                options: .new
-            ) { [weak self] (_, change) in
-                if change.newValue == true {
-                    self?.setNeedsDisplay()
-                }
-            }
-
-            // Then, add the placeholder image
-            let imageView = UIImageView()
-            imageView.contentMode = contentMode
-            imageView.image = placeholderProvider()
-
-            addSubview(imageView)
-            imageView.autoPinEdgesToSuperviewEdges()
-            placeholderView = imageView
-
-        } else if playerLayer.isReadyForDisplay {
-            // Cleanup. The video is ready to go.
-            displayReadyObserver = nil
-            placeholderView?.removeFromSuperview()
-            placeholderView = nil
-        }
     }
 }
