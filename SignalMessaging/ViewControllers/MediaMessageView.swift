@@ -173,7 +173,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
         let loopingVideoView = LoopingVideoView()
         loopingVideoView.video = video
-        loopingVideoView.placeholderProvider = { previewImage }
 
         addSubviewWithScaleAspectFitLayout(view: loopingVideoView, aspectRatio: previewImage.size.aspectRatio)
         contentView = loopingVideoView

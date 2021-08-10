@@ -223,6 +223,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
+    if (CGRectEqualToRect(keyboardEndFrame, CGRectZero)) {
+        // If reduce motion+crossfade transitions is on, in iOS 14 UIKit vends out a keyboard end frame
+        // of CGRect zero. This breaks the math below.
+        //
+        // If our keyboard end frame is CGRectZero, build a fake rect that's translated off the bottom edge.
+        CGRect deviceBounds = UIScreen.mainScreen.bounds;
+        keyboardEndFrame = CGRectOffset(deviceBounds, 0, deviceBounds.size.height);
+    }
+
     CGRect keyboardEndFrameConverted = [self.view convertRect:keyboardEndFrame fromView:nil];
     // Adjust the position of the bottom view to account for the keyboard's
     // intrusion into the view.
@@ -250,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
 
-    if (self.shouldAnimateBottomLayout && duration > 0) {
+    if (self.shouldAnimateBottomLayout && duration > 0 && !UIAccessibilityIsReduceMotionEnabled()) {
         [UIView beginAnimations:@"keyboardStateChange" context:NULL];
         [UIView setAnimationBeginsFromCurrentState:YES];
         [UIView setAnimationCurve:curve];

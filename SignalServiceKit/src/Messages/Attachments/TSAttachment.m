@@ -292,7 +292,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 - (NSString *)description {
     NSString *attachmentString;
 
-    if (self.isAnimated) {
+    if (self.isAnimated || self.isLoopingVideo) {
         BOOL isGIF = ([self.contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame);
         BOOL isLoopingVideo = self.isLoopingVideo && ([MIMETypeUtil isVideo:self.contentType]);
 

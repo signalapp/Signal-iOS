@@ -498,20 +498,22 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     if ([MIMETypeUtil isAudio:contentType]) {
         return NSLocalizedString(
             @"QUOTED_REPLY_TYPE_AUDIO", @"Indicates this message is a quoted reply to an audio file.");
+    } else if ([MIMETypeUtil isAnimated:contentType]) {
+        if ([contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame) {
+            return NSLocalizedString(
+                                     @"QUOTED_REPLY_TYPE_GIF", @"Indicates this message is a quoted reply to animated GIF file.");
+        } else {
+            return NSLocalizedString(
+                                     @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
+        }
+    } else if (self.quotedMessage.attachmentStream.isLoopingVideo) {
+        return NSLocalizedString(@"QUOTED_REPLY_TYPE_GIF", @"Indicates this message is a quoted reply to animated GIF file.");
     } else if ([MIMETypeUtil isVideo:contentType]) {
         return NSLocalizedString(
             @"QUOTED_REPLY_TYPE_VIDEO", @"Indicates this message is a quoted reply to a video file.");
     } else if ([MIMETypeUtil isImage:contentType]) {
         return NSLocalizedString(
             @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
-    } else if ([MIMETypeUtil isAnimated:contentType]) {
-        if ([contentType caseInsensitiveCompare:OWSMimeTypeImageGif] == NSOrderedSame) {
-            return NSLocalizedString(
-                @"QUOTED_REPLY_TYPE_GIF", @"Indicates this message is a quoted reply to animated GIF file.");
-        } else {
-            return NSLocalizedString(
-                @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
-        }
     }
     return nil;
 }

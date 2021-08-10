@@ -293,6 +293,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     LoopingVideoView *view = [[LoopingVideoView alloc] init];
     view.video = video;
+
+    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                         forConstraints:^{
+        [view autoSetDimensionsToSize:self.image.size];
+    }];
     return view;
 }
 
@@ -397,13 +402,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.scrollView);
 
     CGSize scrollViewSize = self.scrollView.bounds.size;
-    CGSize imageViewSize = self.mediaView.frame.size;
+    CGSize mediaSize = self.mediaView.frame.size;
 
-    CGFloat yOffset = MAX(0, (scrollViewSize.height - imageViewSize.height) / 2);
+    CGFloat yOffset = MAX(0, (scrollViewSize.height - mediaSize.height) / 2);
     self.mediaViewTopConstraint.constant = yOffset;
     self.mediaViewBottomConstraint.constant = yOffset;
 
-    CGFloat xOffset = MAX(0, (scrollViewSize.width - imageViewSize.width) / 2);
+    CGFloat xOffset = MAX(0, (scrollViewSize.width - mediaSize.width) / 2);
     self.mediaViewLeadingConstraint.constant = xOffset;
     self.mediaViewTrailingConstraint.constant = -xOffset;
 }
